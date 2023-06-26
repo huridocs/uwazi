@@ -21,7 +21,7 @@ export class MongoPermissionsDataSource
   getByEntities(sharedIds: string[]) {
     const cursor = this.getCollection().find(
       { sharedId: { $in: sharedIds } },
-      { projection: { sharedId: 1, permissions: 1 }, session: this.getSession() }
+      { projection: { sharedId: 1, permissions: 1 } }
     );
     return new MongoResultSet(
       cursor,

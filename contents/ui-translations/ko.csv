@@ -1,24 +1,30 @@
-Key,Korean 
+Key,Korean
 % of sentences above threshold,임계값 이상 문장 비율
 (view page),(페이지 보기)
+*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2FA Enabled,2FA Enabled
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
 Accept,수락
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,계정
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
+Account updated,Account updated
 Accuracy,Accuracy
 Action,활동
 Activate this feature for enhanced account security,계정 보안 강화가 필요한 경우 이 기능을 활성화하십시오.
+Activated,Activated
 Active languages,Active languages
 Activity log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
 Add file,파일 추가
@@ -42,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,모든 언어에 추가
 Add to table of contents,목차에 추가
 Add user,사용자 추가
-Add users,사용자 추가
 add value,add value
 Add/delete users and assign roles,사용자 추가/삭제 및 권한 부여
 Add/edit translations,번역 추가/편집
@@ -107,6 +112,7 @@ malicious content."
 Cards,카드
 Cards view,카드 뷰
 Change password,비밀번호 변경
+Change Password,Change Password
 Change will take effect after saving the template,템플릿 저장 후 변경 사항이 적용됩니다.
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -148,6 +154,7 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,새 비밀번호 확인
 Confirm publish multiple items,여러 항목 게시 확인
 Confirm suggestion acceptance,Confirm suggestion acceptance
@@ -165,6 +172,7 @@ Copy From,외부 복사
 Copy Highlighted,하이라이트 복사
 Copy link,링크 복사
 Copy properties to this entity from,이 엔티티의 속성 복사
+Copy to clipboard,Copy to clipboard
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -188,7 +196,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -255,6 +262,7 @@ documents to be reviewed,검토할 문서
 Documents to be reviewed,검토할 문서
 documents.,문서
 Download,다운로드
+Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
 Drag items here,여기에 아이템을 드래그합니다.
 Drag properties here,여기에 속성을 드래그합니다.
@@ -267,7 +275,9 @@ Duplicated username,사용자 이름 중복
 Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,편집자
 editor,편집자
 Email,이메일
@@ -282,7 +292,9 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable,Enable
 Enable this page to be used as an entity view page:,엔티티 뷰 페이지가 필요할 경우 활성화하십시오.
+Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter the 6-digit verification code generated by your Authenticator app:,보안 인증 앱에서 생성된 6자리 인증 코드를 입력하십시오.
 Entities,엔티티
 entities,엔티티
@@ -334,15 +346,16 @@ From all templates,From all templates
 Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
+General Information,General Information
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,그룹
 help,도움말
@@ -378,11 +391,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,잘못된 보안문자
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,잘못된 이메일
 Invalid form,잘못된 형식
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
@@ -484,7 +498,6 @@ Name,이름
 Name is required,이름이 필요합니다.
 Name is too long,이름이 너무 깁니다.
 Name is too short,이름이 너무 짧습니다.
-Name of the group,그룹 이름
 Narrow down your searches,검색을 세부화하십시오.
 Narrow your search,상세 검색
 Navigate back,Navigate back
@@ -494,8 +507,10 @@ New entity,새 엔티티
 New group,New group
 New language added,새로운 언어가 추가되었습니다.
 New password,새 비밀번호
+New Password,New Password
 New relationship type,New relationship type
 New relationships group,새로운 관계 그룹
+New user,New user
 Next,다음
 No,아니오
 No attachments,첨부파일 없음
@@ -524,6 +539,7 @@ No Value,값 없음
 Non-matching,Non-matching
 Normal view,일반 뷰
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,검색 결과 없음. 해당 문서는 선택한 시소러스를 사용하지 않습니다.
 Number of sentences above threshold,임계값 이상 문장 수
 Obsolete,Obsolete
@@ -556,10 +572,12 @@ Page Javascript,페이지 자바스크립트
 Page name,Page name
 Pages,페이지
 Password,비밀번호
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,암호 오류
 Password is too long,암호가 너무 깁니다.
 Password updated,암호 업데이트 완료
+Passwords do not match,Passwords do not match
 Paste URL here,Paste URL here
 PDF,PDF
 per page,per page
@@ -605,7 +623,6 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,계정 보호하기
 Protection,보호
 ProTip!,프로 팁
 Public Endpoints,공개 엔드포인트
@@ -616,6 +633,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,게시
 Published,공개 게시물
+QR Code,QR Code
 Query,검사
 Quick labeling for,빠른 라벨링
 RAW,RAW
@@ -680,6 +698,8 @@ Search Tips: one char wildcard,검색 팁: one char wildcard
 Search Tips: proximity,검색 팁: 근접성
 Search Tips: wildcard,검색 팁: wildcard
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
+Secret keys,Secret keys
 Select,Select
 Select all,전체 선택
 Select files on your device,기기에서 파일을 선택하십시오.
@@ -776,6 +796,7 @@ The current model was trained at,현재 모델의 훈련은:
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
 The request could not be processed.,The request could not be processed.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
+The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,엔티티 뷰가 활성화된 페이지가 없습니다.
 There are no untranslated terms,There are no untranslated terms
@@ -832,6 +853,7 @@ Translations reset successfully,Translations reset successfully
 Translations saved,번역 저장 완료
 Try selecting other documents.,다른 문서 선택
 Turn off inline translation,Turn off inline translation
+Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
@@ -845,6 +867,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,OCR 지원되지 않는 언어
 Untranslated Terms,Untranslated Terms
 Update,업데이트
@@ -875,11 +898,16 @@ Use,사용
 Use as filter,Use as filter
 Use custom landing page,사용자 지정 랜딩 페이지
 User,사용자
+User Action,User Action
+User Role,User Role
 Username,사용자 이름
 Username is required,사용자 이름이 필요합니다.
 Username is too long,사용자 이름이 너무 깁니다.
 Username is too short,사용자 이름이 너무 짧습니다.
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,사용자
+Users & Groups,Users & Groups
+Using Authenticator,Using Authenticator
 Using Google Authenticator,Google Authenticator 사용 중
 Uwazi is developed by,Uwazi 제작 및 개발:
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi 가 라벨링된 문서를 학습하고 있습니다. 이 과정은 최대 2 시간이 소요될 수 있습니다. 완료 후 Uwazi 의 자동 제안을 검토할 수 있습니다.
@@ -913,13 +941,15 @@ x less,덜 보기
 x more,더 보기
 Year,연도
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
+You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,더 많은 문서를 라벨링해 자동 제안 기능을 향상시킬 수 있습니다.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
 You have labeled,라벨링 완료:
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
-Your account is protected by 2fa.,계정 이중 인증 보호 중
+You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,확대
 Zoom in library view,라이브러리 뷰 확대
 Zoom out,축소

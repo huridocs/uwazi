@@ -1,4 +1,4 @@
-export type { TableProps } from './TableTypes';
+export type { TableProps } from './TableElements';
 export { Button } from './Button';
 export { Modal } from './Modal';
 export { Pill } from './Pill';
@@ -10,3 +10,4 @@ export { Sidepanel } from './Sidepanel';
 export { SearchMultiselect } from './SearchMultiSelect';
 export { ConfirmationModal } from './ConfirmationModal';
 export { Card } from './Card';
+export { CopyValueInput } from './CopyValueInput';

@@ -1,24 +1,30 @@
 Key,Thai
 % of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 (view page),(ดูหน้า)
+*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2FA Enabled,2FA Enabled
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,ID ที่สร้างขึ้นจะเป็นชื่อเริ่มต้น
 Accept,ตกลง
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,บัญชี
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
+Account updated,Account updated
 Accuracy,Accuracy
 Action,เริ่มทำ
 Activate this feature for enhanced account security,เปิดใช้งานคุณสมบัตินี้เพื่อความปลอดภัยของบัญชีขั้นสูง
+Activated,Activated
 Active languages,Active languages
 Activity log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
 Add file,เพิ่มไฟล์
@@ -42,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,เพิ่มเข้าไปในทุกภาษา
 Add to table of contents,เพิ่มลงในสารบัญ
 Add user,เพิ่มผู้ใช้
-Add users,เพิ่มผู้ใช้
 add value,add value
 Add/delete users and assign roles,เพิ่ม / ลบผู้ใช้และกำหนดบทบาทผู้ใช้
 Add/edit translations,เพิ่ม / แก้ไขการแปล
@@ -107,6 +112,7 @@ malicious content."
 Cards,บัตร
 Cards view,มุมมองการ์ด
 Change password,เปลี่ยนรหัสผ่าน
+Change Password,Change Password
 Change will take effect after saving the template,การเปลี่ยนแปลงจะมีผลหลังจากบันทึกเทมเพลต
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -148,6 +154,7 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,ยืนยันรหัสผ่านใหม่
 Confirm publish multiple items,ยืนยันเผยแพร่หลายรายการ
 Confirm suggestion acceptance,Confirm suggestion acceptance
@@ -165,6 +172,7 @@ Copy From,คัดลอกจาก
 Copy Highlighted,คัดลอกสิ่งที่ถูกเน้นสี
 Copy link,คัดลอกลิงค์
 Copy properties to this entity from,คัดลอกคุณสมบัติไปยังรายการนี้ จาก
+Copy to clipboard,Copy to clipboard
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -188,7 +196,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -255,6 +262,7 @@ documents to be reviewed,เอกสารที่จะต้องตรว�
 Documents to be reviewed,เอกสารที่จะต้องตรวจสอบ
 documents.,เอกสาร.
 Download,ดาวน์โหลด
+Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag items here,นำรายการมาวางที่นี่
 Drag properties here,นำคุณสมบัติมาวางที่นี่
@@ -267,7 +275,9 @@ Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Edit,แก้ไข
 Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
 Email,อีเมล
@@ -282,7 +292,9 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable,Enable
 Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
+Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter the 6-digit verification code generated by your Authenticator app:,ป้อนรหัสการยืนยันตัวตน 6 หลักที่สร้างขึ้นโดยแอป Authenticator ของคุณ
 Entities,รายการ
 entities,รายการ
@@ -334,15 +346,16 @@ From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
 General,ข้อมูลทั่วไป
+General Information,General Information
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,กลุ่ม
 help,ช่วยเหลือ
@@ -378,11 +391,12 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,กรุณาติดตั้งแอป Google Authenticator บนอุปกรณ์มือถือของคุณ
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,อีเมลไม่ถูกต้อง
 Invalid form,แบบฟอร์มไม่ถูกต้อง
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
@@ -484,7 +498,6 @@ Name,ชื่อ
 Name is required,จำเป็นต้องใส่ชื่อ
 Name is too long,ชื่อยาวเกินไป
 Name is too short,ชื่อสั้นเกินไป
-Name of the group,ชื่อของกลุ่ม
 Narrow down your searches,จำกัด การค้นหาของคุณให้แคบลง
 Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
@@ -494,8 +507,10 @@ New entity,รายการใหม่
 New group,New group
 New language added,ภาษาใหม่ถูกเพิ่มแล้ว
 New password,รหัสผ่านใหม่
+New Password,New Password
 New relationship type,New relationship type
 New relationships group,กลุ่มความสัมพันธ์ใหม่
+New user,New user
 Next,ต่อไป
 No,เลขที่
 No attachments,ไม่พบสิ่งที่แนบมา
@@ -524,6 +539,7 @@ No Value,ไม่มีค่า
 Non-matching,Non-matching
 Normal view,มุมมองปกติ
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,ไม่พบข้อมูล! เอกสารที่ถูกเลือกไม่ได้ใช้คำอธิบายกลุ่มคำ
 Number of sentences above threshold,จำนวนประโยคเกินเกณฑ์ที่กำหนด
 Obsolete,Obsolete
@@ -556,10 +572,12 @@ Page Javascript,หน้าจาวาสคริปต์
 Page name,Page name
 Pages,หน้า
 Password,รหัสผ่าน
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,รหัสผ่านผิดพลาด
 Password is too long,รหัสผ่านยาวเกินไป
 Password updated,รหัสผ่านอัปเดตแล้ว
+Passwords do not match,Passwords do not match
 Paste URL here,Paste URL here
 PDF,PDF
 per page,per page
@@ -605,7 +623,6 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,ปกป้องบัญชีของคุณ
 Protection,การป้องกัน
 ProTip!,โปรทิป!
 Public Endpoints,Public Endpoints
@@ -616,6 +633,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,เผยแพร่
 Published,ตีพิมพ์แล้ว
+QR Code,QR Code
 Query,สืบค้น
 Quick labeling for,จัดประเภททันที
 RAW,RAW
@@ -680,6 +698,8 @@ Search Tips: one char wildcard,เคล็ดลับการค้นหา:
 Search Tips: proximity,เคล็ดลับการค้นหา: คำใกล้เคียง
 Search Tips: wildcard,เคล็ดลับการค้นหา: ไวลการ์ด
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
+Secret keys,Secret keys
 Select,Select
 Select all,เลือกทั้งหมด
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
@@ -778,6 +798,7 @@ Uwazi จะทำการเรียนรู้เพื่อช่วย�
 The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด
 The request could not be processed.,The request could not be processed.
 The template contains errors,มีข้อผิดพลาดที่แม่แบบ
+The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,ไม่มีหน้าที่ถูกตั้งค่าสำหรับมุมมองรายการ
 There are no untranslated terms,There are no untranslated terms
@@ -834,6 +855,7 @@ Translations reset successfully,Translations reset successfully
 Translations saved,บันทึกการแปล
 Try selecting other documents.,ลองเลือกเอกสารอื่น ๆ
 Turn off inline translation,Turn off inline translation
+Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
@@ -847,6 +869,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
@@ -877,11 +900,16 @@ Use,ใช้
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,ผู้ใช้
+User Action,User Action
+User Role,User Role
 Username,ชื่อผู้ใช้
 Username is required,จำเป็นต้องใส่ชื่อผู้ใช้
 Username is too long,ชื่อผู้ใช้ยาวเกินไป
 Username is too short,ชื่อผู้ใช้สั้นเกินไป
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,ผู้ใช้
+Users & Groups,Users & Groups
+Using Authenticator,Using Authenticator
 Using Google Authenticator,ใช้ Google Authenticator
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi กำลังเรียนรู้โดยใช้เอกสารที่ถูกจำแนกประเภท 
@@ -917,13 +945,15 @@ x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
+You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,นอกจากนี้คุณยังสามารถพัฒนาโมเดลได้โดยใช้เอกสารที่ถูกจำแนกประเภทในจำนวนที่มากขึ้น
 You can create metadata templates in,คุณสามารถสร้างแม่แบบเมตาดาต้าได้
 You have labeled,คุณได้แยกประเภทแล้ว
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,คุณควรเปิดใช้งานคุณสมบัตินี้เพื่อเพิ่มความปลอกภัยให้กับบัญชีของคุณ
-Your account is protected by 2fa.,บัญชีของคุณได้รับการคุ้มครองโดย 2FA
+You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,ขยายเข้า
 Zoom in library view,ขยายเข้าไปยังมุมมองไลบรารี
 Zoom out,ขยายออก

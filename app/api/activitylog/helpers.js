@@ -146,6 +146,12 @@ const loadExtractorData = async data => {
   return { ...data, ...extractor };
 };
 
+const loadUser = async data => {
+  let [user] = await users.get({ _id: data._id });
+  user = user || { username: data._id.toString() };
+  return { ...data, ...user };
+};
+
 export {
   translationsName,
   formatLanguage,
@@ -166,4 +172,5 @@ export {
   loadAllowedUsersAndGroups,
   loadSuggestionData,
   loadExtractorData,
+  loadUser,
 };
