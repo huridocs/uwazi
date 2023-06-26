@@ -41,9 +41,19 @@ const ActionsCell = () => (
   </div>
 );
 
+const updatedData = [
+  { title: 'Entity 2', created: 2, description: 'Short text' },
+  {
+    title: 'Entity 3',
+    created: 3,
+    description: 'Morbi congue et justo vitae congue. Vivamus porttitor et leo vitae efficitur',
+  },
+];
+
 const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
   const [selected1, setSelected1] = useState<Row<SampleSchema>[]>([]);
   const [selected2, setSelected2] = useState<Row<SampleSchema>[]>([]);
+  const [table2Data, setTable2Data] = useState(args.data);
 
   return (
     <div className="tw-content">
@@ -64,7 +74,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
       <Table<SampleSchema>
         columns={args.columns}
-        data={args.data}
+        data={table2Data}
         title="Table B"
         enableSelection
         onSelection={setSelected2}
@@ -74,6 +84,24 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <p className="m-1">
         Selections of Table B: {selected2.map(sel => `${sel.original.title}, `)}
       </p>
+
+      <div className="flex gap-1">
+        <button
+          type="button"
+          className="p-2 text-white rounded border bg-primary-500"
+          onClick={() => setTable2Data(updatedData)}
+        >
+          Update table data
+        </button>
+
+        <button
+          type="button"
+          className="p-2 text-white rounded border bg-primary-500"
+          onClick={() => setTable2Data(args.data)}
+        >
+          Reset table data
+        </button>
+      </div>
     </div>
   );
 };
