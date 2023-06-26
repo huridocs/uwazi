@@ -1,4 +1,8 @@
+/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
+import fs from 'fs';
+import path from 'path';
+
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
@@ -93,6 +97,8 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
+  private tempMigrationLog: fs.WriteStream | null = null;
+
   constructor(
     idGenerator: IdGenerator,
     hubsDS: HubDataSource,
@@ -105,6 +111,30 @@ export class MigrationService {
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
     this.relationshipsDS = relationshipsDS;
+  }
+
+  private log(message: string) {
+    if (this.tempMigrationLog) {
+      this.tempMigrationLog.write(`${message}\n`);
+    }
+  }
+
+  private logNoRepair(first: V1Connection, second: V1Connection) {
+    this.log('----------------------------------');
+    this.log('Could not repair missing file for:');
+    this.log(JSON.stringify(first, null, 2));
+    this.log(JSON.stringify(second, null, 2));
+    this.log('----------------------------------');
+  }
+
+  private logUnhandledError(error: Error, first: V1Connection, second: V1Connection) {
+    this.log('----------------------------------');
+    this.log('Unhandled error encountered at:');
+    this.log(error.message);
+    this.log('Processed connections:');
+    this.log(JSON.stringify(first, null, 2));
+    this.log(JSON.stringify(second, null, 2));
+    this.log('----------------------------------');
   }
 
   private async readV1RelationshipFields() {
@@ -189,6 +219,7 @@ export class MigrationService {
     transform: boolean = false
   ) {
     const stats = new Statistics();
+    let unhandledErrorCount = 0;
     stats.total = connections.length;
     stats.totalTextReferences = connections.filter(c => c.file).length;
     const usedConnections: Record<string, V1ConnectionDisplayed> = {};
@@ -198,24 +229,30 @@ export class MigrationService {
       const first = connections[i];
       for (let j = 0; j < connections.length; j += 1) {
         const second = connections[j];
-        if (first.id !== second.id && matcher.matches(first, second)) {
-          usedConnections[first.id] = first;
-          usedConnections[second.id] = second;
-          if (transform) {
-            // eslint-disable-next-line no-await-in-loop
-            const trd = await this.transform(first, second, this.idGenerator.generate());
-            if (trd) {
-              transformed.push(trd);
-            } else {
-              wasNotAbleToReparMissingFile.push([first, second]);
+        try {
+          if (first.id !== second.id && matcher.matches(first, second)) {
+            usedConnections[first.id] = first;
+            usedConnections[second.id] = second;
+            if (transform) {
+              // eslint-disable-next-line no-await-in-loop
+              const trd = await this.transform(first, second, this.idGenerator.generate());
+              if (trd) {
+                transformed.push(trd);
+              } else {
+                wasNotAbleToReparMissingFile.push([first, second]);
+                this.logNoRepair(first, second);
+              }
             }
           }
+        } catch (error) {
+          unhandledErrorCount += 1;
+          this.logUnhandledError(error, first, second);
         }
       }
     }
     stats.used = Object.keys(usedConnections).length;
     stats.usedTextReferences = Object.values(usedConnections).filter(c => c.file).length;
-    stats.errors = wasNotAbleToReparMissingFile.length;
+    stats.errors = wasNotAbleToReparMissingFile.length + unhandledErrorCount;
     return { stats, transformed };
   }
 
@@ -270,6 +307,11 @@ export class MigrationService {
   }
 
   async migrate(dryRun: boolean) {
+    this.tempMigrationLog = fs.createWriteStream(
+      path.join(__dirname, '..', '..', '..', '..', '__temp_migration_log.txt')
+    );
+    this.tempMigrationLog.write('Migration log\n');
+
     await this.hubsDS.create();
 
     const matcher = await this.readV1RelationshipFields();
@@ -279,6 +321,8 @@ export class MigrationService {
       await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
 
     await this.hubsDS.drop();
+
+    this.tempMigrationLog.close();
 
     return { total, used, totalTextReferences, usedTextReferences, errors };
   }
