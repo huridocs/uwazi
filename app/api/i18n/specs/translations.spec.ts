@@ -193,8 +193,8 @@ describe('translations', () => {
         fr: { Password: 'mot de masse', Age: 'âge' },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [zh, es, en] = await translations.get();
+      const [en] = await translations.get({ locale: 'en' });
+      const [es] = await translations.get({ locale: 'es' });
 
       expect(en.contexts?.[1].values).toMatchObject({
         Password: 'Passphrase',
@@ -340,12 +340,11 @@ describe('translations', () => {
 
   describe('removeLanguage', () => {
     it('should remove translation for the language passed', async () => {
+      await settings.deleteLanguage('es');
       await translations.removeLanguage('es');
       const allTranslations = await translations.get();
 
-      expect(allTranslations.length).toBe(2);
-      expect(allTranslations[0].locale).toBe('zh');
-      expect(allTranslations[1].locale).toBe('en');
+      expect(allTranslations).toMatchObject([{ locale: 'en' }, { locale: 'zh' }]);
     });
   });
 

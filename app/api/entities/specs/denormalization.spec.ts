@@ -8,8 +8,8 @@ import { elasticTesting } from 'api/utils/elastic_testing';
 import translations from 'api/i18n/translations';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
-const load = async (data: DBFixture, index?: string) =>
-  db.setupFixturesAndContext(
+const load = async (data: DBFixture, index?: string) => {
+  return db.setupFixturesAndContext(
     {
       ...data,
       settings: [
@@ -28,6 +28,7 @@ const load = async (data: DBFixture, index?: string) =>
     },
     index
   );
+};
 
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
@@ -290,6 +291,7 @@ describe('Denormalize relationships', () => {
 
   describe('inherited select/multiselect (thesauri)', () => {
     beforeEach(async () => {
+      jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
       const fixtures: DBFixture = {
         templates: [
           factory.template('templateA', [
@@ -595,28 +597,6 @@ describe('Denormalize relationships', () => {
 
   describe('thesauri translations', () => {
     beforeEach(async () => {
-      const translationContext = [
-        {
-          id: factory.id('Numbers'),
-          label: 'Numbers',
-          values: [
-            {
-              key: 'One',
-              value: 'One',
-            },
-            {
-              key: 'Two',
-              value: 'Two',
-            },
-            {
-              key: 'Numbers',
-              value: 'Numbers',
-            },
-          ],
-          type: 'Thesaurus',
-        },
-      ];
-
       await load(
         {
           dictionaries: [factory.thesauri('Numbers', ['One', 'Two'])],
@@ -645,14 +625,67 @@ describe('Denormalize relationships', () => {
               { language: 'es' }
             ),
           ],
-          translations: [
+          translations_v2: [
             {
-              locale: 'en',
-              contexts: translationContext,
+              key: 'One',
+              value: 'One',
+              language: 'en',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
             },
             {
-              locale: 'es',
-              contexts: translationContext,
+              key: 'Two',
+              value: 'Two',
+              language: 'en',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
+            },
+            {
+              key: 'Numbers',
+              value: 'Numbers',
+              language: 'en',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
+            },
+
+            {
+              key: 'One',
+              value: 'One',
+              language: 'es',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
+            },
+            {
+              key: 'Two',
+              value: 'Two',
+              language: 'es',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
+            },
+            {
+              key: 'Numbers',
+              value: 'Numbers',
+              language: 'es',
+              context: {
+                id: factory.id('Numbers').toString(),
+                type: 'Thesaurus',
+                label: 'Numbers',
+              },
             },
           ],
         },
@@ -661,9 +694,8 @@ describe('Denormalize relationships', () => {
     });
 
     it('should update entities when translating thesauri values', async () => {
-      const [spanishTranslation] = await translations.get({ locale: 'es' });
       await translations.save({
-        ...spanishTranslation,
+        locale: 'es',
         contexts: [
           {
             id: factory.id('Numbers').toString(),

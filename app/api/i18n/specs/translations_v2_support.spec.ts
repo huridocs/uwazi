@@ -341,7 +341,7 @@ describe('translations v2 support', () => {
         ],
       });
 
-      const [english] = await translations.get({ context: 'System' });
+      const [_spanish, english] = await translations.get({ context: 'System' });
       expect(english).toMatchObject({
         locale: 'en',
         contexts: [

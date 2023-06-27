@@ -15,6 +15,7 @@ import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTransl
 import { EnforcedWithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { IndexedContextValues } from './translations';
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
@@ -36,11 +37,35 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
   return [];
 };
 
-const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translation>) => {
-  const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
-  const contexts: {
+const resultsToV1TranslationType = async (
+  tranlationsResult: ResultSet<Translation>,
+  onlyLanguage?: LanguageISO6391
+) => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  const settings = DefaultSettingsDataSource(transactionManager);
+  let languageKeys = await settings.getLanguageKeys();
+  if (onlyLanguage) {
+    languageKeys = [onlyLanguage];
+  }
+
+  // const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+
+  const resultMap = languageKeys.reduce<{
+    [language: string]: TranslationType & { locale: string };
+  }>((memo, key) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[key] = { locale: key, contexts: [] };
+    return memo;
+  }, {});
+
+  const contexts = languageKeys.reduce<{
     [language: string]: { [context: string]: TranslationContext & { values: TranslationValue[] } };
-  } = {};
+  }>((memo, key) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[key] = {};
+    return memo;
+  }, {});
+
   await tranlationsResult.forEach(translation => {
     if (!resultMap[translation.language]) {
       resultMap[translation.language] = {
@@ -123,11 +148,12 @@ export const getTranslationsV2ByContext = async (context: string) =>
     ).getByContext(context)
   );
 
-export const getTranslationsV2ByLanguage = async (language: string) =>
+export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
       DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
-    ).getByLanguage(language)
+    ).getByLanguage(language),
+    language
   );
 
 export const getTranslationsV2 = async () =>
@@ -157,24 +183,24 @@ export const updateContextV2 = async (
 
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
-
-  const needsMigration = await db
-    .collection('translations_v2_helper')
-    .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } }, { upsert: true });
-
-  if (needsMigration.value?.migrated) {
-    return true;
-  }
-
-  if (needsMigration.value?.migrating) {
-    return false;
-  }
+  //
+  // const needsMigration = await db
+  //   .collection('translations_v2_helper')
+  //   .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } }, { upsert: true });
+  //
+  // if (needsMigration.value?.migrated) {
+  //   return true;
+  // }
+  //
+  // if (needsMigration.value?.migrating) {
+  //   return false;
+  // }
 
   await migration.up(db);
 
-  await db
-    .collection('translations_v2_helper')
-    .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
-
-  return false;
+  // await db
+  //   .collection('translations_v2_helper')
+  //   .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
+  //
+  // return false;
 };
