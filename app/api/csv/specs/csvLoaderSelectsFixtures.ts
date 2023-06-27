@@ -104,58 +104,247 @@ const fixtures = {
       ],
     },
   ],
-  translations: [
+  translations_v2: [
     {
-      _id: db.id(),
-      locale: 'en',
-      contexts: [
-        ...commonTranslationContexts(),
-        {
-          id: fixtureFactory.id('Select Thesaurus').toString(),
-          label: 'Select Thesaurus',
-          values: [
-            { key: 'Select Thesaurus', value: 'Select Thesaurus' },
-            { key: 'A', value: 'A' },
-          ],
-          type: 'Dictionary',
-        },
-        {
-          id: fixtureFactory.id('multiselect_thesaurus').toString(),
-          label: 'multiselect_thesaurus',
-          values: [
-            { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
-            { key: 'A', value: 'A' },
-            { key: 'B', value: 'B' },
-          ],
-          type: 'Dictionary',
-        },
-      ],
+      language: 'es',
+      key: 'B',
+      value: 'Bes',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
     },
     {
-      _id: db.id(),
-      locale: 'es',
-      contexts: [
-        ...commonTranslationContexts(),
-        {
-          id: fixtureFactory.id('Select Thesaurus').toString(),
-          label: 'Select Thesaurus',
-          values: [
-            { key: 'Select Thesaurus', value: 'Select Thesaurus' },
-            { key: 'A', value: 'Aes' },
-          ],
-          type: 'Dictionary',
-        },
-        {
-          id: fixtureFactory.id('multiselect_thesaurus').toString(),
-          label: 'multiselect_thesaurus',
-          values: [
-            { key: 'multiselect_thesaurus', value: 'multiselect_thesaurus' },
-            { key: 'A', value: 'Aes' },
-            { key: 'B', value: 'Bes' },
-          ],
-          type: 'Dictionary',
-        },
-      ],
+      language: 'es',
+      key: 'A',
+      value: 'Aes',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'multiselect_thesaurus',
+      value: 'multiselect_thesaurus',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
+    },
+
+    {
+      language: 'es',
+      key: 'A',
+      value: 'Aes',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'B',
+      value: 'Bes',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'Select Thesaurus',
+      value: 'Select Thesaurus',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+
+    {
+      language: 'es',
+      key: 'A',
+      value: 'A',
+      context: {
+        id: fixtureFactory.id('nested_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'nested_thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'nested_thesaurus',
+      value: 'nested_thesaurus',
+      context: {
+        id: fixtureFactory.id('nested_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'nested_thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: '1',
+      value: '1',
+      context: {
+        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'no_new_value_thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'no_new_value_thesaurus',
+      value: 'no_new_value_thesaurus',
+      context: {
+        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'no_new_value_thesaurus',
+      },
+    },
+    {
+      language: 'es',
+      key: 'original 3',
+      value: 'original 3',
+      context: { id: 'System', type: 'System', label: 'System' },
+    },
+    {
+      language: 'es',
+      key: 'original 2',
+      value: 'original 2',
+      context: { id: 'System', type: 'System', label: 'System' },
+    },
+    {
+      language: 'es',
+      key: 'original 1',
+      value: 'original 1',
+      context: { id: 'System', type: 'System', label: 'System' },
+    },
+
+    {
+      language: 'en',
+      key: 'B',
+      value: 'B',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'A',
+      value: 'A',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'multiselect_thesaurus',
+      value: 'multiselect_thesaurus',
+      context: {
+        id: fixtureFactory.id('multiselect_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'multiselect_thesaurus',
+      },
+    },
+
+    {
+      language: 'en',
+      key: 'A',
+      value: 'A',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'B',
+      value: 'Bes',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'Select Thesaurus',
+      value: 'Select Thesaurus',
+      context: {
+        id: fixtureFactory.id('Select Thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'Select Thesaurus',
+      },
+    },
+
+    {
+      language: 'en',
+      key: 'A',
+      value: 'A',
+      context: {
+        id: fixtureFactory.id('nested_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'nested_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'nested_thesaurus',
+      value: 'nested_thesaurus',
+      context: {
+        id: fixtureFactory.id('nested_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'nested_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: '1',
+      value: '1',
+      context: {
+        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'no_new_value_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'no_new_value_thesaurus',
+      value: 'no_new_value_thesaurus',
+      context: {
+        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+        type: 'Dictionary',
+        label: 'no_new_value_thesaurus',
+      },
+    },
+    {
+      language: 'en',
+      key: 'original 3',
+      value: 'original 3',
+      context: { id: 'System', type: 'System', label: 'System' },
+    },
+    {
+      language: 'en',
+      key: 'original 2',
+      value: 'original 2',
+      context: { id: 'System', type: 'System', label: 'System' },
+    },
+    {
+      language: 'en',
+      key: 'original 1',
+      value: 'original 1',
+      context: { id: 'System', type: 'System', label: 'System' },
     },
   ],
 };
