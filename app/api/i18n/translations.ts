@@ -24,6 +24,7 @@ import {
   updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
+import { tenants } from 'api/tenants';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -283,7 +284,6 @@ export default {
   async addLanguage(newLanguage: string) {
     const defaultLanguage = await settings.getDefaultLanguage();
     const [defaultTranslation] = await getTranslationsV2ByLanguage(defaultLanguage.key);
-
     const newLanguageTranslations = {
       ...defaultTranslation,
       locale: newLanguage,

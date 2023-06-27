@@ -266,6 +266,21 @@ describe('InformationExtraction', () => {
       });
     });
 
+    it('should avoid sending materials for failed suggestions because no segmentation for instance', async () => {
+      await informationExtraction.getSuggestions(factory.id('extractorWithOneFailedSegmentation'));
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_predict/tenant1/${factory.id('extractorWithOneFailedSegmentation')}`,
+        id: factory.id('extractorWithOneFailedSegmentation').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.filesNames.sort()).toEqual(['documentA.xml'].sort());
+      expect(IXExternalService.files.length).toBe(1);
+
+      expect(IXExternalService.materials.length).toBe(1);
+    });
+
     it('should create the task for the suggestions', async () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
@@ -291,7 +306,7 @@ describe('InformationExtraction', () => {
       );
     });
 
-    it('should stop the model when when the all the suggestions are done', async () => {
+    it('should stop the model when all the suggestions are done', async () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop1extractor') });
