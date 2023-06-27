@@ -352,7 +352,7 @@
     "eslint-plugin-storybook": "^0.6.12",
     "fetch-mock": "^9.11.0",
     "flowbite-typography": "^1.0.3",
-    "html-webpack-plugin": "5.5.1",
+    "html-webpack-plugin": "5.5.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "29.0.1",
     "jest-environment-jsdom": "29.5.0",
