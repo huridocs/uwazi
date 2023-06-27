@@ -10,11 +10,15 @@ interface PaginatorProps {
 }
 
 const Paginator = ({ currentPage, totalPages, pathname, otherParams }: PaginatorProps) => {
+  const page = Number(currentPage);
+  const isFirstPage = currentPage === '1';
+  const isLastPage = currentPage === totalPages;
+
   const basepath = `${pathname}${otherParams ? `?${otherParams},` : '?'}`;
   const currentUrl = `${basepath}page=${currentPage}`;
-  const prevUrl = `${basepath}page=${(Number(currentPage) - 1).toString()}`;
-  const lastUrl = `${basepath}page=${totalPages}`;
-  const nextUrl = `${basepath}page=${(Number(currentPage) + 1).toString()}`;
+  const prevUrl = isFirstPage ? currentUrl : `${basepath}page=${(page - 1).toString()}`;
+  const lastUrl = isLastPage ? currentUrl : `${basepath}page=${totalPages}`;
+  const nextUrl = `${basepath}page=${(page + 1).toString()}`;
 
   return (
     <nav aria-label="Pagination">
@@ -28,30 +32,23 @@ const Paginator = ({ currentPage, totalPages, pathname, otherParams }: Paginator
             <ChevronLeftIcon className="w-[17px]" />
           </a>
         </li>
-        {/* <li>
-        <a className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
-          1
-        </a>
-      </li>
-      <li>
-        <a className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
-          2
-        </a>
-      </li> */}
         <li>
           <a
             href={currentUrl}
             aria-current="page"
-            className="z-10 px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-blue-300"
+            className="px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-blue-300"
           >
             {currentPage}
           </a>
         </li>
-        {/* <li>
-        <a className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700">
-          4
-        </a>
-      </li>*/}
+        <li>
+          <button
+            type="button"
+            className="h-[35px] px-3 py-2 m-0 leading-tight text-gray-500 bg-white border border-gray-300  hover:bg-gray-100 hover:text-gray-700"
+          >
+            ...
+          </button>
+        </li>
         <li>
           <a
             href={lastUrl}

@@ -1445,6 +1445,18 @@ input:checked + .toggle-bg {
   height: 1px;
 }
 
+.h-\[17px\] {
+  height: 17px;
+}
+
+.h-\[35px\] {
+  height: 35px;
+}
+
+.h-9 {
+  height: 2.25rem;
+}
+
 .max-h-56 {
   max-height: 14rem;
 }
@@ -1582,6 +1594,10 @@ input:checked + .toggle-bg {
   width: 75%;
 }
 
+.w-\[17px\] {
+  width: 17px;
+}
+
 .w-auto {
   width: auto;
 }
@@ -1598,14 +1614,6 @@ input:checked + .toggle-bg {
 .w-max {
   width: -moz-max-content;
   width: max-content;
-}
-
-.w-\[16px\] {
-  width: 16px;
-}
-
-.w-\[17px\] {
-  width: 17px;
 }
 
 .max-w-2xl {
@@ -1847,10 +1855,6 @@ input:checked + .toggle-bg {
 
 .items-center {
   align-items: center;
-}
-
-.items-baseline {
-  align-items: baseline;
 }
 
 .justify-start {
@@ -2778,10 +2782,6 @@ input:checked + .toggle-bg {
 
 .p-6 {
   padding: 1.5rem;
-}
-
-.p-3 {
-  padding: 0.75rem;
 }
 
 .px-1 {
