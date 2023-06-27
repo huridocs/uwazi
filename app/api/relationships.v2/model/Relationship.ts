@@ -13,7 +13,9 @@ class Selection {
 
   constructor(page: number, top: number, left: number, height: number, width: number) {
     if (top < 0 || left < 0 || height <= 0 || width <= 0) {
-      throw new Error("Rectangle's top, left, height and width must be positive numbers");
+      throw new Error(
+        "Rectangle's height and width must be positive, and top and left must be zero or positive."
+      );
     }
 
     if (page < 1) {
