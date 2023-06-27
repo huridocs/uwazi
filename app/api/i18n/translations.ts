@@ -289,7 +289,6 @@ export default {
       locale: newLanguage,
       contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
     };
-
     await createTranslationsV2(newLanguageTranslations);
     const [result] = await getTranslationsV2ByLanguage(newLanguage);
     return result;

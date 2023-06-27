@@ -78,7 +78,7 @@ const fixtures: DBFixture = {
           id: db.id().toString(),
         },
         {
-          label: 'Value3',
+          label: 'value3',
           id: db.id().toString(),
         },
         {
@@ -97,16 +97,46 @@ const fixtures: DBFixture = {
     },
   ],
 
-  translations: [
+  translations_v2: [
     {
-      _id: db.id(),
-      locale: 'en',
-      contexts: [],
+      language: 'en',
+      key: 'value1',
+      value: 'value1',
+      context: {
+        id: thesauri1Id.toString(),
+        type: 'Dictionary',
+        label: 'thesauri 1',
+      },
     },
     {
-      _id: db.id(),
-      locale: 'es',
-      contexts: [],
+      language: 'en',
+      key: 'value2',
+      value: 'value2',
+      context: {
+        id: thesauri1Id.toString(),
+        type: 'Dictionary',
+        label: 'thesauri 1',
+      },
+    },
+    {
+      language: 'en',
+      key: 'value3',
+      value: 'value3',
+      context: {
+        id: thesauri1Id.toString(),
+        type: 'Dictionary',
+        label: 'thesauri 1',
+      },
+    },
+    {
+      language: 'en',
+      key: 'value4',
+      value: 'value4',
+      context: {
+        id: thesauri1Id.toString(),
+        type: 'Dictionary',
+        label: 'thesauri 1',
+      },
     },
   ],
 };

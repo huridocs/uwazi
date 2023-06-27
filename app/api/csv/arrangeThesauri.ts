@@ -15,6 +15,7 @@ import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
+import { thesaurusSchema } from 'shared/types/thesaurusSchema';
 
 class ArrangeThesauriError extends Error {
   source: Error;

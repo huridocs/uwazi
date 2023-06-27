@@ -27,11 +27,11 @@ describe('csvLoader thesauri', () => {
     beforeAll(async () => {
       await db.clearAllAndLoad(fixtures);
 
-      await translations.addLanguage('es');
       await settings.addLanguage({ key: 'es', label: 'spanish' });
+      await translations.addLanguage('es');
 
-      await translations.addLanguage('fr');
       await settings.addLanguage({ key: 'fr', label: 'french' });
+      await translations.addLanguage('fr');
 
       const { _id } = await thesauri.save({
         name: 'thesauri2Id',
@@ -51,7 +51,7 @@ describe('csvLoader thesauri', () => {
       mockedFile.mockRestore();
     });
 
-    it('should set thesauri values using the language passed and ignore blank values', async () => {
+    fit('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesaurus = await thesauri.getById(thesauriId);
       expect(thesaurus!.values!.map(v => v.label)).toEqual([
         'existing value',

@@ -146,16 +146,16 @@ const fixtures = {
         label: 'Select Thesaurus',
       },
     },
-    {
-      language: 'es',
-      key: 'B',
-      value: 'Bes',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
-        label: 'Select Thesaurus',
-      },
-    },
+    // {
+    //   language: 'es',
+    //   key: 'B',
+    //   value: 'Bes',
+    //   context: {
+    //     id: fixtureFactory.id('Select Thesaurus').toString(),
+    //     type: 'Dictionary',
+    //     label: 'Select Thesaurus',
+    //   },
+    // },
     {
       language: 'es',
       key: 'Select Thesaurus',
@@ -267,16 +267,16 @@ const fixtures = {
         label: 'Select Thesaurus',
       },
     },
-    {
-      language: 'en',
-      key: 'B',
-      value: 'Bes',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
-        label: 'Select Thesaurus',
-      },
-    },
+    // {
+    //   language: 'en',
+    //   key: 'B',
+    //   value: 'Bes',
+    //   context: {
+    //     id: fixtureFactory.id('Select Thesaurus').toString(),
+    //     type: 'Dictionary',
+    //     label: 'Select Thesaurus',
+    //   },
+    // },
     {
       language: 'en',
       key: 'Select Thesaurus',

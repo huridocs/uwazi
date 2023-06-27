@@ -76,6 +76,7 @@ export class MongoTranslationsDataSource
       { session: this.getSession() }
     );
     if (!translation) {
+      console.log(JSON.stringify(await this.getAll().all(), null, ' '));
       throw new ContextDoesNotExist(contextId);
     }
     return translation.context;
@@ -134,10 +135,11 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async calculateNonexistentKeys(keys: string[]) {
+  async calculateNonexistentKeys(contextId, keys: string[]) {
     const result = this.getCollection().aggregate(
       [
-        { $match: { key: { $in: keys } } },
+        // { $match: { key: { $in: keys } },
+        { $match: { key: { $in: keys }, 'context.id': contextId } },
         { $group: { _id: null, foundKeys: { $push: '$key' } } },
         { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
       ],

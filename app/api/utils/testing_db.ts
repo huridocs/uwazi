@@ -17,6 +17,7 @@ import { UserSchema } from '../../shared/types/userType';
 import { Settings } from 'shared/types/settingsType';
 import path from 'path';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
+import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -147,6 +148,8 @@ const testingDB: {
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
+
+    // await migrateTranslationsToV2()
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });

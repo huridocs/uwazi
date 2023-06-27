@@ -1,15 +1,17 @@
 /* eslint-disable max-lines */
 import path from 'path';
 
-import db from 'api/utils/testing_db';
+import { CSVLoader } from 'api/csv';
+import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import entities from 'api/entities';
 import translations from 'api/i18n';
 import { search } from 'api/search';
-import { CSVLoader } from 'api/csv';
-import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
+import db from 'api/utils/testing_db';
+import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
-import typeParsers from '../typeParsers';
+import { getTranslationsV2 } from 'api/i18n/v2_support';
+import settings from 'api/settings';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
@@ -75,10 +77,11 @@ describe('csvLoader', () => {
 
     it('should not update a language that exists in the system but not in csv', async () => {
       readStreamMock = mockCsvFileReadStream(csv);
+      await settings.addLanguage({ key: 'aa', label: 'Afar' });
       await translations.addLanguage('aa');
       await loader.loadTranslations('mockedFileFromString', 'System');
       const [afar] = await translations.get({ locale: 'aa' });
-      expect(afar.contexts[0].values).toEqual({
+      expect(afar.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'original 1',
         'original 2': 'original 2',
         'original 3': 'original 3',
