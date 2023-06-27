@@ -102,6 +102,7 @@ const fixtures: DBFixture = {
       },
     },
   ],
+  translations_v2: [],
 };
 
 const newQueryInput = [
@@ -133,6 +134,7 @@ const newQueryInDb = [
 describe('template.save()', () => {
   beforeEach(async () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
+    // jest.spyOn(translations, 'save').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');
   });
 

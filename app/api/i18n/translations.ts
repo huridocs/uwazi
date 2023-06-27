@@ -25,6 +25,7 @@ import {
   upsertTranslationsV2,
 } from './v2_support';
 import { tenants } from 'api/tenants';
+import { ObjectId } from 'mongodb';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -237,7 +238,7 @@ export default {
   },
 
   async addContext(
-    id: string,
+    id: string | ObjectId,
     contextName: string,
     values: IndexedContextValues,
     type: ContextType
@@ -252,7 +253,12 @@ export default {
       result.map(translation => {
         // eslint-disable-next-line no-param-reassign
         translation.contexts = translation.contexts || [];
-        translation.contexts.push({ id, label: contextName, values: translatedValues, type });
+        translation.contexts.push({
+          id: id.toString(),
+          label: contextName,
+          values: translatedValues,
+          type,
+        });
         return translation;
       })
     );

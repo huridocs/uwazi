@@ -1,23 +1,23 @@
-import mongoose, { Connection } from 'mongoose';
-import { Db, ObjectId } from 'mongodb';
-import { FileType } from 'shared/types/fileType';
-import { EntitySchema } from 'shared/types/entityType';
-import { PageType } from 'shared/types/pageType';
+import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
-import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { Db, ObjectId } from 'mongodb';
+import mongoose, { Connection } from 'mongoose';
+import path from 'path';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { PageType } from 'shared/types/pageType';
+import { Settings } from 'shared/types/settingsType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import uniqueID from 'shared/uniqueID';
+import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import { UserSchema } from '../../shared/types/userType';
-import { Settings } from 'shared/types/settingsType';
-import path from 'path';
-import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -149,7 +149,7 @@ const testingDB: {
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
 
-    // await migrateTranslationsToV2()
+    // await migrateTranslationsToV2();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });

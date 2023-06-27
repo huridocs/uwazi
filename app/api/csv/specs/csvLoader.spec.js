@@ -6,12 +6,11 @@ import { templateWithGeneratedTitle } from 'api/csv/specs/csvLoaderFixtures';
 import entities from 'api/entities';
 import translations from 'api/i18n';
 import { search } from 'api/search';
+import settings from 'api/settings';
 import db from 'api/utils/testing_db';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
-import { getTranslationsV2 } from 'api/i18n/v2_support';
-import settings from 'api/settings';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');
@@ -58,17 +57,17 @@ describe('csvLoader', () => {
       readStreamMock = mockCsvFileReadStream(csv);
       await loader.loadTranslations('mockedFileFromString', 'System');
       const [english, spanish, french] = await translations.get();
-      expect(english.contexts[0].values).toEqual({
+      expect(english.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'value 1',
         'original 2': 'value 2',
         'original 3': 'value 3',
       });
-      expect(spanish.contexts[0].values).toEqual({
+      expect(spanish.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'valor 1',
         'original 2': 'valor 2',
         'original 3': 'valor 3',
       });
-      expect(french.contexts[0].values).toEqual({
+      expect(french.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'valeur 1',
         'original 2': 'valeur 2',
         'original 3': 'valeur 3',
@@ -95,7 +94,7 @@ describe('csvLoader', () => {
       await loader.loadTranslations('mockedFileFromString', 'System');
 
       const [english] = await translations.get();
-      expect(english.contexts[0].values).toEqual({
+      expect(english.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'value 1',
         'original 2': 'original 2',
         'original 3': 'original 3',
@@ -108,12 +107,12 @@ describe('csvLoader', () => {
       await loader.loadTranslations('mockedFileFromString', 'System');
 
       const [english, spanish] = await translations.get();
-      expect(english.contexts[0].values).toEqual({
+      expect(english.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'original 1',
         'original 2': 'original 2',
         'original 3': 'original 3',
       });
-      expect(spanish.contexts[0].values).toEqual({
+      expect(spanish.contexts.find(c => c.id === 'System').values).toEqual({
         'original 1': 'sp value 1',
         'original 2': 'original 2',
         'original 3': 'original 3',

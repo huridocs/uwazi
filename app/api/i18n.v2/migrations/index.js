@@ -13,7 +13,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
               translation: {
                 key: contextValue.key,
                 value: contextValue.value,
-                context: { type: context.type, label: context.label, id: context.id },
+                context: { type: context.type, label: context.label, id: context.id.toString() },
               },
             };
           }
@@ -24,7 +24,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
             language: translation.locale,
             key: contextValue.key,
             value: contextValue.value,
-            context: { type: context.type, label: context.label, id: context.id },
+            context: { type: context.type, label: context.label, id: context.id.toString() },
           });
         });
       }

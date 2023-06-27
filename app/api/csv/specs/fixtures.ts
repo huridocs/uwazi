@@ -78,7 +78,7 @@ const fixtures: DBFixture = {
           id: db.id().toString(),
         },
         {
-          label: 'value3',
+          label: 'Value3',
           id: db.id().toString(),
         },
         {

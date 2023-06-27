@@ -51,7 +51,7 @@ describe('csvLoader thesauri', () => {
       mockedFile.mockRestore();
     });
 
-    fit('should set thesauri values using the language passed and ignore blank values', async () => {
+    it('should set thesauri values using the language passed and ignore blank values', async () => {
       const thesaurus = await thesauri.getById(thesauriId);
       expect(thesaurus!.values!.map(v => v.label)).toEqual([
         'existing value',

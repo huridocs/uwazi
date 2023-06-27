@@ -1,6 +1,7 @@
 import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 const template1Id = db.id();
 const multiSelectThesaurusId = db.id();
@@ -8,30 +9,50 @@ const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 const templateWithGeneratedTitle = db.id();
 
-const commonTranslationContexts = [
+const commonTranslationsV2 = (language: LanguageISO6391) => [
   {
-    id: 'System',
-    label: 'System',
-    values: [
-      { key: 'original 1', value: 'original 1' },
-      { key: 'original 2', value: 'original 2' },
-      { key: 'original 3', value: 'original 3' },
-    ],
+    language,
+    key: 'multivalue1',
+    value: 'multivalue1',
+    context: {
+      id: multiSelectThesaurusId.toString(),
+      type: 'Dictionary',
+      label: 'multi_select_thesaurus',
+    },
   },
   {
-    id: thesauri1Id.toString(),
-    label: 'thesauri1',
-    values: [{ key: 'thesauri1', value: 'thesauri1' }],
-    type: 'Dictionary',
+    language,
+    key: 'multi_select_thesaurus',
+    value: 'multi_select_thesaurus',
+    context: {
+      id: multiSelectThesaurusId.toString(),
+      type: 'Dictionary',
+      label: 'multi_select_thesaurus',
+    },
   },
   {
-    id: multiSelectThesaurusId.toString(),
-    label: 'multi_select_thesaurus',
-    values: [
-      { key: 'multi_select_thesaurus', value: 'multi_select_thesaurus' },
-      { key: 'multivalue1', value: 'multivalue1' },
-    ],
-    type: 'Dictionary',
+    language,
+    key: 'thesauri1',
+    value: 'thesauri1',
+    context: { id: thesauri1Id.toString(), type: 'Dictionary', label: 'thesauri1' },
+  },
+  {
+    language,
+    key: 'original 3',
+    value: 'original 3',
+    context: { id: 'System', type: 'Dictionary', label: 'System' },
+  },
+  {
+    language,
+    key: 'original 2',
+    value: 'original 2',
+    context: { id: 'System', type: 'Dictionary', label: 'System' },
+  },
+  {
+    language,
+    key: 'original 1',
+    value: 'original 1',
+    context: { id: 'System', type: 'Dictionary', label: 'System' },
   },
 ];
 
@@ -152,22 +173,10 @@ export default {
     },
   ],
 
-  translations: [
-    {
-      _id: db.id(),
-      locale: 'en',
-      contexts: commonTranslationContexts,
-    },
-    {
-      _id: db.id(),
-      locale: 'es',
-      contexts: commonTranslationContexts,
-    },
-    {
-      _id: db.id(),
-      locale: 'fr',
-      contexts: commonTranslationContexts,
-    },
+  translations_v2: [
+    ...commonTranslationsV2('en'),
+    ...commonTranslationsV2('es'),
+    ...commonTranslationsV2('fr'),
   ],
 };
 

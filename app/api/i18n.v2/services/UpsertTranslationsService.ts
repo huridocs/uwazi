@@ -73,13 +73,13 @@ export class UpsertTranslationsService {
         );
       }, Promise.resolve());
 
+      await this.createNewKeys(keysChangedReversed, valueChanges, context);
+
       await this.translationsDS.updateContextLabel(context.id, context.label);
 
       await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
       await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
-
-      await this.createNewKeys(keysChangedReversed, valueChanges, context);
     });
   }
 

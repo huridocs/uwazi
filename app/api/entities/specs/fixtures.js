@@ -660,50 +660,99 @@ export default {
       ],
     },
   ],
-  translations: [
+  translations_v2: [
     {
-      locale: 'en',
-      contexts: [
-        {
-          id: dictionary,
-          values: [
-            { key: 'Country1', value: 'Country1' },
-            { key: 'Country2', value: 'Country2' },
-            { key: 'towns', value: 'Towns' },
-            { key: 'town1', value: 'Town1' },
-            { key: 'town2', value: 'Town2' },
-          ],
-        },
-      ],
+      language: 'pt',
+      key: 'town2',
+      value: 'Ciudad2_pt',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
     },
     {
-      locale: 'es',
-      contexts: [
-        {
-          id: dictionary,
-          values: [
-            { key: 'Country1', value: 'Pais1' },
-            { key: 'Country2', value: 'Pais2' },
-            { key: 'towns', value: 'Ciudades' },
-            { key: 'town1', value: 'Ciudad1' },
-            { key: 'town2', value: 'Ciudad2' },
-          ],
-        },
-      ],
+      language: 'pt',
+      key: 'town1',
+      value: 'Ciudad1_pt',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
     },
     {
-      locale: 'pt',
-      contexts: [
-        {
-          id: dictionary,
-          values: [
-            { key: 'Country1', value: 'Pais1_pt' },
-            { key: 'Country2', value: 'Pais2_pt' },
-          ],
-        },
-      ],
+      language: 'pt',
+      key: 'towns',
+      value: 'Ciudades_pt',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'pt',
+      key: 'Country2',
+      value: 'Pais2_pt',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'pt',
+      key: 'Country1',
+      value: 'Pais1_pt',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'town2',
+      value: 'Ciudad2',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'town1',
+      value: 'Ciudad1',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'towns',
+      value: 'Ciudades',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'Country2',
+      value: 'Pais2',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'Country1',
+      value: 'Pais1',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'town2',
+      value: 'Town2',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'town1',
+      value: 'Town1',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'towns',
+      value: 'Towns',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'Country2',
+      value: 'Country2',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'Country1',
+      value: 'Country1',
+      context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
     },
   ],
+
   ixsuggestions: [
     {
       _id: db.id(),
