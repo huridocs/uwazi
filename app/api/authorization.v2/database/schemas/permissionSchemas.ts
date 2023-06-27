@@ -2,12 +2,22 @@ import { objectIdSchema } from 'api/common.v2/database/schemas/commonSchemas';
 
 const emitSchemaTypes = true;
 
+const legacyObjectIdSchema = {
+  oneOf: [
+    { type: 'string' },
+    {
+      type: 'object',
+      tsType: 'ObjectId',
+    },
+  ],
+};
+
 const restrictedPermissionSchema = {
   type: 'object',
   title: 'RestrictedPermissionType',
   additionalProperties: false,
   properties: {
-    refId: objectIdSchema,
+    refId: legacyObjectIdSchema,
     type: { type: 'string', enum: ['user', 'group'] },
     level: { type: 'string', enum: ['read', 'write'] },
   },
@@ -53,4 +63,5 @@ export {
   permissionSchema,
   entityPermissionsDBOSchema,
   emitSchemaTypes,
+  legacyObjectIdSchema,
 };

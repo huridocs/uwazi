@@ -92,7 +92,11 @@ class V2NewRelationshipsBoard extends Component {
               &emsp;
               {this.showEntityName(r.to.entity)}
               &emsp;
-              <button onClick={this.deleteRelationship(r._id).bind(this)} no-translate>
+              <button
+                type="button"
+                onClick={this.deleteRelationship(r._id).bind(this)}
+                no-translate
+              >
                 X
               </button>
             </div>
@@ -122,6 +126,7 @@ class V2NewRelationshipsBoard extends Component {
           />
           &emsp;
           <button
+            type="button"
             disabled={!targetDocument}
             onClick={this.saveRelationship.bind(this)}
             no-translate
