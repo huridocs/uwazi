@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import fs from 'fs';
@@ -263,6 +264,8 @@ export class MigrationService {
   ) {
     const hubCursor = this.hubsDS.all();
     const stats = new Statistics();
+    const hubWithUnusedLimit = 10;
+    const hubsWithUnusedConnections: V1ConnectionDisplayed[][] = [];
     await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch => {
       const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
       const connectionsGrouped = objectIndexToArrays(
@@ -273,20 +276,27 @@ export class MigrationService {
       const connectionGroups = Array.from(Object.values(connectionsGrouped));
       const transformed: Relationship[] = [];
       for (let i = 0; i < connectionGroups.length; i += 1) {
+        const group = connectionGroups[i];
         // eslint-disable-next-line no-await-in-loop
         const {
           stats: groupStats,
           transformed: groupTransformed,
           // eslint-disable-next-line no-await-in-loop
-        } = await this.transformHub(connectionGroups[i], matcher, transform);
+        } = await this.transformHub(group, matcher, transform);
         stats.add(groupStats);
         transformed.push(...groupTransformed);
+        if (
+          hubsWithUnusedConnections.length < hubWithUnusedLimit &&
+          groupStats.total !== groupStats.used
+        ) {
+          hubsWithUnusedConnections.push(group);
+        }
       }
       if (write && transformed.length > 0) {
         await this.relationshipsDS.insert(transformed);
       }
     });
-    return stats;
+    return { ...stats, hubsWithUnusedConnections };
   }
 
   async testOneHub(hubId: string) {
@@ -317,13 +327,26 @@ export class MigrationService {
     const matcher = await this.readV1RelationshipFields();
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
-    const { total, used, totalTextReferences, usedTextReferences, errors } =
-      await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
+    const {
+      total,
+      used,
+      totalTextReferences,
+      usedTextReferences,
+      errors,
+      hubsWithUnusedConnections,
+    } = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
 
     await this.hubsDS.drop();
 
     this.tempMigrationLog.close();
 
-    return { total, used, totalTextReferences, usedTextReferences, errors };
+    return {
+      total,
+      used,
+      totalTextReferences,
+      usedTextReferences,
+      errors,
+      hubsWithUnusedConnections,
+    };
   }
 }

@@ -24,6 +24,7 @@ type MigrationSummaryType = {
   usedTextReferences: number;
   time: number;
   dryRun: boolean;
+  hubsWithUnusedConnections: OriginalEntityInfo[][];
 };
 
 type OriginalEntityInfo = {
@@ -191,6 +192,26 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                   })`}
                 </div>
                 <div>Errors: {this.migrationSummary.errors}</div>
+                <br />
+                <div>
+                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
+                  connections:
+                </div>
+                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
+                  <div key={`UnusedConnectionList_${index}`}>
+                    <div>{index + 1}---------------------------:</div>
+                    {connectionList.map((connection, connectionIndex) => (
+                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
+                        &emsp;
+                        {connection.templateName}
+                        <Icon icon="link" />
+                        {`${connection.entityTitle}(${
+                          templatesById[connection.entityTemplate].name
+                        })`}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
             <br />

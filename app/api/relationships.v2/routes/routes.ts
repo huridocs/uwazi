@@ -31,8 +31,10 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 export default (app: Application) => {
   app.get('/api/v2/relationships', featureRequired, async (req, res) => {
     const { sharedId } = validateGetRelationships(req.query);
+    console.log(sharedId)
     const service = GetRelationshipService(req);
     const relationshipsData = await service.getByEntity(sharedId);
+    console.log(relationshipsData)
     res.json(relationshipsData);
   });
 
@@ -54,12 +56,26 @@ export default (app: Application) => {
     const timeStart = performance.now();
     const { dryRun } = validateMigration(req.body);
     const service = MigrationService();
-    const { total, used, totalTextReferences, usedTextReferences, errors } = await service.migrate(
-      dryRun
-    );
+    const {
+      total,
+      used,
+      totalTextReferences,
+      usedTextReferences,
+      errors,
+      hubsWithUnusedConnections,
+    } = await service.migrate(dryRun);
     const timeEnd = performance.now();
     const time = timeEnd - timeStart;
-    res.json({ total, used, totalTextReferences, usedTextReferences, errors, time, dryRun });
+    res.json({
+      total,
+      used,
+      totalTextReferences,
+      usedTextReferences,
+      errors,
+      time,
+      dryRun,
+      hubsWithUnusedConnections,
+    });
   });
 
   app.post('/api/v2/relationships/test_one_hub', featureRequired, async (req, res) => {
