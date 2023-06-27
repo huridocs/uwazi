@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 
@@ -9,15 +9,32 @@ interface PaginatorProps {
   otherParams?: string;
 }
 
+const calculateMorePages = (currentPage: string, totalPages: string) => {
+  let page = Number(currentPage);
+  const pages = [];
+
+  while (pages.length < 5) {
+    if (page + 1 === Number(totalPages)) {
+      break;
+    }
+
+    pages.push(Number(page + 1).toString());
+    page += 1;
+  }
+
+  return pages;
+};
+
 const Paginator = ({ currentPage, totalPages, pathname, otherParams }: PaginatorProps) => {
+  const [showMore, setShowMore] = useState(false);
   const page = Number(currentPage);
   const isFirstPage = currentPage === '1';
   const isLastPage = currentPage === totalPages;
 
   const basepath = `${pathname}${otherParams ? `?${otherParams},` : '?'}`;
   const currentUrl = `${basepath}page=${currentPage}`;
-  const prevUrl = isFirstPage ? currentUrl : `${basepath}page=${(page - 1).toString()}`;
   const lastUrl = isLastPage ? currentUrl : `${basepath}page=${totalPages}`;
+  const prevUrl = isFirstPage ? currentUrl : `${basepath}page=${(page - 1).toString()}`;
   const nextUrl = `${basepath}page=${(page + 1).toString()}`;
 
   return (
@@ -41,14 +58,31 @@ const Paginator = ({ currentPage, totalPages, pathname, otherParams }: Paginator
             {currentPage}
           </a>
         </li>
-        <li>
-          <button
-            type="button"
-            className="h-[35px] px-3 py-2 m-0 leading-tight text-gray-500 bg-white border border-gray-300  hover:bg-gray-100 hover:text-gray-700"
-          >
-            ...
-          </button>
-        </li>
+
+        {showMore ? (
+          calculateMorePages(currentPage, totalPages).map(pageNumber => (
+            <li>
+              <a
+                href={`${basepath}page=${pageNumber}`}
+                className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              >
+                {pageNumber}
+              </a>
+            </li>
+          ))
+        ) : (
+          <li>
+            <button
+              onClick={() => setShowMore(true)}
+              type="button"
+              className="h-[35px] px-3 py-2 m-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+            >
+              <Translate className="sr-only">Show more</Translate>
+              ...
+            </button>
+          </li>
+        )}
+
         <li>
           <a
             href={lastUrl}
