@@ -124,6 +124,14 @@ export class MongoTranslationsDataSource
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
+    const context = await this.getCollection().findOne(
+      { 'context.id': contextId },
+      { session: this.getSession() }
+    );
+    if (!context) {
+      return keys;
+    }
+
     const [result] = await this.getCollection()
       .aggregate(
         [

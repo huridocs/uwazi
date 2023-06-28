@@ -432,6 +432,58 @@ describe('translations v2 support', () => {
         },
       ]);
     });
+
+    it('should create new translations when the context do not exists yet', async () => {
+      await testingDB.setupFixturesAndContext(fixtures);
+
+      const values = {
+        'Item 1': 'Item 1',
+        'Item 2': 'Item 2',
+      };
+
+      await translations.updateContext(
+        { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
+        {},
+        [],
+        values
+      );
+
+      const updatedTranslations = await db
+        .collection(newTranslationsCollection)
+        .find({ language: { $in: ['es', 'en'] }, 'context.id': 'Menu' })
+        .sort({ language: 1, key: 1 })
+        .toArray();
+
+      expect(updatedTranslations.filter(t => t.language === 'en')).toMatchObject([
+        {
+          language: 'en',
+          key: 'Item 1',
+          value: 'Item 1',
+          context: { type: 'Uwazi UI', label: 'Menu', id: 'Menu' },
+        },
+        {
+          language: 'en',
+          key: 'Item 2',
+          value: 'Item 2',
+          context: { type: 'Uwazi UI', label: 'Menu', id: 'Menu' },
+        },
+      ]);
+
+      expect(updatedTranslations.filter(t => t.language === 'es')).toMatchObject([
+        {
+          language: 'es',
+          key: 'Item 1',
+          value: 'Item 1',
+          context: { type: 'Uwazi UI', label: 'Menu', id: 'Menu' },
+        },
+        {
+          language: 'es',
+          key: 'Item 2',
+          value: 'Item 2',
+          context: { type: 'Uwazi UI', label: 'Menu', id: 'Menu' },
+        },
+      ]);
+    });
   });
 
   describe('addContext()', () => {
