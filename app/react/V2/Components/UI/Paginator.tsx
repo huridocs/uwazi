@@ -36,7 +36,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
 
   return (
     <nav aria-label="Pagination">
-      <ul className="inline-flex items-center -space-x-px">
+      <ul className="flex flex-wrap items-center">
         <li key="previous">
           {isFirstPage ? (
             <button

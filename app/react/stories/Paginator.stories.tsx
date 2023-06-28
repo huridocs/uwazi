@@ -18,7 +18,7 @@ const Primary: Story = {
     <MemoryRouter>
       <Provider store={createStore()}>
         <div className="tw-content">
-          <div className="container w-10 h-10">
+          <div className="container w-full">
             <Paginator
               currentPage={args.currentPage}
               totalPages={args.totalPages}
