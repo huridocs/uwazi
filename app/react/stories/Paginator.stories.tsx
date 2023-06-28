@@ -27,8 +27,7 @@ const Primary: Story = {
             <Paginator
               currentPage={args.currentPage}
               totalPages={args.totalPages}
-              pathname={args.pathname}
-              otherParams={args.otherParams}
+              buildUrl={args.buildUrl}
               preventScrollReset={args.preventScrollReset}
             />
           </div>
@@ -43,8 +42,7 @@ const Basic: Story = {
   args: {
     currentPage: '8',
     totalPages: '576',
-    pathname: 'somepath',
-    otherParams: '',
+    buildUrl: (page: string) => `/library?q=(filters=('somefilters'),p=${page})`,
     preventScrollReset: true,
   },
 };

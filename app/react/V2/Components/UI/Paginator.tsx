@@ -6,8 +6,7 @@ import { Translate } from 'app/I18N';
 interface PaginatorProps {
   currentPage: string;
   totalPages: string;
-  pathname: string;
-  otherParams?: string;
+  buildUrl: (page: string) => string;
   preventScrollReset?: boolean;
 }
 
@@ -27,30 +26,20 @@ const calculateMorePages = (currentPage: string, totalPages: string) => {
   return pages;
 };
 
-const Paginator = ({
-  currentPage,
-  totalPages,
-  pathname,
-  otherParams,
-  preventScrollReset,
-}: PaginatorProps) => {
+const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: PaginatorProps) => {
   const [showMore, setShowMore] = useState(false);
   const page = Number(currentPage);
   const isFirstPage = currentPage === '1';
   const isLastPage = currentPage === totalPages;
-
-  const basepath = `${pathname}${otherParams ? `?${otherParams},` : '?'}`;
-  const currentUrl = `${basepath}page=${currentPage}`;
-  const lastUrl = isLastPage ? currentUrl : `${basepath}page=${totalPages}`;
-  const prevUrl = isFirstPage ? currentUrl : `${basepath}page=${(page - 1).toString()}`;
-  const nextUrl = `${basepath}page=${(page + 1).toString()}`;
+  const prevPage = isFirstPage ? '1' : (page - 1).toString();
+  const nextPage = isLastPage ? totalPages : (page + 1).toString();
 
   return (
     <nav aria-label="Pagination">
       <ul className="inline-flex items-center -space-x-px">
         <li>
           <Link
-            to={prevUrl}
+            to={buildUrl(prevPage)}
             preventScrollReset={preventScrollReset}
             className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
@@ -61,7 +50,7 @@ const Paginator = ({
         {isFirstPage ? undefined : (
           <li>
             <Link
-              to={`${basepath}page=${1}`}
+              to={buildUrl('1')}
               preventScrollReset={preventScrollReset}
               aria-current="page"
               className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
@@ -72,7 +61,7 @@ const Paginator = ({
         )}
         <li>
           <Link
-            to={currentUrl}
+            to={buildUrl(currentPage)}
             preventScrollReset={preventScrollReset}
             aria-current="page"
             className="px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-blue-300"
@@ -85,7 +74,7 @@ const Paginator = ({
           calculateMorePages(currentPage, totalPages).map(pageNumber => (
             <li>
               <Link
-                to={`${basepath}page=${pageNumber}`}
+                to={buildUrl(pageNumber)}
                 preventScrollReset={preventScrollReset}
                 className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               >
@@ -108,7 +97,7 @@ const Paginator = ({
 
         <li>
           <Link
-            to={lastUrl}
+            to={buildUrl(totalPages)}
             preventScrollReset={preventScrollReset}
             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
@@ -117,7 +106,7 @@ const Paginator = ({
         </li>
         <li>
           <Link
-            to={nextUrl}
+            to={buildUrl(nextPage)}
             preventScrollReset={preventScrollReset}
             className="block px-3 py-2 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
