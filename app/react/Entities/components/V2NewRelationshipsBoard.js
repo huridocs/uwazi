@@ -71,6 +71,21 @@ class V2NewRelationshipsBoard extends Component {
       : sharedId;
   }
 
+  showReferenceText(relationship) {
+    if (relationship.from.text || relationship.to.text) {
+      return (
+        <tr>
+          <td>{relationship.from.text}</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>{relationship.to.text}</td>
+          <td></td>
+        </tr>
+      );
+    }
+  }
+
   render() {
     const { searchResults, uiState, relationTypes, targetDocument } = this.props;
     const relTypesById = objectIndex(
@@ -79,28 +94,44 @@ class V2NewRelationshipsBoard extends Component {
       rt => rt
     );
     return (
-      <>
+      <div className="v2_new_rel_board">
         <div no-translate>Existing:</div>
         <div>
-          {this.relationships.map(r => (
-            <div>
-              {this.showEntityName(r.from.entity)}&emsp;
-              <Icon icon="arrow-right" />
-              &emsp;
-              {relTypesById[r.type].name}&emsp;
-              <Icon icon="arrow-right" />
-              &emsp;
-              {this.showEntityName(r.to.entity)}
-              &emsp;
-              <button
-                type="button"
-                onClick={this.deleteRelationship(r._id).bind(this)}
-                no-translate
-              >
-                X
-              </button>
-            </div>
-          ))}
+          <table>
+            <tr>
+              <th>From</th>
+              <th />
+              <th>Relationship Type</th>
+              <th />
+              <th style={{ maxWidth: '30%' }}>To</th>
+              <th>Delete</th>
+            </tr>
+            {this.relationships.map(r => (
+              <>
+                <tr>
+                  <td>{this.showEntityName(r.from.entity)}</td>
+                  <td>
+                    <Icon icon="arrow-right" />
+                  </td>
+                  <td>{relTypesById[r.type].name}</td>
+                  <td>
+                    <Icon icon="arrow-right" />
+                  </td>
+                  <td>{this.showEntityName(r.to.entity)}</td>
+                  <td>
+                    <button
+                      type="button"
+                      onClick={this.deleteRelationship(r._id).bind(this)}
+                      no-translate
+                    >
+                      X
+                    </button>
+                  </td>
+                </tr>
+                {this.showReferenceText(r)}
+              </>
+            ))}
+          </table>
         </div>
         <br />
         <div no-translate>Add new:</div>
@@ -141,7 +172,7 @@ class V2NewRelationshipsBoard extends Component {
             onClick={this.props.setTargetDocument}
           />
         </div>
-      </>
+      </div>
     );
   }
 }
