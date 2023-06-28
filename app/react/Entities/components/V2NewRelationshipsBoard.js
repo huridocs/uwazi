@@ -95,8 +95,8 @@ class V2NewRelationshipsBoard extends Component {
     );
 
     return (
-      <div className="v2_new_rel_board">
-        <div no-translate>Existing:</div>
+      <div className="v2_new_rel_board" no-translate>
+        <div>Existing:</div>
         <div>
           <table style={{ width: '100%' }}>
             <tr>
@@ -120,11 +120,7 @@ class V2NewRelationshipsBoard extends Component {
                   </td>
                   <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.to.entity)}</td>
                   <td>
-                    <button
-                      type="button"
-                      onClick={this.deleteRelationship(r._id).bind(this)}
-                      no-translate
-                    >
+                    <button type="button" onClick={this.deleteRelationship(r._id).bind(this)}>
                       X
                     </button>
                   </td>
@@ -135,7 +131,7 @@ class V2NewRelationshipsBoard extends Component {
           </table>
         </div>
         <br />
-        <div no-translate>Add new:</div>
+        <div>Add new:</div>
         <div>
           <select
             name="newEntryTypeSelector"
@@ -161,7 +157,6 @@ class V2NewRelationshipsBoard extends Component {
             type="button"
             disabled={!targetDocument}
             onClick={this.saveRelationship.bind(this)}
-            no-translate
           >
             Save
           </button>
