@@ -7,6 +7,7 @@ interface PaginatorProps {
   totalPages: string;
   pathname: string;
   otherParams?: string;
+  preventScrollReset?: boolean;
 }
 
 const calculateMorePages = (currentPage: string, totalPages: string) => {
@@ -25,7 +26,13 @@ const calculateMorePages = (currentPage: string, totalPages: string) => {
   return pages;
 };
 
-const Paginator = ({ currentPage, totalPages, pathname, otherParams }: PaginatorProps) => {
+const Paginator = ({
+  currentPage,
+  totalPages,
+  pathname,
+  otherParams,
+  preventScrollReset,
+}: PaginatorProps) => {
   const [showMore, setShowMore] = useState(false);
   const page = Number(currentPage);
   const isFirstPage = currentPage === '1';
@@ -49,6 +56,17 @@ const Paginator = ({ currentPage, totalPages, pathname, otherParams }: Paginator
             <ChevronLeftIcon className="w-[17px]" />
           </a>
         </li>
+        {isFirstPage ? undefined : (
+          <li>
+            <a
+              href={`${basepath}page=${1}`}
+              aria-current="page"
+              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+            >
+              1
+            </a>
+          </li>
+        )}
         <li>
           <a
             href={currentUrl}

@@ -27,6 +27,7 @@ const Primary: Story = {
             totalPages={args.totalPages}
             pathname={args.pathname}
             otherParams={args.otherParams}
+            preventScrollReset={args.preventScrollReset}
           />
         </div>
       </div>
@@ -36,7 +37,13 @@ const Primary: Story = {
 
 const Basic: Story = {
   ...Primary,
-  args: { currentPage: '8', totalPages: '576', pathname: 'somepath', otherParams: '' },
+  args: {
+    currentPage: '8',
+    totalPages: '576',
+    pathname: 'somepath',
+    otherParams: '',
+    preventScrollReset: true,
+  },
 };
 
 export { Basic };
