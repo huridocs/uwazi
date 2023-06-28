@@ -15,35 +15,31 @@ describe('Paginator', () => {
     cy.get('a').eq(4).should('have.attr', 'href', '/path?page=6');
     cy.get('a').eq(5).should('have.attr', 'href', '/path?page=25');
     cy.get('a').eq(6).should('have.attr', 'href', '/path?page=6');
-    cy.get('button').should('exist');
+    cy.contains('button', 'Show more').should('exist');
   });
 
-  it('should disable the previous page button when on first page', () => {
+  it('should render a disabled button for the previous/next arrow if on first/last page', () => {
     mount(<Basic currentPage="1" totalPages="25" buildUrl={page => `path?page=${page}`} />);
     cy.get('a').eq(0).should('have.attr', 'href', '/path?page=1');
     cy.get('button').eq(0).should('have.attr', 'disabled');
-  });
 
-  it('should disable the next page button when on last page', () => {
     mount(<Basic currentPage="25" totalPages="25" buildUrl={page => `path?page=${page}`} />);
     cy.get('a').eq(3).should('have.attr', 'href', '/path?page=25');
-    cy.get('button').eq(0).should('have.attr', 'disabled');
+    cy.get('button').should('have.attr', 'disabled');
   });
 
-  describe('go to first and last page', () => {
-    it('should not show the link to first page if on fist page', () => {
-      mount(<Basic currentPage="1" totalPages="25" buildUrl={page => `path?page=${page}`} />);
-      cy.get('a').eq(0).should('have.attr', 'href', '/path?page=1');
-      cy.get('a').eq(1).should('have.attr', 'href', '/path?page=2');
-    });
+  it('should not show the link to first page if on fist page', () => {
+    mount(<Basic currentPage="1" totalPages="25" buildUrl={page => `path?page=${page}`} />);
+    cy.get('a').eq(0).should('have.attr', 'href', '/path?page=1');
+    cy.get('a').eq(1).should('have.attr', 'href', '/path?page=2');
+  });
 
-    it('should not show the link to last page if on last page', () => {
-      mount(<Basic currentPage="25" totalPages="25" buildUrl={page => `path?page=${page}`} />);
-      cy.get('a').eq(0).should('have.attr', 'href', '/path?page=24');
-      cy.get('a').eq(1).should('have.attr', 'href', '/path?page=1');
-      cy.get('a').eq(2).should('have.attr', 'href', '/path?page=24');
-      cy.get('a').eq(3).should('have.attr', 'href', '/path?page=25');
-    });
+  it('should not show the link to last page if on last page', () => {
+    mount(<Basic currentPage="25" totalPages="25" buildUrl={page => `path?page=${page}`} />);
+    cy.get('a').eq(0).should('have.attr', 'href', '/path?page=24');
+    cy.get('a').eq(1).should('have.attr', 'href', '/path?page=1');
+    cy.get('a').eq(2).should('have.attr', 'href', '/path?page=24');
+    cy.get('a').eq(3).should('have.attr', 'href', '/path?page=25');
   });
 
   describe('current page siblings', () => {
@@ -57,17 +53,6 @@ describe('Paginator', () => {
       cy.get('a').eq(3).should('have.attr', 'href', '/path?page=24');
       cy.get('a').eq(4).should('have.attr', 'href', '/path?page=25');
       cy.get('a').eq(5).should('have.attr', 'href', '/path?page=25');
-    });
-
-    it('should not show the previous sibling on first page', () => {
-      mount(<Basic currentPage="1" totalPages="25" buildUrl={page => `path?page=${page}`} />);
-      cy.get('a').eq(0).should('have.attr', 'href', '/path?page=1');
-      cy.get('a').eq(1).should('have.attr', 'href', '/path?page=2');
-    });
-
-    it('should not show the next sibling on last page', () => {
-      mount(<Basic currentPage="25" totalPages="25" buildUrl={page => `path?page=${page}`} />);
-      cy.get('a').eq(3).should('have.attr', 'href', '/path?page=25');
     });
   });
 
