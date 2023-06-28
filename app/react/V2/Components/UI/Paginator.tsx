@@ -37,7 +37,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
   return (
     <nav aria-label="Pagination">
       <ul className="inline-flex items-center -space-x-px">
-        <li>
+        <li key="previous">
           <Link
             to={buildUrl(prevPage)}
             preventScrollReset={preventScrollReset}
@@ -48,7 +48,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
           </Link>
         </li>
         {isFirstPage ? undefined : (
-          <li>
+          <li key="first">
             <Link
               to={buildUrl('1')}
               preventScrollReset={preventScrollReset}
@@ -59,7 +59,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             </Link>
           </li>
         )}
-        <li>
+        <li key="current">
           <Link
             to={buildUrl(currentPage)}
             preventScrollReset={preventScrollReset}
@@ -72,7 +72,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
 
         {showMore ? (
           calculateMorePages(currentPage, totalPages).map(pageNumber => (
-            <li>
+            <li key={`more-${pageNumber}`}>
               <Link
                 to={buildUrl(pageNumber)}
                 preventScrollReset={preventScrollReset}
@@ -83,7 +83,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             </li>
           ))
         ) : (
-          <li>
+          <li key="more">
             <button
               onClick={() => setShowMore(true)}
               type="button"
@@ -95,7 +95,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
           </li>
         )}
 
-        <li>
+        <li key="last">
           <Link
             to={buildUrl(totalPages)}
             preventScrollReset={preventScrollReset}
@@ -104,7 +104,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             {totalPages}
           </Link>
         </li>
-        <li>
+        <li key="next">
           <Link
             to={buildUrl(nextPage)}
             preventScrollReset={preventScrollReset}

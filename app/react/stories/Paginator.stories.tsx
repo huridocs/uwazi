@@ -9,11 +9,6 @@ const meta: Meta<typeof Paginator> = {
   title: 'Components/Paginator',
   component: Paginator,
   argTypes: {},
-  //   parameters: {
-  //     actions: {
-  //       handles: ['change'],
-  //     },
-  //   },
 };
 
 type Story = StoryObj<typeof Paginator>;
@@ -42,7 +37,7 @@ const Basic: Story = {
   args: {
     currentPage: '8',
     totalPages: '576',
-    buildUrl: (page: string) => `/library?q=(filters=('somefilters'),p=${page})`,
+    buildUrl: (page: string) => `/library/?q=(filters=('somefilters'),p=${page})`,
     preventScrollReset: true,
   },
 };
