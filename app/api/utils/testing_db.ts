@@ -1,4 +1,5 @@
 import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
@@ -33,6 +34,7 @@ export type DBFixture = {
   users?: UserSchema[];
   settings?: Settings[];
   relationships?: RelationshipDBOType[];
+  translations_v2?: TranslationDBO[];
   [k: string]: any;
 };
 
@@ -49,6 +51,7 @@ const fixturer = {
   },
 
   async clearAllAndLoad(db: Db, fixtures: DBFixture) {
+    fixtures.translations_v2 = fixtures.translations_v2 || [];
     const existingCollections = new Set((await db.listCollections().toArray()).map(c => c.name));
     const expectedCollectons = Object.keys(models).concat(Object.keys(fixtures));
     const missingCollections = Array.from(

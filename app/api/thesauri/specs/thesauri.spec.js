@@ -435,7 +435,7 @@ describe('thesauri', () => {
         await thesauri.save(data);
         const allTranslations = await translations.get();
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-        expect(context.values['new name']).toBe('dictionary 2');
+        expect(context.values['new name']).toBe('new name');
       });
     });
   });

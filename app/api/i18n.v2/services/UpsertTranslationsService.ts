@@ -107,18 +107,20 @@ export class UpsertTranslationsService {
       originalKeysGoingToChange
     );
 
-    await this.translationsDS.insert(
-      (
-        await this.settingsDS.getLanguageKeys()
-      ).reduce<Translation[]>(
-        (memo, languageKey) =>
-          memo.concat(
-            missingKeysInDB.map(
-              key => new Translation(key, valueChanges[key], languageKey, newContext)
-            )
-          ),
-        []
-      )
-    );
+    if (missingKeysInDB.length) {
+      await this.translationsDS.insert(
+        (
+          await this.settingsDS.getLanguageKeys()
+        ).reduce<Translation[]>(
+          (memo, languageKey) =>
+            memo.concat(
+              missingKeysInDB.map(
+                key => new Translation(key, valueChanges[key], languageKey, newContext)
+              )
+            ),
+          []
+        )
+      );
+    }
   }
 }
