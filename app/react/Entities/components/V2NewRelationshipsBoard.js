@@ -71,19 +71,19 @@ class V2NewRelationshipsBoard extends Component {
       : sharedId;
   }
 
-  showReferenceText(relationship) {
+  showReferenceText(relationship, i) {
     if (relationship.from.text || relationship.to.text) {
       return (
-        <tr>
-          <td>{relationship.from.text}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td>{relationship.to.text}</td>
-          <td></td>
+        <tr style={{ height: '100px', background: this.bg(i) }}>
+          <td style={{ padding: '5px' }}>{relationship.from.text}</td>
+          <td colSpan="5" style={{ padding: '5px' }}>{relationship.to.text}</td>
         </tr>
       );
     }
+  }
+
+  bg(i) {
+    return i % 2 === 0 ? '#f2f2f2' : '#ffffff';
   }
 
   render() {
@@ -93,31 +93,32 @@ class V2NewRelationshipsBoard extends Component {
       rt => rt._id,
       rt => rt
     );
+
     return (
       <div className="v2_new_rel_board">
         <div no-translate>Existing:</div>
         <div>
-          <table>
+          <table style={{ width: '100%' }}>
             <tr>
-              <th>From</th>
+              <th style={{ width: '30%' }}>From</th>
               <th />
               <th>Relationship Type</th>
               <th />
-              <th style={{ maxWidth: '30%' }}>To</th>
+              <th style={{ width: '30%' }}>To</th>
               <th>Delete</th>
             </tr>
-            {this.relationships.map(r => (
+            {this.relationships.map((r, i) => (
               <>
-                <tr>
-                  <td>{this.showEntityName(r.from.entity)}</td>
+                <tr style={{ height: '40px', background: this.bg(i) }}>
+                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.from.entity)}</td>
                   <td>
                     <Icon icon="arrow-right" />
                   </td>
-                  <td>{relTypesById[r.type].name}</td>
+                  <td style={{ padding: '5px 8px' }}>{relTypesById[r.type].name}</td>
                   <td>
                     <Icon icon="arrow-right" />
                   </td>
-                  <td>{this.showEntityName(r.to.entity)}</td>
+                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.to.entity)}</td>
                   <td>
                     <button
                       type="button"
@@ -128,7 +129,7 @@ class V2NewRelationshipsBoard extends Component {
                     </button>
                   </td>
                 </tr>
-                {this.showReferenceText(r)}
+                {this.showReferenceText(r, i)}
               </>
             ))}
           </table>
