@@ -37,7 +37,7 @@ const Basic: Story = {
   args: {
     currentPage: '8',
     totalPages: '576',
-    buildUrl: (page: string) => `/library/?q=(filters=('somefilters'),p=${page})`,
+    buildUrl: (page: string) => `library/?q=(filters=('somefilters'),p=${page})`,
     preventScrollReset: true,
   },
 };

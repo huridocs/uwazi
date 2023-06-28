@@ -29,11 +29,10 @@ const calculateMorePages = (currentPage: number, totalPages: number) => {
 const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: PaginatorProps) => {
   const page = Number(currentPage);
   const lastPage = Number(totalPages);
-  const [showMore, setShowMore] = useState(lastPage - page < 6);
-  const isFirstPage = currentPage === '1';
+  const isFirstPage = page === 1;
   const isLastPage = currentPage === totalPages;
-  const prevPage = isFirstPage ? '1' : (page - 1).toString();
-  const nextPage = isLastPage ? totalPages : (page + 1).toString();
+  const shouldDisplayShowMore = page + 1 !== lastPage && !isLastPage;
+  const [showMore, setShowMore] = useState<Boolean>(lastPage - page < 6);
 
   return (
     <nav aria-label="Pagination">
@@ -49,7 +48,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             </button>
           ) : (
             <Link
-              to={buildUrl(prevPage)}
+              to={buildUrl((page - 1).toString())}
               preventScrollReset={preventScrollReset}
               className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
@@ -109,8 +108,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
           </li>
         )}
 
-        {page + 1 !== lastPage &&
-          page !== lastPage &&
+        {shouldDisplayShowMore &&
           (showMore ? (
             calculateMorePages(page, lastPage).map(pageNumber => (
               <li key={`more-${pageNumber}`}>
@@ -159,7 +157,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             </button>
           ) : (
             <Link
-              to={buildUrl(nextPage)}
+              to={buildUrl((page + 1).toString())}
               preventScrollReset={preventScrollReset}
               className="block px-3 py-2 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
