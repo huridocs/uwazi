@@ -17,6 +17,8 @@ import {
 
 const objectIndex = _.memoize(_objectIndex);
 
+const bg = i => (i % 2 === 0 ? '#f2f2f2' : '#ffffff');
+
 class V2NewRelationshipsBoard extends Component {
   constructor(props, context) {
     super(props, context);
@@ -74,16 +76,14 @@ class V2NewRelationshipsBoard extends Component {
   showReferenceText(relationship, i) {
     if (relationship.from.text || relationship.to.text) {
       return (
-        <tr style={{ height: '100px', background: this.bg(i) }}>
+        <tr style={{ height: '100px', background: bg(i) }}>
           <td style={{ padding: '5px' }}>{relationship.from.text}</td>
-          <td colSpan="5" style={{ padding: '5px' }}>{relationship.to.text}</td>
+          <td colSpan="5" style={{ padding: '5px' }}>
+            {relationship.to.text}
+          </td>
         </tr>
       );
     }
-  }
-
-  bg(i) {
-    return i % 2 === 0 ? '#f2f2f2' : '#ffffff';
   }
 
   render() {
@@ -109,7 +109,7 @@ class V2NewRelationshipsBoard extends Component {
             </tr>
             {this.relationships.map((r, i) => (
               <>
-                <tr style={{ height: '40px', background: this.bg(i) }}>
+                <tr style={{ height: '40px', background: bg(i) }}>
                   <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.from.entity)}</td>
                   <td>
                     <Icon icon="arrow-right" />

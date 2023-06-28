@@ -20,6 +20,8 @@ import {
   Selection,
 } from '../model/Relationship';
 
+const UNUSED_HUB_LIMIT = 10;
+
 const HUB_BATCH_SIZE = 1000;
 
 class RelationshipMatcher {
@@ -267,6 +269,54 @@ export class MigrationService {
     return { stats, transformed };
   }
 
+  private async recordUnusedConnections(
+    hubsWithUnusedConnections: V1ConnectionDisplayed[][],
+    stats: Statistics,
+    group: V1ConnectionDisplayed[]
+  ): Promise<void> {
+    if (hubsWithUnusedConnections.length < UNUSED_HUB_LIMIT && stats.total !== stats.used) {
+      hubsWithUnusedConnections.push(group);
+    }
+  }
+
+  private async writeTransformed(write: boolean, transformed: Relationship[]) {
+    if (write && transformed.length > 0) {
+      await this.relationshipsDS.insert(transformed);
+    }
+  }
+
+  private async transformBatch(
+    hubIdBatch: string[],
+    matcher: RelationshipMatcher,
+    stats: Statistics,
+    hubsWithUnusedConnections: V1ConnectionDisplayed[][],
+    transform: boolean = false,
+    write: boolean = false
+  ): Promise<void> {
+    const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
+    const connectionsGrouped = objectIndexToArrays(
+      connections,
+      connection => connection.hub,
+      connection => connection
+    );
+    const connectionGroups = Array.from(Object.values(connectionsGrouped));
+    const transformed: Relationship[] = [];
+    for (let i = 0; i < connectionGroups.length; i += 1) {
+      const group = connectionGroups[i];
+      // eslint-disable-next-line no-await-in-loop
+      const {
+        stats: groupStats,
+        transformed: groupTransformed,
+        // eslint-disable-next-line no-await-in-loop
+      } = await this.transformHub(group, matcher, transform);
+      stats.add(groupStats);
+      transformed.push(...groupTransformed);
+      // eslint-disable-next-line no-await-in-loop
+      await this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
+    }
+    await this.writeTransformed(write, transformed);
+  }
+
   private async transformHubs(
     matcher: RelationshipMatcher,
     transform: boolean = false,
@@ -277,38 +327,10 @@ export class MigrationService {
   }> {
     const hubCursor = this.hubsDS.all();
     const stats = new Statistics();
-    const hubWithUnusedLimit = 10;
     const hubsWithUnusedConnections: V1ConnectionDisplayed[][] = [];
-    await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch => {
-      const connections = await this.v1ConnectionsDS.getConnectedToHubs(hubIdBatch).all();
-      const connectionsGrouped = objectIndexToArrays(
-        connections,
-        connection => connection.hub,
-        connection => connection
-      );
-      const connectionGroups = Array.from(Object.values(connectionsGrouped));
-      const transformed: Relationship[] = [];
-      for (let i = 0; i < connectionGroups.length; i += 1) {
-        const group = connectionGroups[i];
-        // eslint-disable-next-line no-await-in-loop
-        const {
-          stats: groupStats,
-          transformed: groupTransformed,
-          // eslint-disable-next-line no-await-in-loop
-        } = await this.transformHub(group, matcher, transform);
-        stats.add(groupStats);
-        transformed.push(...groupTransformed);
-        if (
-          hubsWithUnusedConnections.length < hubWithUnusedLimit &&
-          groupStats.total !== groupStats.used
-        ) {
-          hubsWithUnusedConnections.push(group);
-        }
-      }
-      if (write && transformed.length > 0) {
-        await this.relationshipsDS.insert(transformed);
-      }
-    });
+    await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch =>
+      this.transformBatch(hubIdBatch, matcher, stats, hubsWithUnusedConnections, transform, write)
+    );
     return { stats, hubsWithUnusedConnections };
   }
 
