@@ -15,7 +15,6 @@ import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
-  AccountSettings,
   CollectionSettings,
   Customisation,
   CustomUploads,
@@ -34,7 +33,7 @@ import NewThesauri from 'app/Thesauri/NewThesauri';
 import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import { UserManagement } from 'app/Users/UserManagement';
+import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { Settings as settingsType } from 'shared/types/settingsType';
@@ -48,7 +47,7 @@ import {
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
-
+import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -81,12 +80,17 @@ const getRoutesLayout = (
     <Route path="unlockaccount/:username/:code" element={<ConnectedUnlockAccount />} />
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
-      <Route path="account" element={<AccountSettings />} />
+      <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
-      <Route path="users" element={adminsOnlyRoute(<UserManagement />)} />
+      <Route
+        path="users"
+        element={adminsOnlyRoute(<Users />)}
+        loader={usersLoader(headers)}
+        action={userAction()}
+      />
       <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
         <Route index element={adminsOnlyRoute(<Pages />)} />

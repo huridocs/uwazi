@@ -3,21 +3,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const factory = getFixturesFactory();
 
-const settings = [
-  {
-    languages: [{ default: true, label: 'English', key: 'en' }],
-    features: {
-      'metadata-extraction': true,
-      metadataExtraction: {
-        url: 'http://localhost:1234/',
-      },
-      segmentation: {
-        url: 'http://localhost:1234/files',
-      },
-    },
-  },
-];
-
 const fixturesPdfNameA = 'documentA.pdf';
 const fixturesPdfNameB = 'documentB.pdf';
 const fixturesPdfNameC = 'documentC.pdf';
@@ -26,7 +11,20 @@ const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
 
 const fixtures: DBFixture = {
-  settings,
+  settings: [
+    {
+      languages: [{ default: true, label: 'English', key: 'en' }],
+      features: {
+        'metadata-extraction': true,
+        metadataExtraction: {
+          url: 'http://localhost:1234/',
+        },
+        segmentation: {
+          url: 'http://localhost:1234/files',
+        },
+      },
+    },
+  ],
   ixextractors: [
     factory.ixExtractor('prop1extractor', 'property1', [
       'templateToSegmentA',
@@ -35,6 +33,7 @@ const fixtures: DBFixture = {
     factory.ixExtractor('prop2extractor', 'property2', ['templateToSegmentA']),
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('prop4extractor', 'property4', ['templateToSegmentA']),
+    factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
   ],
   entities: [
     factory.entity(
@@ -74,6 +73,8 @@ const fixtures: DBFixture = {
     factory.entity('A12', 'templateToSegmentA'),
     factory.entity('A13', 'templateToSegmentA'),
     factory.entity('A14', 'templateToSegmentA'),
+    factory.entity('A15', 'templateToSegmentC'),
+    factory.entity('A16', 'templateToSegmentC'),
   ],
   files: [
     factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -121,6 +122,8 @@ const fixtures: DBFixture = {
     ]),
     factory.file('F5', 'A5', 'document', fixturesPdfNameE, 'spa'),
     factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
+    factory.file('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
+    factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
   ],
   segmentations: [
     {
@@ -276,6 +279,32 @@ const fixtures: DBFixture = {
       page: 1,
       date: 220,
     },
+    {
+      fileId: factory.id('F15'),
+      entityId: 'A15',
+      entityTemplate: factory.id('templateToSegmentC').toString(),
+      language: 'en',
+      extractorId: factory.id('extractorWithOneFailedSegmentation'),
+      propertyName: 'property15',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      state: 'Obsolete',
+      date: 100,
+    },
+    {
+      fileId: factory.id('F16'),
+      entityId: 'A16',
+      entityTemplate: factory.id('templateToSegmentC').toString(),
+      language: 'en',
+      extractorId: factory.id('extractorWithOneFailedSegmentation'),
+      propertyName: 'property15',
+      suggestedValue: '',
+      segment: '',
+      status: 'ready',
+      state: 'Error',
+      date: 100,
+    },
   ],
   ixmodels: [
     {
@@ -286,6 +315,12 @@ const fixtures: DBFixture = {
     },
     {
       extractorId: factory.id('prop4extractor'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractorWithOneFailedSegmentation'),
       creationDate: 200,
       status: 'ready',
       findingSuggestions: true,
@@ -311,6 +346,7 @@ const fixtures: DBFixture = {
       factory.property('property4', 'markdown'),
     ]),
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
+    factory.template('templateToSegmentC', [factory.property('property15', 'text')]),
   ],
 };
 

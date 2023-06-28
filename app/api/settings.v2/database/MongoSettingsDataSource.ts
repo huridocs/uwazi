@@ -10,19 +10,19 @@ export class MongoSettingsDataSource
   protected collectionName = 'settings';
 
   protected async readSettings(): Promise<SettingsType | null> {
-    return this.getCollection().findOne({}, { session: this.getSession() });
+    return this.getCollection().findOne({});
   }
 
   protected async readLanguages(): Promise<SettingsType['languages']> {
     return (await this.readSettings())?.languages;
   }
 
-  async getLanguageKeys(): Promise<string[]> {
+  async getLanguageKeys() {
     const languages = await this.readLanguages();
     return languages?.map(l => l.key) || [];
   }
 
-  async getDefaultLanguageKey(): Promise<string> {
+  async getDefaultLanguageKey() {
     const languages = await this.readLanguages();
     const defaultLanguage = languages?.find(l => l.default);
     if (!defaultLanguage) {

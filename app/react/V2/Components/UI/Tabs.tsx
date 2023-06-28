@@ -36,7 +36,7 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
 
   return (
     <>
-      <div className="flex md:w-1/2">
+      <div className="flex md:w-1/2" data-testid="tabs-comp">
         {children.map((child, index: number) => (
           <button
             key={child.props.id}

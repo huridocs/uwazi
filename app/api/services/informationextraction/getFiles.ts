@@ -14,6 +14,7 @@ import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import languages from 'shared/languages';
+import { SuggestionState } from 'shared/types/suggestionSchema';
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
@@ -36,10 +37,10 @@ type FileEnforcedNotUndefined = {
 };
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
-  const filesIds = files.filter(x => x.filename).map(x => x.filename);
+  const filesNames = files.filter(x => x.filename).map(x => x.filename);
 
   const segmentationForFiles = (await SegmentationModel.get(
-    { filename: { $in: filesIds } },
+    { filename: { $in: filesNames } },
     'filename segmentation xmlname'
   )) as (SegmentationType & { filename: string })[];
 
@@ -126,7 +127,11 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   const [currentModel] = await ixmodels.get({ extractorId });
 
   const suggestions = await IXSuggestionsModel.get(
-    { extractorId, date: { $lt: currentModel.creationDate } },
+    {
+      extractorId,
+      date: { $lt: currentModel.creationDate },
+      state: { $ne: SuggestionState.error },
+    },
     'fileId',
     { limit: BATCH_SIZE }
   );
@@ -139,7 +144,6 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
         {
           type: 'document',
           filename: { $exists: true },
-          _id: { $in: await getSegmentedFilesIds() },
           language: { $exists: true },
         },
         { _id: { $in: fileIds } },
@@ -151,5 +155,5 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   return getFilesWithAggregations(files);
 }
 
-export { getFilesForTraining, getFilesForSuggestions };
+export { getFilesForTraining, getFilesForSuggestions, getSegmentedFilesIds };
 export type { FileWithAggregation };

@@ -1,6 +1,6 @@
 import { Application, NextFunction, Request, Response } from 'express';
 import { needsAuthorization } from 'api/auth';
-import { validation } from 'api/utils';
+import { parseQuery, validation } from 'api/utils';
 import userGroups from './userGroups';
 
 export default (app: Application) => {
@@ -29,21 +29,25 @@ export default (app: Application) => {
   app.delete(
     '/api/usergroups',
     needsAuthorization(['admin']),
+    parseQuery,
     validation.validateRequest({
       type: 'object',
       properties: {
         query: {
           type: 'object',
-          required: ['_id'],
+          additionalProperties: false,
+          required: ['ids'],
           properties: {
-            _id: { type: 'string' },
+            ids: { oneOf: [{ type: 'string' }, { type: 'array', items: { type: 'string' } }] },
           },
         },
       },
     }),
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const deletedGroup = await userGroups.delete(req.query);
+        const { ids } = req.query;
+        const idsArray = Array.isArray(ids) ? ids : [ids];
+        const deletedGroup = await userGroups.delete({ _id: { $in: idsArray } });
         res.json(deletedGroup);
       } catch (err) {
         next(err);

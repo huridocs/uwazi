@@ -1,24 +1,30 @@
 Key,French
 % of sentences above threshold,% des phrases en-dessus du seuil
 (view page),(voir page)
+*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2FA Enabled,2FA Enabled
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,Un identifiant généré sera le titre par défaut.
 Accept,Accepter
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Compte
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
+Account updated,Account updated
 Accuracy,Accuracy
 Action,Action
 Activate this feature for enhanced account security,Activez cette fonction pour renforcer la sécurité du compte
+Activated,Activated
 Active languages,Active languages
 Activity log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
 Add file,Ajouter le fichier
@@ -42,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,Ajouter à toutes les langues
 Add to table of contents,Ajouter à la table des matières
 Add user,Ajouter un utilisateur
-Add users,Ajouter des utilisateurs
 add value,add value
 Add/delete users and assign roles,Ajouter / Supprimer des utilisateurs et attribuer des rôles
 Add/edit translations,Ajouter / Modifier des traductions
@@ -104,6 +109,7 @@ Captcha bypass,Contournement du captcha
 Cards,Cartes
 Cards view,Vue en cartes
 Change password,Changer le mot de passe
+Change Password,Change Password
 Change will take effect after saving the template,Le changement prendra effet après l'enregistrement du modèle
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -147,6 +153,7 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,Confirmer le nouveau mot de passe
 Confirm publish multiple items,Confirmer la publication de plusieurs éléments
 Confirm suggestion acceptance,Confirmer l'acceptation des suggestions
@@ -164,6 +171,7 @@ Copy From,Copier de
 Copy Highlighted,Copier surligné
 Copy link,Copier le lien
 Copy properties to this entity from,Copier les propriétés de cette entité à partir de
+Copy to clipboard,Copy to clipboard
 Copy token,Copy token
 Could not be processed,N'a pas pu être traité
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -187,7 +195,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -254,6 +261,7 @@ documents to be reviewed,Documents à revoir
 Documents to be reviewed,Documents à revoir
 documents.,Documents.
 Download,Télécharger
+Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Faites glisser et déposez le fichier dans cette fenêtre pour le télécharger
 Drag items here,Faire glisser les éléments ici
 Drag properties here,Faites glisser les propriétés ici
@@ -266,7 +274,9 @@ Duplicated username,Nom d'utilisateur en double
 Edit,Éditer
 Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,Éditeur
 editor,Éditeur
 Email,E-mail
@@ -281,7 +291,9 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable,Enable
 Enable this page to be used as an entity view page:,Activez cette page pour qu'elle soit utilisée comme page de visualisation des entités :
+Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter the 6-digit verification code generated by your Authenticator app:,Saisissez le code de vérification à 6 chiffres généré par votre application d'authentification :
 Entities,Entités
 entities,Entités
@@ -333,15 +345,16 @@ From all templates,From all templates
 Full edit mode,Mode d'édition complet
 Full width,Full width
 General,Général
+General Information,General Information
 Global CSS,CSS global
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,Indentifiant Google Analytics
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,Groupes
 help,Aide
@@ -374,14 +387,15 @@ Inherit,Inherit
 Inherit property,Hériter la propriété
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Installez l'application Google Authenticator sur votre appareil mobile
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Captcha invalide
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,Courriel non valide
 Invalid form,Formulaire invalide
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Cela pourrait aussi très facilement casser l'application. N'écrivez du code ici que si vous savez exactement ce que vous faites.
@@ -410,7 +424,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Langue
 Language Code,Language Code
 Language deleted,Language deleted
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,Languages
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Latitude
 Learn more,Learn more
@@ -480,7 +497,6 @@ Name,Nom
 Name is required,Name is required
 Name is too long,Name is too long
 Name is too short,Name is too short
-Name of the group,Name of the group
 Narrow down your searches,Narrow down your searches
 Narrow your search,Narrow your search
 Navigate back,Navigate back
@@ -490,8 +506,10 @@ New entity,Nouvelle entité
 New group,New group
 New language added,New language added
 New password,Nouveau mot de passe
+New Password,New Password
 New relationship type,New relationship type
 New relationships group,New relationships group
+New user,New user
 Next,Next
 No,Non
 No attachments,No attachments
@@ -520,6 +538,7 @@ No Value,Aucune valeur
 Non-matching,Non-matching
 Normal view,Normal view
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Nothing to see here! The selected documents are not using the selected thesaurus
 Number of sentences above threshold,Number of sentences above threshold
 Obsolete,Obsolete
@@ -552,10 +571,12 @@ Page Javascript,Page Javascript
 Page name,Page name
 Pages,Pages
 Password,Mot de passe
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,Erreur de mot de passe
 Password is too long,Le mot de passe est trop long
 Password updated,Mot de passe mis à jour
+Passwords do not match,Passwords do not match
 Paste URL here,Paste URL here
 PDF,PDF
 per page,per page
@@ -601,7 +622,6 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,Protéger votre compte
 Protection,Protection
 ProTip!,ProTip !
 Public Endpoints,Points de terminaison publics
@@ -612,6 +632,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,Publier
 Published,Publié
+QR Code,QR Code
 Query,Requête
 Quick labeling for,Étiquetage rapide pour
 RAW,RAW
@@ -676,6 +697,8 @@ Search Tips: one char wildcard,Astuces de recherche: terme générique a un cara
 Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
+Secret keys,Secret keys
 Select,Select
 Select all,Tout sélectionner
 Select files on your device,Sélectionnez les fichiers sur votre appareil
@@ -772,6 +795,7 @@ The current model was trained at,Le modèle actuel a été formé à
 The import process threw an error:,Le processus d'importation a généré une erreur :
 The request could not be processed.,The request could not be processed.
 The template contains errors,Le modèle contient des erreurs
+The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,Il n'y a pas de pages activées pour la visualisation des entités
 There are no untranslated terms,There are no untranslated terms
@@ -780,6 +804,7 @@ Thesauri,Thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus sauvegardé
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,Cette zone vous permet d'ajouter du Javascript personnalisé à la page. Cela ouvre un nouvel univers de possibilités.
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Ce contenu est généré automatiquement
@@ -827,6 +852,7 @@ Translations reset successfully,Translations reset successfully
 Translations saved,Traductions sauvegardées
 Try selecting other documents.,Essayez de sélectionner d'autres documents.
 Turn off inline translation,Turn off inline translation
+Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
@@ -840,6 +866,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Langage OCR non supporté
 Untranslated Terms,Untranslated Terms
 Update,Mettre à jour
@@ -870,11 +897,16 @@ Use,Utilisez
 Use as filter,Use as filter
 Use custom landing page,Utiliser la page de destination personnalisée
 User,Utilisateur
+User Action,User Action
+User Role,User Role
 Username,Nom d'utilisateur
 Username is required,Le nom d'utilisateur est requis
 Username is too long,Le nom d'utilisateur est trop long
 Username is too short,Le nom d'utilisateur est trop court
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Utilisateurs
+Users & Groups,Users & Groups
+Using Authenticator,Using Authenticator
 Using Google Authenticator,Utilisation de Google Authenticator
 Uwazi is developed by,Uwazi est développé par
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi apprend en utilisant les documents étiquetés. Cela peut prendre jusqu'à 2 heures, et une fois terminé, vous pouvez revoir les suggestions faites par Uwazi pour votre collection."
@@ -908,13 +940,15 @@ x less,x en moins
 x more,x en plus
 Year,Année
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
+You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,Vous pouvez également améliorer le modèle en fournissant davantage de documents étiquetés.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
 You have labeled,Vous avez étiqueté
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte
-Your account is protected by 2fa.,Votre compte est protégé par 2fa.
+You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,Zoom avant
 Zoom in library view,Zoom avant sur la vue de la bibliothèque
 Zoom out,Zoom arrière

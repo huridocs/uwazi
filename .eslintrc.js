@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 const rules = require('./uwazi-eslint-rules');
 
 module.exports = {
@@ -14,7 +15,12 @@ module.exports = {
     'eslint-plugin-cypress',
   ],
   rules: {
-    'prettier/prettier': ['error', { requirePragma: false }],
+    'prettier/prettier': [
+      'error',
+      {
+        requirePragma: false,
+      },
+    ],
     'node/no-restricted-import': [
       'error',
       [
@@ -23,6 +29,7 @@ module.exports = {
       ],
     ],
     indent: 'off',
+    'brace-style': 'off',
     'operator-linebreak': 'off',
     'space-before-function-paren': 'off',
     'no-mixed-operators': 'off',
@@ -155,13 +162,31 @@ module.exports = {
     'react/button-has-type': ['warn'],
     'react/no-access-state-in-setstate': ['warn'],
     'react/jsx-pascal-case': ['warn'],
-    'react/default-props-match-prop-types': ['error', { allowRequiredDefaults: true }],
+    'react/default-props-match-prop-types': [
+      'error',
+      {
+        allowRequiredDefaults: true,
+      },
+    ],
     'react/function-component-definition': [
       2,
-      { namedComponents: 'arrow-function', unnamedComponents: 'arrow-function' },
+      {
+        namedComponents: 'arrow-function',
+        unnamedComponents: 'arrow-function',
+      },
     ],
-    'react/jsx-no-useless-fragment': [2, { allowExpressions: true }],
-    'react/no-unknown-property': ['error', { ignore: ['no-translate'] }],
+    'react/jsx-no-useless-fragment': [
+      2,
+      {
+        allowExpressions: true,
+      },
+    ],
+    'react/no-unknown-property': [
+      'error',
+      {
+        ignore: ['no-translate'],
+      },
+    ],
     //jsx-a11y
     'jsx-a11y/anchor-is-valid': ['warn'],
     'jsx-a11y/label-has-for': ['off'],

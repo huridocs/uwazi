@@ -23,11 +23,11 @@ module.exports = {
       ...config,
       module: {
         ...config.module,
-        rules: custom.module.rules
-      }
+        rules: custom.module.rules,
+      },
     };
   },
   docs: {
-    autodocs: true
-  }
+    autodocs: true,
+  },
 };

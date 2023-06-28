@@ -19,6 +19,8 @@ import fixtures, {
   group1Id,
   group2Id,
   userToDelete,
+  userToDelete2,
+  blockedUserId,
 } from './fixtures.js';
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
@@ -485,6 +487,24 @@ describe('Users', () => {
     });
   });
 
+  describe('simpleUnlock', () => {
+    it('should remove unlock related fields', async () => {
+      await users.simpleUnlock(userId);
+      const [user] = await db.mongodb.collection('users').find({ _id: userId }).toArray();
+      expect(user.accountLocked).toBe(undefined);
+      expect(user.accountUnlockCode).toBe(undefined);
+      expect(user.failedLogins).toBe(undefined);
+    });
+
+    it('should keep fields intact in other users', async () => {
+      await users.simpleUnlock(userId);
+      const [user] = await db.mongodb.collection('users').find({ _id: userToDelete }).toArray();
+      expect(user.accountLocked).toBe(false);
+      expect(user.accountUnlockCode).toBe(undefined);
+      expect(user.failedLogins).toBe(0);
+    });
+  });
+
   describe('recoverPassword', () => {
     beforeEach(() => {
       jest.restoreAllMocks();
@@ -600,31 +620,53 @@ describe('Users', () => {
   });
 
   describe('delete()', () => {
-    it('should delete the user', async () => {
-      await users.delete(userId, { _id: 'another_user' });
-      const user = await users.getById(userId);
-      expect(user).toBe(null);
+    it.each([
+      {
+        ids: [userId],
+      },
+      {
+        ids: [userId, userToDelete],
+      },
+    ])('should delete the users', async ({ ids }) => {
+      await users.delete(ids, { _id: 'another_user' });
+      const usersInDb = await db.mongodb
+        .collection('users')
+        .find({ _id: { $in: ids } })
+        .toArray();
+      expect(usersInDb).toEqual([]);
     });
 
-    it('should not allow to delete self', async () => {
+    it.each([
+      {
+        ids: [userId],
+      },
+      {
+        ids: [userId, userToDelete],
+      },
+    ])('should not allow to delete self', async ({ ids }) => {
       try {
-        await users.delete(userId.toString(), { _id: userId });
+        await users.delete(ids, { _id: userId });
         throw new Error('should throw an error');
       } catch (error) {
         expect(error).toEqual(createError('Can not delete yourself', 403));
-        const user = await users.getById(userId);
-        expect(user).not.toBe(null);
+        const usersInDb = await db.mongodb
+          .collection('users')
+          .find({ _id: { $in: ids } })
+          .toArray();
+        expect(usersInDb.length).toBe(ids.length);
       }
     });
 
     it('should not allow to delete the last user', async () => {
-      await users.delete(userToDelete.toString(), { _id: 'someone' });
-      await users.delete(recoveryUserId.toString(), { _id: 'someone' });
+      await users.delete([userToDelete.toString()], { _id: 'someone' });
+      await users.delete([userToDelete2.toString()], { _id: 'someone' });
+      await users.delete([recoveryUserId.toString()], { _id: 'someone' });
+      await users.delete([blockedUserId.toString()], { _id: 'someone' });
       try {
-        await users.delete(userId.toString(), { _id: 'someone' });
+        await users.delete([userId.toString()], { _id: 'someone' });
         throw new Error('should throw an error');
       } catch (error) {
-        expect(error).toEqual(createError('Can not delete last user', 403));
+        expect(error).toEqual(createError('Can not delete last user(s).', 403));
         const user = await users.getById(userId);
         expect(user).toEqual({
           _id: userId,
@@ -635,10 +677,46 @@ describe('Users', () => {
       }
     });
 
-    it('should delete the user in all the groups', async () => {
-      await users.delete(userToDelete.toString(), { _id: 'someone' });
-      const group = await userGroups.get({ name: 'Group 3' });
-      expect(group[0].members.length).toBe(0);
+    it('should not allow to delete the last users', async () => {
+      const userCount = await db.mongodb.collection('users').countDocuments();
+      try {
+        await users.delete(
+          [
+            userId.toString(),
+            userToDelete.toString(),
+            userToDelete2.toString(),
+            recoveryUserId.toString(),
+            blockedUserId.toString(),
+          ],
+          { _id: 'someone' }
+        );
+        throw new Error('should throw an error');
+      } catch (error) {
+        expect(error).toEqual(createError('Can not delete last user(s).', 403));
+        const countAfterAttempt = await db.mongodb.collection('users').countDocuments();
+        expect(countAfterAttempt).toBe(userCount);
+      }
+    });
+
+    it.each([
+      {
+        ids: [userToDelete],
+      },
+      {
+        ids: [userToDelete, userToDelete2],
+      },
+    ])('should delete the user in all the groups', async ({ ids }) => {
+      await users.delete(ids, { _id: 'someone' });
+      const allGroups = await db.mongodb.collection('usergroups').find().toArray();
+      const allMemberSet = new Set(
+        allGroups
+          .map(group => group.members)
+          .flat()
+          .map(({ refId }) => refId.toString())
+      );
+      ids.forEach(id => {
+        expect(allMemberSet.has(id.toString())).toBe(false);
+      });
     });
   });
 
@@ -664,14 +742,14 @@ describe('Users', () => {
   describe('get', () => {
     it('should return all users without group data', async () => {
       const userList = await users.get();
-      expect(userList.length).toBe(3);
+      expect(userList.length).toBe(5);
       const groupData = userList.filter(u => u.groups !== undefined);
       expect(groupData.length).toBe(0);
     });
 
     it('should return all users with groups to which they belong', async () => {
       const userList = await users.get({}, '+groups');
-      expect(userList.length).toBe(3);
+      expect(userList.length).toBe(5);
       expect(userList[0].groups[0].name).toBe('Group 2');
       expect(userList[1].groups[0].name).toBe('Group 1');
     });

@@ -1,24 +1,30 @@
-Key,Turkish 
+Key,Turkish
 % of sentences above threshold,eşiğin üzerindeki cümlelerin yüzdesi
 (view page),(sayfaya bak)
+*please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
+2FA Enabled,2FA Enabled
 2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,"Oluşturulan kimlik, varsayılan başlık olacaktır."
 Accept,Kabul Et
 Accepted suggestion on entity,Accepted suggestion on entity
 Account,Hesap
+Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
+Account updated,Account updated
 Accuracy,Accuracy
 Action,Eylem
 Activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirin
+Activated,Activated
 Active languages,Active languages
 Activity log,Sistem Günlüğü
 Add,Ekle
 Add / remove favorite,Favoriye ekle / Favoriden çıkarı
+Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Tarih ekle
 Add entities / documents,Varlık/Döküman ekle
 Add file,Dosya ekle
@@ -42,7 +48,6 @@ Add timelink,Add timelink
 Add to all languages,Tüm dillere ekle
 Add to table of contents,İçindekiler tablosuna ekle
 Add user,Kullanıcı ekle
-Add users,Kullanıcılar ekle
 add value,add value
 Add/delete users and assign roles,Kullanıcı ekleme/silme ve roller atama
 Add/edit translations,Çeviri ekle/düzenle
@@ -107,6 +112,7 @@ malicious content."
 Cards,Fişler
 Cards view,Fiş görünümü
 Change password,Parola değiştir
+Change Password,Change Password
 Change will take effect after saving the template,Değişiklik şablonu kaydettikten sonra yürürlüğe girecek
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
@@ -148,6 +154,7 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
 Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
+Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,Yeni parolayı onayla
 Confirm publish multiple items,Birden çok öğe yayınlamayı onaylayın
 Confirm suggestion acceptance,Confirm suggestion acceptance
@@ -165,6 +172,7 @@ Copy From,Formu Kopyala
 Copy Highlighted,Vurgulananları Kopyala
 Copy link,Bağlantıyı kopyala
 Copy properties to this entity from,Özellikleri şuradan bu varlığa kopyala
+Copy to clipboard,Copy to clipboard
 Copy token,Copy token
 Could not be processed,Could not be processed
 Could not detect the area for the selected text,"Could not detect the area for the selected text, please try selecting again."
@@ -188,7 +196,6 @@ Created entity coming from a public form,Created entity coming from a public for
 Created page,Created page
 Created relation type,Created relation type
 Created relationship,Created relationship
-Created successfully.,Created successfully.
 Created template,Created template
 Created thesaurus,Created thesaurus
 Created user group,Created user group
@@ -255,6 +262,7 @@ documents to be reviewed,İncelenecek belgeler
 Documents to be reviewed,İncelenecek belgeler
 documents.,belgeler.
 Download,Özel filtre için belgeler
+Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Yüklemek için dosyayı bu pencerede sürükleyip bırakın
 Drag items here,Öğeleri buraya sürükleyin
 Drag properties here,Özellikleri buraya sürükleyin
@@ -267,7 +275,9 @@ Duplicated username,Mükerrer kullanıcı adı
 Edit,Düzenle
 Edit all documents matching this criteria,Bu kriterlere uyan tüm belgeleri düzenleyin
 Edit Extractor,Edit Extractor
+Edit group,Edit group
 Edit metadata of entities,Edit metadata of entities
+Edit user,Edit user
 Editor,Editör
 editor,Editör
 Email,E-posta
@@ -282,7 +292,9 @@ Empty / Value,Empty / Value
 empty property tip,You won't be able to save an entity if this property is empty.
 emptyDesc,"Both the current value and the suggestion are empty. You can click to fill the value and text selection so it becomes a ""empty / label"" that will be used as a training sample."
 emptyMismatchDesc,"There is no current value and the model is suggesting a value. Accepting the suggestion will replace the current (empty) value and text selection with the suggested ones becoming a ""match / label"" that will be used as a training sample. Alternatively you can ignore the suggestion and click to fill the text selection so it becomes a ""mismatch / label"" that will be used as a training sample."
+Enable,Enable
 Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
+Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
 Enter the 6-digit verification code generated by your Authenticator app:,"""Authenticator"" uygulamanız tarafından oluşturulan 6 haneli doğrulama kodunu girin:"
 Entities,Varlıklar
 entities,Varlıklar
@@ -334,15 +346,16 @@ From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
+General Information,General Information
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics Kimliği
 Google Maps,Google Maps
 Group,Group
-Group created,Group created
-Group deleted,Group deleted
 Group name,Group name
+Group Options,Group Options
+Group saved,Group saved
 Group updated,Group updated
 Groups,Gruplar
 help,yardım
@@ -375,14 +388,15 @@ Inherit,Inherit
 Inherit property,Inherit property
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
-Install language(s),Install language(s)
+Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator uygulamasını mobil cihazınıza yükleyin
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
+"Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Invalid captcha,Geçersiz güvenlik kodu
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
-Invalid email,Geçersiz e-posta
 Invalid form,geçersiz form
 Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Ayrıca uygulamayı çok kolay bozabilir. Buraya sadece tam olarak ne yaptığınızı biliyorsanız kod yazın.
@@ -411,7 +425,10 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Dil
 Language Code,Language Code
 Language deleted,Dil silindi
+Language reset success,Language reset success
+Language uninstalled success,Language uninstalled success
 Languages,Diller
+Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Enlem
 Learn more,Daha fazla bilgi edin
@@ -481,7 +498,6 @@ Name,Ad
 Name is required,Ad gerekli
 Name is too long,Ad çok uzun
 Name is too short,Ad çok kısa
-Name of the group,Grubun adı
 Narrow down your searches,Aramalarınızı daraltın
 Narrow your search,Aramanızı daraltın
 Navigate back,Navigate back
@@ -491,8 +507,10 @@ New entity,Yeni varlık
 New group,New group
 New language added,Yeni dil eklendi
 New password,Yeni parola
+New Password,New Password
 New relationship type,New relationship type
 New relationships group,Yeni ilişkiler grubu
+New user,New user
 Next,Sonraki
 No,Hayır
 No attachments,Ek yok
@@ -521,6 +539,7 @@ No Value,Değer yok
 Non-matching,Non-matching
 Normal view,Normal görünüm
 Not Found,Not Found
+Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,"Burada görülecek bir şey yok! Seçilen belgeler, seçilen Thesaurus'u kullanmıyor."
 Number of sentences above threshold,Eşiğin üzerindeki cümle sayısı
 Obsolete,Obsolete
@@ -553,10 +572,12 @@ Page Javascript,Sayfa Javascript
 Page name,Page name
 Pages,Sayfalar
 Password,Parola
+Password + 2fa,Password + 2fa
 Password changed success,Password changed success
 Password Error,Şifre hatası
 Password is too long,Parola çok uzun
 Password updated,Parola güncellendi
+Passwords do not match,Passwords do not match
 Paste URL here,Paste URL here
 PDF,PDF
 per page,per page
@@ -602,7 +623,6 @@ property preview,Preview
 property relationship,Relationship
 property select,Select
 property text,Text
-Protect your account,Hesabınızı Koruyun
 Protection,Koruma
 ProTip!,Uzman İpucu!
 Public Endpoints,Public Endpoints
@@ -613,6 +633,7 @@ Public form URL description,"If you have configured a public form and would like
 Public form whitelist description,"If you wish to include Public Forms on your pages, you must white-list the template IDs for which Public Forms are expected."
 Publish,Yayınla
 Published,Yayınlanan
+QR Code,QR Code
 Query,Sorgulama
 Quick labeling for,Hızlı etiketleme
 RAW,RAW
@@ -677,6 +698,8 @@ Search Tips: one char wildcard,Arama İpuçları: Bir Char Wildcard
 Search Tips: proximity,Arama İpuçları: Yakınlık
 Search Tips: wildcard,Arama İpuçları: Wildcard
 secret key recommendation,(please keep this key secret and don't share it):
+Security,Security
+Secret keys,Secret keys
 Select,Select
 Select all,Hepsini seç
 Select files on your device,Cihazınızdaki dosyaları seçin
@@ -773,6 +796,7 @@ The current model was trained at,Gelişmiş hesap güvenliği için bu özelliğ
 The import process threw an error:,İçe aktarma işlemi bir hata verdi:
 The request could not be processed.,The request could not be processed.
 The template contains errors,Şablon hatalar içeriyor
+The token does not validate against the secret key,The token does not validate against the secret key
 The token does not validate against the secret key!,The token does not validate against the secret key!
 There are no pages enabled for entity view,Varlık görünümü için etkinleştirilmiş sayfa yok
 There are no untranslated terms,There are no untranslated terms
@@ -781,6 +805,7 @@ Thesauri,Thesauri
 Thesauri name,Thesauri name
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus kaydedildi
+This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
 This area allows you to append custom Javascript to the page. This opens up a new universe of possibilities.,"Bu alan, sayfaya özel Javascript eklemenizi sağlar. Bu, yeni bir olasılıklar evreni açar."
 This cannot be changed after saving,This cannot be changed after saving
 This content is automatically generated,Bu içerik otomatik olarak oluşturulur
@@ -828,6 +853,7 @@ Translations reset successfully,Translations reset successfully
 Translations saved,Çeviriler kaydedildi
 Try selecting other documents.,Diğer belgeleri seçmeyi deneyin.
 Turn off inline translation,Turn off inline translation
+Two-Factor Authentication,Two-Factor Authentication
 Two-factor authentication enabled,Two-factor authentication enabled
 Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
@@ -841,6 +867,7 @@ Unexpected error,Unexpected error
 Uninstall,Uninstall
 Uninstall language,Uninstall language
 Unlink,Unlink
+Unlock account,Unlock account
 Unsupported OCR language,Unsupported OCR language
 Untranslated Terms,Untranslated Terms
 Update,Güncelle
@@ -871,11 +898,16 @@ Use,Kullan
 Use as filter,Use as filter
 Use custom landing page,Use custom landing page
 User,Kullanıcı
+User Action,User Action
+User Role,User Role
 Username,Kullanıcı adı
 Username is required,Kullanıcı adı gerekli
 Username is too long,Kullanıcı adı çok uzun
 Username is too short,Kullanıcı adı çok kısa
+Usernames cannot have spaces,Usernames cannot have spaces
 Users,Kullanıcılar
+Users & Groups,Users & Groups
+Using Authenticator,Using Authenticator
 Using Google Authenticator,Google Authenticator Kullanma
 Uwazi is developed by,Uwazi tarafından geliştirildi
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi etiketli belgeleri kullanarak öğreniyor. Bu işlem 2 saat kadar sürebilir ve tamamlandıktan sonra koleksiyonunuz için Uwazi tarafından yapılan önerileri inceleyebilirsiniz.
@@ -909,13 +941,15 @@ x less,daha az
 x more,daha az
 Year,Yıl
 "You can also embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, çizelgeler ve varlık listeleri gibi gelişmiş bileşenleri de yerleştirebilirsiniz."
+You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,Ayrıca daha fazla etiketli belge sağlayarak modeli iyileştirebilirsiniz.
 You can create metadata templates in,Meta veri şablonları oluşturabilirsiniz
 You have labeled,Etiketledin
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirmelisiniz
-Your account is protected by 2fa.,Hesabınız iki adımlı doğrulama ile korunmaktadır.
+You should activate this feature for enhanced account security.,You should activate this feature for enhanced account security.
+Your account's security is enhanced with two-factor authentication.,Your account's security is enhanced with two-factor authentication.
 Zoom in,Yakınlaştır
 Zoom in library view,Kütüphane görünümünü yakınlaştır
 Zoom out,Uzaklaştır

@@ -18,13 +18,14 @@ const InputFieldStory: Story = {
         <div className="md:w-1/2">
           <InputField
             id={args.id}
-            label={<p className="mb-2 text-lg">{args.label}</p>}
+            label={args.label}
             disabled={args.disabled}
             hideLabel={args.hideLabel}
             hasErrors={args.hasErrors}
             clearFieldAction={args.clearFieldAction}
             placeholder={args.placeholder}
             value={args.value}
+            errorMessage={args.errorMessage}
           />
         </div>
       </div>
@@ -64,6 +65,16 @@ const WithError = {
   },
 };
 
-export { Basic, WithClearFieldButton, WithError };
+const WithErrorMessage = {
+  ...InputFieldStory,
+  args: {
+    ...Basic.args,
+    errorMessage: "This is an error message that will show when there's an error",
+    value: 'This value has errors',
+    clearFieldAction: () => {},
+  },
+};
+
+export { Basic, WithClearFieldButton, WithError, WithErrorMessage };
 
 export default meta;

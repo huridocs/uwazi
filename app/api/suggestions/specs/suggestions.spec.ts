@@ -451,6 +451,33 @@ describe('suggestions', () => {
       await Suggestions.setObsolete(query);
       const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
       expect(obsoletes?.every(s => s.state === SuggestionState.obsolete)).toBe(true);
+      expect(obsoletes?.length).toBe(3);
+    });
+  });
+
+  describe('markSuggestionsWithoutSegmentation()', () => {
+    it('should mark the suggestions without segmentation to error state', async () => {
+      const query = { entityId: 'shared1' };
+      await Suggestions.markSuggestionsWithoutSegmentation(query);
+      const notSegmented = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
+      expect(notSegmented?.every(s => s.state === SuggestionState.error)).toBe(true);
+    });
+
+    it('should not mark suggestions when segmentations are correct', async () => {
+      const query = { entityId: 'shared2' };
+      await Suggestions.markSuggestionsWithoutSegmentation(query);
+      const segmented = await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({ _id: suggestionId })
+        .toArray();
+      const notSegmented = await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({ _id: shared2AgeSuggestionId })
+        .toArray();
+      expect(segmented?.length).toBe(1);
+      expect(segmented?.every(s => s.state === SuggestionState.error)).toBe(false);
+      expect(notSegmented?.length).toBe(1);
+      expect(notSegmented?.every(s => s.state === SuggestionState.error)).toBe(true);
     });
   });
 

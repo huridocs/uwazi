@@ -7,7 +7,7 @@ import RenderIfVisible from 'react-render-if-visible';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema } from 'app/istore';
 import { Button, Pill, Table } from 'V2/Components/UI';
-import { FormInput } from 'V2/Components/Forms';
+import { FormInput } from './FormInput';
 
 type TableData = {
   language: string | undefined;

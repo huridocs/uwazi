@@ -29,11 +29,7 @@ describe('BulkWriteStream', () => {
 
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    stream = new BulkWriteStream(
-      db.mongodb?.collection<NumberValueType>('values'),
-      undefined,
-      stackLimit
-    );
+    stream = new BulkWriteStream(db.mongodb!.collection<NumberValueType>('values'), stackLimit);
   });
 
   afterAll(async () => {
@@ -50,6 +46,12 @@ describe('BulkWriteStream', () => {
     await stream.delete({ value: -1 });
     await stream.flush();
     await checkValues([0]);
+  });
+
+  it('should be able to delete many', async () => {
+    await stream.deleteMany({ value: { $lt: 2 } });
+    await stream.flush();
+    await checkValues([]);
   });
 
   it('should be able to update one', async () => {

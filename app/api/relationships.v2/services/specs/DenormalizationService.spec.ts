@@ -6,7 +6,7 @@ import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsD
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import testingDB from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
@@ -18,7 +18,7 @@ const factory = getFixturesFactory();
 const entityInLanguages = (langs: string[], id: string, template?: string) =>
   langs.map(lang => factory.entity(id, template, {}, { language: lang }));
 
-const fixtures = {
+const fixtures: DBFixture = {
   relationships: [
     {
       _id: factory.id('rel1'),
