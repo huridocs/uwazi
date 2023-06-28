@@ -25,11 +25,12 @@ jobs:
         ports:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
-      mongodb:
-        image: mongo:4.2.6
-        ports:
-          - 27017/tcp
     steps:
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 4.2.6
+          mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v3
       - name: Checkout submodules
@@ -64,14 +65,14 @@ jobs:
         run: yarn production-build
       - run: yarn e2e-puppeteer-fixtures
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
       - name: start Uwazi
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
@@ -82,7 +83,7 @@ jobs:
       - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
         timeout-minutes: 25
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
       - name: Print server output
