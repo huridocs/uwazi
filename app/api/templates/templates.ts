@@ -85,8 +85,7 @@ const updateTranslation = async (
   const context = createTranslationContext(template);
 
   return translations.updateContext(
-    currentTemplate._id.toString(),
-    template.name,
+    { id: currentTemplate._id.toString(), label: template.name, type: 'Entity' },
     updatedLabels,
     deletedPropertiesByLabel,
     context

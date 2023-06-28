@@ -26,6 +26,7 @@ import {
 } from './v2_support';
 import { tenants } from 'api/tenants';
 import { ObjectId } from 'mongodb';
+import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -272,18 +273,12 @@ export default {
   },
 
   async updateContext(
-    id: string,
-    newContextName: string,
+    context: CreateTranslationsData['context'],
     keyNamesChanges: { [x: string]: string },
     deletedProperties: string[],
     values: IndexedContextValues
   ) {
-    await updateContextV2(
-      { id: id.toString(), label: newContextName },
-      keyNamesChanges,
-      deletedProperties,
-      values
-    );
+    await updateContextV2(context, keyNamesChanges, deletedProperties, values);
     return 'ok';
   },
 

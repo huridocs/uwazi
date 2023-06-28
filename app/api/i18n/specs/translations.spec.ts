@@ -25,7 +25,7 @@ describe('translations', () => {
       expect(result).toMatchObject({
         contexts: [
           {
-            type: 'Dictionary',
+            type: 'Thesaurus',
             values: {
               Account: 'Account',
               Age: 'Age',
@@ -262,8 +262,7 @@ describe('translations', () => {
       };
 
       const result = await translations.updateContext(
-        'System',
-        'Menu',
+        { id: 'System', label: 'Menu', type: 'Uwazi UI' },
         keyNameChanges,
         deletedProperties,
         context
@@ -283,8 +282,7 @@ describe('translations', () => {
       };
 
       const result = await translations.updateContext(
-        'System',
-        'Interface',
+        { id: 'System', label: 'Interface', type: 'Uwazi UI' },
         keyNameChanges,
         deletedProperties,
         values

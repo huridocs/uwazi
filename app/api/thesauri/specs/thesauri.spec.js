@@ -198,12 +198,10 @@ describe('thesauri', () => {
         };
         const response = await thesauri.save(data);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          response._id,
-          'Top 1 games',
+          { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
           { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
           ['Fundation'],
-          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
-          'Thesaurus'
+          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
         );
       });
 

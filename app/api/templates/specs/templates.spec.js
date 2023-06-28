@@ -250,8 +250,7 @@ describe('templates', () => {
       };
 
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId.toString(),
-        'changed name',
+        { id: templateToBeEditedId.toString(), label: 'changed name', type: 'Entity' },
         expectedContext,
         [],
         { Title: 'Title', 'changed name': 'changed name' }
@@ -269,8 +268,7 @@ describe('templates', () => {
         'First New Title': 'First New Title',
       };
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId.toString(),
-        'template to be edited',
+        { id: templateToBeEditedId.toString(), label: 'template to be edited', type: 'Entity' },
         {},
         ['Title'],
         expectedContext
@@ -283,8 +281,7 @@ describe('templates', () => {
         'Second New Title': 'Second New Title',
       };
       expect(translations.updateContext).toHaveBeenLastCalledWith(
-        templateToBeEditedId.toString(),
-        'template to be edited',
+        { id: templateToBeEditedId.toString(), label: 'template to be edited', type: 'Entity' },
         {},
         ['First New Title'],
         expectedContext
@@ -388,8 +385,7 @@ describe('templates', () => {
 
         expect(translations.addContext).not.toHaveBeenCalled();
         expect(translations.updateContext).toHaveBeenCalledWith(
-          response._id.toString(),
-          'new title',
+          { id: response._id.toString(), label: 'new title', type: 'Entity' },
           {
             'label 1': 'new label 1',
             'created template': 'new title',

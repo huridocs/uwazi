@@ -88,11 +88,6 @@ export class UpsertTranslationsService {
     valueChanges: { [key: string]: string },
     context: { id: string; label: string }
   ) {
-    const newContext: TranslationContext = {
-      ...(await this.translationsDS.getContext(context.id)),
-      ...context,
-    };
-
     const originalKeysGoingToChange = Object.keys(valueChanges).reduce<string[]>((keys, key) => {
       if (keysChangedReversed[key]) {
         keys.push(keysChangedReversed[key]);
@@ -115,7 +110,7 @@ export class UpsertTranslationsService {
           (memo, languageKey) =>
             memo.concat(
               missingKeysInDB.map(
-                key => new Translation(key, valueChanges[key], languageKey, newContext)
+                key => new Translation(key, valueChanges[key], languageKey, context)
               )
             ),
           []

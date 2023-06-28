@@ -1,6 +1,5 @@
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
@@ -151,8 +150,6 @@ const testingDB: {
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
-
-    // await migrateTranslationsToV2();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });

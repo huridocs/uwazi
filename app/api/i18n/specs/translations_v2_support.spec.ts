@@ -366,8 +366,7 @@ describe('translations v2 support', () => {
       };
 
       await translations.updateContext(
-        dictionaryId.toString(),
-        'new context name',
+        { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
         { Account: 'New Account Key', Password: 'New Password key' },
         ['Email', 'Age'],
         values
@@ -384,25 +383,25 @@ describe('translations v2 support', () => {
           language: 'en',
           key: 'New Account Key',
           value: 'Account edited',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'en',
           key: 'New Password key',
           value: 'Password',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'en',
           key: 'dictionary 2',
           value: 'dictionary 2',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'en',
           key: 'new key',
           value: 'new value',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
       ]);
 
@@ -411,25 +410,25 @@ describe('translations v2 support', () => {
           language: 'es',
           key: 'New Account Key',
           value: 'Cuenta',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'es',
           key: 'New Password key',
           value: 'Contraseña',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'es',
           key: 'dictionary 2',
           value: 'dictionary 2',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
         {
           language: 'es',
           key: 'new key',
           value: 'new value',
-          context: { type: 'Dictionary', label: 'new context name', id: dictionaryId.toString() },
+          context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
         },
       ]);
     });

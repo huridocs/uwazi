@@ -20,7 +20,7 @@ const commonTranslationContexts = () => [
       { key: 'no_new_value_thesaurus', value: 'no_new_value_thesaurus' },
       { key: '1', value: '1' },
     ],
-    type: 'Dictionary',
+    type: 'Thesaurus',
   },
   {
     id: fixtureFactory.id('nested_thesaurus').toString(),
@@ -29,7 +29,7 @@ const commonTranslationContexts = () => [
       { key: 'nested_thesaurus', value: 'nested_thesaurus' },
       { key: 'A', value: 'A' },
     ],
-    type: 'Dictionary',
+    type: 'Thesaurus',
   },
 ];
 
@@ -111,7 +111,7 @@ const fixtures = {
       value: 'Bes',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -121,7 +121,7 @@ const fixtures = {
       value: 'Aes',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -131,7 +131,7 @@ const fixtures = {
       value: 'multiselect_thesaurus',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -142,27 +142,17 @@ const fixtures = {
       value: 'Aes',
       context: {
         id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'Select Thesaurus',
       },
     },
-    // {
-    //   language: 'es',
-    //   key: 'B',
-    //   value: 'Bes',
-    //   context: {
-    //     id: fixtureFactory.id('Select Thesaurus').toString(),
-    //     type: 'Dictionary',
-    //     label: 'Select Thesaurus',
-    //   },
-    // },
     {
       language: 'es',
       key: 'Select Thesaurus',
       value: 'Select Thesaurus',
       context: {
         id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'Select Thesaurus',
       },
     },
@@ -173,7 +163,7 @@ const fixtures = {
       value: 'A',
       context: {
         id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'nested_thesaurus',
       },
     },
@@ -183,7 +173,7 @@ const fixtures = {
       value: 'nested_thesaurus',
       context: {
         id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'nested_thesaurus',
       },
     },
@@ -193,7 +183,7 @@ const fixtures = {
       value: '1',
       context: {
         id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'no_new_value_thesaurus',
       },
     },
@@ -203,7 +193,7 @@ const fixtures = {
       value: 'no_new_value_thesaurus',
       context: {
         id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'no_new_value_thesaurus',
       },
     },
@@ -232,7 +222,7 @@ const fixtures = {
       value: 'B',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -242,7 +232,7 @@ const fixtures = {
       value: 'A',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -252,7 +242,7 @@ const fixtures = {
       value: 'multiselect_thesaurus',
       context: {
         id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'multiselect_thesaurus',
       },
     },
@@ -263,38 +253,27 @@ const fixtures = {
       value: 'A',
       context: {
         id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'Select Thesaurus',
       },
     },
-    // {
-    //   language: 'en',
-    //   key: 'B',
-    //   value: 'Bes',
-    //   context: {
-    //     id: fixtureFactory.id('Select Thesaurus').toString(),
-    //     type: 'Dictionary',
-    //     label: 'Select Thesaurus',
-    //   },
-    // },
     {
       language: 'en',
       key: 'Select Thesaurus',
       value: 'Select Thesaurus',
       context: {
         id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'Select Thesaurus',
       },
     },
-
     {
       language: 'en',
       key: 'A',
       value: 'A',
       context: {
         id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'nested_thesaurus',
       },
     },
@@ -304,7 +283,7 @@ const fixtures = {
       value: 'nested_thesaurus',
       context: {
         id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'nested_thesaurus',
       },
     },
@@ -314,7 +293,7 @@ const fixtures = {
       value: '1',
       context: {
         id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'no_new_value_thesaurus',
       },
     },
@@ -324,7 +303,7 @@ const fixtures = {
       value: 'no_new_value_thesaurus',
       context: {
         id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'no_new_value_thesaurus',
       },
     },

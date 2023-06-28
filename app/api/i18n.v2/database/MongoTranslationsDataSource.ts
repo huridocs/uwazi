@@ -70,19 +70,6 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async getContext(contextId: string) {
-    const translation = await this.getCollection().findOne(
-      { 'context.id': contextId },
-      { session: this.getSession() }
-    );
-
-    if (!translation) {
-      throw new ContextDoesNotExist(contextId);
-    }
-
-    return translation.context;
-  }
-
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ 'context.id': context }, { session: this.getSession() }),
