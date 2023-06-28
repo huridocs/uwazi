@@ -11,7 +11,11 @@ const webpackOptions = {
         exclude: [/node_modules/],
         use: [
           {
-            loader: 'ts-loader',
+            loader: 'babel-loader?cacheDirectory',
+            options: {
+              sourceMap: true,
+            },
+            plugins: ['istanbul'],
           },
         ],
       },

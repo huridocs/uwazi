@@ -56,7 +56,7 @@
     "e2e-puppeteer-all": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",
     "e2e-puppeteer": "yarn e2e-puppeteer-all --roots '<rootDir>/suite1' '<rootDir>/suite2'",
     "e2e-puppeteer-regression": "yarn e2e-puppeteer-all --roots '<rootDir>/regression_suites'",
-    "e2e-puppeteer-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
+    "e2e-fixtures": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e ./uwazi-fixtures/restore.sh",
     "e2e-show": "export SHOW_E2E=1; yarn e2e",
     "e2e-restore-fixtures": "cd nightmare/fixtures; ./restore.sh",
     "eslint": "./node_modules/.bin/eslint e2e app cypress --quiet --ext js,ts,tsx",

@@ -11,11 +11,11 @@ module.exports = {
         exclude: [/node_modules/],
         use: [
           {
-            loader: 'ts-loader',
+            loader: 'babel-loader?cacheDirectory',
             options: {
-              // skip typechecking for speed
-              transpileOnly: true,
+              sourceMap: true,
             },
+            plugins: ['istanbul'],
           },
         ],
       },

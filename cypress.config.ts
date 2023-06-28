@@ -8,7 +8,7 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
       initPlugin(on, config);
-      require('@cypress/code-coverage/task')(on, config)
+      require('./cypress/plugins/index.js')(on, config);
       return config;
     },
     baseUrl: 'http://localhost:3000',
@@ -16,6 +16,11 @@ export default defineConfig({
     testIsolation: false,
   },
   component: {
+    setupNodeEvents(on, config) {
+      // implement node event listeners here
+      require('./cypress/plugins/index.js')(on, config);
+      return config;
+    },
     devServer: {
       framework: 'react',
       bundler: 'webpack',
