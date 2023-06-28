@@ -164,7 +164,7 @@ export const getTranslationsV2 = async () =>
   );
 
 export const updateContextV2 = async (
-  context: { id: string; label: string },
+  context: CreateTranslationsData['context'],
   keyNamesChanges: { [x: string]: string },
   keysToDelete: string[],
   valueChanges: IndexedContextValues

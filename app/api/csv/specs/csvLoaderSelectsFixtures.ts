@@ -3,36 +3,6 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const fixtureFactory = getFixturesFactory();
 
-const commonTranslationContexts = () => [
-  {
-    id: 'System',
-    label: 'System',
-    values: [
-      { key: 'original 1', value: 'original 1' },
-      { key: 'original 2', value: 'original 2' },
-      { key: 'original 3', value: 'original 3' },
-    ],
-  },
-  {
-    id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-    label: 'no_new_value_thesaurus',
-    values: [
-      { key: 'no_new_value_thesaurus', value: 'no_new_value_thesaurus' },
-      { key: '1', value: '1' },
-    ],
-    type: 'Thesaurus',
-  },
-  {
-    id: fixtureFactory.id('nested_thesaurus').toString(),
-    label: 'nested_thesaurus',
-    values: [
-      { key: 'nested_thesaurus', value: 'nested_thesaurus' },
-      { key: 'A', value: 'A' },
-    ],
-    type: 'Thesaurus',
-  },
-];
-
 const fixtures = {
   dictionaries: [
     fixtureFactory.thesauri('no_new_value_thesaurus', ['1', '2', '3']),

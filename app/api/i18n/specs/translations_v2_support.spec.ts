@@ -1,9 +1,9 @@
 import settings from 'api/settings';
-import { testingTenants } from 'api/utils/testingTenants';
 import testingDB from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { ContextType } from 'shared/translationSchema';
 import { TranslationValue } from 'shared/translationType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import translations from '../translations';
 import fixtures, { dictionaryId } from './fixtures';
 
@@ -101,7 +101,7 @@ describe('translations v2 support', () => {
       ],
     });
 
-  const updateTranslation = async (language: string, values: TranslationValue[]) =>
+  const updateTranslation = async (language: LanguageISO6391, values: TranslationValue[]) =>
     translations.save({
       locale: language,
       contexts: [
@@ -341,17 +341,12 @@ describe('translations v2 support', () => {
         ],
       });
 
-      const [_spanish, english] = await translations.get({ context: 'System' });
-      expect(english).toMatchObject({
-        locale: 'en',
-        contexts: [
-          {
-            id: 'System',
-            label: 'System',
-            type: 'Uwazi UI',
-            values: { Password: 'Password', Account: 'Account' },
-          },
-        ],
+      const [english] = await translations.get({ locale: 'en' });
+      expect(english.contexts?.find(c => c.id === 'System')).toMatchObject({
+        id: 'System',
+        label: 'System',
+        type: 'Uwazi UI',
+        values: { Password: 'Password', Account: 'Account' },
       });
     });
   });

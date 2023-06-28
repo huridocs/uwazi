@@ -5,6 +5,7 @@ describe('Translation', () => {
     expect(
       () =>
         new Translation('key', 'value', 'es', {
+          // @ts-ignore
           id: { value: 'invalid_id' },
           type: 'Entity',
           label: 'Entity',

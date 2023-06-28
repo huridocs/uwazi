@@ -64,6 +64,7 @@ describe('translations', () => {
         contexts: [
           {
             id: 'System',
+            // @ts-ignore
             values: [{ key: 'Password', value: 'edited Password' }],
           },
           {

@@ -1,5 +1,4 @@
 import testingDB from 'api/utils/testing_db';
-import translations from 'api/i18n/translations';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 

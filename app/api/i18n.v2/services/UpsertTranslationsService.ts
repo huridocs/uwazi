@@ -1,7 +1,7 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { Translation, TranslationContext } from '../model/Translation';
+import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';
 import { ValidateTranslationsService } from './ValidateTranslationsService';
 
@@ -46,7 +46,7 @@ export class UpsertTranslationsService {
   }
 
   async updateContext(
-    context: { id: string; label: string },
+    context: CreateTranslationsData['context'],
     keyChanges: { [oldKey: string]: string },
     valueChanges: { [key: string]: string },
     keysToDelete: string[]
@@ -86,7 +86,7 @@ export class UpsertTranslationsService {
   private async createNewKeys(
     keysChangedReversed: { [x: string]: string },
     valueChanges: { [key: string]: string },
-    context: { id: string; label: string }
+    context: CreateTranslationsData['context']
   ) {
     const originalKeysGoingToChange = Object.keys(valueChanges).reduce<string[]>((keys, key) => {
       if (keysChangedReversed[key]) {

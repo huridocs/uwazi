@@ -5,7 +5,6 @@ import { MongoBulkWriteError } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
-import { ContextDoesNotExist } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 

@@ -75,7 +75,7 @@ jobs:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
-        run: yarn run-production &
+        run: yarn run-production > output.txt &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
@@ -85,3 +85,6 @@ jobs:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
+      - name: Print server output
+        run: cat output.txt
+        if: failure()

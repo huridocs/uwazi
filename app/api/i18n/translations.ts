@@ -1,19 +1,21 @@
 import { CSVLoader } from 'api/csv';
-import * as os from 'os';
+import { generateFileName } from 'api/files';
 import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
+import * as os from 'os';
 import path from 'path';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
-import { generateFileName } from 'api/files';
-// eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
-import { pipeline } from 'stream/promises';
+import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 import { DefaultTranslations } from 'api/i18n/defaultTranslations';
-import { availableLanguages } from 'shared/languagesList';
 import { errorLog } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+import { ObjectId } from 'mongodb';
+import { availableLanguages } from 'shared/languagesList';
 import { ContextType } from 'shared/translationSchema';
+import { pipeline } from 'stream/promises';
 import {
   createTranslationsV2,
   deleteTranslationsByContextIdV2,
@@ -24,9 +26,7 @@ import {
   updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
-import { tenants } from 'api/tenants';
-import { ObjectId } from 'mongodb';
-import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -169,7 +169,7 @@ const translationTypeToIndexedTranslation = (translations: EnforcedWithId<Transl
 
 export default {
   prepareContexts,
-  async get(query: { locale?: string; context?: string } = {}) {
+  async get(query: { locale?: LanguageISO6391; context?: string } = {}) {
     const language = query.locale;
 
     if (query.context) {
@@ -188,6 +188,10 @@ export default {
       ...translation,
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
+
+    if (!translation.locale) {
+      throw Error('Translation must have a locale');
+    }
 
     const [currentTranslationData] = await getTranslationsV2ByLanguage(translation.locale);
     if (currentTranslationData) {
@@ -208,7 +212,7 @@ export default {
 
     const languagesToUpdate = Object.keys(keyValuePairsPerLanguage).filter(l =>
       languagesSet.has(l)
-    );
+    ) as LanguageISO6391[];
 
     const translationsToUpdate = await Promise.all(
       languagesToUpdate.map(async language => {
@@ -282,7 +286,7 @@ export default {
     return 'ok';
   },
 
-  async addLanguage(newLanguage: string) {
+  async addLanguage(newLanguage: LanguageISO6391) {
     const defaultLanguage = await settings.getDefaultLanguage();
     const [defaultTranslation] = await getTranslationsV2ByLanguage(defaultLanguage.key);
     const newLanguageTranslations = {

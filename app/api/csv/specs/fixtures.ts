@@ -104,7 +104,7 @@ const fixtures: DBFixture = {
       value: 'value1',
       context: {
         id: thesauri1Id.toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'thesauri 1',
       },
     },
@@ -114,7 +114,7 @@ const fixtures: DBFixture = {
       value: 'value2',
       context: {
         id: thesauri1Id.toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'thesauri 1',
       },
     },
@@ -124,7 +124,7 @@ const fixtures: DBFixture = {
       value: 'value3',
       context: {
         id: thesauri1Id.toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'thesauri 1',
       },
     },
@@ -134,7 +134,7 @@ const fixtures: DBFixture = {
       value: 'value4',
       context: {
         id: thesauri1Id.toString(),
-        type: 'Dictionary',
+        type: 'Thesaurus',
         label: 'thesauri 1',
       },
     },
