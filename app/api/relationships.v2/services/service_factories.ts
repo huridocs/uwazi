@@ -16,7 +16,7 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient, getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { Queue } from 'api/queue.v2/application/Queue';
 import RedisSMQ from 'rsmq';
@@ -173,6 +173,7 @@ const DeleteRelationshipService = async (request: Request) => {
 };
 
 const MigrationService = () => {
+  const tenant = getTenant();
   const transactionManager = DefaultTransactionManager();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
@@ -183,7 +184,8 @@ const MigrationService = () => {
     hubDS,
     v1ConnectionsDS,
     templatesDS,
-    relationshipsDS
+    relationshipsDS,
+    tenant
   );
   return service;
 };

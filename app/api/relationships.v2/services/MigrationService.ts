@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import fs from 'fs';
-import path from 'path';
+import { stdout } from 'process';
 
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { Tenant } from 'api/common.v2/model/Tenant';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
@@ -87,6 +87,10 @@ class Statistics {
   }
 }
 
+const logLine = (message: string): void => {
+  stdout.write(`${message}\n`);
+};
+
 export class MigrationService {
   private idGenerator: IdGenerator;
 
@@ -98,47 +102,47 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
-  private tempMigrationLog: fs.WriteStream | null = null;
+  private tenant: Tenant;
 
   constructor(
     idGenerator: IdGenerator,
     hubsDS: HubDataSource,
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
-    relationshipsDS: RelationshipsDataSource
+    relationshipsDS: RelationshipsDataSource,
+    tenant: Tenant
   ) {
     this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
     this.relationshipsDS = relationshipsDS;
+    this.tenant = tenant;
   }
 
-  private log(message: string) {
-    if (this.tempMigrationLog) {
-      this.tempMigrationLog.write(`${message}\n`);
-    }
+  private logNoRepair(first: V1Connection, second: V1Connection): void {
+    logLine(
+      `V2 Relationship Migration Error (tenant:${this.tenant.name})----------------------------------`
+    );
+    logLine('Could not repair missing file for:');
+    logLine(JSON.stringify(first, null, 2));
+    logLine(JSON.stringify(second, null, 2));
+    logLine('----------------------------------');
   }
 
-  private logNoRepair(first: V1Connection, second: V1Connection) {
-    this.log('----------------------------------');
-    this.log('Could not repair missing file for:');
-    this.log(JSON.stringify(first, null, 2));
-    this.log(JSON.stringify(second, null, 2));
-    this.log('----------------------------------');
+  private logUnhandledError(error: Error, first: V1Connection, second: V1Connection): void {
+    logLine(
+      `V2 Relationship Migration Error (tenant:${this.tenant.name})----------------------------------`
+    );
+    logLine('Unhandled error encountered at:');
+    logLine(error.message);
+    logLine('Processed connections:');
+    logLine(JSON.stringify(first, null, 2));
+    logLine(JSON.stringify(second, null, 2));
+    logLine('----------------------------------');
   }
 
-  private logUnhandledError(error: Error, first: V1Connection, second: V1Connection) {
-    this.log('----------------------------------');
-    this.log('Unhandled error encountered at:');
-    this.log(error.message);
-    this.log('Processed connections:');
-    this.log(JSON.stringify(first, null, 2));
-    this.log(JSON.stringify(second, null, 2));
-    this.log('----------------------------------');
-  }
-
-  private async readV1RelationshipFields() {
+  private async readV1RelationshipFields(): Promise<RelationshipMatcher> {
     const relProps = (await this.templatesDS.getAllProperties().all()).filter(
       p => p instanceof V1RelationshipProperty
     );
@@ -146,7 +150,7 @@ export class MigrationService {
     return matcher;
   }
 
-  private async gatherHubs() {
+  private async gatherHubs(): Promise<void> {
     const cursor = this.v1ConnectionsDS.all();
 
     let hubIds: Set<string> = new Set();
@@ -160,7 +164,10 @@ export class MigrationService {
     await this.hubsDS.insertIds(Array.from(hubIds));
   }
 
-  static transformReference(reference: V1TextReference) {
+  static transformReference(reference: V1TextReference): {
+    text: string;
+    selectionRectangles: Selection[];
+  } {
     const { text } = reference;
     const selectionRectangles = reference.selectionRectangles.map(
       sr => new Selection(parseInt(sr.page, 10), sr.top, sr.left, sr.height, sr.width)
@@ -218,7 +225,10 @@ export class MigrationService {
     connections: V1ConnectionDisplayed[],
     matcher: RelationshipMatcher,
     transform: boolean = false
-  ) {
+  ): Promise<{
+    stats: Statistics;
+    transformed: Relationship[];
+  }> {
     const stats = new Statistics();
     let unhandledErrorCount = 0;
     stats.total = connections.length;
@@ -261,7 +271,10 @@ export class MigrationService {
     matcher: RelationshipMatcher,
     transform: boolean = false,
     write: boolean = false
-  ) {
+  ): Promise<{
+    stats: Statistics;
+    hubsWithUnusedConnections: V1ConnectionDisplayed[][];
+  }> {
     const hubCursor = this.hubsDS.all();
     const stats = new Statistics();
     const hubWithUnusedLimit = 10;
@@ -296,7 +309,7 @@ export class MigrationService {
         await this.relationshipsDS.insert(transformed);
       }
     });
-    return { ...stats, hubsWithUnusedConnections };
+    return { stats, hubsWithUnusedConnections };
   }
 
   async testOneHub(hubId: string) {
@@ -317,28 +330,16 @@ export class MigrationService {
   }
 
   async migrate(dryRun: boolean) {
-    this.tempMigrationLog = fs.createWriteStream(
-      path.join(__dirname, '..', '..', '..', '..', '__temp_migration_log.txt')
-    );
-    this.tempMigrationLog.write('Migration log\n');
-
     await this.hubsDS.create();
 
     const matcher = await this.readV1RelationshipFields();
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
-    const {
-      total,
-      used,
-      totalTextReferences,
-      usedTextReferences,
-      errors,
-      hubsWithUnusedConnections,
-    } = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
+    const transformResult = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
+    const { total, used, totalTextReferences, usedTextReferences, errors } = transformResult.stats;
+    const { hubsWithUnusedConnections } = transformResult;
 
     await this.hubsDS.drop();
-
-    this.tempMigrationLog.close();
 
     return {
       total,

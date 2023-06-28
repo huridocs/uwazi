@@ -31,10 +31,8 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 export default (app: Application) => {
   app.get('/api/v2/relationships', featureRequired, async (req, res) => {
     const { sharedId } = validateGetRelationships(req.query);
-    console.log(sharedId)
     const service = GetRelationshipService(req);
     const relationshipsData = await service.getByEntity(sharedId);
-    console.log(relationshipsData)
     res.json(relationshipsData);
   });
 
