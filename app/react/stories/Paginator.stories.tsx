@@ -1,4 +1,5 @@
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Paginator } from 'app/V2/Components/UI';
@@ -19,19 +20,21 @@ type Story = StoryObj<typeof Paginator>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="container w-10 h-10">
-          <Paginator
-            currentPage={args.currentPage}
-            totalPages={args.totalPages}
-            pathname={args.pathname}
-            otherParams={args.otherParams}
-            preventScrollReset={args.preventScrollReset}
-          />
+    <MemoryRouter>
+      <Provider store={createStore()}>
+        <div className="tw-content">
+          <div className="container w-10 h-10">
+            <Paginator
+              currentPage={args.currentPage}
+              totalPages={args.totalPages}
+              pathname={args.pathname}
+              otherParams={args.otherParams}
+              preventScrollReset={args.preventScrollReset}
+            />
+          </div>
         </div>
-      </div>
-    </Provider>
+      </Provider>
+    </MemoryRouter>
   ),
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 
@@ -48,44 +49,48 @@ const Paginator = ({
     <nav aria-label="Pagination">
       <ul className="inline-flex items-center -space-x-px">
         <li>
-          <a
-            href={prevUrl}
+          <Link
+            to={prevUrl}
+            preventScrollReset={preventScrollReset}
             className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
             <Translate className="sr-only">Previous</Translate>
             <ChevronLeftIcon className="w-[17px]" />
-          </a>
+          </Link>
         </li>
         {isFirstPage ? undefined : (
           <li>
-            <a
-              href={`${basepath}page=${1}`}
+            <Link
+              to={`${basepath}page=${1}`}
+              preventScrollReset={preventScrollReset}
               aria-current="page"
               className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
             >
               1
-            </a>
+            </Link>
           </li>
         )}
         <li>
-          <a
-            href={currentUrl}
+          <Link
+            to={currentUrl}
+            preventScrollReset={preventScrollReset}
             aria-current="page"
             className="px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-blue-300"
           >
             {currentPage}
-          </a>
+          </Link>
         </li>
 
         {showMore ? (
           calculateMorePages(currentPage, totalPages).map(pageNumber => (
             <li>
-              <a
-                href={`${basepath}page=${pageNumber}`}
+              <Link
+                to={`${basepath}page=${pageNumber}`}
+                preventScrollReset={preventScrollReset}
                 className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               >
                 {pageNumber}
-              </a>
+              </Link>
             </li>
           ))
         ) : (
@@ -102,21 +107,23 @@ const Paginator = ({
         )}
 
         <li>
-          <a
-            href={lastUrl}
+          <Link
+            to={lastUrl}
+            preventScrollReset={preventScrollReset}
             className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
             {totalPages}
-          </a>
+          </Link>
         </li>
         <li>
-          <a
-            href={nextUrl}
+          <Link
+            to={nextUrl}
+            preventScrollReset={preventScrollReset}
             className="block px-3 py-2 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
           >
             <Translate className="sr-only">Next</Translate>
             <ChevronRightIcon className="w-[17px]" />
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
