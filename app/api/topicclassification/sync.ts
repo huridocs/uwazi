@@ -1,5 +1,5 @@
 import entities from 'api/entities';
-import { QueryForEach } from 'api/odm';
+import { EnforcedWithId, QueryForEach } from 'api/odm';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { extractSequence, listModels } from 'api/topicclassification';
@@ -14,7 +14,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import * as util from 'util';
 import { ensure } from 'shared/tsUtils';
 
-export interface SyncArgs {
+interface SyncArgs {
   limit?: number;
   mode: 'onlynew' | 'autoaccept';
   model?: string;
@@ -97,8 +97,7 @@ async function handlePropAutoaccept(
   return true;
 }
 
-// eslint-disable-next-line max-params
-export async function syncEntity(
+async function syncEntity(
   e: EntitySchema,
   args: SyncArgs,
   templateDictP?: { [k: string]: TemplateSchema },
@@ -116,7 +115,10 @@ export async function syncEntity(
     (await templates.getById(ensure<string>(e.template)));
   const thesaurusDict =
     thesaurusDictP ??
-    (await thesauri.get(null)).reduce((res, t) => ({ ...res, [t._id.toString()]: t }), {});
+    (await thesauri.get(null)).reduce<Record<string, EnforcedWithId<ThesaurusSchema>>>(
+      (res, t) => ({ ...res, [t._id.toString()]: t }),
+      {}
+    );
   let didSth = false;
   await Promise.all(
     (template?.properties ?? []).map(async prop => {
@@ -213,3 +215,6 @@ class SyncTask extends Task {
 }
 
 TaskProvider.registerClass('TopicClassificationSync', SyncTask);
+
+export { syncEntity };
+export type { SyncArgs };
