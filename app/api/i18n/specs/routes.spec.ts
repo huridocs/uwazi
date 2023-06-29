@@ -11,7 +11,6 @@ import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
-import { migrateTranslationsToV2 } from '../v2_support';
 
 describe('i18n translations routes', () => {
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
@@ -35,45 +34,33 @@ describe('i18n translations routes', () => {
           ],
         },
       ],
-      translations: [
+      translations_v2: [
         {
-          locale: 'en',
-          contexts: [
-            {
-              id: 'System',
-              label: 'User Interface',
-              type: 'Uwazi UI',
-              values: [{ key: 'Search', value: 'Search' }],
-            },
-            {
-              id: 'contextID',
-              label: 'Template',
-              type: 'Entity',
-              values: [{ key: 'title', value: 'Template 1' }],
-            },
-          ],
+          language: 'es',
+          key: 'title',
+          value: 'Plantilla 1',
+          context: { id: 'contextID', type: 'Entity', label: 'Template' },
         },
         {
-          locale: 'es',
-          contexts: [
-            {
-              id: 'System',
-              label: 'User Interface',
-              type: 'Uwazi UI',
-              values: [{ key: 'Search', value: 'Buscar' }],
-            },
-            {
-              id: 'contextID',
-              label: 'Template',
-              type: 'Entity',
-              values: [{ key: 'title', value: 'Plantilla 1' }],
-            },
-          ],
+          language: 'es',
+          key: 'Search',
+          value: 'Buscar',
+          context: { id: 'System', type: 'Entity', label: 'User Interface' },
+        },
+        {
+          language: 'en',
+          key: 'title',
+          value: 'Template 1',
+          context: { id: 'contextID', type: 'Entity', label: 'Template' },
+        },
+        {
+          language: 'en',
+          key: 'Search',
+          value: 'Search',
+          context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
         },
       ],
     });
-
-    await migrateTranslationsToV2();
   });
 
   afterEach(() => {
@@ -94,18 +81,18 @@ describe('i18n translations routes', () => {
             {
               contexts: [
                 {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Template 1' },
+                },
+                {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
                   values: {
                     Search: 'Search',
                   },
-                },
-                {
-                  id: 'contextID',
-                  label: 'Template',
-                  type: 'Entity',
-                  values: { title: 'Template 1' },
                 },
               ],
               locale: 'en',
@@ -114,18 +101,18 @@ describe('i18n translations routes', () => {
             {
               contexts: [
                 {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: { title: 'Plantilla 1' },
+                },
+                {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
                   values: {
                     Search: 'Buscar',
                   },
-                },
-                {
-                  id: 'contextID',
-                  label: 'Template',
-                  type: 'Entity',
-                  values: { title: 'Plantilla 1' },
                 },
               ],
               locale: 'es',
@@ -224,7 +211,7 @@ describe('i18n translations routes', () => {
             ],
           });
 
-        expect(response.body.contexts[0]).toMatchObject({
+        expect(response.body.contexts[1]).toMatchObject({
           values: { Search: 'Buscar' },
         });
 
@@ -294,6 +281,12 @@ describe('i18n translations routes', () => {
               locale: 'zh',
               contexts: [
                 {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: [{ key: 'title', value: 'Template 1' }],
+                },
+                {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
@@ -303,12 +296,6 @@ describe('i18n translations routes', () => {
                       value: 'Search',
                     },
                   ],
-                },
-                {
-                  id: 'contextID',
-                  label: 'Template',
-                  type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
                 },
               ],
             },
@@ -319,6 +306,12 @@ describe('i18n translations routes', () => {
               locale: 'ja',
               contexts: [
                 {
+                  id: 'contextID',
+                  label: 'Template',
+                  type: 'Entity',
+                  values: [{ key: 'title', value: 'Template 1' }],
+                },
+                {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
@@ -328,12 +321,6 @@ describe('i18n translations routes', () => {
                       value: 'Search',
                     },
                   ],
-                },
-                {
-                  id: 'contextID',
-                  label: 'Template',
-                  type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
                 },
               ],
             },
@@ -356,18 +343,18 @@ describe('i18n translations routes', () => {
           {
             contexts: [
               {
+                id: 'contextID',
+                label: 'Template',
+                type: 'Entity',
+                values: { title: 'Plantilla 1' },
+              },
+              {
                 id: 'System',
                 label: 'User Interface',
                 type: 'Uwazi UI',
                 values: {
                   Search: 'Buscar traducida',
                 },
-              },
-              {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Plantilla 1' },
               },
             ],
             locale: 'es',

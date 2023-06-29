@@ -9,7 +9,6 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
@@ -42,7 +41,6 @@ const fixtures: DBFixture = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  await migration.createIndexes(testingDB.mongodb);
 });
 
 afterAll(async () => {

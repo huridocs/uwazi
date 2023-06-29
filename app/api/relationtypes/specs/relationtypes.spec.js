@@ -74,7 +74,7 @@ describe('relationtypes', () => {
         relationtype.name = 'Pro';
         const response = await relationtypes.save(relationtype);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          { id: response._id, label: 'Pro', type: 'Connection' },
+          { id: response._id.toString(), label: 'Pro', type: 'Connection' },
           { Against: 'Pro' },
           [],
           { Pro: 'Pro' }

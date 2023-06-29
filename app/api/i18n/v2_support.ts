@@ -1,8 +1,7 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import migration from 'api/i18n.v2/migrations/';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import {
   CreateTranslationsData,
@@ -179,28 +178,4 @@ export const updateContextV2 = async (
     ),
     transactionManager
   ).updateContext(context, keyNamesChanges, valueChanges, keysToDelete);
-};
-
-export const migrateTranslationsToV2 = async () => {
-  const db = getConnection();
-  //
-  // const needsMigration = await db
-  //   .collection('translations_v2_helper')
-  //   .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } }, { upsert: true });
-  //
-  // if (needsMigration.value?.migrated) {
-  //   return true;
-  // }
-  //
-  // if (needsMigration.value?.migrating) {
-  //   return false;
-  // }
-
-  await migration.up(db);
-
-  // await db
-  //   .collection('translations_v2_helper')
-  //   .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
-  //
-  // return false;
 };
