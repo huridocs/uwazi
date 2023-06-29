@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Paginator.stories';
@@ -6,6 +7,12 @@ import * as stories from 'app/stories/Paginator.stories';
 const { Basic } = composeStories(stories);
 
 describe('Paginator', () => {
+  it('should be accessible', () => {
+    mount(<Basic />);
+    cy.injectAxe();
+    cy.checkA11y();
+  });
+
   it('should render with the current page and the correct basic links', () => {
     mount(<Basic currentPage="5" totalPages="25" buildUrl={page => `path?page=${page}`} />);
     cy.get('a').eq(0).should('have.attr', 'href', '/path?page=4');
