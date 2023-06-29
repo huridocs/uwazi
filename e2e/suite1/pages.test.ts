@@ -100,6 +100,7 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toFill('input[name="home_page"]', '/entity/7ycel666l65vobt9');
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert-success');
   });
 
   it('should check that the landing page is the defined entity', async () => {
@@ -120,6 +121,7 @@ describe('Custom home page and styles', () => {
       "/library/table/?types:!('58ada34c299e82674854504b')"
     );
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert-success');
   });
 
   it('should check that the landing page is the defined library query', async () => {
