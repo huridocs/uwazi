@@ -88,7 +88,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 rounded border bg-primary-500"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -96,7 +96,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 rounded border bg-primary-500"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
