@@ -1,8 +1,13 @@
 /* eslint-disable max-classes-per-file */
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { Tenant } from 'api/tenants/tenantContext';
+import {
+  LogEntryInterface,
+  LogLevelInterface,
+  LoggerInterface,
+} from '../contracts/LoggerInterfaces';
 
-class LogLevel {
+class LogLevel implements LogLevelInterface {
   name: string;
 
   severity: number;
@@ -13,7 +18,7 @@ class LogLevel {
   }
 }
 
-const LogLevels = {
+const LogLevels: Record<string, LogLevel> = {
   DEBUG: new LogLevel('DEBUG', 10),
   INFO: new LogLevel('INFO', 20),
   WARNING: new LogLevel('WARNING', 30),
@@ -21,7 +26,7 @@ const LogLevels = {
   CRITICAL: new LogLevel('CRITICAL', 50),
 };
 
-class LogEntry {
+class LogEntry implements LogEntryInterface {
   message: string;
 
   timestamp: number;
@@ -30,7 +35,7 @@ class LogEntry {
 
   tenant: Tenant;
 
-  constructor(message: string, timestamp: number, level: LogLevel, tenant: Tenant) {
+  constructor(message: string, timestamp: number, level: LogLevelInterface, tenant: Tenant) {
     this.message = message;
     this.timestamp = timestamp;
     this.level = level;
@@ -55,7 +60,7 @@ class LogEntry {
   }
 }
 
-class Logger {
+class Logger implements LoggerInterface {
   private tenant: Tenant;
 
   constructor(tenant: Tenant) {
