@@ -11,3 +11,4 @@ export { SearchMultiselect } from './SearchMultiSelect';
 export { ConfirmationModal } from './ConfirmationModal';
 export { Card } from './Card';
 export { CopyValueInput } from './CopyValueInput';
+export { Paginator } from './Paginator';
