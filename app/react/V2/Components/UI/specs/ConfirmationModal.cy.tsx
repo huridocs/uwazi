@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/ConfirmationModal.stories';
@@ -6,6 +7,19 @@ import * as stories from 'app/stories/ConfirmationModal.stories';
 const { BasicConfirmation, TextConfirmation, WarningConfirmation } = composeStories(stories);
 
 describe('ConfirmationModal', () => {
+  it('should be accessible', () => {
+    cy.injectAxe();
+
+    mount(<BasicConfirmation />);
+    cy.checkA11y();
+
+    mount(<TextConfirmation />);
+    cy.checkA11y();
+
+    mount(<WarningConfirmation />);
+    cy.checkA11y();
+  });
+
   it('should show a simple confirmation', () => {
     mount(<BasicConfirmation />);
     cy.contains('Delete Confirmation').should('be.visible');

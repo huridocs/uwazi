@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Notification.stories';
@@ -6,6 +7,19 @@ import * as stories from 'app/stories/Notification.stories';
 const { Basic, WithHeading, WithDetails } = composeStories(stories);
 
 describe('Notification', () => {
+  it('should be accessible', () => {
+    cy.injectAxe();
+
+    mount(<Basic />);
+    cy.checkA11y();
+
+    mount(<WithHeading />);
+    cy.checkA11y();
+
+    mount(<WithDetails />);
+    cy.checkA11y();
+  });
+
   it('should render the heading when passed', () => {
     mount(<WithHeading />);
     cy.contains('.text-lg', 'This is the title of the notification').should('exist');

@@ -88,7 +88,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-500"
+          className="p-2 rounded border bg-primary-500"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -96,7 +96,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-500"
+          className="p-2 rounded border bg-primary-500"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -165,7 +165,7 @@ const WithActions: Story = {
         id: 'description',
         header: 'Description',
         enableSorting: false,
-        meta: { className: 'w-1/3 bg-red-500 text-white' },
+        meta: { className: 'w-1/3 bg-red-200 text-blue' },
       }),
       columnHelper.display({
         id: 'action',

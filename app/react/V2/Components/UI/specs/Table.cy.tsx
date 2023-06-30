@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
@@ -14,6 +15,22 @@ describe('Table', () => {
       cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
     );
   };
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+
+    mount(<Basic />);
+    cy.checkA11y();
+
+    mount(<WithActions />);
+    cy.checkA11y();
+
+    mount(<WithCheckboxes />);
+    cy.checkA11y();
+
+    mount(<WithInitialState />);
+    cy.checkA11y();
+  });
 
   it('Should return a table with the columns and row specified', () => {
     mount(<Basic />);
