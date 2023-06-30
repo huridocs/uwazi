@@ -30,20 +30,20 @@ const IndeterminateCheckbox = ({
 
   return (
     // eslint-disable-next-line react/jsx-props-no-spreading
-    <>
-      <label htmlFor={id} className="sr-only">
+
+    <label>
+      <span className="sr-only">
         {id === 'checkbox-header'
           ? t('System', 'Select all', null, false)
           : t('System', 'Select', null, false)}
-      </label>
+      </span>
       <input
-        id={id}
         type="checkbox"
         ref={ref}
         className={`rounded cursor-pointer ${className}`}
         {...rest}
       />
-    </>
+    </label>
   );
 };
 

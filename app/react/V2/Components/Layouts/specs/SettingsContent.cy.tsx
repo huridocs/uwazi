@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { mount } from '@cypress/react18';
@@ -34,6 +35,12 @@ describe('ConfirmationModal', () => {
       </div>
     );
   };
+
+  it('should be accessible', () => {
+    render();
+    cy.injectAxe();
+    cy.checkA11y();
+  });
 
   it('should have the basic structure of settings content', () => {
     render();

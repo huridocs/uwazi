@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import { sortBy } from 'lodash';
@@ -35,6 +36,11 @@ describe('MultiSelect', () => {
   describe('Rendering', () => {
     beforeEach(() => {
       mount(<MultiSelect />);
+    });
+
+    it('should be accessible', () => {
+      cy.injectAxe();
+      cy.checkA11y();
     });
 
     it('should render context menu when button clicked', () => {
