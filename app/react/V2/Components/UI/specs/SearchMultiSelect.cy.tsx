@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { Provider } from 'react-redux';
 import { mount } from '@cypress/react18';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
@@ -34,6 +35,11 @@ describe('SearchMultiSelect.cy.tsx', () => {
         </div>
       </Provider>
     );
+  });
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+    cy.checkA11y();
   });
 
   it('should render the list of options', () => {
