@@ -8,6 +8,7 @@ import {
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { DefaultLogger } from 'api/log.v2/Logger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -16,7 +17,7 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { getClient, getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { Queue } from 'api/queue.v2/application/Queue';
 import RedisSMQ from 'rsmq';
@@ -173,7 +174,7 @@ const DeleteRelationshipService = async (request: Request) => {
 };
 
 const MigrationService = () => {
-  const tenant = getTenant();
+  const logger = DefaultLogger();
   const transactionManager = DefaultTransactionManager();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
@@ -185,7 +186,7 @@ const MigrationService = () => {
     v1ConnectionsDS,
     templatesDS,
     relationshipsDS,
-    tenant
+    logger
   );
   return service;
 };

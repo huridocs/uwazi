@@ -1,10 +1,8 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
-import { stdout } from 'process';
-
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { Tenant } from 'api/common.v2/model/Tenant';
+import { Logger } from 'api/log.v2/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
@@ -89,10 +87,6 @@ class Statistics {
   }
 }
 
-const logLine = (message: string): void => {
-  stdout.write(`${message}\n`);
-};
-
 export class MigrationService {
   private idGenerator: IdGenerator;
 
@@ -104,7 +98,7 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
-  private tenant: Tenant;
+  private logger: Logger;
 
   constructor(
     idGenerator: IdGenerator,
@@ -112,36 +106,36 @@ export class MigrationService {
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource,
-    tenant: Tenant
+    logger: Logger
   ) {
     this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
     this.relationshipsDS = relationshipsDS;
-    this.tenant = tenant;
+    this.logger = logger;
   }
 
   private logNoRepair(first: V1Connection, second: V1Connection): void {
-    logLine(
-      `V2 Relationship Migration Error (tenant:${this.tenant.name})----------------------------------`
-    );
-    logLine('Could not repair missing file for:');
-    logLine(JSON.stringify(first, null, 2));
-    logLine(JSON.stringify(second, null, 2));
-    logLine('----------------------------------');
+    const message = [
+      'V2 Relationship Migration Error:',
+      'Could not repair missing file for:',
+      JSON.stringify(first, null, 2),
+      JSON.stringify(second, null, 2),
+    ];
+    this.logger.error(message);
   }
 
   private logUnhandledError(error: Error, first: V1Connection, second: V1Connection): void {
-    logLine(
-      `V2 Relationship Migration Error (tenant:${this.tenant.name})----------------------------------`
-    );
-    logLine('Unhandled error encountered at:');
-    logLine(error.message);
-    logLine('Processed connections:');
-    logLine(JSON.stringify(first, null, 2));
-    logLine(JSON.stringify(second, null, 2));
-    logLine('----------------------------------');
+    const message = [
+      'V2 Relationship Migration Error:',
+      'Unhandled error encountered:',
+      error.message,
+      'Processed connections:',
+      JSON.stringify(first, null, 2),
+      JSON.stringify(second, null, 2),
+    ];
+    this.logger.error(message);
   }
 
   private async readV1RelationshipFields(): Promise<RelationshipMatcher> {
