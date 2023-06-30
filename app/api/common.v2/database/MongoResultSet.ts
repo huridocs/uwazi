@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
-import { loopCallbackReturn, ResultSet } from '../contracts/ResultSet';
+import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;
@@ -54,16 +54,16 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
-  async forEach(callback: (item: U) => loopCallbackReturn) {
-    let progress = true;
-    while (progress && (await this.hasNext())) {
+  async forEach(callback: (item: U) => BreakLoopSignal) {
+    let shouldContinue = true;
+    while (shouldContinue && (await this.hasNext())) {
       const item: U | null = await this.next();
-      progress = (await callback(item!)) !== false;
+      shouldContinue = (await callback(item!)) !== false;
     }
     await this.close();
   }
 
-  async forEachBatch(batchSize: number, callback: (items: U[]) => loopCallbackReturn) {
+  async forEachBatch(batchSize: number, callback: (items: U[]) => BreakLoopSignal) {
     let progress = true;
     while (progress && (await this.hasNext())) {
       const items: U[] = await this.nextBatch(batchSize);
