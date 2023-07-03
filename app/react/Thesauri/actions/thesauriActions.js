@@ -33,7 +33,10 @@ export function importThesaurus(thesaurus, file) {
       notifications.notify(t('System', 'Data imported', null, false), 'success')(dispatch);
       dispatch(formActions.change('thesauri.data', data));
     } catch (e) {
-      notifications.notify(t('System', e.error, null, false), 'danger')(dispatch);
+      notifications.notify(
+        t('System', e.prettyMessage || e.error, null, false),
+        'danger'
+      )(dispatch);
     }
   };
 }

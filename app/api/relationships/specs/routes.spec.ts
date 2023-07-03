@@ -33,7 +33,7 @@ describe('relationships routes', () => {
         .post('/api/relationships/bulk')
         .send({ save: [{ notAllowedProperty: 'test' }], delete: [] });
 
-      expect(body.prettyMessage).toBe('validation failed');
+      expect(body.prettyMessage).toBe('validation failed\n/0: must NOT have additional properties');
     });
 
     it('should throw an especial 500 error when selectionRectangles is sent empty', async () => {

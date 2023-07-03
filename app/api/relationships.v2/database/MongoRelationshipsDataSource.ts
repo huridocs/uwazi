@@ -19,32 +19,24 @@ export class MongoRelationshipsDataSource
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
     const items = relationships.map(RelationshipMappers.toDBO);
-    await this.getCollection().insertMany(items, {
-      session: this.getSession(),
-    });
+    await this.getCollection().insertMany(items);
 
     return relationships;
   }
 
   async exists(ids: string[]) {
-    const existingCount = await this.getCollection().countDocuments(
-      { _id: { $in: idsToDb(ids) } },
-      { session: this.getSession() }
-    );
+    const existingCount = await this.getCollection().countDocuments({ _id: { $in: idsToDb(ids) } });
     return existingCount === ids.length;
   }
 
   async countByType(type: string) {
-    const total = await this.getCollection().countDocuments(
-      { type: MongoIdHandler.mapToDb(type) },
-      { session: this.getSession() }
-    );
+    const total = await this.getCollection().countDocuments({ type: MongoIdHandler.mapToDb(type) });
     return total;
   }
 
   getById(_ids: string[]) {
     const ids = idsToDb(_ids);
-    const cursor = this.getCollection().find({ _id: { $in: ids } }, { session: this.getSession() });
+    const cursor = this.getCollection().find({ _id: { $in: ids } });
     return new MongoResultSet<RelationshipDBOType, Relationship>(
       cursor,
       RelationshipMappers.toModel
@@ -53,7 +45,7 @@ export class MongoRelationshipsDataSource
 
   async delete(_ids: string[]) {
     const ids = idsToDb(_ids);
-    await this.getCollection().deleteMany({ _id: { $in: ids } }, { session: this.getSession() });
+    await this.getCollection().deleteMany({ _id: { $in: ids } });
   }
 
   getByFiles(fileIds: string[]) {
@@ -73,9 +65,7 @@ export class MongoRelationshipsDataSource
 
   getByQuery(query: MatchQueryNode, language: string) {
     const pipeline = compileQuery(query, language);
-    const cursor = this.db
-      .collection('entities')
-      .aggregate<TraversalResult>(pipeline, { session: this.getSession() });
+    const cursor = this.db.collection('entities').aggregate<TraversalResult>(pipeline);
     return new MongoResultSet(cursor, RelationshipMappers.toGraphQueryResult);
   }
 

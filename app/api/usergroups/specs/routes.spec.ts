@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { Application, NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 
 import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
@@ -8,7 +9,6 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
-import { ObjectId } from 'mongodb';
 
 jest.mock(
   '../../utils/languageMiddleware.ts',
@@ -47,8 +47,8 @@ describe('usergroups routes', () => {
     return request(app).post('/api/usergroups').send(userGroupData);
   }
 
-  async function deleteUserGroup(userGroupData = defaultUserGroup): Promise<SuperTestResponse> {
-    return request(app).delete('/api/usergroups').query({ _id: userGroupData._id });
+  async function deleteUserGroup(ids: string[] = ['group1']): Promise<SuperTestResponse> {
+    return request(app).delete('/api/usergroups').query({ ids });
   }
 
   describe('GET', () => {
@@ -110,16 +110,35 @@ describe('usergroups routes', () => {
       jest
         .spyOn(userGroups, 'delete')
         //@ts-ignore
-        .mockImplementation(async () => Promise.resolve({ _id: 'user1' }));
+        .mockImplementation(async (query: any) => Promise.resolve({ ids: query._id.$in }));
     });
-    it('should delete the group with the specified query', async () => {
-      const response = await deleteUserGroup({ _id: 'group1' });
-      expect(response.status).toBe(200);
-      expect(userGroups.delete).toHaveBeenCalledWith({ _id: 'group1' });
-      expect(response.text).toBe('{"_id":"user1"}');
-    });
+    it.each([
+      {
+        ids: 'group1',
+        expectedDbCallIds: ['group1'],
+        responseText: '{"ids":["group1"]}',
+      },
+      {
+        ids: ['group1'],
+        expectedDbCallIds: ['group1'],
+        responseText: '{"ids":["group1"]}',
+      },
+      {
+        ids: ['group1', 'group2'],
+        expectedDbCallIds: ['group1', 'group2'],
+        responseText: '{"ids":["group1","group2"]}',
+      },
+    ])(
+      'should delete the group with the specified query',
+      async ({ ids, expectedDbCallIds, responseText }) => {
+        const response = await request(app).delete('/api/usergroups').query({ ids });
+        expect(response.status).toBe(200);
+        expect(userGroups.delete).toHaveBeenCalledWith({ _id: { $in: expectedDbCallIds } });
+        expect(response.text).toBe(responseText);
+      }
+    );
     it('should not validate an object with invalid schema', async () => {
-      const response = await deleteUserGroup({});
+      const response = await request(app).delete('/api/usergroups').query({});
       expect(response.status).toBe(400);
       expect(userGroups.delete).not.toHaveBeenCalled();
       expect(response.body.errors[0].keyword).toBe('required');

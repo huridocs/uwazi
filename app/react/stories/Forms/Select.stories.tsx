@@ -9,7 +9,7 @@ const meta: Meta<typeof Select> = {
 
 type Story = StoryObj<typeof Select>;
 
-const SelectStory: Story = {
+const Primary: Story = {
   render: args => (
     <div className="tw-content">
       <div className="md:w-1/2">
@@ -27,7 +27,7 @@ const SelectStory: Story = {
 };
 
 const Basic = {
-  ...SelectStory,
+  ...Primary,
   args: {
     label: 'Please select an option',
     disabled: false,
@@ -35,11 +35,11 @@ const Basic = {
     hasErrors: false,
     options: [
       { key: '1', value: 'Algeria' },
-      { key: '2', value: 'Argentina' },
-      { key: '3', value: 'Bavaria' },
-      { key: '4', value: 'Bolivia' },
-      { key: '5', value: 'Colombia' },
-      { key: '6', value: 'Dinamarca' },
+      { key: '2', value: 'Argentina', selected: true },
+      { key: '3', value: 'Bavaria', selected: false },
+      { key: '4', value: 'Bolivia', selected: false },
+      { key: '5', value: 'Colombia', selected: false },
+      { key: '6', value: 'Dinamarca', selected: false },
     ],
   },
 };

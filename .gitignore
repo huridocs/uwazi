@@ -50,4 +50,6 @@ data_mongo
 e2e/**/__diff_output__/
 /storage
 cypress/snapshots/diff/*
+*.diff.png
+*.actual.png
 

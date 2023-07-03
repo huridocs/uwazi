@@ -199,7 +199,7 @@ describe('api', () => {
         ['elastic_index_error', 'Failed to index documents: id1 '],
         [
           'validation_error',
-          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long,",
+          "validation failed:  .metadata['prop1'] should be string, .metadata['prop2'] is too long",
         ],
         ['unprocessable_entity', 'unprocessable entity'],
       ];

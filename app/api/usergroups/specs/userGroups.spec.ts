@@ -108,5 +108,11 @@ describe('userGroups', () => {
       expect(groups.length).toBe(1);
       expect(groups[0]._id).toEqual(group1Id);
     });
+
+    it('should delete the user groups with by the specified ids', async () => {
+      await userGroups.delete({ _id: { $in: [group1Id.toString(), group2Id.toString()] } });
+      const groups = await userGroups.get({});
+      expect(groups.length).toBe(0);
+    });
   });
 });

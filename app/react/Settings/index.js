@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-as-default */
-import AccountSettings from './components/AccountSettings';
 import { CollectionSettings } from './components/CollectionSettings';
 import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
@@ -18,7 +17,6 @@ export {
   Settings,
   SettingsAPI,
   PreserveSettings,
-  AccountSettings,
   CollectionSettings,
   NavlinksSettings,
   EntityTypesList,
