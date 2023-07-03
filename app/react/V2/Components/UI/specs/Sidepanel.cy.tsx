@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Sidepanel.stories';
@@ -6,6 +7,12 @@ import * as stories from 'app/stories/Sidepanel.stories';
 const { Basic } = composeStories(stories);
 
 describe('Sidepanel', () => {
+  it('should be accessible', () => {
+    mount(<Basic />);
+    cy.injectAxe();
+    cy.checkA11y();
+  });
+
   it('should open and close the sidepanel using the button on the page', () => {
     mount(<Basic />);
     cy.contains('button', 'Open/Close sidepanel').click();

@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/RadioSelect.stories';
@@ -8,6 +9,11 @@ const { Basic, Horizontal } = composeStories(stories);
 describe('RadioSelect', () => {
   beforeEach(() => {
     mount(<Basic />);
+  });
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+    cy.checkA11y();
   });
 
   it('should show all the options', () => {
@@ -44,6 +50,11 @@ describe('RadioSelect', () => {
 describe('RadioSelect Horizontal', () => {
   beforeEach(() => {
     mount(<Horizontal />);
+  });
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+    cy.checkA11y();
   });
 
   it('should be horizontal if specified', () => {

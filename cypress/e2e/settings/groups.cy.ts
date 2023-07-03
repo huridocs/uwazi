@@ -94,8 +94,18 @@ describe('Groups', () => {
   });
 
   it('should delete two groups', () => {
-    cy.get('input[id=0]').click();
-    cy.get('input[id=2]').click();
+    cy.get('table tbody tr')
+      .eq(0)
+      .within(() => {
+        cy.get('td input').eq(0).click();
+      });
+
+    cy.get('table tbody tr')
+      .eq(2)
+      .within(() => {
+        cy.get('td input').eq(0).click();
+      });
+
     cy.contains('button', 'Dismiss').click();
     cy.contains('button', 'Delete').click();
     cy.contains('span', 'Do you want to delete the following items?');

@@ -19,7 +19,7 @@ const SidePanelContainer = (args: SidePanelProps) => {
     <Provider store={createStore()}>
       <div className="tw-content">
         <div>
-          <main>
+          <article>
             <h1 className="mb-2 text-xl">This a content title</h1>
 
             <h2 className="mb-1 text-lg">
@@ -63,12 +63,12 @@ const SidePanelContainer = (args: SidePanelProps) => {
 
             <button
               type="button"
-              className="p-1 text-white rounded border-2 border-primary-400 bg-primary-400"
+              className="p-1 text-white rounded border-2 border-primary-400 bg-primary-700"
               onClick={() => setShowSidepanel(!showSidepanel)}
             >
               Open/Close sidepanel
             </button>
-          </main>
+          </article>
           <Sidepanel
             isOpen={showSidepanel}
             withOverlay={args.withOverlay}

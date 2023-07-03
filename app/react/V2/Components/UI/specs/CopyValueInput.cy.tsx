@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
@@ -8,7 +9,7 @@ describe('CopyValueInput', () => {
   const Component = () => (
     <Provider store={createStore()}>
       <div className="tw-content" style={{ height: '200px', paddingTop: '40px' }}>
-        <CopyValueInput label="name" value="some testing value" />
+        <CopyValueInput label="name" value="some testing value" id="my-value" />
       </div>
     </Provider>
   );
@@ -28,6 +29,11 @@ describe('CopyValueInput', () => {
 
   beforeEach(() => {
     mount(<Component />);
+  });
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+    cy.checkA11y();
   });
 
   it('Should copy the value to clipboard when clicking the button', () => {

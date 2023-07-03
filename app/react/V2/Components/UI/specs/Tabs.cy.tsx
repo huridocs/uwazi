@@ -1,4 +1,5 @@
 import React from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Tabs.stories';
@@ -8,6 +9,11 @@ const { Basic } = composeStories(stories);
 describe('Tabas', () => {
   beforeEach(() => {
     mount(<Basic />);
+  });
+
+  it('should be accessible', () => {
+    cy.injectAxe();
+    cy.checkA11y();
   });
 
   it('should render the first tab by defaut', () => {

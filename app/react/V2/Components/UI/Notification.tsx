@@ -127,21 +127,21 @@ const Notification = ({
 
   return (
     <div
-      className={`${containerClass} p-4 mb-4 border rounded-lg`}
+      className={`p-4 mb-4 rounded-lg border ${containerClass}`}
       role="alert"
       data-testid="notifications-container"
     >
       {heading && (
         <div className="flex items-cente">
           {getIcon('small', type)}
-          <h3 className="ml-2 text-lg font-medium">{heading}</h3>
+          <p className="ml-2 text-lg font-medium">{heading}</p>
         </div>
       )}
       {heading ? (
         <div className="mt-2 mb-4 text-sm">{text}</div>
       ) : (
         <div className="flex mb-4">
-          <span className={`${iconContainer} border-0 rounded p-1 mr-2 align-top w-fit h-fit`}>
+          <span className={`p-1 mr-2 align-top rounded border-0 ${iconContainer} w-fit h-fit`}>
             {getIcon('large', type)}
           </span>
           <div className="text-sm">{text}</div>
