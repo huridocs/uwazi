@@ -132,6 +132,7 @@ Cypress.Commands.add(
     );
   }
 );
+
 Cypress.Commands.add('configureCypressTestingLibrary', config => {
   cy.configureCypressTestingLibrary(config);
 });
@@ -151,6 +152,7 @@ Cypress.on('window:before:load', window => {
   `
   );
 });
+
 Cypress.Commands.add('clearAndType', (selector, value) => {
   cy.get(selector).clear();
   cy.get(selector).type(value);
