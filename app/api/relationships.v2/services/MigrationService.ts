@@ -1,5 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { LoggerInterface } from 'api/log.v2/contracts/LoggerInterfaces';
@@ -216,7 +214,35 @@ export class MigrationService {
     return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
   }
 
-  // eslint-disable-next-line max-statements
+  private async transformPair(
+    first: V1ConnectionDisplayed,
+    second: V1ConnectionDisplayed,
+    matcher: RelationshipMatcher,
+    usedConnections: { [id: string]: V1ConnectionDisplayed },
+    transform: boolean,
+    transformed: Relationship[],
+    stats: Statistics
+  ): Promise<void> {
+    try {
+      if (first.id !== second.id && matcher.matches(first, second)) {
+        usedConnections[first.id] = first;
+        usedConnections[second.id] = second;
+        if (transform) {
+          const trd = await this.transform(first, second, this.idGenerator.generate());
+          if (trd) {
+            transformed.push(trd);
+          } else {
+            stats.errors += 1;
+            this.logNoRepair(first, second);
+          }
+        }
+      }
+    } catch (error) {
+      stats.errors += 1;
+      this.logUnhandledError(error, first, second);
+    }
+  }
+
   private async transformHub(
     connections: V1ConnectionDisplayed[],
     matcher: RelationshipMatcher,
@@ -226,40 +252,27 @@ export class MigrationService {
     transformed: Relationship[];
   }> {
     const stats = new Statistics();
-    let unhandledErrorCount = 0;
     stats.total = connections.length;
     stats.totalTextReferences = connections.filter(c => c.file).length;
     const usedConnections: Record<string, V1ConnectionDisplayed> = {};
     const transformed: Relationship[] = [];
-    const wasNotAbleToReparMissingFile: [V1Connection, V1Connection][] = [];
-    for (let i = 0; i < connections.length; i += 1) {
-      const first = connections[i];
-      for (let j = 0; j < connections.length; j += 1) {
-        const second = connections[j];
-        try {
-          if (first.id !== second.id && matcher.matches(first, second)) {
-            usedConnections[first.id] = first;
-            usedConnections[second.id] = second;
-            if (transform) {
-              // eslint-disable-next-line no-await-in-loop
-              const trd = await this.transform(first, second, this.idGenerator.generate());
-              if (trd) {
-                transformed.push(trd);
-              } else {
-                wasNotAbleToReparMissingFile.push([first, second]);
-                this.logNoRepair(first, second);
-              }
-            }
-          }
-        } catch (error) {
-          unhandledErrorCount += 1;
-          this.logUnhandledError(error, first, second);
-        }
-      }
-    }
+    await connections.reduce(async (batchPromise, first) => {
+      await batchPromise;
+      await connections.reduce(async (pairPromise, second) => {
+        await pairPromise;
+        return this.transformPair(
+          first,
+          second,
+          matcher,
+          usedConnections,
+          transform,
+          transformed,
+          stats
+        );
+      }, Promise.resolve());
+    }, Promise.resolve());
     stats.used = Object.keys(usedConnections).length;
     stats.usedTextReferences = Object.values(usedConnections).filter(c => c.file).length;
-    stats.errors = wasNotAbleToReparMissingFile.length + unhandledErrorCount;
     return { stats, transformed };
   }
 
@@ -295,19 +308,17 @@ export class MigrationService {
     );
     const connectionGroups = Array.from(Object.values(connectionsGrouped));
     const transformed: Relationship[] = [];
-    for (let i = 0; i < connectionGroups.length; i += 1) {
-      const group = connectionGroups[i];
-      // eslint-disable-next-line no-await-in-loop
-      const {
-        stats: groupStats,
-        transformed: groupTransformed,
-        // eslint-disable-next-line no-await-in-loop
-      } = await this.transformHub(group, matcher, transform);
+    await connectionGroups.reduce(async (prevPromise, group) => {
+      await prevPromise;
+      const { stats: groupStats, transformed: groupTransformed } = await this.transformHub(
+        group,
+        matcher,
+        transform
+      );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      // eslint-disable-next-line no-await-in-loop
-      await this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
-    }
+      return this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
+    }, Promise.resolve());
     await this.writeTransformed(write, transformed);
   }
 
