@@ -41,7 +41,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           id={id}
           className="disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5"
         />
-        <div className="absolute right-0 flex items-center top-px">
+        <div className="flex absolute right-0 top-px items-center">
           <button
             type="button"
             onClick={copyToClipboard}
@@ -60,7 +60,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           {copied && (
             <div
               role="tooltip"
-              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-sm -top-11 border-gray-50 w-max"
+              className="inline-block absolute right-0 -top-11 z-10 px-3 py-2 w-max text-sm font-medium bg-white rounded-lg border-gray-50 shadow-sm"
             >
               <Translate>Copied to clipboard</Translate>
             </div>

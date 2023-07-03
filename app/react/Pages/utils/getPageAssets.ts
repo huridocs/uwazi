@@ -96,13 +96,9 @@ const getPageAssets = async (
     additionalDatasets,
   });
 
-  const [pageView, searchParams, searchOptions, datasets, listSearchs] = await Promise.all([
-    page,
-    listsData.params,
-    listsData.options,
-    dataSets,
-    listsData.searchs,
-  ]);
+  const [pageView, searchParams, searchOptions, datasets, listSearchs] = await Promise.all<
+    [any, ListsData['params'], ListsData['options'], Promise<any>, ListsData['searchs']]
+  >([page, listsData.params, listsData.options, dataSets, listsData.searchs]);
   pageView.scriptRendered = false;
 
   const itemLists = searchParams.map((p, index) => ({
