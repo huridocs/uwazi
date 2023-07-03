@@ -3,11 +3,13 @@ import db from 'api/utils/testing_db';
 import thesauri from 'api/thesauri/thesauri.js';
 import { ContextType } from 'shared/translationSchema';
 // eslint-disable-next-line node/no-restricted-import
-import * as fs from 'fs';
 import settings from 'api/settings';
+import * as fs from 'fs';
+import { TranslationType } from 'shared/translationType';
 import { UITranslationNotAvailable } from '../defaultTranslations';
-import translations from '../translations';
+import translations, { IndexedTranslations } from '../translations';
 import fixtures, { dictionaryId, englishTranslation } from './fixtures';
+import { sortByLocale } from './sortByLocale';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -90,7 +92,6 @@ describe('translations', () => {
           .mockImplementation(async () => Promise.resolve());
 
         await translations.save({
-          _id: englishTranslation,
           locale: 'en',
           contexts: [
             {
@@ -319,8 +320,7 @@ describe('translations', () => {
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
       const defaultTranslation = allTranslations.find(t => t.locale === 'en');
 
-      expect(frTranslation?.contexts?.[0].values).toEqual(defaultTranslation?.contexts?.[0].values);
-      expect(frTranslation?.contexts?.[1].values).toEqual(defaultTranslation?.contexts?.[1].values);
+      expect(frTranslation.contexts).toMatchObject(defaultTranslation.contexts);
     });
 
     describe('when translation already exists', () => {
@@ -343,7 +343,10 @@ describe('translations', () => {
       await translations.removeLanguage('es');
       const allTranslations = await translations.get();
 
-      expect(allTranslations).toMatchObject([{ locale: 'en' }, { locale: 'zh' }]);
+      expect(allTranslations.sort(sortByLocale)).toMatchObject([
+        { locale: 'en' },
+        { locale: 'zh' },
+      ]);
     });
   });
 

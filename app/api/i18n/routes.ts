@@ -44,7 +44,7 @@ export default (app: Application) => {
     }),
     async (req: TranslationsRequest, res) => {
       const { context } = req.query;
-      const response = await translations.get({ context });
+      const response = await translations.get({ context }, context && { locale: 1 });
 
       res.json({ rows: response });
     }
