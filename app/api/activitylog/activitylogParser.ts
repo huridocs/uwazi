@@ -145,6 +145,12 @@ const entryValues: { [key: string]: EntryValue } = {
     nameField: 'username',
     extra: data => `with ${data.role} role`,
   },
+  'POST/api/users/unlock': {
+    desc: 'Unlocked account of user',
+    method: Methods.Update,
+    related: helpers.loadUser,
+    nameField: 'username',
+  },
   'POST/api/files/upload/document': {
     desc: 'Uploaded file',
     method: Methods.Create,
@@ -157,7 +163,7 @@ const entryValues: { [key: string]: EntryValue } = {
     related: helpers.loadFile,
     nameFunc: helpers.updatedFile,
   },
-  'DELETE/api/users': { desc: 'Deleted user', method: Methods.Delete, nameField: '_id' },
+  'DELETE/api/users': { desc: 'Deleted multiple users', method: Methods.Delete },
   'POST/api/usergroups': {
     desc: 'Created user group',
     method: Methods.Create,
@@ -166,9 +172,8 @@ const entryValues: { [key: string]: EntryValue } = {
     extra: helpers.groupMembers,
   },
   'DELETE/api/usergroups': {
-    desc: 'Deleted user group',
+    desc: 'Deleted multiple user groups',
     method: Methods.Delete,
-    nameField: '_id',
   },
   'POST/api/entities/permissions': {
     desc: 'Updated permissions on entity',
