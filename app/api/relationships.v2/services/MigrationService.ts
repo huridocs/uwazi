@@ -20,6 +20,8 @@ const UNUSED_HUB_LIMIT = 10;
 
 const HUB_BATCH_SIZE = 1000;
 
+class MissingFileNotRepairedError extends Error {}
+
 class RelationshipMatcher {
   readonly fieldLibrary: Record<string, Record<string, Set<string | undefined>>>;
 
@@ -114,21 +116,11 @@ export class MigrationService {
     this.logger = logger;
   }
 
-  private logNoRepair(first: V1Connection, second: V1Connection): void {
-    const message = [
-      'V2 Relationship Migration Error:',
-      'Could not repair missing file for:',
-      JSON.stringify(first, null, 2),
-      JSON.stringify(second, null, 2),
-    ];
-    this.logger.error(message);
-  }
-
   private logUnhandledError(error: Error, first: V1Connection, second: V1Connection): void {
     const message = [
       'V2 Relationship Migration Error:',
       'Unhandled error encountered:',
-      error.message,
+      error.stack || error.message,
       'Processed connections:',
       JSON.stringify(first, null, 2),
       JSON.stringify(second, null, 2),
@@ -199,7 +191,7 @@ export class MigrationService {
     first: V1Connection,
     second: V1Connection,
     newId: string
-  ): Promise<Relationship | null> {
+  ): Promise<Relationship> {
     const sourcePointer = await this.transformPointer(first);
     const targetPointer = await this.transformPointer(second);
     const relationshipType = second.template;
@@ -209,7 +201,7 @@ export class MigrationService {
       );
     }
     if (!sourcePointer || !targetPointer) {
-      return null;
+      throw new MissingFileNotRepairedError('Could not repair a missing file pointer.');
     }
     return new Relationship(newId, sourcePointer, targetPointer, relationshipType);
   }
@@ -229,12 +221,7 @@ export class MigrationService {
         usedConnections[second.id] = second;
         if (transform) {
           const trd = await this.transform(first, second, this.idGenerator.generate());
-          if (trd) {
-            transformed.push(trd);
-          } else {
-            stats.errors += 1;
-            this.logNoRepair(first, second);
-          }
+          transformed.push(trd);
         }
       }
     } catch (error) {
