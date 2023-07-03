@@ -71,7 +71,9 @@ describe('Information Extraction', () => {
     cy.get('.suggestion-templates span').eq(1).should('be.visible');
     cy.get('.training-dashboard').should('be.visible');
     cy.get('table').should('be.visible');
-    cy.get('.settings-content').toMatchImageSnapshot({ name: 'ix-1' });
+    cy.get('.settings-content').matchImage({
+      matchAgainstPath: 'cypress/e2e/__image_snapshots__/ix-1 #0.png',
+    });
   });
 
   it('should find suggestions successfully', { defaultCommandTimeout: 6000 }, () => {
@@ -80,7 +82,9 @@ describe('Information Extraction', () => {
     cy.get('table').should('be.visible');
     cy.contains('button', 'Find suggestions').click();
     cy.get('table tr').should('have.length.above', 1);
-    cy.get('.settings-content').toMatchImageSnapshot({ name: 'ix-2' });
+    cy.get('.settings-content').matchImage({
+      matchAgainstPath: 'cypress/e2e/__image_snapshots__/ix-2 #0.png',
+    });
   });
 
   it('should show filters sidepanel', () => {
@@ -88,7 +92,9 @@ describe('Information Extraction', () => {
     cy.get('.training-dashboard').should('be.visible');
     cy.get('table').should('be.visible');
     cy.contains('button', 'Show Filters').click();
-    cy.get('.settings-content .sidepanel-body').toMatchImageSnapshot({ name: 'ix-3' });
+    cy.get('.settings-content .sidepanel-body').matchImage({
+      matchAgainstPath: 'cypress/e2e/__image_snapshots__/ix-3 #0.png',
+    });
   });
 
   it('should delete an extractor', () => {
@@ -96,6 +102,8 @@ describe('Information Extraction', () => {
     cy.get('.extractor-checkbox input').click();
     cy.contains('button', 'Delete').click();
     cy.contains('button', 'Create Extractor').should('be.visible');
-    cy.get('table').toMatchImageSnapshot({ name: 'ix-4' });
+    cy.get('table').matchImage({
+      matchAgainstPath: 'cypress/e2e/__image_snapshots__/ix-4 #0.png',
+    });
   });
 });
