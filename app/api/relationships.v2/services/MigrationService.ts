@@ -256,12 +256,11 @@ export class MigrationService {
     stats.totalTextReferences = connections.filter(c => c.file).length;
     const usedConnections: Record<string, V1ConnectionDisplayed> = {};
     const transformed: Relationship[] = [];
-    for (let i = 0; i < connections.length; i += 1) {
-      const first = connections[i];
-      for (let j = 0; j < connections.length; j += 1) {
-        const second = connections[j];
-        // eslint-disable-next-line no-await-in-loop
-        await this.transformPair(
+    await connections.reduce(async (batchPromise, first) => {
+      await batchPromise;
+      await connections.reduce(async (pairPromise, second) => {
+        await pairPromise;
+        return this.transformPair(
           first,
           second,
           matcher,
@@ -270,8 +269,8 @@ export class MigrationService {
           transformed,
           stats
         );
-      }
-    }
+      }, Promise.resolve());
+    }, Promise.resolve());
     stats.used = Object.keys(usedConnections).length;
     stats.usedTextReferences = Object.values(usedConnections).filter(c => c.file).length;
     return { stats, transformed };
@@ -309,18 +308,17 @@ export class MigrationService {
     );
     const connectionGroups = Array.from(Object.values(connectionsGrouped));
     const transformed: Relationship[] = [];
-    for (let i = 0; i < connectionGroups.length; i += 1) {
-      const group = connectionGroups[i];
-      const {
-        stats: groupStats,
-        transformed: groupTransformed,
-        // eslint-disable-next-line no-await-in-loop
-      } = await this.transformHub(group, matcher, transform);
+    await connectionGroups.reduce(async (prevPromise, group) => {
+      await prevPromise;
+      const { stats: groupStats, transformed: groupTransformed } = await this.transformHub(
+        group,
+        matcher,
+        transform
+      );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      // eslint-disable-next-line no-await-in-loop
-      await this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
-    }
+      return this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
+    }, Promise.resolve());
     await this.writeTransformed(write, transformed);
   }
 
