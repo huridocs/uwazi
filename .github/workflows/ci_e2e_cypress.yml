@@ -94,6 +94,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
+          COVERAGE: true
         run: yarn run-production > output.txt &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/

@@ -36,6 +36,7 @@ import { closeSockets } from './api/socketio/setupSockets';
 import { permissionsContext } from './api/permissions/permissionsContext';
 
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
+import coverageMiddleware from '@cypress/code-coverage/middleware/express';
 
 mongoose.Promise = Promise;
 
@@ -75,8 +76,8 @@ routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
 /* istanbul ignore next */
-if (global.__coverage__) {
-  require('@cypress/code-coverage/middleware/express')(app);
+if (config.COVERAGE) {
+  app.use(coverageMiddleware);
 }
 
 const http = Server(app);
