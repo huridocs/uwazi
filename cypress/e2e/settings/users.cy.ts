@@ -25,10 +25,10 @@ describe('Users', () => {
     cy.get('caption').within(() => cy.contains('span', 'Users'));
     cy.get('div.tw-content').scrollTo('top');
     cy.checkA11y();
-    cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
+    cy.get('div[data-testid="settings-content"]').matchImage();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
-    cy.get('aside').toMatchImageSnapshot();
+    cy.get('aside').matchImage();
     cy.checkA11y();
     cy.contains('button', 'Cancel').click();
   });

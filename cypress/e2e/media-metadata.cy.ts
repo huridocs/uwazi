@@ -15,6 +15,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains(field).parentsUntil('.form-group').contains('button', action).scrollIntoView();
     cy.contains(field).parentsUntil('.form-group').contains('button', action).click();
   };
+
   const addEntity = (title: string) => {
     cy.contains('button', 'Create entity').click();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
@@ -58,6 +59,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait(200);
     cy.get('img').should('be.visible');
   };
+
   const addInvalidFile = (field: string) => {
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').scrollIntoView();
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').click();
@@ -73,7 +75,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const checkMediaSnapshots = (selector: string) => {
     cy.get(selector).scrollIntoView();
-    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
+    cy.get(selector).matchImage({ maxDiffThreshold: 0.08 });
   };
 
   const saveEntity = () => {
@@ -138,6 +140,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
+
   it('should show an error for an invalid property and allow to replace it for a valid one', () => {
     addEntity('Reporte con propiedades audiovisuales corregidas');
     addInvalidFile('Fotografía');
@@ -150,6 +153,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
+
   it('should allow unlink the value of a media property', () => {
     cy.contains('h2', 'Reporte con propiedades audiovisuales corregidas').click();
     cy.contains('button', 'Edit').should('be.visible').click();
