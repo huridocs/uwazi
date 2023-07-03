@@ -1,3 +1,4 @@
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
@@ -135,7 +136,7 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-  translations_v2: [
+  translations: fixturesTranslationsV2ToTranslationsLegacy([
     {
       language: 'en',
       key: 'Parent',
@@ -185,7 +186,7 @@ const fixtures: DBFixture = {
       value: 'dictionary 2',
       context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
     },
-  ],
+  ]),
 };
 
 export {

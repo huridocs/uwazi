@@ -12,6 +12,7 @@ import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
 import translations from 'api/i18n';
+import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));
@@ -26,8 +27,8 @@ describe('csvLoader languages', () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 
-    const { languages = [] } = await settings.get();
-    await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });
+    await settings.addLanguage({ key: 'es', label: 'Spanish' });
+    await translations.addLanguage('es');
 
     await createTestingZip(
       [

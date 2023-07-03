@@ -440,7 +440,7 @@ describe('thesauri', () => {
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
-        const allTranslations = await translations.get();
+        const allTranslations = await translations.get({ locale: 'es' });
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
         expect(context.values['new name']).toBe('new name');
       });

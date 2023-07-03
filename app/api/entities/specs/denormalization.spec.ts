@@ -7,6 +7,7 @@ import thesauris from 'api/thesauri';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import translations from 'api/i18n/translations';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const load = async (data: DBFixture, index?: string) => {
   return db.setupFixturesAndContext(
@@ -625,7 +626,7 @@ describe('Denormalize relationships', () => {
               { language: 'es' }
             ),
           ],
-          translations_v2: [
+          translations: fixturesTranslationsV2ToTranslationsLegacy([
             {
               key: 'One',
               value: 'One',
@@ -687,7 +688,7 @@ describe('Denormalize relationships', () => {
                 label: 'Numbers',
               },
             },
-          ],
+          ]),
         },
         'index_denormalization'
       );

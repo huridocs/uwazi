@@ -433,7 +433,9 @@ describe('translations v2 support', () => {
       });
 
       it('should only migrate once (on concurrent calls also)', async () => {
+        await deactivateFeature();
         await testingDB.setupFixturesAndContext(fixtures);
+        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
 
         jest.spyOn(migration, 'up');
         await Promise.all([translations.get(), translations.get(), translations.get()]);
@@ -460,7 +462,7 @@ describe('translations v2 support', () => {
             },
           ],
         });
-        const [english] = await translations.get();
+        const [english] = await translations.get({ locale: 'en' });
         expect(english).toMatchObject({
           locale: 'en',
           contexts: [
@@ -511,7 +513,6 @@ describe('translations v2 support', () => {
             },
           ],
         });
-        await translations.get();
         const [spanish, english] = await translations.get();
 
         const englishComesFromTheOldCollection = !english._id;
@@ -638,7 +639,6 @@ describe('translations v2 support', () => {
             },
           ],
         });
-        await translations.get();
         const [spanish] = await translations.get({ context: 'System' });
         expect(spanish).toMatchObject({
           locale: 'es',
@@ -722,7 +722,7 @@ describe('translations v2 support', () => {
         };
 
         await translations.updateContext(
-          { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus'},
+          { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
           { Account: 'New Account Key', Password: 'New Password key' },
           ['Email', 'Age'],
           values

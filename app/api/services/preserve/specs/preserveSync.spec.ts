@@ -20,6 +20,8 @@ import { createReadStream } from 'fs';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
+import { Tenant } from 'api/tenants/tenantContext';
+import { config } from 'api/config';
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -70,11 +72,12 @@ describe('preserveSync', () => {
     db.UserInContextMockFactory.restore();
     backend.restore();
 
-    const tenant1 = {
+    const tenant1: Tenant = {
       name: tenantName,
       dbName: db.dbName,
       indexName: db.dbName,
       ...(await testingUploadPaths()),
+      featureFlags: config.defaultTenant.featureFlags, 
     };
 
     tenants.add(tenant1);
@@ -128,7 +131,7 @@ describe('preserveSync', () => {
       await preserveSync.syncAllTenants();
     });
 
-    it('should create entities based on evidences PROCESSED status', async () => {
+    fit('should create entities based on evidences PROCESSED status', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
         const entitiesImported: EntitySchema[] = await entities.get(

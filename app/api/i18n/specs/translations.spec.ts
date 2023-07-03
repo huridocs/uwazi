@@ -10,10 +10,12 @@ import { UITranslationNotAvailable } from '../defaultTranslations';
 import translations, { IndexedTranslations } from '../translations';
 import fixtures, { dictionaryId, englishTranslation } from './fixtures';
 import { sortByLocale } from './sortByLocale';
+import { migrateTranslationsToV2 } from '../v2_support';
 
 describe('translations', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
+    await migrateTranslationsToV2();
   });
 
   afterAll(async () => {

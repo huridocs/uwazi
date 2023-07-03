@@ -11,7 +11,7 @@ import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
-import { fixturesTranslationsV2ToTranslationsLegacy } from './fixtures';
+import { fixturesTranslationsV2ToTranslationsLegacy } from "./fixturesTranslationsV2ToTranslationsLegacy";
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { sortByLocale } from './sortByLocale';
 
@@ -63,6 +63,7 @@ describe('i18n translations routes', () => {
           ],
         },
       ],
+      translations_v2: translations_v2,
       translations: fixturesTranslationsV2ToTranslationsLegacy(translations_v2),
     });
   });

@@ -1,8 +1,10 @@
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
+import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
+import { tenants } from 'api/tenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
@@ -150,6 +152,12 @@ const testingDB: {
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
+    if (
+      tenants.current().featureFlags?.translationsV2 &&
+      !Object.keys(fixtures).includes('translations_v2')
+    ) {
+      await migrateTranslationsToV2();
+    }
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });

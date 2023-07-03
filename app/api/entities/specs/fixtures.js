@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-len */
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
@@ -660,7 +661,7 @@ export default {
       ],
     },
   ],
-  translations_v2: [
+  translations: fixturesTranslationsV2ToTranslationsLegacy([
     {
       language: 'pt',
       key: 'town2',
@@ -751,7 +752,7 @@ export default {
       value: 'Country1',
       context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
     },
-  ],
+  ]),
 
   ixsuggestions: [
     {

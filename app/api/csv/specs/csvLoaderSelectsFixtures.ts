@@ -1,5 +1,6 @@
 import db from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const fixtureFactory = getFixturesFactory();
 
@@ -74,7 +75,7 @@ const fixtures = {
       ],
     },
   ],
-  translations_v2: [
+  translations: fixturesTranslationsV2ToTranslationsLegacy([
     {
       language: 'es',
       key: 'B',
@@ -295,7 +296,7 @@ const fixtures = {
       value: 'original 1',
       context: { id: 'System', type: 'System', label: 'System' },
     },
-  ],
+  ]),
 };
 
 export { fixtures, fixtureFactory };

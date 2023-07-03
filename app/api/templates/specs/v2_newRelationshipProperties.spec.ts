@@ -102,7 +102,7 @@ const fixtures: DBFixture = {
       },
     },
   ],
-  translations_v2: [],
+  translations: [],
 };
 
 const newQueryInput = [
