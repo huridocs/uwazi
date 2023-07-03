@@ -74,6 +74,11 @@ if (config.sentry.dsn) {
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
+/* istanbul ignore next */
+if (global.__coverage__) {
+  require('@cypress/code-coverage/middleware/express')(app);
+}
+
 const http = Server(app);
 
 const uncaughtError = error => {

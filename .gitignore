@@ -5,6 +5,7 @@ node_modules
 .history/*
 stats.json
 coverage
+.nyc_output
 /dist
 /prod
 /build
@@ -49,7 +50,7 @@ data_elastic
 data_mongo
 e2e/**/__diff_output__/
 /storage
-cypress/snapshots/diff/*
+cypress/screenshots
 *.diff.png
 *.actual.png
 

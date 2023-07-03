@@ -16,7 +16,7 @@
     "production": {
       "plugins": [
         "babel-plugin-transform-react-remove-prop-types",
-        "@babel/plugin-transform-react-inline-elements"
+        "@babel/plugin-transform-react-inline-elements",
       ]
     },
     "debug": {
