@@ -77,7 +77,7 @@ app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false 
 
 /* istanbul ignore next */
 if (config.COVERAGE) {
-  app.use(coverageMiddleware);
+  coverageMiddleware(app);
 }
 
 const http = Server(app);
