@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   download_artifacts:
-    uses: actions/download-artifact@v3
+    uses: actions/download-artifact@v2.1.1
     with:
       name: 'api-coverage-report'
   upload_coverage:
