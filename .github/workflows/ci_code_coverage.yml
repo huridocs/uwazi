@@ -16,7 +16,7 @@ jobs:
   download_artifacts:
     uses: dawidd6/action-download-artifact@v2
     with:
-      workflow: ci_unit_tests.yml
+      workflow: .github/workflows/ci_unit_tests.yml
       workflow_conclusion: success
   upload_coverage:
     runs-on: ubuntu-latest
