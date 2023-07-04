@@ -38,6 +38,7 @@ export default {
       role: UserRole.EDITOR,
     },
   ],
+  translations_v2: [],
 };
 
 export { userId1, userId2, templateId };

@@ -23,6 +23,7 @@ const settings: DBFixture['settings'] = [
 
 const fixturesOneTenant: DBFixture = {
   settings,
+  translations_v2: [],
 };
 const otherSettings: DBFixture['settings'] = [
   {
