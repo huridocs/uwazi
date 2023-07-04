@@ -3,6 +3,7 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 
 const template1Id = db.id();
 const multiSelectThesaurusId = db.id();
@@ -10,14 +11,14 @@ const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 const templateWithGeneratedTitle = db.id();
 
-const commonTranslationsV2 = (language: LanguageISO6391) => [
+const commonTranslationsV2 = (language: LanguageISO6391): TranslationDBO[] => [
   {
     language,
     key: 'multivalue1',
     value: 'multivalue1',
     context: {
       id: multiSelectThesaurusId.toString(),
-      type: 'Dictionary',
+      type: 'Thesaurus',
       label: 'multi_select_thesaurus',
     },
   },
@@ -27,7 +28,7 @@ const commonTranslationsV2 = (language: LanguageISO6391) => [
     value: 'multi_select_thesaurus',
     context: {
       id: multiSelectThesaurusId.toString(),
-      type: 'Dictionary',
+      type: 'Thesaurus',
       label: 'multi_select_thesaurus',
     },
   },
@@ -35,25 +36,25 @@ const commonTranslationsV2 = (language: LanguageISO6391) => [
     language,
     key: 'thesauri1',
     value: 'thesauri1',
-    context: { id: thesauri1Id.toString(), type: 'Dictionary', label: 'thesauri1' },
+    context: { id: thesauri1Id.toString(), type: 'Thesaurus', label: 'thesauri1' },
   },
   {
     language,
     key: 'original 3',
     value: 'original 3',
-    context: { id: 'System', type: 'Dictionary', label: 'System' },
+    context: { id: 'System', type: 'Uwazi UI', label: 'System' },
   },
   {
     language,
     key: 'original 2',
     value: 'original 2',
-    context: { id: 'System', type: 'Dictionary', label: 'System' },
+    context: { id: 'System', type: 'Thesaurus', label: 'System' },
   },
   {
     language,
     key: 'original 1',
     value: 'original 1',
-    context: { id: 'System', type: 'Dictionary', label: 'System' },
+    context: { id: 'System', type: 'Thesaurus', label: 'System' },
   },
 ];
 

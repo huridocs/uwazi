@@ -172,19 +172,19 @@ const fixtures = {
       language: 'es',
       key: 'original 3',
       value: 'original 3',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
     {
       language: 'es',
       key: 'original 2',
       value: 'original 2',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
     {
       language: 'es',
       key: 'original 1',
       value: 'original 1',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
 
     {
@@ -282,19 +282,19 @@ const fixtures = {
       language: 'en',
       key: 'original 3',
       value: 'original 3',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
     {
       language: 'en',
       key: 'original 2',
       value: 'original 2',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
     {
       language: 'en',
       key: 'original 1',
       value: 'original 1',
-      context: { id: 'System', type: 'System', label: 'System' },
+      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
     },
   ]),
 };
