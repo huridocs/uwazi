@@ -75,6 +75,8 @@ jobs:
             ${{ hashFiles('webpack/**/config.js') }}-
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
+        env:
+          BABEL_ENV: ci
         run: yarn production-build
       - run: yarn e2e-fixtures
         env:
@@ -95,7 +97,6 @@ jobs:
           INDEX_NAME: uwazi_e2e
           EXTERNAL_SERVICES: true
           COVERAGE: true
-          BABEL_ENV: 'ci'
         run: yarn run-production > output.txt &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
