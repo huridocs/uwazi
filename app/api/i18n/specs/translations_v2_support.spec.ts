@@ -515,8 +515,8 @@ describe('translations v2 support', () => {
         });
         const [spanish, english] = await translations.get();
 
-        const englishComesFromTheOldCollection = !english._id;
-        expect(englishComesFromTheOldCollection).toBe(true);
+        const englishComesFromTheOldCollection = english._id;
+        expect(englishComesFromTheOldCollection).toBeTruthy();
 
         expect(english).toMatchObject({
           locale: 'en',
@@ -530,8 +530,8 @@ describe('translations v2 support', () => {
           ],
         });
 
-        const spanishComesFromTheOldCollection = !spanish._id;
-        expect(spanishComesFromTheOldCollection).toBe(true);
+        const spanishComesFromTheOldCollection = spanish._id;
+        expect(spanishComesFromTheOldCollection).toBeTruthy();
 
         expect(spanish).toMatchObject({
           locale: 'es',

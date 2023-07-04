@@ -152,11 +152,18 @@ const testingDB: {
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
-    if (
-      tenants.current().featureFlags?.translationsV2 &&
-      !Object.keys(fixtures).includes('translations_v2')
-    ) {
-      await migrateTranslationsToV2();
+
+    try {
+      if (
+        tenants.current().featureFlags?.translationsV2 &&
+        !Object.keys(fixtures).includes('translations_v2')
+      ) {
+        await migrateTranslationsToV2();
+      }
+    } catch (e) {
+      if (!e.message.match('nonexistent async')) {
+        throw e;
+      }
     }
 
     if (elasticIndex) {

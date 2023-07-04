@@ -221,7 +221,10 @@ export default {
     const { context, ...actualQuery } = query;
     const translations = await model.get(
       actualQuery,
-      Object.assign(selector, context ? { contexts: { $elemMatch: { id: context } } } : {})
+      Object.assign(
+        { ...selector, ...(context ? { locale: 1 } : {}) },
+        context ? { contexts: { $elemMatch: { id: context } } } : {}
+      )
     );
 
     return translationTypeToIndexedTranslation(translations);

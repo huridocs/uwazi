@@ -77,7 +77,7 @@ describe('preserveSync', () => {
       dbName: db.dbName,
       indexName: db.dbName,
       ...(await testingUploadPaths()),
-      featureFlags: config.defaultTenant.featureFlags, 
+      featureFlags: config.defaultTenant.featureFlags,
     };
 
     tenants.add(tenant1);
@@ -131,7 +131,7 @@ describe('preserveSync', () => {
       await preserveSync.syncAllTenants();
     });
 
-    fit('should create entities based on evidences PROCESSED status', async () => {
+    it('should create entities based on evidences PROCESSED status', async () => {
       await tenants.run(async () => {
         permissionsContext.setCommandContext();
         const entitiesImported: EntitySchema[] = await entities.get(
