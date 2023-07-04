@@ -1,0 +1,34 @@
+name: Upload Code Coverage
+
+on:
+  push:
+    branches:
+      - production
+      - development
+      - staging
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  download_artifacts:
+    uses: dawidd6/action-download-artifact@v2
+    with:
+      workflow: ci_unit_tests.yml
+      workflow_conclusion: success
+  upload_coverage:
+    runs-on: ubuntu-latest
+    needs: [download_artifacts]
+    steps:
+      - name: Download codeclimate binary
+        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - name: Make codeclimate binary executable
+        run: chmod +x ./cc-test-reporter
+      - name: Sum coverage reports
+        run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 2 -o codeclimate.total.json
+      - name: Upload coverage reports
+        run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
+    env:
+      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
