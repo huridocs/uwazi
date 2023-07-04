@@ -69,9 +69,9 @@ jobs:
           key: >-
             ${{ runner.os }}-build-${{ hashFiles('app/**/*.*') }}-
             ${{ hashFiles('database/**/*.*') }}-
-            ${{ hashFiles('**/yarn.lock') }}-
-            ${{ hashFiles('**/webpack.production.config.js') }}-
-            ${{ hashFiles('**/.babelrc') }}-
+            ${{ hashFiles('yarn.lock') }}-
+            ${{ hashFiles('webpack.production.config.js') }}-
+            ${{ hashFiles('babel.config.json') }}-
             ${{ hashFiles('webpack/**/config.js') }}-
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
