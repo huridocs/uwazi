@@ -16,7 +16,6 @@ const {
   ENVIRONMENT,
   FILES_ROOT_PATH,
   QUEUE_NAME,
-  COVERAGE,
 } = process.env;
 
 const rootPath = ROOT_PATH || `${__dirname}/../../`;
@@ -87,5 +86,5 @@ export const config = {
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
 
-  COVERAGE: COVERAGE || ENVIRONMENT !== 'production',
+  COVERAGE: Boolean(process.env.COVERAGE) || ENVIRONMENT !== 'production',
 };

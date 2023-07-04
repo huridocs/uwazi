@@ -75,6 +75,7 @@ if (config.sentry.dsn) {
 routesErrorHandler(app);
 app.use(helmet({ contentSecurityPolicy: false, crossOriginEmbedderPolicy: false }));
 
+console.log('coverage', config.COVERAGE ? 'enabled' : 'disabled');
 /* istanbul ignore next */
 if (config.COVERAGE) {
   coverageMiddleware(app);
