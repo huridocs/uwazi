@@ -19,14 +19,12 @@ jobs:
       - name: Wait for Workflow Action
         uses: kamilchodola/wait-for-workflow-action@1.1.0
         with:
-          GITHUB_TOKEN: ${{ secrets.REPOSITORY_DISPATCH_TOKEN }}
           workflow_id: 'ci_unit_tests.yml'
           max_wait_minutes: '20'
           interval: '15'
           timeout: '60'
           org_name: 'Huridocs'
           repo_name: 'Uwazi'
-          ref: '${{ github.ref }}'
   download_artifacts:
     runs-on: ubuntu-latest
     needs: [wait_for_unit_tests]
