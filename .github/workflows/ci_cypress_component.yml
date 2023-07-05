@@ -26,14 +26,7 @@ jobs:
         with:
           browser: chrome
           component: true
-  coverage-report:
-    runs-on: ubuntu-latest
-    needs: [cypress-run]
-    steps:
-      - name: Generate Code Coverage report
-        uses: barecheck/code-coverage-action@v1
+      - uses: actions/upload-artifact@v3
         with:
-          barecheck-github-app-token: $2b$10$POPC3moPq89kKw2oYkqDieVu60V.riVOVcbcDbhguCDaU86QnCOiW:39308071
-          lcov-file: 'coverage/lcov.info'
-          send-summary-comment: true
-          show-annotations: 'warning'
+          name: coverage
+          path: coverage
