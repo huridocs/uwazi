@@ -17,7 +17,7 @@ export class MongoTranslationsDataSource
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     try {
-      await this.getCollection().insertMany(items, { session: this.getSession() });
+      await this.getCollection().insertMany(items);
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
         throw new DuplicatedKeyError(e.message);
@@ -45,43 +45,37 @@ export class MongoTranslationsDataSource
   }
 
   async deleteByContextId(contextId: string) {
-    return this.getCollection().deleteMany(
-      { 'context.id': contextId },
-      { session: this.getSession() }
-    );
+    return this.getCollection().deleteMany({ 'context.id': contextId });
   }
 
   async deleteByLanguage(language: LanguageISO6391) {
-    return this.getCollection().deleteMany({ language }, { session: this.getSession() });
+    return this.getCollection().deleteMany({ language });
   }
 
   getAll() {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({}, { session: this.getSession() }),
+      this.getCollection().find({}),
       TranslationMappers.toModel
     );
   }
 
   getByLanguage(language: LanguageISO6391) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ language }, { session: this.getSession() }),
+      this.getCollection().find({ language }),
       TranslationMappers.toModel
     );
   }
 
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find({ 'context.id': context }, { session: this.getSession() }),
+      this.getCollection().find({ 'context.id': context }),
       TranslationMappers.toModel
     );
   }
 
   getContextAndKeys(contextId: string, keys: string[]) {
     return new MongoResultSet<TranslationDBO, Translation>(
-      this.getCollection().find(
-        { 'context.id': contextId, key: { $in: keys } },
-        { session: this.getSession() }
-      ),
+      this.getCollection().find({ 'context.id': contextId, key: { $in: keys } }),
       TranslationMappers.toModel
     );
   }
@@ -89,8 +83,7 @@ export class MongoTranslationsDataSource
   async updateContextLabel(contextId: string, contextLabel: string) {
     return this.getCollection().updateMany(
       { 'context.id': contextId },
-      { $set: { 'context.label': contextLabel } },
-      { session: this.getSession() }
+      { $set: { 'context.label': contextLabel } }
     );
   }
 
@@ -110,36 +103,26 @@ export class MongoTranslationsDataSource
   async updateValue(key: string, contextId: string, language: LanguageISO6391, value: string) {
     await this.getCollection().updateOne(
       { key, 'context.id': contextId, language },
-      { $set: { value } },
-      { session: this.getSession() }
+      { $set: { value } }
     );
   }
 
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
-    return this.getCollection().deleteMany(
-      { 'context.id': contextId, key: { $in: keysToDelete } },
-      { session: this.getSession() }
-    );
+    return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
   }
 
   async calculateNonexistentKeys(contextId: string, keys: string[]) {
-    const context = await this.getCollection().findOne(
-      { 'context.id': contextId },
-      { session: this.getSession() }
-    );
+    const context = await this.getCollection().findOne({ 'context.id': contextId });
     if (!context) {
       return keys;
     }
 
     const [result] = await this.getCollection()
-      .aggregate(
-        [
-          { $match: { key: { $in: keys }, 'context.id': contextId } },
-          { $group: { _id: null, foundKeys: { $push: '$key' } } },
-          { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
-        ],
-        { session: this.getSession() }
-      )
+      .aggregate([
+        { $match: { key: { $in: keys }, 'context.id': contextId } },
+        { $group: { _id: null, foundKeys: { $push: '$key' } } },
+        { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
+      ])
       .toArray();
 
     return result?.notFoundKeys || [];
