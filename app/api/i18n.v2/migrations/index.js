@@ -13,7 +13,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
               translation: {
                 key: contextValue.key,
                 value: contextValue.value,
-                context: { type: context.type, label: context.label, id: context.id },
+                context: { type: context.type, label: context.label, id: context.id.toString() },
               },
             };
           }
@@ -24,7 +24,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
             language: translation.locale,
             key: contextValue.key,
             value: contextValue.value,
-            context: { type: context.type, label: context.label, id: context.id },
+            context: { type: context.type, label: context.label, id: context.id.toString() },
           });
         });
       }
@@ -35,10 +35,10 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
   return [];
 };
 
-const newTranslationsCollection = 'translations_v2';
+const newTranslationsCollection = 'translationsV2';
 
 export default {
-  delta: 1,
+  delta: 137,
 
   name: 'translations to translations v2',
 
@@ -56,6 +56,7 @@ export default {
   },
 
   async up(db) {
+    // process.stdout.write(`${this.name}...\r\n`);
     await this.createIndexes(db);
     const newTranslations = await db.collection(newTranslationsCollection);
     await newTranslations.deleteMany({});

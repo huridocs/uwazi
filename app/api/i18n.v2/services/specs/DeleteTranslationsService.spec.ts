@@ -5,7 +5,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { DeleteTranslationsService } from '../DeleteTranslationsService';
 
-const collectionInDb = (collection = 'translations_v2') =>
+const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
@@ -17,42 +17,42 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [
+  translationsV2: [
     {
       language: 'es',
       key: 'clave',
       value: 'valor',
-      context: { type: 'test', label: 'Test', id: 'context1' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
     },
     {
       language: 'en',
       key: 'key',
       value: 'value',
-      context: { type: 'test', label: 'Test', id: 'context1' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
     },
     {
       language: 'es',
       key: 'clave',
       value: 'valor',
-      context: { type: 'test', label: 'Test', id: 'context2' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context2' },
     },
     {
       language: 'en',
       key: 'key',
       value: 'value',
-      context: { type: 'test', label: 'Test', id: 'context2' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context2' },
     },
     {
       language: 'es',
       key: 'clave',
       value: 'valor',
-      context: { type: 'test', label: 'Test', id: 'context3' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
     },
     {
       language: 'en',
       key: 'key',
       value: 'value',
-      context: { type: 'test', label: 'Test', id: 'context3' },
+      context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
     },
   ],
   settings: [
@@ -88,25 +88,25 @@ describe('DeleteTranslationsService', () => {
           language: 'es',
           key: 'clave',
           value: 'valor',
-          context: { type: 'test', label: 'Test', id: 'context1' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'context1' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
         },
         {
           language: 'es',
           key: 'clave',
           value: 'valor',
-          context: { type: 'test', label: 'Test', id: 'context3' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'context3' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
         },
       ]);
     });
@@ -126,19 +126,19 @@ describe('DeleteTranslationsService', () => {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'context1' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'context2' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context2' },
         },
         {
           language: 'en',
           key: 'key',
           value: 'value',
-          context: { type: 'test', label: 'Test', id: 'context3' },
+          context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
         },
       ]);
     });

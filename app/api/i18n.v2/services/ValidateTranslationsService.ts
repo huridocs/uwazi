@@ -41,7 +41,8 @@ export class ValidateTranslationsService {
     const allowedLanguageKeys = await this.settingsDS.getLanguageKeys();
     const difference = translations
       .map(t => t.language)
-      .filter(key => !allowedLanguageKeys.includes(key));
+      .filter(key => !allowedLanguageKeys.includes(key))
+      .filter((key, index, array) => array.indexOf(key) === index);
     if (difference.length) {
       throw new LanguageDoesNotExist(JSON.stringify(difference));
     }

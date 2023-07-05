@@ -8,6 +8,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import templates from '../templates';
+import translations from 'api/i18n';
 
 jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
 
@@ -101,6 +102,7 @@ const fixtures: DBFixture = {
       },
     },
   ],
+  translations: [],
 };
 
 const newQueryInput = [
@@ -131,6 +133,8 @@ const newQueryInDb = [
 
 describe('template.save()', () => {
   beforeEach(async () => {
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
+    // jest.spyOn(translations, 'save').mockImplementation(async () => 'ok');
     await testingEnvironment.setUp(fixtures, 'v2_new_relationship_properties.index');
   });
 

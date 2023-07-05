@@ -1,5 +1,5 @@
 import Ajv from 'ajv';
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import { LanguageISO6391Schema, objectIdSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { TranslationType } from './translationType';
 
@@ -50,10 +50,10 @@ const translationSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'TranslationType',
-  definitions: { objectIdSchema, translationContextSchema },
+  definitions: { LanguageISO6391Schema, objectIdSchema, translationContextSchema },
   properties: {
     _id: objectIdSchema,
-    locale: { type: 'string', minLength: 1 },
+    locale: LanguageISO6391Schema,
     contexts: {
       type: 'array',
       items: translationContextSchema,

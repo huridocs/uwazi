@@ -11,30 +11,30 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [
+  translationsV2: [
     {
       key: 'key1',
       value: 'value1',
       language: 'en',
-      context: { type: 'type', label: 'label', id: 'context1' },
+      context: { type: 'Uwazi UI', label: 'label', id: 'context1' },
     },
     {
       key: 'key2',
       value: 'value2',
       language: 'en',
-      context: { type: 'type', label: 'label', id: 'context1' },
+      context: { type: 'Uwazi UI', label: 'label', id: 'context1' },
     },
     {
       key: 'key3',
       value: 'value3',
       language: 'en',
-      context: { type: 'type', label: 'label', id: 'context2' },
+      context: { type: 'Uwazi UI', label: 'label', id: 'context2' },
     },
     {
       key: 'key1',
       value: 'valor1',
       language: 'es',
-      context: { type: 'type', label: 'label', id: 'context2' },
+      context: { type: 'Uwazi UI', label: 'label', id: 'context2' },
     },
   ],
   settings: [
@@ -67,25 +67,25 @@ describe('GetTranslationsService', () => {
           key: 'key1',
           value: 'value1',
           language: 'en',
-          context: { type: 'type', label: 'label', id: 'context1' },
+          context: { type: 'Uwazi UI', label: 'label', id: 'context1' },
         },
         {
           key: 'key2',
           value: 'value2',
           language: 'en',
-          context: { type: 'type', label: 'label', id: 'context1' },
+          context: { type: 'Uwazi UI', label: 'label', id: 'context1' },
         },
         {
           key: 'key3',
           value: 'value3',
           language: 'en',
-          context: { type: 'type', label: 'label', id: 'context2' },
+          context: { type: 'Uwazi UI', label: 'label', id: 'context2' },
         },
         {
           key: 'key1',
           value: 'valor1',
           language: 'es',
-          context: { type: 'type', label: 'label', id: 'context2' },
+          context: { type: 'Uwazi UI', label: 'label', id: 'context2' },
         },
       ]);
     });
@@ -108,8 +108,8 @@ describe('GetTranslationsService', () => {
       const allTranslations = createService().getByContext('context1');
 
       expect(await allTranslations.all()).toMatchObject([
-        { context: { type: 'type', label: 'label', id: 'context1' } },
-        { context: { type: 'type', label: 'label', id: 'context1' } },
+        { context: { type: 'Uwazi UI', label: 'label', id: 'context1' } },
+        { context: { type: 'Uwazi UI', label: 'label', id: 'context1' } },
       ]);
     });
   });

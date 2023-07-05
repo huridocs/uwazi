@@ -124,7 +124,7 @@ const translateSelectLabels = (
           (values || []).map(({ value, label }) => ({
             value,
             label: label
-              ? translations[language][propNameToThesauriId[key]][label] || label
+              ? translations[language]?.[propNameToThesauriId[key]]?.[label] || label
               : label,
           })),
         ];

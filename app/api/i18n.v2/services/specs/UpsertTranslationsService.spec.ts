@@ -9,7 +9,7 @@ import { CreateTranslationsData } from '../CreateTranslationsService';
 import { UpsertTranslationsService } from '../UpsertTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
-const collectionInDb = (collection = 'translations_v2') =>
+const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
@@ -34,7 +34,7 @@ const translation = (translationData: Partial<CreateTranslationsData>): CreateTr
 });
 
 const fixtures: DBFixture = {
-  translations_v2: [
+  translationsV2: [
     {
       language: 'es',
       key: 'key',
