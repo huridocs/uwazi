@@ -155,6 +155,7 @@ const testingDB: {
     try {
       if (
         tenants.current().featureFlags?.translationsV2 &&
+        !expect.getState().testPath?.includes('api/migrations') &&
         Object.keys(fixtures).includes('translations') &&
         !Object.keys(fixtures).includes('translationsV2')
       ) {
