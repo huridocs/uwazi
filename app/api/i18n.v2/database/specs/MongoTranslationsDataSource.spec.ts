@@ -5,10 +5,9 @@ import { Translation } from 'api/i18n.v2/model/Translation';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
-import migration from '../../migrations/index';
 
 const fixtures: DBFixture = {
-  translations_v2: [],
+  translationsV2: [],
   settings: [
     {
       languages: [
@@ -21,7 +20,10 @@ const fixtures: DBFixture = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  await migration.createIndexes(testingDB.mongodb);
+
+  await testingDB
+    .mongodb!.collection('translationsV2')
+    .createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
 });
 
 afterAll(async () => {
@@ -34,7 +36,7 @@ describe('MongoTranslationsDataSource', () => {
       it('should throw an error', async () => {
         await testingEnvironment.setUp({
           ...fixtures,
-          translations_v2: [
+          translationsV2: [
             {
               language: 'en',
               key: 'existing_key',

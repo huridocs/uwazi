@@ -1,16 +1,17 @@
-import request from 'supertest';
-import { permissionsContext } from 'api/permissions/permissionsContext';
-import { NextFunction, Application } from 'express';
-import { setUpApp } from 'api/utils/testingRoutes';
 import entities from 'api/entities';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { search } from 'api/search';
 import settings from 'api/settings';
 import templates from 'api/templates';
-import { search } from 'api/search';
+import { setUpApp } from 'api/utils/testingRoutes';
+import { Application, NextFunction } from 'express';
+import request from 'supertest';
 
+import translations from 'api/i18n';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import fixtures from './fixtures';
 import settingsRoutes from '../routes';
 import { settingsModel } from '../settingsModel';
+import fixtures from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -24,6 +25,7 @@ describe('Settings routes', () => {
 
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     const elasticIndex = 'settings_index';
     await testingEnvironment.setUp(fixtures, elasticIndex);
   });

@@ -1,22 +1,25 @@
-import mongoose, { Connection } from 'mongoose';
-import { Db, ObjectId } from 'mongodb';
-import { FileType } from 'shared/types/fileType';
-import { EntitySchema } from 'shared/types/entityType';
-import { PageType } from 'shared/types/pageType';
+import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
+import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
-import { setupTestUploadedPaths } from 'api/files/filesystem';
+import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
+import { tenants } from 'api/tenants';
+import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
+import { Db, ObjectId } from 'mongodb';
+import mongoose, { Connection } from 'mongoose';
+import path from 'path';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import { PageType } from 'shared/types/pageType';
+import { Settings } from 'shared/types/settingsType';
+import { IXSuggestionType } from 'shared/types/suggestionType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
-import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import uniqueID from 'shared/uniqueID';
+import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
-import { UserSchema } from '../../shared/types/userType';
-import { Settings } from 'shared/types/settingsType';
-import path from 'path';
-import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -32,6 +35,7 @@ export type DBFixture = {
   users?: UserSchema[];
   settings?: Settings[];
   relationships?: RelationshipDBOType[];
+  translationsV2?: TranslationDBO[];
   [k: string]: any;
 };
 
@@ -147,6 +151,21 @@ const testingDB: {
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
     this.UserInContextMockFactory.mockEditorUser();
+
+    try {
+      if (
+        tenants.current().featureFlags?.translationsV2 &&
+        !expect.getState().testPath?.includes('api/migrations') &&
+        Object.keys(fixtures).includes('translations') &&
+        !Object.keys(fixtures).includes('translationsV2')
+      ) {
+        await migrateTranslationsToV2();
+      }
+    } catch (e) {
+      if (!e.message.match('nonexistent async')) {
+        throw e;
+      }
+    }
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
