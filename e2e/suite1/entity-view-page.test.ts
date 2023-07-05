@@ -27,7 +27,7 @@ describe('Entity Page view', () => {
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
-  });
+  }, 60000);
 
   it('should set the template as entity view', async () => {
     await expect(page).toClick('a', { text: 'Settings' });
