@@ -18,6 +18,9 @@ export class Translation {
   readonly context: TranslationContext;
 
   constructor(key: string, value: string, language: LanguageISO6391, context: TranslationContext) {
+    if (typeof context.id !== 'string') {
+      throw new Error(`context.id is of type "${typeof context.id}", should be a string`);
+    }
     this.key = key;
     this.value = value;
     this.language = language;

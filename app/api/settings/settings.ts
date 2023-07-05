@@ -76,12 +76,10 @@ const saveLinksTranslations = async (
   );
 
   return translations.updateContext(
-    'Menu',
-    'Menu',
+    { id: 'Menu', label: 'Menu', type: ContextType.uwaziUI },
     updatedValues,
     deletedValues,
-    values,
-    ContextType.uwaziUI
+    values
   );
 };
 
@@ -103,12 +101,10 @@ const saveFiltersTranslations = async (
     currentFilters
   );
   return translations.updateContext(
-    'Filters',
-    'Filters',
+    { id: 'Filters', label: 'Filters', type: ContextType.uwaziUI },
     updatedValues,
     deletedValues,
-    values,
-    ContextType.uwaziUI
+    values
   );
 };
 

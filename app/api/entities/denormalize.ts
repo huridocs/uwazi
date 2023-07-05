@@ -8,7 +8,12 @@ import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
-import { MetadataSchema, MetadataObjectSchema, PropertySchema } from 'shared/types/commonTypes';
+import {
+  MetadataSchema,
+  MetadataObjectSchema,
+  PropertySchema,
+  LanguageISO6391,
+} from 'shared/types/commonTypes';
 import { isString } from 'util';
 
 import model from './entitiesModel';
@@ -401,7 +406,7 @@ const denormalizeProperty = async (
 
 async function denormalizeMetadata(
   metadata: MetadataSchema,
-  language: string,
+  language: LanguageISO6391,
   templateId: string,
   thesauriByKey: Record<string, ThesaurusSchema>
 ) {

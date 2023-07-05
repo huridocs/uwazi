@@ -5,7 +5,6 @@ import { MongoBulkWriteError } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
-import { ContextDoesNotExist } from '../errors/translationErrors';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 
@@ -13,7 +12,7 @@ export class MongoTranslationsDataSource
   extends MongoDataSource<TranslationDBO>
   implements TranslationsDataSource
 {
-  protected collectionName = 'translations_v2';
+  protected collectionName = 'translationsV2';
 
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
@@ -70,17 +69,6 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async getContext(contextId: string) {
-    const translation = await this.getCollection().findOne(
-      { 'context.id': contextId },
-      { session: this.getSession() }
-    );
-    if (!translation) {
-      throw new ContextDoesNotExist(contextId);
-    }
-    return translation.context;
-  }
-
   getByContext(context: string) {
     return new MongoResultSet<TranslationDBO, Translation>(
       this.getCollection().find({ 'context.id': context }, { session: this.getSession() }),
@@ -134,16 +122,26 @@ export class MongoTranslationsDataSource
     );
   }
 
-  async calculateNonexistentKeys(keys: string[]) {
-    const result = this.getCollection().aggregate(
-      [
-        { $match: { key: { $in: keys } } },
-        { $group: { _id: null, foundKeys: { $push: '$key' } } },
-        { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
-      ],
+  async calculateNonexistentKeys(contextId: string, keys: string[]) {
+    const context = await this.getCollection().findOne(
+      { 'context.id': contextId },
       { session: this.getSession() }
     );
-    const [{ notFoundKeys }] = await result.toArray();
-    return notFoundKeys || [];
+    if (!context) {
+      return keys;
+    }
+
+    const [result] = await this.getCollection()
+      .aggregate(
+        [
+          { $match: { key: { $in: keys }, 'context.id': contextId } },
+          { $group: { _id: null, foundKeys: { $push: '$key' } } },
+          { $project: { notFoundKeys: { $setDifference: [keys, '$foundKeys'] } } },
+        ],
+        { session: this.getSession() }
+      )
+      .toArray();
+
+    return result?.notFoundKeys || [];
   }
 }

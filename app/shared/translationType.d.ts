@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { LanguageISO6391, ObjectIdSchema } from 'shared/types/commonTypes';
 
 export interface TranslationContext {
   _id?: ObjectIdSchema;
@@ -13,7 +13,7 @@ export interface TranslationContext {
 
 export interface TranslationType {
   _id?: ObjectIdSchema;
-  locale?: string;
+  locale?: LanguageISO6391;
   contexts?: TranslationContext[];
 }
 
