@@ -28,7 +28,7 @@ describe('i18n translations routes', () => {
   });
 
   beforeEach(async () => {
-    const translations_v2: TranslationDBO[] = [
+    const translationsV2: TranslationDBO[] = [
       {
         language: 'es',
         key: 'title',
@@ -63,8 +63,8 @@ describe('i18n translations routes', () => {
           ],
         },
       ],
-      translations_v2: translations_v2,
-      translations: fixturesTranslationsV2ToTranslationsLegacy(translations_v2),
+      translationsV2: translationsV2,
+      translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
     });
   });
 

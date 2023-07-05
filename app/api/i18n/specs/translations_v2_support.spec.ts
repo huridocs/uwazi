@@ -11,7 +11,7 @@ import { migrateTranslationsToV2 } from '../v2_support';
 import fixtures, { dictionaryId } from './fixtures';
 
 let db: Db;
-const newTranslationsCollection = 'translations_v2';
+const newTranslationsCollection = 'translationsV2';
 
 describe('translations v2 support', () => {
   beforeEach(async () => {

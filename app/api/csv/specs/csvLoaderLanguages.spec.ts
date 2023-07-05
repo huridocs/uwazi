@@ -1,18 +1,17 @@
-import path from 'path';
-import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { files } from 'api/files/files';
+import * as filesystem from 'api/files/filesystem';
+import { uploadsPath } from 'api/files/filesystem';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import * as filesystem from 'api/files/filesystem';
+import db from 'api/utils/testing_db';
+import path from 'path';
 import { EntitySchema } from 'shared/types/entityType';
-import { uploadsPath } from 'api/files/filesystem';
 
+import translations from 'api/i18n';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
-import translations from 'api/i18n';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 const removeTestingZip = async () =>
   filesystem.deleteFile(path.join(__dirname, 'zipData/testLanguages.zip'));

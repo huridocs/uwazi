@@ -5,7 +5,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { DeleteTranslationsService } from '../DeleteTranslationsService';
 
-const collectionInDb = (collection = 'translations_v2') =>
+const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
@@ -17,7 +17,7 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [
+  translationsV2: [
     {
       language: 'es',
       key: 'clave',

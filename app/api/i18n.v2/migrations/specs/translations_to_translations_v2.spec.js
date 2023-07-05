@@ -22,7 +22,7 @@ describe('migration set_up_new_relationship_collection', () => {
 
   it('should set up the relationships collection', async () => {
     const collections = await db.listCollections().toArray();
-    const relCollection = collections.find(c => c.name === 'translations_v2');
+    const relCollection = collections.find(c => c.name === 'translationsV2');
     expect(relCollection).toBeDefined();
   });
 
@@ -31,7 +31,7 @@ describe('migration set_up_new_relationship_collection', () => {
   });
 
   it('should set up the relationships collection with the correct indices', async () => {
-    const indexInfo = await db.collection('translations_v2').indexInformation();
+    const indexInfo = await db.collection('translationsV2').indexInformation();
     expect(indexInfo).toEqual({
       _id_: [['_id', 1]],
       'context.id_1_key_1': [
@@ -46,10 +46,10 @@ describe('migration set_up_new_relationship_collection', () => {
     });
   });
 
-  it('should migrate translations to translations_v2 as atomic entries and be idempotent', async () => {
+  it('should migrate translations to translationsV2 as atomic entries and be idempotent', async () => {
     await migration.up(db);
     const translationsMigrated = await db
-      .collection('translations_v2')
+      .collection('translationsV2')
       .find({ 'context.id': 'System', language: 'en' })
       .sort({ key: 1 })
       .toArray();
@@ -142,7 +142,7 @@ describe('migration set_up_new_relationship_collection', () => {
     await migration.up(db);
 
     const translationsMigrated = await db
-      .collection('translations_v2')
+      .collection('translationsV2')
       .find()
       .sort({ language: 1, key: 1 })
       .toArray();

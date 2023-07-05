@@ -35,7 +35,7 @@ export type DBFixture = {
   users?: UserSchema[];
   settings?: Settings[];
   relationships?: RelationshipDBOType[];
-  translations_v2?: TranslationDBO[];
+  translationsV2?: TranslationDBO[];
   [k: string]: any;
 };
 
@@ -156,7 +156,7 @@ const testingDB: {
       if (
         tenants.current().featureFlags?.translationsV2 &&
         Object.keys(fixtures).includes('translations') &&
-        !Object.keys(fixtures).includes('translations_v2')
+        !Object.keys(fixtures).includes('translationsV2')
       ) {
         await migrateTranslationsToV2();
       }

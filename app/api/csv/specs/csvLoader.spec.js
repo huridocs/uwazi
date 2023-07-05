@@ -11,7 +11,6 @@ import db from 'api/utils/testing_db';
 import typeParsers from '../typeParsers';
 import fixtures, { template1Id } from './csvLoaderFixtures';
 import { mockCsvFileReadStream } from './helpers';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 describe('csvLoader', () => {
   const csvFile = path.join(__dirname, '/test.csv');

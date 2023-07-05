@@ -39,7 +39,7 @@ const fixtures: DBFixture = {
       role: UserRole.EDITOR,
     },
   ],
-  translations_v2: [],
+  translationsV2: [],
 };
 
 export { userId1, userId2, templateId };

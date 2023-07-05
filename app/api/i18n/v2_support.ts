@@ -22,8 +22,8 @@ import migration from '../i18n.v2/migrations';
 
 const cleanUpV2Collections = async (db: Db) => {
   try {
-    await db.collection('translations_v2').drop({});
-    await db.collection('translations_v2_helper').drop();
+    await db.collection('translationsV2').drop({});
+    await db.collection('translationsV2_helper').drop();
   } catch (e) {
     if (e.message !== 'ns not found') {
       throw e;
@@ -234,12 +234,12 @@ export const migrateTranslationsToV2 = async () => {
   }
 
   try {
-    await db.collection('translations_v2_helper').createIndex({ migration_helper: 1 });
-    await db.collection('translations_v2_helper').insertOne({ migration_helper: true });
+    await db.collection('translationsV2_helper').createIndex({ migration_helper: 1 });
+    await db.collection('translationsV2_helper').insertOne({ migration_helper: true });
   } catch (e) {}
 
   const needsMigration = await db
-    .collection('translations_v2_helper')
+    .collection('translationsV2_helper')
     .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } });
 
   if (needsMigration.value?.migrating) {
@@ -253,7 +253,7 @@ export const migrateTranslationsToV2 = async () => {
   await migration.up(db);
 
   await db
-    .collection('translations_v2_helper')
+    .collection('translationsV2_helper')
     .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
   return false;
 };
