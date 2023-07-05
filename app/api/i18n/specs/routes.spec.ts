@@ -2,6 +2,7 @@ import 'isomorphic-fetch';
 import request from 'supertest';
 
 import * as csvApi from 'api/csv/csvLoader';
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import i18nRoutes from 'api/i18n/routes';
 import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -11,8 +12,7 @@ import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
-import { fixturesTranslationsV2ToTranslationsLegacy } from "./fixturesTranslationsV2ToTranslationsLegacy";
-import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
+import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 import { sortByLocale } from './sortByLocale';
 
 describe('i18n translations routes', () => {
@@ -212,7 +212,9 @@ describe('i18n translations routes', () => {
             ],
           });
 
-        expect(response.body.contexts.find(context => context.id === 'System')).toMatchObject({
+        expect(
+          response.body.contexts.find((context: any) => context.id === 'System')
+        ).toMatchObject({
           values: { Search: 'Buscar' },
         });
 

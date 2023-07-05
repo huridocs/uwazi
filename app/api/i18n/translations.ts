@@ -1,24 +1,25 @@
 import { CSVLoader } from 'api/csv';
 import { generateFileName } from 'api/files';
-import { EnforcedWithId, WithId } from 'api/odm';
-import settings from 'api/settings/settings';
-import thesauri from 'api/thesauri/thesauri';
-import * as os from 'os';
-import path from 'path';
-import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 import { DefaultTranslations } from 'api/i18n/defaultTranslations';
 import { errorLog } from 'api/log';
+import { EnforcedWithId, WithId } from 'api/odm';
+import settings from 'api/settings/settings';
+import thesauri from 'api/thesauri/thesauri';
 import { prettifyError } from 'api/utils/handleError';
+import * as os from 'os';
+import path from 'path';
+import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 import { ObjectId } from 'mongodb';
 import { availableLanguages } from 'shared/languagesList';
 import { ContextType } from 'shared/translationSchema';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { pipeline } from 'stream/promises';
+import model from './translationsModel';
 import {
   addLanguageV2,
-  createTranslationsV2,
   deleteTranslationsByContextIdV2,
   deleteTranslationsByLanguageV2,
   getTranslationsV2,
@@ -28,8 +29,6 @@ import {
   updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import model from './translationsModel';
 
 function checkForMissingKeys(
   keyValuePairsPerLanguage: { [x: string]: { [k: string]: string } },
@@ -161,14 +160,16 @@ const propagateTranslation = async (
   );
 };
 
-const translationTypeToIndexedTranslation = (translations: EnforcedWithId<TranslationType>[]) =>
-  translations.map(
-    translation =>
-      ({
-        ...translation,
-        contexts: prepareContexts(translation.contexts),
-      } as IndexedTranslations)
-  );
+const translationTypeToIndexedTranslation = (translations?: EnforcedWithId<TranslationType>[]) =>
+  translations
+    ? translations.map(
+        translation =>
+          ({
+            ...translation,
+            contexts: prepareContexts(translation.contexts),
+          } as IndexedTranslations)
+      )
+    : [];
 
 const update = async (translation: TranslationType | IndexedTranslations) => {
   const currentTranslationData = await model.getById(translation._id);
@@ -219,13 +220,11 @@ export default {
     }
 
     const { context, ...actualQuery } = query;
-    const translations = await model.get(
-      actualQuery,
-      Object.assign(
-        { ...selector, ...(context ? { locale: 1 } : {}) },
-        context ? { contexts: { $elemMatch: { id: context } } } : {}
-      )
-    );
+    const translations = await model.get(actualQuery, {
+      ...selector,
+      ...(context ? { locale: 1 } : {}),
+      ...(context ? { contexts: { $elemMatch: { id: context } } } : {}),
+    });
 
     return translationTypeToIndexedTranslation(translations);
   },
@@ -315,7 +314,6 @@ export default {
           values: translatedValues,
           type,
         });
-        translation.contexts.push({ id, label: contextName, values: translatedValues, type });
         return this.oldSave(translation);
       })
     );

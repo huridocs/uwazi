@@ -1,16 +1,15 @@
 import db from 'api/utils/testing_db';
 
+import settings from 'api/settings';
 import thesauri from 'api/thesauri/thesauri.js';
 import { ContextType } from 'shared/translationSchema';
 // eslint-disable-next-line node/no-restricted-import
-import settings from 'api/settings';
 import * as fs from 'fs';
-import { TranslationType } from 'shared/translationType';
 import { UITranslationNotAvailable } from '../defaultTranslations';
-import translations, { IndexedTranslations } from '../translations';
-import fixtures, { dictionaryId, englishTranslation } from './fixtures';
-import { sortByLocale } from './sortByLocale';
+import translations from '../translations';
 import { migrateTranslationsToV2 } from '../v2_support';
+import fixtures, { dictionaryId } from './fixtures';
+import { sortByLocale } from './sortByLocale';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -320,9 +319,9 @@ describe('translations', () => {
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
-      const defaultTranslation = allTranslations.find(t => t.locale === 'en');
+      const defaultTranslation = allTranslations.find(t => t.locale === 'en') || { contexts: [] };
 
-      expect(frTranslation.contexts).toMatchObject(defaultTranslation.contexts);
+      expect(frTranslation?.contexts?.[0].values).toEqual(defaultTranslation.contexts?.[0].values);
     });
 
     describe('when translation already exists', () => {

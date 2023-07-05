@@ -2,7 +2,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
-import { DBFixture } from 'api/utils/testing_db';
 import request from 'shared/JSONRequest';
 import { PreserveConfig } from 'shared/types/settingsType.js';
 import fixtures, { userId1, userId2 } from './fixtures.js';
@@ -20,7 +19,7 @@ describe('Preserve', () => {
         endpoint: { url: 'fake url', method: 'GET' },
       })
     );
-    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index');
+    await testingEnvironment.setUp(fixtures, 'preserve-index');
   });
   afterAll(async () => {
     await testingEnvironment.tearDown();
