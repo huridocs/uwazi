@@ -2,7 +2,6 @@ import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
-import migration from 'api/i18n.v2/migrations/';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import {
   CreateTranslationsData,
@@ -17,12 +16,14 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { tenants } from 'api/tenants';
 import { Db } from 'mongodb';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { IndexedContextValues } from './translations';
+import migration from '../i18n.v2/migrations';
 
 const cleanUpV2Collections = async (db: Db) => {
   try {
-    await db.collection('translations_v2').drop({});
-    await db.collection('translations_v2_helper').drop();
+    await db.collection('translationsV2').drop({});
+    await db.collection('translationsV2_helper').drop();
   } catch (e) {
     if (e.message !== 'ns not found') {
       throw e;
@@ -49,11 +50,35 @@ const flattenTranslations = (translation: TranslationType): CreateTranslationsDa
   return [];
 };
 
-const resultsToV1TranslationType = async (tranlationsResult: ResultSet<Translation>) => {
-  const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
-  const contexts: {
+export const resultsToV1TranslationType = async (
+  tranlationsResult: ResultSet<Translation>,
+  onlyLanguage?: LanguageISO6391
+) => {
+  const transactionManager = new MongoTransactionManager(getClient());
+  const settings = DefaultSettingsDataSource(transactionManager);
+  let languageKeys = await settings.getLanguageKeys();
+  if (onlyLanguage) {
+    languageKeys = [onlyLanguage];
+  }
+
+  // const resultMap: { [language: string]: TranslationType & { locale: string } } = {};
+
+  const resultMap = languageKeys.reduce<{
+    [language: string]: TranslationType & { locale: string };
+  }>((memo, key) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[key] = { locale: key, contexts: [] };
+    return memo;
+  }, {});
+
+  const contexts = languageKeys.reduce<{
     [language: string]: { [context: string]: TranslationContext & { values: TranslationValue[] } };
-  } = {};
+  }>((memo, key) => {
+    // eslint-disable-next-line no-param-reassign
+    memo[key] = {};
+    return memo;
+  }, {});
+
   await tranlationsResult.forEach(translation => {
     if (!resultMap[translation.language]) {
       resultMap[translation.language] = {
@@ -130,7 +155,7 @@ export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
 export const deleteTranslationsByLanguageV2 = async (language: string) => {
   if (tenants.current().featureFlags?.translationsV2) {
     const transactionManager = new MongoTransactionManager(getClient());
-    await new DeleteTranslationsService(
+    return new DeleteTranslationsService(
       DefaultTranslationsDataSource(transactionManager),
       transactionManager
     ).deleteByLanguage(language);
@@ -144,12 +169,16 @@ export const getTranslationsV2ByContext = async (context: string) =>
     ).getByContext(context)
   );
 
-export const getTranslationsV2ByLanguage = async (language: string) =>
-  resultsToV1TranslationType(
-    new GetTranslationsService(
-      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
-    ).getByLanguage(language)
-  );
+export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) => {
+  if (tenants.current().featureFlags?.translationsV2) {
+    return resultsToV1TranslationType(
+      new GetTranslationsService(
+        DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
+      ).getByLanguage(language),
+      language
+    );
+  }
+};
 
 export const getTranslationsV2 = async () =>
   resultsToV1TranslationType(
@@ -159,7 +188,7 @@ export const getTranslationsV2 = async () =>
   );
 
 export const updateContextV2 = async (
-  context: { id: string; label: string },
+  context: CreateTranslationsData['context'],
   keyNamesChanges: { [x: string]: string },
   keysToDelete: string[],
   valueChanges: IndexedContextValues
@@ -178,30 +207,53 @@ export const updateContextV2 = async (
   }
 };
 
+export const addLanguageV2 = async (
+  newLanguage: LanguageISO6391,
+  defaultLanguage: LanguageISO6391
+) => {
+  if (tenants.current().featureFlags?.translationsV2) {
+    const [defaultTranslation] = (await getTranslationsV2ByLanguage(defaultLanguage)) || [];
+    const newLanguageTranslations = {
+      ...defaultTranslation,
+      locale: newLanguage,
+      contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
+    };
+
+    await createTranslationsV2(newLanguageTranslations);
+    const [result] = (await getTranslationsV2ByLanguage(newLanguage)) || [];
+    return result;
+  }
+};
+
 export const migrateTranslationsToV2 = async () => {
   const db = getConnection();
+
   if (!tenants.current().featureFlags?.translationsV2) {
     await cleanUpV2Collections(db);
     return false;
   }
 
-  const needsMigration = await db
-    .collection('translations_v2_helper')
-    .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } }, { upsert: true });
+  try {
+    await db.collection('translationsV2_helper').createIndex({ migration_helper: 1 });
+    await db.collection('translationsV2_helper').insertOne({ migration_helper: true });
+  } catch (e) {}
 
-  if (needsMigration.value?.migrated) {
-    return true;
-  }
+  const needsMigration = await db
+    .collection('translationsV2_helper')
+    .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } });
 
   if (needsMigration.value?.migrating) {
     return false;
   }
 
+  if (needsMigration.value?.migrated) {
+    return true;
+  }
+
   await migration.up(db);
 
   await db
-    .collection('translations_v2_helper')
+    .collection('translationsV2_helper')
     .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
-
   return false;
 };

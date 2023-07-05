@@ -1,6 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { DeleteResult, UpdateResult } from 'mongodb';
-import { Translation, TranslationContext } from '../model/Translation';
+import { Translation } from '../model/Translation';
 
 export interface TranslationsDataSource {
   insert(translations: Translation[]): Promise<Translation[]>;
@@ -10,7 +10,6 @@ export interface TranslationsDataSource {
   getByLanguage(language: string): ResultSet<Translation>;
   getByContext(context: string): ResultSet<Translation>;
   getContextAndKeys(contextId: string, keys: string[]): ResultSet<Translation>;
-  getContext(contextId: string): Promise<TranslationContext>;
 
   deleteByContextId(contextId: string): Promise<DeleteResult>;
   deleteByLanguage(language: string): Promise<DeleteResult>;
@@ -21,5 +20,5 @@ export interface TranslationsDataSource {
 
   updateValue(key: string, contextId: string, language: string, value: string): Promise<void>;
 
-  calculateNonexistentKeys(keys: string[]): Promise<string[]>;
+  calculateNonexistentKeys(contextId: string, keys: string[]): Promise<string[]>;
 }

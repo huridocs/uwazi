@@ -1,10 +1,55 @@
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
+
+const translationsV2: TranslationDBO[] = [
+  {
+    language: 'en',
+    key: 'value1',
+    value: 'value1',
+    context: {
+      id: thesauri1Id.toString(),
+      type: 'Thesaurus',
+      label: 'thesauri 1',
+    },
+  },
+  {
+    language: 'en',
+    key: 'value2',
+    value: 'value2',
+    context: {
+      id: thesauri1Id.toString(),
+      type: 'Thesaurus',
+      label: 'thesauri 1',
+    },
+  },
+  {
+    language: 'en',
+    key: 'value3',
+    value: 'value3',
+    context: {
+      id: thesauri1Id.toString(),
+      type: 'Thesaurus',
+      label: 'thesauri 1',
+    },
+  },
+  {
+    language: 'en',
+    key: 'value4',
+    value: 'value4',
+    context: {
+      id: thesauri1Id.toString(),
+      type: 'Thesaurus',
+      label: 'thesauri 1',
+    },
+  },
+];
 
 const fixtures: DBFixture = {
   templates: [
@@ -97,18 +142,7 @@ const fixtures: DBFixture = {
     },
   ],
 
-  translations: [
-    {
-      _id: db.id(),
-      locale: 'en',
-      contexts: [],
-    },
-    {
-      _id: db.id(),
-      locale: 'es',
-      contexts: [],
-    },
-  ],
+  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
 };
 
 export { fixtures, template1Id, thesauri1Id, templateToRelateId };

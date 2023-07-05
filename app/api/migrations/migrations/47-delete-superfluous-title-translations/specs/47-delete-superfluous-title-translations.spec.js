@@ -1,32 +1,33 @@
 import testingDB from 'api/utils/testing_db';
-import translations from 'api/i18n/translations';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
-const expectedDefaultResult = { 'default template': 'default template', Title: 'Title' };
-const expectedChangedOnceResult = {
-  'changed once': 'changed once',
-  'First New Title': 'First New Title',
-};
-const expectedChangedMultipleResult = {
-  'changed multiple correct': 'changed multiple correct',
-  'Fourth New Title': 'Fourth New Title',
-};
-const expectedComplexResult = {
-  'with properties': 'with properties',
-  'Fourth New Title': 'Fourth New Title',
-  date_title: 'date_title',
-  rich_text_title: 'rich_text_title',
-  Geolocation: 'Geolocation',
-  'Generated ID': 'Generated ID',
-};
-const unrelatedResult = {
-  'some-menu-item': 'some-menu-item',
-  'other-menu-item': 'other-menu-item',
-};
-const nonexistingResult = {
-  NonExistingTemplateName: 'NonExistingTemplateName',
-};
+const expectedDefaultResult = [
+  { key: 'default template', value: 'default template' },
+  { key: 'Title', value: 'Title' },
+];
+
+const expectedChangedOnceResult = [
+  { key: 'changed once', value: 'changed once' },
+  { key: 'First New Title', value: 'First New Title' },
+];
+const expectedChangedMultipleResult = [
+  { key: 'changed multiple correct', value: 'changed multiple correct' },
+  { key: 'Fourth New Title', value: 'Fourth New Title' },
+];
+const expectedComplexResult = [
+  { key: 'with properties', value: 'with properties' },
+  { key: 'Fourth New Title', value: 'Fourth New Title' },
+  { key: 'date_title', value: 'date_title' },
+  { key: 'rich_text_title', value: 'rich_text_title' },
+  { key: 'Geolocation', value: 'Geolocation' },
+  { key: 'Generated ID', value: 'Generated ID' },
+];
+const unrelatedResult = [
+  { key: 'some-menu-item', value: 'some-menu-item' },
+  { key: 'other-menu-item', value: 'other-menu-item' },
+];
+const nonexistingResult = [{ key: 'NonExistingTemplateName', value: 'NonExistingTemplateName' }];
 const results = [
   expectedDefaultResult,
   expectedChangedOnceResult,
@@ -53,7 +54,8 @@ describe('migration delete-superfluous-title-translations', () => {
   it('should delete obsolete title translations', async () => {
     await migration.up(testingDB.mongodb);
 
-    const allTranslations = await translations.get();
+    const allTranslations = await testingDB.mongodb.collection('translations').find({}).toArray();
+
     const spanishContexts = allTranslations[0].contexts;
     const englishContexts = allTranslations[1].contexts;
 
