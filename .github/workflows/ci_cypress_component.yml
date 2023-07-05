@@ -34,6 +34,6 @@ jobs:
         uses: barecheck/code-coverage-action@v1
         with:
           barecheck-github-app-token: $2b$10$POPC3moPq89kKw2oYkqDieVu60V.riVOVcbcDbhguCDaU86QnCOiW:39308071
-          lcov-file: './coverage/lcov.info'
+          lcov-file: 'coverage/lcov.info'
           send-summary-comment: true
           show-annotations: 'warning'
