@@ -1,42 +1,17 @@
 name: Upload Code Coverage
-
 on:
-  push:
-    branches:
-      - production
-      - development
-      - staging
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_run:
+    workflows: [Modules security check]
+    types: [completed]
 
 jobs:
-  wait_for_unit_tests:
+  on-success:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - uses: ArcticLampyrid/action-wait-for-workflow@v1.0.4
-        with:
-          workflow: Unit Tests
-  download_artifacts:
+      - run: echo 'The triggering workflow passed'
+  on-failure:
     runs-on: ubuntu-latest
-    needs: [wait_for_unit_tests]
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: 'api-coverage-report'
-  upload_coverage:
-    runs-on: ubuntu-latest
-    needs: [download_artifacts]
-    steps:
-      - name: Download codeclimate binary
-        run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-      - name: Make codeclimate binary executable
-        run: chmod +x ./cc-test-reporter
-      - name: Sum coverage reports
-        run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 2 -o codeclimate.total.json
-      - name: Upload coverage reports
-        run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
-    env:
-      CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
+      - run: echo 'The triggering workflow failed'
