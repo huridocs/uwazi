@@ -198,12 +198,10 @@ describe('thesauri', () => {
         };
         const response = await thesauri.save(data);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          response._id,
-          'Top 1 games',
+          { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
           { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
           ['Fundation'],
-          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
-          'Thesaurus'
+          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
         );
       });
 
@@ -442,9 +440,9 @@ describe('thesauri', () => {
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
         await thesauri.save(data);
-        const allTranslations = await translations.get();
+        const allTranslations = await translations.get({ locale: 'es' });
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
-        expect(context.values['new name']).toBe('dictionary 2');
+        expect(context.values['new name']).toBe('new name');
       });
     });
   });

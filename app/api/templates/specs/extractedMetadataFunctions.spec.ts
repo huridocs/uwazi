@@ -1,6 +1,7 @@
+import { files } from 'api/files';
+import translations from 'api/i18n/translations';
 import db from 'api/utils/testing_db';
 import { TemplateSchema } from 'shared/types/templateType';
-import { files } from 'api/files';
 import templates from '../templates';
 import fixtures, {
   propertyA,
@@ -12,6 +13,7 @@ import fixtures, {
 
 describe('updateExtractedMetadataProperties()', () => {
   beforeEach(async () => {
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await db.clearAllAndLoad(fixtures, 'uwazi_test_index');
   });
 

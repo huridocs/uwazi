@@ -1,20 +1,22 @@
 import entities from 'api/entities';
-import db from 'api/utils/testing_db';
+import translations from 'api/i18n';
+import { elastic } from 'api/search';
 import {
   fixtures,
   templateId,
   textPropertyId,
 } from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
-import { unique } from 'api/utils/filters';
-import { EntitySchema } from 'shared/types/entityType';
-import { propertyTypes } from 'shared/propertyTypes';
-import { TemplateSchema } from 'shared/types/templateType';
-import { elastic } from 'api/search';
 import { elasticTesting } from 'api/utils/elastic_testing';
+import { unique } from 'api/utils/filters';
+import db from 'api/utils/testing_db';
+import { propertyTypes } from 'shared/propertyTypes';
+import { EntitySchema } from 'shared/types/entityType';
+import { TemplateSchema } from 'shared/types/templateType';
 import templates from '../templates';
 
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await db.setupFixturesAndContext(fixtures, 'generated_id_auto_filler_index');
   });
 

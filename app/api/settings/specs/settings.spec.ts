@@ -45,12 +45,10 @@ describe('settings', () => {
       it('should create a translation context for the passed links', async () => {
         await settings.save(config);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          'Menu',
-          'Menu',
+          { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
           {},
           [],
-          { 'Page one': 'Page one' },
-          'Uwazi UI'
+          { 'Page one': 'Page one' }
         );
       });
 
@@ -60,12 +58,10 @@ describe('settings', () => {
         config.links[0].sublinks = [{ title: 'Page two' }];
         await settings.save(config);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          'Menu',
-          'Menu',
+          { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
           {},
           [],
-          { 'Page one': 'Page one', 'Page two': 'Page two' },
-          'Uwazi UI'
+          { 'Page one': 'Page one', 'Page two': 'Page two' }
         );
       });
 
@@ -80,12 +76,10 @@ describe('settings', () => {
           };
           await settings.save(config);
           expect(translations.updateContext).toHaveBeenCalledWith(
-            'Menu',
-            'Menu',
+            { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
             { 'Page one': 'Page 1' },
             ['Page two'],
-            { 'Page 1': 'Page 1', 'Page three': 'Page three' },
-            'Uwazi UI'
+            { 'Page 1': 'Page 1', 'Page three': 'Page three' }
           );
         });
 
@@ -104,12 +98,10 @@ describe('settings', () => {
           await settings.save(finalConfig);
 
           expect(translations.updateContext).toHaveBeenCalledWith(
-            'Menu',
-            'Menu',
+            { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
             { 'Page one': 'Page 1' },
             ['Subpage two', 'Page two'],
-            { 'Page 1': 'Page 1', 'Page three': 'Page three' },
-            'Uwazi UI'
+            { 'Page 1': 'Page 1', 'Page three': 'Page three' }
           );
         });
       });
@@ -126,12 +118,10 @@ describe('settings', () => {
         };
         await settings.save(config);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          'Filters',
-          'Filters',
+          { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
           {},
           [],
-          { Documents: 'Documents' },
-          'Uwazi UI'
+          { Documents: 'Documents' }
         );
       });
 
@@ -154,12 +144,10 @@ describe('settings', () => {
         };
         await settings.save(config);
         expect(translations.updateContext).toHaveBeenCalledWith(
-          'Filters',
-          'Filters',
+          { id: 'Filters', label: 'Filters', type: 'Uwazi UI' },
           { Documents: 'Important Documents' },
           ['Files'],
-          { 'Important Documents': 'Important Documents' },
-          'Uwazi UI'
+          { 'Important Documents': 'Important Documents' }
         );
       });
     });

@@ -1,116 +1,201 @@
 /** @format */
 
 import db, { DBFixture } from 'api/utils/testing_db';
+import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
 const englishTranslation = db.id();
 const dictionaryId = db.id();
 
+// eslint-disable-next-line camelcase
+const translationsV2: DBFixture['translationsV2'] = [
+  {
+    language: 'zh',
+    key: 'Age',
+    value: 'Age',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'zh',
+    key: 'Library',
+    value: 'Library',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'zh',
+    key: 'Email',
+    value: 'Email',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'zh',
+    key: 'Account',
+    value: 'Account',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'zh',
+    key: 'Password',
+    value: 'Password',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'zh',
+    key: 'Age',
+    value: 'Edad',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'zh',
+    key: 'Email',
+    value: 'E-Mail',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'zh',
+    key: 'Account',
+    value: 'Cuenta',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'zh',
+    key: 'Password',
+    value: 'Contraseña',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'zh',
+    key: 'dictionary 2',
+    value: 'dictionary 2',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'Age',
+    value: 'Edad',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'Email',
+    value: 'E-Mail',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'Account',
+    value: 'Cuenta',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'Password',
+    value: 'Contraseña',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'dictionary 2',
+    value: 'dictionary 2',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'es',
+    key: 'Age',
+    value: 'Edad',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'es',
+    key: 'Email',
+    value: 'Correo electronico',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'es',
+    key: 'Account',
+    value: 'Cuenta',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'es',
+    key: 'Password',
+    value: 'Contraseña',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'es',
+    key: 'Library',
+    value: 'Library',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'en',
+    key: 'Age',
+    value: 'Age',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'en',
+    key: 'Email',
+    value: 'E-Mail',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'en',
+    key: 'Account',
+    value: 'Account',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'en',
+    key: 'Password',
+    value: 'Password',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'en',
+    key: 'dictionary 2',
+    value: 'dictionary 2',
+    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
+  },
+  {
+    language: 'en',
+    key: 'Library',
+    value: 'Library',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'en',
+    key: 'Age',
+    value: 'Age',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'en',
+    key: 'Email',
+    value: 'E-Mail',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'en',
+    key: 'Account',
+    value: 'Account',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+  {
+    language: 'en',
+    key: 'Password',
+    value: 'Password',
+    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
+  },
+];
+
 const fixtures: DBFixture = {
-  translations: [
-    {
-      _id: englishTranslation,
-      locale: 'en',
-      contexts: [
-        {
-          _id: db.id(),
-          id: 'System',
-          label: 'System',
-          type: 'Uwazi UI',
-          values: [
-            { key: 'Password', value: 'Password' },
-            { key: 'Account', value: 'Account' },
-            { key: 'Email', value: 'E-Mail' },
-            { key: 'Age', value: 'Age' },
-            { key: 'Library', value: 'Library' },
-          ],
-        },
-        {
-          _id: db.id(),
-          id: 'Filters',
-          label: 'Filters',
-        },
-        {
-          _id: db.id(),
-          id: 'Menu',
-          label: 'Menu',
-        },
-        {
-          _id: db.id(),
-          id: entityTemplateId.toString(),
-          label: 'Judge',
-          values: [],
-          type: 'Entity',
-        },
-        {
-          _id: db.id(),
-          id: documentTemplateId.toString(),
-          label: 'Court order',
-          values: [],
-          type: 'Document',
-        },
-        {
-          id: dictionaryId.toString(),
-          type: 'Dictionary',
-          label: 'Dictionary',
-          values: [
-            { key: 'dictionary 2', value: 'dictionary 2' },
-            { key: 'Password', value: 'Password' },
-            { key: 'Account', value: 'Account' },
-            { key: 'Email', value: 'E-Mail' },
-            { key: 'Age', value: 'Age' },
-          ],
-        },
-      ],
-    },
-    {
-      _id: db.id(),
-      type: 'translation',
-      locale: 'es',
-      contexts: [
-        {
-          id: 'System',
-          label: 'System',
-          values: [
-            { key: 'Password', value: 'Contraseña' },
-            { key: 'Account', value: 'Cuenta' },
-            { key: 'Email', value: 'Correo electronico' },
-            { key: 'Age', value: 'Edad' },
-          ],
-        },
-        {
-          id: dictionaryId.toString(),
-          type: 'Dictionary',
-          label: 'Dictionary',
-          values: [
-            { key: 'dictionary 2', value: 'dictionary 2' },
-            { key: 'Password', value: 'Contraseña' },
-            { key: 'Account', value: 'Cuenta' },
-            { key: 'Email', value: 'E-Mail' },
-            { key: 'Age', value: 'Edad' },
-          ],
-        },
-      ],
-    },
-    {
-      _id: db.id(),
-      type: 'translation',
-      locale: 'zh',
-      contexts: [
-        {
-          id: 'System',
-          label: 'System',
-          values: [
-            { key: 'Password', value: 'Password' },
-            { key: 'Account', value: 'Account' },
-            { key: 'Email', value: 'Email' },
-            { key: 'Age', value: 'Age' },
-          ],
-        },
-      ],
-    },
-  ],
+  // eslint-disable-next-line camelcase
+  translationsV2,
+  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
   settings: [
     {
       _id: db.id(),

@@ -26,8 +26,7 @@ const testingEnvironment = {
 
   async setFixtures(fixtures?: DBFixture) {
     if (fixtures) {
-      await testingDB.connect();
-      await testingDB.clearAllAndLoadFixtures(fixtures);
+      await testingDB.setupFixturesAndContext(fixtures);
     }
   },
 
