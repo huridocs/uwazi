@@ -2,7 +2,7 @@ name: Upload Code Coverage
 
 on:
   workflow_run:
-    workflows: ['Unit tests']
+    workflows: [Unit tests]
     types:
       - completed
 
