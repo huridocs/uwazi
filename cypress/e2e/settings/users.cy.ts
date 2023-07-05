@@ -40,6 +40,7 @@ describe('Users', () => {
 
   describe('actions', () => {
     it('create user', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
         cy.get('#username').type('User_1');
@@ -47,16 +48,13 @@ describe('Users', () => {
         cy.get('#password').type('secret');
         cy.get('[data-testid="multiselect-comp"]').within(() => {
           cy.get('button').click();
-          cy.get('ul li')
-            .eq(0)
-            .within(() => {
-              cy.get('input').eq(0).click();
-            });
+          cy.contains('Activistas').click();
         });
       });
       cy.contains('button', 'Save').click();
       cy.contains('span', 'User_1');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
     });
 
     it('edit user', () => {
@@ -143,6 +141,7 @@ describe('Users', () => {
 
   describe('reset password and 2fa', () => {
     it('reset password', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -152,9 +151,11 @@ describe('Users', () => {
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
     });
 
     it('Reset 2fa', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('span', 'Password + 2fa');
       cy.get('table tbody tr')
         .eq(4)
@@ -169,11 +170,13 @@ describe('Users', () => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
     });
   });
 
   describe('unblock user', () => {
     it('should unblock a user', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(4)
         .within(() => {
@@ -181,6 +184,7 @@ describe('Users', () => {
         });
 
       cy.contains('button', 'Unlock account').click();
+      cy.wait('@updateUsers');
     });
 
     it('should log in with the unblocked user', () => {
