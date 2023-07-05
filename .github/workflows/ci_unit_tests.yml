@@ -122,12 +122,5 @@ jobs:
         run: ./cc-test-reporter sum-coverage **/codeclimate.*.json -p 2 -o codeclimate.total.json
       - name: Upload coverage reports
         run: ./cc-test-reporter upload-coverage -i codeclimate.total.json
-      - name: Generate Code Coverage report
-        uses: barecheck/code-coverage-action@v1
-        with:
-          barecheck-github-app-token: $2b$10$POPC3moPq89kKw2oYkqDieVu60V.riVOVcbcDbhguCDaU86QnCOiW:39308071
-          lcov-file: 'codeclimate.total.json'
-          send-summary-comment: true
-          show-annotations: 'warning'
     env:
       CC_TEST_REPORTER_ID: 61434ccfc3eeb2ed7b9cfec1d61c4e0ca115a32c1eebfefe404d1ecb77d73358 #codelimate api key
