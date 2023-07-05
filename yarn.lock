@@ -3109,9 +3109,9 @@
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
 "@elastic/elasticsearch@7.17":
-  version "7.17.0"
-  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.17.0.tgz#589fb219234cf1b0da23744e82b1d25e2fe9a797"
-  integrity sha512-5QLPCjd0uLmLj1lSuKSThjNpq39f6NmlTy9ROLFwG5gjyTgpwSqufDeYG/Fm43Xs05uF7WcscoO7eguI3HuuYA==
+  version "7.17.11"
+  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.17.11.tgz#bcb16b2e348a826eec821155fcc018b40bc4dfbb"
+  integrity sha512-4PiIh+F+dT/3w7eBPieUeTqnXHkss8Uyf4/LfyUn1pToYKZp0GrQmQfyuXCumZI7GE4dKEu8E8w0ZE7/dP88hg==
   dependencies:
     debug "^4.3.1"
     hpagent "^0.1.1"
