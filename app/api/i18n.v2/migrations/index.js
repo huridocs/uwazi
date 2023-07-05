@@ -35,7 +35,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
   return [];
 };
 
-const newTranslationsCollection = 'translations_v2';
+const newTranslationsCollection = 'translationsV2';
 
 export default {
   delta: 137,

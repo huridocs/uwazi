@@ -10,7 +10,6 @@ import { IndexedContextValues } from 'api/i18n/translations';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, thesauri1Id } from './fixtures';
 import { mockCsvFileReadStream } from './helpers';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 
 const getTranslation = async (lang: string, id: ObjectId) =>
   ((await translations.get()).find(t => t.locale === lang)?.contexts || []).find(

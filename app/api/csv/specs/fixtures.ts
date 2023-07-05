@@ -2,13 +2,13 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { fixturesTranslationsV2ToTranslationsLegacy } from "api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy";
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 
-const translations_v2: TranslationDBO[] = [
+const translationsV2: TranslationDBO[] = [
   {
     language: 'en',
     key: 'value1',
@@ -142,7 +142,7 @@ const fixtures: DBFixture = {
     },
   ],
 
-  translations: fixturesTranslationsV2ToTranslationsLegacy(translations_v2),
+  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
 };
 
 export { fixtures, template1Id, thesauri1Id, templateToRelateId };

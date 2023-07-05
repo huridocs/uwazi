@@ -12,7 +12,7 @@ export class MongoTranslationsDataSource
   extends MongoDataSource<TranslationDBO>
   implements TranslationsDataSource
 {
-  protected collectionName = 'translations_v2';
+  protected collectionName = 'translationsV2';
 
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));

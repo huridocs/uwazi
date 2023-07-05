@@ -4,7 +4,7 @@ import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import request from 'shared/JSONRequest';
 import { PreserveConfig } from 'shared/types/settingsType.js';
-import fixtures, { userId1, userId2 } from './fixtures.js';
+import fixtures, { userId1, userId2 } from './fixtures';
 import { Preserve } from '../preserve';
 
 describe('Preserve', () => {

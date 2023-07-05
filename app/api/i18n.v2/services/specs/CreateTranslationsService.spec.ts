@@ -12,7 +12,7 @@ import { ObjectId } from 'mongodb';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
-const collectionInDb = (collection = 'translations_v2') =>
+const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
@@ -28,7 +28,7 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [],
+  translationsV2: [],
   settings: [
     {
       languages: [
@@ -140,7 +140,7 @@ describe('CreateTranslationsService', () => {
       it('should throw a validation error', async () => {
         await testingEnvironment.setUp({
           ...fixtures,
-          translations_v2: [
+          translationsV2: [
             {
               language: 'en',
               key: 'existing_key',

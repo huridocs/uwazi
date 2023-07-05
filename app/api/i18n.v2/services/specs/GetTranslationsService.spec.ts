@@ -11,7 +11,7 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [
+  translationsV2: [
     {
       key: 'key1',
       value: 'value1',

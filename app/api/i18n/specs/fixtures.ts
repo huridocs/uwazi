@@ -9,7 +9,7 @@ const englishTranslation = db.id();
 const dictionaryId = db.id();
 
 // eslint-disable-next-line camelcase
-const translations_v2: DBFixture['translations_v2'] = [
+const translationsV2: DBFixture['translationsV2'] = [
   {
     language: 'zh',
     key: 'Age',
@@ -194,8 +194,8 @@ const translations_v2: DBFixture['translations_v2'] = [
 
 const fixtures: DBFixture = {
   // eslint-disable-next-line camelcase
-  translations_v2,
-  translations: fixturesTranslationsV2ToTranslationsLegacy(translations_v2),
+  translationsV2,
+  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
   settings: [
     {
       _id: db.id(),

@@ -85,7 +85,7 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-  translations_v2: [],
+  translationsV2: [],
 };
 
 export { templateCommonProperties, fixtures, fixtureFactory };
