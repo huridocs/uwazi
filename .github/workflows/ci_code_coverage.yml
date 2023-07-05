@@ -1,10 +1,12 @@
 name: Upload Code Coverage
 
 on:
-  workflow_run:
-    workflows: [Unit tests]
-    types:
-      - completed
+  push:
+    branches:
+      - production
+      - development
+      - staging
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
