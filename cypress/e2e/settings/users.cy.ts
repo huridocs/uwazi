@@ -25,7 +25,7 @@ describe('Users', () => {
     cy.get('caption').within(() => cy.contains('span', 'Users'));
     cy.get('div.tw-content').scrollTo('top');
     cy.checkA11y();
-    cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
+    cy.getByTestId('settings-content').toMatchImageSnapshot();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
     cy.get('aside').toMatchImageSnapshot();
@@ -46,15 +46,15 @@ describe('Users', () => {
         cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
         cy.get('#password').type('secret');
-        cy.get('[data-testid="multiselect-comp"]').within(() => {
+        cy.getByTestId('multiselect').within(() => {
           cy.get('button').click();
           cy.contains('Activistas').click();
         });
       });
       cy.contains('button', 'Save').click();
       cy.contains('span', 'User_1');
-      cy.contains('button', 'Dismiss').click();
       cy.wait('@updateUsers');
+      cy.contains('button', 'Dismiss').click();
     });
 
     it('edit user', () => {
@@ -150,8 +150,8 @@ describe('Users', () => {
       cy.contains('button', 'Reset Password').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
-      cy.contains('button', 'Dismiss').click();
       cy.wait('@updateUsers');
+      cy.contains('button', 'Dismiss').click();
     });
 
     it('Reset 2fa', () => {
@@ -169,8 +169,8 @@ describe('Users', () => {
         .within(() => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
-      cy.contains('button', 'Dismiss').click();
       cy.wait('@updateUsers');
+      cy.contains('button', 'Dismiss').click();
     });
   });
 
@@ -216,7 +216,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset Password').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset passwords');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Cynthia');
@@ -238,7 +238,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset 2FA').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset 2FA');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
@@ -274,7 +274,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Delete').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Delete');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');

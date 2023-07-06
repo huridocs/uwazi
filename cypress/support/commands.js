@@ -132,9 +132,7 @@ Cypress.Commands.add(
     );
   }
 );
-Cypress.Commands.add('configureCypressTestingLibrary', config => {
-  cy.configureCypressTestingLibrary(config);
-});
+
 
 Cypress.on('window:before:load', window => {
   window.document.head.insertAdjacentHTML(
@@ -154,6 +152,12 @@ Cypress.on('window:before:load', window => {
 Cypress.Commands.add('clearAndType', (selector, value) => {
   cy.get(selector).clear();
   cy.get(selector).type(value);
+});
+
+// eslint-disable-next-line prefer-arrow-callback
+Cypress.Commands.addQuery('getByTestId', function getByTestId(id) {
+  const getFn = cy.now('get', `[data-testid="${id}"]`);
+  return subject => getFn(subject);
 });
 
 Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
