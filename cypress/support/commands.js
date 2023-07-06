@@ -133,7 +133,6 @@ Cypress.Commands.add(
   }
 );
 
-
 Cypress.on('window:before:load', window => {
   window.document.head.insertAdjacentHTML(
     'beforeend',
