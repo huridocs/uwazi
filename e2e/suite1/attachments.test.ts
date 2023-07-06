@@ -113,7 +113,7 @@ describe('connections', () => {
         { text: 'View' }
       );
 
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(1000);
       await expect(page).toMatchElement('#page3R_mcid6 > span', {
         text: 'RESOLUCIÓN DE LA PRESIDENTA DE LA',
       });
