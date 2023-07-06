@@ -349,6 +349,11 @@ export class MigrationService {
     const matcher = await this.readV1RelationshipFields();
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
+
+    if (transformAndWrite) {
+      await this.relationshipsDS.deleteAll();
+    }
+
     const transformResult = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
     const { total, used, totalTextReferences, usedTextReferences, errors } = transformResult.stats;
     const { hubsWithUnusedConnections } = transformResult;

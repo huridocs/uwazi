@@ -93,6 +93,8 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   private hubTestResult?: hubTestResult;
 
+  private showMigrationConfirm = false;
+
   async performDryRun() {
     const summary = await _sendMigrationRequest(true);
     this.migrationSummary = summary;
@@ -102,6 +104,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   async performMigration() {
     const summary = await _sendMigrationRequest();
     this.migrationSummary = summary;
+    this.showMigrationConfirm = false;
     this.forceUpdate();
   }
 
@@ -112,6 +115,16 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   async testOneHub() {
     const testresult = await _testOneHub(this.testedHub);
     this.hubTestResult = testresult;
+    this.forceUpdate();
+  }
+
+  readyMigration() {
+    this.showMigrationConfirm = true;
+    this.forceUpdate();
+  }
+
+  cancelMigration() {
+    this.showMigrationConfirm = false;
     this.forceUpdate();
   }
 
@@ -166,9 +179,20 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               Dry Run
             </button>
             &emsp;
-            <button type="button" className="btn" onClick={this.performMigration.bind(this)}>
+            <button type="button" className="btn" onClick={this.readyMigration.bind(this)}>
               Migrate
             </button>
+            {this.showMigrationConfirm && (
+              <>
+                <div>This will clean all your existing v2 relationships. Are you sure?</div>
+                <button type="button" className="btn" onClick={this.performMigration.bind(this)}>
+                  Perform
+                </button>
+                <button type="button" className="btn" onClick={this.cancelMigration.bind(this)}>
+                  Cancel
+                </button>
+              </>
+            )}
             <br />
             <br />
             {this.migrationSummary && (
