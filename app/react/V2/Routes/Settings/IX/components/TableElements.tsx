@@ -12,7 +12,7 @@ interface PropertyTypes extends PropertySchema {
   type: 'text' | 'numeric' | 'date';
 }
 
-type TableData = IXExtractorInfo & {
+type Extractor = IXExtractorInfo & {
   propertyLabel: string;
   propertyType: PropertyTypes['type'];
 };
@@ -23,14 +23,14 @@ const propertyIcons = {
   date: <CalendarDaysIcon className="w-5" />,
 };
 
-const columnHelper = createColumnHelper<TableData>();
+const columnHelper = createColumnHelper<Extractor>();
 
-const ExtractorHeader = () => <Translate>Extractor Name</Translate>;
+const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
-const PropertyCell = ({ cell }: CellContext<TableData, TableData['propertyType']>) => {
+const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
     <div className="flex gap-2">
@@ -40,7 +40,7 @@ const PropertyCell = ({ cell }: CellContext<TableData, TableData['propertyType']
   );
 };
 
-const TemplatesCell = ({ cell }: CellContext<TableData, TableData['templates']>) => (
+const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['templates']>) => (
   <div className="flex gap-1">
     {cell.getValue().map(templateName => (
       <div key={templateName} className="whitespace-nowrap">
@@ -50,7 +50,7 @@ const TemplatesCell = ({ cell }: CellContext<TableData, TableData['templates']>)
   </div>
 );
 
-const LinkButton = ({ cell }: CellContext<TableData, TableData['_id']>) => (
+const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
       <Translate>Review</Translate>
@@ -82,5 +82,5 @@ const tableColumns = [
   }),
 ];
 
-export type { TableData };
+export type { Extractor };
 export { tableColumns };
