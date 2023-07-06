@@ -67,7 +67,7 @@
     "build-storybook": "storybook build",
     "cypress": "cypress open",
     "cy-components": "cypress run --component --config video=false --browser chrome",
-    "cy-e2e": "cypress run --brow --browser chrome"
+    "cy-e2e": "cypress run --browser chrome"
   },
   "jest": {
     "projects": [
