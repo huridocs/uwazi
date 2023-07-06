@@ -53,6 +53,8 @@ const IXDashboard = () => {
             data={formmatedExtractors}
             columns={tableColumns}
             title={<Translate>Extractors</Translate>}
+            enableSelection
+            initialState={{ sorting: [{ id: 'name', desc: false }] }}
           />
         </SettingsContent.Body>
 
