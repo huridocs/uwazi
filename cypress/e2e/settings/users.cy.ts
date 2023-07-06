@@ -49,6 +49,7 @@ describe('Users', () => {
         cy.getByTestId('multiselect').within(() => {
           cy.get('button').click();
           cy.contains('Activistas').click();
+          cy.get('button').click();
         });
       });
       cy.contains('button', 'Save').click();
