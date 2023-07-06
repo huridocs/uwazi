@@ -3062,16 +3062,17 @@
     tunnel-agent "^0.6.0"
     uuid "^8.3.2"
 
-"@cypress/webpack-dev-server@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@cypress/webpack-dev-server/-/webpack-dev-server-3.4.1.tgz#d706437624a386022d75fd9c326b9f010fd3a854"
-  integrity sha512-S6IUklDXIkcajtkjtLZz8nzVMuG/kjEKnRVkAiIyJL3EZ+EHcXgrUQegfRb15poFlk4SZ/AMLRMqLSB6KCCxkg==
+"@cypress/webpack-dev-server@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@cypress/webpack-dev-server/-/webpack-dev-server-3.5.0.tgz#06dd01e9a14735d86e7161ebae4f653a1af4f802"
+  integrity sha512-fFgXJL//tqPkDyZXL/Wwl/LEf/mkvf8LlbOzvPhm0ACChpYGwq6a1i9/mp/gdx/0n+Sk39NwXWfTS2knYm9Dyw==
   dependencies:
     find-up "6.3.0"
     fs-extra "9.1.0"
     html-webpack-plugin-4 "npm:html-webpack-plugin@^4"
     html-webpack-plugin-5 "npm:html-webpack-plugin@^5"
     local-pkg "0.4.1"
+    semver "^7.3.2"
     speed-measure-webpack-plugin "1.4.2"
     tslib "^2.3.1"
     webpack-dev-server "^4.7.4"
