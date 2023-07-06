@@ -11,6 +11,7 @@ import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'app/V2/atoms';
 import { IXExtractorInfo } from './types';
 import { Extractor, tableColumns } from './components/TableElements';
+import { List } from './components/List';
 
 const formatExtractors = (
   extractors: IXExtractorInfo[],
@@ -115,8 +116,7 @@ const IXDashboard = () => {
         <ConfirmationModal
           header="Delete extractors"
           warningText="Do you want to delete the following items?"
-          // body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
-          body="make a list of selected extractors"
+          body={<List items={selected} />}
           onAcceptClick={async () => {
             await deleteExtractors();
             setConfirmModal(false);
