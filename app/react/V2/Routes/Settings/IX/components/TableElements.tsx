@@ -25,9 +25,9 @@ const propertyIcons = {
 
 const columnHelper = createColumnHelper<TableData>();
 
-const ExtractorHeader = () => <Translate>Extractor</Translate>;
+const ExtractorHeader = () => <Translate>Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
-const TemplatesHeader = () => <Translate>Templates</Translate>;
+const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
 const PropertyCell = ({ cell }: CellContext<TableData, TableData['propertyType']>) => {
@@ -61,18 +61,18 @@ const LinkButton = ({ cell }: CellContext<TableData, TableData['_id']>) => (
 const tableColumns = [
   columnHelper.accessor('name', {
     header: ExtractorHeader,
-    meta: { className: '' },
+    meta: { className: 'w-1/6' },
   }),
   columnHelper.accessor('propertyType', {
     header: PropertyHeader,
     cell: PropertyCell,
-    meta: { className: '' },
+    meta: { className: 'w-1/6' },
   }),
   columnHelper.accessor('templates', {
     header: TemplatesHeader,
     enableSorting: false,
     cell: TemplatesCell,
-    meta: { className: '' },
+    meta: { className: 'w-4/6' },
   }),
   columnHelper.accessor('_id', {
     header: ActionHeader,
