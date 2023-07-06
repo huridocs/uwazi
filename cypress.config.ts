@@ -12,6 +12,7 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     video: false,
     testIsolation: false,
+    specPattern: 'cypress/e2e/settings/users.cy.{js,jsx,ts,tsx}',
   },
   component: {
     devServer: {

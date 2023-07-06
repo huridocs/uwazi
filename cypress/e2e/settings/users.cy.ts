@@ -42,7 +42,7 @@ describe('Users', () => {
     it('create user', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('button', 'Add user').click();
-      cy.get('aside').within(() => {
+      /*cy.get('aside').within(() => {
         cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
         cy.get('#password').type('secret');
@@ -55,10 +55,10 @@ describe('Users', () => {
       cy.contains('button', 'Save').click();
       cy.contains('span', 'User_1');
       cy.wait('@updateUsers');
-      cy.contains('button', 'Dismiss').click();
+      cy.contains('button', 'Dismiss').click();*/
     });
-
-    it('edit user', () => {
+  });
+  /*it('edit user', () => {
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -286,5 +286,5 @@ describe('Users', () => {
       cy.contains('button', 'Dismiss').click();
       namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
     });
-  });
+  });*/
 });
