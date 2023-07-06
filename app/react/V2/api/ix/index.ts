@@ -1,9 +1,8 @@
-import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
-const getExtractors = async (headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams({}, headers);
+const get = async () => {
+  const requestParams = new RequestParams({});
   const { json: response } = await api.get('ixextractors', requestParams);
   return response;
 };
@@ -47,14 +46,15 @@ const getExtractors = async (headers?: IncomingHttpHeaders) => {
 //   return response;
 // };
 
-// const deleteExtractors = async (requestParams: RequestParams<{ ids: string[] }>) => {
-//   const { json: response } = await api.delete('ixextractors', requestParams);
-//   return response;
-// };
+const deleteExtractors = async (ids: string[]) => {
+  const requestParams = new RequestParams({ ids });
+  const response = await api.delete('ixextractors', requestParams);
+  return response;
+};
 
 // const updateExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
 //   const { json: response } = await api.put('ixextractors', requestParams);
 //   return response;
 // };
 
-export { getExtractors };
+export { get, deleteExtractors };

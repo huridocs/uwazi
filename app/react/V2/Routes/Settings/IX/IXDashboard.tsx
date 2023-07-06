@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
+import { useSetRecoilState } from 'recoil';
 import * as ixAPI from 'V2/api/ix';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
+import { notificationAtom } from 'app/V2/atoms';
 import { IXExtractorInfo } from './types';
 import { Extractor, tableColumns } from './components/TableElements';
 
@@ -44,12 +45,34 @@ const IXDashboard = () => {
     extractors: IXExtractorInfo[];
     templates: ClientTemplateSchema[];
   };
+  const revalidator = useRevalidator();
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
+  const [confirmModal, setConfirmModal] = useState(false);
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const formmatedExtractors = useMemo(
     () => formatExtractors(extractors, templates),
     [extractors, templates]
   );
+
+  const deleteExtractors = async () => {
+    const extractorIds = selected.map(selection => selection.original._id);
+
+    try {
+      await ixAPI.deleteExtractors(extractorIds);
+      revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Extractor/s deleted</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    }
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
@@ -75,7 +98,7 @@ const IXDashboard = () => {
           ) : undefined}
 
           {selected.length ? (
-            <Button size="small" type="button" color="error">
+            <Button size="small" type="button" color="error" onClick={() => setConfirmModal(true)}>
               <Translate>Delete</Translate>
             </Button>
           ) : undefined}
@@ -87,16 +110,30 @@ const IXDashboard = () => {
           ) : undefined}
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {confirmModal && (
+        <ConfirmationModal
+          header="Delete extractors"
+          warningText="Do you want to delete the following items?"
+          // body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
+          body="make a list of selected extractors"
+          onAcceptClick={async () => {
+            await deleteExtractors();
+            setConfirmModal(false);
+            setSelected([]);
+          }}
+          onCancelClick={() => setConfirmModal(false)}
+          dangerStyle
+        />
+      )}
     </div>
   );
 };
 
-const dashboardLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () => {
-    const extractors = await ixAPI.getExtractors(headers);
-    const templates = await templatesAPI.get(headers);
-    return { extractors, templates };
-  };
+const dashboardLoader = (): LoaderFunction => async () => {
+  const extractors = await ixAPI.get();
+  const templates = await templatesAPI.get();
+  return { extractors, templates };
+};
 
 export { IXDashboard, dashboardLoader };
