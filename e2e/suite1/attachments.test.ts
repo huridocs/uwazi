@@ -112,6 +112,7 @@ describe('connections', () => {
         '.filelist > ul > li:nth-child(2) > .file > div:nth-child(2) >  div:nth-child(2) > .btn-default',
         { text: 'View' }
       );
+      await page.waitForSelector('#page3R_mcid6');
       await expect(page).toMatchElement('#page3R_mcid6', {
         text: 'RESOLUCIÓN DE LA PRESIDENTA DE LA',
       });
