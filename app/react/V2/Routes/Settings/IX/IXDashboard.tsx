@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Row } from '@tanstack/react-table';
 import * as ixAPI from 'V2/api/ix';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
-import { Table } from 'V2/Components/UI';
+import { Button, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { IXExtractorInfo } from './types';
-import { TableData, tableColumns } from './components/TableElements';
+import { Extractor, tableColumns } from './components/TableElements';
 
-const formatExtractors = (extractors: IXExtractorInfo[], templates: ClientTemplateSchema[]) =>
+const formatExtractors = (
+  extractors: IXExtractorInfo[],
+  templates: ClientTemplateSchema[]
+): Extractor[] =>
   extractors.map(extractor => {
-    let propertyType: TableData['propertyType'] = 'text';
+    let propertyType: Extractor['propertyType'] = 'text';
     let propertyLabel = t('System', 'Title', null, false);
 
     const namedTemplates = extractor.templates.map(extractorTemplate => {
@@ -27,7 +31,7 @@ const formatExtractors = (extractors: IXExtractorInfo[], templates: ClientTempla
       );
 
       if (property) {
-        propertyType = property.type as TableData['propertyType'];
+        propertyType = property.type as Extractor['propertyType'];
         propertyLabel = t(template._id, property.label, null, false);
       }
     });
@@ -40,8 +44,12 @@ const IXDashboard = () => {
     extractors: IXExtractorInfo[];
     templates: ClientTemplateSchema[];
   };
+  const [selected, setSelected] = useState<Row<Extractor>[]>([]);
 
-  const formmatedExtractors = formatExtractors(extractors, templates);
+  const formmatedExtractors = useMemo(
+    () => formatExtractors(extractors, templates),
+    [extractors, templates]
+  );
 
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
@@ -49,16 +57,35 @@ const IXDashboard = () => {
         <SettingsContent.Header title="Metadata extraction dashboard" />
 
         <SettingsContent.Body>
-          <Table<TableData>
+          <Table<Extractor>
             data={formmatedExtractors}
             columns={tableColumns}
             title={<Translate>Extractors</Translate>}
             enableSelection
+            onSelection={setSelected}
             initialState={{ sorting: [{ id: 'name', desc: false }] }}
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer>footer</SettingsContent.Footer>
+        <SettingsContent.Footer className="flex gap-2">
+          {selected.length === 1 ? (
+            <Button size="small" type="button">
+              <Translate>Edit Extractor</Translate>
+            </Button>
+          ) : undefined}
+
+          {selected.length ? (
+            <Button size="small" type="button" color="error">
+              <Translate>Delete</Translate>
+            </Button>
+          ) : undefined}
+
+          {!selected.length ? (
+            <Button size="small" type="button">
+              <Translate>Create Extractor</Translate>
+            </Button>
+          ) : undefined}
+        </SettingsContent.Footer>
       </SettingsContent>
     </div>
   );
