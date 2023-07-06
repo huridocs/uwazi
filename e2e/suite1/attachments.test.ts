@@ -113,11 +113,11 @@ describe('connections', () => {
         { text: 'View' }
       );
 
-      await page.waitForTimeout(1000);
+      await page.reload();
+      await page.waitForSelector('#page3R_mcid6 > span');
       await expect(page).toMatchElement('#page3R_mcid6 > span', {
         text: 'RESOLUCIÓN DE LA PRESIDENTA DE LA',
       });
-      await page.reload();
 
       await expect(page).toClick(
         '.filelist > ul > li:nth-child(1) > .file > div:nth-child(2) >  div:nth-child(2) > .btn-default',
@@ -126,7 +126,7 @@ describe('connections', () => {
       await expect(page).toMatchElement('.textLayer > span:nth-child(1)', {
         text: 'Research Paper',
       });
-    });
+    }, 4000);
   });
 
   describe('entity attachment', () => {
