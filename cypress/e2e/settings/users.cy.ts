@@ -28,8 +28,8 @@ describe('Users', () => {
     cy.getByTestId('settings-content').toMatchImageSnapshot();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
-    cy.get('aside').toMatchImageSnapshot();
     cy.checkA11y();
+    cy.get('aside').toMatchImageSnapshot();
     cy.contains('button', 'Cancel').click();
   });
 
