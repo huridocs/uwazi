@@ -13,6 +13,7 @@ interface PropertyTypes extends PropertySchema {
 }
 
 type Extractor = IXExtractorInfo & {
+  namedTemplates: string[];
   propertyLabel: string;
   propertyType: PropertyTypes['type'];
 };
@@ -40,7 +41,7 @@ const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']
   );
 };
 
-const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['templates']>) => (
+const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplates']>) => (
   <div className="flex gap-1">
     {cell.getValue().map(templateName => (
       <div key={templateName} className="whitespace-nowrap">
@@ -68,7 +69,7 @@ const tableColumns = [
     cell: PropertyCell,
     meta: { className: 'w-1/6' },
   }),
-  columnHelper.accessor('templates', {
+  columnHelper.accessor('namedTemplates', {
     header: TemplatesHeader,
     enableSorting: false,
     cell: TemplatesCell,

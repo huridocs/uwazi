@@ -38,7 +38,7 @@ export const ExtractorModal = ({
       setEditing(true);
       setName(extractor.name);
       const initialValues = extractor.templates.map(
-        template => template + '-' + extractor.property
+        template => `${template}-${extractor.property}`
       );
       setValues(initialValues);
     } else {

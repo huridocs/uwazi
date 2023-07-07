@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
@@ -9,6 +10,7 @@ import { ClientTemplateSchema } from 'app/istore';
 import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'app/V2/atoms';
+import { ExtractorModal } from 'app/MetadataExtraction/ExtractorModal';
 import { IXExtractorInfo } from './types';
 import { Extractor, tableColumns } from './components/TableElements';
 import { List } from './components/List';
@@ -38,7 +40,7 @@ const formatExtractors = (
       }
     });
 
-    return { ...extractor, templates: namedTemplates, propertyType, propertyLabel };
+    return { ...extractor, namedTemplates: namedTemplates, propertyType, propertyLabel };
   });
 
 const IXDashboard = () => {
@@ -49,6 +51,7 @@ const IXDashboard = () => {
   const revalidator = useRevalidator();
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const formmatedExtractors = useMemo(
@@ -93,7 +96,7 @@ const IXDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected.length === 1 ? (
-            <Button size="small" type="button">
+            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
@@ -105,7 +108,7 @@ const IXDashboard = () => {
           ) : undefined}
 
           {!selected.length ? (
-            <Button size="small" type="button">
+            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Create Extractor</Translate>
             </Button>
           ) : undefined}
@@ -126,6 +129,14 @@ const IXDashboard = () => {
           dangerStyle
         />
       )}
+
+      <ExtractorModal
+        isOpen={extractorModal}
+        onClose={() => setExtractorModal(false)}
+        onAccept={() => console.log('saving')}
+        templates={templates}
+        extractor={selected.length ? selected[0].original : undefined}
+      />
     </div>
   );
 };
