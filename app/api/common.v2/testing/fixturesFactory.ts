@@ -4,9 +4,20 @@ import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
-import { EntityPointer, Relationship } from 'api/relationships.v2/model/Relationship';
+import {
+  EntityPointer,
+  ReadableEntityPointer,
+  ReadableRelationship,
+  Relationship,
+} from 'api/relationships.v2/model/Relationship';
 
 const entityPointer = (entity: string): EntityPointer => new EntityPointer(entity);
+
+const entityPointerWithEntityData = (
+  entity: string,
+  entityTitle: string,
+  entityTemplateName: string
+): ReadableEntityPointer => new ReadableEntityPointer(entity, entityTitle, entityTemplateName);
 
 const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
   application: {
@@ -36,6 +47,25 @@ const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
         entityPointer(from),
         entityPointer(to),
         idMapper(type).toString()
+      ),
+
+    readableRelationship: (
+      name: string,
+      from: string,
+      fromTitle: string,
+      fromTemplateName: string,
+      to: string,
+      toTitle: string,
+      toTemplateName: string,
+      type: string,
+      relationshipTypeName: string
+    ): Relationship =>
+      new ReadableRelationship(
+        idMapper(name).toString(),
+        entityPointerWithEntityData(from, fromTitle, fromTemplateName),
+        entityPointerWithEntityData(to, toTitle, toTemplateName),
+        idMapper(type).toString(),
+        relationshipTypeName
       ),
   },
 
