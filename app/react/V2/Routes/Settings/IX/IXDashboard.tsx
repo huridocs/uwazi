@@ -130,10 +130,12 @@ const IXDashboard = () => {
   );
 };
 
-const dashboardLoader = (): LoaderFunction => async () => {
-  const extractors = await ixAPI.get();
-  const templates = await templatesAPI.get();
-  return { extractors, templates };
-};
+const dashboardLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async () => {
+    const extractors = await ixAPI.get(headers);
+    const templates = await templatesAPI.get(headers);
+    return { extractors, templates };
+  };
 
 export { IXDashboard, dashboardLoader };

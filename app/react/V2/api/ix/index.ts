@@ -1,8 +1,9 @@
+import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 
-const get = async () => {
-  const requestParams = new RequestParams({});
+const get = async (headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams({}, headers);
   const { json: response } = await api.get('ixextractors', requestParams);
   return response;
 };
