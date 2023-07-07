@@ -78,6 +78,44 @@ const IXDashboard = () => {
     }
   };
 
+  const saveExtractor = async (newExtractor: IXExtractorInfo) => {
+    try {
+      await ixAPI.save(newExtractor);
+      revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Saved successfully.</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    }
+
+    setExtractorModal(false);
+  };
+
+  const updateExtractor = async (updatedExtractor: IXExtractorInfo) => {
+    try {
+      await ixAPI.update(updatedExtractor);
+      revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Saved successfully.</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    }
+
+    setExtractorModal(false);
+  };
+
   return (
     <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
@@ -133,7 +171,9 @@ const IXDashboard = () => {
       <ExtractorModal
         isOpen={extractorModal}
         onClose={() => setExtractorModal(false)}
-        onAccept={() => console.log('saving')}
+        onAccept={result => {
+          result._id ? updateExtractor(result) : saveExtractor(result);
+        }}
         templates={templates}
         extractor={selected.length ? selected[0].original : undefined}
       />
