@@ -13,9 +13,20 @@ const blankState = [
   },
 ];
 
+const updateLogsBlankState = [
+  {
+    _id: new ObjectId(),
+    timestamp: 123,
+    namespace: 'namespace',
+    mongoId: 'mongoid',
+    deleted: false,
+  },
+];
+
 beforeEach(async () => {
   await testingEnvironment.setUp({
     collection: blankState,
+    updatelogs: updateLogsBlankState,
   });
 });
 
@@ -142,6 +153,9 @@ describe('session scoped collection', () => {
             throw new Error('make it fail');
           });
         } catch (e) {
+          if(e.message !== 'make it fail') {
+            throw e;
+          }
           expect(e.message).toEqual('make it fail');
           expect(await testingDB.mongodb?.collection('collection').find({}).toArray()).toEqual(
             expectedOnAbort
@@ -287,5 +301,84 @@ describe('session scoped collection', () => {
         expect(typeof collectionMember).not.toBe('function');
       }
     });
+  });
+});
+
+describe('collection with automatic log to updatelogs', () => {
+  describe('should log creations/updates/deletions on updatelogs collection', () => {
+    const casesForUpdates = [
+      {
+        method: 'insertOne',
+        callback: async (ds: DataSource) => {
+          await ds.collection().insertOne({ data: 'some data' });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          ...updateLogsBlankState,
+          {
+            _id: expect.anything(),
+            timestamp: expect.anything(),
+            namespace: 'collection',
+            mongoId: expect.anything(),
+            deleted: false,
+          },
+        ],
+      },
+      {
+        method: 'insertMany',
+        callback: async (ds: DataSource) => {
+          await ds.collection().insertMany([{ data: 'data 1' }, { data: 'data 2' }]);
+        },
+        expectedOnAbort: blankState,
+        expectedOnSuccess: [
+          ...updateLogsBlankState,
+          {
+            _id: expect.anything(),
+            timestamp: expect.anything(),
+            namespace: 'collection',
+            mongoId: expect.anything(),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: expect.anything(),
+            namespace: 'collection',
+            mongoId: expect.anything(),
+            deleted: false,
+          },
+        ],
+      },
+    ];
+
+    it.each(casesForUpdates)(
+      '$method should log changes to updatelogs',
+      async ({ callback, expectedOnAbort, expectedOnSuccess }) => {
+        const transactionManager1 = new MongoTransactionManager(getClient());
+        const dataSource1 = new DataSource(getConnection(), transactionManager1);
+
+        try {
+          await transactionManager1.run(async () => {
+            await callback(dataSource1);
+            throw new Error('make it fail');
+          });
+        } catch (e) {
+          expect(e.message).toEqual('make it fail');
+          expect(await testingDB.mongodb?.collection('updatelogs').find({}).toArray()).toEqual(
+            expectedOnAbort
+          );
+        }
+
+        const transactionManager2 = new MongoTransactionManager(getClient());
+        const dataSource2 = new DataSource(getConnection(), transactionManager2);
+
+        await transactionManager2.run(async () => {
+          await callback(dataSource2);
+        });
+
+        expect(await testingDB.mongodb?.collection('updatelogs').find({}).toArray()).toEqual(
+          expectedOnSuccess
+        );
+      }
+    );
   });
 });

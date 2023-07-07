@@ -109,7 +109,39 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
           const original = Reflect.get(target, property, receiver);
 
           return function proxiedFunction(...args: any[]) {
-            return original.apply(receiver, self.appendSessionToOptions(args, propertyName));
+            const result = original.apply(
+              receiver,
+              self.appendSessionToOptions(args, propertyName)
+            );
+
+            if (property === 'insertMany') {
+              result.then(async ({ insertedIds }) => {
+                return self.db.collection('updatelogs').insertMany(
+                  Object.values(insertedIds).map(insertedId => ({
+                    timestamp: 123,
+                    namespace: self.collectionName,
+                    mongoId: insertedId.toString(),
+                    deleted: false,
+                  })),
+                  { session: self.getSession() }
+                );
+              });
+            }
+
+            if (property === 'insertOne') {
+              result.then(async ({ insertedId }) =>
+                self.db.collection('updatelogs').insertOne(
+                  {
+                    timestamp: 123,
+                    namespace: self.collectionName,
+                    mongoId: insertedId,
+                    deleted: false,
+                  },
+                  { session: self.getSession() }
+                )
+              );
+            }
+            return result;
           };
         }
 
