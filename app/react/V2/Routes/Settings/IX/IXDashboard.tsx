@@ -10,8 +10,8 @@ import { ClientTemplateSchema } from 'app/istore';
 import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'app/V2/atoms';
-import { ExtractorModal } from 'app/MetadataExtraction/ExtractorModal';
 import { IXExtractorInfo } from './types';
+import { ExtractorModal } from './components/ExtractorModal';
 import { Extractor, tableColumns } from './components/TableElements';
 import { List } from './components/List';
 

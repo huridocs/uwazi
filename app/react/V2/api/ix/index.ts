@@ -4,9 +4,13 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
 
 const get = async (headers?: IncomingHttpHeaders) => {
-  const requestParams = new RequestParams({}, headers);
-  const { json: response } = await api.get('ixextractors', requestParams);
-  return response;
+  try {
+    const requestParams = new RequestParams({}, headers);
+    const { json: response } = await api.get('ixextractors', requestParams);
+    return response.json;
+  } catch (e) {
+    return e;
+  }
 };
 
 // const getSuggestions = async (requestParams: RequestParams) => {

@@ -7,14 +7,14 @@ import Icons from 'app/Templates/components/Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
-export interface IXExtractorInfo {
+interface IXExtractorInfo {
   _id?: string;
   name: string;
   property: string;
   templates: string[];
 }
 
-export interface ExtractorModalProps {
+interface ExtractorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (extractorInfo: IXExtractorInfo) => void;
@@ -22,7 +22,7 @@ export interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-export const ExtractorModal = ({
+const ExtractorModal = ({
   isOpen,
   onClose,
   onAccept,
@@ -113,7 +113,7 @@ export const ExtractorModal = ({
     templatesIds.forEach(template => {
       const arrProps = Array.from(properties);
       arrProps.forEach(prop => {
-        newValues.push(template + '-' + prop);
+        newValues.push(`${template}-${prop}`);
       });
     });
     console.log(newValues);
@@ -131,7 +131,7 @@ export const ExtractorModal = ({
           )}
         </div>
         <div className="all-templates-button">
-          <button className="btn" onClick={onAllTemplatedCheckboxChanged}>
+          <button type="button" className="btn" onClick={onAllTemplatedCheckboxChanged}>
             <Translate>From all templates</Translate>
           </button>
         </div>
@@ -180,7 +180,4 @@ export const ExtractorModal = ({
   );
 };
 
-export interface ExtractorModalStateType {
-  configurationModalIsOpen: boolean;
-  extractorModelIsOpen: boolean;
-}
+export { ExtractorModal };

@@ -9,7 +9,7 @@ import { acceptEntitySuggestion } from 'app/MetadataExtraction/SuggestionsAPI';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import scroller from 'app/Viewer/utils/Scroller';
 import { actions } from 'app/BasicReducer';
-import { IXExtractorInfo } from '../ExtractorModal';
+import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
 import {
   getAllExtractors,
   createExtractor as createExtractorAPICall,

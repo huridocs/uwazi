@@ -21,6 +21,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
+import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
 import {
   getStats,
   getSuggestions,
@@ -32,7 +33,6 @@ import { PDFSidePanel } from './PDFSidePanel';
 import { TrainingHealthDashboard } from './TrainingHealthDashboard';
 import { CancelFindingSuggestionModal } from './CancelFindingSuggestionsModal';
 import { FiltersSidePanel } from './FilterSidePanel';
-import { IXExtractorInfo } from './ExtractorModal';
 
 interface EntitySuggestionsProps {
   property: PropertySchema;
@@ -98,7 +98,7 @@ const EntitySuggestionsComponent = ({
   };
 
   const actionsCellButtonClassNames = (state: string) => {
-    let className = 'btn ';
+    let className = 'btn';
     if (state === SuggestionState.labelMatch) {
       className += 'btn-outline-success label-match';
     }
