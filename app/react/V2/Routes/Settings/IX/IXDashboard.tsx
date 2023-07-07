@@ -60,7 +60,7 @@ const IXDashboard = () => {
   );
 
   const deleteExtractors = async () => {
-    const extractorIds = selected.map(selection => selection.original._id);
+    const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
       await ixAPI.deleteExtractors(extractorIds);
@@ -78,28 +78,9 @@ const IXDashboard = () => {
     }
   };
 
-  const saveExtractor = async (newExtractor: IXExtractorInfo) => {
+  const handleSave = async (extractor: IXExtractorInfo) => {
     try {
-      await ixAPI.save(newExtractor);
-      revalidator.revalidate();
-      setNotifications({
-        type: 'success',
-        text: <Translate>Saved successfully.</Translate>,
-      });
-    } catch (error) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>An error occurred</Translate>,
-        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
-      });
-    }
-
-    setExtractorModal(false);
-  };
-
-  const updateExtractor = async (updatedExtractor: IXExtractorInfo) => {
-    try {
-      await ixAPI.update(updatedExtractor);
+      extractor._id ? await ixAPI.update(extractor) : await ixAPI.save(extractor);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -171,9 +152,7 @@ const IXDashboard = () => {
       <ExtractorModal
         isOpen={extractorModal}
         onClose={() => setExtractorModal(false)}
-        onAccept={result => {
-          result._id ? updateExtractor(result) : saveExtractor(result);
-        }}
+        onAccept={extractor => handleSave(extractor)}
         templates={templates}
         extractor={selected.length ? selected[0].original : undefined}
       />

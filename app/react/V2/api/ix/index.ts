@@ -7,7 +7,7 @@ const get = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
     const { json: response } = await api.get('ixextractors', requestParams);
-    return response.json;
+    return response;
   } catch (e) {
     return e;
   }
