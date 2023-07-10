@@ -115,31 +115,59 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
             );
 
             if (property === 'insertMany') {
-              result.then(async ({ insertedIds }) => {
-                return self.db.collection('updatelogs').insertMany(
-                  Object.values(insertedIds).map(insertedId => ({
-                    timestamp: 123,
-                    namespace: self.collectionName,
-                    mongoId: insertedId.toString(),
-                    deleted: false,
-                  })),
-                  { session: self.getSession() }
-                );
+              return result.then(async insertManyResult => {
+                return self.db
+                  .collection('updatelogs')
+                  .insertMany(
+                    Object.values(insertManyResult.insertedIds).map(insertedId => ({
+                      timestamp: Date.now(),
+                      namespace: self.collectionName,
+                      mongoId: insertedId,
+                      deleted: false,
+                    })),
+                    { session: self.getSession() }
+                  )
+                  .then(() => insertManyResult);
               });
             }
 
             if (property === 'insertOne') {
-              result.then(async ({ insertedId }) =>
-                self.db.collection('updatelogs').insertOne(
-                  {
-                    timestamp: 123,
-                    namespace: self.collectionName,
-                    mongoId: insertedId,
-                    deleted: false,
-                  },
-                  { session: self.getSession() }
-                )
+              return result.then(async insertOneResult =>
+                self.db
+                  .collection('updatelogs')
+                  .insertOne(
+                    {
+                      timestamp: Date.now(),
+                      namespace: self.collectionName,
+                      mongoId: insertOneResult.insertedId,
+                      deleted: false,
+                    },
+                    { session: self.getSession() }
+                  )
+                  .then(() => insertOneResult)
               );
+            }
+            if (property === 'updateOne') {
+              const condition = args[0];
+              return result.then(async updateOneResult => {
+                // if (updateOneResult.modifiedCount) {
+                return self
+                  .getCollection()
+                  .findOne(condition)
+                  .then(updatedDocument => {
+                    return self.db.collection('updatelogs').updateOne(
+                      { mongoId: updatedDocument._id.toString() },
+                      {
+                        $set: {
+                          timestamp: Date.now(),
+                        },
+                      },
+                      { session: self.getSession() }
+                    );
+                  })
+                  .then(() => updateOneResult);
+                // }
+              });
             }
             return result;
           };
