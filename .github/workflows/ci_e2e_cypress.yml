@@ -115,6 +115,11 @@ jobs:
         with:
           name: snapshots
           path: cypress/e2e/**/__image_snapshots__/
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: video
+          path: cypress/videos/
       - name: Print server output
         run: cat output.txt
         if: failure()

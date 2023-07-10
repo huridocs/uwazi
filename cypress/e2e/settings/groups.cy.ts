@@ -26,8 +26,8 @@ describe('Groups', () => {
     cy.getByTestId('settings-content').toMatchImageSnapshot();
     cy.contains('button', 'Add group').click();
     cy.contains('h1', 'New group');
-    cy.get('aside').toMatchImageSnapshot();
     cy.checkA11y();
+    cy.get('aside').toMatchImageSnapshot();
     cy.contains('button', 'Cancel').click();
   });
 
