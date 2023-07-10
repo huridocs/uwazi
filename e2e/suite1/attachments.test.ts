@@ -113,8 +113,6 @@ describe('connections', () => {
         { text: 'View' }
       );
 
-      // await page.reload();
-      // await page.waitForSelector('#page3R_mcid6 > span');
       await expect(page).toMatchElement('span', {
         text: 'RESOLUCIÓN DE LA PRESIDENTA DE LA',
       });
