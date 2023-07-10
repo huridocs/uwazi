@@ -79,16 +79,30 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   const saveEntity = () => {
     cy.contains('button', 'Save').click();
     cy.wait('@saveEntity');
+
     // waiting for video
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(200);
-    cy.get('video', { timeout: 2000 }).should('be.visible');
+    cy.get('video', { timeout: 2000 })
+      .then(
+        async $video =>
+          new Promise(resolve => {
+            $video[0].removeAttribute('controls');
+            const interval = setInterval(() => {
+              if ($video[0].readyState >= 4) {
+                clearInterval(interval);
+                resolve($video);
+              }
+            }, 10);
+          })
+      )
+      .should('be.visible');
   };
+
   it('should allow media selection on entity creation', () => {
     addEntity('Reporte audiovisual');
     addVideo();
     addImage();
     saveEntity();
+
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
@@ -138,6 +152,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
+
   it('should show an error for an invalid property and allow to replace it for a valid one', () => {
     addEntity('Reporte con propiedades audiovisuales corregidas');
     addInvalidFile('Fotografía');
@@ -150,6 +165,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
+
   it('should allow unlink the value of a media property', () => {
     cy.contains('h2', 'Reporte con propiedades audiovisuales corregidas').click();
     cy.contains('button', 'Edit').should('be.visible').click();

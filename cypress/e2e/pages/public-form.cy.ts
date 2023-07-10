@@ -117,6 +117,11 @@ describe('Public Form', () => {
           force: true,
         }
       );
+      cy.get('video', { timeout: 2000 }).then(async $video => {
+        $video[0].pause();
+        $video[0].currentTime = 0;
+        $video[0].removeAttribute('controls');
+      });
       cy.get('video').should('be.visible');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
