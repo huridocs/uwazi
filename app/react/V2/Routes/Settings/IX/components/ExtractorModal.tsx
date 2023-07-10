@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'app/Layout/Modal';
 import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
-import { TemplateSchema } from 'shared/types/templateType';
+import { ClientTemplateSchema } from 'app/istore';
 import Icons from 'app/Templates/components/Icons';
 import { IXExtractorInfo } from '../types';
 
@@ -12,7 +12,7 @@ interface ExtractorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (extractorInfo: IXExtractorInfo) => void;
-  templates: TemplateSchema[];
+  templates: ClientTemplateSchema[];
   extractor?: IXExtractorInfo;
 }
 
@@ -98,16 +98,31 @@ const ExtractorModal = ({
   };
 
   const onAllTemplatedCheckboxChanged = () => {
-    const templatesIds = templates.map(template => template._id);
     const properties = new Set();
+    const newValues: string[] = [];
+
     values.forEach(value => {
       properties.add(value.split('-')[1]);
     });
-    const newValues: string[] = [];
-    templatesIds.forEach(template => {
+
+    const validTemplateIds: string[] = templates
+      .filter(template => {
+        const isTitle = properties.has('title');
+
+        if (isTitle) return true;
+
+        const hasMatchingProperty = template.properties.filter(property =>
+          properties.has(property.name)
+        ).length;
+
+        return hasMatchingProperty > 0;
+      })
+      .map(template => template._id);
+
+    validTemplateIds.forEach(id => {
       const arrProps = Array.from(properties);
       arrProps.forEach(prop => {
-        newValues.push(`${template}-${prop}`);
+        newValues.push(`${id}-${prop}`);
       });
     });
 
