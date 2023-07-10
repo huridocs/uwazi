@@ -1,3 +1,4 @@
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import { RelationshipMigrationField } from '../model/RelationshipMigrationField';
@@ -7,23 +8,27 @@ class UpsertRelationshipMigrationFieldService {
 
   private fieldDS: RelationshipMigrationFieldsDataSource;
 
+  private idGenerator: IdGenerator;
+
   constructor(
     transactionManager: TransactionManager,
-    fieldDS: RelationshipMigrationFieldsDataSource
+    fieldDS: RelationshipMigrationFieldsDataSource,
+    idGenerator: IdGenerator
   ) {
     this.transactionManager = transactionManager;
     this.fieldDS = fieldDS;
+    this.idGenerator = idGenerator;
   }
 
   async upsert(
-    id: string,
+    id: string | undefined,
     sourceTemplate: string,
     relationType: string,
     targetTemplate: string,
     ignored: boolean = false
   ) {
     const field = new RelationshipMigrationField(
-      id,
+      id || this.idGenerator.generate(),
       sourceTemplate,
       relationType,
       targetTemplate,

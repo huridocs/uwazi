@@ -220,7 +220,12 @@ const GetRelationshipMigrationFieldsService = () => {
 const UpsertRelationshipMigrationFieldService = () => {
   const transactionManager = DefaultTransactionManager();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
+  const idGenerator = DefaultIdGenerator;
+  const service = new GenericUpsertRelationshipMigrationFieldService(
+    transactionManager,
+    fieldDS,
+    idGenerator
+  );
   return service;
 };
 
