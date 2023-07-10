@@ -13,6 +13,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 type RelationshipType = {
   template?: string;
   relationType?: string;
+  relationTypeId?: string;
   content?: string;
 };
 
@@ -64,6 +65,7 @@ const inferFromV1 = (
       .map(p => ({
         template: templateIndex[p.template].name,
         relationType: p.relationType ? relationTypeIndex[p.relationType].name : undefined,
+        relationTypeId: p.relationType,
         content: p.content ? templateIndex[p.content].name : 'ALL',
       })) || [];
 
@@ -223,11 +225,13 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </div>
                 {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
                   <div key={`UnusedConnectionList_${index}`}>
-                    <div>{index + 1}---------------------------:</div>
+                    <div>
+                      {index + 1}---------------------------:{connectionList[0].hub}
+                    </div>
                     {connectionList.map((connection, connectionIndex) => (
                       <div key={`unusedConnection_${index}_${connectionIndex}`}>
                         &emsp;
-                        {connection.templateName}
+                        {`(${connection.templateName})`}
                         <Icon icon="link" />
                         {`${connection.entityTitle}(${
                           templatesById[connection.entityTemplate].name
@@ -245,7 +249,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 {p.template}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
-                {p.relationType}&emsp;
+                {`(${p.relationType})`}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
                 {p.content}

@@ -304,7 +304,7 @@ export class MigrationService {
       );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      return this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
+      return this.recordUnusedConnections(hubsWithUnusedConnections, groupStats, group);
     }, Promise.resolve());
     await this.writeTransformed(write, transformed);
   }
