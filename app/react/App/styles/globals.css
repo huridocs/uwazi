@@ -1419,6 +1419,10 @@ input:checked + .toggle-bg {
   height: 24rem;
 }
 
+.h-\[35px\] {
+  height: 35px;
+}
+
 .h-auto {
   height: auto;
 }
@@ -1580,6 +1584,10 @@ input:checked + .toggle-bg {
 
 .w-9\/12 {
   width: 75%;
+}
+
+.w-\[17px\] {
+  width: 17px;
 }
 
 .w-auto {
@@ -1753,10 +1761,6 @@ input:checked + .toggle-bg {
   animation: spin 1s linear infinite;
 }
 
-.\!cursor-wait {
-  cursor: wait !important;
-}
-
 .cursor-grab {
   cursor: grab;
 }
@@ -1767,6 +1771,10 @@ input:checked + .toggle-bg {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-wait {
+  cursor: wait;
 }
 
 .select-none {
@@ -1809,8 +1817,8 @@ input:checked + .toggle-bg {
           appearance: none;
 }
 
-.grid-cols-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.grid-flow-col {
+  grid-auto-flow: column;
 }
 
 .flex-row {
@@ -1991,14 +1999,6 @@ input:checked + .toggle-bg {
   white-space: nowrap;
 }
 
-.\!rounded-full {
-  border-radius: 9999px !important;
-}
-
-.\!rounded-none {
-  border-radius: 0px !important;
-}
-
 .rounded {
   border-radius: 0.25rem;
 }
@@ -2071,10 +2071,6 @@ input:checked + .toggle-bg {
   border-width: 2px;
 }
 
-.\!border-b-0 {
-  border-bottom-width: 0px !important;
-}
-
 .border-b {
   border-bottom-width: 1px;
 }
@@ -2113,6 +2109,11 @@ input:checked + .toggle-bg {
 
 .border-t-4 {
   border-top-width: 4px;
+}
+
+.border-blue-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(164 202 254 / var(--tw-border-opacity));
 }
 
 .border-error-300 {
@@ -2323,6 +2324,11 @@ input:checked + .toggle-bg {
   background-color: transparent !important;
 }
 
+.bg-blue-50 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(235 245 255 / var(--tw-bg-opacity));
+}
+
 .bg-error-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(254 226 226 / var(--tw-bg-opacity));
@@ -2443,19 +2449,14 @@ input:checked + .toggle-bg {
   background-color: rgb(224 231 255 / var(--tw-bg-opacity));
 }
 
-.bg-primary-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(129 140 248 / var(--tw-bg-opacity));
-}
-
 .bg-primary-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(238 242 255 / var(--tw-bg-opacity));
 }
 
-.bg-primary-500 {
+.bg-primary-600 {
   --tw-bg-opacity: 1;
-  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
 }
 
 .bg-primary-700 {
@@ -2488,6 +2489,11 @@ input:checked + .toggle-bg {
   background-color: rgb(253 232 232 / var(--tw-bg-opacity));
 }
 
+.bg-red-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(251 213 213 / var(--tw-bg-opacity));
+}
+
 .bg-red-400 {
   --tw-bg-opacity: 1;
   background-color: rgb(249 128 128 / var(--tw-bg-opacity));
@@ -2496,11 +2502,6 @@ input:checked + .toggle-bg {
 .bg-red-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(253 242 242 / var(--tw-bg-opacity));
-}
-
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(240 82 82 / var(--tw-bg-opacity));
 }
 
 .bg-red-600 {
@@ -2732,10 +2733,6 @@ input:checked + .toggle-bg {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
-}
-
-.\!p-2 {
-  padding: 0.5rem !important;
 }
 
 .p-0 {
@@ -3790,11 +3787,6 @@ input:checked + .toggle-bg {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.hover\:\!text-gray-900:hover {
-  --tw-text-opacity: 1 !important;
-  color: rgb(17 24 39 / var(--tw-text-opacity)) !important;
-}
-
 .hover\:text-gray-600:hover {
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity));
@@ -3856,12 +3848,6 @@ input:checked + .toggle-bg {
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-.focus\:\!ring-2:focus {
-  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color) !important;
-  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color) !important;
-  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important;
 }
 
 .focus\:ring-2:focus {
@@ -4385,15 +4371,6 @@ input:checked + .toggle-bg {
 :is(.dark .dark\:border-yellow-600) {
   --tw-border-opacity: 1;
   border-color: rgb(159 88 10 / var(--tw-border-opacity));
-}
-
-:is(.dark .dark\:\!bg-gray-700) {
-  --tw-bg-opacity: 1 !important;
-  background-color: rgb(55 65 81 / var(--tw-bg-opacity)) !important;
-}
-
-:is(.dark .dark\:\!bg-transparent) {
-  background-color: transparent !important;
 }
 
 :is(.dark .dark\:bg-black) {
