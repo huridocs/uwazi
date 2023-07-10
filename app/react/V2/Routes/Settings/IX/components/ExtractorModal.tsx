@@ -4,15 +4,9 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { TemplateSchema } from 'shared/types/templateType';
 import Icons from 'app/Templates/components/Icons';
+import { IXExtractorInfo } from '../types';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
-
-interface IXExtractorInfo {
-  _id?: string;
-  name: string;
-  property: string;
-  templates: string[];
-}
 
 interface ExtractorModalProps {
   isOpen: boolean;
@@ -59,7 +53,7 @@ const ExtractorModal = ({
         type: prop.type,
         icon: { type: 'Icons', _id: Icons[prop.type] },
       }))
-      .filter(p => SUPPORTED_PROPERTIES.includes(p.type))
+      .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
       .concat(
         !filter || filter === 'title'
           ? [
@@ -116,7 +110,7 @@ const ExtractorModal = ({
         newValues.push(`${template}-${prop}`);
       });
     });
-    console.log(newValues);
+
     setValues(newValues);
   };
 

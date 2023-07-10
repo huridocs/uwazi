@@ -40,7 +40,7 @@ const formatExtractors = (
       }
     });
 
-    return { ...extractor, namedTemplates: namedTemplates, propertyType, propertyLabel };
+    return { ...extractor, namedTemplates, propertyType, propertyLabel };
   });
 
 const IXDashboard = () => {
@@ -80,7 +80,11 @@ const IXDashboard = () => {
 
   const handleSave = async (extractor: IXExtractorInfo) => {
     try {
-      extractor._id ? await ixAPI.update(extractor) : await ixAPI.save(extractor);
+      if (extractor._id) {
+        await ixAPI.update(extractor);
+      } else {
+        await ixAPI.save(extractor);
+      }
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -152,7 +156,7 @@ const IXDashboard = () => {
       <ExtractorModal
         isOpen={extractorModal}
         onClose={() => setExtractorModal(false)}
-        onAccept={extractor => handleSave(extractor)}
+        onAccept={async extractor => handleSave(extractor)}
         templates={templates}
         extractor={selected.length ? selected[0].original : undefined}
       />

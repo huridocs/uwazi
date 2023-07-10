@@ -1,3 +1,8 @@
+import { PropertySchema } from 'shared/types/commonTypes';
+
+interface IXProperty extends PropertySchema {
+  type: 'text' | 'numeric' | 'date';
+}
 interface IXExtractorInfo {
   _id?: string;
   name: string;
@@ -5,4 +10,10 @@ interface IXExtractorInfo {
   templates: string[];
 }
 
-export type { IXExtractorInfo };
+type Extractor = IXExtractorInfo & {
+  namedTemplates: string[];
+  propertyLabel: string;
+  propertyType: IXProperty['type'];
+};
+
+export type { IXExtractorInfo, Extractor, IXProperty };

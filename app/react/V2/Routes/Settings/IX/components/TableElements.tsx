@@ -4,19 +4,8 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { CalculatorIcon, CalendarDaysIcon, Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { PropertySchema } from 'shared/types/commonTypes';
 import { Button, Pill } from 'app/V2/Components/UI';
-import { IXExtractorInfo } from '../types';
-
-interface PropertyTypes extends PropertySchema {
-  type: 'text' | 'numeric' | 'date';
-}
-
-type Extractor = IXExtractorInfo & {
-  namedTemplates: string[];
-  propertyLabel: string;
-  propertyType: PropertyTypes['type'];
-};
+import { Extractor } from '../types';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
