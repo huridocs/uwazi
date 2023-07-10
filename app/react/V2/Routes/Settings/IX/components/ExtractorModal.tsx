@@ -170,7 +170,7 @@ const ExtractorModal = ({
         {error && (
           <div className="tw-content">
             <Translate className="block mt-1 text-sm font-medium text-error-700">
-              This field is requiered
+              This field is required
             </Translate>
           </div>
         )}
