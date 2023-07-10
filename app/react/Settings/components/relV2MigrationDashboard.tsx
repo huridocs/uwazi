@@ -10,13 +10,6 @@ import {
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 
-type RelationshipType = {
-  template?: string;
-  relationType?: string;
-  relationTypeId?: string;
-  content?: string;
-};
-
 type MigrationSummaryType = {
   total: number;
   used: number;
@@ -52,11 +45,20 @@ type hubTestResult = {
   original: OriginalEntityInfo[];
 };
 
+type MatcherElement = {
+  sourceTemplate: string;
+  relationType: string;
+  relationTypeId: string;
+  targetTemplate: string;
+  inferred?: boolean;
+  ignored?: boolean;
+};
+
 const inferFromV1 = (
   templates: ClientTemplateSchema[],
   templateIndex: Record<string, ClientTemplateSchema>,
   relationTypeIndex: Record<string, RelationshipTypesType>
-) => {
+): MatcherElement[] => {
   const arr =
     templates
       .map(t => t.properties?.map(p => ({ ...p, template: t._id })) || [])
@@ -77,7 +79,16 @@ const inferFromV1 = (
 
   const sorted = _.sortBy(unique, ['template', 'relationType', 'content']);
 
-  return sorted;
+  const transformed = sorted.map(s => ({
+    sourceTemplate: s.template,
+    relationType: s.relationType || '',
+    relationTypeId: s.relationTypeId || '',
+    targetTemplate: s.content,
+    inferred: true,
+    ignored: false,
+  }));
+
+  return transformed;
 };
 
 const formatTime = (time: number) => {
@@ -96,6 +107,25 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   private hubTestResult?: hubTestResult;
 
   private showMigrationConfirm = false;
+
+  private currentPlan: MatcherElement[] = [];
+
+  async componentDidMount() {
+    this.currentPlan = inferFromV1(
+      this.props.templates,
+      objectIndex(
+        this.props.templates,
+        t => t._id,
+        t => t
+      ),
+      objectIndex(
+        this.props.relationTypes,
+        t => t._id,
+        t => t
+      )
+    );
+    this.forceUpdate();
+  }
 
   async performDryRun() {
     const summary = await _sendMigrationRequest(true);
@@ -136,11 +166,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       t => t._id,
       t => t
     );
-    const relationTypesById = objectIndex(
-      this.props.relationTypes,
-      t => t._id,
-      t => t
-    );
     const oneHubTestEntityTitlesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
       t => t.entity,
@@ -155,11 +180,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       this.hubTestResult?.original || [],
       t => t.template,
       t => t.templateName
-    );
-    const inferedRelationships: RelationshipType[] = inferFromV1(
-      this.props.templates,
-      templatesById,
-      relationTypesById
     );
     const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
       `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
@@ -243,16 +263,22 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               </div>
             )}
             <br />
-            <div>Relationships infered from v1 relationship properties:</div>
-            {inferedRelationships.map(p => (
-              <div key={`${p.template}_${p.relationType}_${p.content}`}>
-                {p.template}&emsp;
+            <div>Current migration plan:</div>
+            {this.currentPlan.map(p => (
+              <div key={`${p.sourceTemplate}_${p.relationType}_${p.targetTemplate}`}>
+                {p.sourceTemplate}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
                 {`(${p.relationType})`}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
-                {p.content}
+                {p.targetTemplate}
+                &emsp;
+                {'--'}
+                &emsp;
+                {[p.inferred ? 'inferred' : 'user defined', p.ignored ? 'ignored' : undefined]
+                  .filter(x => x)
+                  .join(', ')}
               </div>
             ))}
             <br />
