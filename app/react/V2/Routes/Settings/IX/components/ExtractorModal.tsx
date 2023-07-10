@@ -26,6 +26,8 @@ const ExtractorModal = ({
   const [name, setName] = useState('');
   const [values, setValues] = useState<string[]>([]);
   const [isEditing, setEditing] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (extractor) {
@@ -68,8 +70,23 @@ const ExtractorModal = ({
       ),
   }));
 
-  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+  const handleClose = () => {
     setEditing(false);
+    setName('');
+    setValues([]);
+    setIsDisabled(false);
+    onClose();
+  };
+
+  // eslint-disable-next-line max-statements
+  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+    if (!submittedName.length) {
+      setError(true);
+      return;
+    }
+
+    setEditing(false);
+    setIsDisabled(true);
     const result: null | IXExtractorInfo = submitedValues.length
       ? {
           _id: undefined,
@@ -84,17 +101,11 @@ const ExtractorModal = ({
     }
 
     if (result === null) {
-      onClose();
+      handleClose();
     } else {
       onAccept(result);
+      handleClose();
     }
-  };
-
-  const handleClose = () => {
-    setEditing(false);
-    setName('');
-    setValues([]);
-    onClose();
   };
 
   const onAllTemplatedCheckboxChanged = () => {
@@ -150,9 +161,19 @@ const ExtractorModal = ({
           value={name}
           type="text"
           className="form-control extractor-name-input"
-          onChange={event => setName(event.target.value)}
+          onChange={event => {
+            setName(event.target.value);
+            setError(false);
+          }}
           placeholder="Extractor name"
         />
+        {error && (
+          <div className="tw-content">
+            <Translate className="block mt-1 text-sm font-medium text-error-700">
+              This field is requiered
+            </Translate>
+          </div>
+        )}
         <div className="property-selection">
           <MultiSelect
             className="ix-extraction-multiselect"
@@ -180,6 +201,7 @@ const ExtractorModal = ({
             type="button"
             className="btn btn-default action-button btn-extra-padding"
             onClick={() => handleSubmit(name, values)}
+            disabled={isDisabled}
           >
             {isEditing ? <Translate>Save</Translate> : <Translate>Add</Translate>}
           </button>
