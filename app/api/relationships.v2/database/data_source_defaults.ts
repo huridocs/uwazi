@@ -3,6 +3,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { MongoRelationshipsDataSource } from './MongoRelationshipsDataSource';
 import { MongoV1ConnectionsDataSource } from './MongoV1ConnectionsDataSource';
 import { MongoHubsDataSource } from './MongoHubsDataSource';
+import { MongoRelationshipMigrationFieldsDataSource } from './RelationshipMigrationFieldsDataSource';
 
 const DefaultRelationshipDataSource = (transactionManager: MongoTransactionManager) => {
   const connection = getConnection();
@@ -19,4 +20,16 @@ const DefaultHubsDataSource = (transactionManager: MongoTransactionManager) => {
   return new MongoHubsDataSource(db, transactionManager);
 };
 
-export { DefaultHubsDataSource, DefaultRelationshipDataSource, DefaultV1ConnectionsDataSource };
+const DefaultRelationshipMigrationFieldsDataSource = (
+  transactionManager: MongoTransactionManager
+) => {
+  const db = getConnection();
+  return new MongoRelationshipMigrationFieldsDataSource(db, transactionManager);
+};
+
+export {
+  DefaultHubsDataSource,
+  DefaultRelationshipDataSource,
+  DefaultRelationshipMigrationFieldsDataSource,
+  DefaultV1ConnectionsDataSource,
+};
