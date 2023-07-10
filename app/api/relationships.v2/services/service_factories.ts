@@ -29,16 +29,20 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import {
   DefaultHubsDataSource,
   DefaultRelationshipDataSource,
+  DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
 } from '../database/data_source_defaults';
 
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
+import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
+import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from './GetRelationshipMigrationFieldService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
+import { MigrationService as GenericMigrationService } from './MigrationService';
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
-import { MigrationService as GenericMigrationService } from './MigrationService';
+import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -199,10 +203,34 @@ const MigrationService = () => {
   return service;
 };
 
+const DeleteRelationshipMigrationFieldService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
+  const service = new GenericDeleteRelationshipMigrationFieldService(transactionManager, fieldDS);
+  return service;
+};
+
+const GetRelationshipMigrationFieldsService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
+  const service = new GenericGetRelationshipMigrationFieldsService(transactionManager, fieldDS);
+  return service;
+};
+
+const UpsertRelationshipMigrationFieldService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
+  const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
+  return service;
+};
+
 export {
   CreateRelationshipService,
+  DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
   GetRelationshipService,
+  GetRelationshipMigrationFieldsService,
   DenormalizationService,
   MigrationService,
+  UpsertRelationshipMigrationFieldService,
 };

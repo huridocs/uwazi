@@ -29,9 +29,12 @@ class UpsertRelationshipMigrationFieldService {
       targetTemplate,
       ignored
     );
+    let upsertedField: RelationshipMigrationField = field;
     await this.transactionManager.run(async () => {
       await this.fieldDS.upsert(field);
+      upsertedField = await this.fieldDS.get(sourceTemplate, relationType, targetTemplate);
     });
+    return upsertedField;
   }
 }
 

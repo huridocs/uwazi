@@ -12,6 +12,19 @@ class MongoRelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
+  async get(
+    sourceTemplate: string,
+    relationType: string,
+    targetTemplate: string
+  ): Promise<RelationshipMigrationField> {
+    const dbo = await this.getCollection().findOne({
+      sourceTemplate,
+      relationType,
+      targetTemplate,
+    });
+    return mapFieldToApp(dbo);
+  }
+
   getAll(): MongoResultSet<RelationshipMigrationFieldDBO, RelationshipMigrationField> {
     const cursor = this.getCollection().find();
     return new MongoResultSet<RelationshipMigrationFieldDBO, RelationshipMigrationField>(
