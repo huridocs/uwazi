@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.125.0-rc1",
+  "version": "1.125.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -392,6 +392,6 @@
     "worker-loader": "^3.0.8"
   },
   "engines": {
-    "node": ">=16.17.0"
+    "node": ">=18.16.1"
   }
 }
