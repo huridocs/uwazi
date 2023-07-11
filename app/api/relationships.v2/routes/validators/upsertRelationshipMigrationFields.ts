@@ -14,9 +14,6 @@ const schema: ValidatorSchema<UpsertMigrationFieldRequest> = {
     },
   },
   optionalProperties: {
-    id: {
-      type: 'string',
-    },
     ignored: {
       type: 'boolean',
     },

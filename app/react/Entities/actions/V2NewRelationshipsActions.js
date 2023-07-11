@@ -16,10 +16,21 @@ const sendMigrationRequest = dryRun => api.migrate(new RequestParams({ dryRun: d
 
 const testOneHub = hubId => api.testOneHub(new RequestParams({ hubId }));
 
+const saveRelationshipMigrationField = field =>
+  api.saveRelationshipMigrationField(
+    new RequestParams({
+      sourceTemplate: field.sourceTemplateId,
+      relationType: field.relationTypeId,
+      targetTemplate: field.targetTemplateId,
+      ignored: field.ignored,
+    })
+  );
+
 export {
   deleteRelationships,
   getRelationshipsByEntity,
   saveRelationship,
   sendMigrationRequest,
   testOneHub,
+  saveRelationshipMigrationField,
 };

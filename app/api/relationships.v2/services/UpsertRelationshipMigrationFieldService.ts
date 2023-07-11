@@ -21,22 +21,15 @@ class UpsertRelationshipMigrationFieldService {
   }
 
   async upsert(
-    id: string | undefined,
     sourceTemplate: string,
     relationType: string,
     targetTemplate: string,
     ignored: boolean = false
   ) {
-    const field = new RelationshipMigrationField(
-      id || this.idGenerator.generate(),
-      sourceTemplate,
-      relationType,
-      targetTemplate,
-      ignored
-    );
-    let upsertedField: RelationshipMigrationField = field;
+    const fieldInfo = { sourceTemplate, relationType, targetTemplate, ignored };
+    let upsertedField: RelationshipMigrationField | null = null;
     await this.transactionManager.run(async () => {
-      await this.fieldDS.upsert(field);
+      await this.fieldDS.upsert(fieldInfo);
       upsertedField = await this.fieldDS.get(sourceTemplate, relationType, targetTemplate);
     });
     return upsertedField;

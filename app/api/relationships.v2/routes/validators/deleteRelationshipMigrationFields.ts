@@ -3,7 +3,13 @@ import { DeleteRelationshipMigrationFieldRequest } from 'shared/types/api.v2/rel
 
 const schema: ValidatorSchema<DeleteRelationshipMigrationFieldRequest> = {
   properties: {
-    id: {
+    sourceTemplate: {
+      type: 'string',
+    },
+    relationType: {
+      type: 'string',
+    },
+    targetTemplate: {
       type: 'string',
     },
   },

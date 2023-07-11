@@ -1,5 +1,9 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { RelationshipMigrationField } from '../model/RelationshipMigrationField';
+import {
+  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationField,
+  RelationshipMigrationFieldInfo,
+} from '../model/RelationshipMigrationField';
 
 export interface RelationshipMigrationFieldsDataSource {
   get(
@@ -8,6 +12,6 @@ export interface RelationshipMigrationFieldsDataSource {
     targetTemplate: string
   ): Promise<RelationshipMigrationField>;
   getAll(): ResultSet<RelationshipMigrationField>;
-  upsert(field: RelationshipMigrationField): Promise<void>;
-  delete(id: string): Promise<void>;
+  upsert(field: RelationshipMigrationFieldInfo): Promise<void>;
+  delete(fieldId: RelationShipMigrationFieldUniqueId): Promise<void>;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -6,6 +7,7 @@ import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore'
 import {
   sendMigrationRequest as _sendMigrationRequest,
   testOneHub as _testOneHub,
+  saveRelationshipMigrationField,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -45,11 +47,13 @@ type hubTestResult = {
   original: OriginalEntityInfo[];
 };
 
-type MatcherElement = {
+type PlanElement = {
   sourceTemplate: string;
+  sourceTemplateId: string;
   relationType: string;
   relationTypeId: string;
   targetTemplate: string;
+  targetTemplateId?: string;
   inferred?: boolean;
   ignored?: boolean;
 };
@@ -58,7 +62,7 @@ const inferFromV1 = (
   templates: ClientTemplateSchema[],
   templateIndex: Record<string, ClientTemplateSchema>,
   relationTypeIndex: Record<string, RelationshipTypesType>
-): MatcherElement[] => {
+): PlanElement[] => {
   const arr =
     templates
       .map(t => t.properties?.map(p => ({ ...p, template: t._id })) || [])
@@ -66,9 +70,11 @@ const inferFromV1 = (
       .filter(p => p.type === 'relationship')
       .map(p => ({
         template: templateIndex[p.template].name,
+        templateId: p.template,
         relationType: p.relationType ? relationTypeIndex[p.relationType].name : undefined,
         relationTypeId: p.relationType,
         content: p.content ? templateIndex[p.content].name : 'ALL',
+        contentId: p.content,
       })) || [];
 
   const unique = _.uniqWith(
@@ -81,15 +87,38 @@ const inferFromV1 = (
 
   const transformed = sorted.map(s => ({
     sourceTemplate: s.template,
+    sourceTemplateId: s.templateId,
     relationType: s.relationType || '',
     relationTypeId: s.relationTypeId || '',
     targetTemplate: s.content,
+    targetTemplateId: s.contentId,
     inferred: true,
     ignored: false,
   }));
 
   return transformed;
 };
+
+// const mapPlanElementFromApiResponse = (
+//   response: SaveRelationshipMigrationFieldResponse,
+//   templateIndex: Record<string, ClientTemplateSchema>,
+//   relationTypeIndex: Record<string, RelationshipTypesType>
+// ): PlanElement => {
+//   const template = templateIndex[response.sourceTemplate];
+//   const relationType = relationTypeIndex[response.relationType];
+//   const targetTemplate = templateIndex[response.targetTemplate];
+//   return {
+//     id: response.id,
+//     sourceTemplate: template.name,
+//     sourceTemplateId: response.sourceTemplate,
+//     relationType: relationType.name,
+//     relationTypeId: response.relationType,
+//     targetTemplate: targetTemplate.name,
+//     targetTemplateId: response.targetTemplate,
+//     inferred: false,
+//     ignored: response.ignored,
+//   };
+// };
 
 const formatTime = (time: number) => {
   const floored = Math.floor(time);
@@ -108,7 +137,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   private showMigrationConfirm = false;
 
-  private currentPlan: MatcherElement[] = [];
+  private currentPlan: PlanElement[] = [];
 
   async componentDidMount() {
     this.currentPlan = inferFromV1(
@@ -157,6 +186,12 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   cancelMigration() {
     this.showMigrationConfirm = false;
+    this.forceUpdate();
+  }
+
+  async toggleIgnore(pe: PlanElement) {
+    pe.ignored = !pe.ignored;
+    await saveRelationshipMigrationField(pe);
     this.forceUpdate();
   }
 
@@ -279,6 +314,14 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 {[p.inferred ? 'inferred' : 'user defined', p.ignored ? 'ignored' : undefined]
                   .filter(x => x)
                   .join(', ')}
+                &emsp;
+                <button
+                  type="button"
+                  onClick={this.toggleIgnore.bind(this, p)}
+                  className={`btn btn-xs${p.ignored ? ' btn-danger' : ' btn-success'} }`}
+                >
+                  {`${p.ignored ? 'Unignore' : 'Ignore'}`}
+                </button>
               </div>
             ))}
             <br />

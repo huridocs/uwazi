@@ -134,7 +134,6 @@ export default (app: Application) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
       const service = UpsertRelationshipMigrationFieldService();
       const upsertedField = await service.upsert(
-        field.id,
         field.sourceTemplate,
         field.relationType,
         field.targetTemplate,
@@ -149,9 +148,10 @@ export default (app: Application) => {
     needsAuthorization(),
     featureRequired,
     async (req, res) => {
-      const { id } = validateDeleteRelationshipMigrationField(req.body);
+      const { sourceTemplate, relationType, targetTemplate } =
+        validateDeleteRelationshipMigrationField(req.body);
       const service = DeleteRelationshipMigrationFieldService();
-      await service.delete(id);
+      await service.delete(sourceTemplate, relationType, targetTemplate);
       res.status(200).send();
     }
   );

@@ -21,4 +21,10 @@ export default {
   testOneHub(requestParams = new RequestParams()) {
     return api.post('v2/relationships/test_one_hub', requestParams).then(response => response.json);
   },
+
+  saveRelationshipMigrationField(requestParams = new RequestParams()) {
+    return api
+      .post('v2/relationshipMigrationFields', requestParams)
+      .then(response => response.json);
+  },
 };

@@ -1,22 +1,48 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { RelationshipMigrationField } from '../model/RelationshipMigrationField';
-import { RelationshipMigrationFieldDBO } from './schemas/relationshipMigrationFieldTypes';
+import {
+  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationField,
+  RelationshipMigrationFieldInfo,
+} from '../model/RelationshipMigrationField';
+import {
+  RelationshipMigrationFieldDBO,
+  RelationshipMigrationFieldInfoDBO,
+  RelationshipMigrationFieldUniqueIdDBO,
+} from './schemas/relationshipMigrationFieldTypes';
 
-const mapFieldToDBO = (field: RelationshipMigrationField): RelationshipMigrationFieldDBO => ({
-  id: MongoIdHandler.mapToDb(field.id),
-  sourceTemplate: MongoIdHandler.mapToDb(field.sourceTemplate),
-  relationType: MongoIdHandler.mapToDb(field.relationType),
-  targetTemplate: MongoIdHandler.mapToDb(field.targetTemplate),
-  ignored: field.ignored,
+const mapFieldIdToDBO = (
+  fieldId: RelationShipMigrationFieldUniqueId
+): RelationshipMigrationFieldUniqueIdDBO => ({
+  sourceTemplate: MongoIdHandler.mapToDb(fieldId.sourceTemplate),
+  relationType: MongoIdHandler.mapToDb(fieldId.relationType),
+  targetTemplate: MongoIdHandler.mapToDb(fieldId.targetTemplate),
 });
+
+const mapFieldInfoToDBO = (
+  field: RelationshipMigrationFieldInfo
+): RelationshipMigrationFieldInfoDBO => {
+  const { ignored, ...fieldId } = field;
+  return {
+    ...mapFieldIdToDBO(fieldId),
+    ignored,
+  };
+};
+
+const mapFieldToDBO = (field: RelationshipMigrationField): RelationshipMigrationFieldDBO => {
+  const { id, ...info } = field;
+  return {
+    _id: MongoIdHandler.mapToDb(id),
+    ...mapFieldInfoToDBO(info),
+  };
+};
 
 const mapFieldToApp = (field: RelationshipMigrationFieldDBO): RelationshipMigrationField =>
   new RelationshipMigrationField(
-    MongoIdHandler.mapToApp(field.id),
+    MongoIdHandler.mapToApp(field._id),
     MongoIdHandler.mapToApp(field.sourceTemplate),
     MongoIdHandler.mapToApp(field.relationType),
     MongoIdHandler.mapToApp(field.targetTemplate),
     field.ignored
   );
 
-export { mapFieldToDBO, mapFieldToApp };
+export { mapFieldToDBO, mapFieldIdToDBO, mapFieldInfoToDBO, mapFieldToApp };

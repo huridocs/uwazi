@@ -1,5 +1,6 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
+import { RelationShipMigrationFieldUniqueId } from '../model/RelationshipMigrationField';
 
 class DeleteRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;
@@ -14,9 +15,18 @@ class DeleteRelationshipMigrationFieldService {
     this.fieldDS = fieldDS;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(
+    sourceTemplate: string,
+    relationType: string,
+    targetTemplate: string
+  ): Promise<void> {
     await this.transactionManager.run(async () => {
-      await this.fieldDS.delete(id);
+      const fieldId = new RelationShipMigrationFieldUniqueId(
+        sourceTemplate,
+        relationType,
+        targetTemplate
+      );
+      await this.fieldDS.delete(fieldId);
     });
   }
 }

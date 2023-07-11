@@ -2,8 +2,16 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
-import { RelationshipMigrationField } from '../model/RelationshipMigrationField';
-import { mapFieldToApp, mapFieldToDBO } from './RelationshipMigrationFieldMappers';
+import {
+  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationField,
+  RelationshipMigrationFieldInfo,
+} from '../model/RelationshipMigrationField';
+import {
+  mapFieldIdToDBO,
+  mapFieldInfoToDBO,
+  mapFieldToApp,
+} from './RelationshipMigrationFieldMappers';
 import { RelationshipMigrationFieldDBO } from './schemas/relationshipMigrationFieldTypes';
 
 class MongoRelationshipMigrationFieldsDataSource
@@ -18,9 +26,9 @@ class MongoRelationshipMigrationFieldsDataSource
     targetTemplate: string
   ): Promise<RelationshipMigrationField> {
     const dbo = await this.getCollection().findOne({
-      sourceTemplate,
-      relationType,
-      targetTemplate,
+      sourceTemplate: MongoIdHandler.mapToDb(sourceTemplate),
+      relationType: MongoIdHandler.mapToDb(relationType),
+      targetTemplate: MongoIdHandler.mapToDb(targetTemplate),
     });
     return mapFieldToApp(dbo);
   }
@@ -33,19 +41,26 @@ class MongoRelationshipMigrationFieldsDataSource
     );
   }
 
-  async delete(id: string): Promise<void> {
-    await this.getCollection().deleteOne({ _id: MongoIdHandler.mapToDb(id) });
+  async delete(fieldId: RelationShipMigrationFieldUniqueId): Promise<void> {
+    await this.getCollection().deleteOne({ ...mapFieldIdToDBO(fieldId) });
   }
 
-  async upsert(field: RelationshipMigrationField): Promise<void> {
-    const mapped = mapFieldToDBO(field);
+  async upsert(field: RelationshipMigrationFieldInfo): Promise<void> {
+    const mapped = mapFieldInfoToDBO(field);
     await this.getCollection().updateOne(
       {
         sourceTemplate: mapped.sourceTemplate,
         relationType: mapped.relationType,
         targetTemplate: mapped.targetTemplate,
       },
-      { $set: { ...mapFieldToDBO(field) } },
+      {
+        $set: {
+          sourceTemplate: mapped.sourceTemplate,
+          relationType: mapped.relationType,
+          targetTemplate: mapped.targetTemplate,
+          ignored: mapped.ignored,
+        },
+      },
       { upsert: true }
     );
   }

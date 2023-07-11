@@ -1,11 +1,19 @@
 import { ObjectId } from 'mongodb';
 
 type RelationshipMigrationFieldDBO = {
-  id: ObjectId;
+  _id: ObjectId;
   sourceTemplate: ObjectId;
   relationType: ObjectId;
   targetTemplate: ObjectId;
   ignored: boolean;
 };
 
-export type { RelationshipMigrationFieldDBO };
+type RelationshipMigrationFieldInfoDBO = Omit<RelationshipMigrationFieldDBO, '_id'>;
+
+type RelationshipMigrationFieldUniqueIdDBO = Omit<RelationshipMigrationFieldInfoDBO, 'ignored'>;
+
+export type {
+  RelationshipMigrationFieldDBO,
+  RelationshipMigrationFieldInfoDBO,
+  RelationshipMigrationFieldUniqueIdDBO,
+};
