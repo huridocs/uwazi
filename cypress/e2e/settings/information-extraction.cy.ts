@@ -1,4 +1,4 @@
-import { clearCookiesAndLogin } from './helpers';
+import { clearCookiesAndLogin } from '../helpers';
 
 const labelEntityTitle = (
   entityPos: number,
