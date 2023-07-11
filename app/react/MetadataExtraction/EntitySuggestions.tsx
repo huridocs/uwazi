@@ -21,7 +21,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { SuggestionState } from 'shared/types/suggestionSchema';
 import { TemplateSchema } from 'shared/types/templateType';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
+import { IXExtractorInfo } from 'V2/shared/types';
 import {
   getStats,
   getSuggestions,

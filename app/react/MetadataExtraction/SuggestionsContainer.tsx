@@ -8,7 +8,7 @@ import { EntitySuggestions } from 'app/MetadataExtraction/EntitySuggestions';
 import { IImmutable } from 'shared/types/Immutable';
 import { ensure } from 'shared/tsUtils';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
+import { IXExtractorInfo } from 'V2/shared/types';
 import { IncomingHttpHeaders } from 'http';
 
 const SuggestionComponent = ({

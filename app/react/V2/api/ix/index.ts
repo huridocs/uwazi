@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
+import { IXExtractorInfo } from 'V2/shared/types';
 
 const get = async (headers?: IncomingHttpHeaders) => {
   try {

@@ -4,7 +4,7 @@ import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
 import { ClientTemplateSchema } from 'app/istore';
 import Icons from 'app/Templates/components/Icons';
-import { IXExtractorInfo } from '../types';
+import { IXExtractorInfo } from 'V2/shared/types';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 

@@ -11,7 +11,7 @@ import { ClientUserSchema, ClientUserGroupSchema, ClientSettings } from 'app/api
 import { FileType } from 'shared/types/fileType';
 import { PageType } from 'shared/types/pageType';
 import { TranslationContext, TranslationType } from 'shared/translationType';
-import { IXExtractorInfo } from 'V2/Routes/Settings/IX/types';
+import { IXExtractorInfo } from 'V2/shared/types';
 
 interface InstanceStats {
   users: { total: number; admin: number; editor: number; collaborator: number };
