@@ -44,7 +44,7 @@ const RolePill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['role
 const MembersPill = ({
   cell,
 }: CellContext<ClientUserGroupSchema, ClientUserGroupSchema['members']>) => (
-  <div className="flex gap-1">
+  <div className="flex flex-wrap gap-2">
     {cell.getValue().map(member => (
       <div key={member.username}>
         <Pill color="gray">{member.username}</Pill>
@@ -54,7 +54,7 @@ const MembersPill = ({
 );
 
 const GroupsPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['groups']>) => (
-  <div className="flex gap-1">
+  <div className="flex flex-wrap gap-2">
     {cell.getValue()?.map(group => (
       <div key={cell.id + group._id}>
         <Pill color="gray" className="whitespace-nowrap">
