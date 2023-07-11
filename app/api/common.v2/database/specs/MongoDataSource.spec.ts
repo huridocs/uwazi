@@ -333,6 +333,16 @@ describe('collection with automatic log to updatelogs', () => {
       {
         method: 'updateOne',
         callback: async (ds: DataSource) => {
+          await ds
+            .collection()
+            .updateOne({ _id: idMapper('this id does not exists') }, { $set: { data: 'updated data' } });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: updateLogsBlankState,
+      },
+      {
+        method: 'updateOne',
+        callback: async (ds: DataSource) => {
           jest.spyOn(Date, 'now').mockReturnValue(2);
           await ds
             .collection()

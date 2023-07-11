@@ -150,23 +150,23 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
             if (property === 'updateOne') {
               const condition = args[0];
               return result.then(async updateOneResult => {
-                // if (updateOneResult.modifiedCount) {
-                return self
-                  .getCollection()
-                  .findOne(condition)
-                  .then(updatedDocument => {
-                    return self.db.collection('updatelogs').updateOne(
-                      { mongoId: updatedDocument._id.toString() },
-                      {
-                        $set: {
-                          timestamp: Date.now(),
+                if (updateOneResult.modifiedCount) {
+                  return self
+                    .getCollection()
+                    .findOne(condition)
+                    .then(updatedDocument => {
+                      return self.db.collection('updatelogs').updateOne(
+                        { mongoId: updatedDocument._id },
+                        {
+                          $set: {
+                            timestamp: Date.now(),
+                          },
                         },
-                      },
-                      { session: self.getSession() }
-                    );
-                  })
-                  .then(() => updateOneResult);
-                // }
+                        { session: self.getSession() }
+                      );
+                    })
+                    .then(() => updateOneResult);
+                }
               });
             }
             return result;
