@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import requestShared from 'shared/JSONRequest';
 import { PreserveRoutes } from '../routes';
@@ -16,7 +15,7 @@ describe('entities get searchString', () => {
   });
 
   beforeAll(async () => {
-    await testingEnvironment.setUp(fixtures as DBFixture, 'preserve-index-routes');
+    await testingEnvironment.setUp(fixtures, 'preserve-index-routes');
     jest.spyOn(requestShared, 'post').mockImplementation(async () =>
       Promise.resolve({
         json: { data: { token: 'sometoken' } },

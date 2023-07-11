@@ -21,16 +21,17 @@ jobs:
         ports:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
-      mongodb:
-        image: mongo:4.2.6
-        ports:
-          - 27017/tcp
       redis:
         image: redis:5.0.14
         ports:
           - 6379:6379
 
     steps:
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 4.2.6
+          mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v3
       - name: Checkout submodules
@@ -78,18 +79,18 @@ jobs:
         run: yarn production-build
       - run: yarn e2e-puppeteer-fixtures
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
       - run: yarn ix-config
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
@@ -106,7 +107,7 @@ jobs:
           config: defaultCommandTimeout=8000,requestTimeout=12000
         timeout-minutes: 25
         env:
-          DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
+          DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           TRANSPILED: true
       - uses: actions/upload-artifact@v3
@@ -114,6 +115,6 @@ jobs:
         with:
           name: snapshots
           path: cypress/e2e/**/__image_snapshots__/
-      - name: print server output
+      - name: Print server output
         run: cat output.txt
         if: failure()

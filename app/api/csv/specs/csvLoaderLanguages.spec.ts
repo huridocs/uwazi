@@ -1,13 +1,14 @@
-import path from 'path';
-import db from 'api/utils/testing_db';
 import entities from 'api/entities';
 import { files } from 'api/files/files';
+import * as filesystem from 'api/files/filesystem';
+import { uploadsPath } from 'api/files/filesystem';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import * as filesystem from 'api/files/filesystem';
+import db from 'api/utils/testing_db';
+import path from 'path';
 import { EntitySchema } from 'shared/types/entityType';
-import { uploadsPath } from 'api/files/filesystem';
 
+import translations from 'api/i18n';
 import { CSVLoader } from '../csvLoader';
 import { fixtures, template1Id } from './fixtures';
 import { createTestingZip } from './helpers';
@@ -22,10 +23,11 @@ describe('csvLoader languages', () => {
   beforeAll(async () => {
     await db.setupFixturesAndContext(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
 
-    const { languages = [] } = await settings.get();
-    await settings.save({ languages: [...languages, { key: 'es', label: 'es' }] });
+    await settings.addLanguage({ key: 'es', label: 'Spanish' });
+    await translations.addLanguage('es');
 
     await createTestingZip(
       [

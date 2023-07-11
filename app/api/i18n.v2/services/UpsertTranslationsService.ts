@@ -1,7 +1,7 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
-import { Translation, TranslationContext } from '../model/Translation';
+import { Translation } from '../model/Translation';
 import { CreateTranslationsData } from './CreateTranslationsService';
 import { ValidateTranslationsService } from './ValidateTranslationsService';
 
@@ -46,7 +46,7 @@ export class UpsertTranslationsService {
   }
 
   async updateContext(
-    context: { id: string; label: string },
+    context: CreateTranslationsData['context'],
     keyChanges: { [oldKey: string]: string },
     valueChanges: { [key: string]: string },
     keysToDelete: string[]
@@ -73,26 +73,21 @@ export class UpsertTranslationsService {
         );
       }, Promise.resolve());
 
+      await this.createNewKeys(keysChangedReversed, valueChanges, context);
+
       await this.translationsDS.updateContextLabel(context.id, context.label);
 
       await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
       await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
-
-      await this.createNewKeys(keysChangedReversed, valueChanges, context);
     });
   }
 
   private async createNewKeys(
     keysChangedReversed: { [x: string]: string },
     valueChanges: { [key: string]: string },
-    context: { id: string; label: string }
+    context: CreateTranslationsData['context']
   ) {
-    const newContext: TranslationContext = {
-      ...(await this.translationsDS.getContext(context.id)),
-      ...context,
-    };
-
     const originalKeysGoingToChange = Object.keys(valueChanges).reduce<string[]>((keys, key) => {
       if (keysChangedReversed[key]) {
         keys.push(keysChangedReversed[key]);
@@ -103,21 +98,24 @@ export class UpsertTranslationsService {
     }, []);
 
     const missingKeysInDB = await this.translationsDS.calculateNonexistentKeys(
+      context.id,
       originalKeysGoingToChange
     );
 
-    await this.translationsDS.insert(
-      (
-        await this.settingsDS.getLanguageKeys()
-      ).reduce<Translation[]>(
-        (memo, languageKey) =>
-          memo.concat(
-            missingKeysInDB.map(
-              key => new Translation(key, valueChanges[key], languageKey, newContext)
-            )
-          ),
-        []
-      )
-    );
+    if (missingKeysInDB.length) {
+      await this.translationsDS.insert(
+        (
+          await this.settingsDS.getLanguageKeys()
+        ).reduce<Translation[]>(
+          (memo, languageKey) =>
+            memo.concat(
+              missingKeysInDB.map(
+                key => new Translation(key, valueChanges[key], languageKey, context)
+              )
+            ),
+          []
+        )
+      );
+    }
   }
 }

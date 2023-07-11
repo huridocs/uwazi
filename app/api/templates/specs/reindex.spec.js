@@ -1,14 +1,15 @@
-import db from 'api/utils/testing_db';
+import translations from 'api/i18n';
 import { search } from 'api/search';
+import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
+import { checkIfReindex } from '../reindex';
+import templates from '../templates';
 import fixtures, {
   pageSharedId,
   propertyToBeInherited2,
   templateInheritingFromAnother,
   templateWithContents,
 } from './fixtures/fixtures';
-import { checkIfReindex } from '../reindex';
-import templates from '../templates';
 
 const expectReindex = async (template, reindex) => {
   expect(await checkIfReindex(template)).toBe(reindex);
@@ -18,6 +19,7 @@ const expectReindex = async (template, reindex) => {
 
 describe('reindex', () => {
   beforeAll(async () => {
+    jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     await db.setupFixturesAndContext(fixtures, 'reindex');
     jest.spyOn(search, 'indexEntities').mockReturnValue({});
   });
