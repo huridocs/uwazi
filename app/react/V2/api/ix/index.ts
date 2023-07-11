@@ -13,46 +13,7 @@ const get = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
-// const getSuggestions = async (requestParams: RequestParams) => {
-//   const { json: response } = await api.get('suggestions', requestParams);
-//   return {
-//     suggestions: response.suggestions,
-//     aggregations: response.aggregations,
-//     totalPages: response.totalPages,
-//   };
-// };
-
-// const getStats = async (requestParams: RequestParams): Promise<SuggestionsStats> => {
-//   const { json: response } = await api.get('suggestions/stats', requestParams);
-//   return response;
-// };
-
-// const trainModel = async (requestParams: RequestParams) => {
-//   const { json: response } = await api.post('suggestions/train', requestParams);
-//   return response;
-// };
-
-// const cancelFindingSuggestions = async (requestParams: RequestParams) => {
-//   const { json: response } = await api.post('suggestions/stop', requestParams);
-//   return response;
-// };
-
-// const ixStatus = async (requestParams: RequestParams) => {
-//   const { json: response } = await api.post('suggestions/status', requestParams);
-//   return response;
-// };
-
-// const acceptEntitySuggestion = async (requestParams: RequestParams) => {
-//   const { json: response } = await api.post('suggestions/accept', requestParams);
-//   return response;
-// };
-
-// const createExtractor = async (requestParams: RequestParams<IXExtractorInfo>) => {
-//   const { json: response } = await api.post('ixextractors', requestParams);
-//   return response;
-// };
-
-const deleteExtractors = async (ids: string[]) => {
+const remove = async (ids: string[]) => {
   const requestParams = new RequestParams({ ids });
   const response = await api.delete('ixextractors', requestParams);
   return response;
@@ -70,4 +31,4 @@ const update = async (extractor: IXExtractorInfo) => {
   return response;
 };
 
-export { get, save, update, deleteExtractors };
+export { get, save, update, remove };

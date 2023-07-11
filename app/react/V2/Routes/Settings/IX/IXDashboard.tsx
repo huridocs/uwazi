@@ -63,7 +63,7 @@ const IXDashboard = () => {
     const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
-      await ixAPI.deleteExtractors(extractorIds);
+      await ixAPI.remove(extractorIds);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
