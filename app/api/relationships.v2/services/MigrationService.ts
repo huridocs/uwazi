@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { LoggerInterface } from 'api/log.v2/contracts/LoggerInterfaces';
+import { LoggerInterface } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
