@@ -106,7 +106,7 @@ export class MigrationService {
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource,
-    logger: LoggerInterface
+    logger: Logger
   ) {
     this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;
