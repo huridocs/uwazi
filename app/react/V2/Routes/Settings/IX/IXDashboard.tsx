@@ -128,13 +128,11 @@ const IXDashboard = () => {
             <Button size="small" type="button" color="error" onClick={() => setConfirmModal(true)}>
               <Translate>Delete</Translate>
             </Button>
-          ) : undefined}
-
-          {!selected.length ? (
+          ) : (
             <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Create Extractor</Translate>
             </Button>
-          ) : undefined}
+          )}
         </SettingsContent.Footer>
       </SettingsContent>
 
