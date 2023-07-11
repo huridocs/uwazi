@@ -23,7 +23,7 @@ const ActionHeader = () => <Translate>Action</Translate>;
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-wrap gap-2">
       {propertyIcons[property]}
       <p className="text-gray-500">{cell.row.original.propertyLabel}</p>
     </div>
@@ -31,7 +31,7 @@ const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']
 };
 
 const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplates']>) => (
-  <div className="flex gap-1">
+  <div className="flex flex-wrap gap-2">
     {cell.getValue().map(templateName => (
       <div key={templateName} className="whitespace-nowrap">
         <Pill color="gray">{templateName}</Pill>
