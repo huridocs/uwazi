@@ -39,7 +39,6 @@ describe('Information Extraction', () => {
     cy.exec('yarn e2e-puppeteer-fixtures', { env });
     cy.exec('yarn ix-config', { env });
     clearCookiesAndLogin();
-    cy.injectAxe();
   });
 
   describe('labeling entities', () => {
@@ -51,6 +50,10 @@ describe('Information Extraction', () => {
   });
 
   describe('Dashboard', () => {
+    before(() => {
+      cy.injectAxe();
+    });
+
     it('should navigate to the dashboard', () => {
       cy.get('.only-desktop a[aria-label="Settings"]').click();
       cy.contains('a', 'Metadata Extraction').click();
