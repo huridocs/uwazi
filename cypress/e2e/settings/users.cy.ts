@@ -25,11 +25,11 @@ describe('Users', () => {
     cy.get('caption').within(() => cy.contains('span', 'Users'));
     cy.get('div.tw-content').scrollTo('top');
     cy.checkA11y();
-    cy.get('div[data-testid="settings-content"]').toMatchImageSnapshot();
+    cy.getByTestId('settings-content').toMatchImageSnapshot();
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
-    cy.get('aside').toMatchImageSnapshot();
     cy.checkA11y();
+    cy.get('aside').toMatchImageSnapshot();
     cy.contains('button', 'Cancel').click();
   });
 
@@ -40,22 +40,20 @@ describe('Users', () => {
 
   describe('actions', () => {
     it('create user', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
         cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
         cy.get('#password').type('secret');
-        cy.get('[data-testid="multiselect-comp"]').within(() => {
+        cy.getByTestId('multiselect').within(() => {
           cy.get('button').click();
-          cy.get('ul li')
-            .eq(0)
-            .within(() => {
-              cy.get('input').eq(0).click();
-            });
+          cy.contains('Activistas').click();
         });
       });
       cy.contains('button', 'Save').click();
       cy.contains('span', 'User_1');
+      cy.wait('@updateUsers');
       cy.contains('button', 'Dismiss').click();
     });
 
@@ -143,6 +141,7 @@ describe('Users', () => {
 
   describe('reset password and 2fa', () => {
     it('reset password', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -151,10 +150,12 @@ describe('Users', () => {
       cy.contains('button', 'Reset Password').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
+      cy.wait('@updateUsers');
       cy.contains('button', 'Dismiss').click();
     });
 
     it('Reset 2fa', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('span', 'Password + 2fa');
       cy.get('table tbody tr')
         .eq(4)
@@ -168,12 +169,14 @@ describe('Users', () => {
         .within(() => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
+      cy.wait('@updateUsers');
       cy.contains('button', 'Dismiss').click();
     });
   });
 
   describe('unblock user', () => {
     it('should unblock a user', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(4)
         .within(() => {
@@ -181,6 +184,7 @@ describe('Users', () => {
         });
 
       cy.contains('button', 'Unlock account').click();
+      cy.wait('@updateUsers');
     });
 
     it('should log in with the unblocked user', () => {
@@ -212,7 +216,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset Password').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset passwords');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Cynthia');
@@ -234,7 +238,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Reset 2FA').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset 2FA');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
@@ -270,7 +274,7 @@ describe('Users', () => {
           cy.get('td input').eq(0).click();
         });
       cy.contains('button', 'Delete').click();
-      cy.get('[data-testid="modal"]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Delete');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');

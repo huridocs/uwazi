@@ -9,6 +9,8 @@ export interface EntityPermissionsDBOType {
   permissions: PermissionType[];
 }
 
+export type LegacyObjectIdSchema = string | ObjectId;
+
 export type PermissionType = RestrictedPermissionType | PublicPermissionType;
 
 export interface PublicPermissionType {
@@ -18,7 +20,7 @@ export interface PublicPermissionType {
 }
 
 export interface RestrictedPermissionType {
-  refId: ObjectIdType;
+  refId: string | ObjectId;
   type: 'user' | 'group';
   level: 'read' | 'write';
 }
