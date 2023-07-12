@@ -155,7 +155,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                   .then(() => insertOneResult)
               );
             }
-            if (property === 'updateOne') {
+            if (property === 'replaceOne') {
               const originalFunction = self.getCollection()[property];
               type ResultType = ReturnType<typeof originalFunction>;
               const result: ResultType = original.apply(
@@ -167,11 +167,14 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                 if (updateOneResult.modifiedCount) {
                   return self
                     .getCollection()
-                    .findOne(condition)
-                    .then(updatedDocument => {
-                      if (updatedDocument) {
-                        return self.db.collection('updatelogs').updateOne(
-                          { mongoId: updatedDocument._id },
+                    .find(condition)
+                    .toArray()
+                    .then(updatedDocuments => {
+                      if (updatedDocuments) {
+                        return self.db.collection('updatelogs').updateMany(
+                          {
+                            mongoId: { $in: updatedDocuments.map(u => u._id) },
+                          },
                           {
                             $set: {
                               timestamp: Date.now(),
@@ -185,11 +188,259 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                 }
               });
             }
-            const result = original.apply(
-              receiver,
-              self.appendSessionToOptions(args, propertyName)
-            );
-            return result;
+            if (property === 'updateOne') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+              const condition = args[0];
+              return result.then(async updateOneResult => {
+                if (updateOneResult.modifiedCount) {
+                  return self
+                    .getCollection()
+                    .find(condition)
+                    .toArray()
+                    .then(updatedDocuments => {
+                      if (updatedDocuments) {
+                        return self.db.collection('updatelogs').updateMany(
+                          {
+                            mongoId: { $in: updatedDocuments.map(u => u._id) },
+                          },
+                          {
+                            $set: {
+                              timestamp: Date.now(),
+                            },
+                          },
+                          { session: self.getSession() }
+                        );
+                      }
+                    })
+                    .then(() => updateOneResult);
+                }
+              });
+            }
+            if (property === 'findOneAndReplace') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+              const condition = args[0];
+              return result.then(async updateOneResult => {
+                if (updateOneResult.ok) {
+                  return self
+                    .getCollection()
+                    .find(condition)
+                    .toArray()
+                    .then(updatedDocuments => {
+                      if (updatedDocuments) {
+                        return self.db.collection('updatelogs').updateMany(
+                          {
+                            mongoId: { $in: updatedDocuments.map(u => u._id) },
+                          },
+                          {
+                            $set: {
+                              timestamp: Date.now(),
+                            },
+                          },
+                          { session: self.getSession() }
+                        );
+                      }
+                    })
+                    .then(() => updateOneResult);
+                }
+              });
+            }
+            if (property === 'findOneAndUpdate') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+              const condition = args[0];
+              return result.then(async updateOneResult => {
+                if (updateOneResult.ok) {
+                  return self
+                    .getCollection()
+                    .find(condition)
+                    .toArray()
+                    .then(updatedDocuments => {
+                      if (updatedDocuments) {
+                        return self.db.collection('updatelogs').updateMany(
+                          {
+                            mongoId: { $in: updatedDocuments.map(u => u._id) },
+                          },
+                          {
+                            $set: {
+                              timestamp: Date.now(),
+                            },
+                          },
+                          { session: self.getSession() }
+                        );
+                      }
+                    })
+                    .then(() => updateOneResult);
+                }
+              });
+            }
+            if (property === 'updateMany') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+              const condition = args[0];
+              return result.then(async updateOneResult => {
+                if (updateOneResult.modifiedCount) {
+                  return self
+                    .getCollection()
+                    .find(condition)
+                    .toArray()
+                    .then(updatedDocuments => {
+                      if (updatedDocuments) {
+                        return self.db.collection('updatelogs').updateMany(
+                          {
+                            mongoId: { $in: updatedDocuments.map(u => u._id) },
+                          },
+                          {
+                            $set: {
+                              timestamp: Date.now(),
+                            },
+                          },
+                          { session: self.getSession() }
+                        );
+                      }
+                    })
+                    .then(() => updateOneResult);
+                }
+              });
+            }
+            if (property === 'deleteOne') {
+              const condition = args[0];
+              return self
+                .getCollection()
+                .find(condition)
+                .toArray()
+                .then(documentsToBeDeleted => {
+                  if (documentsToBeDeleted) {
+                    return self.db
+                      .collection('updatelogs')
+                      .updateMany(
+                        { mongoId: { $in: documentsToBeDeleted.map(u => u._id) } },
+                        { $set: { timestamp: Date.now(), deleted: true } },
+                        { session: self.getSession() }
+                      );
+                  }
+                })
+                .then(() =>
+                  original.apply(receiver, self.appendSessionToOptions(args, propertyName))
+                );
+            }
+            if (property === 'findOneAndDelete') {
+              const condition = args[0];
+              return self
+                .getCollection()
+                .find(condition)
+                .toArray()
+                .then(documentsToBeDeleted => {
+                  if (documentsToBeDeleted) {
+                    return self.db
+                      .collection('updatelogs')
+                      .updateMany(
+                        { mongoId: { $in: documentsToBeDeleted.map(u => u._id) } },
+                        { $set: { timestamp: Date.now(), deleted: true } },
+                        { session: self.getSession() }
+                      );
+                  }
+                })
+                .then(() =>
+                  original.apply(receiver, self.appendSessionToOptions(args, propertyName))
+                );
+            }
+            if (property === 'deleteMany') {
+              const condition = args[0];
+              return self
+                .getCollection()
+                .find(condition)
+                .toArray()
+                .then(documentsToBeDeleted => {
+                  if (documentsToBeDeleted) {
+                    return self.db
+                      .collection('updatelogs')
+                      .updateMany(
+                        { mongoId: { $in: documentsToBeDeleted.map(u => u._id) } },
+                        { $set: { timestamp: Date.now(), deleted: true } },
+                        { session: self.getSession() }
+                      );
+                  }
+                })
+                .then(() =>
+                  original.apply(receiver, self.appendSessionToOptions(args, propertyName))
+                );
+            }
+            if (property === 'bulkWrite') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+
+              // return self
+              //   .getCollection()
+              //   .find({
+              //     $or: [
+              //       args[0]
+              //         .filter(arg => {
+              //           return arg.deleteOne || arg.deleteMany;
+              //         })
+              //         .map(arg => {
+              //           return arg.deleteOne?.filter || arg.deleteMany.filter;
+              //         }),
+              //     ],
+              //   })
+              //   .toArray()
+              //   .then(documentsToBeDeleted => {
+              //     if (documentsToBeDeleted) {
+              //       return self.db
+              //         .collection('updatelogs')
+              //         .updateMany(
+              //           { mongoId: { $in: documentsToBeDeleted.map(u => u._id) } },
+              //           { $set: { timestamp: Date.now(), deleted: true } },
+              //           { session: self.getSession() }
+              //         );
+              //     }
+              //     return original.apply(receiver, self.appendSessionToOptions(args, propertyName));
+              //   });
+
+              return result.then(async bulkWriteResult => {
+                return Promise.resolve()
+                  .then(() => {
+                    if (Object.values(bulkWriteResult.insertedIds).length) {
+                      return self.db.collection('updatelogs').insertMany(
+                        Object.values(bulkWriteResult.insertedIds).map(insertedId => ({
+                          timestamp: Date.now(),
+                          namespace: self.collectionName,
+                          mongoId: insertedId,
+                          deleted: false,
+                        })),
+                        { session: self.getSession() }
+                      );
+                    }
+                  })
+                  .then(() => {
+                    if (bulkWriteResult) {
+                    }
+                  })
+                  .then(() => bulkWriteResult);
+              });
+            }
+            return original.apply(receiver, self.appendSessionToOptions(args, propertyName));
           };
         }
 

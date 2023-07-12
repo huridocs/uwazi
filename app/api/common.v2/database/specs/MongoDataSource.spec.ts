@@ -1,11 +1,12 @@
 /* eslint-disable max-statements */
-import testingDB from 'api/utils/testing_db';
+import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
+import { BulkWriteStream } from '../BulkWriteStream';
+import { getClient, getConnection } from '../getConnectionForCurrentTenant';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';
-import { getClient, getConnection } from '../getConnectionForCurrentTenant';
-import { getIdMapper } from 'api/utils/fixturesFactory';
 
 const idMapper = getIdMapper();
 
@@ -331,32 +332,6 @@ describe('collection with automatic log to updatelogs', () => {
         ],
       },
       {
-        method: 'updateOne',
-        callback: async (ds: DataSource) => {
-          await ds
-            .collection()
-            .updateOne({ _id: idMapper('this id does not exists') }, { $set: { data: 'updated data' } });
-        },
-        expectedOnAbort: updateLogsBlankState,
-        expectedOnSuccess: updateLogsBlankState,
-      },
-      {
-        method: 'updateOne',
-        callback: async (ds: DataSource) => {
-          jest.spyOn(Date, 'now').mockReturnValue(2);
-          await ds
-            .collection()
-            .updateOne({ _id: idMapper('update log 1') }, { $set: { data: 'updated data' } });
-        },
-        expectedOnAbort: updateLogsBlankState,
-        expectedOnSuccess: [
-          {
-            ...updateLogsBlankState[0],
-            timestamp: 2,
-          },
-        ],
-      },
-      {
         method: 'insertMany',
         callback: async (ds: DataSource) => {
           await ds.collection().insertMany([
@@ -383,6 +358,238 @@ describe('collection with automatic log to updatelogs', () => {
           },
         ],
       },
+      {
+        method: 'updateOne',
+        callback: async (ds: DataSource) => {
+          await ds
+            .collection()
+            .updateOne(
+              { _id: idMapper('this id does not exists') },
+              { $set: { data: 'updated data' } }
+            );
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: updateLogsBlankState,
+      },
+      {
+        method: 'updateOne',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .updateOne({ _id: idMapper('update log 1') }, { $set: { data: 'updated data' } });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'replaceOne',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .replaceOne({ _id: idMapper('update log 1') }, { data: 'replaced document' });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'findOneAndUpdate',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .findOneAndUpdate(
+              { _id: idMapper('update log 1') },
+              { $set: { data: 'updated data' } }
+            );
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'findOneAndReplace',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .findOneAndReplace({ _id: idMapper('update log 1') }, { data: 'updated data' });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'updateMany',
+        callback: async (ds: DataSource) => {
+          await ds.collection().insertMany([
+            { _id: idMapper('data 1'), data: 'data 1' },
+            { _id: idMapper('data 2'), data: 'data 2' },
+          ]);
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds.collection().updateMany({}, { $set: { data: 'updated data' } });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 1'),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 2'),
+            deleted: false,
+          },
+        ],
+      },
+      {
+        method: 'updateMany',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .updateMany({ property: 'does not exist' }, { $set: { data: 'updated data' } });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: updateLogsBlankState,
+      },
+      {
+        method: 'deleteOne',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds.collection().deleteOne({ _id: idMapper('update log 1') });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            deleted: true,
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'deleteMany',
+        callback: async (ds: DataSource) => {
+          await ds.collection().insertOne({ _id: idMapper('data 1'), data: 'data 1' });
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds
+            .collection()
+            .deleteMany({ _id: { $in: [idMapper('update log 1'), idMapper('data 1')] } });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            deleted: true,
+            timestamp: 2,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 1'),
+            deleted: true,
+          },
+        ],
+      },
+      {
+        method: 'findOneAndDelete',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds.collection().findOneAndDelete({ _id: idMapper('update log 1') });
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            deleted: true,
+            timestamp: 2,
+          },
+        ],
+      },
+      {
+        method: 'bulkWrite (insert)',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          const stream = new BulkWriteStream(ds.collection());
+          await stream.insert({ _id: idMapper('insert one'), data: 'insert one' });
+          await stream.insertMany([
+            { _id: idMapper('insert many 1'), data: 'insert many 1' },
+            { _id: idMapper('insert many 2'), data: 'insert many 1' },
+          ]);
+          await stream.flush();
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          ...updateLogsBlankState,
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('insert one'),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('insert many 1'),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('insert many 2'),
+            deleted: false,
+          },
+        ],
+      },
+      {
+        method: 'bulkWrite (delete)',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await ds.collection().insertMany([
+            { _id: idMapper('data 1'), data: 'data 1' },
+            { _id: idMapper('data 2'), data: 'data 2' },
+          ]);
+          const stream = new BulkWriteStream(ds.collection());
+          await stream.delete({ _id: idMapper('update log 1') });
+          await stream.deleteMany({ _id: { $in: [idMapper('data 1'), idMapper('data 2')] } });
+          await stream.flush();
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [],
+      },
     ];
 
     it.each(casesForUpdates)(
@@ -397,7 +604,9 @@ describe('collection with automatic log to updatelogs', () => {
             throw new Error('make it fail');
           });
         } catch (e) {
-          expect(e.message).toEqual('make it fail');
+          if (e.message !== 'make it fail') {
+            throw e;
+          }
           expect(await testingDB.mongodb?.collection('updatelogs').find({}).toArray()).toEqual(
             expectedOnAbort
           );
