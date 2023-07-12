@@ -17,7 +17,7 @@ export interface PublicPermissionType {
 }
 
 export interface RestrictedPermissionType {
-  refId: string | ObjectId;
+  refId: LegacyObjectIdSchema;
   type: 'user' | 'group';
   level: 'read' | 'write';
 }

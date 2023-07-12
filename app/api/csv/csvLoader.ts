@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 import translations from 'api/i18n';
-import { EnforcedWithId, WithId } from 'api/odm';
+import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
@@ -211,7 +211,7 @@ export class CSVLoader extends EventEmitter {
       }
 
       return translations.save(dbTranslations);
-    }, Promise.resolve({} as WithId<TranslationType>));
+    }, Promise.resolve({} as TranslationType));
 
     return translations.get();
   }

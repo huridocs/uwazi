@@ -1,3 +1,4 @@
+import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
@@ -126,25 +127,66 @@ const fixtures: DBFixture = {
       published: true,
     },
   ],
-  settings: [{ _id: testingDB.id(), languages: [{ key: 'es', label: 'ES', default: true }] }],
-  translations: [
+  settings: [
     {
       _id: testingDB.id(),
-      locale: 'en',
-      contexts: [
-        {
-          id: dictionaryId,
-          type: 'Dictionary',
-          values: [
-            { key: 'dictionary 2', value: 'dictionary 2' },
-            { key: 'value 1', value: 'value 1' },
-            { key: 'value 2', value: 'value 2' },
-            { key: 'Parent', value: 'Parent' },
-          ],
-        },
+      languages: [
+        { key: 'es', label: 'ES', default: true },
+        { key: 'en', label: 'English' },
       ],
     },
   ],
+  translations: fixturesTranslationsV2ToTranslationsLegacy([
+    {
+      language: 'en',
+      key: 'Parent',
+      value: 'Parent',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'value 2',
+      value: 'value 2',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'value 1',
+      value: 'value 1',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'en',
+      key: 'dictionary 2',
+      value: 'dictionary 2',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+
+    {
+      language: 'es',
+      key: 'Parent',
+      value: 'Parent',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'value 2',
+      value: 'value 2',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'value 1',
+      value: 'value 1',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+    {
+      language: 'es',
+      key: 'dictionary 2',
+      value: 'dictionary 2',
+      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
+    },
+  ]),
 };
 
 export {

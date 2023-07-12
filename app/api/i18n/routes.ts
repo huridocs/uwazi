@@ -5,11 +5,12 @@ import entities from 'api/entities';
 import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
-import { languageSchema } from 'shared/types/commonSchemas';
+import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 const addLanguage = async (language: any) => {
   const newSettings = await settings.addLanguage(language);
@@ -44,7 +45,7 @@ export default (app: Application) => {
     }),
     async (req: TranslationsRequest, res) => {
       const { context } = req.query;
-      const response = await translations.get({ context }, context && { locale: 1 });
+      const response = await translations.get({ context });
 
       res.json({ rows: response });
     }
@@ -112,8 +113,8 @@ export default (app: Application) => {
     ),
 
     async (req, res) => {
-      const { _id } = await translations.save(req.body);
-      const [response] = await translations.get({ _id: _id.toString() });
+      const { locale } = await translations.save(req.body);
+      const [response] = await translations.get({ locale });
       req.sockets.emitToCurrentTenant('translationsChange', response);
       res.json(response);
     }
@@ -187,18 +188,18 @@ export default (app: Application) => {
     }
   );
 
+  type DeleteTranslationRequest = Request & { query: { key: LanguageISO6391 } };
+
   app.delete(
     '/api/translations/languages',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          key: Joi.string(),
-        })
-        .required()
-    ),
-
-    async (req: Request<{}, {}, {}, { key: string }>, res) => {
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        key: LanguageISO6391Schema,
+      },
+    }),
+    async (req: DeleteTranslationRequest, res) => {
       const [newSettings, newTranslations] = await Promise.all([
         settings.deleteLanguage(req.query.key),
         translations.removeLanguage(req.query.key),
