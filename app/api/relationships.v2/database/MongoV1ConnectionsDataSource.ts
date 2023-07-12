@@ -6,20 +6,45 @@ import {
   V1ConnectionDBO,
   V1ConnectionDBOWithEntityInfo,
 } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection, V1ConnectionDisplayed } from '../model/V1Connection';
+import {
+  V1Connection,
+  V1ConnectionDisplayed,
+  V1SelectionRectangle,
+  V1TextReference,
+} from '../model/V1Connection';
+
+const mapReference = (dbo: V1ConnectionDBO): V1TextReference | undefined =>
+  dbo.reference
+    ? new V1TextReference(
+        dbo.reference.text,
+        dbo.reference.selectionRectangles.map(
+          (rect): V1SelectionRectangle =>
+            new V1SelectionRectangle(rect.page, rect.top, rect.left, rect.height, rect.width)
+        )
+      )
+    : undefined;
 
 const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
-  new V1Connection(dbo._id.toString(), dbo.entity, dbo.hub.toString(), dbo.template.toString());
+  new V1Connection(
+    dbo._id.toString(),
+    dbo.entity,
+    dbo.hub.toString(),
+    dbo.template?.toString(),
+    dbo.file,
+    mapReference(dbo)
+  );
 
 const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
   new V1ConnectionDisplayed(
     dbo._id.toString(),
     dbo.entity,
     dbo.hub.toString(),
-    dbo.template.toString(),
+    dbo.template?.toString(),
     dbo.entityTemplateId.toString(),
     dbo.entityTitle,
-    dbo.templateName
+    dbo.templateName,
+    dbo.file,
+    mapReference(dbo)
   );
 
 export class MongoV1ConnectionsDataSource
@@ -78,5 +103,13 @@ export class MongoV1ConnectionsDataSource
       cursor,
       mapConnectionsWithEntityInfo
     );
+  }
+
+  getSimilarConnections(connection: V1Connection): MongoResultSet<V1ConnectionDBO, V1Connection> {
+    const cursor = this.getCollection().find({
+      entity: connection.entity,
+      template: connection.template ? MongoIdHandler.mapToDb(connection.template) : undefined,
+    });
+    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
   }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
-import { ResultSet } from '../contracts/ResultSet';
+import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;
@@ -54,50 +54,52 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
-  async forEach(callback: (item: U) => Promise<void> | void) {
-    while (await this.hasNext()) {
+  async forEach(callback: (item: U) => BreakLoopSignal) {
+    let shouldContinue = true;
+    while (shouldContinue && (await this.hasNext())) {
       const item: U | null = await this.next();
-      await callback(item!);
+      shouldContinue = (await callback(item!)) !== false;
     }
+    await this.close();
   }
 
-  async forEachBatch(batchSize: number, callback: (items: U[]) => Promise<void> | void) {
-    while (await this.hasNext()) {
+  async forEachBatch(batchSize: number, callback: (items: U[]) => BreakLoopSignal) {
+    let progress = true;
+    while (progress && (await this.hasNext())) {
       const items: U[] = await this.nextBatch(batchSize);
-      await callback(items);
+      progress = (await callback(items)) !== false;
     }
+    await this.close();
+  }
+
+  async find(predicate: (item: U) => boolean): Promise<U | null> {
+    let result: U | null = null;
+
+    await this.forEach(item => {
+      if (predicate(item!) === true) {
+        result = item;
+        return false;
+      }
+    });
+
+    return result;
   }
 
   async every(predicate: (item: U) => boolean): Promise<boolean> {
-    let result = true;
-    let counter = 0;
+    let hasItems = false;
 
-    while (await this.hasNext()) {
-      counter += 1;
-      const item = await this.next();
-      if (predicate(item!) === false) {
-        result = false;
-        break;
-      }
-    }
+    const result = await this.find(item => {
+      hasItems = true;
+      return predicate(item!) === false;
+    });
 
-    await this.close();
-    return counter > 0 && result;
+    return hasItems && result === null;
   }
 
   async some(predicate: (item: U) => boolean): Promise<boolean> {
-    let result = false;
+    const result = await this.find(predicate);
 
-    while (await this.hasNext()) {
-      const item = await this.next();
-      if (predicate(item!) === true) {
-        result = true;
-        break;
-      }
-    }
-
-    await this.close();
-    return result;
+    return result !== null;
   }
 
   async first() {

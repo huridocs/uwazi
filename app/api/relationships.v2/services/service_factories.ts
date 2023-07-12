@@ -8,6 +8,7 @@ import {
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { DefaultRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/data_source_defaults';
 import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -173,6 +174,7 @@ const DeleteRelationshipService = async (request: Request) => {
 };
 
 const MigrationService = () => {
+  const logger = DefaultLogger();
   const transactionManager = DefaultTransactionManager();
   const hubDS = DefaultHubsDataSource(transactionManager);
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
@@ -183,7 +185,8 @@ const MigrationService = () => {
     hubDS,
     v1ConnectionsDS,
     templatesDS,
-    relationshipsDS
+    relationshipsDS,
+    logger
   );
   return service;
 };

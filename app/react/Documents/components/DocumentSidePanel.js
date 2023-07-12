@@ -451,6 +451,32 @@ class DocumentSidePanel extends Component {
                   );
                 }
               })()}
+              <li>
+                <ShowIf
+                  if={this.props.newRelationshipsEnabled && currentSidepanelView === 'entity'}
+                >
+                  <TabLink
+                    to="newrelationships"
+                    role="button"
+                    tabIndex="0"
+                    aria-label="New Relationships"
+                    component="div"
+                  >
+                    <I18NLink
+                      className={this.linkClassNames(['newrelationships'])}
+                      to={`/entity/${doc.get('sharedId')}/newrelationships`}
+                      onClick={() =>
+                        store.dispatch(actions.set('viewer.sidepanel.tab', 'newrelationships'))
+                      }
+                    >
+                      <Icon icon="exchange-alt" />*
+                      <span className="tab-link-tooltip" no-translate>
+                        New Relationships
+                      </span>
+                    </I18NLink>
+                  </TabLink>
+                </ShowIf>
+              </li>
             </ul>
           </Tabs>
         </div>
@@ -708,6 +734,8 @@ DocumentSidePanel.defaultProps = {
   file: {},
   leaveEditMode: () => {},
   selectedDocument: undefined,
+  // relationships v2
+  newRelationshipsEnabled: false,
 };
 
 DocumentSidePanel.propTypes = {
@@ -759,6 +787,8 @@ DocumentSidePanel.propTypes = {
   }).isRequired,
   navigate: PropTypes.func.isRequired,
   selectedDocument: PropTypes.instanceOf(Immutable),
+  // relationships v2
+  newRelationshipsEnabled: PropTypes.bool,
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -790,6 +820,8 @@ const mapStateToProps = (state, ownProps) => {
     formState: state[ownProps.storeKey].sidepanel.metadataForm,
     currentSidepanelView: state.library.sidepanel.view,
     selectedDocument,
+    // relationships v2
+    newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
 

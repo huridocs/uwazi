@@ -19,8 +19,12 @@ type RelationshipType = {
 type MigrationSummaryType = {
   total: number;
   used: number;
+  errors: number;
+  totalTextReferences: number;
+  usedTextReferences: number;
   time: number;
   dryRun: boolean;
+  hubsWithUnusedConnections: OriginalEntityInfo[][];
 };
 
 type OriginalEntityInfo = {
@@ -42,6 +46,7 @@ type TransformedInfo = {
 type hubTestResult = {
   total: number;
   used: number;
+  errors: number;
   transformed: TransformedInfo[];
   original: OriginalEntityInfo[];
 };
@@ -171,9 +176,42 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 <br />
                 <div>Migration Summary{this.migrationSummary.dryRun ? ' (Dry Run)' : ''}:</div>
                 <div>Time: {formatTime(this.migrationSummary.time)}</div>
-                <div>Total: {this.migrationSummary.total}</div>
-                <div>Used: {this.migrationSummary.used}</div>
-                <div>Unused: {this.migrationSummary.total - this.migrationSummary.used}</div>
+                <div>
+                  Total: {this.migrationSummary.total}
+                  {`(text references: ${this.migrationSummary.totalTextReferences})`}
+                </div>
+                <div>
+                  Used: {this.migrationSummary.used}
+                  {`(${this.migrationSummary.usedTextReferences})`}
+                </div>
+                <div>
+                  Unused: {this.migrationSummary.total - this.migrationSummary.used}
+                  {`(${
+                    this.migrationSummary.totalTextReferences -
+                    this.migrationSummary.usedTextReferences
+                  })`}
+                </div>
+                <div>Errors: {this.migrationSummary.errors}</div>
+                <br />
+                <div>
+                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
+                  connections:
+                </div>
+                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
+                  <div key={`UnusedConnectionList_${index}`}>
+                    <div>{index + 1}---------------------------:</div>
+                    {connectionList.map((connection, connectionIndex) => (
+                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
+                        &emsp;
+                        {connection.templateName}
+                        <Icon icon="link" />
+                        {`${connection.entityTitle}(${
+                          templatesById[connection.entityTemplate].name
+                        })`}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
             <br />
