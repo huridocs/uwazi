@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { Tenant } from 'api/tenants/tenantContext';
-import { Logger as LoggerInterface } from '../contracts/Logger';
+import { Logger } from '../contracts/Logger';
 
 class LogLevel {
   name: string;
@@ -56,7 +56,7 @@ class LogEntry {
   }
 }
 
-class Logger implements LoggerInterface {
+class StandardLogger implements Logger {
   private tenant: Tenant;
 
   constructor(tenant: Tenant) {
@@ -94,6 +94,6 @@ class Logger implements LoggerInterface {
   }
 }
 
-const DefaultLogger = () => new Logger(getTenant());
+const DefaultLogger = () => new StandardLogger(getTenant());
 
-export { Logger, DefaultLogger };
+export { StandardLogger, DefaultLogger };
