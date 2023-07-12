@@ -9,11 +9,10 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import migration from '../../migrations/index';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
-const collectionInDb = (collection = 'translations_v2') =>
+const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
@@ -29,7 +28,7 @@ const createService = () => {
 };
 
 const fixtures: DBFixture = {
-  translations_v2: [],
+  translationsV2: [],
   settings: [
     {
       languages: [
@@ -42,7 +41,6 @@ const fixtures: DBFixture = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  await migration.createIndexes(testingDB.mongodb);
 });
 
 afterAll(async () => {
@@ -142,7 +140,7 @@ describe('CreateTranslationsService', () => {
       it('should throw a validation error', async () => {
         await testingEnvironment.setUp({
           ...fixtures,
-          translations_v2: [
+          translationsV2: [
             {
               language: 'en',
               key: 'existing_key',

@@ -1,6 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { LoggerInterface } from 'api/log.v2/contracts/LoggerInterfaces';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
@@ -98,7 +98,7 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
-  private logger: LoggerInterface;
+  private logger: Logger;
 
   constructor(
     idGenerator: IdGenerator,
@@ -106,7 +106,7 @@ export class MigrationService {
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource,
-    logger: LoggerInterface
+    logger: Logger
   ) {
     this.idGenerator = idGenerator;
     this.hubsDS = hubsDS;

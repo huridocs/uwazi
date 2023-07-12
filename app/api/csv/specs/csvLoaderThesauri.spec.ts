@@ -27,11 +27,11 @@ describe('csvLoader thesauri', () => {
     beforeAll(async () => {
       await db.clearAllAndLoad(fixtures);
 
-      await translations.addLanguage('es');
       await settings.addLanguage({ key: 'es', label: 'spanish' });
+      await translations.addLanguage('es');
 
-      await translations.addLanguage('fr');
       await settings.addLanguage({ key: 'fr', label: 'french' });
+      await translations.addLanguage('fr');
 
       const { _id } = await thesauri.save({
         name: 'thesauri2Id',

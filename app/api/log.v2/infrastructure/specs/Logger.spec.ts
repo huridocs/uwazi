@@ -1,5 +1,5 @@
 import { Tenant } from 'api/tenants/tenantContext';
-import { Logger } from '../Logger';
+import { StandardLogger } from '../StandardLogger';
 
 const tenant: Tenant = {
   name: 'testTenant',
@@ -11,7 +11,7 @@ const tenant: Tenant = {
   activityLogs: 'testTenant/activityLogs',
 };
 
-const logging = new Logger(tenant);
+const logging = new StandardLogger(tenant);
 const mockedTimeStamp = Date.UTC(1999, 11, 31, 23, 59);
 const mockedDateString = '1999-12-31T23:59:00.000Z';
 

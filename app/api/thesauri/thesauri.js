@@ -72,12 +72,10 @@ const updateTranslation = (current, thesauri) => {
 
   context[thesauri.name] = thesauri.name;
   return translations.updateContext(
-    current._id,
-    thesauri.name,
+    { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
     updatedLabels,
     deletedPropertiesByLabel,
-    context,
-    'Thesaurus'
+    context
   );
 };
 
