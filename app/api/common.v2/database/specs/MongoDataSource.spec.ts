@@ -577,18 +577,91 @@ describe('collection with automatic log to updatelogs', () => {
       {
         method: 'bulkWrite (delete)',
         callback: async (ds: DataSource) => {
-          jest.spyOn(Date, 'now').mockReturnValue(2);
           await ds.collection().insertMany([
             { _id: idMapper('data 1'), data: 'data 1' },
             { _id: idMapper('data 2'), data: 'data 2' },
           ]);
+          jest.spyOn(Date, 'now').mockReturnValue(2);
           const stream = new BulkWriteStream(ds.collection());
           await stream.delete({ _id: idMapper('update log 1') });
           await stream.deleteMany({ _id: { $in: [idMapper('data 1'), idMapper('data 2')] } });
           await stream.flush();
         },
         expectedOnAbort: updateLogsBlankState,
-        expectedOnSuccess: [],
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+            deleted: true,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 1'),
+            deleted: true,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 2'),
+            deleted: true,
+          },
+        ],
+      },
+      {
+        method: 'bulkWrite (update/replace)',
+        callback: async (ds: DataSource) => {
+          await ds.collection().insertMany([
+            { _id: idMapper('data 1'), data: 'data 1' },
+            { _id: idMapper('data 2'), data: 'data 2' },
+          ]);
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          const stream = new BulkWriteStream(ds.collection());
+          await stream.updateOne(
+            { _id: idMapper('update log 1') },
+            { $set: { data: 'update log 1 updated' } }
+          );
+          await stream.updateOne(
+            { _id: idMapper('upserted') },
+            { $set: { data: 'upserted' } },
+            true
+          );
+          await stream.updateMany(
+            { _id: { $in: [idMapper('data 1'), idMapper('data 2')] } },
+            { $set: { data: 'data 1 and 2 updated' } }
+          );
+          await stream.flush();
+        },
+        expectedOnAbort: updateLogsBlankState,
+        expectedOnSuccess: [
+          {
+            ...updateLogsBlankState[0],
+            timestamp: 2,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 1'),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('data 2'),
+            deleted: false,
+          },
+          {
+            _id: expect.anything(),
+            timestamp: 2,
+            namespace: 'collection',
+            mongoId: idMapper('upserted'),
+            deleted: false,
+          },
+        ],
       },
     ];
 
