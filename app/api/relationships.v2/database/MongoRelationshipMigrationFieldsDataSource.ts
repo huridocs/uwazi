@@ -1,5 +1,4 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
@@ -20,16 +19,8 @@ class MongoRelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
-  async get(
-    sourceTemplate: string,
-    relationType: string,
-    targetTemplate: string
-  ): Promise<RelationshipMigrationField> {
-    const dbo = await this.getCollection().findOne({
-      sourceTemplate: MongoIdHandler.mapToDb(sourceTemplate),
-      relationType: MongoIdHandler.mapToDb(relationType),
-      targetTemplate: MongoIdHandler.mapToDb(targetTemplate),
-    });
+  async get(fieldId: RelationShipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
+    const dbo = await this.getCollection().findOne({ ...mapFieldIdToDBO(fieldId) });
     return mapFieldToApp(dbo);
   }
 

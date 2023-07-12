@@ -191,8 +191,15 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   async toggleIgnore(pe: PlanElement) {
     pe.ignored = !pe.ignored;
-    await saveRelationshipMigrationField(pe);
-    this.forceUpdate();
+    console.log(pe);
+    saveRelationshipMigrationField(pe)
+      .then(() => {
+        this.forceUpdate();
+      })
+      .catch(() => {
+        pe.ignored = !pe.ignored;
+        this.forceUpdate();
+      });
   }
 
   render() {

@@ -6,11 +6,7 @@ import {
 } from '../model/RelationshipMigrationField';
 
 export interface RelationshipMigrationFieldsDataSource {
-  get(
-    sourceTemplate: string,
-    relationType: string,
-    targetTemplate: string
-  ): Promise<RelationshipMigrationField>;
+  get(fieldId: RelationShipMigrationFieldUniqueId): Promise<RelationshipMigrationField>;
   getAll(): ResultSet<RelationshipMigrationField>;
   upsert(field: RelationshipMigrationFieldInfo): Promise<void>;
   delete(fieldId: RelationShipMigrationFieldUniqueId): Promise<void>;

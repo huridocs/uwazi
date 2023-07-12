@@ -18,7 +18,7 @@ class DeleteRelationshipMigrationFieldService {
   async delete(
     sourceTemplate: string,
     relationType: string,
-    targetTemplate: string
+    targetTemplate?: string
   ): Promise<void> {
     await this.transactionManager.run(async () => {
       const fieldId = new RelationShipMigrationFieldUniqueId(

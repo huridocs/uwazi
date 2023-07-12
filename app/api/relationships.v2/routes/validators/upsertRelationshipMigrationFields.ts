@@ -9,13 +9,13 @@ const schema: ValidatorSchema<UpsertMigrationFieldRequest> = {
     relationType: {
       type: 'string',
     },
-    targetTemplate: {
-      type: 'string',
-    },
   },
   optionalProperties: {
     ignored: {
       type: 'boolean',
+    },
+    targetTemplate: {
+      type: 'string',
     },
   },
 };

@@ -15,13 +15,16 @@ const mapFieldIdToDBO = (
 ): RelationshipMigrationFieldUniqueIdDBO => ({
   sourceTemplate: MongoIdHandler.mapToDb(fieldId.sourceTemplate),
   relationType: MongoIdHandler.mapToDb(fieldId.relationType),
-  targetTemplate: MongoIdHandler.mapToDb(fieldId.targetTemplate),
+  targetTemplate: fieldId.targetTemplate
+    ? MongoIdHandler.mapToDb(fieldId.targetTemplate)
+    : undefined,
 });
 
 const mapFieldInfoToDBO = (
   field: RelationshipMigrationFieldInfo
 ): RelationshipMigrationFieldInfoDBO => {
-  const { ignored, ...fieldId } = field;
+  const { ignored } = field;
+  const fieldId = field.getId();
   return {
     ...mapFieldIdToDBO(fieldId),
     ignored,
@@ -29,7 +32,8 @@ const mapFieldInfoToDBO = (
 };
 
 const mapFieldToDBO = (field: RelationshipMigrationField): RelationshipMigrationFieldDBO => {
-  const { id, ...info } = field;
+  const { id } = field;
+  const info = field.getInfo();
   return {
     _id: MongoIdHandler.mapToDb(id),
     ...mapFieldInfoToDBO(info),
@@ -41,7 +45,7 @@ const mapFieldToApp = (field: RelationshipMigrationFieldDBO): RelationshipMigrat
     MongoIdHandler.mapToApp(field._id),
     MongoIdHandler.mapToApp(field.sourceTemplate),
     MongoIdHandler.mapToApp(field.relationType),
-    MongoIdHandler.mapToApp(field.targetTemplate),
+    field.targetTemplate ? MongoIdHandler.mapToApp(field.targetTemplate) : undefined,
     field.ignored
   );
 

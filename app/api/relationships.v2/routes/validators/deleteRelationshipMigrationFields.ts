@@ -9,6 +9,8 @@ const schema: ValidatorSchema<DeleteRelationshipMigrationFieldRequest> = {
     relationType: {
       type: 'string',
     },
+  },
+  optionalProperties: {
     targetTemplate: {
       type: 'string',
     },

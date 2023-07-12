@@ -1,13 +1,13 @@
 type DeleteRelationshipMigrationFieldRequest = {
   sourceTemplate: string;
   relationType: string;
-  targetTemplate: string;
+  targetTemplate?: string;
 };
 
 type UpsertMigrationFieldRequest = {
   sourceTemplate: string;
   relationType: string;
-  targetTemplate: string;
+  targetTemplate?: string;
   ignored?: boolean;
 };
 
