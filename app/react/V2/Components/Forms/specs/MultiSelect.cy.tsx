@@ -44,24 +44,24 @@ describe('MultiSelect', () => {
     });
 
     it('should render context menu when button clicked', () => {
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').should('have.length', 19);
     });
 
     it('should close when clicking on the open button again', () => {
-      cy.get('[data-testid="multiselect-comp"] button').click();
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').should('not.exist');
     });
 
     it('should close when clicking outside of the component', () => {
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.contains('h1', 'Multiselect component').click();
       cy.get('ul li').should('not.exist');
     });
 
     it('should sort the option by label', () => {
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul').within(() => {
         cy.get('li').eq(0).contains('label', 'And another');
         cy.get('li').eq(1).contains('label', 'Another');
@@ -73,7 +73,7 @@ describe('MultiSelect', () => {
   describe('Main area', () => {
     beforeEach(() => {
       mount(<MultiSelect />);
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').get('input').eq(1).click();
       cy.get('ul li').get('input').eq(2).click();
     });
@@ -102,7 +102,7 @@ describe('MultiSelect', () => {
           }}
         />
       );
-      cy.get('[data-testid="multiselect-comp"] button').click();
+      cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').get('input').eq(1).click();
 
       cy.get('@onChange').should('have.been.calledOnceWith', expectedArguments);
@@ -121,8 +121,8 @@ describe('MultiSelect', () => {
         />
       );
 
-      cy.get('[data-testid="multiselect-comp"] button').eq(0).should('be.disabled');
-      cy.get('[data-testid="multiselect-comp"] button').eq(1).should('be.disabled');
+      cy.get('[data-testid="multiselect"] button').eq(0).should('be.disabled');
+      cy.get('[data-testid="multiselect"] button').eq(1).should('be.disabled');
     });
   });
 });
