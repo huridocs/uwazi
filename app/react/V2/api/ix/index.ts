@@ -13,22 +13,23 @@ const get = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
+const save = async (extractor: IXExtractorInfo) => {
+  const requestParams = new RequestParams(extractor);
+  let response: IXExtractorInfo[];
+
+  if (extractor._id) {
+    response = await api.put('ixextractors', requestParams);
+  } else {
+    response = await api.post('ixextractors', requestParams);
+  }
+
+  return response;
+};
+
 const remove = async (ids: string[]) => {
   const requestParams = new RequestParams({ ids });
   const response = await api.delete('ixextractors', requestParams);
   return response;
 };
 
-const save = async (extractor: IXExtractorInfo) => {
-  const requestParams = new RequestParams(extractor);
-  const response = await api.post('ixextractors', requestParams);
-  return response;
-};
-
-const update = async (extractor: IXExtractorInfo) => {
-  const requestParams = new RequestParams(extractor);
-  const response = await api.put('ixextractors', requestParams);
-  return response;
-};
-
-export { get, save, update, remove };
+export { get, save, remove };

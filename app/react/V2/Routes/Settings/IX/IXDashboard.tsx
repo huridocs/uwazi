@@ -80,11 +80,7 @@ const IXDashboard = () => {
 
   const handleSave = async (extractor: IXExtractorInfo) => {
     try {
-      if (extractor._id) {
-        await ixAPI.update(extractor);
-      } else {
-        await ixAPI.save(extractor);
-      }
+      await ixAPI.save(extractor);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
