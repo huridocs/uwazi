@@ -54,6 +54,7 @@ describe('Groups', () => {
 
     const groups = ['Activistas', 'Asesores legales', 'Group One'];
     namesShouldMatch(groups);
+    cy.contains('button', 'Dismiss').click();
   });
 
   it('should edit group', () => {
@@ -80,6 +81,7 @@ describe('Groups', () => {
 
     const groups = ['Asesores legales', 'Group One', 'Knights of the Zodiac'];
     namesShouldMatch(groups);
+    cy.contains('button', 'Dismiss').click();
   });
 
   it('check for unique name', () => {
@@ -91,6 +93,7 @@ describe('Groups', () => {
     cy.clearAndType('input[id=name]', 'Group Two');
     cy.contains('button', 'Save').click();
     cy.contains('td', 'Group Two');
+    cy.contains('button', 'Dismiss').click();
   });
 
   it('should delete two groups', () => {
@@ -106,13 +109,13 @@ describe('Groups', () => {
         cy.get('td input').eq(0).click();
       });
 
-    cy.contains('button', 'Dismiss').click();
     cy.contains('button', 'Delete').click();
     cy.contains('span', 'Do you want to delete the following items?');
     cy.contains('li', 'Knights of the Zodiac');
     cy.contains('li', 'Group One');
 
     cy.contains('button', 'Accept').click();
+    cy.contains('button', 'Dismiss').click();
   });
 
   it('should check that the groups are deleted', () => {
