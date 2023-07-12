@@ -13,7 +13,9 @@ class Selection {
 
   constructor(page: number, top: number, left: number, height: number, width: number) {
     if (top < 0 || left < 0 || height <= 0 || width <= 0) {
-      throw new Error("Rectangle's top, left, height and width must be positive numbers");
+      throw new Error(
+        "Rectangle's height and width must be positive, and top and left must be zero or positive."
+      );
     }
 
     if (page < 1) {
@@ -27,6 +29,7 @@ class Selection {
     this.width = width;
   }
 }
+
 abstract class Pointer {
   readonly entity: string;
 
@@ -37,9 +40,16 @@ abstract class Pointer {
 
 class EntityPointer extends Pointer {}
 
-class TextReferencePointer extends Pointer {
+class FilePointer extends EntityPointer {
   readonly file: string;
 
+  constructor(entity: string, file: string) {
+    super(entity);
+    this.file = file;
+  }
+}
+
+class TextReferencePointer extends FilePointer {
   readonly selections: Selection[];
 
   readonly text: string;
@@ -48,8 +58,7 @@ class TextReferencePointer extends Pointer {
     if (!selections.length) {
       throw new Error('Text references must have at least 1 selection');
     }
-    super(entity);
-    this.file = file;
+    super(entity, file);
     this.selections = selections;
     this.text = text;
   }
@@ -79,4 +88,4 @@ class Relationship {
   }
 }
 
-export { Relationship, EntityPointer, TextReferencePointer, Selection };
+export { Relationship, EntityPointer, FilePointer, TextReferencePointer, Selection };

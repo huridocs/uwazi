@@ -438,7 +438,7 @@ const mapStateToProps = state => {
     formState: state.entityView.entityFormState,
     // Is this used at all?
     library: state.library,
-    // v2
+    // relationships v2
     newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };

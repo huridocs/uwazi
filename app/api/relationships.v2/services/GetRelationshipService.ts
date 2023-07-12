@@ -25,7 +25,6 @@ class GetRelationshipService {
     sharedId: string
   ): Promise<{ relationships: Relationship[]; titleMap: Record<string, string> }> {
     const relationships = await this.relationshipsDS.getByEntities([sharedId]).all();
-
     const allowedRelationships = await this.authService.filterRelationships(relationships, 'read');
     const allowedSharedIds = Relationship.getSharedIds(allowedRelationships);
     const allowedEntities = await this.entitiesDS.getByIds([...allowedSharedIds]).all();

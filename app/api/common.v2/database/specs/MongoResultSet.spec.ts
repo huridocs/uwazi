@@ -72,6 +72,22 @@ describe('when built from a $type cursor', () => {
     expect(cursor?.closed).toBe(true);
   });
 
+  describe('using find(...)', () => {
+    it('should return the first result that matches the query', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.find(item => item.startsWith('doc2'))).toBe('doc2');
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should return null if no item matches the query', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      expect(await resultSet.find(item => item.startsWith('notDoc'))).toBe(null);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
   describe('using every(...) to check a predicate against every item', () => {
     it('should return true if it is true for every item', async () => {
       const cursor = buildCursor();
@@ -154,6 +170,73 @@ describe('when built from a $type cursor', () => {
         'doc5',
         'doc6',
         'doc6',
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should allow breaking, when the callback returns false', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[] = [];
+      await resultSet.forEach(item => {
+        visited.push(item);
+        if (item === 'doc2') {
+          return false;
+        }
+      });
+      expect(visited).toEqual(['doc1', 'doc2']);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
+  describe('using forEachBatch(...)', () => {
+    it('should execute the sync callback for every batch', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(4, batch => {
+        visited.push(batch);
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc5', 'doc6'],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should execute the async callback for every batch', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(4, async batch => {
+        visited.push(batch);
+        await new Promise(resolve => {
+          setTimeout(resolve, 2);
+        });
+        visited.push(batch);
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc1', 'doc2', 'doc3', 'doc4'],
+        ['doc5', 'doc6'],
+        ['doc5', 'doc6'],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+
+    it('should allow breaking, when the callback returns false', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem.name);
+      const visited: string[][] = [];
+      await resultSet.forEachBatch(2, batch => {
+        visited.push(batch);
+        if (batch[0] === 'doc3') {
+          return false;
+        }
+      });
+      expect(visited).toEqual([
+        ['doc1', 'doc2'],
+        ['doc3', 'doc4'],
       ]);
       expect(cursor?.closed).toBe(true);
     });
