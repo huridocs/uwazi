@@ -17,6 +17,8 @@ import {
 
 const objectIndex = _.memoize(_objectIndex);
 
+const bg = i => (i % 2 === 0 ? '#f2f2f2' : '#ffffff');
+
 class V2NewRelationshipsBoard extends Component {
   constructor(props, context) {
     super(props, context);
@@ -71,6 +73,19 @@ class V2NewRelationshipsBoard extends Component {
       : sharedId;
   }
 
+  showReferenceText(relationship, i) {
+    if (relationship.from.text || relationship.to.text) {
+      return (
+        <tr style={{ height: '100px', background: bg(i) }}>
+          <td style={{ padding: '5px' }}>{relationship.from.text}</td>
+          <td colSpan="5" style={{ padding: '5px' }}>
+            {relationship.to.text}
+          </td>
+        </tr>
+      );
+    }
+  }
+
   render() {
     const { searchResults, uiState, relationTypes, targetDocument } = this.props;
     const relTypesById = objectIndex(
@@ -78,28 +93,45 @@ class V2NewRelationshipsBoard extends Component {
       rt => rt._id,
       rt => rt
     );
+
     return (
-      <>
-        <div no-translate>Existing:</div>
+      <div className="v2_new_rel_board" no-translate>
+        <div>Existing:</div>
         <div>
-          {this.relationships.map(r => (
-            <div>
-              {this.showEntityName(r.from.entity)}&emsp;
-              <Icon icon="arrow-right" />
-              &emsp;
-              {relTypesById[r.type].name}&emsp;
-              <Icon icon="arrow-right" />
-              &emsp;
-              {this.showEntityName(r.to.entity)}
-              &emsp;
-              <button onClick={this.deleteRelationship(r._id).bind(this)} no-translate>
-                X
-              </button>
-            </div>
-          ))}
+          <table style={{ width: '100%' }}>
+            <tr>
+              <th style={{ width: '30%' }}>From</th>
+              <th />
+              <th>Relationship Type</th>
+              <th />
+              <th style={{ width: '30%' }}>To</th>
+              <th>Delete</th>
+            </tr>
+            {this.relationships.map((r, i) => (
+              <>
+                <tr style={{ height: '40px', background: bg(i) }}>
+                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.from.entity)}</td>
+                  <td>
+                    <Icon icon="arrow-right" />
+                  </td>
+                  <td style={{ padding: '5px 8px' }}>{relTypesById[r.type].name}</td>
+                  <td>
+                    <Icon icon="arrow-right" />
+                  </td>
+                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.to.entity)}</td>
+                  <td>
+                    <button type="button" onClick={this.deleteRelationship(r._id).bind(this)}>
+                      X
+                    </button>
+                  </td>
+                </tr>
+                {this.showReferenceText(r, i)}
+              </>
+            ))}
+          </table>
         </div>
         <br />
-        <div no-translate>Add new:</div>
+        <div>Add new:</div>
         <div>
           <select
             name="newEntryTypeSelector"
@@ -122,9 +154,9 @@ class V2NewRelationshipsBoard extends Component {
           />
           &emsp;
           <button
+            type="button"
             disabled={!targetDocument}
             onClick={this.saveRelationship.bind(this)}
-            no-translate
           >
             Save
           </button>
@@ -136,7 +168,7 @@ class V2NewRelationshipsBoard extends Component {
             onClick={this.props.setTargetDocument}
           />
         </div>
-      </>
+      </div>
     );
   }
 }
