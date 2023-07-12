@@ -1,9 +1,9 @@
 Key,Spanish
-% of sentences above threshold,% de frases por encima del límite
 (view page),(ver página)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ click to select multiple cards.,+ para seleccionar múltiples tarjetas
 // Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
+% of sentences above threshold,% de frases por encima del límite
++ click to select multiple cards.,+ para seleccionar múltiples tarjetas
 2FA,2FA
 2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
 2FA Enabled,2FA Enabled
@@ -310,6 +310,8 @@ Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
 Extractor Name,Extractor Name
+Extractor/s deleted,Extractor/s deleted
+Extractors,Extractors
 Favicon description,"Un favicon es un pequeño ícono que representa a tu colección en las pestañas y marcadores del navegador. El favicon predeterminado es el logo de Uwazi. Para usar el tuyo:
 
 1. Sube tu ícono en Subidas personalizadas.
@@ -388,9 +390,9 @@ Install browser extension (dynamic link),Instalar extensión de navegador (enlac
 Install Language(s),Instalar Idioma(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
@@ -695,8 +697,8 @@ Search Tips: one char wildcard,"? para un carácter comodín. Es decir: ""198?""
 Search Tips: proximity,"~ para búsquedas de proximidad. Es decir: ""el estado""~5 encontrará cualquier cosa que tenga ""el"" y ""estado"" dentro de una distancia de 5 palabras, como ""el estado procesal"", ""el estado legal específico""."
 Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: ""juris*"" coincidirá con palabras como jurisdicción, jurisdiccional, juristas, jurisprudencia, etc."
 secret key recommendation,"Por favor, mantén tu contraseña secreta y no la compartas"
-Security,Security
 Secret keys,Secret keys
+Security,Security
 Select,Seleccionar
 Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
