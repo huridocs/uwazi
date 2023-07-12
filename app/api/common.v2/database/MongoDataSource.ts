@@ -109,12 +109,14 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
           const original = Reflect.get(target, property, receiver);
 
           return function proxiedFunction(...args: any[]) {
-            const result = original.apply(
-              receiver,
-              self.appendSessionToOptions(args, propertyName)
-            );
-
             if (property === 'insertMany') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
+
               return result.then(async insertManyResult => {
                 return self.db
                   .collection('updatelogs')
@@ -132,6 +134,12 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
             }
 
             if (property === 'insertOne') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
               return result.then(async insertOneResult =>
                 self.db
                   .collection('updatelogs')
@@ -148,6 +156,12 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
               );
             }
             if (property === 'updateOne') {
+              const originalFunction = self.getCollection()[property];
+              type ResultType = ReturnType<typeof originalFunction>;
+              const result: ResultType = original.apply(
+                receiver,
+                self.appendSessionToOptions(args, propertyName)
+              );
               const condition = args[0];
               return result.then(async updateOneResult => {
                 if (updateOneResult.modifiedCount) {
@@ -155,20 +169,26 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                     .getCollection()
                     .findOne(condition)
                     .then(updatedDocument => {
-                      return self.db.collection('updatelogs').updateOne(
-                        { mongoId: updatedDocument._id },
-                        {
-                          $set: {
-                            timestamp: Date.now(),
+                      if (updatedDocument) {
+                        return self.db.collection('updatelogs').updateOne(
+                          { mongoId: updatedDocument._id },
+                          {
+                            $set: {
+                              timestamp: Date.now(),
+                            },
                           },
-                        },
-                        { session: self.getSession() }
-                      );
+                          { session: self.getSession() }
+                        );
+                      }
                     })
                     .then(() => updateOneResult);
                 }
               });
             }
+            const result = original.apply(
+              receiver,
+              self.appendSessionToOptions(args, propertyName)
+            );
             return result;
           };
         }
