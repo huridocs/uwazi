@@ -246,7 +246,10 @@ const resetTranslations = () => {
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   RouteHandler.renderedFromServer = true;
   const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
-  const routes = getRoutes(settings, req.user && req.user._id, req.headers);
+  //https://github.com/trpc/trpc/issues/1811#issuecomment-1242222057
+  //for Node18 we have to remove the connection header
+  const { connection, ...headers } = req.headers;
+  const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
 
