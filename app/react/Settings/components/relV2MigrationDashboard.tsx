@@ -306,27 +306,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </div>
                 <div>Errors: {this.migrationSummary.errors}</div>
                 <br />
-                <div>
-                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
-                  connections:
-                </div>
-                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
-                  <div key={`UnusedConnectionList_${index}`}>
-                    <div>
-                      {index + 1}---------------------------:{connectionList[0].hub}
-                    </div>
-                    {connectionList.map((connection, connectionIndex) => (
-                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
-                        &emsp;
-                        {`(${connection.templateName})`}
-                        <Icon icon="link" />
-                        {`${connection.entityTitle}(${
-                          this.templateIndex[connection.entityTemplate].name
-                        })`}
-                      </div>
-                    ))}
-                  </div>
-                ))}
               </div>
             )}
             <br />
@@ -447,6 +426,33 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                     </tr>
                   </tbody>
                 </table>
+              </div>
+            )}
+            <br />
+            <br />
+            {this.migrationSummary && (
+              <div>
+                <div>
+                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
+                  connections:
+                </div>
+                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
+                  <div key={`UnusedConnectionList_${index}`}>
+                    <div>
+                      {index + 1}---------------------------:{connectionList[0].hub}
+                    </div>
+                    {connectionList.map((connection, connectionIndex) => (
+                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
+                        &emsp;
+                        {`(${connection.templateName})`}
+                        <Icon icon="link" />
+                        {`${connection.entityTitle}(${
+                          this.templateIndex[connection.entityTemplate].name
+                        })`}
+                      </div>
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
           </div>
