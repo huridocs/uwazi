@@ -9,8 +9,9 @@ import { Extractor } from '../types';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
-  numeric: <CalculatorIcon className="w-5" />,
   date: <CalendarDaysIcon className="w-5" />,
+  numeric: <CalculatorIcon className="w-5" />,
+  markdown: <Bars3BottomLeftIcon className="w-5" />,
 };
 
 const columnHelper = createColumnHelper<Extractor>();
@@ -23,7 +24,7 @@ const ActionHeader = () => <Translate>Action</Translate>;
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-1">
       {propertyIcons[property]}
       <p className="text-gray-500">{cell.row.original.propertyLabel}</p>
     </div>
