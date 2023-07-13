@@ -121,7 +121,7 @@ export default (app: Application) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async (req, res) => {
       const service = GetRelationshipMigrationFieldsService();
-      const fields = await service.getAll();
+      const fields = await service.getAllCombinedWithInferred();
       res.json(fields);
     }
   );

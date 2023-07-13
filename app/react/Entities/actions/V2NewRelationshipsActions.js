@@ -26,8 +26,11 @@ const saveRelationshipMigrationField = field =>
     })
   );
 
+const getCurrentPlan = () => api.getCurrentPlan();
+
 export {
   deleteRelationships,
+  getCurrentPlan,
   getRelationshipsByEntity,
   saveRelationship,
   sendMigrationRequest,

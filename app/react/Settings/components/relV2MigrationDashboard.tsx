@@ -5,12 +5,17 @@ import { connect } from 'react-redux';
 
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
 import {
+  getCurrentPlan,
   sendMigrationRequest as _sendMigrationRequest,
   testOneHub as _testOneHub,
   saveRelationshipMigrationField,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import {
+  GetRelationshipMigrationFieldsResponse,
+  ResponseElement,
+} from 'shared/types/api.v2/relationshipMigrationFieldResponses';
 
 type MigrationSummaryType = {
   total: number;
@@ -58,67 +63,33 @@ type PlanElement = {
   ignored?: boolean;
 };
 
-const inferFromV1 = (
-  templates: ClientTemplateSchema[],
+const mapPlanElementFromApiResponse = (
+  response: ResponseElement,
   templateIndex: Record<string, ClientTemplateSchema>,
   relationTypeIndex: Record<string, RelationshipTypesType>
-): PlanElement[] => {
-  const arr =
-    templates
-      .map(t => t.properties?.map(p => ({ ...p, template: t._id })) || [])
-      .flat()
-      .filter(p => p.type === 'relationship')
-      .map(p => ({
-        template: templateIndex[p.template].name,
-        templateId: p.template,
-        relationType: p.relationType ? relationTypeIndex[p.relationType].name : undefined,
-        relationTypeId: p.relationType,
-        content: p.content ? templateIndex[p.content].name : 'ALL',
-        contentId: p.content,
-      })) || [];
-
-  const unique = _.uniqWith(
-    arr,
-    (a, b) =>
-      a.template === b.template && a.relationType === b.relationType && a.content === b.content
-  );
-
-  const sorted = _.sortBy(unique, ['template', 'relationType', 'content']);
-
-  const transformed = sorted.map(s => ({
-    sourceTemplate: s.template,
-    sourceTemplateId: s.templateId,
-    relationType: s.relationType || '',
-    relationTypeId: s.relationTypeId || '',
-    targetTemplate: s.content,
-    targetTemplateId: s.contentId,
-    inferred: true,
-    ignored: false,
-  }));
-
-  return transformed;
+): PlanElement => {
+  const template = templateIndex[response.sourceTemplate];
+  const relationType = relationTypeIndex[response.relationType];
+  const targetTemplate = response.targetTemplate
+    ? templateIndex[response.targetTemplate]
+    : undefined;
+  return {
+    sourceTemplate: template.name,
+    sourceTemplateId: response.sourceTemplate,
+    relationType: relationType.name,
+    relationTypeId: response.relationType,
+    targetTemplate: targetTemplate?.name || 'ALL',
+    targetTemplateId: response.targetTemplate,
+    inferred: response.infered,
+    ignored: response.ignored,
+  };
 };
 
-// const mapPlanElementFromApiResponse = (
-//   response: SaveRelationshipMigrationFieldResponse,
-//   templateIndex: Record<string, ClientTemplateSchema>,
-//   relationTypeIndex: Record<string, RelationshipTypesType>
-// ): PlanElement => {
-//   const template = templateIndex[response.sourceTemplate];
-//   const relationType = relationTypeIndex[response.relationType];
-//   const targetTemplate = templateIndex[response.targetTemplate];
-//   return {
-//     id: response.id,
-//     sourceTemplate: template.name,
-//     sourceTemplateId: response.sourceTemplate,
-//     relationType: relationType.name,
-//     relationTypeId: response.relationType,
-//     targetTemplate: targetTemplate.name,
-//     targetTemplateId: response.targetTemplate,
-//     inferred: false,
-//     ignored: response.ignored,
-//   };
-// };
+const mapGetPlanResponse = (
+  response: GetRelationshipMigrationFieldsResponse,
+  templateIndex: Record<string, ClientTemplateSchema>,
+  relationTypeIndex: Record<string, RelationshipTypesType>
+) => response.map(r => mapPlanElementFromApiResponse(r, templateIndex, relationTypeIndex));
 
 const formatTime = (time: number) => {
   const floored = Math.floor(time);
@@ -139,20 +110,25 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   private currentPlan: PlanElement[] = [];
 
+  private templateIndex: Record<string, ClientTemplateSchema> = {};
+
+  private relationTypeIndex: Record<string, RelationshipTypesType> = {};
+
   async componentDidMount() {
-    this.currentPlan = inferFromV1(
+    this.templateIndex = objectIndex(
       this.props.templates,
-      objectIndex(
-        this.props.templates,
-        t => t._id,
-        t => t
-      ),
-      objectIndex(
-        this.props.relationTypes,
-        t => t._id,
-        t => t
-      )
+      t => t._id,
+      t => t
     );
+    this.relationTypeIndex = objectIndex(
+      this.props.relationTypes,
+      t => t._id,
+      t => t
+    );
+    const response = (await getCurrentPlan()) as GetRelationshipMigrationFieldsResponse;
+    const mapped = mapGetPlanResponse(response, this.templateIndex, this.relationTypeIndex);
+    const ordered = _.orderBy(mapped, ['sourceTemplate', 'relationType', 'targetTemplate']);
+    this.currentPlan = ordered;
     this.forceUpdate();
   }
 

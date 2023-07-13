@@ -6,15 +6,18 @@ class RelationShipMigrationFieldUniqueId {
 
   readonly targetTemplate?: string;
 
+  readonly stringHash: string;
+
   constructor(sourceTemplate: string, relationType: string, targetTemplate?: string) {
     this.sourceTemplate = sourceTemplate;
     this.relationType = relationType;
     this.targetTemplate = targetTemplate === '' ? undefined : targetTemplate;
+    this.stringHash = `${this.sourceTemplate}#${this.relationType}#${this.targetTemplate}`;
   }
 }
 
 class RelationshipMigrationFieldInfo extends RelationShipMigrationFieldUniqueId {
-  readonly ignored: boolean = false;
+  public ignored: boolean = false;
 
   readonly infered: boolean = false;
 

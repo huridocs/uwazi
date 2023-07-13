@@ -213,7 +213,12 @@ const DeleteRelationshipMigrationFieldService = () => {
 const GetRelationshipMigrationFieldsService = () => {
   const transactionManager = DefaultTransactionManager();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const service = new GenericGetRelationshipMigrationFieldsService(transactionManager, fieldDS);
+  const templatesDS = DefaultTemplatesDataSource(transactionManager);
+  const service = new GenericGetRelationshipMigrationFieldsService(
+    transactionManager,
+    fieldDS,
+    templatesDS
+  );
   return service;
 };
 
