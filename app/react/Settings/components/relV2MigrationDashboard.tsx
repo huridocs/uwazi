@@ -10,6 +10,7 @@ import {
   testOneHub as _testOneHub,
   createRelationshipMigrationField,
   updateRelationshipMigrationField,
+  deleteRelationshipMigrationField,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -233,6 +234,14 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
     );
   }
 
+  async removePlanElement(index: number) {
+    const pe = this.currentPlan[index];
+    deleteRelationshipMigrationField(pe).then(() => {
+      this.currentPlan.splice(index, 1);
+      this.forceUpdate();
+    });
+  }
+
   render() {
     const oneHubTestEntityTitlesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
@@ -332,7 +341,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             )}
             <br />
             <div>Current migration plan:</div>
-            {this.currentPlan.map(p => (
+            {this.currentPlan.map((p, index) => (
               <div key={`${p.sourceTemplate}_${p.relationType}_${p.targetTemplate}`}>
                 {p.sourceTemplate}&emsp;
                 <Icon icon="arrow-right" />
@@ -355,6 +364,15 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 >
                   {`${p.ignored ? 'Unignore' : 'Ignore'}`}
                 </button>
+                {!p.inferred && (
+                  <button
+                    type="button"
+                    onClick={this.removePlanElement.bind(this, index)}
+                    className="btn btn-xs"
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
             <div>

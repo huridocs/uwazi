@@ -167,7 +167,7 @@ export default (app: Application) => {
     featureRequired,
     async (req, res) => {
       const { sourceTemplate, relationType, targetTemplate } =
-        validateDeleteRelationshipMigrationField(req.body);
+        validateDeleteRelationshipMigrationField(req.query);
       const service = DeleteRelationshipMigrationFieldService();
       await service.delete(sourceTemplate, relationType, targetTemplate);
       res.status(200).send();

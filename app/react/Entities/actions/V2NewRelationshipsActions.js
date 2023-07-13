@@ -36,6 +36,15 @@ const updateRelationshipMigrationField = field =>
     })
   );
 
+const deleteRelationshipMigrationField = field =>
+  api.deleteRelationshipMigrationField(
+    new RequestParams({
+      sourceTemplate: field.sourceTemplateId,
+      relationType: field.relationTypeId,
+      targetTemplate: field.targetTemplateId,
+    })
+  );
+
 const getCurrentPlan = () => api.getCurrentPlan();
 
 export {
@@ -47,4 +56,5 @@ export {
   testOneHub,
   createRelationshipMigrationField,
   updateRelationshipMigrationField,
+  deleteRelationshipMigrationField,
 };

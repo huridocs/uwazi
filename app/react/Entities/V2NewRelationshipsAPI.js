@@ -34,6 +34,10 @@ export default {
       .then(response => response.json);
   },
 
+  deleteRelationshipMigrationField(requestParams = new RequestParams()) {
+    return api.delete('v2/relationshipMigrationFields', requestParams);
+  },
+
   getCurrentPlan() {
     return api.get('v2/relationshipMigrationFields').then(response => response.json);
   },
