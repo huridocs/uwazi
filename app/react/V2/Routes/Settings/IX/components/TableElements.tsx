@@ -6,6 +6,7 @@ import { CalculatorIcon, CalendarDaysIcon, Bars3BottomLeftIcon } from '@heroicon
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Extractor } from '../types';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
@@ -13,7 +14,8 @@ const propertyIcons = {
   date: <CalendarDaysIcon className="w-5" />,
 };
 
-const columnHelper = createColumnHelper<Extractor>();
+const extractorColumnHelper = createColumnHelper<Extractor>();
+const suggestionColumnHelper = createColumnHelper<EntitySuggestionType>();
 
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
@@ -48,23 +50,35 @@ const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
   </Link>
 );
 
-const tableColumns = [
-  columnHelper.accessor('name', {
+const OpenPDFButton = () => (
+  <Button className="leading-4" styling="outline">
+    <Translate>Open PDF</Translate>
+  </Button>
+);
+
+const AcceptButton = () => (
+  <Button className="leading-4" styling="outline">
+    <Translate>Open PDF</Translate>
+  </Button>
+);
+
+const extractorsTableColumns = [
+  extractorColumnHelper.accessor('name', {
     header: ExtractorHeader,
     meta: { className: 'w-1/6' },
   }),
-  columnHelper.accessor('propertyType', {
+  extractorColumnHelper.accessor('propertyType', {
     header: PropertyHeader,
     cell: PropertyCell,
     meta: { className: 'w-1/6' },
   }),
-  columnHelper.accessor('namedTemplates', {
+  extractorColumnHelper.accessor('namedTemplates', {
     header: TemplatesHeader,
     enableSorting: false,
     cell: TemplatesCell,
     meta: { className: 'w-4/6' },
   }),
-  columnHelper.accessor('_id', {
+  extractorColumnHelper.accessor('_id', {
     header: ActionHeader,
     enableSorting: false,
     cell: LinkButton,
@@ -72,5 +86,38 @@ const tableColumns = [
   }),
 ];
 
+const suggestionsTableColumns = [
+  suggestionColumnHelper.accessor('fileId', {
+    header: () => <Translate>Document</Translate>,
+    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['fileId']>) =>
+      cell.getValue(),
+    meta: { className: 'w-1/6' },
+  }),
+  suggestionColumnHelper.accessor('segment', {
+    header: () => <Translate>Context</Translate>,
+    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) =>
+      cell.getValue(),
+    meta: { className: 'w-1/6' },
+  }),
+  suggestionColumnHelper.accessor('currentValue', {
+    header: () => <Translate>Current Value/Suggestion</Translate>,
+    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) =>
+      cell.getValue(),
+    meta: { className: 'w-4/6' },
+  }),
+  suggestionColumnHelper.accessor('_id', {
+    header: () => <Translate>Accept</Translate>,
+    enableSorting: false,
+    cell: () => <p>Toggle input</p>,
+    meta: { className: 'w-1/6 text-center' },
+  }),
+  suggestionColumnHelper.accessor('_id', {
+    header: ActionHeader,
+    enableSorting: false,
+    cell: OpenPDFButton,
+    meta: { className: 'w-1/6 text-center' },
+  }),
+];
+
 export type { Extractor };
-export { tableColumns };
+export { extractorsTableColumns, suggestionsTableColumns };

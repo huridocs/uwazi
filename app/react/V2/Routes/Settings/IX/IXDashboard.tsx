@@ -12,7 +12,7 @@ import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { ExtractorModal } from './components/ExtractorModal';
-import { Extractor, tableColumns } from './components/TableElements';
+import { Extractor, extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
 
 const formatExtractors = (
@@ -63,7 +63,7 @@ const IXDashboard = () => {
     const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
-      await ixAPI.remove(extractorIds);
+      await ixAPI.removeExtractors(extractorIds);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -80,7 +80,7 @@ const IXDashboard = () => {
 
   const handleSave = async (extractor: IXExtractorInfo) => {
     try {
-      await ixAPI.save(extractor);
+      await ixAPI.saveExtractors(extractor);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -109,7 +109,7 @@ const IXDashboard = () => {
         <SettingsContent.Body>
           <Table<Extractor>
             data={formmatedExtractors}
-            columns={tableColumns}
+            columns={extractorsTableColumns}
             title={<Translate>Extractors</Translate>}
             enableSelection
             onSelection={setSelected}
@@ -165,7 +165,7 @@ const IXDashboard = () => {
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await ixAPI.get(headers);
+    const extractors = await ixAPI.getExtractors(headers);
     const templates = await templatesAPI.get(headers);
     return { extractors, templates };
   };

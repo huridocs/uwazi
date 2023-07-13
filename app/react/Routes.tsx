@@ -54,7 +54,7 @@ import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
-import { IXSuggestions, IXSuggestionsLoader } from './MetadataExtraction/SuggestionsContainer';
+import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
