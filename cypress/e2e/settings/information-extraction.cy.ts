@@ -24,7 +24,7 @@ const editPropertyForExtractor = (
   property: string,
   remove?: boolean
 ) => {
-  cy.get('[data-testid=modal]').contains('li', templateName).as(alias);
+  cy.getByTestId('modal').contains('li', templateName).as(alias);
   if (remove) {
     cy.get(`@${alias}`).contains('label', property).click();
   } else {
@@ -61,7 +61,7 @@ describe('Information Extraction', () => {
 
     it('Should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
-      cy.get('[data-testid=modal]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.get('input').type('Extractor 1');
       });
 
@@ -76,7 +76,7 @@ describe('Information Extraction', () => {
 
     it('should create another extractor selecting all templates', () => {
       cy.contains('button', 'Create Extractor').click();
-      cy.get('[data-testid=modal]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.get('input').type('Titles from all templates');
       });
 
@@ -102,7 +102,7 @@ describe('Information Extraction', () => {
 
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
-      cy.get('[data-testid=modal]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.get('input').type('Fechas from relevant templates');
       });
 
@@ -121,7 +121,7 @@ describe('Information Extraction', () => {
         });
       cy.contains('button', 'Edit Extractor').click();
 
-      cy.get('[data-testid=modal]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.get('input').eq(0).type(' edited');
       });
 
@@ -152,7 +152,7 @@ describe('Information Extraction', () => {
         });
       cy.contains('button', 'Delete').click();
 
-      cy.get('[data-testid=modal]').within(() => {
+      cy.getByTestId('modal').within(() => {
         cy.contains('li', 'Titles from all templates');
         cy.contains('button', 'Accept').click();
       });
@@ -162,7 +162,7 @@ describe('Information Extraction', () => {
     });
 
     it('should check table display and accessibility', () => {
-      cy.get('[data-testid=settings-ix]').toMatchImageSnapshot();
+      cy.getByTestId('settings-ix').toMatchImageSnapshot();
       cy.checkA11y();
     });
   });
