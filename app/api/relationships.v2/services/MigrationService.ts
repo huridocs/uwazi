@@ -339,10 +339,10 @@ export class MigrationService {
     };
   }
 
-  async migrate(dryRun: boolean) {
+  async migrate(dryRun: boolean, plan: MigrationPlan) {
     await this.hubsDS.create();
 
-    const matcher = await this.readMigrationPlan();
+    const matcher = new RelationshipMatcher(plan);
     await this.gatherHubs();
     const transformAndWrite = !dryRun;
 

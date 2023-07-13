@@ -63,7 +63,7 @@ export default (app: Application) => {
     featureRequired,
     async (req, res) => {
       const timeStart = performance.now();
-      const { dryRun } = validateMigration(req.body);
+      const { dryRun, migrationPlan } = validateMigration(req.body);
       const service = MigrationService();
       const {
         total,
@@ -72,7 +72,7 @@ export default (app: Application) => {
         usedTextReferences,
         errors,
         hubsWithUnusedConnections,
-      } = await service.migrate(dryRun);
+      } = await service.migrate(dryRun, migrationPlan);
       const timeEnd = performance.now();
       const time = timeEnd - timeStart;
       res.json({

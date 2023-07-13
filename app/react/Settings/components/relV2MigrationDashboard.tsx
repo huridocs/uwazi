@@ -151,13 +151,13 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   }
 
   async performDryRun() {
-    const summary = await _sendMigrationRequest(true);
+    const summary = await _sendMigrationRequest(true, this.currentPlan);
     this.migrationSummary = summary;
     this.forceUpdate();
   }
 
   async performMigration() {
-    const summary = await _sendMigrationRequest();
+    const summary = await _sendMigrationRequest(false, this.currentPlan);
     this.migrationSummary = summary;
     this.showMigrationConfirm = false;
     this.forceUpdate();

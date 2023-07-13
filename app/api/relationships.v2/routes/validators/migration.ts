@@ -1,35 +1,37 @@
 import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
-import { TestOneHubRequest } from 'shared/types/api.v2/relationshipsMigrationRequests';
+import {
+  MigrationRequest,
+  TestOneHubRequest,
+} from 'shared/types/api.v2/relationshipsMigrationRequests';
 
-interface MigrationData {
-  dryRun: boolean;
-}
+const migrationPlanSchemaDef = {
+  elements: {
+    properties: {
+      sourceTemplate: { type: 'string' as 'string' },
+      sourceTemplateId: { type: 'string' as 'string' },
+      relationType: { type: 'string' as 'string' },
+      relationTypeId: { type: 'string' as 'string' },
+      targetTemplate: { type: 'string' as 'string' },
+    },
+    optionalProperties: {
+      targetTemplateId: { type: 'string' as 'string' },
+      inferred: { type: 'boolean' as 'boolean' },
+      ignored: { type: 'boolean' as 'boolean' },
+    },
+  },
+};
 
-const schema: ValidatorSchema<MigrationData> = {
+const schema: ValidatorSchema<MigrationRequest> = {
   properties: {
     dryRun: { type: 'boolean' },
+    migrationPlan: migrationPlanSchemaDef,
   },
 };
 
 const testOneHubSchema: ValidatorSchema<TestOneHubRequest> = {
   properties: {
     hubId: { type: 'string' },
-    migrationPlan: {
-      elements: {
-        properties: {
-          sourceTemplate: { type: 'string' },
-          sourceTemplateId: { type: 'string' },
-          relationType: { type: 'string' },
-          relationTypeId: { type: 'string' },
-          targetTemplate: { type: 'string' },
-        },
-        optionalProperties: {
-          targetTemplateId: { type: 'string' },
-          inferred: { type: 'boolean' },
-          ignored: { type: 'boolean' },
-        },
-      },
-    },
+    migrationPlan: migrationPlanSchemaDef,
   },
 };
 

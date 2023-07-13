@@ -9,9 +9,16 @@ type PlanElement = {
   ignored?: boolean;
 };
 
+type MigrationPlan = PlanElement[];
+
 type TestOneHubRequest = {
   hubId: string;
   migrationPlan: PlanElement[];
 };
 
-export type { PlanElement, TestOneHubRequest };
+type MigrationRequest = {
+  dryRun: boolean;
+  migrationPlan: MigrationPlan;
+};
+
+export type { MigrationPlan, MigrationRequest, PlanElement, TestOneHubRequest };
