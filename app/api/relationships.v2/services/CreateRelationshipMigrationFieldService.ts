@@ -5,7 +5,7 @@ import {
   RelationshipMigrationFieldInfo,
 } from '../model/RelationshipMigrationField';
 
-class UpsertRelationshipMigrationFieldService {
+class CreateRelationshipMigrationFieldService {
   private transactionManager: TransactionManager;
 
   private fieldDS: RelationshipMigrationFieldsDataSource;
@@ -18,7 +18,7 @@ class UpsertRelationshipMigrationFieldService {
     this.fieldDS = fieldDS;
   }
 
-  async upsert(
+  async create(
     sourceTemplate: string,
     relationType: string,
     targetTemplate?: string,
@@ -30,13 +30,13 @@ class UpsertRelationshipMigrationFieldService {
       targetTemplate,
       ignored
     );
-    let upsertedField: RelationshipMigrationField | null = null;
+    let saved: RelationshipMigrationField | null = null;
     await this.transactionManager.run(async () => {
-      await this.fieldDS.upsert(fieldInfo);
-      upsertedField = await this.fieldDS.get(fieldInfo);
+      await this.fieldDS.create(fieldInfo);
+      saved = await this.fieldDS.get(fieldInfo);
     });
-    return upsertedField;
+    return saved;
   }
 }
 
-export { UpsertRelationshipMigrationFieldService };
+export { CreateRelationshipMigrationFieldService };

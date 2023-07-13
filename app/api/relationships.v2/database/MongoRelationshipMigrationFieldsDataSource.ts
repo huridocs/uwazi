@@ -36,6 +36,11 @@ class MongoRelationshipMigrationFieldsDataSource
     await this.getCollection().deleteOne({ ...mapFieldIdToDBO(fieldId) });
   }
 
+  async create(field: RelationshipMigrationFieldInfo): Promise<void> {
+    const mapped = mapFieldInfoToDBO(field);
+    await this.getCollection().insertOne(mapped);
+  }
+
   async upsert(field: RelationshipMigrationFieldInfo): Promise<void> {
     const mapped = mapFieldInfoToDBO(field);
     await this.getCollection().updateOne(

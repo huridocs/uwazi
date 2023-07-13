@@ -33,6 +33,7 @@ import {
   DefaultV1ConnectionsDataSource,
 } from '../database/data_source_defaults';
 
+import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMigrationFieldService } from './CreateRelationshipMigrationFieldService';
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
@@ -222,19 +223,22 @@ const GetRelationshipMigrationFieldsService = () => {
   return service;
 };
 
+const CreateRelationshipMigrationFieldService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
+  const service = new GenericCreateRelationshipMigrationFieldService(transactionManager, fieldDS);
+  return service;
+};
+
 const UpsertRelationshipMigrationFieldService = () => {
   const transactionManager = DefaultTransactionManager();
   const fieldDS = DefaultRelationshipMigrationFieldsDataSource(transactionManager);
-  const idGenerator = DefaultIdGenerator;
-  const service = new GenericUpsertRelationshipMigrationFieldService(
-    transactionManager,
-    fieldDS,
-    idGenerator
-  );
+  const service = new GenericUpsertRelationshipMigrationFieldService(transactionManager, fieldDS);
   return service;
 };
 
 export {
+  CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,

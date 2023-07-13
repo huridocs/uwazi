@@ -8,6 +8,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { parseQuery } from 'api/utils';
 import {
+  CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
@@ -127,19 +128,36 @@ export default (app: Application) => {
   );
 
   app.post(
-    '/api/v2/relationshipMigrationFields',
+    '/api/v2/relationshipMigrationFields/create',
     needsAuthorization(),
     featureRequired,
     async (req, res) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
-      const service = UpsertRelationshipMigrationFieldService();
-      const upsertedField = await service.upsert(
+      const service = CreateRelationshipMigrationFieldService();
+      const created = await service.create(
         field.sourceTemplate,
         field.relationType,
         field.targetTemplate,
         field.ignored
       );
-      res.json(upsertedField);
+      res.json(created);
+    }
+  );
+
+  app.post(
+    '/api/v2/relationshipMigrationFields/update',
+    needsAuthorization(),
+    featureRequired,
+    async (req, res) => {
+      const field = validateUpsertRelationshipMigrationField(req.body);
+      const service = UpsertRelationshipMigrationFieldService();
+      const updated = await service.upsert(
+        field.sourceTemplate,
+        field.relationType,
+        field.targetTemplate,
+        field.ignored
+      );
+      res.json(updated);
     }
   );
 

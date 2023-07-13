@@ -8,10 +8,13 @@ type ResponseElement = {
 
 type GetRelationshipMigrationFieldsResponse = ResponseElement[];
 
-type UpsertRelationshipMigrationFieldResponse = ResponseElement;
+type CreateRelationshipMigRationFieldResponse = ResponseElement;
+
+type UpdateRelationshipMigrationFieldResponse = ResponseElement;
 
 export type {
   ResponseElement,
+  CreateRelationshipMigRationFieldResponse,
   GetRelationshipMigrationFieldsResponse,
-  UpsertRelationshipMigrationFieldResponse,
+  UpdateRelationshipMigrationFieldResponse,
 };

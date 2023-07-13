@@ -8,11 +8,13 @@ import {
   getCurrentPlan,
   sendMigrationRequest as _sendMigrationRequest,
   testOneHub as _testOneHub,
-  saveRelationshipMigrationField,
+  createRelationshipMigrationField,
+  updateRelationshipMigrationField,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
+  CreateRelationshipMigRationFieldResponse,
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
 } from 'shared/types/api.v2/relationshipMigrationFieldResponses';
@@ -114,21 +116,46 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   private relationTypeIndex: Record<string, RelationshipTypesType> = {};
 
+  private templatesNameSorted: ClientTemplateSchema[] = [];
+
+  private relationTypesNameSorted: RelationshipTypesType[] = [];
+
+  private newPlanElement: PlanElement = {
+    sourceTemplate: '',
+    sourceTemplateId: '',
+    relationType: '',
+    relationTypeId: '',
+    targetTemplate: '',
+    targetTemplateId: '',
+    inferred: false,
+    ignored: false,
+  };
+
   async componentDidMount() {
     this.templateIndex = objectIndex(
       this.props.templates,
       t => t._id,
       t => t
     );
+    this.templatesNameSorted = _.orderBy(this.props.templates, t => t.name);
     this.relationTypeIndex = objectIndex(
       this.props.relationTypes,
       t => t._id,
       t => t
     );
+    this.relationTypesNameSorted = _.orderBy(this.props.relationTypes, t => t.name);
     const response = (await getCurrentPlan()) as GetRelationshipMigrationFieldsResponse;
     const mapped = mapGetPlanResponse(response, this.templateIndex, this.relationTypeIndex);
     const ordered = _.orderBy(mapped, ['sourceTemplate', 'relationType', 'targetTemplate']);
     this.currentPlan = ordered;
+    this.newPlanElement = {
+      sourceTemplate: this.templatesNameSorted[0].name,
+      sourceTemplateId: this.templatesNameSorted[0]._id,
+      relationType: this.relationTypesNameSorted[0].name,
+      relationTypeId: this.relationTypesNameSorted[0]._id,
+      targetTemplate: this.templatesNameSorted[1].name,
+      targetTemplateId: this.templatesNameSorted[1]._id,
+    };
     this.forceUpdate();
   }
 
@@ -167,8 +194,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   async toggleIgnore(pe: PlanElement) {
     pe.ignored = !pe.ignored;
-    console.log(pe);
-    saveRelationshipMigrationField(pe)
+    updateRelationshipMigrationField(pe)
       .then(() => {
         this.forceUpdate();
       })
@@ -178,12 +204,36 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       });
   }
 
-  render() {
-    const templatesById = objectIndex(
-      this.props.templates,
-      t => t._id,
-      t => t
+  storeNewPlanElementSourceTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.sourceTemplateId = event.target.value;
+    this.newPlanElement.sourceTemplate = this.templateIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  storeNewPlanElementRelationType(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.relationTypeId = event.target.value;
+    this.newPlanElement.relationType = this.relationTypeIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  storeNewPlanElementTargetTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.targetTemplateId = event.target.value;
+    this.newPlanElement.targetTemplate = this.templateIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  async addNewPlanElement() {
+    createRelationshipMigrationField(this.newPlanElement).then(
+      (created: CreateRelationshipMigRationFieldResponse) => {
+        this.currentPlan.push(
+          mapPlanElementFromApiResponse(created, this.templateIndex, this.relationTypeIndex)
+        );
+        this.forceUpdate();
+      }
     );
+  }
+
+  render() {
     const oneHubTestEntityTitlesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
       t => t.entity,
@@ -201,11 +251,11 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
     );
     const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
       `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
-        templatesById[orig.entityTemplate].name
+        this.templateIndex[orig.entityTemplate].name
       })`;
     const displayEntityTitleAndNameFromTransformed = (entity: string) =>
       `${oneHubTestEntityTitlesBySharedId[entity]}(${
-        templatesById[oneHubTestEntityTemplatesBySharedId[entity]].name
+        this.templateIndex[oneHubTestEntityTemplatesBySharedId[entity]].name
       })`;
 
     return (
@@ -272,7 +322,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                         {`(${connection.templateName})`}
                         <Icon icon="link" />
                         {`${connection.entityTitle}(${
-                          templatesById[connection.entityTemplate].name
+                          this.templateIndex[connection.entityTemplate].name
                         })`}
                       </div>
                     ))}
@@ -307,6 +357,41 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </button>
               </div>
             ))}
+            <div>
+              <select
+                value={this.newPlanElement.sourceTemplateId}
+                onChange={this.storeNewPlanElementSourceTemplate.bind(this)}
+              >
+                {this.templatesNameSorted.map(t => (
+                  <option key={`sourceDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={this.newPlanElement.relationTypeId}
+                onChange={this.storeNewPlanElementRelationType.bind(this)}
+              >
+                {this.relationTypesNameSorted.map(t => (
+                  <option key={`relationDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={this.newPlanElement.targetTemplateId}
+                onChange={this.storeNewPlanElementTargetTemplate.bind(this)}
+              >
+                {this.templatesNameSorted.map(t => (
+                  <option key={`targetDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <button type="button" onClick={this.addNewPlanElement.bind(this)}>
+                Add
+              </button>
+            </div>
             <br />
             <br />
             <button type="button" onClick={this.testOneHub.bind(this)}>
