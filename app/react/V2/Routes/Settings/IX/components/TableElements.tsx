@@ -95,8 +95,13 @@ const suggestionsTableColumns = [
   }),
   suggestionColumnHelper.accessor('segment', {
     header: () => <Translate>Context</Translate>,
-    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) =>
-      cell.getValue(),
+    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
+      const segment = cell.getValue();
+      if (segment === '') {
+        return <span style={{ color: 'red' }}>No context</span>;
+      }
+      return segment;
+    },
     meta: { className: 'w-1/6' },
   }),
   suggestionColumnHelper.accessor('currentValue', {
