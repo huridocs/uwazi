@@ -151,7 +151,12 @@ const ExtractorModal = ({
           )}
         </div>
         <div className="all-templates-button">
-          <button type="button" className="btn" onClick={onAllTemplatedCheckboxChanged}>
+          <button
+            type="button"
+            className="btn"
+            onClick={onAllTemplatedCheckboxChanged}
+            disabled={!values.length}
+          >
             <Translate>From all templates</Translate>
           </button>
         </div>

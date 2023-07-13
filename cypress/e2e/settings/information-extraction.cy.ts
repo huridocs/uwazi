@@ -87,6 +87,19 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Dismiss').click();
     });
 
+    it('should disable the button to select all templates if no property is selected', () => {
+      cy.contains('button', 'Create Extractor').click();
+      cy.contains('button', 'From all templates').should('have.attr', 'disabled');
+
+      editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
+      cy.contains('button', 'From all templates').should('not.have.attr', 'disabled');
+
+      editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title', true);
+      cy.contains('button', 'From all templates').should('have.attr', 'disabled');
+
+      cy.contains('button', 'Cancel').click();
+    });
+
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.get('[data-testid=modal]').within(() => {
