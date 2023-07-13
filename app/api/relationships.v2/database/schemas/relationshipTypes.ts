@@ -1,14 +1,11 @@
-/* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emit-types to update.*/
-
-import { ObjectIdType } from 'api/common.v2/database/schemas/commonTypes';
+import { ObjectId } from 'mongodb';
 
 export interface RelationshipDBOType {
-  _id: ObjectIdType;
+  _id: ObjectId;
   from:
     | {
         entity: string;
-        file: ObjectIdType;
+        file: ObjectId;
         selections: {
           page: number;
           top: number;
@@ -24,7 +21,7 @@ export interface RelationshipDBOType {
   to:
     | {
         entity: string;
-        file: ObjectIdType;
+        file: ObjectId;
         selections: {
           page: number;
           top: number;
@@ -37,5 +34,5 @@ export interface RelationshipDBOType {
     | {
         entity: string;
       };
-  type: ObjectIdType;
+  type: ObjectId;
 }
