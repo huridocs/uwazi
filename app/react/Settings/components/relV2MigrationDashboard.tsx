@@ -19,6 +19,7 @@ import {
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
 } from 'shared/types/api.v2/relationshipMigrationFieldResponses';
+import { PlanElement } from 'shared/types/api.v2/relationshipsMigrationRequests';
 
 type MigrationSummaryType = {
   total: number;
@@ -53,17 +54,6 @@ type hubTestResult = {
   errors: number;
   transformed: TransformedInfo[];
   original: OriginalEntityInfo[];
-};
-
-type PlanElement = {
-  sourceTemplate: string;
-  sourceTemplateId: string;
-  relationType: string;
-  relationTypeId: string;
-  targetTemplate: string;
-  targetTemplateId?: string;
-  inferred?: boolean;
-  ignored?: boolean;
 };
 
 const mapPlanElementFromApiResponse = (
@@ -178,7 +168,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   }
 
   async testOneHub() {
-    const testresult = await _testOneHub(this.testedHub);
+    const testresult = await _testOneHub(this.testedHub, this.currentPlan);
     this.hubTestResult = testresult;
     this.forceUpdate();
   }

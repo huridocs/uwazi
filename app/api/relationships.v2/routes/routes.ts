@@ -20,7 +20,7 @@ import {
 import { validateCreateRelationship } from './validators/createRelationship';
 import { validateDeleteRelationships } from './validators/deleteRelationships';
 import { validateGetRelationships } from './validators/getRelationship';
-import { validateMigration } from './validators/migration';
+import { validateMigration, validateTestOneHub } from './validators/migration';
 import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
 import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
 
@@ -93,7 +93,7 @@ export default (app: Application) => {
     needsAuthorization(),
     featureRequired,
     async (req, res) => {
-      const { hubId } = req.body;
+      const { hubId, migrationPlan } = validateTestOneHub(req.body);
       const {
         total,
         used,
@@ -102,7 +102,7 @@ export default (app: Application) => {
         transformed,
         original,
         errors,
-      } = await MigrationService().testOneHub(hubId);
+      } = await MigrationService().testOneHub(hubId, migrationPlan);
       res.json({
         total,
         used,

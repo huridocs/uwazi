@@ -14,7 +14,8 @@ const deleteRelationships = ids => api.delete(new RequestParams({ ids }));
 
 const sendMigrationRequest = dryRun => api.migrate(new RequestParams({ dryRun: dryRun || false }));
 
-const testOneHub = hubId => api.testOneHub(new RequestParams({ hubId }));
+const testOneHub = (hubId, migrationPlan) =>
+  api.testOneHub(new RequestParams({ hubId, migrationPlan }));
 
 const createRelationshipMigrationField = field =>
   api.createRelationshipMigrationField(
