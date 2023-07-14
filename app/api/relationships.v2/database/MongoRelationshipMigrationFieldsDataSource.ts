@@ -9,13 +9,16 @@ import { mapFieldIdToDBO, mapFieldToApp, mapFieldToDBO } from './RelationshipMig
 import { RelationshipMigrationFieldDBO } from './schemas/relationshipMigrationFieldTypes';
 
 class MongoRelationshipMigrationFieldsDataSource
-  extends MongoDataSource
+  extends MongoDataSource<RelationshipMigrationFieldDBO>
   implements RelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
   async get(fieldId: RelationShipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
     const dbo = await this.getCollection().findOne({ ...mapFieldIdToDBO(fieldId) });
+    if (!dbo) {
+      throw new Error(`Field with id ${fieldId} not found`);
+    }
     return mapFieldToApp(dbo);
   }
 

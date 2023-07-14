@@ -1,17 +1,14 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import {
-  V1ConnectionsDataSource,
-  V1ConnectionDBO,
-  V1ConnectionDBOWithEntityInfo,
-} from '../contracts/V1ConnectionsDataSource';
+import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
 import {
   V1Connection,
-  V1ConnectionDisplayed,
+  ReadableV1Connection,
   V1SelectionRectangle,
   V1TextReference,
 } from '../model/V1Connection';
+import { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo } from './schemas/v1ConnectionTypes';
 
 const mapReference = (dbo: V1ConnectionDBO): V1TextReference | undefined =>
   dbo.reference
@@ -34,8 +31,8 @@ const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
     mapReference(dbo)
   );
 
-const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
-  new V1ConnectionDisplayed(
+const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): ReadableV1Connection =>
+  new ReadableV1Connection(
     dbo._id.toString(),
     dbo.entity,
     dbo.hub.toString(),
@@ -60,7 +57,7 @@ export class MongoV1ConnectionsDataSource
 
   getConnectedToHubs(
     hubIds: string[]
-  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed> {
+  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, ReadableV1Connection> {
     const collection = this.getCollection();
     const cursor = collection.aggregate<V1ConnectionDBOWithEntityInfo>([
       {
@@ -99,7 +96,7 @@ export class MongoV1ConnectionsDataSource
         $unset: ['entityInfo', 'pickedEntity', 'relTypeInfo', 'pickedRelType'],
       },
     ]);
-    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed>(
+    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, ReadableV1Connection>(
       cursor,
       mapConnectionsWithEntityInfo
     );
@@ -113,3 +110,5 @@ export class MongoV1ConnectionsDataSource
     return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
   }
 }
+
+export { mapConnections, mapConnectionsWithEntityInfo };
