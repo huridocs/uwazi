@@ -246,7 +246,7 @@
   "devDependencies": {
     "@babel/cli": "7.22.6",
     "@babel/core": "7.22.8",
-    "@babel/eslint-parser": "7.22.7",
+    "@babel/eslint-parser": "7.22.9",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-get-function-arity": "^7.16.7",
     "@babel/helper-string-parser": "^7.22.5",
