@@ -6,16 +6,8 @@ type RelationshipMigrationFieldUniqueIdDBO = {
   targetTemplate?: ObjectId;
 };
 
-type RelationshipMigrationFieldInfoDBO = RelationshipMigrationFieldUniqueIdDBO & {
+type RelationshipMigrationFieldDBO = RelationshipMigrationFieldUniqueIdDBO & {
   ignored: boolean;
 };
 
-type RelationshipMigrationFieldDBO = RelationshipMigrationFieldInfoDBO & {
-  _id: ObjectId;
-};
-
-export type {
-  RelationshipMigrationFieldDBO,
-  RelationshipMigrationFieldInfoDBO,
-  RelationshipMigrationFieldUniqueIdDBO,
-};
+export type { RelationshipMigrationFieldDBO, RelationshipMigrationFieldUniqueIdDBO };

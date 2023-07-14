@@ -16,58 +16,32 @@ class RelationShipMigrationFieldUniqueId {
   }
 }
 
-class RelationshipMigrationFieldInfo extends RelationShipMigrationFieldUniqueId {
+class RelationshipMigrationField {
   public ignored: boolean = false;
+
+  readonly id: RelationShipMigrationFieldUniqueId;
 
   readonly infered: boolean = false;
 
   constructor(
-    sourceTemplate: string,
-    relationType: string,
-    targetTemplate?: string,
+    id: RelationShipMigrationFieldUniqueId,
     ignored: boolean = false,
     infered: boolean = false
   ) {
-    super(sourceTemplate, relationType, targetTemplate);
+    this.id = id;
     this.ignored = ignored;
     this.infered = infered;
   }
 
-  getId() {
-    return new RelationShipMigrationFieldUniqueId(
-      this.sourceTemplate,
-      this.relationType,
-      this.targetTemplate
-    );
+  flatten() {
+    return {
+      sourceTemplate: this.id.sourceTemplate,
+      relationType: this.id.relationType,
+      targetTemplate: this.id.targetTemplate,
+      ignored: this.ignored,
+      infered: this.infered,
+    };
   }
 }
 
-class RelationshipMigrationField extends RelationshipMigrationFieldInfo {
-  readonly id: string;
-
-  constructor(
-    id: string,
-    sourceTemplate: string,
-    relationType: string,
-    targetTemplate?: string,
-    ignored: boolean = false
-  ) {
-    super(sourceTemplate, relationType, targetTemplate, ignored);
-    this.id = id;
-  }
-
-  getInfo() {
-    return new RelationshipMigrationFieldInfo(
-      this.sourceTemplate,
-      this.relationType,
-      this.targetTemplate,
-      this.ignored
-    );
-  }
-}
-
-export {
-  RelationshipMigrationField,
-  RelationshipMigrationFieldInfo,
-  RelationShipMigrationFieldUniqueId,
-};
+export { RelationshipMigrationField, RelationShipMigrationFieldUniqueId };

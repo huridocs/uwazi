@@ -4,13 +4,8 @@ import { RelationshipMigrationFieldsDataSource } from '../contracts/Relationship
 import {
   RelationShipMigrationFieldUniqueId,
   RelationshipMigrationField,
-  RelationshipMigrationFieldInfo,
 } from '../model/RelationshipMigrationField';
-import {
-  mapFieldIdToDBO,
-  mapFieldInfoToDBO,
-  mapFieldToApp,
-} from './RelationshipMigrationFieldMappers';
+import { mapFieldIdToDBO, mapFieldToApp, mapFieldToDBO } from './RelationshipMigrationFieldMappers';
 import { RelationshipMigrationFieldDBO } from './schemas/relationshipMigrationFieldTypes';
 
 class MongoRelationshipMigrationFieldsDataSource
@@ -36,13 +31,13 @@ class MongoRelationshipMigrationFieldsDataSource
     await this.getCollection().deleteOne({ ...mapFieldIdToDBO(fieldId) });
   }
 
-  async create(field: RelationshipMigrationFieldInfo): Promise<void> {
-    const mapped = mapFieldInfoToDBO(field);
+  async create(field: RelationshipMigrationField): Promise<void> {
+    const mapped = mapFieldToDBO(field);
     await this.getCollection().insertOne(mapped);
   }
 
-  async upsert(field: RelationshipMigrationFieldInfo): Promise<void> {
-    const mapped = mapFieldInfoToDBO(field);
+  async upsert(field: RelationshipMigrationField): Promise<void> {
+    const mapped = mapFieldToDBO(field);
     await this.getCollection().updateOne(
       {
         sourceTemplate: mapped.sourceTemplate,

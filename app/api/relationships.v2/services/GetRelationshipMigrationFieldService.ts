@@ -4,8 +4,8 @@ import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipPro
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
+  RelationShipMigrationFieldUniqueId,
   RelationshipMigrationField,
-  RelationshipMigrationFieldInfo,
 } from '../model/RelationshipMigrationField';
 
 class GetRelationshipMigrationFieldService {
@@ -38,23 +38,28 @@ class GetRelationshipMigrationFieldService {
       p => p instanceof V1RelationshipProperty
     ) as V1RelationshipProperty[];
     const allV1Info = allV1Properties.map(
-      p => new RelationshipMigrationFieldInfo(p.template, p.relationType, p.content, false, true)
+      p =>
+        new RelationshipMigrationField(
+          new RelationShipMigrationFieldUniqueId(p.template, p.relationType, p.content),
+          false,
+          true
+        )
     );
     const indexed = objectIndex(
       allV1Info,
-      i => i.stringHash,
+      i => i.id.stringHash,
       i => i
     );
 
     const fieldsInDb = await this.getAll();
     fieldsInDb.forEach(f => {
-      if (f.stringHash in indexed) {
-        indexed[f.stringHash].ignored = f.ignored;
+      if (f.id.stringHash in indexed) {
+        indexed[f.id.stringHash].ignored = f.ignored;
       } else {
-        indexed[f.stringHash] = f;
+        indexed[f.id.stringHash] = f;
       }
     });
-    return Object.values(indexed);
+    return Object.values(indexed).map(f => f.flatten());
   }
 }
 

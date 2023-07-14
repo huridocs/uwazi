@@ -1,8 +1,8 @@
 import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
+  RelationShipMigrationFieldUniqueId,
   RelationshipMigrationField,
-  RelationshipMigrationFieldInfo,
 } from '../model/RelationshipMigrationField';
 
 class CreateRelationshipMigrationFieldService {
@@ -24,18 +24,15 @@ class CreateRelationshipMigrationFieldService {
     targetTemplate?: string,
     ignored: boolean = false
   ) {
-    const fieldInfo = new RelationshipMigrationFieldInfo(
-      sourceTemplate,
-      relationType,
-      targetTemplate,
+    const field = new RelationshipMigrationField(
+      new RelationShipMigrationFieldUniqueId(sourceTemplate, relationType, targetTemplate),
       ignored
     );
-    let saved: RelationshipMigrationField | null = null;
-    await this.transactionManager.run(async () => {
-      await this.fieldDS.create(fieldInfo);
-      saved = await this.fieldDS.get(fieldInfo);
+    const saved = await this.transactionManager.run(async () => {
+      await this.fieldDS.create(field);
+      return this.fieldDS.get(field.id);
     });
-    return saved;
+    return saved.flatten();
   }
 }
 

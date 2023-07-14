@@ -8,6 +8,10 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { parseQuery } from 'api/utils';
 import {
+  CreateRelationshipMigRationFieldResponse,
+  GetRelationshipMigrationFieldsResponse,
+} from 'shared/types/api.v2/relationshipMigrationFieldResponses';
+import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
@@ -120,7 +124,7 @@ export default (app: Application) => {
     needsAuthorization(),
     featureRequired,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async (req, res) => {
+    async (req: Request, res: Response<GetRelationshipMigrationFieldsResponse>) => {
       const service = GetRelationshipMigrationFieldsService();
       const fields = await service.getAllCombinedWithInferred();
       res.json(fields);
@@ -131,7 +135,7 @@ export default (app: Application) => {
     '/api/v2/relationshipMigrationFields/create',
     needsAuthorization(),
     featureRequired,
-    async (req, res) => {
+    async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
       const service = CreateRelationshipMigrationFieldService();
       const created = await service.create(
@@ -148,7 +152,7 @@ export default (app: Application) => {
     '/api/v2/relationshipMigrationFields/update',
     needsAuthorization(),
     featureRequired,
-    async (req, res) => {
+    async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {
       const field = validateUpsertRelationshipMigrationField(req.body);
       const service = UpsertRelationshipMigrationFieldService();
       const updated = await service.upsert(
