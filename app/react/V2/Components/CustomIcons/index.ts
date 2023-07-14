@@ -1,1 +1,12 @@
 export { TextPropertyIcon } from './TextPropertyIcon';
+export { SelectPropertyIcon } from './SelectPropertyIcon';
+export { MarkdownPropertyIcon } from './MarkdownPropertyIcon';
+export { RelationshipPropertyIcon } from './RelationshipPropertyIcon';
+export { PreviewPropertyIcon } from './PreviewPropertyIcon';
+export { NumericPropertyIcon } from './NumericPropertyIcon';
+export { MediaPropertyIcon } from './MediaPropertyIcon';
+export { LinkPropertyIcon } from './LinkPropertyIcon';
+export { ImagePropertyIcon } from './ImagePropertyIcon';
+export { IDPropertyIcon } from './IDPropertyIcon';
+export { GeolocationPropertyIcon } from './GeolocationPropertyIcon';
+export { DatePropertyIcon } from './DatePropertyIcon';
