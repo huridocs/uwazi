@@ -205,6 +205,7 @@ describe('Users', () => {
     });
 
     it('bulk password reset', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -224,9 +225,11 @@ describe('Users', () => {
       });
       cy.contains('div', 'Instructions to reset the password were sent to the user');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
     });
 
     it('bulk reset 2FA', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -260,9 +263,11 @@ describe('Users', () => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
     });
 
     it('bulk delete', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -283,6 +288,7 @@ describe('Users', () => {
       cy.contains('span', 'Carmen_edited').should('not.exist');
       cy.contains('span', 'Mike').should('not.exist');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
       namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
     });
   });
