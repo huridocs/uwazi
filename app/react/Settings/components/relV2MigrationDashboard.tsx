@@ -29,7 +29,7 @@ type MigrationSummaryType = {
   usedTextReferences: number;
   time: number;
   dryRun: boolean;
-  hubsWithUnusedConnections: OriginalEntityInfo[][];
+  // hubsWithUnusedConnections: OriginalEntityInfo[][];
 };
 
 type OriginalEntityInfo = {
@@ -430,7 +430,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             )}
             <br />
             <br />
-            {this.migrationSummary && (
+            {/* {this.migrationSummary && (
               <div>
                 <div>
                   First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
@@ -454,7 +454,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>

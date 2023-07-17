@@ -16,8 +16,9 @@ import {
   Relationship,
   Selection,
 } from '../model/Relationship';
-
-const UNUSED_HUB_LIMIT = 10;
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
+import { MigrationHubRecord } from '../model/MigrationHubRecord';
+import { Sink } from 'api/common.v2/contracts/Sink';
 
 const HUB_BATCH_SIZE = 1000;
 
@@ -102,6 +103,8 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
+  private hubRecordDS: MigrationHubRecordDataSource;
+
   private logger: Logger;
 
   constructor(
@@ -110,6 +113,7 @@ export class MigrationService {
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource,
+    hubRecordDS: MigrationHubRecordDataSource,
     logger: Logger
   ) {
     this.idGenerator = idGenerator;
@@ -117,6 +121,7 @@ export class MigrationService {
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
     this.relationshipsDS = relationshipsDS;
+    this.hubRecordDS = hubRecordDS;
     this.logger = logger;
   }
 
@@ -260,12 +265,12 @@ export class MigrationService {
   }
 
   private async recordUnusedConnections(
-    hubsWithUnusedConnections: ReadableV1Connection[][],
+    unusedHubsSaveStream: Sink<MigrationHubRecord>,
     stats: Statistics,
     group: ReadableV1Connection[]
   ): Promise<void> {
-    if (hubsWithUnusedConnections.length < UNUSED_HUB_LIMIT && stats.total !== stats.used) {
-      hubsWithUnusedConnections.push(group);
+    if (stats.total !== stats.used) {
+      await unusedHubsSaveStream.push(new MigrationHubRecord(group[0].hub, group));
     }
   }
 
@@ -279,7 +284,7 @@ export class MigrationService {
     hubIdBatch: string[],
     matcher: RelationshipMatcher,
     stats: Statistics,
-    hubsWithUnusedConnections: ReadableV1Connection[][],
+    unusedHubsSaveStream: Sink<MigrationHubRecord>,
     transform: boolean = false,
     write: boolean = false
   ): Promise<void> {
@@ -300,7 +305,7 @@ export class MigrationService {
       );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      return this.recordUnusedConnections(hubsWithUnusedConnections, groupStats, group);
+      return this.recordUnusedConnections(unusedHubsSaveStream, groupStats, group);
     }, Promise.resolve());
     await this.writeTransformed(write, transformed);
   }
@@ -311,15 +316,15 @@ export class MigrationService {
     write: boolean = false
   ): Promise<{
     stats: Statistics;
-    hubsWithUnusedConnections: ReadableV1Connection[][];
   }> {
     const hubCursor = this.hubsDS.all();
+    const unusedHubsSaveStream = this.hubRecordDS.openSaveStream();
     const stats = new Statistics();
-    const hubsWithUnusedConnections: ReadableV1Connection[][] = [];
     await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch =>
-      this.transformBatch(hubIdBatch, matcher, stats, hubsWithUnusedConnections, transform, write)
+      this.transformBatch(hubIdBatch, matcher, stats, unusedHubsSaveStream, transform, write)
     );
-    return { stats, hubsWithUnusedConnections };
+    await unusedHubsSaveStream.flush();
+    return { stats };
   }
 
   async testOneHub(hubId: string, plan: MigrationPlan) {
@@ -339,20 +344,23 @@ export class MigrationService {
     };
   }
 
-  async migrate(dryRun: boolean, plan: MigrationPlan) {
+  async setupDB(transformAndWrite: boolean) {
     await this.hubsDS.create();
-
-    const matcher = new RelationshipMatcher(plan);
-    await this.gatherHubs();
-    const transformAndWrite = !dryRun;
-
+    await this.hubRecordDS.deleteAll();
     if (transformAndWrite) {
       await this.relationshipsDS.deleteAll();
     }
+  }
+
+  async migrate(dryRun: boolean, plan: MigrationPlan) {
+    const transformAndWrite = !dryRun;
+    await this.setupDB(transformAndWrite);
+
+    const matcher = new RelationshipMatcher(plan);
+    await this.gatherHubs();
 
     const transformResult = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
     const { total, used, totalTextReferences, usedTextReferences, errors } = transformResult.stats;
-    const { hubsWithUnusedConnections } = transformResult;
 
     await this.hubsDS.drop();
 
@@ -362,7 +370,6 @@ export class MigrationService {
       totalTextReferences,
       usedTextReferences,
       errors,
-      hubsWithUnusedConnections,
     };
   }
 }

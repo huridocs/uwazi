@@ -13,10 +13,10 @@ class MongoSaveStream<T extends Document, U = T> implements Sink<U> {
 
   private bulkWriteStream: BulkWriteStream<T>;
 
-  constructor(collection: Collection<T>, mapper: MapperFunc<U, T>) {
+  constructor(collection: Collection<T>, mapper: MapperFunc<U, T>, stackLimit: number = 1000) {
     this.collection = collection;
     this.mapper = mapper;
-    this.bulkWriteStream = new BulkWriteStream<T>(collection);
+    this.bulkWriteStream = new BulkWriteStream<T>(collection, stackLimit);
   }
 
   async flush(): Promise<void> {

@@ -28,6 +28,7 @@ import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationR
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import {
   DefaultHubsDataSource,
+  DefaultMigrationHubRecordDataSource,
   DefaultRelationshipDataSource,
   DefaultRelationshipMigrationFieldsDataSource,
   DefaultV1ConnectionsDataSource,
@@ -193,12 +194,14 @@ const MigrationService = () => {
   const v1ConnectionsDS = DefaultV1ConnectionsDataSource(transactionManager);
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
+  const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
   const service = new GenericMigrationService(
     MongoIdHandler,
     hubDS,
     v1ConnectionsDS,
     templatesDS,
     relationshipsDS,
+    hubRecordDS,
     logger
   );
   return service;
