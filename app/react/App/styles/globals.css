@@ -1522,6 +1522,10 @@ input:checked + .toggle-bg {
   width: 0.5rem;
 }
 
+.w-2\/12 {
+  width: 16.666667%;
+}
+
 .w-2\/3 {
   width: 66.666667%;
 }
@@ -1544,6 +1548,10 @@ input:checked + .toggle-bg {
 
 .w-3\.5 {
   width: 0.875rem;
+}
+
+.w-3\/12 {
+  width: 25%;
 }
 
 .w-3\/4 {
@@ -1572,6 +1580,10 @@ input:checked + .toggle-bg {
 
 .w-6 {
   width: 1.5rem;
+}
+
+.w-6\/12 {
+  width: 50%;
 }
 
 .w-64 {
@@ -2025,6 +2037,10 @@ input:checked + .toggle-bg {
 
 .rounded-none {
   border-radius: 0px;
+}
+
+.rounded-xl {
+  border-radius: 0.75rem;
 }
 
 .rounded-b {

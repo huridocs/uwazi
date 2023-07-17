@@ -78,7 +78,7 @@ const Table = <T,>({
   }, [onSelection, rowSelection, table]);
 
   return (
-    <div className="overflow-x-auto relative">
+    <div className="relative overflow-x-auto">
       <table className="w-full text-sm text-left">
         {title && (
           <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
@@ -93,7 +93,7 @@ const Table = <T,>({
                 const isSortable = header.column.getCanSort();
                 const isSelect = header.column.id === 'checkbox-select';
                 const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
-                  header.column.columnDef.meta?.className || ''
+                  header.column.columnDef.meta?.headerClassName || ''
                 }`;
 
                 return (
@@ -119,7 +119,12 @@ const Table = <T,>({
                 const isSelect = cell.column.id === 'checkbox-select';
 
                 return (
-                  <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
+                  <td
+                    key={cell.id}
+                    className={`${isSelect ? 'px-2' : 'px-6'} py-3 ${
+                      cell.column.columnDef.meta?.contentClassName || ''
+                    }`}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 );

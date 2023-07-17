@@ -88,7 +88,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -96,7 +96,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -122,7 +122,7 @@ const Basic: Story = {
       columnHelper.accessor('created', {
         header: 'Date added',
         cell: CustomCell,
-        meta: { className: 'something' },
+        meta: { headerClassName: 'something' },
       }),
     ],
     data: [
@@ -159,19 +159,19 @@ const WithActions: Story = {
       columnHelper.accessor('created', {
         id: 'created',
         header: 'Date added',
-        meta: { className: 'w-1/3' },
+        meta: { headerClassName: 'w-1/3' },
       }),
       columnHelper.accessor('description', {
         id: 'description',
         header: 'Description',
         enableSorting: false,
-        meta: { className: 'w-1/3 bg-red-200 text-blue' },
+        meta: { headerClassName: 'w-1/3 bg-red-200 text-blue' },
       }),
       columnHelper.display({
         id: 'action',
         header: 'Actions',
         cell: ActionsCell,
-        meta: { className: 'text-center' },
+        meta: { headerClassName: 'text-center' },
       }),
     ],
   },

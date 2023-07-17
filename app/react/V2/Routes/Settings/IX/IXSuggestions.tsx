@@ -48,7 +48,6 @@ const IXSuggestionsLoader =
       { filter: { extractorId }, page: { number: 1, size: 20 } },
       headers
     );
-    console.log(response.suggestions);
     return { suggestions: response.suggestions };
   };
 export { IXSuggestions, IXSuggestionsLoader };
