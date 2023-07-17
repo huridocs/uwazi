@@ -16,4 +16,14 @@ type MigrationRequest = {
   migrationPlan: MigrationPlan;
 };
 
-export type { MigrationPlan, MigrationRequest, PlanElement };
+type MigrationResponse = {
+  total: number;
+  used: number;
+  totalTextReferences: number;
+  usedTextReferences: number;
+  errors: number;
+  time: number;
+  dryRun: boolean;
+};
+
+export type { MigrationPlan, MigrationRequest, MigrationResponse, PlanElement };

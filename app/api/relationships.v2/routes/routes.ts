@@ -7,10 +7,8 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { parseQuery } from 'api/utils';
-import {
-  CreateRelationshipMigRationFieldResponse,
-  GetRelationshipMigrationFieldsResponse,
-} from 'shared/types/api.v2/relationshipMigrationFieldResponses';
+import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
+import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -27,6 +25,8 @@ import { validateGetRelationships } from './validators/getRelationship';
 import { validateMigration, validateTestOneHub } from './validators/migration';
 import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
 import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
+import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -65,7 +65,7 @@ export default (app: Application) => {
     '/api/v2/relationships/migrate',
     needsAuthorization(),
     featureRequired,
-    async (req, res) => {
+    async (req: Request, res: Response<MigrationResponse>) => {
       const timeStart = performance.now();
       const { dryRun, migrationPlan } = validateMigration(req.body);
       const service = MigrationService();
@@ -89,7 +89,7 @@ export default (app: Application) => {
     '/api/v2/relationships/test_one_hub',
     needsAuthorization(),
     featureRequired,
-    async (req, res) => {
+    async (req: Request, res: Response<TestOneHubResponse>) => {
       const { hubId, migrationPlan } = validateTestOneHub(req.body);
       const {
         total,
@@ -162,7 +162,7 @@ export default (app: Application) => {
     '/api/v2/relationshipMigrationFields',
     needsAuthorization(),
     featureRequired,
-    async (req, res) => {
+    async (req: Request, res: Response<void>) => {
       const { sourceTemplate, relationType, targetTemplate } =
         validateDeleteRelationshipMigrationField(req.query);
       const service = DeleteRelationshipMigrationFieldService();

@@ -25,4 +25,4 @@ interface RelationshipData {
 
 type CreateRelationshipData = RelationshipData[];
 
-export type { TextReference, EntityReference, CreateRelationshipData };
+export type { TextReference, EntityReference, RelationshipData, CreateRelationshipData };
