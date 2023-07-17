@@ -1,5 +1,4 @@
 import {
-  AnyBulkWriteOperation,
   BulkWriteResult,
   Collection,
   Db,
@@ -140,7 +139,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
               property === 'findOneAndReplace'
             ) {
               return originalMethod().then(async (result: any) =>
-                self.updateSyncLogs(condition).then(() => result)
+                self.updateSyncLogs([condition]).then(() => result)
               );
             }
 
@@ -149,7 +148,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
               property === 'findOneAndDelete' ||
               property === 'deleteMany'
             ) {
-              return self.updateSyncLogs(condition, true).then(() => originalMethod());
+              return self.updateSyncLogs([condition], true).then(() => originalMethod());
             }
 
             if (property === 'bulkWrite') {
@@ -189,7 +188,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
 
   private async getModifiedIds(condition: any) {
     return this.getCollection()
-      .find(condition)
+      .find(condition, { projection: { _id: 1 } })
       .toArray()
       .then(modifiedDocuments => modifiedDocuments.map(d => d._id));
   }
@@ -208,15 +207,11 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     }
   }
 
-  private async updateSyncLogs(condition: any, deleted: boolean = false) {
-    let cond = condition;
-    if (Array.isArray(condition) && condition.length === 0) {
+  private async updateSyncLogs(conditions: any[], deleted: boolean = false) {
+    if (conditions.length === 0) {
       return;
     }
-    if (Array.isArray(condition)) {
-      cond = { $or: condition };
-    }
-    const mongoIds = await this.getModifiedIds(cond);
+    const mongoIds = await this.getModifiedIds({ $or: conditions });
     await this.db.collection('updatelogs').updateMany(
       { mongoId: { $in: mongoIds } },
       {
