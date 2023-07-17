@@ -13,6 +13,16 @@ const getExtractors = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
+const getExtractorById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  try {
+    const requestParams = new RequestParams({ id: extractorId }, headers);
+    const { json: response } = await api.get('ixextractors', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
 const saveExtractors = async (extractor: IXExtractorInfo) => {
   const requestParams = new RequestParams(extractor);
   let response: IXExtractorInfo[];
@@ -48,4 +58,4 @@ const getSuggestions = async (
   return response.json;
 };
 
-export { getExtractors, saveExtractors, removeExtractors, getSuggestions };
+export { getExtractors, saveExtractors, removeExtractors, getSuggestions, getExtractorById };

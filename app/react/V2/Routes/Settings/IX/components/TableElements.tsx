@@ -7,7 +7,7 @@ import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Extractor } from '../types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Dot } from './dot';
+import { Dot } from './Dot';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
@@ -82,7 +82,7 @@ const extractorsTableColumns = [
 ];
 
 const suggestionsTableColumns = [
-  suggestionColumnHelper.accessor('fileId', {
+  suggestionColumnHelper.accessor('entityTitle', {
     header: () => <Translate>Document</Translate>,
     cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['fileId']>) => {
       return <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>;
@@ -120,7 +120,14 @@ const suggestionsTableColumns = [
   suggestionColumnHelper.display({
     id: 'accept-actions',
     header: () => <Translate>Accept</Translate>,
-    cell: () => <Dot color="green"></Dot>,
+    cell: () => (
+      <div className="flex items-center justify-between">
+        <Button styling="outline" className="orange-500" size="small">
+          <Translate>Accept</Translate>
+        </Button>
+        <Dot color="red"></Dot>
+      </div>
+    ),
     meta: { headerClassName: 'w-1/12 text-center', contentClassName: 'text-center' },
   }),
   suggestionColumnHelper.display({
