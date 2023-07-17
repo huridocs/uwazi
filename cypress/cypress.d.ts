@@ -15,6 +15,7 @@ declare global {
       setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
       clearAndType(selector: string, value: string): Chainable;
       addTimeLink(duration: number, label: string, index?: number): Chainable;
+      getByTestId(id: string): Chainable<Element>;
       shouldNotBeActionable(
         done: Mocha.Done,
         clickOptions?: Partial<Cypress.ClickOptions> & {

@@ -25,7 +25,7 @@ describe('Sidepanel', () => {
   it('shuld close the sidepanel using the button on top of the sidepanel', () => {
     mount(<Basic />);
     cy.contains('button', 'Open/Close sidepanel').click();
-    cy.get('[data-testid="Close sidepanel"]').click();
+    cy.getByTestId('close-sidepanel').click();
     cy.contains('h1', 'My sidepanel').should('not.exist');
   });
 

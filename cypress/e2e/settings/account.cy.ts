@@ -42,7 +42,7 @@ describe('Public Form', () => {
     });
 
     it('should login with the new password', () => {
-      cy.get('[data-testid="account-logout"]').click();
+      cy.getByTestId('account-logout').click();
       cy.get('input[name=username]').type('admin');
       cy.get('input[name=password]').type('1234');
       cy.contains('button', 'Login').click();
@@ -60,7 +60,7 @@ describe('Public Form', () => {
     });
 
     it('should enable 2FA', () => {
-      cy.get('[data-testid="copy-value-button"]').click();
+      cy.getByTestId('copy-value-button').click();
       cy.window()
         .then(async win => win.navigator.clipboard.readText())
         .then(value => {
@@ -74,7 +74,7 @@ describe('Public Form', () => {
     });
 
     it('should login with 2FA', () => {
-      cy.get('[data-testid="account-logout"]').click();
+      cy.getByTestId('account-logout').click();
       cy.get('input[name=username]').type('admin');
       cy.get('input[name=password]').type('1234');
       cy.contains('button', 'Login').click();
