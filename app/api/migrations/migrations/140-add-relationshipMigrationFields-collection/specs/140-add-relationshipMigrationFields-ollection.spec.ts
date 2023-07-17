@@ -5,9 +5,9 @@ import migration from '../index';
 
 let db: Db;
 
-describe('migration add relationshipMigrationFields collection', () => {
+describe('migration add collections for v2 relationships migration', () => {
   beforeAll(async () => {
-    // jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     await testingDB.setupFixturesAndContext({});
     db = testingDB.mongodb!;
     await migration.up(db);
@@ -27,8 +27,14 @@ describe('migration add relationshipMigrationFields collection', () => {
     expect(coll).toBeDefined();
   });
 
-  it('should set up the correct indices', async () => {
-    const relCollection = await db.collection('relationshipMigrationFields');
+  it('should set up the hub records collection', async () => {
+    const collections = await db.listCollections().toArray();
+    const coll = collections.find(c => c.name === 'migrationHubRecords');
+    expect(coll).toBeDefined();
+  });
+
+  it('should set up the correct indices on the migration fields', async () => {
+    const relCollection = db.collection('relationshipMigrationFields');
     const indexInfo = await relCollection.indexInformation();
     expect(indexInfo).toEqual({
       _id_: [['_id', 1]],
@@ -40,7 +46,15 @@ describe('migration add relationshipMigrationFields collection', () => {
     });
   });
 
-  it('the source-relationtype-target index should be unique', async () => {
+  it('should set up the correct indices on the hub records', async () => {
+    const relCollection = db.collection('migrationHubRecords');
+    const indexInfo = await relCollection.indexInformation();
+    expect(indexInfo).toEqual({
+      _id_: [['_id', 1]],
+    });
+  });
+
+  it('should set unique index on the migration fields', async () => {
     const relCollection = await db.collection('relationshipMigrationFields');
     const indexInfo = await relCollection.indexInformation({ full: true });
     const uniqueIndex = indexInfo.find(
