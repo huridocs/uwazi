@@ -7,7 +7,6 @@ import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { MetadataExtractionDashboard } from 'app/MetadataExtraction/MetadataExtractionDashboard';
 import { EditPage } from 'app/Pages/EditPage';
 import NewPage from 'app/Pages/NewPage';
 import Pages from 'app/Pages/Pages';
@@ -48,6 +47,7 @@ import {
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
+import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -104,7 +104,8 @@ const getRoutesLayout = (
       </Route>
       <Route
         path="metadata_extraction"
-        element={adminsOnlyRoute(<MetadataExtractionDashboard />)}
+        element={adminsOnlyRoute(<IXDashboard />)}
+        loader={dashboardLoader(headers)}
       />
       <Route
         path="metadata_extraction/suggestions/:extractorId"
