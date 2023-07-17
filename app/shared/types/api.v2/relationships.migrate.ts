@@ -11,14 +11,9 @@ type PlanElement = {
 
 type MigrationPlan = PlanElement[];
 
-type TestOneHubRequest = {
-  hubId: string;
-  migrationPlan: PlanElement[];
-};
-
 type MigrationRequest = {
   dryRun: boolean;
   migrationPlan: MigrationPlan;
 };
 
-export type { MigrationPlan, MigrationRequest, PlanElement, TestOneHubRequest };
+export type { MigrationPlan, MigrationRequest, PlanElement };
