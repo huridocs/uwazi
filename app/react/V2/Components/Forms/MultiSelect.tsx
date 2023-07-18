@@ -38,9 +38,9 @@ const MultiSelect = ({
   const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <div data-testid="multiselect-comp">
-      <Popover className="relative rounded-lg border border-gray-50">
-        <div className="flex justify-between p-2 bg-gray-50 border-b border-gray-50">
+    <div data-testid="multiselect">
+      <Popover className="relative border rounded-lg border-gray-50">
+        <div className="flex justify-between p-2 border-b bg-gray-50 border-gray-50">
           <div className="text-base text-indigo-700">{renderChild(label)}</div>
           <div className="left-0">
             <Popover.Button
@@ -69,7 +69,7 @@ const MultiSelect = ({
             {...attributes.popper}
             as="div"
           >
-            <ul className="overflow-y-auto p-2 max-w-md max-h-56 bg-white rounded shadow-md w-fit">
+            <ul className="max-w-md p-2 overflow-y-auto bg-white rounded shadow-md max-h-56 w-fit">
               {optionsState.map((option: Option) => (
                 <li key={option.label} className="flex gap-2 py-1 align-top">
                   <Checkbox
@@ -104,7 +104,7 @@ const MultiSelect = ({
                 <span className="flex items-center">{option.label}</span>
                 <button
                   type="button"
-                  className="justify-center content-center ml-1 font-bold text-gray-400"
+                  className="content-center justify-center ml-1 font-bold text-gray-400"
                   disabled={disabled}
                   onClick={() => {
                     const selected = optionsState.map(opt => {

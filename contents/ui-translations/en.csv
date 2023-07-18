@@ -1,9 +1,9 @@
 Key,English
-% of sentences above threshold,% of sentences above threshold
 (view page),(view page)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
+% of sentences above threshold,% of sentences above threshold
++ click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
@@ -313,8 +313,9 @@ Exploration,Exploration
 Export CSV,Export CSV
 Exporting entities to CSV,Exporting entities to CSV
 Extension Token,Extension Token
-Extract information from your documents,Extract information from your documents
 Extractor Name,Extractor Name
+Extractor/s deleted,Extractor/s deleted
+Extractors,Extractors
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -393,9 +394,9 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Install the Google Authenticator app on your mobile device
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,Invalid captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
@@ -700,8 +701,8 @@ Search Tips: one char wildcard,"? for one character wildcard. Ie: ""198?"" will 
 Search Tips: proximity,"~ for proximity searches. Ie: ""the status""~5 will find anything having ""the"" and""status"" within a distance of 5 words, such as ""the procedural status"", ""the specific legal status""."
 Search Tips: wildcard,"Use an * for wildcard search. Ie: ""juris*"" will match words  such as jurisdiction, jurisdictional, jurists, jurisprudence, etc."
 secret key recommendation,(please keep this key secret and don't share it):
-Security,Security
 Secret keys,Secret keys
+Security,Security
 Select,Select
 Select all,Select all
 Select files on your device,Select files on your device
