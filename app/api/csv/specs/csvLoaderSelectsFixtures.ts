@@ -3,6 +3,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const fixtureFactory = getFixturesFactory();
+const createTranslationDBO = fixtureFactory.v2.database.translationDBO;
 
 const fixtures = {
   dictionaries: [
@@ -76,226 +77,126 @@ const fixtures = {
     },
   ],
   translations: fixturesTranslationsV2ToTranslationsLegacy([
-    {
-      language: 'es',
-      key: 'B',
-      value: 'Bes',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'A',
-      value: 'Aes',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'multiselect_thesaurus',
-      value: 'multiselect_thesaurus',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-
-    {
-      language: 'es',
-      key: 'A',
-      value: 'Aes',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'Select Thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'Select Thesaurus',
-      value: 'Select Thesaurus',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'Select Thesaurus',
-      },
-    },
-
-    {
-      language: 'es',
-      key: 'A',
-      value: 'A',
-      context: {
-        id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'nested_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'nested_thesaurus',
-      value: 'nested_thesaurus',
-      context: {
-        id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'nested_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: '1',
-      value: '1',
-      context: {
-        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'no_new_value_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'no_new_value_thesaurus',
-      value: 'no_new_value_thesaurus',
-      context: {
-        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'no_new_value_thesaurus',
-      },
-    },
-    {
-      language: 'es',
-      key: 'original 3',
-      value: 'original 3',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
-    {
-      language: 'es',
-      key: 'original 2',
-      value: 'original 2',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
-    {
-      language: 'es',
-      key: 'original 1',
-      value: 'original 1',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
-
-    {
-      language: 'en',
-      key: 'B',
-      value: 'B',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'A',
-      value: 'A',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'multiselect_thesaurus',
-      value: 'multiselect_thesaurus',
-      context: {
-        id: fixtureFactory.id('multiselect_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'multiselect_thesaurus',
-      },
-    },
-
-    {
-      language: 'en',
-      key: 'A',
-      value: 'A',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'Select Thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'Select Thesaurus',
-      value: 'Select Thesaurus',
-      context: {
-        id: fixtureFactory.id('Select Thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'Select Thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'A',
-      value: 'A',
-      context: {
-        id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'nested_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'nested_thesaurus',
-      value: 'nested_thesaurus',
-      context: {
-        id: fixtureFactory.id('nested_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'nested_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: '1',
-      value: '1',
-      context: {
-        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'no_new_value_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'no_new_value_thesaurus',
-      value: 'no_new_value_thesaurus',
-      context: {
-        id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-        type: 'Thesaurus',
-        label: 'no_new_value_thesaurus',
-      },
-    },
-    {
-      language: 'en',
-      key: 'original 3',
-      value: 'original 3',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
-    {
-      language: 'en',
-      key: 'original 2',
-      value: 'original 2',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
-    {
-      language: 'en',
-      key: 'original 1',
-      value: 'original 1',
-      context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-    },
+    createTranslationDBO('B', 'Bes', 'es', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('A', 'Aes', 'es', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('multiselect_thesaurus', 'multiselect_thesaurus', 'es', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('A', 'Aes', 'es', {
+      id: fixtureFactory.id('Select Thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'Select Thesaurus',
+    }),
+    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'es', {
+      id: fixtureFactory.id('Select Thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'Select Thesaurus',
+    }),
+    createTranslationDBO('A', 'A', 'es', {
+      id: fixtureFactory.id('nested_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'nested_thesaurus',
+    }),
+    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'es', {
+      id: fixtureFactory.id('nested_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'nested_thesaurus',
+    }),
+    createTranslationDBO('1', '1', 'es', {
+      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'no_new_value_thesaurus',
+    }),
+    createTranslationDBO('no_new_value_thesaurus', 'no_new_value_thesaurus', 'es', {
+      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'no_new_value_thesaurus',
+    }),
+    createTranslationDBO('original 3', 'original 3', 'es', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('original 2', 'original 2', 'es', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('original 1', 'original 1', 'es', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('B', 'B', 'en', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('A', 'A', 'en', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('multiselect_thesaurus', 'multiselect_thesaurus', 'en', {
+      id: fixtureFactory.id('multiselect_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'multiselect_thesaurus',
+    }),
+    createTranslationDBO('A', 'A', 'en', {
+      id: fixtureFactory.id('Select Thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'Select Thesaurus',
+    }),
+    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'en', {
+      id: fixtureFactory.id('Select Thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'Select Thesaurus',
+    }),
+    createTranslationDBO('A', 'A', 'en', {
+      id: fixtureFactory.id('nested_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'nested_thesaurus',
+    }),
+    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'en', {
+      id: fixtureFactory.id('nested_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'nested_thesaurus',
+    }),
+    createTranslationDBO('1', '1', 'en', {
+      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'no_new_value_thesaurus',
+    }),
+    createTranslationDBO('no_new_value_thesaurus', 'no_new_value_thesaurus', 'en', {
+      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
+      type: 'Thesaurus',
+      label: 'no_new_value_thesaurus',
+    }),
+    createTranslationDBO('original 3', 'original 3', 'en', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('original 2', 'original 2', 'en', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('original 1', 'original 1', 'en', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
   ]),
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { ToggleButton } from '../ToggleButton';
 
@@ -17,6 +18,12 @@ describe('ToggleButton', () => {
       </div>
     );
   };
+
+  it('should be accessible', () => {
+    mount(<Component />);
+    cy.injectAxe();
+    cy.checkA11y();
+  });
 
   it('should show and hide the text when toggled', () => {
     mount(<Component />);
