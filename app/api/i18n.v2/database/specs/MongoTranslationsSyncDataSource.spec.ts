@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { MongoTranslationsSyncDataSource } from '../MongoTranslationsSyncDataSource';
 
-const idMapper = getIdMapper();
+const id = getIdMapper();
 
 const fixtures: DBFixture = {
   translationsV2: [],
@@ -26,10 +26,12 @@ const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const translation = (
+  _id: ObjectId,
   value: string,
   key: string = 'key',
   language: LanguageISO6391 = 'es'
 ): TranslationDBO => ({
+  _id,
   language,
   key,
   value,
@@ -56,27 +58,24 @@ describe('MongoTranslationsSyncDataSource', () => {
       const transactionManager = DefaultTransactionManager();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).save(
-        translation('value')
+        translation(id('value'), 'value')
       );
 
-      expect(await translationsInDb()).toEqual([
-        { _id: expect.any(ObjectId), ...translation('value') },
-      ]);
+      expect(await translationsInDb()).toEqual([translation(id('value'), 'value')]);
     });
+
     it('should update translation when it does exists', async () => {
       const transactionManager = DefaultTransactionManager();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).save(
-        translation('value')
+        translation(id('value'), 'value')
       );
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).save(
-        translation('value updated')
+        translation(id('value'), 'value updated')
       );
 
-      expect(await translationsInDb()).toEqual([
-        { _id: expect.any(ObjectId), ...translation('value updated') },
-      ]);
+      expect(await translationsInDb()).toEqual([translation(id('value'), 'value updated')]);
     });
   });
 
@@ -85,13 +84,13 @@ describe('MongoTranslationsSyncDataSource', () => {
       const transactionManager = DefaultTransactionManager();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).saveMultiple([
-        translation('value'),
-        translation('value 2', 'key 2'),
+        translation(id('value'), 'value'),
+        translation(id('value 2'), 'value 2', 'key 2'),
       ]);
 
       expect(await translationsInDb()).toEqual([
-        { _id: expect.any(ObjectId), ...translation('value') },
-        { _id: expect.any(ObjectId), ...translation('value 2', 'key 2') },
+        translation(id('value'), 'value'),
+        translation(id('value 2'), 'value 2', 'key 2'),
       ]);
     });
 
@@ -99,17 +98,17 @@ describe('MongoTranslationsSyncDataSource', () => {
       const transactionManager = DefaultTransactionManager();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).saveMultiple([
-        translation('value'),
+        translation(id('value'), 'value'),
       ]);
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).saveMultiple([
-        translation('value updated'),
-        translation('value 2', 'key 2'),
+        translation(id('value'), 'value updated'),
+        translation(id('value 2'), 'value 2', 'key 2'),
       ]);
 
       expect(await translationsInDb()).toEqual([
-        { _id: expect.any(ObjectId), ...translation('value updated') },
-        { _id: expect.any(ObjectId), ...translation('value 2', 'key 2') },
+        translation(id('value'), 'value updated'),
+        translation(id('value 2'), 'value 2', 'key 2'),
       ]);
     });
   });
@@ -118,13 +117,7 @@ describe('MongoTranslationsSyncDataSource', () => {
     it('should return the translation matching the _id', async () => {
       await testingEnvironment.setUp({
         ...fixtures,
-        translationsV2: [
-          {
-            // @ts-ignore
-            _id: idMapper('translation 1'),
-            ...translation('value'),
-          },
-        ],
+        translationsV2: [translation(id('value'), 'value')],
       });
 
       const transactionManager = DefaultTransactionManager();
@@ -132,9 +125,9 @@ describe('MongoTranslationsSyncDataSource', () => {
       const result = await new MongoTranslationsSyncDataSource(
         getConnection(),
         transactionManager
-      ).getById(idMapper('translation 1').toString());
+      ).getById(id('value').toString());
 
-      expect(result).toEqual({ _id: idMapper('translation 1'), ...translation('value') });
+      expect(result).toEqual(translation(id('value'), 'value'));
     });
   });
 
@@ -142,19 +135,13 @@ describe('MongoTranslationsSyncDataSource', () => {
     it('should delete the translation matching the _id', async () => {
       await testingEnvironment.setUp({
         ...fixtures,
-        translationsV2: [
-          {
-            // @ts-ignore
-            _id: idMapper('translation 1'),
-            ...translation('value'),
-          },
-        ],
+        translationsV2: [translation(id('value'), 'value')],
       });
 
       const transactionManager = DefaultTransactionManager();
 
       await new MongoTranslationsSyncDataSource(getConnection(), transactionManager).delete({
-        _id: idMapper('translation 1').toString(),
+        _id: id('value').toString(),
       });
 
       expect(await translationsInDb()).toEqual([]);

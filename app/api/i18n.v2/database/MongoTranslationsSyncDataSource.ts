@@ -9,11 +9,7 @@ export class MongoTranslationsSyncDataSource
 {
   async save(translation: TranslationDBO): Promise<TranslationDBO> {
     await this.getCollection().updateOne(
-      {
-        language: translation.language,
-        key: translation.key,
-        'context.id': translation.context.id,
-      },
+      { _id: translation._id },
       { $set: translation },
       { upsert: true }
     );
@@ -24,15 +20,7 @@ export class MongoTranslationsSyncDataSource
     const stream = this.createBulkStream();
     await translations.reduce(async (previous, translation) => {
       await previous;
-      await stream.updateOne(
-        {
-          language: translation.language,
-          key: translation.key,
-          'context.id': translation.context.id,
-        },
-        { $set: translation },
-        true
-      );
+      await stream.updateOne({ _id: translation._id }, { $set: translation }, true);
     }, Promise.resolve());
 
     await stream.flush();
