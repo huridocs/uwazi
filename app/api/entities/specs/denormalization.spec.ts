@@ -33,6 +33,7 @@ const load = async (data: DBFixture, index?: string) => {
 
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
+  const createTranslationDBO = factory.v2.database.translationDBO;
 
   const modifyEntity = async (id: string, entityData: EntitySchema, language: string = 'en') => {
     await entities.save(
@@ -627,67 +628,37 @@ describe('Denormalize relationships', () => {
             ),
           ],
           translations: fixturesTranslationsV2ToTranslationsLegacy([
-            {
-              key: 'One',
-              value: 'One',
-              language: 'en',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
-            {
-              key: 'Two',
-              value: 'Two',
-              language: 'en',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
-            {
-              key: 'Numbers',
-              value: 'Numbers',
-              language: 'en',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
+            createTranslationDBO('One', 'One', 'en', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
+            createTranslationDBO('Two', 'Two', 'en', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
+            createTranslationDBO('Numbers', 'Numbers', 'en', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
 
-            {
-              key: 'One',
-              value: 'One',
-              language: 'es',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
-            {
-              key: 'Two',
-              value: 'Two',
-              language: 'es',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
-            {
-              key: 'Numbers',
-              value: 'Numbers',
-              language: 'es',
-              context: {
-                id: factory.id('Numbers').toString(),
-                type: 'Thesaurus',
-                label: 'Numbers',
-              },
-            },
+            createTranslationDBO('One', 'One', 'es', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
+            createTranslationDBO('Two', 'Two', 'es', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
+            createTranslationDBO('Numbers', 'Numbers', 'es', {
+              id: factory.id('Numbers').toString(),
+              type: 'Thesaurus',
+              label: 'Numbers',
+            }),
           ]),
         },
         'index_denormalization'

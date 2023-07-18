@@ -2,6 +2,7 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
 import { Translation } from 'api/i18n.v2/model/Translation';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { MongoTranslationsDataSource } from '../../database/MongoTranslationsDataSource';
@@ -30,6 +31,8 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+
 describe('MongoTranslationsDataSource', () => {
   describe('insert()', () => {
     describe('when trying to insert a duplicated translations', () => {
@@ -37,18 +40,16 @@ describe('MongoTranslationsDataSource', () => {
         await testingEnvironment.setUp({
           ...fixtures,
           translationsV2: [
-            {
-              language: 'en',
-              key: 'existing_key',
-              value: 'value',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
-            {
-              language: 'es',
-              key: 'existing_key',
-              value: 'value',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
+            createTranslationDBO('existing_key', 'value', 'en', {
+              type: 'Entity',
+              label: 'Test',
+              id: 'test',
+            }),
+            createTranslationDBO('existing_key', 'value', 'es', {
+              type: 'Entity',
+              label: 'Test',
+              id: 'test',
+            }),
           ],
         });
         const transactionManager = DefaultTransactionManager();
