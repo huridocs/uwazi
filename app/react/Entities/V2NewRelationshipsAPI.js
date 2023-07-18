@@ -41,4 +41,8 @@ export default {
   getCurrentPlan() {
     return api.get('v2/relationshipMigrationFields').then(response => response.json);
   },
+
+  getHubrecordPage(requestParams = new RequestParams()) {
+    return api.get('v2/migrationHubRecords', requestParams).then(response => response.json);
+  },
 };

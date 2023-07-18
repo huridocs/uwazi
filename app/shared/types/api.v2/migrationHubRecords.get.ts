@@ -1,8 +1,8 @@
 import { ReadableV1Connection } from './relationships.testOneHub';
 
 type GetMigrationHubRecordsRequest = {
-  page: number;
-  pageSize: number;
+  page: string;
+  pageSize: string;
 };
 
 type MigrationHubRecordResponse = {

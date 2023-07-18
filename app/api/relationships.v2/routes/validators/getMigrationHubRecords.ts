@@ -4,10 +4,10 @@ import { GetMigrationHubRecordsRequest } from 'shared/types/api.v2/migrationHubR
 const schema: ValidatorSchema<GetMigrationHubRecordsRequest> = {
   properties: {
     page: {
-      type: 'uint32',
+      type: 'string',
     },
     pageSize: {
-      type: 'uint32',
+      type: 'string',
     },
   },
 };

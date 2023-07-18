@@ -180,7 +180,9 @@ export default (app: Application) => {
     needsAuthorization(),
     featureRequired,
     async (req: Request, res: Response<GetMigrationHubRecordsResponse>) => {
-      const { page, pageSize } = validateGetMigrationHubRecordsRequest(req.query);
+      const { page: _page, pageSize: _pageSize } = validateGetMigrationHubRecordsRequest(req.query);
+      const page = parseInt(_page, 10);
+      const pageSize = parseInt(_pageSize, 10);
       const service = GetMigrationHubRecordsService();
       const records = await service.getPage(page, pageSize);
       res.json(records);

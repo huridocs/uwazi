@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
 import {
   getCurrentPlan,
+  getHubrecordPage,
   sendMigrationRequest as _sendMigrationRequest,
   testOneHub as _testOneHub,
   createRelationshipMigrationField,
@@ -15,11 +16,14 @@ import {
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
-  CreateRelationshipMigRationFieldResponse,
   GetRelationshipMigrationFieldsResponse,
   ResponseElement,
-} from 'shared/types/api.v2/relationshipMigrationFieldResponses';
-import { PlanElement } from 'shared/types/api.v2/relationshipsMigrationRequests';
+} from 'shared/types/api.v2/relationshipMigrationField.get';
+import { PlanElement } from 'shared/types/api.v2/relationships.migrate';
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
+import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
+
+const UNUSED_RECORDS_PAGE_SIZE = 10;
 
 type MigrationSummaryType = {
   total: number;
@@ -29,7 +33,6 @@ type MigrationSummaryType = {
   usedTextReferences: number;
   time: number;
   dryRun: boolean;
-  // hubsWithUnusedConnections: OriginalEntityInfo[][];
 };
 
 type OriginalEntityInfo = {
@@ -122,6 +125,10 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
     ignored: false,
   };
 
+  private unusedConnectionsPage = 1;
+
+  private unusedConnectionsInfo?: GetMigrationHubRecordsResponse;
+
   async componentDidMount() {
     this.templateIndex = objectIndex(
       this.props.templates,
@@ -147,6 +154,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       targetTemplate: this.templatesNameSorted[1].name,
       targetTemplateId: this.templatesNameSorted[1]._id,
     };
+    await this.getUnusedConnections();
     this.forceUpdate();
   }
 
@@ -230,6 +238,71 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       this.currentPlan.splice(index, 1);
       this.forceUpdate();
     });
+  }
+
+  async getUnusedConnections(update: boolean = false) {
+    this.unusedConnectionsInfo = await getHubrecordPage(
+      this.unusedConnectionsPage,
+      UNUSED_RECORDS_PAGE_SIZE
+    );
+    if (update) {
+      this.forceUpdate();
+    }
+  }
+
+  renderUnusedConnections() {
+    if (!this.unusedConnectionsInfo) {
+      return <div />;
+    }
+    const maxPage = Math.ceil(this.unusedConnectionsInfo.fullCount / UNUSED_RECORDS_PAGE_SIZE);
+    return (
+      this.unusedConnectionsInfo && (
+        <div>
+          <div>
+            <button
+              type="button"
+              disabled={this.unusedConnectionsPage === 1}
+              onClick={async () => {
+                this.unusedConnectionsPage -= 1;
+                await this.getUnusedConnections(true);
+              }}
+            >
+              ←
+            </button>
+            <span>
+              {this.unusedConnectionsPage}/{maxPage}
+            </span>
+            <button
+              type="button"
+              disabled={this.unusedConnectionsPage === maxPage}
+              onClick={async () => {
+                this.unusedConnectionsPage += 1;
+                await this.getUnusedConnections(true);
+              }}
+            >
+              →
+            </button>
+          </div>
+          {this.unusedConnectionsInfo.hubRecords.map((records, index) => (
+            <div key={`UnusedConnectionList_${records.hubId}`}>
+              <div>
+                {index + 1}---------------------------:{records.hubId}
+              </div>
+              {records.connections.map(connection => (
+                <div key={`unusedConnection_${records.hubId}_${connection.id}`}>
+                  &emsp;
+                  {`(${connection.templateName})`}
+                  <Icon icon="link" />
+                  {`${connection.entityTitle}(${
+                    this.templateIndex[connection.entityTemplate].name
+                  })`}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )
+    );
   }
 
   render() {
@@ -319,9 +392,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 <Icon icon="arrow-right" />
                 &emsp;
                 {p.targetTemplate}
-                &emsp;
-                {'--'}
-                &emsp;
+                &emsp; -- &emsp;
                 {[p.inferred ? 'inferred' : 'user defined', p.ignored ? 'ignored' : undefined]
                   .filter(x => x)
                   .join(', ')}
@@ -430,31 +501,7 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
             )}
             <br />
             <br />
-            {/* {this.migrationSummary && (
-              <div>
-                <div>
-                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
-                  connections:
-                </div>
-                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
-                  <div key={`UnusedConnectionList_${index}`}>
-                    <div>
-                      {index + 1}---------------------------:{connectionList[0].hub}
-                    </div>
-                    {connectionList.map((connection, connectionIndex) => (
-                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
-                        &emsp;
-                        {`(${connection.templateName})`}
-                        <Icon icon="link" />
-                        {`${connection.entityTitle}(${
-                          this.templateIndex[connection.entityTemplate].name
-                        })`}
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )} */}
+            {this.renderUnusedConnections()}
           </div>
         </div>
       </div>

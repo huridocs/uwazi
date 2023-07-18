@@ -49,9 +49,13 @@ const deleteRelationshipMigrationField = field =>
 
 const getCurrentPlan = () => api.getCurrentPlan();
 
+const getHubrecordPage = (page, pageSize) =>
+  api.getHubrecordPage(new RequestParams({ page, pageSize }));
+
 export {
   deleteRelationships,
   getCurrentPlan,
+  getHubrecordPage,
   getRelationshipsByEntity,
   saveRelationship,
   sendMigrationRequest,
