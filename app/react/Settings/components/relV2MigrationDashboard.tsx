@@ -158,15 +158,30 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
     this.forceUpdate();
   }
 
-  async performDryRun() {
-    const summary = await _sendMigrationRequest(true, this.currentPlan);
+  async getUnusedConnections(update: boolean = false) {
+    this.unusedConnectionsInfo = await getHubrecordPage(
+      this.unusedConnectionsPage,
+      UNUSED_RECORDS_PAGE_SIZE
+    );
+    if (update) {
+      this.forceUpdate();
+    }
+  }
+
+  async sendMigrationRequest(dryRun: boolean) {
+    const summary = await _sendMigrationRequest(dryRun, this.currentPlan);
     this.migrationSummary = summary;
+    this.unusedConnectionsPage = 1;
+    await this.getUnusedConnections();
+  }
+
+  async performDryRun() {
+    await this.sendMigrationRequest(true);
     this.forceUpdate();
   }
 
   async performMigration() {
-    const summary = await _sendMigrationRequest(false, this.currentPlan);
-    this.migrationSummary = summary;
+    await this.sendMigrationRequest(false);
     this.showMigrationConfirm = false;
     this.forceUpdate();
   }
@@ -238,16 +253,6 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       this.currentPlan.splice(index, 1);
       this.forceUpdate();
     });
-  }
-
-  async getUnusedConnections(update: boolean = false) {
-    this.unusedConnectionsInfo = await getHubrecordPage(
-      this.unusedConnectionsPage,
-      UNUSED_RECORDS_PAGE_SIZE
-    );
-    if (update) {
-      this.forceUpdate();
-    }
   }
 
   renderUnusedConnections() {
