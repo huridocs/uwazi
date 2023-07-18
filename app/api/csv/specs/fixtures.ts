@@ -3,52 +3,35 @@ import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const template1Id = db.id();
 const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+
 const translationsV2: TranslationDBO[] = [
-  {
-    language: 'en',
-    key: 'value1',
-    value: 'value1',
-    context: {
-      id: thesauri1Id.toString(),
-      type: 'Thesaurus',
-      label: 'thesauri 1',
-    },
-  },
-  {
-    language: 'en',
-    key: 'value2',
-    value: 'value2',
-    context: {
-      id: thesauri1Id.toString(),
-      type: 'Thesaurus',
-      label: 'thesauri 1',
-    },
-  },
-  {
-    language: 'en',
-    key: 'value3',
-    value: 'value3',
-    context: {
-      id: thesauri1Id.toString(),
-      type: 'Thesaurus',
-      label: 'thesauri 1',
-    },
-  },
-  {
-    language: 'en',
-    key: 'value4',
-    value: 'value4',
-    context: {
-      id: thesauri1Id.toString(),
-      type: 'Thesaurus',
-      label: 'thesauri 1',
-    },
-  },
+  createTranslationDBO('value1', 'value1', 'en', {
+    id: thesauri1Id.toString(),
+    type: 'Thesaurus',
+    label: 'thesauri 1',
+  }),
+  createTranslationDBO('value2', 'value2', 'en', {
+    id: thesauri1Id.toString(),
+    type: 'Thesaurus',
+    label: 'thesauri 1',
+  }),
+  createTranslationDBO('value3', 'value3', 'en', {
+    id: thesauri1Id.toString(),
+    type: 'Thesaurus',
+    label: 'thesauri 1',
+  }),
+  createTranslationDBO('value4', 'value4', 'en', {
+    id: thesauri1Id.toString(),
+    type: 'Thesaurus',
+    label: 'thesauri 1',
+  }),
 ];
 
 const fixtures: DBFixture = {

@@ -6,6 +6,7 @@ import {
   TranslationMissingLanguages,
 } from 'api/i18n.v2/errors/translationErrors';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
@@ -27,6 +28,7 @@ const createService = () => {
   );
 };
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 const fixtures: DBFixture = {
   translationsV2: [],
   settings: [
@@ -141,12 +143,11 @@ describe('CreateTranslationsService', () => {
         await testingEnvironment.setUp({
           ...fixtures,
           translationsV2: [
-            {
-              language: 'en',
-              key: 'existing_key',
-              value: 'value',
-              context: { type: 'Entity', label: 'Test', id: 'test' },
-            },
+            createTranslationDBO('existing_key', 'value', 'en', {
+              type: 'Entity',
+              label: 'Test',
+              id: 'test',
+            }),
           ],
         });
         const service = createService();
