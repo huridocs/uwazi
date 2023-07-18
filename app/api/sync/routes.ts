@@ -10,6 +10,9 @@ import { TranslationType } from 'shared/translationType';
 import { updateMapping } from 'api/search/entitiesIndex';
 
 import { needsAuthorization } from '../auth';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {
@@ -79,6 +82,11 @@ const preserveTranslations = async (syncData: TranslationType): Promise<Translat
 
 export default (app: Application) => {
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
+    const transactionManager = DefaultTransactionManager();
+    models.translationsV2 = new MongoTranslationsSyncDataSource(
+      getConnection(),
+      transactionManager
+    );
     try {
       if (req.body.namespace === 'settings') {
         const [settings] = await models.settings.get({});
