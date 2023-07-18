@@ -1,4 +1,5 @@
 import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
 const entityTemplateId = '589af97080fc0b23471d67f3';
@@ -7,6 +8,8 @@ const dictionaryId = '589af97080fc0b23471d67f4';
 const dictionaryIdToTranslate = '589af97080fc0b23471d67f5';
 const dictionaryWithValueGroups = testingDB.id();
 const dictionaryValueId = '1';
+
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 
 const fixtures: DBFixture = {
   dictionaries: [
@@ -137,55 +140,47 @@ const fixtures: DBFixture = {
     },
   ],
   translations: fixturesTranslationsV2ToTranslationsLegacy([
-    {
-      language: 'en',
-      key: 'Parent',
-      value: 'Parent',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'en',
-      key: 'value 2',
-      value: 'value 2',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'en',
-      key: 'value 1',
-      value: 'value 1',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'en',
-      key: 'dictionary 2',
-      value: 'dictionary 2',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
+    createTranslationDBO('Parent', 'Parent', 'en', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('value 2', 'value 2', 'en', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('value 1', 'value 1', 'en', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('dictionary 2', 'dictionary 2', 'en', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
 
-    {
-      language: 'es',
-      key: 'Parent',
-      value: 'Parent',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'es',
-      key: 'value 2',
-      value: 'value 2',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'es',
-      key: 'value 1',
-      value: 'value 1',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
-    {
-      language: 'es',
-      key: 'dictionary 2',
-      value: 'dictionary 2',
-      context: { id: dictionaryId, type: 'Thesaurus', label: 'Dictionary' },
-    },
+    createTranslationDBO('Parent', 'Parent', 'es', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('value 2', 'value 2', 'es', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('value 1', 'value 1', 'es', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
+    createTranslationDBO('dictionary 2', 'dictionary 2', 'es', {
+      id: dictionaryId,
+      type: 'Thesaurus',
+      label: 'Dictionary',
+    }),
   ]),
 };
 

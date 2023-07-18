@@ -1,6 +1,7 @@
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { DeleteTranslationsService } from '../DeleteTranslationsService';
@@ -16,44 +17,27 @@ const createService = () => {
   );
 };
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 const fixtures: DBFixture = {
   translationsV2: [
-    {
-      language: 'es',
-      key: 'clave',
-      value: 'valor',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
-    },
-    {
-      language: 'en',
-      key: 'key',
-      value: 'value',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context1' },
-    },
-    {
-      language: 'es',
-      key: 'clave',
-      value: 'valor',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context2' },
-    },
-    {
-      language: 'en',
-      key: 'key',
-      value: 'value',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context2' },
-    },
-    {
-      language: 'es',
-      key: 'clave',
-      value: 'valor',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
-    },
-    {
-      language: 'en',
-      key: 'key',
-      value: 'value',
-      context: { type: 'Uwazi UI', label: 'Test', id: 'context3' },
-    },
+    createTranslationDBO('clave', 'valor', 'es', {
+      type: 'Uwazi UI',
+      label: 'Test',
+      id: 'context1',
+    }),
+    createTranslationDBO('key', 'value', 'en', { type: 'Uwazi UI', label: 'Test', id: 'context1' }),
+    createTranslationDBO('clave', 'valor', 'es', {
+      type: 'Uwazi UI',
+      label: 'Test',
+      id: 'context2',
+    }),
+    createTranslationDBO('key', 'value', 'en', { type: 'Uwazi UI', label: 'Test', id: 'context2' }),
+    createTranslationDBO('clave', 'valor', 'es', {
+      type: 'Uwazi UI',
+      label: 'Test',
+      id: 'context3',
+    }),
+    createTranslationDBO('key', 'value', 'en', { type: 'Uwazi UI', label: 'Test', id: 'context3' }),
   ],
   settings: [
     {
