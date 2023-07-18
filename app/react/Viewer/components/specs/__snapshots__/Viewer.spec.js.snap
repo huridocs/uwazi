@@ -44,6 +44,13 @@ exports[`Viewer relationships should display the document relationships 1`] = `
           searchCentered={true}
         />
       </ShowIf>
+      <ShowIf
+        if={false}
+      >
+        <Connect(V2NewRelationshipsBoard)
+          sharedId="sharedId"
+        />
+      </ShowIf>
       <Connect(Document) />
       <Connect(Footer) />
     </div>

@@ -77,7 +77,7 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
-      - run: yarn e2e-puppeteer-fixtures
+      - run: yarn blank-state
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
@@ -115,6 +115,11 @@ jobs:
         with:
           name: snapshots
           path: cypress/e2e/**/__image_snapshots__/
+      - uses: actions/upload-artifact@v3
+        if: ${{ failure() }}
+        with:
+          name: video
+          path: cypress/videos/
       - name: Print server output
         run: cat output.txt
         if: failure()
