@@ -1,7 +1,7 @@
 import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
-import { UpsertMigrationFieldRequest } from 'shared/types/api.v2/relationshipMigrationFieldRequests';
+import { UpdateRelationshipMigrationFieldRequest } from 'shared/types/api.v2/relationshipMigrationField.update';
 
-const schema: ValidatorSchema<UpsertMigrationFieldRequest> = {
+const schema: ValidatorSchema<UpdateRelationshipMigrationFieldRequest> = {
   properties: {
     sourceTemplate: {
       type: 'string',

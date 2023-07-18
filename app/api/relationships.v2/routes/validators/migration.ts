@@ -1,8 +1,6 @@
 import { createValidator, ValidatorSchema } from 'api/common.v2/validation/routesValidation';
-import {
-  MigrationRequest,
-  TestOneHubRequest,
-} from 'shared/types/api.v2/relationshipsMigrationRequests';
+import { MigrationRequest } from 'shared/types/api.v2/relationships.migrate';
+import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
 
 const migrationPlanSchemaDef = {
   elements: {

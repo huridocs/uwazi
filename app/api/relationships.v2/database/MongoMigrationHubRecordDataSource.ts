@@ -35,6 +35,10 @@ class MongoMigrationHubRecordDataSource
     return resultset.page(page, pageSize);
   }
 
+  async countAll(): Promise<number> {
+    return this.getCollection().countDocuments();
+  }
+
   openSaveStream(): MongoSaveStream<MigrationHubRecordDBO, MigrationHubRecord> {
     const collection = this.getCollection();
     return new MongoSaveStream<MigrationHubRecordDBO, MigrationHubRecord>(

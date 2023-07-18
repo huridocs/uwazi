@@ -7,13 +7,17 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { parseQuery } from 'api/utils';
+import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
 import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
+import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
+  GetMigrationHubRecordsService,
   GetRelationshipMigrationFieldsService,
   GetRelationshipService,
   MigrationService,
@@ -25,8 +29,8 @@ import { validateGetRelationships } from './validators/getRelationship';
 import { validateMigration, validateTestOneHub } from './validators/migration';
 import { validateDeleteRelationshipMigrationField } from './validators/deleteRelationshipMigrationFields';
 import { validateUpsertRelationshipMigrationField } from './validators/upsertRelationshipMigrationFields';
-import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
-import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
+
+import { validateGetMigrationHubRecordsRequest } from './validators/getMigrationHubRecords';
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
@@ -168,6 +172,18 @@ export default (app: Application) => {
       const service = DeleteRelationshipMigrationFieldService();
       await service.delete(sourceTemplate, relationType, targetTemplate);
       res.status(200).send();
+    }
+  );
+
+  app.get(
+    '/api/v2/migrationHubRecords',
+    needsAuthorization(),
+    featureRequired,
+    async (req: Request, res: Response<GetMigrationHubRecordsResponse>) => {
+      const { page, pageSize } = validateGetMigrationHubRecordsRequest(req.query);
+      const service = GetMigrationHubRecordsService();
+      const records = await service.getPage(page, pageSize);
+      res.json(records);
     }
   );
 };

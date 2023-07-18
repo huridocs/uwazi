@@ -48,4 +48,4 @@ type TestOneHubResponse = Omit<MigrationResponse, 'time' | 'dryRun'> & {
   original: ReadableV1Connection[];
 };
 
-export type { TestOneHubRequest, TestOneHubResponse };
+export type { TestOneHubRequest, TestOneHubResponse, ReadableV1Connection };

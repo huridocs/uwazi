@@ -1,10 +1,11 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { Sink } from 'api/common.v2/contracts/Sink';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
-import { TestOneHubRequest } from 'shared/types/api.v2/relationshipsMigrationRequests';
+import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
@@ -18,7 +19,6 @@ import {
 } from '../model/Relationship';
 import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
 import { MigrationHubRecord } from '../model/MigrationHubRecord';
-import { Sink } from 'api/common.v2/contracts/Sink';
 
 const HUB_BATCH_SIZE = 1000;
 

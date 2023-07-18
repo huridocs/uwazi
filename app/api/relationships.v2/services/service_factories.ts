@@ -38,6 +38,7 @@ import { CreateRelationshipMigrationFieldService as GenericCreateRelationshipMig
 import { CreateRelationshipService as GenericCreateRelationshipService } from './CreateRelationshipService';
 import { DeleteRelationshipMigrationFieldService as GenericDeleteRelationshipMigrationFieldService } from './DeleteRelationshipMigrationFieldService';
 import { DeleteRelationshipService as GenericDeleteRelationshipService } from './DeleteRelationshipService';
+import { GetMigrationHubRecordsService as GenericGetMigrationHubRecordsService } from './GetMigrationHubRecordsService';
 import { GetRelationshipMigrationFieldService as GenericGetRelationshipMigrationFieldsService } from './GetRelationshipMigrationFieldService';
 import { GetRelationshipService as GenericGetRelationshipService } from './GetRelationshipService';
 import { DenormalizationService as GenericDenormalizationService } from './DenormalizationService';
@@ -240,11 +241,19 @@ const UpsertRelationshipMigrationFieldService = () => {
   return service;
 };
 
+const GetMigrationHubRecordsService = () => {
+  const transactionManager = DefaultTransactionManager();
+  const hubRecordDS = DefaultMigrationHubRecordDataSource(transactionManager);
+  const service = new GenericGetMigrationHubRecordsService(hubRecordDS);
+  return service;
+};
+
 export {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
   DeleteRelationshipMigrationFieldService,
   DeleteRelationshipService,
+  GetMigrationHubRecordsService,
   GetRelationshipService,
   GetRelationshipMigrationFieldsService,
   DenormalizationService,

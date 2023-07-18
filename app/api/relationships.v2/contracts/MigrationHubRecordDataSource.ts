@@ -3,6 +3,7 @@ import { MigrationHubRecord } from '../model/MigrationHubRecord';
 
 interface MigrationHubRecordDataSource {
   getPage(page: number, pageSize: number): Promise<MigrationHubRecord[]>;
+  countAll(): Promise<number>;
   openSaveStream(): Sink<MigrationHubRecord>;
   deleteAll(): Promise<void>;
 }
