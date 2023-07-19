@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 export default {
-  delta: 140,
+  delta: 141,
 
   name: 'add collections for v2 relationships migration',
 

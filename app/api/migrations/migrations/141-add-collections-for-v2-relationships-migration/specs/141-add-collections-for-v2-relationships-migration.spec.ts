@@ -18,7 +18,7 @@ describe('migration add collections for v2 relationships migration', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(140);
+    expect(migration.delta).toBe(141);
   });
 
   it('should set up the migration fields collection', async () => {
