@@ -1,7 +1,6 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef } from 'react';
-import * as pdfjs from 'pdfjs-dist';
-import 'pdfjs-dist/build/pdf.worker.entry';
+import * as pdfjs from 'pdfjs-dist/webpack';
 
 interface PDFProps {
   fileUrl: string;

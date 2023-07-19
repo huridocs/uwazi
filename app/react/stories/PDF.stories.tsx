@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-// import { PDF } from 'V2/Components/PDFViewer';
-import PDF from 'V2/Components/PDFViewer/PDF';
+import { PDF } from 'V2/Components/PDFViewer';
 
 const meta: Meta<typeof PDF> = {
   title: 'Viewers/PDF',
