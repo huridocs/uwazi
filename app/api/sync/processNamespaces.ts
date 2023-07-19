@@ -1,20 +1,20 @@
 /* eslint-disable max-lines */
-import sift from 'sift';
+import entitiesModel from 'api/entities/entitiesModel';
+import { filesModel } from 'api/files/filesModel';
 import { DataType, models, WithId } from 'api/odm';
-import {
-  SettingsSyncTemplateSchema,
-  SettingsSyncRelationtypesSchema,
-  Settings,
-} from 'shared/types/settingsType';
-import { ensure } from 'shared/tsUtils';
 import { settingsModel } from 'api/settings/settingsModel';
 import templatesModel from 'api/templates/templatesModel';
-import { TemplateSchema } from 'shared/types/templateType';
-import entitiesModel from 'api/entities/entitiesModel';
-import { EntitySchema } from 'shared/types/entityType';
-import { filesModel } from 'api/files/filesModel';
-import { FileType } from 'shared/types/fileType';
 import { UpdateLog } from 'api/updatelogs';
+import { ensure } from 'shared/tsUtils';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import {
+  Settings,
+  SettingsSyncRelationtypesSchema,
+  SettingsSyncTemplateSchema,
+} from 'shared/types/settingsType';
+import { TemplateSchema } from 'shared/types/templateType';
+import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -106,7 +106,7 @@ class ProcessNamespaces {
 
   private async fetchData() {
     const { namespace, mongoId } = this.change;
-    const data = await models[namespace].getById(mongoId);
+    const data = await models[namespace]().getById(mongoId.toString());
     if (data) {
       return data;
     }
@@ -155,7 +155,7 @@ class ProcessNamespaces {
     templateData: TemplateSchema,
     templateHasValidRelationProperties: boolean
   ) {
-    const hubOtherConnections = await models.connections.get({
+    const hubOtherConnections = await models.connections().get({
       hub: data.hub,
       _id: { $ne: data._id },
     });

@@ -5,13 +5,13 @@ import mongoose from 'mongoose';
 import { model as updatelogsModel } from 'api/updatelogs';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
-import { OdmModel, models, UwaziFilterQuery, EnforcedWithId, DataType } from './model';
+import { models, UwaziFilterQuery, DataType, SyncDBDataSource } from './model';
 
 const getBatchSteps = async <T>(
-  model: OdmModel<T>,
+  model: SyncDBDataSource<T>,
   query: UwaziFilterQuery<DataType<T>>,
   batchSize: number
-): Promise<EnforcedWithId<T>[]> => {
+): Promise<T[]> => {
   const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
 
   const steps = [];
@@ -31,10 +31,6 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
     this.collectionName = collectionName;
   }
 
-  async getAffectedIds(conditions: any) {
-    return models[this.collectionName].db.distinct('_id', conditions);
-  }
-
   async upsertLogOne(doc: mongoose.Document) {
     const logData = { namespace: this.collectionName, mongoId: doc._id };
     await updatelogsModel.findOneAndUpdate(
@@ -50,10 +46,10 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
     batchSize = UpdateLogHelper.batchSizeUpsertMany
   ) {
     await new PromisePool()
-      .for(await getBatchSteps(models[this.collectionName], query, batchSize))
+      .for(await getBatchSteps(models[this.collectionName](), query, batchSize))
       .withConcurrency(5)
       .process(async (stepIndex: T) => {
-        const batch = await models[this.collectionName].get(
+        const batch = await models[this.collectionName]().get(
           { ...query, $and: [{ _id: { $gte: stepIndex } }] },
           { _id: 1 },
           { limit: batchSize }
@@ -69,11 +65,6 @@ export class UpdateLogHelper<T> implements UpdateLogger<T> {
 }
 
 export class NoLogger<T> implements UpdateLogger<T> {
-  // eslint-disable-next-line class-methods-use-this
-  async getAffectedIds() {
-    return Promise.resolve();
-  }
-
   // eslint-disable-next-line class-methods-use-this
   async upsertLogOne() {
     return Promise.resolve();
@@ -109,8 +100,6 @@ export function createUpdateLogHelper<T>(collectionName: string): UpdateLogger<T
 }
 
 export interface UpdateLogger<T> {
-  getAffectedIds(conditions: any): Promise<any>;
-
   upsertLogOne(doc: mongoose.Document): Promise<void>;
 
   upsertLogMany(query: UwaziFilterQuery<T>, deleted?: boolean, batchSize?: number): Promise<void>;

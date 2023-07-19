@@ -1,12 +1,14 @@
-import { DeleteResult, ObjectId } from 'mongodb';
-import { TranslationsSyncDataSource } from '../contracts/TranslationsSyncDataSource';
+import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { SyncDBDataSource } from 'api/odm';
+import { DeleteResult, ObjectId, OptionalId } from 'mongodb';
 import { TranslationDBO } from '../schemas/TranslationDBO';
-import { MongoTranslationsDataSource } from './MongoTranslationsDataSource';
 
 export class MongoTranslationsSyncDataSource
-  extends MongoTranslationsDataSource
-  implements TranslationsSyncDataSource
+  extends MongoDataSource<OptionalId<TranslationDBO>>
+  implements SyncDBDataSource<TranslationDBO>
 {
+  protected collectionName = 'translationsV2';
+
   async save(translation: TranslationDBO): Promise<TranslationDBO> {
     await this.getCollection().updateOne(
       { _id: translation._id },
@@ -25,6 +27,11 @@ export class MongoTranslationsSyncDataSource
 
     await stream.flush();
     return translations;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async get(_query: any, _select?: any, _options?: any): Promise<TranslationDBO[]> {
+    return Promise.resolve([]);
   }
 
   async getById(translationId: string): Promise<TranslationDBO | null> {

@@ -45,7 +45,7 @@ describe('userGroups', () => {
       };
 
       await userGroups.save(userGroup1);
-      const storedUserGroups = await models.usergroups.get({
+      const storedUserGroups = await models.usergroups().get({
         _id: group1Id,
         name: 'Group 1 edited',
       });
@@ -92,7 +92,7 @@ describe('userGroups', () => {
         members: [{ refId: user2Id.toString() }],
       };
       await userGroups.saveMultiple([userGroup1, userGroup2]);
-      const storedUserGroups: UserGroupSchema[] = await models.usergroups.get({});
+      const storedUserGroups: UserGroupSchema[] = await models.usergroups().get({});
       expect(storedUserGroups[0].name).toBe('Group 1 M');
       expect(storedUserGroups[0].members[0].refId).toEqual(user1Id.toString());
       expect((storedUserGroups[0].members[0] as Partial<UserSchema>).username).toBeUndefined();

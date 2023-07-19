@@ -21,7 +21,7 @@ import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
@@ -47,9 +47,6 @@ import {
   thesauri1,
   thesauri1Value2,
 } from './fixtures';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
-import { models } from 'mongoose';
 
 async function runAllTenants() {
   try {
@@ -340,7 +337,7 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  fit('should syncronize translations v2 that match configured properties', async () => {
+  it('should syncronize translations v2 that match configured properties', async () => {
     await tenants.run(async () => {
       const transactionManager = new MongoTransactionManager(getClient());
       await new CreateTranslationsService(

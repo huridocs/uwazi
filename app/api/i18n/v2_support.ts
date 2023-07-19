@@ -1,6 +1,8 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { Translation } from 'api/i18n.v2/model/Translation';
 import {
@@ -11,14 +13,17 @@ import { DeleteTranslationsService } from 'api/i18n.v2/services/DeleteTranslatio
 import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
-import { EnforcedWithId } from 'api/odm';
+import { EnforcedWithId, models } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
 import { Db } from 'mongodb';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { IndexedContextValues } from './translations';
 import migration from '../i18n.v2/migrations';
+import { IndexedContextValues } from './translations';
+
+models.translationsV2 = () =>
+  new MongoTranslationsSyncDataSource(getConnection(), DefaultTransactionManager());
 
 const cleanUpV2Collections = async (db: Db) => {
   try {

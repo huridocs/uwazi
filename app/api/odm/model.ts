@@ -1,9 +1,9 @@
-import { ObjectId } from 'mongodb';
-import mongoose, { Schema, UpdateQuery, FilterQuery, QueryOptions } from 'mongoose';
+import { DeleteResult, ObjectId } from 'mongodb';
+import mongoose, { FilterQuery, QueryOptions, Schema, UpdateQuery } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { ModelBulkWriteStream } from './modelBulkWriteStream';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
-import { createUpdateLogHelper, UpdateLogger } from './logHelper';
+import { UpdateLogger, createUpdateLogHelper } from './logHelper';
+import { ModelBulkWriteStream } from './modelBulkWriteStream';
 
 /** Ideas!
  *  T is the actual model-specific document Schema!
@@ -22,7 +22,15 @@ export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
-export class OdmModel<T> {
+export interface SyncDBDataSource<T> {
+  save(document: Partial<T>): Promise<T>;
+  saveMultiple(documents: Partial<T>[]): Promise<T[]>;
+  getById(documentId: string): Promise<T | null>;
+  get(query: any, select?: any, options?: any): Promise<T[]>;
+  delete(query: { _id: string }): Promise<DeleteResult>;
+}
+
+export class OdmModel<T> implements SyncDBDataSource<T> {
   db: MultiTenantMongooseModel<T>;
 
   logHelper: UpdateLogger<T>;
@@ -170,11 +178,16 @@ export class OdmModel<T> {
 
 // models are accessed in api/sync, which cannot be type-safe since the document
 // type is a request parameter. Thus, we store all OdmModels as type Document.
-export const models: { [index: string]: OdmModel<any> } = {};
+// export const models: { [index: string]: OdmModel<any> } = {};
+export const models: { [index: string]: () => SyncDBDataSource<any> } = {
+  // translationsV2() {
+  //   return new MongoTranslationsSyncDataSource(getConnection(), DefaultTransactionManager());
+  // },
+};
 
 export function instanceModel<T = any>(collectionName: string, schema: Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
   const model = new OdmModel<T>(logHelper, collectionName, schema);
-  models[collectionName] = model;
+  models[collectionName] = () => model;
   return model;
 }
