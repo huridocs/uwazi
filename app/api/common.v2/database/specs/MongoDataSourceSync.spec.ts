@@ -3,7 +3,6 @@ import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { BulkWriteStream } from '../BulkWriteStream';
 import { getClient, getConnection } from '../getConnectionForCurrentTenant';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';

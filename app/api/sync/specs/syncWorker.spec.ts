@@ -352,11 +352,55 @@ describe('syncWorker', () => {
           language: 'en',
           key: 'System Key',
           value: 'System Value',
-          context: {
-            id: 'System',
-            type: 'Uwazi UI',
-            label: 'System',
-          },
+          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+        },
+        {
+          language: 'en',
+          key: 'template1',
+          value: 'template1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Property1L',
+          value: 't1Property1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1L',
+          value: 't1Relationship1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship2L',
+          value: 't1Relationship2T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Thesauri2SelectL',
+          value: 't1Thesauri2SelectT',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Thesauri3MultiSelectL',
+          value: 't1Thesauri3MultiSelectT',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1',
+          value: 't1Relationship1',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 'Template Title',
+          value: 'Template Title translated',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
         },
       ]);
     }, 'host1');
@@ -376,11 +420,31 @@ describe('syncWorker', () => {
           language: 'en',
           key: 'System Key',
           value: 'System Value',
-          context: {
-            id: 'System',
-            type: 'Uwazi UI',
-            label: 'System',
-          },
+          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+        },
+        {
+          language: 'en',
+          key: 'template1',
+          value: 'template1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Property1L',
+          value: 't1Property1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1L',
+          value: 't1Relationship1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 'Template Title',
+          value: 'Template Title translated',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
         },
       ]);
     }, 'target1');

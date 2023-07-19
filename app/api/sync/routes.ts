@@ -10,9 +10,6 @@ import { TranslationType } from 'shared/translationType';
 import { FileType } from 'shared/types/fileType';
 
 import { needsAuthorization } from '../auth';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
 
 const diskStorage = multer.diskStorage({
   filename(_req, file, cb) {

@@ -26,6 +26,7 @@ const namespaces = [
   'files',
   'dictionaries',
   'relationtypes',
+  'translationsV2',
   'translations',
 ];
 
@@ -37,6 +38,7 @@ type MethodNames =
   | 'files'
   | 'dictionaries'
   | 'relationtypes'
+  | 'translationsV2'
   | 'translations';
 
 interface Options {
@@ -325,6 +327,40 @@ class ProcessNamespaces {
     }
 
     return this.default();
+  }
+
+  private async translationsV2() {
+    const data = await this.fetchData();
+    const { context } = data;
+    const templatesData = await templatesModel.get({
+      _id: { $in: this.templatesConfigKeys },
+    });
+
+    if (this.assessTranslationApproved(context)) {
+      return { data };
+    }
+
+    if (this.templatesConfigKeys.includes(context.id.toString())) {
+      const contextTemplate = ensure<WithId<TemplateSchema>>(
+        templatesData.find(t => t._id.toString() === context.id.toString())
+      );
+      const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
+      const templateTitle = contextTemplate.commonProperties?.find(p => p.name === 'title')?.label;
+
+      const approvedKeys = [contextTemplate.name, templateTitle]
+        .concat(
+          (contextTemplate.properties || [])
+            .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
+            .map(p => p.label)
+        )
+        .filter(k => Boolean(k));
+
+      if (approvedKeys.includes(data.key)) {
+        return { data };
+      }
+    }
+
+    return { skip: true };
   }
 
   private async translations() {
