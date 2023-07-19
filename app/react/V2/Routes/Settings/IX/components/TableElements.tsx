@@ -8,6 +8,7 @@ import { Button, Pill } from 'app/V2/Components/UI';
 import { Extractor } from '../types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Dot } from './Dot';
+import { SuggestedValue } from './SuggestedValue';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
@@ -81,6 +82,18 @@ const extractorsTableColumns = [
   }),
 ];
 
+type Color = 'red' | 'green' | 'yellow';
+
+const statusColor = (suggestion: EntitySuggestionType): Color => {
+  if (!suggestion.suggestedValue || suggestion.suggestedValue === '') {
+    return 'red';
+  }
+  if (suggestion.currentValue === suggestion.suggestedValue) {
+    return 'green';
+  }
+  return 'yellow';
+};
+
 const suggestionsTableColumns = [
   suggestionColumnHelper.accessor('entityTitle', {
     header: () => <Translate>Document</Translate>,
@@ -103,16 +116,11 @@ const suggestionsTableColumns = [
   suggestionColumnHelper.accessor('currentValue', {
     header: () => <Translate>Current Value/Suggestion</Translate>,
     cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
-      const currentValue = cell.getValue() === '' ? '-' : cell.getValue();
-      const suggestedValue =
-        cell.row.original.suggestedValue?.toString() === ''
-          ? '-'
-          : cell.row.original.suggestedValue?.toString();
       return (
-        <div>
-          <div className="text-xs font-normal text-gray-500">{currentValue}</div>
-          <div className="text-xs font-normal text-gray-500">{suggestedValue}</div>
-        </div>
+        <SuggestedValue
+          value={cell.getValue()}
+          suggestion={cell.row.original.suggestedValue!.toString()}
+        />
       );
     },
     meta: { headerClassName: 'w-3/12' },
@@ -120,14 +128,23 @@ const suggestionsTableColumns = [
   suggestionColumnHelper.display({
     id: 'accept-actions',
     header: () => <Translate>Accept</Translate>,
-    cell: () => (
-      <div className="flex items-center justify-between">
-        <Button styling="outline" className="orange-500" size="small">
-          <Translate>Accept</Translate>
-        </Button>
-        <Dot color="red"></Dot>
-      </div>
-    ),
+    cell: ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
+      const color = statusColor(cell.row.original);
+      return (
+        <div className="flex items-center justify-between">
+          <Button
+            styling="outline"
+            className="orange-500"
+            size="small"
+            color={color === 'green' ? 'success' : 'primary'}
+            disabled={color === 'green'}
+          >
+            <Translate>Accept</Translate>
+          </Button>
+          <Dot color={color}></Dot>
+        </div>
+      );
+    },
     meta: { headerClassName: 'w-1/12 text-center', contentClassName: 'text-center' },
   }),
   suggestionColumnHelper.display({

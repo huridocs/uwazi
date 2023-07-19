@@ -32,7 +32,7 @@ const SuggestionsTitle = ({
       {templates.map(template => (
         <Pill
           color="gray"
-          className="inline-block text-xs font-medium text-center"
+          className="inline-flex items-center text-xs font-medium"
           key={template._id}
         >
           {template.name}

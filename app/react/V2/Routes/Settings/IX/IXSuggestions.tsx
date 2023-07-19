@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getSuggestions, getExtractorById } from 'app/V2/api/ix';
@@ -11,6 +11,7 @@ import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { ClientTemplateSchema } from 'app/istore';
+import { Row } from '@tanstack/react-table';
 
 const IXSuggestions = () => {
   const { suggestions, extractor, templates } = useLoaderData() as {
@@ -18,6 +19,10 @@ const IXSuggestions = () => {
     extractor: IXExtractorInfo;
     templates: ClientTemplateSchema[];
   };
+  const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
+
+  const filteredTemplates = () =>
+    templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
   return (
     <div
@@ -35,22 +40,32 @@ const IXSuggestions = () => {
             title={
               <SuggestionsTitle
                 propertyName={extractor.property}
-                templates={
-                  templates
-                    ? templates.filter(template => extractor.templates.includes(template._id))
-                    : []
-                }
+                templates={filteredTemplates()}
               ></SuggestionsTitle>
             }
             enableSelection
-            onSelection={() => {}}
+            onSelection={setSelected}
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="flex gap-2">
-          <Button size="small" type="button" onClick={() => {}}>
-            <Translate>Find suggestions</Translate>
-          </Button>
+        <SettingsContent.Footer
+          className={`flex gap-2 ${Boolean(selected.length) ? 'bg-gray-200' : ''}`}
+        >
+          {Boolean(selected.length) ? (
+            <div className="flex items-center justify-center space-x-4">
+              <Button size="small" type="button" styling="outline" onClick={() => {}}>
+                <Translate>Accept suggestion</Translate>
+              </Button>
+              <div className="text-sm font-semibold text-center text-gray-900">
+                <span className="font-light text-gray-500">Selected</span> {selected.length}{' '}
+                <span className="font-light text-gray-500">of</span> 20
+              </div>
+            </div>
+          ) : (
+            <Button size="small" type="button" onClick={() => {}}>
+              <Translate>Find suggestions</Translate>
+            </Button>
+          )}
         </SettingsContent.Footer>
       </SettingsContent>
     </div>
