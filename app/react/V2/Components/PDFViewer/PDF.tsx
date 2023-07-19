@@ -1,13 +1,18 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef } from 'react';
-import * as pdfjs from 'pdfjs-dist/webpack';
+import { pdfjs } from './pdfjs';
 
 interface PDFProps {
   fileUrl: string;
 }
 
 const getRenderedPages = async (fileUrl: string) => {
-  const loadingTask = pdfjs.getDocument(fileUrl);
+  const loadingTask = pdfjs.getDocument({
+    url: fileUrl,
+    cMapUrl: '/legacy_character_maps/',
+    cMapPacked: true,
+  });
+
   const file = await loadingTask.promise;
 
   const pageNumbers = Array.from({ length: file.numPages }, (_, index) => index + 1);
