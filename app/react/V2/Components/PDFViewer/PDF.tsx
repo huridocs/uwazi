@@ -42,21 +42,22 @@ const getRenderedPages = async (fileUrl: string) => {
 
 const PDF = ({ fileUrl }: PDFProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = React.useState();
+  const [error, setError] = React.useState<string>();
 
   useEffect(() => {
-    getRenderedPages(fileUrl)
-      .then(canvases => {
-        if (containerRef.current) {
+    if (containerRef.current) {
+      getRenderedPages(fileUrl)
+        .then(canvases => {
           canvases.map(canvas => containerRef!.current!.appendChild(canvas));
-        }
-      })
-      .catch(e => {
-        setError(e);
-      });
+        })
+
+        .catch((e: Error) => {
+          setError(e.message);
+        });
+    }
   }, [fileUrl]);
 
-  return error ? <div>Error!!! {JSON.stringify(error, null, 2)}</div> : <div ref={containerRef} />;
+  return error ? <div>{error}</div> : <div ref={containerRef} />;
 };
 
 export default PDF;
