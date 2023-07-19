@@ -3,6 +3,7 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { LanguageDoesNotExist } from 'api/i18n.v2/errors/translationErrors';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { CreateTranslationsData } from '../CreateTranslationsService';
@@ -33,20 +34,11 @@ const translation = (translationData: Partial<CreateTranslationsData>): CreateTr
   ...translationData,
 });
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 const fixtures: DBFixture = {
   translationsV2: [
-    {
-      language: 'es',
-      key: 'key',
-      value: 'valor',
-      context: { type: 'Entity', label: 'Test', id: 'test' },
-    },
-    {
-      language: 'en',
-      key: 'key',
-      value: 'value',
-      context: { type: 'Entity', label: 'Test', id: 'test' },
-    },
+    createTranslationDBO('key', 'valor', 'es', { type: 'Entity', label: 'Test', id: 'test' }),
+    createTranslationDBO('key', 'value', 'en', { type: 'Entity', label: 'Test', id: 'test' }),
   ],
   settings: [
     {

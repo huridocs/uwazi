@@ -1,8 +1,9 @@
+import { OptionalId } from 'mongodb';
 import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 
 export const TranslationMappers = {
-  toDBO(translation: Translation): TranslationDBO {
+  toDBO(translation: Translation): OptionalId<TranslationDBO> {
     return {
       key: translation.key,
       value: translation.value,

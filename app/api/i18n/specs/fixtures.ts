@@ -1,5 +1,4 @@
-/** @format */
-
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 
@@ -8,188 +7,143 @@ const documentTemplateId = db.id();
 const englishTranslation = db.id();
 const dictionaryId = db.id();
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 // eslint-disable-next-line camelcase
 const translationsV2: DBFixture['translationsV2'] = [
-  {
-    language: 'zh',
-    key: 'Age',
-    value: 'Age',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'zh',
-    key: 'Library',
-    value: 'Library',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'zh',
-    key: 'Email',
-    value: 'Email',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'zh',
-    key: 'Account',
-    value: 'Account',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'zh',
-    key: 'Password',
-    value: 'Password',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'zh',
-    key: 'Age',
-    value: 'Edad',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'zh',
-    key: 'Email',
-    value: 'E-Mail',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'zh',
-    key: 'Account',
-    value: 'Cuenta',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'zh',
-    key: 'Password',
-    value: 'Contraseña',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'zh',
-    key: 'dictionary 2',
-    value: 'dictionary 2',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'Age',
-    value: 'Edad',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'Email',
-    value: 'E-Mail',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'Account',
-    value: 'Cuenta',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'Password',
-    value: 'Contraseña',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'dictionary 2',
-    value: 'dictionary 2',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'es',
-    key: 'Age',
-    value: 'Edad',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'es',
-    key: 'Email',
-    value: 'Correo electronico',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'es',
-    key: 'Account',
-    value: 'Cuenta',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'es',
-    key: 'Password',
-    value: 'Contraseña',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'es',
-    key: 'Library',
-    value: 'Library',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'en',
-    key: 'Age',
-    value: 'Age',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'en',
-    key: 'Email',
-    value: 'E-Mail',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'en',
-    key: 'Account',
-    value: 'Account',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'en',
-    key: 'Password',
-    value: 'Password',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'en',
-    key: 'dictionary 2',
-    value: 'dictionary 2',
-    context: { id: dictionaryId.toString(), label: 'Dictionary', type: 'Thesaurus' },
-  },
-  {
-    language: 'en',
-    key: 'Library',
-    value: 'Library',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'en',
-    key: 'Age',
-    value: 'Age',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'en',
-    key: 'Email',
-    value: 'E-Mail',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'en',
-    key: 'Account',
-    value: 'Account',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
-  {
-    language: 'en',
-    key: 'Password',
-    value: 'Password',
-    context: { id: 'System', label: 'System', type: 'Uwazi UI' },
-  },
+  createTranslationDBO('Age', 'Age', 'zh', { id: 'System', label: 'System', type: 'Uwazi UI' }),
+  createTranslationDBO('Library', 'Library', 'zh', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Email', 'Email', 'zh', { id: 'System', label: 'System', type: 'Uwazi UI' }),
+  createTranslationDBO('Account', 'Account', 'zh', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Password', 'Password', 'zh', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Age', 'Edad', 'zh', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Email', 'E-Mail', 'zh', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Account', 'Cuenta', 'zh', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Password', 'Contraseña', 'zh', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('dictionary 2', 'dictionary 2', 'zh', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Age', 'Edad', 'es', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Email', 'E-Mail', 'es', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Account', 'Cuenta', 'es', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Password', 'Contraseña', 'es', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('dictionary 2', 'dictionary 2', 'es', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Age', 'Edad', 'es', { id: 'System', label: 'System', type: 'Uwazi UI' }),
+  createTranslationDBO('Email', 'Correo electronico', 'es', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Account', 'Cuenta', 'es', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Password', 'Contraseña', 'es', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Library', 'Library', 'es', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Age', 'Age', 'en', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Email', 'E-Mail', 'en', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Account', 'Account', 'en', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Password', 'Password', 'en', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('dictionary 2', 'dictionary 2', 'en', {
+    id: dictionaryId.toString(),
+    label: 'Dictionary',
+    type: 'Thesaurus',
+  }),
+  createTranslationDBO('Library', 'Library', 'en', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Age', 'Age', 'en', { id: 'System', label: 'System', type: 'Uwazi UI' }),
+  createTranslationDBO('Email', 'E-Mail', 'en', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Account', 'Account', 'en', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
+  createTranslationDBO('Password', 'Password', 'en', {
+    id: 'System',
+    label: 'System',
+    type: 'Uwazi UI',
+  }),
 ];
 
 const fixtures: DBFixture = {
