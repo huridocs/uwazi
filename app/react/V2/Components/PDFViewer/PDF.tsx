@@ -7,43 +7,56 @@ interface PDFProps {
   fileUrl: string;
 }
 
+const getRenderedPages = async (fileUrl: string) => {
+  const loadingTask = pdfjs.getDocument(fileUrl);
+  const file = await loadingTask.promise;
+
+  const pageNumbers = Array.from({ length: file.numPages }, (_, index) => index + 1);
+
+  const renderedPages = await Promise.all(
+    pageNumbers.map(async pageNumber => {
+      const page = await file.getPage(pageNumber);
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+
+      if (context) {
+        const viewport = page.getViewport({ scale: 1 });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        const renderContext = {
+          canvasContext: context,
+          viewport,
+        };
+
+        await page.render(renderContext).promise;
+      }
+
+      return canvas;
+    })
+  );
+
+  return renderedPages;
+};
+
 const PDF = ({ fileUrl }: PDFProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = React.useState();
 
   useEffect(() => {
-    const loadPDF = async () => {
-      try {
-        const loadingTask = pdfjs.getDocument(fileUrl);
-        const pdf = await loadingTask.promise;
-
-        const pageNumber = 1;
-        const page = await pdf.getPage(pageNumber);
-
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        if (containerRef.current && context) {
-          const viewport = page.getViewport({ scale: 1 });
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-
-          const renderContext = {
-            canvasContext: context,
-            viewport,
-          };
-          await page.render(renderContext).promise;
-
-          containerRef.current.appendChild(canvas);
+    getRenderedPages(fileUrl)
+      .then(canvases => {
+        if (containerRef.current) {
+          canvases.map(canvas => containerRef!.current!.appendChild(canvas));
         }
-      } catch (error) {
-        console.error('Error loading PDF:', error);
-      }
-    };
+      })
+      .catch(e => {
+        setError(e);
+      });
+  }, [fileUrl]);
 
-    loadPDF();
-  }, []);
-
-  return <div ref={containerRef} />;
+  return error ? <div>Error!!! {JSON.stringify(error, null, 2)}</div> : <div ref={containerRef} />;
 };
 
 export default PDF;
