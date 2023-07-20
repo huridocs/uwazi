@@ -41,7 +41,7 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
         {...attributes.popper}
         as="div"
       >
-        <div className="max-w-md px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 w-fit">
+        <div className="px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 max-w-xs">
           <div>
             <span className="font-bold">Current value:</span> {currentValue}
           </div>
@@ -50,6 +50,7 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
           </div>
         </div>
         <span
+          // @ts-ignore
           ref={setArrowElement}
           className="absolute bottom-[4px] left-0 w-4 h-4 rotate-45 bg-white"
           // style={styles.arrow}
