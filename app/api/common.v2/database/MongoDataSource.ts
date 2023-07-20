@@ -131,15 +131,27 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                 self.insertSyncLogs([result.insertedId]).then(() => result)
               );
             }
+            if (property === 'updateOne') {
+              return originalMethod().then(async (result: any) =>
+                self.upsertSyncLogs([condition]).then(() => result)
+              );
+            }
             if (
-              property === 'updateOne' ||
               property === 'replaceOne' ||
               property === 'updateMany' ||
               property === 'findOneAndUpdate' ||
               property === 'findOneAndReplace'
             ) {
               return originalMethod().then(async (result: any) =>
-                self.updateSyncLogs([condition]).then(() => result)
+                self
+                  .updateSyncLogs([condition])
+                  .then(() => {
+                    if (result.upsertedCount) {
+                      return self.insertSyncLogs([result.upsertedId]).then(() => result);
+                    }
+                    return result;
+                  })
+                  .then(() => result)
               );
             }
 
@@ -212,7 +224,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
       return;
     }
     const mongoIds = await this.getModifiedIds({ $or: conditions });
-    await this.db.collection('updatelogs').updateMany(
+    return this.db.collection('updatelogs').updateMany(
       { mongoId: { $in: mongoIds } },
       {
         $set: {
@@ -223,6 +235,29 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
       },
       { session: this.getSession() }
     );
+  }
+
+  private async upsertSyncLogs(conditions: any[], deleted: boolean = false) {
+    if (conditions.length === 0) {
+      return;
+    }
+    const mongoIds = await this.getModifiedIds({ $or: conditions });
+
+    await mongoIds.reduce(async (prev, _id) => {
+      await prev;
+      await this.db.collection('updatelogs').updateMany(
+        { mongoId: _id },
+        {
+          $set: {
+            timestamp: Date.now(),
+            mongoId: _id,
+            namespace: this.collectionName,
+            deleted,
+          },
+        },
+        { session: this.getSession(), upsert: true }
+      );
+    }, Promise.resolve());
   }
 
   protected getCollection() {

@@ -106,6 +106,47 @@ describe('collection with automatic log to updatelogs', () => {
         },
       },
       {
+        method: 'updateOne without previous updatelog',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await getConnection().collection('updatelogs').deleteMany();
+          return ds
+            .collection()
+            .updateOne({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
+        },
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) }],
+        expectedDBStateOnTransactionError: [],
+        expectedResult: {
+          acknowledged: true,
+          matchedCount: 1,
+          modifiedCount: 1,
+        },
+      },
+      {
+        method: 'updateOne with upsert',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          return ds
+            .collection()
+            .updateOne(
+              { _id: id('non existent') },
+              { $set: { data: 'updated data' } },
+              { upsert: true }
+            );
+        },
+        expectedDBState: [
+          { ...updateLogsBlankState[0] },
+          updateLog({ mongoId: id('non existent'), timestamp: 2 }),
+        ],
+        expectedResult: {
+          acknowledged: true,
+          matchedCount: 0,
+          modifiedCount: 0,
+          upsertedCount: 1,
+          upsertedId: id('non existent'),
+        },
+      },
+      {
         method: 'updateOne with 0 matches',
         callback: async (ds: DataSource) =>
           ds
@@ -135,6 +176,44 @@ describe('collection with automatic log to updatelogs', () => {
           modifiedCount: 1,
           upsertedCount: 0,
           upsertedId: null,
+        },
+      },
+      {
+        method: 'replaceOne with upsert',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          return ds
+            .collection()
+            .replaceOne(
+              { _id: id('non existent id') },
+              { data: 'replaced document' },
+              { upsert: true }
+            );
+        },
+        expectedDBState: [
+          { ...updateLogsBlankState[0] },
+          updateLog({ mongoId: id('non existent id'), timestamp: 2 }),
+        ],
+        expectedResult: {
+          acknowledged: true,
+          upsertedCount: 1,
+          upsertedId: id('non existent id'),
+        },
+      },
+      {
+        method: 'replaceOne without previous updatelog',
+        callback: async (ds: DataSource) => {
+          jest.spyOn(Date, 'now').mockReturnValue(2);
+          await getConnection().collection('updatelogs').deleteMany();
+          return ds
+            .collection()
+            .replaceOne({ _id: id('collection id 1') }, { data: 'updated data' });
+        },
+        expectedDBStateOnTransactionError: [],
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) }],
+        expectedResult: {
+          acknowledged: true,
+          upsertedCount: 0,
         },
       },
       {
@@ -331,7 +410,12 @@ describe('collection with automatic log to updatelogs', () => {
 
     it.each(casesForUpdates)(
       '$method should log changes to updatelogs',
-      async ({ callback, expectedDBState, expectedResult }) => {
+      async ({
+        callback,
+        expectedDBState,
+        expectedResult,
+        expectedDBStateOnTransactionError = updateLogsBlankState,
+      }) => {
         const transactionManager1 = new MongoTransactionManager(getClient());
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
@@ -345,7 +429,7 @@ describe('collection with automatic log to updatelogs', () => {
             throw e;
           }
           expect(await testingDB.mongodb?.collection('updatelogs').find({}).toArray()).toEqual(
-            updateLogsBlankState
+            expectedDBStateOnTransactionError
           );
         }
 
