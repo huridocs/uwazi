@@ -6,40 +6,25 @@ interface PDFProps {
   fileUrl: string;
 }
 
-const getRenderedPages = async (fileUrl: string) => {
+const getRenderedPages = async (fileUrl: string, container: HTMLDivElement) => {
   const file = await PDFJS.getDocument({
     url: fileUrl,
     cMapUrl: CMAP_URL,
     cMapPacked: true,
   }).promise;
 
-  const pageNumbers = Array.from({ length: file.numPages }, (_, index) => index + 1);
+  const page = await file.getPage(1);
 
-  const renderedPages = await Promise.all(
-    pageNumbers.map(async pageNumber => {
-      const page = await file.getPage(pageNumber);
+  const pageViewer = new PDFJSViewer.PDFPageView({
+    container,
+    id: 1,
+    scale: 1,
+    defaultViewport: page.getViewport({ scale: 1 }),
+    eventBus: new EventBus(),
+  });
 
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-
-      if (context) {
-        const viewport = page.getViewport({ scale: 1 });
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-
-        const renderContext = {
-          canvasContext: context,
-          viewport,
-        };
-
-        await page.render(renderContext).promise;
-      }
-
-      return canvas;
-    })
-  );
-
-  return renderedPages;
+  pageViewer.setPdfPage(page);
+  await pageViewer.draw();
 };
 
 const PDF = ({ fileUrl }: PDFProps) => {
@@ -48,18 +33,19 @@ const PDF = ({ fileUrl }: PDFProps) => {
 
   useEffect(() => {
     if (containerRef.current) {
-      getRenderedPages(fileUrl)
-        .then(canvases => {
-          canvases.map(canvas => containerRef!.current!.appendChild(canvas));
-        })
-
-        .catch((e: Error) => {
-          setError(e.message);
-        });
+      getRenderedPages(fileUrl, containerRef.current).catch((e: Error) => {
+        setError(e.message);
+      });
     }
   }, [fileUrl]);
 
-  return error ? <div>{error}</div> : <div ref={containerRef} />;
+  return error ? (
+    <div>{error}</div>
+  ) : (
+    <div className="relative">
+      <div className="absolute" id="something" ref={containerRef} />
+    </div>
+  );
 };
 
 export default PDF;

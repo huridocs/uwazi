@@ -1,9 +1,10 @@
 import * as dist from 'pdfjs-dist';
 import * as viewer from 'pdfjs-dist/web/pdf_viewer';
+import 'pdfjs-dist/web/pdf_viewer.css';
 
 const PDFJS = dist;
 const PDFJSViewer = viewer;
-const EventBus = new viewer.EventBus();
+const { EventBus } = viewer;
 const CMAP_URL = '../../../../../node_modules/pdfjs-dist/cmaps/';
 
 if (typeof window !== 'undefined' && 'Worker' in window) {

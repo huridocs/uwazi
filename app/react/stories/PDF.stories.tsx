@@ -12,7 +12,9 @@ type Story = StoryObj<typeof PDF>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <PDF fileUrl="/sample.pdf" />
+      <div className="w-screen h-screen">
+        <PDF fileUrl="/sample.pdf" />
+      </div>
     </div>
   ),
 };
