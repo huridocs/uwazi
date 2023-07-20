@@ -7,28 +7,25 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
-export const IXSuggestionStateSchema = {
-  type: 'object',
-  additionalProperties: false,
-  title: 'IXSuggestionStateType',
-  properties: {
-    labeled: { type: 'boolean' },
-    withValue: { type: 'boolean' },
-    withSuggestion: { type: 'boolean' },
-    match: { type: 'boolean' },
-    hasContext: { type: 'boolean' },
-    obsolete: { type: 'boolean' },
-    processing: { type: 'boolean' },
-    error: { type: 'boolean' },
-  },
-  required: ['labeled', 'withSuggestion', 'match', 'hasContext', 'obsolete', 'processing', 'error'],
-};
+export enum SuggestionState {
+  labelMatch = 'Match / Label',
+  labelMismatch = 'Mismatch / Label',
+  valueMatch = 'Match / Value',
+  valueMismatch = 'Mismatch / Value',
+  empty = 'Empty / Empty',
+  obsolete = 'Obsolete',
+  labelEmpty = 'Empty / Label',
+  valueEmpty = 'Empty / Value',
+  error = 'Error',
+  processing = 'Processing',
+  emptyMismatch = 'Mismatch / Empty',
+}
 
 export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -42,7 +39,7 @@ export const IXSuggestionSchema = {
     language: { type: 'string', minLength: 1 },
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
-    state: IXSuggestionStateSchema,
+    state: { type: 'string', enum: Object.values(SuggestionState) },
     date: { type: 'number' },
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
@@ -62,7 +59,7 @@ export const EntitySuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'EntitySuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -77,7 +74,7 @@ export const EntitySuggestionSchema = {
     selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
-    state: IXSuggestionStateSchema,
+    state: { type: 'string', enum: Object.values(SuggestionState) },
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     date: { type: 'number' },
@@ -105,7 +102,7 @@ export const SuggestionsQueryFilterSchema = {
   properties: {
     language: { type: 'string' },
     extractorId: objectIdSchema,
-    // states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
+    states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
     entityTemplates: { type: 'array', items: { type: 'string' } },
   },
   required: ['extractorId'],
