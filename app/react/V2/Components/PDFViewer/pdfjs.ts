@@ -1,11 +1,15 @@
-import * as pdfjsDist from 'pdfjs-dist';
+import * as dist from 'pdfjs-dist';
+import * as viewer from 'pdfjs-dist/web/pdf_viewer';
 
-const pdfjs = pdfjsDist;
+const PDFJS = dist;
+const PDFJSViewer = viewer;
+const EventBus = new viewer.EventBus();
+const CMAP_URL = '../../../../../node_modules/pdfjs-dist/cmaps/';
 
 if (typeof window !== 'undefined' && 'Worker' in window) {
-  pdfjs.GlobalWorkerOptions.workerPort = new Worker(
+  PDFJS.GlobalWorkerOptions.workerPort = new Worker(
     new URL('../../../../../node_modules/pdfjs-dist/build/pdf.worker.js', import.meta.url)
   );
 }
 
-export { pdfjs };
+export { PDFJS, PDFJSViewer, EventBus, CMAP_URL };
