@@ -125,13 +125,3 @@ export const IXSuggestionsQuerySchema = {
     },
   },
 };
-
-export const IXSuggestionsStatsQuerySchema = {
-  title: 'IXSuggestionsStatsQuery',
-  additionalProperties: false,
-  definitions: { SuggestionsQueryFilterSchema },
-  properties: {
-    extractorId: { type: 'string' },
-  },
-  required: ['extractorId'],
-};

@@ -24,7 +24,6 @@ import {
   getMatchStage,
   groupByAndSort,
 } from './pipelineStages';
-import { getStats } from './stats';
 import { updateStates } from './updateState';
 
 interface AcceptedSuggestion {
@@ -200,8 +199,6 @@ const Suggestions = {
 
     return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
   },
-
-  getStats,
 
   updateStates,
 

@@ -88,10 +88,6 @@ export interface IXSuggestionsQuery {
   };
 }
 
-export interface IXSuggestionsStatsQuery {
-  extractorId: string;
-}
-
 export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;
