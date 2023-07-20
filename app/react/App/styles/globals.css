@@ -1033,6 +1033,10 @@ input:checked + .toggle-bg {
   visibility: collapse;
 }
 
+.static {
+  position: static;
+}
+
 .fixed {
   position: fixed;
 }
@@ -1140,6 +1144,10 @@ input:checked + .toggle-bg {
 
 .bottom-\[4px\] {
   bottom: 4px;
+}
+
+.bottom-\[2px\] {
+  bottom: 2px;
 }
 
 .-z-10 {
@@ -3701,6 +3709,10 @@ input:checked + .toggle-bg {
 
 .hover\:cursor-not-allowed:hover {
   cursor: not-allowed;
+}
+
+.hover\:cursor-default:hover {
+  cursor: default;
 }
 
 .hover\:border-error-800:hover {
