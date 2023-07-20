@@ -68,23 +68,6 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
         </Popover.Panel>
       )}
     </Popover>
-    // <>
-    //   <div
-    //     ref={setPopperElement}
-    //     {...attributes.popper}
-    //     style={styles.popper}
-    //     className="max-w-md px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 w-fit hidden"
-    //   >
-    //     This is a popup
-    //     <div ref={setArrowElement} style={styles.arrow} className="mt-2" />
-    //   </div>
-    //   <button type="button" ref={setReferenceElement}>
-    //     <div>
-    //       <div className="text-xs font-normal text-gray-500">{currentValue}</div>
-    //       <div className={`text-xs font-normal ${colorClass}`}>{suggestedValue}</div>
-    //     </div>
-    //   </button>
-    // </>
   );
 };
 
