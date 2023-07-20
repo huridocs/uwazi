@@ -60,7 +60,7 @@ export interface IXSuggestionType {
 
 export interface IXSuggestionStateType {
   labeled: boolean;
-  withValue?: boolean;
+  withValue: boolean;
   withSuggestion: boolean;
   match: boolean;
   hasContext: boolean;
