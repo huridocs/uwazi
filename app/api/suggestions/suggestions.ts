@@ -11,7 +11,6 @@ import {
   ObjectIdSchema,
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
 import { ObjectId } from 'mongodb';
 import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
