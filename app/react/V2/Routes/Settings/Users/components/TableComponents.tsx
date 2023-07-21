@@ -68,7 +68,7 @@ const GroupsPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['gr
 const UsernameCell = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['username']>) => {
   const userIsBlocker = cell.row.original.accountLocked;
   return (
-    <div className="flex gap-1 items-start">
+    <div className="flex items-start gap-1">
       <span className={userIsBlocker ? 'text-red-600' : ''}>{cell.getValue()}</span>
       {userIsBlocker && (
         <Tooltip
@@ -84,7 +84,7 @@ const UsernameCell = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['
 };
 
 const EditButton = ({ onClick }: { onClick: MouseEventHandler }) => (
-  <Button styling="outline" onClick={onClick} className="leading-4">
+  <Button styling="outline" onClick={onClick} className="leading-4" size="small">
     <Translate>Edit</Translate>
   </Button>
 );

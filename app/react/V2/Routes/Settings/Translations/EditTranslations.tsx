@@ -291,7 +291,7 @@ const EditTranslations = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex justify-end gap-2 p-2 pt-1">
+          <div className="flex justify-end gap-2">
             <div className="flex-1">
               {contextId === 'System' && (
                 <>

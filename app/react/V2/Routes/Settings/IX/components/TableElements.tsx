@@ -48,7 +48,7 @@ const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplate
 
 const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
-    <Button className="leading-4" styling="outline">
+    <Button className="leading-4" styling="outline" size="small">
       <Translate>Review</Translate>
     </Button>
   </Link>

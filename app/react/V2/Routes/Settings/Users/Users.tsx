@@ -105,7 +105,7 @@ const Users = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex gap-2 p-2 pt-1">
+          <div className="flex gap-2">
             {selectedUsers.length ? (
               <>
                 <Button
