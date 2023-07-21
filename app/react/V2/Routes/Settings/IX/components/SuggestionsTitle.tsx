@@ -34,7 +34,7 @@ const SuggestionsTitle = ({
         {propGraphics}
       </span>
       <span>{template?.label}</span>
-      <span className="italic font-light">
+      <span className="italic font-normal">
         <Translate>for</Translate>
       </span>
       {templates.map(template => (
