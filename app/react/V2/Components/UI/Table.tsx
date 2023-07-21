@@ -21,6 +21,7 @@ const Table = <T,>({
   columns,
   data,
   title,
+  footer,
   initialState,
   enableSelection,
   onSelection,
@@ -81,7 +82,7 @@ const Table = <T,>({
     <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
       <table className="w-full text-sm text-left">
         {title && (
-          <caption className="p-5 text-lg font-semibold text-left text-gray-900 bg-white">
+          <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
             {title}
           </caption>
         )}
@@ -128,6 +129,7 @@ const Table = <T,>({
           ))}
         </tbody>
       </table>
+      {footer && <div className="p-4">{footer}</div>}
     </div>
   );
 };
