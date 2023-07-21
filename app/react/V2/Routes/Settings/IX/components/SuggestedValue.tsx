@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
+import { propertyValueFormatter } from 'app/V2/shared/helpers';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { ClientTemplateSchema } from 'app/istore';
 
-const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: string }) => {
+const SuggestedValue = ({
+  value,
+  suggestion,
+  templateProperties,
+}: {
+  value: string;
+  suggestion: EntitySuggestionType;
+  templateProperties: ClientTemplateSchema['properties'];
+}) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const [arrowElement, setArrowElement] = useState(null);
@@ -14,16 +25,25 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   let colorClass = '';
-  if (!suggestion || suggestion === '') {
+  if (!suggestion || suggestion.suggestedValue === '') {
     colorClass = 'text-orange-500';
   }
-  if (value === suggestion) {
+  if (value === suggestion.suggestedValue) {
     colorClass = 'text-green-400';
   } else {
     colorClass = 'text-orange-300';
   }
-  const currentValue = value === '' ? '-' : value;
-  const suggestedValue = suggestion === '' ? '-' : suggestion;
+
+  const property = templateProperties.find(prop => prop.name === suggestion.propertyName);
+
+  const getCurrentValue = () => {
+    if (value === '') return '-';
+    if (property?.type === 'date') return propertyValueFormatter.date(value);
+    return value;
+  };
+
+  const suggestedValue =
+    suggestion.suggestedValue?.toString() === '' ? '-' : suggestion.suggestedValue?.toString();
   return (
     <Popover>
       <Popover.Button
@@ -33,7 +53,7 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
         className="w-full h-full text-xs font-normal text-left focus-visible:outline-none hover:cursor-default"
       >
         <div>
-          <div className="text-gray-500">{currentValue}</div>
+          <div className="text-gray-500">{getCurrentValue()}</div>
           <div className={`text-left ${colorClass}`}>{suggestedValue}</div>
         </div>
       </Popover.Button>
@@ -48,7 +68,7 @@ const SuggestedValue = ({ value, suggestion }: { value: string; suggestion: stri
         >
           <div className="px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 max-w-xs">
             <div>
-              <span className="font-bold">Current value:</span> {currentValue}
+              <span className="font-bold">Current value:</span> {getCurrentValue()}
             </div>
             <div>
               <span className="font-bold">Suggestion:</span> {suggestedValue}

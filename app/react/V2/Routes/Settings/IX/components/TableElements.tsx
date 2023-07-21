@@ -9,6 +9,7 @@ import { Extractor } from '../types';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
+import { ClientTemplateSchema } from 'app/istore';
 
 const propertyIcons = {
   text: <Bars3BottomLeftIcon className="w-5" />,
@@ -94,66 +95,70 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
   return 'yellow';
 };
 
-const suggestionsTableColumns = [
-  suggestionColumnHelper.accessor('entityTitle', {
-    header: () => <Translate>Document</Translate>,
-    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['fileId']>) => {
-      return <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>;
-    },
-    meta: { headerClassName: 'w-3/12' },
-  }),
-  suggestionColumnHelper.accessor('segment', {
-    header: () => <Translate>Context</Translate>,
-    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
-      const segment = cell.getValue();
-      if (segment === '') {
-        return <span className="text-xs font-normal text-orange-500">No context</span>;
-      }
-      return segment;
-    },
-    meta: { headerClassName: 'w-3/12' },
-  }),
-  suggestionColumnHelper.accessor('currentValue', {
-    header: () => <Translate>Current Value/Suggestion</Translate>,
-    cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
-      return (
-        <SuggestedValue
-          value={cell.getValue()}
-          suggestion={cell.row.original.suggestedValue!.toString()}
-        />
-      );
-    },
-    meta: { headerClassName: 'w-3/12' },
-  }),
-  suggestionColumnHelper.display({
-    id: 'accept-actions',
-    header: () => <Translate>Accept</Translate>,
-    cell: ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
-      const color = statusColor(cell.row.original);
-      return (
-        <div className="flex items-center justify-between">
-          <Button
-            styling="outline"
-            className="orange-500"
-            size="small"
-            color={color === 'green' ? 'success' : 'primary'}
-            disabled={color === 'green'}
-          >
-            <Translate>Accept</Translate>
-          </Button>
-          <Dot color={color}></Dot>
-        </div>
-      );
-    },
-    meta: { headerClassName: 'w-1/12 text-center', contentClassName: 'text-center' },
-  }),
-  suggestionColumnHelper.display({
-    id: 'open-pdf-actions',
-    header: () => <Translate>Actions</Translate>,
-    cell: OpenPDFButton,
-    meta: { headerClassName: 'w-2/12 text-center', contentClassName: 'text-center' },
-  }),
-];
+const suggestionsTableColumnsBuilder = (templates: ClientTemplateSchema[]) => {
+  const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
+  return [
+    suggestionColumnHelper.accessor('entityTitle', {
+      header: () => <Translate>Document</Translate>,
+      cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['fileId']>) => {
+        return <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>;
+      },
+      meta: { headerClassName: 'w-3/12' },
+    }),
+    suggestionColumnHelper.accessor('segment', {
+      header: () => <Translate>Context</Translate>,
+      cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
+        const segment = cell.getValue();
+        if (segment === '') {
+          return <span className="text-xs font-normal text-orange-500">No context</span>;
+        }
+        return segment;
+      },
+      meta: { headerClassName: 'w-3/12' },
+    }),
+    suggestionColumnHelper.accessor('currentValue', {
+      header: () => <Translate>Current Value/Suggestion</Translate>,
+      cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
+        return (
+          <SuggestedValue
+            value={cell.getValue()}
+            suggestion={cell.row.original}
+            templateProperties={allProperties}
+          />
+        );
+      },
+      meta: { headerClassName: 'w-3/12' },
+    }),
+    suggestionColumnHelper.display({
+      id: 'accept-actions',
+      header: () => <Translate>Accept</Translate>,
+      cell: ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
+        const color = statusColor(cell.row.original);
+        return (
+          <div className="flex items-center justify-between">
+            <Button
+              styling="outline"
+              className="orange-500"
+              size="small"
+              color={color === 'green' ? 'success' : 'primary'}
+              disabled={color === 'green'}
+            >
+              <Translate>Accept</Translate>
+            </Button>
+            <Dot color={color}></Dot>
+          </div>
+        );
+      },
+      meta: { headerClassName: 'w-1/12 text-center', contentClassName: 'text-center' },
+    }),
+    suggestionColumnHelper.display({
+      id: 'open-pdf-actions',
+      header: () => <Translate>Actions</Translate>,
+      cell: OpenPDFButton,
+      meta: { headerClassName: 'w-2/12 text-center', contentClassName: 'text-center' },
+    }),
+  ];
+};
 
 export type { Extractor };
-export { extractorsTableColumns, suggestionsTableColumns };
+export { extractorsTableColumns, suggestionsTableColumnsBuilder };

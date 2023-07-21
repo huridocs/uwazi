@@ -1,4 +1,6 @@
 import React from 'react';
+import { CalendarDaysIcon, HashtagIcon } from '@heroicons/react/20/solid';
+import {} from '@heroicons/react/24/solid';
 import { Translate } from 'app/I18N';
 import { Pill } from 'app/V2/Components/UI';
 import { ClientTemplateSchema } from 'app/istore';
@@ -12,17 +14,23 @@ const SuggestionsTitle = ({
 }) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   const template = allProperties.find(prop => prop.name === propertyName);
-  let propGraphics = 'A';
+  let propGraphics: string | React.ReactNode = '_';
   switch (template?.type) {
     case 'text':
-      propGraphics = 'A';
+      propGraphics = '_';
+      break;
+    case 'date':
+      propGraphics = <CalendarDaysIcon className="w-3" />;
+      break;
+    case 'numeric':
+      propGraphics = <HashtagIcon className="w-3" />;
       break;
     default:
-      propGraphics = 'A';
+      propGraphics = '_';
   }
   return (
     <div className="flex space-x-2">
-      <span className="font-sans text-center text-gray-700 bg-indigo-200 rounded-full w-7 h-7">
+      <span className="flex items-center justify-center font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full w-7 h-7">
         {propGraphics}
       </span>
       <span>{template?.label}</span>

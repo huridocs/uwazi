@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { getSuggestions, getExtractorById } from 'app/V2/api/ix';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { suggestionsTableColumns } from './components/TableElements';
+import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
@@ -31,12 +32,19 @@ const IXSuggestions = () => {
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
-        <SettingsContent.Header title="Metadata extraction suggestions" />
+        <SettingsContent.Header
+          title={
+            <>
+              <Translate>Metadata extraction</Translate> <ChevronRightIcon className="w-4 mx-2" />{' '}
+              {extractor.name}
+            </>
+          }
+        />
 
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={suggestions}
-            columns={suggestionsTableColumns}
+            columns={suggestionsTableColumnsBuilder(filteredTemplates())}
             title={
               <SuggestionsTitle
                 propertyName={extractor.property}
