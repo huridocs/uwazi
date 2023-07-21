@@ -296,7 +296,6 @@ const EditTranslations = () => {
               {contextId === 'System' && (
                 <>
                   <Button
-                    size="small"
                     styling="light"
                     type="button"
                     disabled={isSubmitting}
@@ -315,11 +314,11 @@ const EditTranslations = () => {
               )}
             </div>
             <Link to="/settings/translations">
-              <Button size="small" styling="light" type="button" disabled={isSubmitting}>
+              <Button styling="light" type="button" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
-            <Button size="small" type="submit" disabled={isSubmitting} form="edit-translations">
+            <Button type="submit" disabled={isSubmitting} form="edit-translations">
               <Translate>Save</Translate>
             </Button>
           </div>

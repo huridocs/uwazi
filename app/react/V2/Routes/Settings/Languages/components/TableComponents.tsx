@@ -11,7 +11,6 @@ const DefaultButton = ({ cell, column }: CellContext<LanguageSchema, boolean>) =
     styling={cell.row.original.default ? 'solid' : 'light'}
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
-    size="small"
   >
     <Translate className="sr-only">Default</Translate>
     <StarIcon
@@ -30,7 +29,6 @@ const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) 
       styling="outline"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
-      size="small"
     >
       <Translate>Uninstall</Translate>
     </Button>
@@ -44,7 +42,6 @@ const ResetButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
       styling="outline"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
-      size="small"
     >
       <Translate>Reset</Translate>
     </Button>

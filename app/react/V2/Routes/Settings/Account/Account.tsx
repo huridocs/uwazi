@@ -170,7 +170,7 @@ const Account = () => {
               <Translate>Logout</Translate>
             </a>
 
-            <Button type="submit" form="account-form" size="small">
+            <Button type="submit" form="account-form">
               <Translate>Update</Translate>
             </Button>
           </div>

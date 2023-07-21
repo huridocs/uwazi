@@ -109,7 +109,6 @@ const Users = () => {
             {selectedUsers.length ? (
               <>
                 <Button
-                  size="small"
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
@@ -124,7 +123,6 @@ const Users = () => {
                 </Button>
 
                 <Button
-                  size="small"
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
@@ -142,7 +140,6 @@ const Users = () => {
 
             {selectedUsers.length || selectedGroups.length ? (
               <Button
-                size="small"
                 color="error"
                 onClick={() => {
                   setConfirmationModalProps({
@@ -159,7 +156,6 @@ const Users = () => {
 
             {!selectedUsers.length && !selectedGroups.length ? (
               <Button
-                size="small"
                 onClick={() => {
                   setSidepanelData(undefined);
                   setShowSidepanel(true);

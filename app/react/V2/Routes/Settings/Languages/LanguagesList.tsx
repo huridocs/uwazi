@@ -169,7 +169,6 @@ const LanguagesList = () => {
               onClick={() => {
                 setShowInstallModal(true);
               }}
-              size="small"
             >
               <Translate>Install Language(s)</Translate>
             </Button>
