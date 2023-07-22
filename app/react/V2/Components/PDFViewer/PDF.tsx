@@ -1,49 +1,46 @@
-/* eslint-disable max-statements */
-import React, { useEffect, useRef } from 'react';
-import { PDFJS, PDFJSViewer, EventBus, CMAP_URL } from './pdfjs';
+import React, { Suspense, useEffect, useState } from 'react';
+import loadable from '@loadable/component';
+import { PDFDocumentProxy } from 'pdfjs-dist';
+import { Translate } from 'app/I18N';
+import { PDFJS, CMAP_URL } from './pdfjs';
+
+const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
 
 interface PDFProps {
   fileUrl: string;
 }
 
-const getRenderedPages = async (fileUrl: string, container: HTMLDivElement) => {
-  const file = await PDFJS.getDocument({
+const getPDFFile = async (fileUrl: string) =>
+  PDFJS.getDocument({
     url: fileUrl,
     cMapUrl: CMAP_URL,
     cMapPacked: true,
   }).promise;
 
-  const page = await file.getPage(1);
-
-  const pageViewer = new PDFJSViewer.PDFPageView({
-    container,
-    id: 1,
-    scale: 1,
-    defaultViewport: page.getViewport({ scale: 1 }),
-    eventBus: new EventBus(),
-  });
-
-  pageViewer.setPdfPage(page);
-  await pageViewer.draw();
-};
-
 const PDF = ({ fileUrl }: PDFProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = React.useState<string>();
+  const [pdf, setPDF] = useState<PDFDocumentProxy>();
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
-    if (containerRef.current) {
-      getRenderedPages(fileUrl, containerRef.current).catch((e: Error) => {
+    getPDFFile(fileUrl)
+      .then(pdfFile => {
+        setPDF(pdfFile);
+      })
+      .catch((e: Error) => {
         setError(e.message);
       });
-    }
   }, [fileUrl]);
 
   return error ? (
     <div>{error}</div>
   ) : (
-    <div className="relative">
-      <div className="absolute" id="something" ref={containerRef} />
+    <div id="pdf-container">
+      {pdf &&
+        Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(page => (
+          <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
+            <PDFPage pdf={pdf} page={page} />
+          </Suspense>
+        ))}
     </div>
   );
 };

@@ -1449,10 +1449,6 @@ input:checked + .toggle-bg {
   height: 1px;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
 .max-h-56 {
   max-height: 14rem;
 }
@@ -1570,6 +1566,10 @@ input:checked + .toggle-bg {
   width: 66.666667%;
 }
 
+.w-40 {
+  width: 10rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
@@ -1618,10 +1618,6 @@ input:checked + .toggle-bg {
 .w-max {
   width: -moz-max-content;
   width: max-content;
-}
-
-.w-screen {
-  width: 100vw;
 }
 
 .max-w-2xl {
