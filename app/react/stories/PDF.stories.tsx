@@ -15,8 +15,11 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <PDF fileUrl="/sample.pdf" />
-        <div className="w-40 h-96" />
+        <PDF
+          fileUrl={args.fileUrl || '/sample.pdf'}
+          onSelect={args.onSelect}
+          onDeselect={args.onDeselect}
+        />
       </div>
     </Provider>
   ),
@@ -24,7 +27,11 @@ const Primary: Story = {
 
 const Basic: Story = {
   ...Primary,
-  args: {},
+  args: {
+    fileUrl: '',
+    onSelect: () => {},
+    onDeselect: () => {},
+  },
 };
 
 export { Basic };
