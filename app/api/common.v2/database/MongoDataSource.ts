@@ -131,36 +131,24 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                 self.insertSyncLogs([result.insertedId]).then(() => result)
               );
             }
-            if (property === 'updateOne') {
-              return originalMethod().then(async (result: any) =>
-                self.upsertSyncLogs([condition]).then(() => result)
-              );
-            }
             if (
+              property === 'updateOne' ||
               property === 'replaceOne' ||
-              property === 'updateMany' ||
               property === 'findOneAndUpdate' ||
-              property === 'findOneAndReplace'
+              property === 'findOneAndReplace' ||
+              property === 'updateMany'
             ) {
               return originalMethod().then(async (result: any) =>
-                self
-                  .updateSyncLogs([condition])
-                  .then(() => {
-                    if (result.upsertedCount) {
-                      return self.insertSyncLogs([result.upsertedId]).then(() => result);
-                    }
-                    return result;
-                  })
-                  .then(() => result)
+                self.upsertSyncLogs([condition]).then(() => result)
               );
             }
 
             if (
               property === 'deleteOne' ||
-              property === 'findOneAndDelete' ||
-              property === 'deleteMany'
+              property === 'deleteMany' ||
+              property === 'findOneAndDelete'
             ) {
-              return self.updateSyncLogs([condition], true).then(() => originalMethod());
+              return self.upsertSyncLogs([condition], true).then(() => originalMethod());
             }
 
             if (property === 'bulkWrite') {
@@ -175,11 +163,11 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
                 .filter((op: any) => op);
 
               return self
-                .updateSyncLogs(deleteConditions, true)
+                .upsertSyncLogs(deleteConditions, true)
                 .then(() => originalMethod())
                 .then(async (result: BulkWriteResult) => {
                   await Promise.all([
-                    self.updateSyncLogs(updateConditions),
+                    self.upsertSyncLogs(updateConditions),
                     self.insertSyncLogs(
                       Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
                     ),
