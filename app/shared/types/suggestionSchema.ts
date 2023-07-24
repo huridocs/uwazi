@@ -106,16 +106,45 @@ export const EntitySuggestionSchema = {
   ],
 };
 
+export const SuggestionCustomFilterSchema = {
+  type: 'object',
+  title: 'SuggestionCustomFilter',
+  additionalProperties: false,
+  properties: {
+    labeled: {
+      type: 'object',
+      properties: {
+        match: { type: 'boolean' },
+        mismatch: { type: 'boolean' },
+      },
+      additionalProperties: false,
+      required: ['match', 'mismatch'],
+    },
+    nonLabeled: {
+      type: 'object',
+      properties: {
+        noSuggestion: { type: 'boolean' },
+        noContext: { type: 'boolean' },
+        obsolete: { type: 'boolean' },
+        others: { type: 'boolean' },
+      },
+      additionalProperties: false,
+      required: ['noSuggestion', 'noContext', 'obsolete', 'others'],
+    },
+  },
+  required: ['labeled', 'nonLabeled'],
+};
+
 export const SuggestionsQueryFilterSchema = {
   type: 'object',
   title: 'IXSuggestionsFilter',
   additionalProperties: false,
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, SuggestionCustomFilterSchema },
   properties: {
     language: { type: 'string' },
     extractorId: objectIdSchema,
-    // states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
     entityTemplates: { type: 'array', items: { type: 'string' } },
+    customFilter: SuggestionCustomFilterSchema,
   },
   required: ['extractorId'],
 };
@@ -134,6 +163,8 @@ export const IXSuggestionsQuerySchema = {
         number: { type: 'number', minimum: 1 },
         size: { type: 'number', minimum: 1, maximum: 500 },
       },
+      required: ['number', 'size'],
     },
   },
+  required: ['filter'],
 };

@@ -73,6 +73,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
           propertyName: 1,
           extractorId: 1,
           state: 1,
+          segment: 1,
         },
       },
     ])

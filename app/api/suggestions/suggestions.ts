@@ -140,69 +140,83 @@ const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) =>
   return pipeline;
 };
 
-const fetchAndAggregateSuggestions = async (
-  _filters: Omit<IXSuggestionsFilter, 'language'>,
-  setLanguages: LanguagesListSchema | undefined,
-  offset: number,
-  limit: number
-) => {
-  const {
-    states,
-    entityTemplates,
-    ...filters
-  }: {
-    states?: string[];
-    entityTemplates?: string[];
-    extractorId?: ObjectIdSchema;
-    state?: { $in: string[] };
-    entityTemplate?: { $in: string[] };
-  } = _filters;
-  if (states) filters.state = { $in: _filters.states || [] };
-  if (entityTemplates) filters.entityTemplate = { $in: _filters.entityTemplates || [] };
+// const fetchAndAggregateSuggestions = async (
+//   _filters: Omit<IXSuggestionsFilter, 'language'>,
+//   setLanguages: LanguagesListSchema | undefined,
+//   offset: number,
+//   limit: number
+// ) => {
+//   const {
+//     states,
+//     entityTemplates,
+//     ...filters
+//   }: {
+//     states?: string[];
+//     entityTemplates?: string[];
+//     extractorId?: ObjectIdSchema;
+//     state?: { $in: string[] };
+//     entityTemplate?: { $in: string[] };
+//   } = _filters;
+//   if (states) filters.state = { $in: _filters.states || [] };
+//   if (entityTemplates) filters.entityTemplate = { $in: _filters.entityTemplates || [] };
 
-  const count = await IXSuggestionsModel.db
-    .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
-    .then(result => (result?.length ? result[0].count : 0));
+//   const count = await IXSuggestionsModel.db
+//     .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+//     .then(result => (result?.length ? result[0].count : 0));
 
-  const suggestions = await IXSuggestionsModel.db.aggregate(
-    buildListQuery(filters, setLanguages, offset, limit)
-  );
+//   const suggestions = await IXSuggestionsModel.db.aggregate(
+//     buildListQuery(filters, setLanguages, offset, limit)
+//   );
 
-  const templateAggregations = await IXSuggestionsModel.db.aggregate(
-    buildTemplateAggregationsQuery(filters)
-  );
+//   const templateAggregations = await IXSuggestionsModel.db.aggregate(
+//     buildTemplateAggregationsQuery(filters)
+//   );
 
-  const stateAggregations = await IXSuggestionsModel.db.aggregate(
-    buildStateAggregationsQuery(filters)
-  );
+//   const stateAggregations = await IXSuggestionsModel.db.aggregate(
+//     buildStateAggregationsQuery(filters)
+//   );
 
-  return {
-    suggestions,
-    aggregations: { template: templateAggregations, state: stateAggregations },
-    totalPages: Math.ceil(count / limit),
-  };
-};
+//   return {
+//     suggestions,
+//     aggregations: { template: templateAggregations, state: stateAggregations },
+//     totalPages: Math.ceil(count / limit),
+//   };
+// };
 
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
   getByExtractor: async (extractorId: ObjectIdSchema) => IXSuggestionsModel.get({ extractorId }),
 
-  get: async (filter: IXSuggestionsFilter, options: { page: { size: number; number: number } }) => {
+  get: async (
+    filter: IXSuggestionsFilter,
+    options: { page?: { size: number; number: number } }
+  ) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-    const { language, ...filters } = filter;
+    const { language, customFilter, ...filters } = filter;
     filters.extractorId = new ObjectId(filter.extractorId);
 
-    return fetchAndAggregateSuggestions(filters, setLanguages, offset, limit);
+    const count = await IXSuggestionsModel.db
+      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+      .then(result => (result?.length ? result[0].count : 0));
+
+    const suggestions = await IXSuggestionsModel.db.aggregate(
+      buildListQuery(filters, setLanguages, offset, limit)
+    );
+
+    return {
+      suggestions,
+      totalPages: Math.ceil(count / limit),
+    };
   },
 
   updateStates,
 
   setObsolete: async (query: any) =>
-    IXSuggestionsModel.updateMany(query, { $set: { state: SuggestionState.obsolete } }),
+    IXSuggestionsModel.updateMany(query, { $set: { 'state.obsolete': true } }),
 
   markSuggestionsWithoutSegmentation: async (query: any) => {
     const segmentedFilesIds = await getSegmentedFilesIds();
@@ -222,7 +236,7 @@ const Suggestions = {
     const toSaveAndUpdate: IXSuggestionType[] = [];
     _suggestions.forEach(s => {
       if (s.status === 'failed') {
-        toSave.push({ ...s, state: SuggestionState.error });
+        toSave.push({ ...s, state: {} });
       } else if (s.status === 'processing') {
         toSave.push({ ...s, state: SuggestionState.processing });
       } else {

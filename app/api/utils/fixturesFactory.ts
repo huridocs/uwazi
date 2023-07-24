@@ -17,7 +17,6 @@ import {
 import { UpdateLog } from 'api/updatelogs';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
@@ -256,7 +255,16 @@ function getFixturesFactory() {
       segment: '',
       suggestedValue: '',
       date: 1,
-      state: SuggestionState.valueEmpty,
+      state: {
+        labeled: false,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      },
       ...otherProps,
     }),
 

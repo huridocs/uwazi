@@ -70,10 +70,23 @@ export interface IXSuggestionStateType {
 }
 
 export interface IXSuggestionsQuery {
-  filter?: IXSuggestionsFilter;
+  filter: IXSuggestionsFilter;
   page?: {
-    number?: number;
-    size?: number;
+    number: number;
+    size: number;
+  };
+}
+
+export interface SuggestionCustomFilter {
+  labeled: {
+    match: boolean;
+    mismatch: boolean;
+  };
+  nonLabeled: {
+    noSuggestion: boolean;
+    noContext: boolean;
+    obsolete: boolean;
+    others: boolean;
   };
 }
 
@@ -81,4 +94,5 @@ export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;
   entityTemplates?: string[];
+  customFilter?: SuggestionCustomFilter;
 }

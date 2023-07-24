@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Application, NextFunction, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -8,9 +8,9 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
+import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsFilter } from 'shared/types/suggestionType';
+import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
@@ -54,36 +54,14 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
-    validateAndCoerceRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          required: ['filter'],
-          properties: {
-            filter: SuggestionsQueryFilterSchema,
-            page: {
-              type: 'object',
-              properties: {
-                number: { type: 'number', minimum: 1 },
-                size: { type: 'number', minimum: 1, maximum: 500 },
-              },
-            },
-          },
-        },
-      },
-    }),
+    validateAndCoerceRequest(IXSuggestionsQuerySchema),
     async (
       req: Request & {
-        query: { filter: IXSuggestionsFilter; page: { number: number; size: number } };
+        query: IXSuggestionsQuery;
       },
-      res: Response,
-      _next: NextFunction
+      res: Response
     ) => {
-      const suggestionsList = await Suggestions.get(
-        { language: req.language, ...req.query.filter },
-        { page: req.query.page }
-      );
+      const suggestionsList = await Suggestions.get(req.query.filter, { page: req.query.page });
       res.json(suggestionsList);
     }
   );

@@ -262,7 +262,8 @@ describe('suggestions', () => {
     await db.disconnect();
   });
 
-  describe('get()', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('get()', () => {
     beforeEach(async () => {
       await Suggestions.updateStates({});
     });
@@ -308,22 +309,6 @@ describe('suggestions', () => {
       );
       expect(suggestions).toMatchObject([
         {
-          fileId: file3Id,
-          propertyName: 'super_powers',
-          extractorId: factory.id('super_powers_extractor'),
-          suggestedValue: 'scientific knowledge es',
-          segment: 'el confía en su propio conocimiento científico',
-          language: 'es',
-          date: 4,
-          page: 5,
-          currentValue: 'conocimiento científico',
-          labeledValue: 'conocimiento científico',
-          state: 'Mismatch / Label',
-          entityId: shared2esId,
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-        },
-        {
           fileId: file2Id,
           propertyName: 'super_powers',
           extractorId: factory.id('super_powers_extractor'),
@@ -334,10 +319,44 @@ describe('suggestions', () => {
           page: 5,
           currentValue: 'scientific knowledge',
           labeledValue: 'scientific knowledge',
-          state: 'Match / Label',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
           entityId: shared2enId,
           sharedId: 'shared2',
           entityTitle: 'Batman en',
+        },
+        {
+          fileId: file3Id,
+          propertyName: 'super_powers',
+          extractorId: factory.id('super_powers_extractor'),
+          suggestedValue: 'scientific knowledge es',
+          segment: 'el confía en su propio conocimiento científico',
+          language: 'es',
+          date: 4,
+          page: 5,
+          currentValue: 'conocimiento científico',
+          labeledValue: 'conocimiento científico',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          entityId: shared2esId,
+          sharedId: 'shared2',
+          entityTitle: 'Batman es',
         },
       ]);
     });
@@ -349,7 +368,16 @@ describe('suggestions', () => {
 
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
-      ).toBe(SuggestionState.labelMatch);
+      ).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       const { suggestions: enemySuggestions } = await getSuggestions(
         factory.id('enemy_extractor').toString(),
@@ -360,30 +388,66 @@ describe('suggestions', () => {
         enemySuggestions.filter(
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
         )[1].state
-      ).toBe(SuggestionState.labelEmpty);
+      ).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       expect(
         enemySuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared1').state
-      ).toBe(SuggestionState.valueMatch);
+      ).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       expect(
         enemySuggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared8' && s.language === 'en'
         ).state
-      ).toBe(SuggestionState.empty);
+      ).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       const { suggestions: ageSuggestions } = await getSuggestions(
         factory.id('age_extractor').toString()
       );
 
       expect(ageSuggestions.length).toBe(4);
-      expect(ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state).toBe(
-        SuggestionState.obsolete
-      );
+      expect(
+        ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state.obsolete
+      ).toEqual(true);
 
-      expect(ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared3').state).toBe(
-        SuggestionState.valueEmpty
-      );
+      expect(
+        ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared3').state
+      ).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
     it('should return mismatch status', async () => {
@@ -392,7 +456,16 @@ describe('suggestions', () => {
       );
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
-      ).toBe(SuggestionState.labelMismatch);
+      ).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       const { suggestions: enemySuggestions } = await getSuggestions(
         factory.id('enemy_extractor').toString()
@@ -401,20 +474,38 @@ describe('suggestions', () => {
         enemySuggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
         ).state
-      ).toBe(SuggestionState.valueMismatch);
+      ).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
 
       expect(
         enemySuggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared9' && s.language === 'en'
         ).state
-      ).toBe(SuggestionState.emptyMismatch);
+      ).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: true,
+        match: false,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
     it('should return error status', async () => {
       const { suggestions } = await getSuggestions(factory.id('age_extractor').toString());
-      expect(suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state).toBe(
-        SuggestionState.error
-      );
+      expect(
+        suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state.error
+      ).toBe(true);
     });
   });
 
@@ -526,8 +617,7 @@ describe('suggestions', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('updateStates()', () => {
+  describe('updateStates()', () => {
     it.each(stateUpdateCases)('should mark $reason', async ({ state, suggestionQuery }) => {
       const original = await findOneSuggestion(suggestionQuery);
       const idQuery = { _id: original._id };
