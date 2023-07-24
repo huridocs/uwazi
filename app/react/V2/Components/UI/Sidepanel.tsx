@@ -20,7 +20,7 @@ const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactN
     <button
       type="button"
       className="justify-end"
-      data-testid="Close sidepanel"
+      data-testid="close-sidepanel"
       onClick={closeSidepanelFunction}
     >
       <span className="sr-only">

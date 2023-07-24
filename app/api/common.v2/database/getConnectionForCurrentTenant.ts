@@ -1,11 +1,19 @@
-import { DB } from 'api/odm';
-import { tenants } from 'api/tenants';
 import { Db, MongoClient } from 'mongodb';
 
-export function getConnection(): Db {
-  return DB.connectionForDB(tenants.current().dbName).db;
+import { DB } from 'api/odm';
+import { tenants } from 'api/tenants';
+import { Tenant } from 'api/tenants/tenantContext';
+
+function getTenant(): Tenant {
+  return tenants.current();
 }
 
-export function getClient(): MongoClient {
-  return DB.connectionForDB(tenants.current().dbName).getClient();
+function getConnection(): Db {
+  return DB.connectionForDB(getTenant().dbName).db;
 }
+
+function getClient(): MongoClient {
+  return DB.connectionForDB(getTenant().dbName).getClient();
+}
+
+export { getTenant, getConnection, getClient };

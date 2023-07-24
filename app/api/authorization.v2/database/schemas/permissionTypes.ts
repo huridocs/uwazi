@@ -1,13 +1,12 @@
-/* eslint-disable */
-/**AUTO-GENERATED. RUN yarn emit-types to update.*/
-
-import { ObjectIdType } from 'api/common.v2/database/schemas/commonTypes';
+import { ObjectId } from 'mongodb';
 
 export interface EntityPermissionsDBOType {
-  _id?: ObjectIdType;
+  _id?: ObjectId;
   sharedId: string;
   permissions: PermissionType[];
 }
+
+export type LegacyObjectIdSchema = string | ObjectId;
 
 export type PermissionType = RestrictedPermissionType | PublicPermissionType;
 
@@ -18,7 +17,7 @@ export interface PublicPermissionType {
 }
 
 export interface RestrictedPermissionType {
-  refId: ObjectIdType;
+  refId: LegacyObjectIdSchema;
   type: 'user' | 'group';
   level: 'read' | 'write';
 }
