@@ -1,9 +1,9 @@
 Key,Burmese
-% of sentences above threshold,အနိမ့်ဆုံး သတ်မှတ်ချက် အထက်ရှိ ဝါကျ % (ရာခိုင်နှုန်း)
 (view page),(စာမျက်နှာ ကြည့်ရန်)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-+ click to select multiple cards.,+ click to select multiple cards.
 // Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
+% of sentences above threshold,အနိမ့်ဆုံး သတ်မှတ်ချက် အထက်ရှိ ဝါကျ % (ရာခိုင်နှုန်း)
++ click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
@@ -311,8 +311,9 @@ Exploration,စူးစမ်းလေ့လာခြင်း
 Export CSV,CSV တင်ပို့ရန်
 Exporting entities to CSV,ဖြည့်သွင်းချက်များကို CSV သို့ တင်ပို့နေသည်
 Extension Token,Extension Token
-Extract information from your documents,သင့်စာရွက်စာတမ်းများမှ အချက်အလက်ကို ထုတ်ယူပါ
 Extractor Name,Extractor Name
+Extractor/s deleted,Extractor/s deleted
+Extractors,Extractors
 Favicon description,"A favicon is a small icon that represents your collection in browser tabs and bookmarks. The default favicon is the Uwazi logo. To use your own:
 
 1. Upload your icon in Custom Uploads.
@@ -391,9 +392,9 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Google Authenticator အက်ပ်ကို သင့်မိုဘိုင်းစက်တွင် တပ်ဆင်ပါ
-Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
@@ -698,8 +699,8 @@ Search Tips: one char wildcard,ရှာဖွေမှု အကြံပြု
 Search Tips: proximity,ရှာဖွေမှု အကြံပြုချက်များ- နီးစပ်မှု
 Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက်များ- ပါဝင်မှု
 secret key recommendation,(please keep this key secret and don't share it):
-Security,Security
 Secret keys,Secret keys
+Security,Security
 Select,Select
 Select all,အားလုံးကို ရွေးရန်
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
