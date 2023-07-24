@@ -43,7 +43,9 @@ const SuggestedValue = ({
   };
 
   const suggestedValue =
-    suggestion.suggestedValue?.toString() === '' ? '-' : suggestion.suggestedValue?.toString();
+    suggestion.suggestedValue?.toString() === ''
+      ? '-'
+      : propertyValueFormatter.date(suggestion.suggestedValue?.toString() as string);
   return (
     <Popover>
       <Popover.Button

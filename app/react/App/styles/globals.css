@@ -1759,6 +1759,11 @@ input:checked + .toggle-bg {
   margin-right: 0.25rem;
 }
 
+.mx-2 {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -1777,11 +1782,6 @@ input:checked + .toggle-bg {
 .my-6 {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
-}
-
-.mx-2 {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
 }
 
 .-mb-px {
@@ -3593,16 +3593,6 @@ input:checked + .toggle-bg {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.text-sm\/\[0px\] {
-  font-size: 0.875rem;
-  line-height: 0px;
-}
-
-.text-sm\/\[25px\] {
-  font-size: 0.875rem;
-  line-height: 25px;
 }
 
 .font-bold {

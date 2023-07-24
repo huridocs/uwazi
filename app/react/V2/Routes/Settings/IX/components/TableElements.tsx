@@ -95,7 +95,10 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
   return 'yellow';
 };
 
-const suggestionsTableColumnsBuilder = (templates: ClientTemplateSchema[]) => {
+const suggestionsTableColumnsBuilder = (
+  templates: ClientTemplateSchema[],
+  acceptSuggestionAction: (suggestion: any, allLanguages: boolean) => void
+) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   return [
     suggestionColumnHelper.accessor('entityTitle', {
@@ -142,6 +145,7 @@ const suggestionsTableColumnsBuilder = (templates: ClientTemplateSchema[]) => {
               size="small"
               color={color === 'green' ? 'success' : 'primary'}
               disabled={color === 'green'}
+              onClick={() => acceptSuggestionAction(cell.row.original, true)}
             >
               <Translate>Accept</Translate>
             </Button>
@@ -149,7 +153,10 @@ const suggestionsTableColumnsBuilder = (templates: ClientTemplateSchema[]) => {
           </div>
         );
       },
-      meta: { headerClassName: 'w-1/12 text-center', contentClassName: 'text-center' },
+      meta: {
+        headerClassName: 'w-1/12 text-center',
+        contentClassName: 'text-center',
+      },
     }),
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',

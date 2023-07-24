@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IXExtractorInfo } from 'V2/shared/types';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
 
 const getExtractors = async (headers?: IncomingHttpHeaders) => {
   try {
@@ -58,4 +59,20 @@ const getSuggestions = async (
   return response.json;
 };
 
-export { getExtractors, saveExtractors, removeExtractors, getSuggestions, getExtractorById };
+const acceptSuggestion = async (
+  suggestion: { _id: ObjectIdSchema; sharedId: string; entityId: string },
+  allLanguages: boolean = true
+) => {
+  const params = new RequestParams({ suggestion, allLanguages });
+  const response = await api.post('suggestions/accept', params);
+  return response.json;
+};
+
+export {
+  getExtractors,
+  saveExtractors,
+  removeExtractors,
+  getSuggestions,
+  getExtractorById,
+  acceptSuggestion,
+};
