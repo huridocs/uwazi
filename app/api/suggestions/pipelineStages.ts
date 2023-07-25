@@ -1,16 +1,70 @@
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
 
-export const getMatchStage = (filters: FilterQuery<IXSuggestionType>) => [
-  {
-    $match: {
-      ...filters,
-      status: { $ne: 'processing' },
+// eslint-disable-next-line max-statements
+const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
+  const orFilters = [];
+  if (customFilter.labeled.match) {
+    orFilters.push({ 'state.labeled': true, 'state.match': true });
+  }
+  if (customFilter.labeled.mismatch) {
+    orFilters.push({ 'state.labeled': true, 'state.match': false });
+  }
+
+  if (customFilter.nonLabeled.noSuggestion) {
+    orFilters.push({ 'state.labeled': false, 'state.withSuggestion': false });
+  }
+  if (customFilter.nonLabeled.noContext) {
+    orFilters.push({
+      'state.labeled': false,
+      'state.withSuggestion': true,
+      'state.hasContext': false,
+    });
+  }
+  if (customFilter.nonLabeled.obsolete) {
+    orFilters.push({
+      'state.labeled': false,
+      'state.withSuggestion': true,
+      'state.hasContext': true,
+      'state.obsolete': true,
+    });
+  }
+  if (customFilter.nonLabeled.others) {
+    orFilters.push({
+      'state.labeled': false,
+      'state.withSuggestion': true,
+      'state.hasContext': true,
+      'state.obsolete': false,
+    });
+  }
+  return orFilters;
+};
+
+export const getMatchStage = (
+  filters: FilterQuery<IXSuggestionType>,
+  customFilter: SuggestionCustomFilter | undefined,
+  countOnly = false
+) => {
+  const matchQuery = {
+    ...filters,
+    status: { $ne: 'processing' },
+  };
+  if (customFilter) {
+    const orFilters = translateCustomFilter(customFilter);
+    if (orFilters.length > 0) matchQuery.$or = orFilters;
+  }
+
+  const countExpression = countOnly ? [{ $count: 'count' }] : [];
+
+  return [
+    {
+      $match: matchQuery,
     },
-  },
-];
+    ...countExpression,
+  ];
+};
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
   const defaultLanguage = languages.find(l => l.default)?.key;

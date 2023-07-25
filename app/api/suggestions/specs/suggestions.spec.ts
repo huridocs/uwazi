@@ -4,6 +4,8 @@ import {
   EntitySuggestionType,
   IXSuggestionStateType,
   IXSuggestionType,
+  IXSuggestionsFilter,
+  SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
 import { Suggestions } from '../suggestions';
 import {
@@ -16,10 +18,11 @@ import {
   shared2esId,
   suggestionId,
   shared2AgeSuggestionId,
+  stateFilterFixtures,
 } from './fixtures';
 
-const getSuggestions = async (extractorId: string, size = 5) =>
-  Suggestions.get({ extractorId }, { page: { size, number: 1 } });
+const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
+  Suggestions.get(filter, { page: { size, number: 1 } });
 
 const findOneSuggestion = async (query: any): Promise<IXSuggestionType> =>
   db.mongodb
@@ -253,6 +256,19 @@ const newErroringSuggestion: IXSuggestionType = {
   error: 'Some error message',
 };
 
+const blankCustomFilter: SuggestionCustomFilter = {
+  labeled: {
+    match: false,
+    mismatch: false,
+  },
+  nonLabeled: {
+    noSuggestion: false,
+    noContext: false,
+    obsolete: false,
+    others: false,
+  },
+};
+
 describe('suggestions', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
@@ -262,8 +278,7 @@ describe('suggestions', () => {
     await db.disconnect();
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('get()', () => {
+  describe('get()', () => {
     beforeEach(async () => {
       await Suggestions.updateStates({});
     });
@@ -362,9 +377,9 @@ describe('suggestions', () => {
     });
 
     it('should return match status', async () => {
-      const { suggestions: superPowersSuggestions } = await getSuggestions(
-        factory.id('super_powers_extractor').toString()
-      );
+      const { suggestions: superPowersSuggestions } = await getSuggestions({
+        extractorId: factory.id('super_powers_extractor').toString(),
+      });
 
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'en').state
@@ -380,7 +395,7 @@ describe('suggestions', () => {
       });
 
       const { suggestions: enemySuggestions } = await getSuggestions(
-        factory.id('enemy_extractor').toString(),
+        { extractorId: factory.id('enemy_extractor').toString() },
         6
       );
 
@@ -427,9 +442,9 @@ describe('suggestions', () => {
         error: false,
       });
 
-      const { suggestions: ageSuggestions } = await getSuggestions(
-        factory.id('age_extractor').toString()
-      );
+      const { suggestions: ageSuggestions } = await getSuggestions({
+        extractorId: factory.id('age_extractor').toString(),
+      });
 
       expect(ageSuggestions.length).toBe(4);
       expect(
@@ -451,9 +466,9 @@ describe('suggestions', () => {
     });
 
     it('should return mismatch status', async () => {
-      const { suggestions: superPowersSuggestions } = await getSuggestions(
-        factory.id('super_powers_extractor').toString()
-      );
+      const { suggestions: superPowersSuggestions } = await getSuggestions({
+        extractorId: factory.id('super_powers_extractor').toString(),
+      });
       expect(
         superPowersSuggestions.find((s: EntitySuggestionType) => s.language === 'es').state
       ).toEqual({
@@ -467,9 +482,9 @@ describe('suggestions', () => {
         error: false,
       });
 
-      const { suggestions: enemySuggestions } = await getSuggestions(
-        factory.id('enemy_extractor').toString()
-      );
+      const { suggestions: enemySuggestions } = await getSuggestions({
+        extractorId: factory.id('enemy_extractor').toString(),
+      });
       expect(
         enemySuggestions.find(
           (s: EntitySuggestionType) => s.sharedId === 'shared6' && s.language === 'en'
@@ -502,22 +517,27 @@ describe('suggestions', () => {
     });
 
     it('should return error status', async () => {
-      const { suggestions } = await getSuggestions(factory.id('age_extractor').toString());
+      const { suggestions } = await getSuggestions({
+        extractorId: factory.id('age_extractor').toString(),
+      });
       expect(
         suggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared4').state.error
       ).toBe(true);
     });
   });
 
-  describe('accept()', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('accept()', () => {
     beforeEach(async () => {
       await Suggestions.updateStates({});
     });
 
     it('should accept a suggestion', async () => {
-      const { suggestions } = await getSuggestions(factory.id('super_powers_extractor').toString());
+      const { suggestions } = await getSuggestions({
+        extractorId: factory.id('super_powers_extractor').toString(),
+      });
       const labelMismatchedSuggestion = suggestions.find(
-        (sug: any) => sug.state === SuggestionState.labelMismatch
+        (sug: any) => sug.state.labeled && !sug.state.match
       );
       await Suggestions.accept(
         {
@@ -527,18 +547,29 @@ describe('suggestions', () => {
         },
         false
       );
-      const { suggestions: newSuggestions } = await getSuggestions(
-        factory.id('super_powers_extractor').toString()
-      );
+      const { suggestions: newSuggestions } = await getSuggestions({
+        extractorId: factory.id('super_powers_extractor').toString(),
+      });
       const changedSuggestion = newSuggestions.find(
         (sg: any) => sg._id.toString() === suggestionId.toString()
       );
 
-      expect(changedSuggestion.state).toBe(SuggestionState.labelMatch);
+      expect(changedSuggestion.state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: true,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
       expect(changedSuggestion.suggestedValue).toEqual(changedSuggestion.labeledValue);
     });
     it('should not accept a suggestion with an error', async () => {
-      const { suggestions } = await getSuggestions(factory.id('age_extractor').toString());
+      const { suggestions } = await getSuggestions({
+        extractorId: factory.id('age_extractor').toString(),
+      });
       const errorSuggestion = suggestions.find(
         (s: EntitySuggestionType) => s.sharedId === 'shared4'
       );
@@ -701,5 +732,114 @@ describe('suggestions', () => {
         }
       );
     });
+  });
+});
+
+describe('suggestions with CustomFilters', () => {
+  describe('get()', () => {
+    beforeAll(async () => {
+      await db.setupFixturesAndContext(stateFilterFixtures);
+      await Suggestions.updateStates({});
+    });
+
+    it.each([
+      {
+        description: 'filtering for labeled - match',
+        customFilter: {
+          ...blankCustomFilter,
+          labeled: {
+            match: true,
+            mismatch: false,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'labeled-match', language: 'en' },
+          { sharedId: 'labeled-match', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for labeled - mismatch',
+        customFilter: {
+          ...blankCustomFilter,
+          labeled: {
+            match: false,
+            mismatch: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'labeled-mismatch', language: 'en' },
+          { sharedId: 'labeled-mismatch', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - noSuggestion',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            noSuggestion: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - noContext',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            noContext: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-no-context', language: 'en' },
+          { sharedId: 'unlabeled-no-context', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - obsolete',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            obsolete: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - others',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            others: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-others', language: 'en' },
+          { sharedId: 'unlabeled-others', language: 'es' },
+        ],
+      },
+    ])(
+      'should use the custom filter properly when $description',
+      async ({ customFilter, expectedSuggestions }) => {
+        const result = await getSuggestions({
+          extractorId: factory.id('test_extractor').toString(),
+          customFilter,
+        });
+        expect(result.suggestions).toMatchObject(expectedSuggestions);
+      }
+    );
+  });
+
+  afterAll(async () => {
+    await db.disconnect();
   });
 });

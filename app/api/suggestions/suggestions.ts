@@ -11,7 +11,11 @@ import {
   ObjectIdSchema,
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { IXSuggestionsFilter, IXSuggestionType } from 'shared/types/suggestionType';
+import {
+  IXSuggestionsFilter,
+  IXSuggestionType,
+  SuggestionCustomFilter,
+} from 'shared/types/suggestionType';
 import { ObjectId } from 'mongodb';
 import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
 import { registerEventListeners } from './eventListeners';
@@ -90,12 +94,13 @@ const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
 
 const buildListQuery = (
   filters: FilterQuery<IXSuggestionType>,
+  customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
   offset: number,
   limit: number
 ) => {
   const pipeline = [
-    ...getMatchStage(filters),
+    ...getMatchStage(filters, customFilter),
     { $sort: { date: 1, state: -1 } },
     { $skip: offset },
     { $limit: limit },
@@ -200,11 +205,11 @@ const Suggestions = {
     filters.extractorId = new ObjectId(filter.extractorId);
 
     const count = await IXSuggestionsModel.db
-      .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
+      .aggregate(getMatchStage(filters, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
     const suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(filters, setLanguages, offset, limit)
+      buildListQuery(filters, customFilter, setLanguages, offset, limit)
     );
 
     return {
