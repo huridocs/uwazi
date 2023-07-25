@@ -16,6 +16,7 @@ import { ClientTemplateSchema } from 'app/istore';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { FiltersSidepanel } from './components/FiltersSidepanel';
 
 const IXSuggestions = () => {
   const { suggestions, extractor, templates } = useLoaderData() as {
@@ -23,6 +24,7 @@ const IXSuggestions = () => {
     extractor: IXExtractorInfo;
     templates: ClientTemplateSchema[];
   };
+  const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -75,6 +77,9 @@ const IXSuggestions = () => {
               <SuggestionsTitle
                 propertyName={extractor.property}
                 templates={filteredTemplates()}
+                onFiltersButtonClicked={() => {
+                  setShowSidepanel(true);
+                }}
               ></SuggestionsTitle>
             }
             enableSelection
@@ -102,6 +107,7 @@ const IXSuggestions = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+      <FiltersSidepanel showSidepanel={showSidepanel} setShowSidepanel={setShowSidepanel} />
     </div>
   );
 };

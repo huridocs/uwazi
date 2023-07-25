@@ -95,7 +95,7 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
   return 'yellow';
 };
 
-const suggestionsTableColumnsBuilder = (
+const suggestionsTableColumnsBuilder: Function = (
   templates: ClientTemplateSchema[],
   acceptSuggestionAction: (suggestion: any) => void
 ) => {
@@ -145,7 +145,7 @@ const suggestionsTableColumnsBuilder = (
               size="small"
               color={color === 'green' ? 'success' : 'primary'}
               disabled={color === 'green'}
-              onClick={() => acceptSuggestionAction(cell.row.original)}
+              onClick={() => cell.column.columnDef.meta!.action!(cell.row.original)}
             >
               <Translate>Accept</Translate>
             </Button>
@@ -154,6 +154,7 @@ const suggestionsTableColumnsBuilder = (
         );
       },
       meta: {
+        action: acceptSuggestionAction,
         headerClassName: 'w-1/12 text-center',
         contentClassName: 'text-center',
       },
