@@ -3,7 +3,8 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
-import { getSuggestions, getExtractorById, acceptSuggestion } from 'app/V2/api/ix';
+import * as extractorsAPI from 'app/V2/api/ix/extractors';
+import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
@@ -34,7 +35,7 @@ const IXSuggestions = () => {
 
   const acceptSuggestionAction = async (suggestion: EntitySuggestionType) => {
     try {
-      await acceptSuggestion({
+      await suggestionsAPI.accept({
         _id: suggestion._id as ObjectIdSchema,
         sharedId: suggestion.sharedId,
         entityId: suggestion.entityId,
@@ -115,11 +116,11 @@ const IXSuggestions = () => {
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId } }) => {
-    const response = await getSuggestions(
+    const response = await suggestionsAPI.get(
       { filter: { extractorId }, page: { number: 1, size: 20 } },
       headers
     );
-    const extractors = await getExtractorById(extractorId!, headers);
+    const extractors = await extractorsAPI.getById(extractorId!, headers);
     const templates = await templatesAPI.get(headers);
 
     return { suggestions: response.suggestions, extractor: extractors[0], templates };
