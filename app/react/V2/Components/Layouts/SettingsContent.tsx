@@ -61,7 +61,7 @@ SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
 
 SettingsContent.Footer = ({ children, className }: SettingsContentProps) => (
   <div
-    className={`fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1 ${
+    className={`fixed bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 lg:sticky z-1 ${
       className || ''
     }`}
     data-testid="settings-content-footer"

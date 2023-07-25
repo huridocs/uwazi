@@ -119,17 +119,17 @@ const IXDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected.length === 1 ? (
-            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
 
           {selected.length ? (
-            <Button size="small" type="button" color="error" onClick={() => setConfirmModal(true)}>
+            <Button type="button" color="error" onClick={() => setConfirmModal(true)}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}

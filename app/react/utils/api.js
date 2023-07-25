@@ -130,12 +130,15 @@ const handleError = (e, endpoint) => {
 };
 
 const _request = (url, req, method) => {
-  loadingBar.start();
-  return request[method](API_URL + url, req.data, {
+  const headers = {
     'Content-Language': language,
     ...req.headers,
     'X-Requested-With': 'XMLHttpRequest',
-  })
+  };
+
+  loadingBar.start();
+
+  return request[method](API_URL + url, req.data, headers)
     .then(doneLoading)
     .catch(e => handleError(e, { url, method }));
 };

@@ -2,7 +2,6 @@
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
-import { CalculatorIcon, CalendarDaysIcon, Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Extractor } from '../types';
@@ -10,11 +9,18 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { ClientTemplateSchema } from 'app/istore';
+import {
+  DatePropertyIcon,
+  MarkdownPropertyIcon,
+  NumericPropertyIcon,
+  TextPropertyIcon,
+} from 'app/V2/Components/CustomIcons';
 
 const propertyIcons = {
-  text: <Bars3BottomLeftIcon className="w-5" />,
-  numeric: <CalculatorIcon className="w-5" />,
-  date: <CalendarDaysIcon className="w-5" />,
+  text: <TextPropertyIcon className="w-4" />,
+  date: <DatePropertyIcon className="w-4" />,
+  numeric: <NumericPropertyIcon className="w-4" />,
+  markdown: <MarkdownPropertyIcon className="w-4" />,
 };
 
 const extractorColumnHelper = createColumnHelper<Extractor>();
@@ -28,7 +34,7 @@ const ActionHeader = () => <Translate>Action</Translate>;
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex gap-2">
       {propertyIcons[property]}
       <p className="text-gray-500">{cell.row.original.propertyLabel}</p>
     </div>

@@ -1,7 +1,7 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { DuplicatedKeyError } from 'api/common.v2/errors/DuplicatedKeyError';
-import { MongoBulkWriteError } from 'mongodb';
+import { MongoBulkWriteError, OptionalId } from 'mongodb';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { TranslationsDataSource } from '../contracts/TranslationsDataSource';
 import { TranslationMappers } from '../database/TranslationMappers';
@@ -9,7 +9,7 @@ import { Translation } from '../model/Translation';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 
 export class MongoTranslationsDataSource
-  extends MongoDataSource<TranslationDBO>
+  extends MongoDataSource<OptionalId<TranslationDBO>>
   implements TranslationsDataSource
 {
   protected collectionName = 'translationsV2';

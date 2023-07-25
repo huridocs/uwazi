@@ -5,6 +5,7 @@ import * as csvApi from 'api/csv/csvLoader';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import i18nRoutes from 'api/i18n/routes';
 import { errorLog } from 'api/log';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { availableLanguages } from 'shared/languagesList';
@@ -16,6 +17,7 @@ import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslatio
 import { sortByLocale } from './sortByLocale';
 
 describe('i18n translations routes', () => {
+  const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
   const app = setUpApp(i18nRoutes, (req, _res, next) => {
     req.user = {
       username: 'admin',
@@ -29,30 +31,26 @@ describe('i18n translations routes', () => {
 
   beforeEach(async () => {
     const translationsV2: TranslationDBO[] = [
-      {
-        language: 'es',
-        key: 'title',
-        value: 'Plantilla 1',
-        context: { id: 'contextID', type: 'Entity', label: 'Template' },
-      },
-      {
-        language: 'es',
-        key: 'Search',
-        value: 'Buscar',
-        context: { id: 'System', type: 'Entity', label: 'User Interface' },
-      },
-      {
-        language: 'en',
-        key: 'title',
-        value: 'Template 1',
-        context: { id: 'contextID', type: 'Entity', label: 'Template' },
-      },
-      {
-        language: 'en',
-        key: 'Search',
-        value: 'Search',
-        context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
-      },
+      createTranslationDBO('title', 'Plantilla 1', 'es', {
+        id: 'contextID',
+        type: 'Entity',
+        label: 'Template',
+      }),
+      createTranslationDBO('Search', 'Buscar', 'es', {
+        id: 'System',
+        type: 'Entity',
+        label: 'User Interface',
+      }),
+      createTranslationDBO('title', 'Template 1', 'en', {
+        id: 'contextID',
+        type: 'Entity',
+        label: 'Template',
+      }),
+      createTranslationDBO('Search', 'Search', 'en', {
+        id: 'System',
+        type: 'Uwazi UI',
+        label: 'User Interface',
+      }),
     ];
     await testingEnvironment.setUp({
       settings: [
@@ -63,7 +61,7 @@ describe('i18n translations routes', () => {
           ],
         },
       ],
-      translationsV2: translationsV2,
+      translationsV2,
       translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
     });
   });
