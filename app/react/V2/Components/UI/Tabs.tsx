@@ -32,17 +32,20 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
     onTabSelected(newActiveTab);
   };
 
-  const buttonClass = 'flex-1 text-gray-700 font-medium py-2 w-80 h-14 border-b-2';
+  const buttonClass = 'flex-1 text-gray-700 font-medium py-2 w-80 h-14';
 
   return (
     <>
-      <div className="flex md:w-1/2" data-testid="tabs-comp">
+      <div
+        className="flex border rounded-md shadow-sm md:w-1/2 border-gray-50"
+        data-testid="tabs-comp"
+      >
         {children.map((child, index: number) => (
           <button
             key={child.props.id}
             type="button"
             className={`${buttonClass} ${activeTab === child.props.id ? 'bg-gray-50' : ''} ${
-              index !== children.length - 1 ? 'border-r-2 border-primary-50' : ''
+              index !== children.length - 1 ? 'border-r-2 border-gray-50' : ''
             }`}
             onClick={e => handleClick(e, child.props.id)}
           >
