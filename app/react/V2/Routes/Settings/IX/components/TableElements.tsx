@@ -97,7 +97,7 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
 
 const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
-  acceptSuggestionAction: (suggestion: any, allLanguages: boolean) => void
+  acceptSuggestionAction: (suggestion: any) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   return [
@@ -145,7 +145,7 @@ const suggestionsTableColumnsBuilder = (
               size="small"
               color={color === 'green' ? 'success' : 'primary'}
               disabled={color === 'green'}
-              onClick={() => acceptSuggestionAction(cell.row.original, true)}
+              onClick={() => acceptSuggestionAction(cell.row.original)}
             >
               <Translate>Accept</Translate>
             </Button>

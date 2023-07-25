@@ -42,10 +42,13 @@ const SuggestedValue = ({
     return value;
   };
 
-  const suggestedValue =
-    suggestion.suggestedValue?.toString() === ''
-      ? '-'
-      : propertyValueFormatter.date(suggestion.suggestedValue?.toString() as string);
+  const getSuggestedValue = () => {
+    if (suggestion.suggestedValue === '') return '-';
+    if (property?.type === 'date')
+      return propertyValueFormatter.date(suggestion.suggestedValue!.toString());
+    return suggestion.suggestedValue!.toString();
+  };
+
   return (
     <Popover>
       <Popover.Button
@@ -56,7 +59,7 @@ const SuggestedValue = ({
       >
         <div>
           <div className="text-gray-500">{getCurrentValue()}</div>
-          <div className={`text-left ${colorClass}`}>{suggestedValue}</div>
+          <div className={`text-left ${colorClass}`}>{getSuggestedValue()}</div>
         </div>
       </Popover.Button>
       {popoverOpen && (
@@ -73,7 +76,7 @@ const SuggestedValue = ({
               <span className="font-bold">Current value:</span> {getCurrentValue()}
             </div>
             <div>
-              <span className="font-bold">Suggestion:</span> {suggestedValue}
+              <span className="font-bold">Suggestion:</span> {getSuggestedValue()}
             </div>
           </div>
           <span

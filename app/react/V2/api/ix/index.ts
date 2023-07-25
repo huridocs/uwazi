@@ -61,7 +61,7 @@ const getSuggestions = async (
 
 const acceptSuggestion = async (
   suggestion: { _id: ObjectIdSchema; sharedId: string; entityId: string },
-  allLanguages: boolean = true
+  allLanguages: boolean = false
 ) => {
   const params = new RequestParams({ suggestion, allLanguages });
   const response = await api.post('suggestions/accept', params);
