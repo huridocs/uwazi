@@ -48,7 +48,7 @@ const getModelCreationDateStage = () => [
 const findSuggestions = (query: any, languages: LanguagesListSchema) =>
   IXSuggestionsModel.db
     .aggregateCursor<SuggestionsAggregationResult[]>([
-      { $match: { ...query, status: { $ne: 'processing' } } },
+      { $match: { ...query } },
       ...getEntityStage(languages),
       ...getCurrentValueStage(),
       {
@@ -72,6 +72,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
           date: 1,
           propertyName: 1,
           extractorId: 1,
+          status: 1,
           state: 1,
           segment: 1,
         },

@@ -11,6 +11,7 @@ interface SuggestionValues {
   date: number;
   segment: string | null;
   state: string | null;
+  status: string | null;
 }
 
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
@@ -87,14 +88,14 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setProcessing({ state }: SuggestionValues) {
-    if (state === 'processing') {
+  setProcessing({ status }: SuggestionValues) {
+    if (status === 'processing') {
       this.processing = true;
     }
   }
 
-  setError({ error }: SuggestionValues) {
-    if (error && error !== '') {
+  setError({ error, status }: SuggestionValues) {
+    if ((error && error !== '') || (status && status === 'failed')) {
       this.error = true;
     }
   }

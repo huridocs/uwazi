@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { FilterQuery } from 'mongoose';
 
 import entities from 'api/entities/entities';
@@ -230,27 +231,15 @@ const Suggestions = {
         ...query,
         fileId: { $nin: segmentedFilesIds },
       },
-      { $set: { state: SuggestionState.error } }
+      { $set: { 'state.error': true } }
     );
   },
 
   save: async (suggestion: IXSuggestionType) => Suggestions.saveMultiple([suggestion]),
 
   saveMultiple: async (_suggestions: IXSuggestionType[]) => {
-    const toSave: IXSuggestionType[] = [];
-    const toSaveAndUpdate: IXSuggestionType[] = [];
-    _suggestions.forEach(s => {
-      if (s.status === 'failed') {
-        toSave.push({ ...s, state: {} });
-      } else if (s.status === 'processing') {
-        toSave.push({ ...s, state: SuggestionState.processing });
-      } else {
-        toSaveAndUpdate.push(s);
-      }
-    });
-    await IXSuggestionsModel.saveMultiple(toSave);
-    const toUpdate = await IXSuggestionsModel.saveMultiple(toSaveAndUpdate);
-    if (toUpdate.length) await updateStates({ _id: { $in: toUpdate.map(s => s._id) } });
+    const toUpdate = await IXSuggestionsModel.saveMultiple(_suggestions);
+    if (toUpdate.length > 0) await updateStates({ _id: { $in: toUpdate.map(s => s._id) } });
   },
 
   accept: async (acceptedSuggestion: AcceptedSuggestion, allLanguages: boolean) => {
