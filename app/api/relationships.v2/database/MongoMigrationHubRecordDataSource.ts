@@ -26,13 +26,13 @@ class MongoMigrationHubRecordDataSource
 {
   protected collectionName = 'migrationHubRecords';
 
-  async getPage(page: number, pageSize: number): Promise<MigrationHubRecord[]> {
+  getAll(): MongoResultSet<MigrationHubRecordDBO, MigrationHubRecord> {
     const cursor = this.getCollection().find();
     const resultset = new MongoResultSet<MigrationHubRecordDBO, MigrationHubRecord>(
       cursor,
       mapRecordToApp
     );
-    return resultset.page(page, pageSize);
+    return resultset;
   }
 
   async countAll(): Promise<number> {
