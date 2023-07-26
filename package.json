@@ -171,7 +171,7 @@
     "mime-types": "^2.1.35",
     "moment": "^2.29.4",
     "moment-timezone": "0.5.43",
-    "mongodb": "5.5.0",
+    "mongodb": "5.7.0",
     "mongoose": "7.4.1",
     "multer": "^1.4.5-lts.1",
     "node-uuid": "^1.4.7",
