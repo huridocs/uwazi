@@ -20,12 +20,12 @@ class DeleteRelationshipMigrationFieldService {
     relationType: string,
     targetTemplate?: string
   ): Promise<void> {
+    const fieldId = new RelationshipMigrationFieldUniqueId(
+      sourceTemplate,
+      relationType,
+      targetTemplate
+    );
     await this.transactionManager.run(async () => {
-      const fieldId = new RelationshipMigrationFieldUniqueId(
-        sourceTemplate,
-        relationType,
-        targetTemplate
-      );
       await this.fieldDS.delete(fieldId);
     });
   }
