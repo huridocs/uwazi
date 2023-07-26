@@ -1,9 +1,14 @@
 import React from 'react';
-import { CalendarDaysIcon, HashtagIcon, FunnelIcon } from '@heroicons/react/20/solid';
-import {} from '@heroicons/react/24/solid';
+import { FunnelIcon } from '@heroicons/react/24/solid';
 import { Translate } from 'app/I18N';
 import { Pill, Button } from 'app/V2/Components/UI';
 import { ClientTemplateSchema } from 'app/istore';
+import {
+  DatePropertyIcon,
+  MarkdownPropertyIcon,
+  NumericPropertyIcon,
+  TextPropertyIcon,
+} from 'app/V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
   propertyName,
@@ -19,13 +24,16 @@ const SuggestionsTitle = ({
   let propGraphics: string | React.ReactNode = '_';
   switch (template?.type) {
     case 'text':
-      propGraphics = '_';
+      propGraphics = <TextPropertyIcon className="w-3" />;
       break;
     case 'date':
-      propGraphics = <CalendarDaysIcon className="w-3" />;
+      propGraphics = <DatePropertyIcon className="w-3" />;
       break;
     case 'numeric':
-      propGraphics = <HashtagIcon className="w-3" />;
+      propGraphics = <NumericPropertyIcon className="w-3" />;
+      break;
+    case 'markdown':
+      propGraphics = <MarkdownPropertyIcon className="w-3" />;
       break;
     default:
       propGraphics = '_';

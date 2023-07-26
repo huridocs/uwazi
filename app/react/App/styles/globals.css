@@ -2704,6 +2704,10 @@ input:checked + .toggle-bg {
   border-top-width: 4px;
 }
 
+.border-dashed {
+  border-style: dashed;
+}
+
 .border-blue-300 {
   --tw-border-opacity: 1;
   border-color: rgb(165 180 252 / var(--tw-border-opacity));
@@ -2906,6 +2910,11 @@ input:checked + .toggle-bg {
 .border-yellow-600 {
   --tw-border-opacity: 1;
   border-color: rgb(159 88 10 / var(--tw-border-opacity));
+}
+
+.border-t-gray-200 {
+  --tw-border-opacity: 1;
+  border-top-color: rgb(229 231 235 / var(--tw-border-opacity));
 }
 
 .\!bg-transparent {
@@ -3608,10 +3617,6 @@ input:checked + .toggle-bg {
 
 .uppercase {
   text-transform: uppercase;
-}
-
-.capitalize {
-  text-transform: capitalize;
 }
 
 .italic {
