@@ -27,9 +27,7 @@ class GetRelationshipMigrationFieldService {
 
   async getAll(): Promise<RelationshipMigrationField[]> {
     let fields: RelationshipMigrationField[] = [];
-    await this.transactionManager.run(async () => {
-      fields = await this.fieldDS.getAll().all();
-    });
+    fields = await this.fieldDS.getAll().all();
     return fields;
   }
 
