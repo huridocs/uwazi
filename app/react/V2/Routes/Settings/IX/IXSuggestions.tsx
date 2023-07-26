@@ -20,10 +20,11 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 
 const IXSuggestions = () => {
-  const { suggestions, extractor, templates } = useLoaderData() as {
+  const { suggestions, extractor, templates, aggregation } = useLoaderData() as {
     suggestions: EntitySuggestionType[];
     extractor: IXExtractorInfo;
     templates: ClientTemplateSchema[];
+    aggregation: any;
   };
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
@@ -108,7 +109,11 @@ const IXSuggestions = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      <FiltersSidepanel showSidepanel={showSidepanel} setShowSidepanel={setShowSidepanel} />
+      <FiltersSidepanel
+        showSidepanel={showSidepanel}
+        setShowSidepanel={setShowSidepanel}
+        aggregation={aggregation}
+      />
     </div>
   );
 };
@@ -121,8 +126,16 @@ const IXSuggestionsLoader =
       headers
     );
     const extractors = await extractorsAPI.getById(extractorId!, headers);
+    const aggregation = await suggestionsAPI.aggregation({
+      filter: { extractorId: extractorId! },
+    });
     const templates = await templatesAPI.get(headers);
 
-    return { suggestions: response.suggestions, extractor: extractors[0], templates };
+    return {
+      suggestions: response.suggestions,
+      extractor: extractors[0],
+      templates,
+      aggregation: aggregation || {},
+    };
   };
 export { IXSuggestions, IXSuggestionsLoader };

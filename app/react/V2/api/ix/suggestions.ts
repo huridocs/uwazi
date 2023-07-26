@@ -19,6 +19,21 @@ const get = async (
   return response.json;
 };
 
+const aggregation = async (
+  parameters: {
+    filter: {
+      extractorId: string;
+      language?: string;
+      entityTemplates?: string[];
+    };
+  },
+  headers?: IncomingHttpHeaders
+) => {
+  const params = new RequestParams(parameters, headers);
+  const response = await api.get('suggestions/aggregation', params);
+  return response.json;
+};
+
 const accept = async (
   suggestion: { _id: ObjectIdSchema; sharedId: string; entityId: string },
   allLanguages: boolean = false
@@ -28,4 +43,4 @@ const accept = async (
   return response.json;
 };
 
-export { get, accept };
+export { get, accept, aggregation };
