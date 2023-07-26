@@ -128,8 +128,8 @@ export default (app: Application) => {
     }
   );
 
-  app.post(
-    '/api/v2/relationshipMigrationFields/create',
+  app.put(
+    '/api/v2/relationshipMigrationFields',
     needsAuthorization(),
     featureRequired,
     async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {
@@ -146,7 +146,7 @@ export default (app: Application) => {
   );
 
   app.post(
-    '/api/v2/relationshipMigrationFields/update',
+    '/api/v2/relationshipMigrationFields',
     needsAuthorization(),
     featureRequired,
     async (req: Request, res: Response<CreateRelationshipMigRationFieldResponse>) => {

@@ -23,14 +23,12 @@ export default {
   },
 
   createRelationshipMigrationField(requestParams = new RequestParams()) {
-    return api
-      .post('v2/relationshipMigrationFields/create', requestParams)
-      .then(response => response.json);
+    return api.put('v2/relationshipMigrationFields', requestParams).then(response => response.json);
   },
 
   updateRelationshipMigrationField(requestParams = new RequestParams()) {
     return api
-      .post('v2/relationshipMigrationFields/update', requestParams)
+      .post('v2/relationshipMigrationFields', requestParams)
       .then(response => response.json);
   },
 
