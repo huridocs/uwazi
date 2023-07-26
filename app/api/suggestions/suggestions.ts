@@ -26,7 +26,6 @@ import {
   getFileStage,
   getLabeledValueStage,
   getMatchStage,
-  groupByAndSort,
 } from './pipelineStages';
 import { updateStates } from './updateState';
 
@@ -134,17 +133,17 @@ const buildListQuery = (
   return pipeline;
 };
 
-const buildTemplateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
-  const { entityTemplate, ...filters } = _filters;
-  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$entityTemplate')];
-  return pipeline;
-};
+// const buildTemplateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
+//   const { entityTemplate, ...filters } = _filters;
+//   const pipeline = [...getMatchStage(filters), ...groupByAndSort('$entityTemplate')];
+//   return pipeline;
+// };
 
-const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
-  const { state, ...filters } = _filters;
-  const pipeline = [...getMatchStage(filters), ...groupByAndSort('$state')];
-  return pipeline;
-};
+// const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
+//   const { state, ...filters } = _filters;
+//   const pipeline = [...getMatchStage(filters), ...groupByAndSort('$state')];
+//   return pipeline;
+// };
 
 // const fetchAndAggregateSuggestions = async (
 //   _filters: Omit<IXSuggestionsFilter, 'language'>,
