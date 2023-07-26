@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import { getSuggestions, getExtractorById } from 'app/V2/api/ix';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { Row } from '@tanstack/react-table';
+import * as extractorsAPI from 'app/V2/api/ix/extractors';
+import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { suggestionsTableColumns } from './components/TableElements';
+import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { ClientTemplateSchema } from 'app/istore';
-import { Row } from '@tanstack/react-table';
+import { useSetRecoilState } from 'recoil';
+import { notificationAtom } from 'app/V2/atoms';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { FiltersSidepanel } from './components/FiltersSidepanel';
 
 const IXSuggestions = () => {
   const { suggestions, extractor, templates } = useLoaderData() as {
@@ -19,10 +25,34 @@ const IXSuggestions = () => {
     extractor: IXExtractorInfo;
     templates: ClientTemplateSchema[];
   };
+  const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
+  const revalidator = useRevalidator();
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
+
+  const acceptSuggestionAction = async (suggestion: EntitySuggestionType) => {
+    try {
+      await suggestionsAPI.accept({
+        _id: suggestion._id as ObjectIdSchema,
+        sharedId: suggestion.sharedId,
+        entityId: suggestion.entityId,
+      });
+      revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Suggestion accepted.</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    }
+  };
 
   return (
     <div
@@ -31,16 +61,26 @@ const IXSuggestions = () => {
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
-        <SettingsContent.Header title="Metadata extraction suggestions" />
+        <SettingsContent.Header
+          title={
+            <>
+              <Translate>Metadata extraction</Translate> <ChevronRightIcon className="w-4 mx-2" />{' '}
+              {extractor.name}
+            </>
+          }
+        />
 
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={suggestions}
-            columns={suggestionsTableColumns}
+            columns={suggestionsTableColumnsBuilder(filteredTemplates(), acceptSuggestionAction)}
             title={
               <SuggestionsTitle
                 propertyName={extractor.property}
                 templates={filteredTemplates()}
+                onFiltersButtonClicked={() => {
+                  setShowSidepanel(true);
+                }}
               ></SuggestionsTitle>
             }
             enableSelection
@@ -68,6 +108,7 @@ const IXSuggestions = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+      <FiltersSidepanel showSidepanel={showSidepanel} setShowSidepanel={setShowSidepanel} />
     </div>
   );
 };
@@ -75,11 +116,11 @@ const IXSuggestions = () => {
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId } }) => {
-    const response = await getSuggestions(
+    const response = await suggestionsAPI.get(
       { filter: { extractorId }, page: { number: 1, size: 20 } },
       headers
     );
-    const extractors = await getExtractorById(extractorId!, headers);
+    const extractors = await extractorsAPI.getById(extractorId!, headers);
     const templates = await templatesAPI.get(headers);
 
     return { suggestions: response.suggestions, extractor: extractors[0], templates };

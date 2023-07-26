@@ -25,6 +25,7 @@ const Primary: Story = {
         data={args.data}
         title={args.title}
         initialState={args.initialState}
+        footer={args.footer}
       />
     </div>
   ),
@@ -116,6 +117,7 @@ const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
+    footer: <span className="text-sm italic text-gray-500">* Table footer</span>,
     columns: [
       columnHelper.accessor('title', { header: 'Title', id: 'title' }),
       columnHelper.accessor('description', { header: 'Description' }),

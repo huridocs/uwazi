@@ -3,7 +3,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
-import * as ixAPI from 'V2/api/ix';
+import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
@@ -63,7 +63,7 @@ const IXDashboard = () => {
     const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
-      await ixAPI.removeExtractors(extractorIds);
+      await extractorsAPI.remove(extractorIds);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -80,7 +80,7 @@ const IXDashboard = () => {
 
   const handleSave = async (extractor: IXExtractorInfo) => {
     try {
-      await ixAPI.saveExtractors(extractor);
+      await extractorsAPI.save(extractor);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -119,17 +119,17 @@ const IXDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected.length === 1 ? (
-            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
 
           {selected.length ? (
-            <Button size="small" type="button" color="error" onClick={() => setConfirmModal(true)}>
+            <Button type="button" color="error" onClick={() => setConfirmModal(true)}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button size="small" type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}
@@ -165,7 +165,7 @@ const IXDashboard = () => {
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await ixAPI.getExtractors(headers);
+    const extractors = await extractorsAPI.get(headers);
     const templates = await templatesAPI.get(headers);
     return { extractors, templates };
   };
