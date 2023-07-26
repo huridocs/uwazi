@@ -89,7 +89,7 @@ export const suggestionsRoutes = (app: Application) => {
   );
 
   app.get(
-    '/api/suggestions/',
+    '/api/suggestions/aggregation',
     serviceMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
