@@ -8,7 +8,7 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { IXSuggestionsQuerySchema } from 'shared/types/suggestionSchema';
+import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
@@ -54,7 +54,25 @@ export const suggestionsRoutes = (app: Application) => {
     serviceMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
-    validateAndCoerceRequest(IXSuggestionsQuerySchema),
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          required: ['filter'],
+          properties: {
+            filter: SuggestionsQueryFilterSchema,
+            page: {
+              type: 'object',
+              properties: {
+                number: { type: 'number', minimum: 1 },
+                size: { type: 'number', minimum: 1, maximum: 500 },
+              },
+            },
+          },
+        },
+      },
+    }),
     async (
       req: Request & {
         query: IXSuggestionsQuery;

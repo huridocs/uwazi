@@ -189,6 +189,19 @@ const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) =>
 //   };
 // };
 
+const readFilter = (filter: IXSuggestionsFilter) => {
+  const { customFilter, entityTemplates, extractorId } = filter;
+  const filters: FilterQuery<IXSuggestionType> = {
+    extractorId: new ObjectId(extractorId),
+  };
+  if (entityTemplates?.length) {
+    filters.entityTemplate = { $in: entityTemplates };
+  }
+  filters.extractorId = new ObjectId(filter.extractorId);
+
+  return { customFilter, filters };
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -202,8 +215,7 @@ const Suggestions = {
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-    const { language, customFilter, ...filters } = filter;
-    filters.extractorId = new ObjectId(filter.extractorId);
+    const { customFilter, filters } = readFilter(filter);
 
     const count = await IXSuggestionsModel.db
       .aggregate(getMatchStage(filters, customFilter, true))
