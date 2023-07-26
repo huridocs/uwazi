@@ -90,6 +90,21 @@ export interface SuggestionCustomFilter {
   };
 }
 
+export interface IXFilterAggregationResponse {
+  labeled: {
+    _count: number,
+    match: number,
+    mismatch: number,
+  },
+  nonLabeled: {
+    _count: number,
+    noSuggestion: number,
+    noContext: number,
+    obsolete: number,
+    others: number,
+  },
+}
+
 export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;

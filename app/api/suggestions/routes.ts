@@ -10,7 +10,11 @@ import { parseQuery } from 'api/utils/parseQueryMiddleware';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsQuery } from 'shared/types/suggestionType';
+import {
+  IXFilterAggregationResponse,
+  IXSuggestionsQuery,
+  SuggestionCustomFilter,
+} from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
@@ -81,6 +85,56 @@ export const suggestionsRoutes = (app: Application) => {
     ) => {
       const suggestionsList = await Suggestions.get(req.query.filter, { page: req.query.page });
       res.json(suggestionsList);
+    }
+  );
+
+  app.get(
+    '/api/suggestions/',
+    serviceMiddleware,
+    needsAuthorization(['admin']),
+    parseQuery,
+    validateAndCoerceRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          required: ['filter'],
+          properties: {
+            filter: SuggestionsQueryFilterSchema,
+          },
+        },
+      },
+    }),
+    async (
+      req: Request & {
+        query: IXSuggestionsQuery;
+      },
+      res: Response<IXFilterAggregationResponse>
+    ) => {
+      const customFilter: SuggestionCustomFilter = req.query.filter.customFilter || {
+        labeled: { match: false, mismatch: false },
+        nonLabeled: {
+          noSuggestion: false,
+          noContext: false,
+          obsolete: false,
+          others: false,
+        },
+      };
+      const dummyAnswer = {
+        labeled: {
+          _count: 1,
+          match: +customFilter.labeled.match,
+          mismatch: +customFilter.labeled.mismatch,
+        },
+        nonLabeled: {
+          _count: 1,
+          noSuggestion: +customFilter.nonLabeled.noSuggestion,
+          noContext: +customFilter.nonLabeled.noContext,
+          obsolete: +customFilter.nonLabeled.obsolete,
+          others: +customFilter.nonLabeled.others,
+        },
+      };
+      res.json(dummyAnswer);
     }
   );
 
