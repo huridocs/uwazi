@@ -30,7 +30,7 @@ class UpsertRelationshipMigrationFieldService {
     );
     const upserted = await this.transactionManager.run(async () => {
       await this.fieldDS.upsert(field);
-      return this.fieldDS.get(field.id);
+      return this.fieldDS.getById(field.id);
     });
     return upserted.flatten();
   }

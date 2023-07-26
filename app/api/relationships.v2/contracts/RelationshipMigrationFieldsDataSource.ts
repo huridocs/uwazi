@@ -5,7 +5,7 @@ import {
 } from '../model/RelationshipMigrationField';
 
 export interface RelationshipMigrationFieldsDataSource {
-  get(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField>;
+  getById(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField>;
   getAll(): ResultSet<RelationshipMigrationField>;
   create(field: RelationshipMigrationField): Promise<void>;
   upsert(field: RelationshipMigrationField): Promise<void>;

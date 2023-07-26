@@ -14,7 +14,7 @@ class MongoRelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
-  async get(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
+  async getById(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
     const dbo = await this.getCollection().findOne({ ...mapFieldIdToDBO(fieldId) });
     if (!dbo) {
       throw new Error(`Field with id ${fieldId} not found`);

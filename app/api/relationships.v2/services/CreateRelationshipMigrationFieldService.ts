@@ -30,7 +30,7 @@ class CreateRelationshipMigrationFieldService {
     );
     const saved = await this.transactionManager.run(async () => {
       await this.fieldDS.create(field);
-      return this.fieldDS.get(field.id);
+      return this.fieldDS.getById(field.id);
     });
     return saved.flatten();
   }
