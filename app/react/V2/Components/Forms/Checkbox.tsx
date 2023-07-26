@@ -2,11 +2,11 @@ import React, { ReactEventHandler } from 'react';
 import { Checkbox as FlowbiteCheckbox, Label } from 'flowbite-react';
 import { isString } from 'lodash';
 import { Translate } from 'app/I18N';
-import { Option } from './SelectTypes';
 
 interface CheckboxProps {
   name: string;
   onChange?: ReactEventHandler<HTMLInputElement>;
+  checked?: boolean;
   defaultChecked?: boolean;
   label: string;
   className?: string;
@@ -18,13 +18,15 @@ const Checkbox = ({
   onChange,
   className,
   disabled,
-  defaultChecked,
+  checked,
   label,
+  defaultChecked,
 }: CheckboxProps) => (
   <div className="tw-content">
     <fieldset className={`flex flex-wrap gap-4 ${className}`} id={`radio_${name}`}>
       <div className={`flex items-center gap-2 mr-4`}>
         <FlowbiteCheckbox
+          checked={checked}
           id={name}
           name={name}
           disabled={disabled || false}

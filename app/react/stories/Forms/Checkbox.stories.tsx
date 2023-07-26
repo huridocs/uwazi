@@ -21,6 +21,7 @@ const Primary: Story = {
       <Checkbox
         label={args.label}
         defaultChecked={args.defaultChecked}
+        checked={args.checked}
         name={args.name}
         onChange={args.onChange}
         className={args.className}
@@ -37,6 +38,7 @@ const Basic: Story = {
     name: 'awesomeness',
     defaultChecked: false,
     disabled: false,
+    checked: false,
     className: '',
     onChange: action('changed'),
   },
