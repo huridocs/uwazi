@@ -1,5 +1,5 @@
 /* eslint-disable max-classes-per-file */
-class RelationShipMigrationFieldUniqueId {
+class RelationshipMigrationFieldUniqueId {
   readonly sourceTemplate: string;
 
   readonly relationType: string;
@@ -19,12 +19,12 @@ class RelationShipMigrationFieldUniqueId {
 class RelationshipMigrationField {
   public ignored: boolean = false;
 
-  readonly id: RelationShipMigrationFieldUniqueId;
+  readonly id: RelationshipMigrationFieldUniqueId;
 
   readonly infered: boolean = false;
 
   constructor(
-    id: RelationShipMigrationFieldUniqueId,
+    id: RelationshipMigrationFieldUniqueId,
     ignored: boolean = false,
     infered: boolean = false
   ) {
@@ -44,4 +44,4 @@ class RelationshipMigrationField {
   }
 }
 
-export { RelationshipMigrationField, RelationShipMigrationFieldUniqueId };
+export { RelationshipMigrationField, RelationshipMigrationFieldUniqueId };

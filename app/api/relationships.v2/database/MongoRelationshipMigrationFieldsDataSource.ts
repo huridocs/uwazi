@@ -2,7 +2,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
-  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
 } from '../model/RelationshipMigrationField';
 import { mapFieldIdToDBO, mapFieldToApp, mapFieldToDBO } from './RelationshipMigrationFieldMappers';
@@ -14,7 +14,7 @@ class MongoRelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
-  async get(fieldId: RelationShipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
+  async get(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
     const dbo = await this.getCollection().findOne({ ...mapFieldIdToDBO(fieldId) });
     if (!dbo) {
       throw new Error(`Field with id ${fieldId} not found`);
@@ -30,7 +30,7 @@ class MongoRelationshipMigrationFieldsDataSource
     );
   }
 
-  async delete(fieldId: RelationShipMigrationFieldUniqueId): Promise<void> {
+  async delete(fieldId: RelationshipMigrationFieldUniqueId): Promise<void> {
     await this.getCollection().deleteOne({ ...mapFieldIdToDBO(fieldId) });
   }
 

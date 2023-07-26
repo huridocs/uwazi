@@ -1,13 +1,13 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import {
-  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
 } from '../model/RelationshipMigrationField';
 
 export interface RelationshipMigrationFieldsDataSource {
-  get(fieldId: RelationShipMigrationFieldUniqueId): Promise<RelationshipMigrationField>;
+  get(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField>;
   getAll(): ResultSet<RelationshipMigrationField>;
   create(field: RelationshipMigrationField): Promise<void>;
   upsert(field: RelationshipMigrationField): Promise<void>;
-  delete(fieldId: RelationShipMigrationFieldUniqueId): Promise<void>;
+  delete(fieldId: RelationshipMigrationFieldUniqueId): Promise<void>;
 }

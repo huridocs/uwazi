@@ -1,6 +1,6 @@
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import {
-  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
 } from '../model/RelationshipMigrationField';
 import {
@@ -9,7 +9,7 @@ import {
 } from './schemas/relationshipMigrationFieldTypes';
 
 const mapFieldIdToDBO = (
-  fieldId: RelationShipMigrationFieldUniqueId
+  fieldId: RelationshipMigrationFieldUniqueId
 ): RelationshipMigrationFieldUniqueIdDBO => ({
   sourceTemplate: MongoIdHandler.mapToDb(fieldId.sourceTemplate),
   relationType: MongoIdHandler.mapToDb(fieldId.relationType),
@@ -25,11 +25,11 @@ const mapFieldToDBO = (field: RelationshipMigrationField): RelationshipMigration
 
 const mapFieldIdToApp = (
   field: RelationshipMigrationFieldUniqueIdDBO
-): RelationShipMigrationFieldUniqueId => {
+): RelationshipMigrationFieldUniqueId => {
   const targetTemplate = field.targetTemplate
     ? MongoIdHandler.mapToApp(field.targetTemplate)
     : undefined;
-  return new RelationShipMigrationFieldUniqueId(
+  return new RelationshipMigrationFieldUniqueId(
     MongoIdHandler.mapToApp(field.sourceTemplate),
     MongoIdHandler.mapToApp(field.relationType),
     targetTemplate

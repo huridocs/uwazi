@@ -4,7 +4,7 @@ import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipPro
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { RelationshipMigrationFieldsDataSource } from '../contracts/RelationshipMigrationFieldsDataSource';
 import {
-  RelationShipMigrationFieldUniqueId,
+  RelationshipMigrationFieldUniqueId,
   RelationshipMigrationField,
 } from '../model/RelationshipMigrationField';
 
@@ -40,7 +40,7 @@ class GetRelationshipMigrationFieldService {
     const allV1Info = allV1Properties.map(
       p =>
         new RelationshipMigrationField(
-          new RelationShipMigrationFieldUniqueId(p.template, p.relationType, p.content),
+          new RelationshipMigrationFieldUniqueId(p.template, p.relationType, p.content),
           false,
           true
         )
