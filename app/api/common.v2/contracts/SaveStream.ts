@@ -1,6 +1,6 @@
-interface Sink<T> {
+interface SaveStream<T> {
   flush(): Promise<void>;
   push(item: T): Promise<void>;
 }
 
-export type { Sink };
+export type { SaveStream };

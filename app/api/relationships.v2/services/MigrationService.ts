@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { Sink } from 'api/common.v2/contracts/Sink';
+import { SaveStream } from 'api/common.v2/contracts/SaveStream';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
@@ -265,7 +265,7 @@ export class MigrationService {
   }
 
   private async recordUnusedConnections(
-    unusedHubsSaveStream: Sink<MigrationHubRecord>,
+    unusedHubsSaveStream: SaveStream<MigrationHubRecord>,
     stats: Statistics,
     group: ReadableV1Connection[]
   ): Promise<void> {
@@ -284,7 +284,7 @@ export class MigrationService {
     hubIdBatch: string[],
     matcher: RelationshipMatcher,
     stats: Statistics,
-    unusedHubsSaveStream: Sink<MigrationHubRecord>,
+    unusedHubsSaveStream: SaveStream<MigrationHubRecord>,
     transform: boolean = false,
     write: boolean = false
   ): Promise<void> {

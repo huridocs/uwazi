@@ -1,12 +1,12 @@
 import { Collection, Document, OptionalId } from 'mongodb';
-import { Sink } from '../contracts/Sink';
+import { SaveStream } from '../contracts/SaveStream';
 import { BulkWriteStream } from './BulkWriteStream';
 
 interface MapperFunc<U, T> {
   (elem: U): OptionalId<T> | Promise<OptionalId<T>>;
 }
 
-class MongoSaveStream<T extends Document, U = T> implements Sink<U> {
+class MongoSaveStream<T extends Document, U = T> implements SaveStream<U> {
   private collection: Collection<T>;
 
   private mapper: MapperFunc<U, T>;
