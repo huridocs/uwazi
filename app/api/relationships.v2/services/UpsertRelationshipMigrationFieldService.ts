@@ -28,11 +28,10 @@ class UpsertRelationshipMigrationFieldService {
       new RelationshipMigrationFieldUniqueId(sourceTemplate, relationType, targetTemplate),
       ignored
     );
-    const upserted = await this.transactionManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await this.fieldDS.upsert(field);
-      return this.fieldDS.getById(field.id);
     });
-    return upserted.flatten();
+    return field.flatten();
   }
 }
 

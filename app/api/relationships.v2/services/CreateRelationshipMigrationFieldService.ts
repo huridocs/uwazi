@@ -28,11 +28,10 @@ class CreateRelationshipMigrationFieldService {
       new RelationshipMigrationFieldUniqueId(sourceTemplate, relationType, targetTemplate),
       ignored
     );
-    const saved = await this.transactionManager.run(async () => {
+    await this.transactionManager.run(async () => {
       await this.fieldDS.create(field);
-      return this.fieldDS.getById(field.id);
     });
-    return saved.flatten();
+    return field.flatten();
   }
 }
 

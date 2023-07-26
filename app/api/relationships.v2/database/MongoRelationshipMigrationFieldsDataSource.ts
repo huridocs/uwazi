@@ -14,14 +14,6 @@ class MongoRelationshipMigrationFieldsDataSource
 {
   protected collectionName = 'relationshipMigrationFields';
 
-  async getById(fieldId: RelationshipMigrationFieldUniqueId): Promise<RelationshipMigrationField> {
-    const dbo = await this.getCollection().findOne({ ...mapFieldIdToDBO(fieldId) });
-    if (!dbo) {
-      throw new Error(`Field with id ${fieldId} not found`);
-    }
-    return mapFieldToApp(dbo);
-  }
-
   getAll(): MongoResultSet<RelationshipMigrationFieldDBO, RelationshipMigrationField> {
     const cursor = this.getCollection().find();
     return new MongoResultSet<RelationshipMigrationFieldDBO, RelationshipMigrationField>(
