@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongodb';
 
+import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { Property, PropertyTypes } from 'api/templates.v2/model/Property';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
@@ -10,6 +11,7 @@ import {
   ReadableRelationship,
   Relationship,
 } from 'api/relationships.v2/model/Relationship';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 const entityPointer = (entity: string): EntityPointer => new EntityPointer(entity);
 
@@ -80,6 +82,19 @@ const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
       from: { entity: from },
       to: { entity: to },
       type: idMapper(type),
+    }),
+
+    translationDBO: (
+      key: string,
+      value: string,
+      language: LanguageISO6391,
+      context: TranslationDBO['context']
+    ): TranslationDBO => ({
+      _id: idMapper(`${key}-${language}-${context.id}`),
+      key,
+      value,
+      language,
+      context,
     }),
   },
 

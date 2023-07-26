@@ -9,6 +9,7 @@ interface TableProps<T> {
   columns: ColumnDef<T, any>[];
   data: T[];
   title?: string | React.ReactNode;
+  footer?: string | React.ReactNode;
   initialState?: Partial<TableState>;
   enableSelection?: boolean;
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;

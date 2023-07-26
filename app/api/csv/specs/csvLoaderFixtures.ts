@@ -4,6 +4,7 @@ import { templateUtils } from 'api/templates';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const template1Id = db.id();
 const multiSelectThesaurusId = db.id();
@@ -11,51 +12,39 @@ const thesauri1Id = db.id();
 const templateToRelateId = db.id();
 const templateWithGeneratedTitle = db.id();
 
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
+
 const commonTranslationsV2 = (language: LanguageISO6391): TranslationDBO[] => [
-  {
-    language,
-    key: 'multivalue1',
-    value: 'multivalue1',
-    context: {
-      id: multiSelectThesaurusId.toString(),
-      type: 'Thesaurus',
-      label: 'multi_select_thesaurus',
-    },
-  },
-  {
-    language,
-    key: 'multi_select_thesaurus',
-    value: 'multi_select_thesaurus',
-    context: {
-      id: multiSelectThesaurusId.toString(),
-      type: 'Thesaurus',
-      label: 'multi_select_thesaurus',
-    },
-  },
-  {
-    language,
-    key: 'thesauri1',
-    value: 'thesauri1',
-    context: { id: thesauri1Id.toString(), type: 'Thesaurus', label: 'thesauri1' },
-  },
-  {
-    language,
-    key: 'original 3',
-    value: 'original 3',
-    context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-  },
-  {
-    language,
-    key: 'original 2',
-    value: 'original 2',
-    context: { id: 'System', type: 'Thesaurus', label: 'System' },
-  },
-  {
-    language,
-    key: 'original 1',
-    value: 'original 1',
-    context: { id: 'System', type: 'Thesaurus', label: 'System' },
-  },
+  createTranslationDBO('multivalue1', 'multivalue1', language, {
+    id: multiSelectThesaurusId.toString(),
+    type: 'Thesaurus',
+    label: 'multi_select_thesaurus',
+  }),
+  createTranslationDBO('multi_select_thesaurus', 'multi_select_thesaurus', language, {
+    id: multiSelectThesaurusId.toString(),
+    type: 'Thesaurus',
+    label: 'multi_select_thesaurus',
+  }),
+  createTranslationDBO('thesauri1', 'thesauri1', language, {
+    id: thesauri1Id.toString(),
+    type: 'Thesaurus',
+    label: 'thesauri1',
+  }),
+  createTranslationDBO('original 3', 'original 3', language, {
+    id: 'System',
+    type: 'Uwazi UI',
+    label: 'System',
+  }),
+  createTranslationDBO('original 2', 'original 2', language, {
+    id: 'System',
+    type: 'Thesaurus',
+    label: 'System',
+  }),
+  createTranslationDBO('original 1', 'original 1', language, {
+    id: 'System',
+    type: 'Thesaurus',
+    label: 'System',
+  }),
 ];
 
 export default {
