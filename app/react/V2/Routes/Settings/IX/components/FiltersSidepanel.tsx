@@ -4,6 +4,7 @@ import { Translate, t } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
+import { useFetcher } from 'react-router-dom';
 
 interface FiltersSidepanelProps {
   showSidepanel: boolean;
@@ -39,6 +40,8 @@ const FiltersSidepanel = ({
   setShowSidepanel,
   aggregation,
 }: FiltersSidepanelProps) => {
+  const fetcher = useFetcher();
+
   const defaultFilter: Filter = {
     labeled: {
       match: false,
@@ -62,8 +65,13 @@ const FiltersSidepanel = ({
     defaultValues: defaultFilter,
   });
 
-  const submitFilters = (filters: Filter) => {
-    console.log(filters);
+  const submitFilters = async (filters: Filter) => {
+    const formData = new FormData();
+    formData.set('intent', 'filter-suggestions');
+    formData.set('data', JSON.stringify(filters));
+    fetcher.submit(formData, { method: 'post' });
+    setShowSidepanel(false);
+    reset(defaultFilter);
   };
 
   const checkOption = (e: any, optionName: any) => {

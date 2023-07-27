@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { ActionFunction, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
@@ -122,7 +122,7 @@ const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId } }) => {
     const response = await suggestionsAPI.get(
-      { filter: { extractorId }, page: { number: 1, size: 20 } },
+      { filter: { extractorId: extractorId! }, page: { number: 1, size: 20 } },
       headers
     );
     const extractors = await extractorsAPI.getById(extractorId!, headers);
@@ -135,7 +135,20 @@ const IXSuggestionsLoader =
       suggestions: response.suggestions,
       extractor: extractors[0],
       templates,
-      aggregation: aggregation || {},
+      aggregation: aggregation,
     };
   };
-export { IXSuggestions, IXSuggestionsLoader };
+
+const IXSuggestionsAction =
+  (): ActionFunction =>
+  async ({ request, params: { extractorId } }) => {
+    const formData = await request.formData();
+    const formValues = JSON.parse(formData.get('data') as string);
+
+    return suggestionsAPI.get({
+      page: { number: 1, size: 20 },
+      filter: { extractorId: extractorId!, customFilter: formValues },
+    });
+  };
+
+export { IXSuggestions, IXSuggestionsLoader, IXSuggestionsAction };

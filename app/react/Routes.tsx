@@ -58,7 +58,11 @@ import {
   IXSuggestions as OldIXSuggestions,
   IXSuggestionsLoader as OldIXSuggestionsLoader,
 } from './MetadataExtraction/SuggestionsContainer';
-import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
+import {
+  IXSuggestions,
+  IXSuggestionsAction,
+  IXSuggestionsLoader,
+} from 'V2/Routes/Settings/IX/IXSuggestions';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
@@ -119,6 +123,7 @@ const getRoutesLayout = (
       <Route
         path="metadata_extraction/suggestions/:extractorId"
         loader={IXSuggestionsLoader(headers)}
+        action={IXSuggestionsAction()}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">

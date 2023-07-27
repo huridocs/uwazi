@@ -7,9 +7,10 @@ const get = async (
   parameters: {
     page: { number: number; size: number };
     filter: {
-      extractorId?: string;
+      extractorId: string;
       states?: string[];
       entityTemplates?: string[];
+      customFilter?: any;
     };
   },
   headers?: IncomingHttpHeaders
