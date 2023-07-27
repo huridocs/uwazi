@@ -273,3 +273,16 @@ describe('getByEntities()', () => {
     ]);
   });
 });
+
+describe('deleteAll()', () => {
+  it('should delete all relationships', async () => {
+    const ds = new MongoRelationshipsDataSource(
+      testingDB.mongodb!,
+      new MongoTransactionManager(getClient())
+    );
+
+    await ds.deleteAll();
+    const rels = await testingDB.mongodb!.collection('relationships').find().toArray();
+    expect(rels).toEqual([]);
+  });
+});

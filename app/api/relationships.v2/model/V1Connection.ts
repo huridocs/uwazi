@@ -102,7 +102,7 @@ class V1Connection {
   }
 }
 
-class V1ConnectionDisplayed extends V1Connection {
+class ReadableV1Connection extends V1Connection {
   readonly entityTemplate: string;
 
   readonly entityTitle: string;
@@ -127,4 +127,4 @@ class V1ConnectionDisplayed extends V1Connection {
   }
 }
 
-export { V1Connection, V1ConnectionDisplayed, V1SelectionRectangle, V1TextReference };
+export { V1Connection, ReadableV1Connection, V1SelectionRectangle, V1TextReference };
