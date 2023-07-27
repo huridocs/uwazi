@@ -62,6 +62,7 @@ describe('collection with automatic log to updatelogs', () => {
     beforeEach(() => {
       jest.spyOn(Date, 'now').mockReturnValue(1);
     });
+
     const casesForUpdates = [
       {
         method: 'insertOne',
@@ -97,13 +98,7 @@ describe('collection with automatic log to updatelogs', () => {
             .updateOne({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
         },
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 1,
-          modifiedCount: 1,
-          upsertedCount: 0,
-          upsertedId: null,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
         method: 'updateOne without previous updatelog',
@@ -116,11 +111,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) }],
         expectedDBStateOnTransactionError: [],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 1,
-          modifiedCount: 1,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
         method: 'updateOne with upsert',
@@ -138,13 +129,7 @@ describe('collection with automatic log to updatelogs', () => {
           { ...updateLogsBlankState[0] },
           updateLog({ mongoId: id('non existent'), timestamp: 2 }),
         ],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 0,
-          modifiedCount: 0,
-          upsertedCount: 1,
-          upsertedId: id('non existent'),
-        },
+        expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent') },
       },
       {
         method: 'updateOne with 0 matches',
@@ -153,13 +138,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .updateOne({ _id: id('non existent') }, { $set: { data: 'updated data' } }),
         expectedDBState: updateLogsBlankState,
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 0,
-          modifiedCount: 0,
-          upsertedCount: 0,
-          upsertedId: null,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 0 },
       },
       {
         method: 'replaceOne',
@@ -170,13 +149,7 @@ describe('collection with automatic log to updatelogs', () => {
             .replaceOne({ _id: id('collection id 1') }, { data: 'replaced document' });
         },
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 1,
-          modifiedCount: 1,
-          upsertedCount: 0,
-          upsertedId: null,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
         method: 'replaceOne with upsert',
@@ -194,11 +167,7 @@ describe('collection with automatic log to updatelogs', () => {
           { ...updateLogsBlankState[0] },
           updateLog({ mongoId: id('non existent id'), timestamp: 2 }),
         ],
-        expectedResult: {
-          acknowledged: true,
-          upsertedCount: 1,
-          upsertedId: id('non existent id'),
-        },
+        expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent id') },
       },
       {
         method: 'replaceOne without previous updatelog',
@@ -211,10 +180,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBStateOnTransactionError: [],
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) }],
-        expectedResult: {
-          acknowledged: true,
-          upsertedCount: 0,
-        },
+        expectedResult: { acknowledged: true, upsertedCount: 0 },
       },
       {
         method: 'findOneAndUpdate',
@@ -225,10 +191,7 @@ describe('collection with automatic log to updatelogs', () => {
             .findOneAndUpdate({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
         },
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
-        expectedResult: {
-          ok: 1,
-          value: { _id: id('collection id 1'), data: 'some old data' },
-        },
+        expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
       },
       {
         method: 'findOneAndUpdate with upsert',
@@ -249,7 +212,6 @@ describe('collection with automatic log to updatelogs', () => {
         expectedResult: {
           lastErrorObject: { n: 1, updatedExisting: false, upserted: id('non existent id') },
           ok: 1,
-          value: null,
         },
       },
       {
@@ -274,10 +236,7 @@ describe('collection with automatic log to updatelogs', () => {
             .findOneAndReplace({ _id: id('collection id 1') }, { data: 'updated data' });
         },
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
-        expectedResult: {
-          ok: 1,
-          value: { _id: id('collection id 1'), data: 'some old data' },
-        },
+        expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
       },
       {
         method: 'findOneAndReplace with upsert',
@@ -298,7 +257,6 @@ describe('collection with automatic log to updatelogs', () => {
         expectedResult: {
           lastErrorObject: { n: 1, updatedExisting: false, upserted: id('non existent id') },
           ok: 1,
-          value: null,
         },
       },
       {
@@ -312,10 +270,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBStateOnTransactionError: [],
         expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) }],
-        expectedResult: {
-          ok: 1,
-          value: { _id: id('collection id 1'), data: 'some old data' },
-        },
+        expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
       },
       {
         method: 'updateMany',
@@ -332,13 +287,7 @@ describe('collection with automatic log to updatelogs', () => {
           updateLog({ mongoId: id('data 1'), timestamp: 2 }),
           updateLog({ mongoId: id('data 2'), timestamp: 2 }),
         ],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 3,
-          modifiedCount: 3,
-          upsertedCount: 0,
-          upsertedId: null,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 3, modifiedCount: 3 },
       },
       {
         method: 'updateMany with upsert',
@@ -356,13 +305,7 @@ describe('collection with automatic log to updatelogs', () => {
           ...updateLogsBlankState,
           updateLog({ mongoId: id('non existent id'), timestamp: 2 }),
         ],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 0,
-          modifiedCount: 0,
-          upsertedCount: 1,
-          upsertedId: id('non existent id'),
-        },
+        expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent id') },
       },
       {
         method: 'updateMany without previous updatelogs (should test more than one update)',
@@ -374,14 +317,11 @@ describe('collection with automatic log to updatelogs', () => {
         expectedDBStateOnTransactionError: [],
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) },
-          // updateLog({ mongoId: id('data 1'), timestamp: 2 }),
+          // red test to continue here ( should test more than one occurrence )
+          updateLog({ mongoId: id('data 1'), timestamp: 2 }),
           // updateLog({ mongoId: id('data 2'), timestamp: 2 }),
         ],
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 1,
-          modifiedCount: 1,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
         method: 'updateMany with 0 matches',
