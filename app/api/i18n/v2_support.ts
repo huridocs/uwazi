@@ -239,19 +239,23 @@ export const migrateTranslationsToV2 = async () => {
   }
 
   try {
-    await db.collection('translationsV2_helper').createIndex({ migration_helper: 1 });
-    await db.collection('translationsV2_helper').insertOne({ migration_helper: true });
+    await db
+      .collection('translationsV2_helper')
+      .createIndex({ migration_helper: 1 }, { unique: true });
+    await db
+      .collection('translationsV2_helper')
+      .insertOne({ migration_helper: true, migrated: false });
   } catch (e) {}
 
-  const needsMigration = await db
+  const migrationHelper = await db
     .collection('translationsV2_helper')
-    .findOneAndUpdate({ migration_helper: true }, { $set: { migrating: true } });
+    .findOneAndUpdate({ migration_helper: true, migrated: false }, { $set: { migrating: true } });
 
-  if (needsMigration.value?.migrating) {
+  if (migrationHelper.value?.migrating) {
     return false;
   }
 
-  if (needsMigration.value?.migrated) {
+  if (migrationHelper.value?.migrated || !migrationHelper.value) {
     return true;
   }
 
@@ -260,5 +264,5 @@ export const migrateTranslationsToV2 = async () => {
   await db
     .collection('translationsV2_helper')
     .findOneAndUpdate({ migration_helper: true }, { $set: { migrated: true, migrating: false } });
-  return false;
+  return true;
 };

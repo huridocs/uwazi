@@ -30,7 +30,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
             translation.locale
           );
           flatTranslations.push({
-            _id: new ObjectId().toString(),
+            _id: new ObjectId(),
             language: translation.locale,
             key: contextValue.key,
             value: contextValue.value,

@@ -1,4 +1,5 @@
 import testingDB from 'api/utils/testing_db';
+import { ObjectId } from 'mongodb';
 import migration from '../index.js';
 import fixtures from './fixtures.js';
 
@@ -220,12 +221,12 @@ describe('migration set_up_new_relationship_collection', () => {
       .toArray();
 
     expect(updatelogs).toMatchObject([
-      { timestamp: 1, namespace: 'translationsV2', deleted: false },
-      { timestamp: 2, namespace: 'translationsV2', deleted: false },
-      { timestamp: 3, namespace: 'translationsV2', deleted: false },
-      { timestamp: 4, namespace: 'translationsV2', deleted: false },
-      { timestamp: 5, namespace: 'translationsV2', deleted: false },
-      { timestamp: 6, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 1, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 2, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 3, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 4, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 5, namespace: 'translationsV2', deleted: false },
+      { mongoId: expect.any(ObjectId), timestamp: 6, namespace: 'translationsV2', deleted: false },
     ]);
 
     const translationsMigrated = await db
@@ -235,13 +236,12 @@ describe('migration set_up_new_relationship_collection', () => {
       .toArray();
 
     expect(translationsMigrated).toMatchObject([
-      { key: 'Key 1', value: 'Value 1 es', language: 'en' },
-      { key: 'Key 2', value: 'Value 2 en', language: 'en' },
-      { key: 'Key 3', value: 'Value 3 en', language: 'en' },
-
-      { key: 'Key 1', value: 'Value 1 es', language: 'es' },
-      { key: 'Key 2', value: 'Value 2 en', language: 'es' },
-      { key: 'Key 3', value: 'Value 3 es', language: 'es' },
+      { _id: expect.any(ObjectId), key: 'Key 1', value: 'Value 1 es', language: 'en' },
+      { _id: expect.any(ObjectId), key: 'Key 2', value: 'Value 2 en', language: 'en' },
+      { _id: expect.any(ObjectId), key: 'Key 3', value: 'Value 3 en', language: 'en' },
+      { _id: expect.any(ObjectId), key: 'Key 1', value: 'Value 1 es', language: 'es' },
+      { _id: expect.any(ObjectId), key: 'Key 2', value: 'Value 2 en', language: 'es' },
+      { _id: expect.any(ObjectId), key: 'Key 3', value: 'Value 3 es', language: 'es' },
     ]);
   });
 
