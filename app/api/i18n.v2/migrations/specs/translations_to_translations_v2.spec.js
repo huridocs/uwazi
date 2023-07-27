@@ -48,6 +48,7 @@ describe('migration set_up_new_relationship_collection', () => {
 
   it('should migrate translations to translationsV2 as atomic entries and be idempotent', async () => {
     await migration.up(db);
+
     const translationsMigrated = await db
       .collection('translationsV2')
       .find({ 'context.id': 'System', language: 'en' })
@@ -163,5 +164,92 @@ describe('migration set_up_new_relationship_collection', () => {
       { key: 'Key 3', value: 'Value 3 es', language: 'zh' },
       { key: 'Key 4', value: 'Value 4 zh', language: 'zh' },
     ]);
+  });
+
+  it('should create updatelogs in order to support sync out of the box', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(0);
+
+    await testingDB.setupFixturesAndContext({
+      ...fixtures,
+
+      settings: [
+        {
+          languages: [
+            { key: 'es', label: 'Español' },
+            { key: 'en', label: 'English', default: true },
+          ],
+        },
+      ],
+      translations: [
+        {
+          type: 'translation',
+          locale: 'es',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: [
+                { key: 'Key 1', value: 'Value 1 es' },
+                { key: 'Key 3', value: 'Value 3 es' },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'translation',
+          locale: 'en',
+          contexts: [
+            {
+              id: 'System',
+              label: 'System',
+              values: [
+                { key: 'Key 2', value: 'Value 2 en' },
+                { key: 'Key 3', value: 'Value 3 en' },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+
+    await migration.up(db);
+    const updatelogs = await db
+      .collection('updatelogs')
+      .find({ namespace: 'translationsV2' })
+      .sort({ timestamp: 1 })
+      .toArray();
+
+    expect(updatelogs).toMatchObject([
+      { timestamp: 1, namespace: 'translationsV2', deleted: false },
+      { timestamp: 2, namespace: 'translationsV2', deleted: false },
+      { timestamp: 3, namespace: 'translationsV2', deleted: false },
+      { timestamp: 4, namespace: 'translationsV2', deleted: false },
+      { timestamp: 5, namespace: 'translationsV2', deleted: false },
+      { timestamp: 6, namespace: 'translationsV2', deleted: false },
+    ]);
+
+    const translationsMigrated = await db
+      .collection('translationsV2')
+      .find({ _id: { $in: updatelogs.map(u => u.mongoId) } })
+      .sort({ language: 1, key: 1 })
+      .toArray();
+
+    expect(translationsMigrated).toMatchObject([
+      { key: 'Key 1', value: 'Value 1 es', language: 'en' },
+      { key: 'Key 2', value: 'Value 2 en', language: 'en' },
+      { key: 'Key 3', value: 'Value 3 en', language: 'en' },
+
+      { key: 'Key 1', value: 'Value 1 es', language: 'es' },
+      { key: 'Key 2', value: 'Value 2 en', language: 'es' },
+      { key: 'Key 3', value: 'Value 3 es', language: 'es' },
+    ]);
+  });
+
+  it('should maintain updatelogs not beloning to translationsV2 namespace', async () => {
+    const updatelogs = await db
+      .collection('updatelogs')
+      .find({ namespace: 'test_namespace' })
+      .toArray();
+    expect(updatelogs.length).toBe(1);
   });
 });

@@ -1,3 +1,12 @@
+import { ObjectId } from 'mongodb';
+
+let timeoffset = 1;
+const generateTimestamp = () => {
+  const result = Date.now() + timeoffset;
+  timeoffset += 1;
+  return result;
+};
+
 /* eslint-disable no-await-in-loop */
 const flattenTranslations = (translation, languagesByKeyContext) => {
   if (translation.contexts?.length) {
@@ -21,6 +30,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
             translation.locale
           );
           flatTranslations.push({
+            _id: new ObjectId().toString(),
             language: translation.locale,
             key: contextValue.key,
             value: contextValue.value,
@@ -56,10 +66,13 @@ export default {
   },
 
   async up(db) {
+    timeoffset = 1;
     // process.stdout.write(`${this.name}...\r\n`);
     await this.createIndexes(db);
     const newTranslations = await db.collection(newTranslationsCollection);
     await newTranslations.deleteMany({});
+    const updatelogs = await db.collection('updatelogs');
+    await updatelogs.deleteMany({ namespace: newTranslationsCollection });
 
     const configuredLanguageKeys = (await db.collection('settings').findOne()).languages.map(
       l => l.key
@@ -74,6 +87,14 @@ export default {
         const flattenedTranslations = flattenTranslations(translation, languagesByKeyContext);
         if (flattenedTranslations.length) {
           await newTranslations.insertMany(flattenedTranslations);
+          await updatelogs.insertMany(
+            flattenedTranslations.map(t => ({
+              namespace: newTranslationsCollection,
+              deleted: false,
+              mongoId: t._id,
+              timestamp: generateTimestamp(),
+            }))
+          );
         }
       }
     }
@@ -99,8 +120,19 @@ export default {
     if (keyContextMissingInSomeLanguage.length) {
       await keyContextMissingInSomeLanguage.reduce(async (previous, keyContext) => {
         await previous;
-        await newTranslations.insertMany(
-          keyContext.missingLanguages.map(language => ({ ...keyContext.translation, language }))
+        const missingForLanguage = keyContext.missingLanguages.map(language => ({
+          ...keyContext.translation,
+          language,
+          _id: new ObjectId(),
+        }));
+        await newTranslations.insertMany(missingForLanguage);
+        await updatelogs.insertMany(
+          missingForLanguage.map(t => ({
+            namespace: newTranslationsCollection,
+            deleted: false,
+            mongoId: t._id,
+            timestamp: generateTimestamp(),
+          }))
         );
       }, Promise.resolve());
     }
