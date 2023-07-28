@@ -19,24 +19,19 @@ const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   if (customFilter.nonLabeled.noContext) {
     orFilters.push({
       'state.labeled': false,
-      'state.withSuggestion': true,
       'state.hasContext': false,
     });
   }
   if (customFilter.nonLabeled.obsolete) {
     orFilters.push({
       'state.labeled': false,
-      'state.withSuggestion': true,
-      'state.hasContext': true,
       'state.obsolete': true,
     });
   }
   if (customFilter.nonLabeled.others) {
     orFilters.push({
       'state.labeled': false,
-      'state.withSuggestion': true,
-      'state.hasContext': true,
-      'state.obsolete': false,
+      'state.error': true,
     });
   }
   return orFilters;
@@ -58,12 +53,14 @@ export const getMatchStage = (
 
   const countExpression = countOnly ? [{ $count: 'count' }] : [];
 
-  return [
+  const matchStage = [
     {
       $match: matchQuery,
     },
     ...countExpression,
   ];
+
+  return matchStage;
 };
 
 export const getEntityStage = (languages: LanguagesListSchema) => {

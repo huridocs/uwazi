@@ -127,6 +127,20 @@ const fixtures: DBFixture = {
       error: '',
     },
     {
+      entityId: 'shared1',
+      fileId: factory.id('F1'),
+      entityTemplate: personTemplateId.toString(),
+      propertyName: 'age',
+      extractorId: factory.id('age_extractor'),
+      suggestedValue: '17',
+      segment: 'Robin is 17.',
+      language: 'en',
+      date: 5,
+      page: 2,
+      status: 'ready',
+      error: '',
+    },
+    {
       entityId: 'shared2',
       entityTemplate: personTemplateId.toString(),
       propertyName: 'super_powers',
@@ -203,6 +217,20 @@ const fixtures: DBFixture = {
       extractorId: factory.id('age_extractor'),
       suggestedValue: '',
       segment: 'Alfred 67 years old',
+      language: 'en',
+      date: 4000,
+      page: 3,
+      status: 'ready',
+      error: '',
+    },
+    {
+      entityId: 'shared3',
+      fileId: factory.id('F7'),
+      entityTemplate: personTemplateId.toString(),
+      propertyName: 'super_powers',
+      extractorId: factory.id('super_powers_extractor'),
+      suggestedValue: 'puts up with Bruce Wayne',
+      segment: 'he puts up with Bruce Wayne',
       language: 'en',
       date: 4000,
       page: 3,
@@ -431,7 +459,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared1',
       title: 'Robin',
       language: 'en',
-      metadata: { enemy: [{ value: 'Red Robin' }] },
+      metadata: { enemy: [{ value: 'Red Robin' }], age: [{ value: 99 }] },
       template: personTemplateId,
     },
     {
@@ -440,6 +468,7 @@ const fixtures: DBFixture = {
       title: 'Robin es',
       language: 'es',
       template: personTemplateId,
+      metadata: { age: [{ value: 99 }] },
     },
     {
       _id: testingDB.id(),
@@ -466,11 +495,11 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
+      _id: factory.id('Alfred-english-entity'),
       sharedId: 'shared3',
       title: 'Alfred',
       language: 'en',
-      metadata: { age: [{ value: 23 }] },
+      metadata: { age: [{ value: 23 }], super_powers: [{ value: 'no super powers' }] },
       template: personTemplateId,
     },
     {
@@ -517,7 +546,9 @@ const fixtures: DBFixture = {
       sharedId: 'shared7',
       title: 'The Riddler',
       language: 'en',
-      metadata: { first_encountered: [{ value: 1654732800 }] },
+      metadata: {
+        first_encountered: [{ value: 1654732800 }],
+      },
       template: heroTemplateId,
     },
     {
@@ -554,6 +585,15 @@ const fixtures: DBFixture = {
     },
   ],
   files: [
+    factory.file('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
+      {
+        name: 'age',
+        selection: {
+          text: '99',
+          selectionRectangles: [{ top: 0, left: 0, width: 1, height: 2, page: '2' }],
+        },
+      },
+    ]),
     factory.file('F2', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
       {
         name: 'super_powers',
@@ -615,6 +655,23 @@ const fixtures: DBFixture = {
       },
     ]),
     factory.file('F6', 'shared8', 'document', 'documentRiddler.pdf', 'eng', '', []),
+    factory.file('F7', 'shared3', 'document', 'documentAlfred.pdf', 'eng', '', [
+      {
+        name: 'super_powers',
+        selection: {
+          text: 'no super powers',
+          selectionRectangles: [
+            {
+              top: 0,
+              left: 0,
+              width: 0,
+              height: 0,
+              page: '1',
+            },
+          ],
+        },
+      },
+    ]),
   ],
   templates: [
     {
@@ -709,8 +766,11 @@ const stateFilterFixtures: DBFixture = {
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-obsolete', 'template1', {
       testprop: [{ value: 'test-unlabeled-obsolete' }],
     }),
-    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-others', 'template1', {
-      testprop: [{ value: 'test-unlabeled-others' }],
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-processing', 'template1', {
+      testprop: [{ value: 'test-unlabeled-processing' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-error', 'template1', {
+      testprop: [{ value: 'test-unlabeled-error' }],
     }),
   ],
   files: [
@@ -799,6 +859,38 @@ const stateFilterFixtures: DBFixture = {
       'unlabeled-others',
       'document',
       'unlotes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-en',
+      'unlabeled-processing',
+      'document',
+      'unlpen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-es',
+      'unlabeled-processing',
+      'document',
+      'unlpes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-en',
+      'unlabeled-error',
+      'document',
+      'unleen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-es',
+      'unlabeled-error',
+      'document',
+      'unlees.pdf',
       'es',
       undefined
     ),
@@ -949,33 +1041,65 @@ const stateFilterFixtures: DBFixture = {
       }
     ),
     factory.ixSuggestion(
-      'unlabeled-others-suggestion-en',
+      'unlabeled-processing-suggestion-en',
       'test_extractor',
-      'unlabeled-others',
+      'unlabeled-processing',
       'template1',
-      'unlabeled-others-file-en',
+      'unlabeled-processing-file-en',
       'testprop',
       {
-        status: 'ready',
+        status: 'processing',
         date: 1001,
         language: 'en',
-        suggestedValue: 'test-unlabeled-others',
-        segment: 'test-unlabeled-others',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
       }
     ),
     factory.ixSuggestion(
-      'unlabeled-others-suggestion-es',
+      'unlabeled-processing-suggestion-es',
       'test_extractor',
-      'unlabeled-others',
+      'unlabeled-processing',
       'template1',
-      'unlabeled-others-file-es',
+      'unlabeled-processing-file-es',
       'testprop',
       {
-        status: 'ready',
+        status: 'processing',
         date: 1001,
         language: 'es',
-        suggestedValue: 'test-unlabeled-others',
-        segment: 'test-unlabeled-others',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-en',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-en',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-es',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-es',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
       }
     ),
   ],

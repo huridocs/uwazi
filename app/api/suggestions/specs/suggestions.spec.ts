@@ -300,7 +300,7 @@ describe('suggestions', () => {
         },
         { page: { size: 50, number: 1 } }
       );
-      expect(suggestions.length).toBe(2);
+      expect(suggestions.length).toBe(3);
     });
 
     it('should return suggestion and extra entity information', async () => {
@@ -358,6 +358,33 @@ describe('suggestions', () => {
           entityId: shared2esId,
           sharedId: 'shared2',
           entityTitle: 'Batman es',
+        },
+        {
+          fileId: factory.id('F7'),
+          propertyName: 'super_powers',
+          extractorId: factory.id('super_powers_extractor'),
+          segment: 'he puts up with Bruce Wayne',
+          currentValue: 'no super powers',
+          date: 4000,
+          page: 3,
+          entityId: factory.id('Alfred-english-entity'),
+          entityTemplateId: personTemplateId,
+          entityTitle: 'Alfred',
+          error: '',
+          labeledValue: 'no super powers',
+          language: 'en',
+          sharedId: 'shared3',
+          state: {
+            error: false,
+            hasContext: true,
+            labeled: true,
+            match: false,
+            obsolete: false,
+            processing: false,
+            withSuggestion: true,
+            withValue: true,
+          },
+          suggestedValue: 'puts up with Bruce Wayne',
         },
       ]);
     });
@@ -432,7 +459,7 @@ describe('suggestions', () => {
         extractorId: factory.id('age_extractor').toString(),
       });
 
-      expect(ageSuggestions.length).toBe(4);
+      expect(ageSuggestions.length).toBe(5);
       expect(
         ageSuggestions.find((s: EntitySuggestionType) => s.sharedId === 'shared5').state.obsolete
       ).toEqual(true);
@@ -517,29 +544,26 @@ describe('suggestions', () => {
       await Suggestions.updateStates({});
     });
 
-    it('should accept a suggestion', async () => {
+    it('should accept suggestions', async () => {
       const { suggestions } = await getSuggestions({
         extractorId: factory.id('super_powers_extractor').toString(),
       });
-      const labelMismatchedSuggestion = suggestions.find(
+      const labelMismatchedSuggestions = suggestions.filter(
         (sug: any) => sug.state.labeled && !sug.state.match
       );
+      const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
       await Suggestions.accept(
-        {
-          _id: suggestionId,
-          sharedId: labelMismatchedSuggestion.sharedId,
-          entityId: labelMismatchedSuggestion.entityId,
-        },
-        false
+        labelMismatchedSuggestions.map((sug: any) => ({
+          _id: sug._id,
+          sharedId: sug.sharedId,
+          entityId: sug.entityId,
+        }))
       );
       const { suggestions: newSuggestions } = await getSuggestions({
         extractorId: factory.id('super_powers_extractor').toString(),
       });
-      const changedSuggestion = newSuggestions.find(
-        (sg: any) => sg._id.toString() === suggestionId.toString()
-      );
-
-      expect(changedSuggestion.state).toEqual({
+      const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
+      const matchState = {
         labeled: true,
         withValue: true,
         withSuggestion: true,
@@ -548,9 +572,47 @@ describe('suggestions', () => {
         obsolete: false,
         processing: false,
         error: false,
-      });
-      expect(changedSuggestion.suggestedValue).toEqual(changedSuggestion.labeledValue);
+      };
+      expect(changedSuggestions).toMatchObject([
+        {
+          _id: labelMismatchedSuggestions[0]._id,
+          state: matchState,
+          suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
+          labeledValue: labelMismatchedSuggestions[0].suggestedValue,
+        },
+        {
+          _id: labelMismatchedSuggestions[1]._id,
+          state: matchState,
+          suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
+          labeledValue: labelMismatchedSuggestions[1].suggestedValue,
+        },
+      ]);
     });
+
+    it('should require all suggestions to come from the same extractor', async () => {
+      const [ageSuggestion] = (await getSuggestions({ extractorId: factory.id('age_extractor') }))
+        .suggestions;
+      const [superPowersSuggestion] = (
+        await getSuggestions({
+          extractorId: factory.id('super_powers_extractor'),
+        })
+      ).suggestions;
+      await expect(
+        Suggestions.accept([
+          {
+            _id: ageSuggestion._id,
+            sharedId: ageSuggestion.sharedId,
+            entityId: ageSuggestion.entityId,
+          },
+          {
+            _id: superPowersSuggestion._id,
+            sharedId: superPowersSuggestion.sharedId,
+            entityId: superPowersSuggestion.entityId,
+          },
+        ])
+      ).rejects.toThrow('All suggestions must come from the same extractor');
+    });
+
     it('should not accept a suggestion with an error', async () => {
       const { suggestions } = await getSuggestions({
         extractorId: factory.id('age_extractor').toString(),
@@ -559,43 +621,51 @@ describe('suggestions', () => {
         (s: EntitySuggestionType) => s.sharedId === 'shared4'
       );
       try {
-        await Suggestions.accept(
+        await Suggestions.accept([
           {
             _id: errorSuggestion._id,
             sharedId: errorSuggestion.sharedId,
             entityId: errorSuggestion.entityId,
           },
-          true
-        );
+        ]);
       } catch (e: any) {
-        expect(e?.message).toBe('Suggestion has an error');
+        expect(e?.message).toBe('Some Suggestions have an error.');
       }
     });
+
     it('should update entities of all languages if property name is numeric or date', async () => {
       const { suggestions } = await getSuggestions({
         extractorId: factory.id('age_extractor').toString(),
       });
-      const shared2Suggestion = suggestions.find(sug => sug.sharedId === 'shared2');
-      await Suggestions.accept(
-        {
-          _id: shared2AgeSuggestionId,
-          sharedId: shared2Suggestion.sharedId,
-          entityId: shared2Suggestion.entityId,
-        },
-        false
+      const suggestionsToAccept = suggestions.filter(
+        sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
       );
+      await Suggestions.accept([
+        {
+          _id: suggestionsToAccept[0]._id,
+          sharedId: suggestionsToAccept[0].sharedId,
+          entityId: suggestionsToAccept[0].entityId,
+        },
+        {
+          _id: suggestionsToAccept[1]._id,
+          sharedId: suggestionsToAccept[1].sharedId,
+          entityId: suggestionsToAccept[1].entityId,
+        },
+      ]);
 
-      const entities = await db.mongodb
+      const entities1 = await db.mongodb
         ?.collection('entities')
-        .find({ sharedId: shared2Suggestion.sharedId })
+        .find({ sharedId: 'shared1' })
         .toArray();
+      const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
+      expect(ages1).toEqual(['17', '17']);
 
-      const propertyValues = entities?.map(entity => entity.metadata.age);
-      expect(propertyValues).not.toBe(undefined);
-      const ages = propertyValues?.map(value => value[0].value) as string[];
-      expect(ages[0]).toEqual('20');
-      expect(ages[1]).toEqual('20');
-      expect(ages[2]).toEqual('20');
+      const entities2 = await db.mongodb
+        ?.collection('entities')
+        .find({ sharedId: 'shared2' })
+        .toArray();
+      const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
+      expect(ages2).toEqual(['20', '20', '20']);
     });
   });
 
@@ -662,7 +732,7 @@ describe('suggestions', () => {
       await Suggestions.setObsolete(query);
       const obsoletes = await db.mongodb?.collection('ixsuggestions').find(query).toArray();
       expect(obsoletes?.every(s => s.state.obsolete)).toBe(true);
-      expect(obsoletes?.length).toBe(3);
+      expect(obsoletes?.length).toBe(4);
     });
   });
 
