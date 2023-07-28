@@ -178,26 +178,28 @@ export const suggestionsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['suggestion', 'allLanguages'],
+          required: ['suggestions'],
           properties: {
-            suggestion: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['_id', 'sharedId', 'entityId'],
-              properties: {
-                _id: objectIdSchema,
-                sharedId: { type: 'string' },
-                entityId: { type: 'string' },
+            suggestions: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['_id', 'sharedId', 'entityId'],
+                properties: {
+                  _id: objectIdSchema,
+                  sharedId: { type: 'string' },
+                  entityId: { type: 'string' },
+                },
               },
             },
-            allLanguages: { type: 'boolean' },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const { suggestion, allLanguages } = req.body;
-      await Suggestions.accept(suggestion, allLanguages);
+      const { suggestions } = req.body;
+      await Suggestions.accept(suggestions);
       res.json({ success: true });
     }
   );

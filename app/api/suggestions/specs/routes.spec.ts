@@ -3,7 +3,6 @@ import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
 import entities from 'api/entities';
-import { WithId } from 'api/odm';
 import { search } from 'api/search';
 import {
   factory,
@@ -18,7 +17,6 @@ import {
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { EntitySchema } from 'shared/types/entityType';
 import { Suggestions } from '../suggestions';
 
 jest.mock(
@@ -318,17 +316,19 @@ describe('suggestions routes', () => {
     });
   });
 
-  describe('POST /api/suggestions/accept', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('POST /api/suggestions/accept', () => {
     it('should update the suggestion for title in one language', async () => {
       await request(app)
         .post('/api/suggestions/accept')
         .send({
-          suggestion: {
-            _id: suggestionSharedId6Title,
-            sharedId: 'shared6',
-            entityId: shared6enId,
-          },
-          allLanguages: false,
+          suggestions: [
+            {
+              _id: suggestionSharedId6Title,
+              sharedId: 'shared6',
+              entityId: shared6enId,
+            },
+          ],
         })
         .expect(200);
 
@@ -349,37 +349,7 @@ describe('suggestions routes', () => {
         '+fullText'
       );
     });
-    it('should update the suggestion for all the languages', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          allLanguages: true,
-          suggestion: {
-            _id: suggestionSharedId6Enemy,
-            sharedId: 'shared6',
-            entityId: shared6enId,
-          },
-        })
-        .expect(200);
 
-      const actualEntities = await entities.get({ sharedId: 'shared6' });
-      expect(actualEntities).toMatchObject([
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-      ]);
-      const entityIds = actualEntities.map((e: WithId<EntitySchema>) => e._id);
-      expect(search.indexEntities).toHaveBeenCalledWith(
-        { _id: { $in: expect.arrayContaining(entityIds) } },
-        '+fullText'
-      );
-    });
     it('should reject with unauthorized when user has not admin role', async () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)

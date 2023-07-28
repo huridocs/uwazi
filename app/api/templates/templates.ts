@@ -263,7 +263,9 @@ export default {
       ],
     });
     const allProperties = templates
-      .flatMap(template => template.properties || [])
+      .map(template => [template.properties || [], template.commonProperties || []])
+      .flat()
+      .flat()
       .filter(t => nameSet.has(t.name));
     const propertiesByName = objectIndex(
       allProperties,

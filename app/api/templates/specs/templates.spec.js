@@ -623,8 +623,9 @@ describe('templates', () => {
       };
       await templates.save(newTemplate);
       await templates.save(newTemplate2);
-      const properties = await templates.getPropertiesByName(['date', 'label', 'number']);
+      const properties = await templates.getPropertiesByName(['date', 'label', 'number', 'title']);
       expect(properties).toMatchObject([
+        { name: 'title', type: 'text' },
         { name: 'label', type: 'text' },
         { name: 'date', type: 'date' },
         { name: 'number', type: 'numeric' },
