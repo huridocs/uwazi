@@ -1,23 +1,27 @@
 /* eslint-disable max-lines */
+import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
+import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
+import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import {
   ExtractedMetadataSchema,
   LanguagesListSchema,
   ObjectIdSchema,
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
 import {
   IXSuggestionsFilter,
   IXSuggestionType,
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
-import { ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
 import { registerEventListeners } from './eventListeners';
 import {
@@ -37,59 +41,89 @@ interface AcceptedSuggestion {
 
 const updateEntitiesWithSuggestion = async (
   allLanguages: boolean,
-  acceptedSuggestion: AcceptedSuggestion,
-  suggestion: IXSuggestionType
+  acceptedSuggestions: AcceptedSuggestion[],
+  suggestions: IXSuggestionType[]
 ) => {
+  const sharedIds = acceptedSuggestions.map(s => s.sharedId);
+  const entityIds = acceptedSuggestions.map(s => s.entityId);
+  const { propertyName } = suggestions[0];
   const query = allLanguages
-    ? { sharedId: acceptedSuggestion.sharedId }
-    : { sharedId: acceptedSuggestion.sharedId, _id: acceptedSuggestion.entityId };
+    ? { sharedId: { $in: sharedIds } }
+    : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
   const storedEntities = await entities.get(query, '+permissions');
+
+  const acceptedSuggestionsBySharedId = objectIndex(
+    acceptedSuggestions,
+    as => as.sharedId,
+    as => as
+  );
+  const suggestionsById = objectIndex(
+    suggestions,
+    s => s._id?.toString() || '',
+    s => s
+  );
+
+  const getValue = (entity: EntitySchema) =>
+    suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
+      .suggestedValue;
+
   const entitiesToUpdate =
-    suggestion.propertyName !== 'title'
+    propertyName !== 'title'
       ? storedEntities.map((entity: EntitySchema) => ({
           ...entity,
           metadata: {
             ...entity.metadata,
-            [suggestion.propertyName]: [{ value: suggestion.suggestedValue }],
+            [propertyName]: [
+              {
+                value: getValue(entity),
+              },
+            ],
           },
           permissions: entity.permissions || [],
         }))
       : storedEntities.map((entity: EntitySchema) => ({
           ...entity,
-          title: suggestion.suggestedValue,
+          title: getValue(entity),
         }));
 
   await entities.saveMultiple(entitiesToUpdate);
 };
 
-const updateExtractedMetadata = async (suggestion: IXSuggestionType) => {
-  const fetchedFiles = await files.get({ _id: suggestion.fileId });
+const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
+  const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
+  const suggestionsByFileId = objectIndex(
+    suggestions,
+    s => s.fileId?.toString() || '',
+    s => s
+  );
 
-  if (!fetchedFiles?.length) return Promise.resolve();
-  const file = fetchedFiles[0];
+  await syncedPromiseLoop(fetchedFiles, async (file: EnforcedWithId<FileType>) => {
+    const suggestion = suggestionsByFileId[file._id.toString()];
+    file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
 
-  file.extractedMetadata = file.extractedMetadata ? file.extractedMetadata : [];
-  const extractedMetadata = file.extractedMetadata.find(
-    (em: any) => em.name === suggestion.propertyName
-  ) as ExtractedMetadataSchema;
+    const extractedMetadata = file.extractedMetadata.find(
+      (em: any) => em.name === suggestion.propertyName
+    ) as ExtractedMetadataSchema;
 
-  if (!extractedMetadata) {
-    file.extractedMetadata.push({
-      name: suggestion.propertyName,
-      timestamp: Date(),
-      selection: {
+    if (!extractedMetadata) {
+      file.extractedMetadata.push({
+        name: suggestion.propertyName,
+        timestamp: Date(),
+        selection: {
+          text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
+          selectionRectangles: suggestion.selectionRectangles,
+        },
+      });
+    } else {
+      extractedMetadata.timestamp = Date();
+      extractedMetadata.selection = {
         text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
         selectionRectangles: suggestion.selectionRectangles,
-      },
-    });
-  } else {
-    extractedMetadata.timestamp = Date();
-    extractedMetadata.selection = {
-      text: suggestion.suggestedText || suggestion.suggestedValue?.toString(),
-      selectionRectangles: suggestion.selectionRectangles,
-    };
-  }
-  return files.save(file);
+      };
+    }
+
+    return files.save(file);
+  });
 };
 
 const buildListQuery = (
@@ -253,22 +287,28 @@ const Suggestions = {
     if (toUpdate.length > 0) await updateStates({ _id: { $in: toUpdate.map(s => s._id) } });
   },
 
-  accept: async (acceptedSuggestion: AcceptedSuggestion, allLanguages: boolean) => {
-    const suggestion = await IXSuggestionsModel.getById(acceptedSuggestion._id);
-    if (!suggestion) {
-      throw new Error('Suggestion not found');
+  accept: async (acceptedSuggestions: AcceptedSuggestion[]) => {
+    const acceptedIds = Array.from(new Set(acceptedSuggestions.map(s => s._id.toString())));
+    const suggestions = await IXSuggestionsModel.get({ _id: { $in: acceptedIds } });
+    const extractors = new Set(suggestions.map(s => s.extractorId.toString()));
+    if (extractors.size > 1) {
+      throw new Error('All suggestions must come from the same extractor');
     }
-    if (suggestion.error !== '') {
-      throw new Error('Suggestion has an error');
+    const foundIds = new Set(suggestions.map(s => s._id.toString()));
+    if (!acceptedIds.every(id => foundIds.has(id))) {
+      throw new Error('Suggestion(s) not found.');
     }
-    let shouldUpdateAllLanguages = allLanguages;
-    const property = await templates.getPropertyByName(suggestion.propertyName);
-    if (property && ['numeric', 'date'].includes(property.type)) {
-      shouldUpdateAllLanguages = true;
+    if (suggestions.some(s => s.error !== '')) {
+      throw new Error('Some Suggestions have an error.');
     }
-    await updateEntitiesWithSuggestion(shouldUpdateAllLanguages, acceptedSuggestion, suggestion);
-    await updateExtractedMetadata(suggestion);
-    await Suggestions.updateStates({ _id: acceptedSuggestion._id });
+
+    const { propertyName } = suggestions[0];
+    const property = await templates.getPropertyByName(propertyName);
+    const allLanguage = property.type === 'numeric' || property.type === 'date';
+
+    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions);
+    await updateExtractedMetadata(suggestions);
+    await Suggestions.updateStates({ _id: { $in: acceptedIds.map(id => new ObjectId(id)) } });
   },
 
   deleteByEntityId: async (sharedId: string) => {
