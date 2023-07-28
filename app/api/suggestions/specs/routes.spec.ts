@@ -111,6 +111,26 @@ describe('suggestions routes', () => {
           language: 'es',
           page: 5,
         },
+        {
+          entityId: factory.id('Alfred-english-entity').toString(),
+          sharedId: 'shared3',
+          entityTitle: 'Alfred',
+          propertyName: 'super_powers',
+          suggestedValue: 'puts up with Bruce Wayne',
+          segment: 'he puts up with Bruce Wayne',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'en',
+          page: 3,
+        },
       ]);
       expect(response.body.totalPages).toBe(1);
     });
@@ -200,7 +220,6 @@ describe('suggestions routes', () => {
             },
           })
           .expect(200);
-        console.log(response.body.suggestions);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
             entityTitle: 'Catwoman',
@@ -316,8 +335,7 @@ describe('suggestions routes', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('POST /api/suggestions/accept', () => {
+  describe('POST /api/suggestions/accept', () => {
     it('should update the suggestion for title in one language', async () => {
       await request(app)
         .post('/api/suggestions/accept')

@@ -766,8 +766,11 @@ const stateFilterFixtures: DBFixture = {
     ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-obsolete', 'template1', {
       testprop: [{ value: 'test-unlabeled-obsolete' }],
     }),
-    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-others', 'template1', {
-      testprop: [{ value: 'test-unlabeled-others' }],
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-processing', 'template1', {
+      testprop: [{ value: 'test-unlabeled-processing' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-error', 'template1', {
+      testprop: [{ value: 'test-unlabeled-error' }],
     }),
   ],
   files: [
@@ -856,6 +859,38 @@ const stateFilterFixtures: DBFixture = {
       'unlabeled-others',
       'document',
       'unlotes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-en',
+      'unlabeled-processing',
+      'document',
+      'unlpen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-es',
+      'unlabeled-processing',
+      'document',
+      'unlpes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-en',
+      'unlabeled-error',
+      'document',
+      'unleen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-es',
+      'unlabeled-error',
+      'document',
+      'unlees.pdf',
       'es',
       undefined
     ),
@@ -1006,33 +1041,65 @@ const stateFilterFixtures: DBFixture = {
       }
     ),
     factory.ixSuggestion(
-      'unlabeled-others-suggestion-en',
+      'unlabeled-processing-suggestion-en',
       'test_extractor',
-      'unlabeled-others',
+      'unlabeled-processing',
       'template1',
-      'unlabeled-others-file-en',
+      'unlabeled-processing-file-en',
       'testprop',
       {
-        status: 'ready',
+        status: 'processing',
         date: 1001,
         language: 'en',
-        suggestedValue: 'test-unlabeled-others',
-        segment: 'test-unlabeled-others',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
       }
     ),
     factory.ixSuggestion(
-      'unlabeled-others-suggestion-es',
+      'unlabeled-processing-suggestion-es',
       'test_extractor',
-      'unlabeled-others',
+      'unlabeled-processing',
       'template1',
-      'unlabeled-others-file-es',
+      'unlabeled-processing-file-es',
       'testprop',
       {
-        status: 'ready',
+        status: 'processing',
         date: 1001,
         language: 'es',
-        suggestedValue: 'test-unlabeled-others',
-        segment: 'test-unlabeled-others',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-en',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-en',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-es',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-es',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
       }
     ),
   ],

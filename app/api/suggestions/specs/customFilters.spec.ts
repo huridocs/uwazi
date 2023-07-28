@@ -78,6 +78,8 @@ describe('suggestions with CustomFilters', () => {
         expectedSuggestions: [
           { sharedId: 'unlabeled-no-context', language: 'en' },
           { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
       },
       {
@@ -104,8 +106,45 @@ describe('suggestions with CustomFilters', () => {
           },
         },
         expectedSuggestions: [
-          { sharedId: 'unlabeled-others', language: 'en' },
-          { sharedId: 'unlabeled-others', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for labeled - match and nonLabeled - obsolete',
+        customFilter: {
+          ...blankCustomFilter,
+          labeled: {
+            match: true,
+            mismatch: false,
+          },
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            obsolete: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'labeled-match', language: 'en' },
+          { sharedId: 'labeled-match', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - noSuggestion and nonLabeled - noContext',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            noSuggestion: true,
+            noContext: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-no-context', language: 'en' },
+          { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
       },
     ])(
