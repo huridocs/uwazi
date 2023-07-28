@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { ActionFunction, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import {
+  ActionFunction,
+  LoaderFunction,
+  useLoaderData,
+  useRevalidator,
+  useSearchParams,
+} from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
@@ -9,7 +15,7 @@ import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
@@ -26,6 +32,7 @@ const IXSuggestions = () => {
     templates: ClientTemplateSchema[];
     aggregation: any;
   };
+  const [searchParams] = useSearchParams();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
@@ -86,6 +93,24 @@ const IXSuggestions = () => {
             }
             enableSelection
             onSelection={setSelected}
+            footer={
+              <div className="flex h-4">
+                <div className="flex-none">
+                  <div className="text-sm font-semibold text-center text-gray-900">
+                    <span className="font-light text-gray-500">Showing</span> 1-
+                    {searchParams.get('size') + ' '}
+                    <span className="font-light text-gray-500">of</span> 200
+                  </div>
+                </div>
+                <div className="self-end flex-1">
+                  <Paginator
+                    totalPages="200"
+                    currentPage="1"
+                    buildUrl={(page: any) => 'http://localhost:3000'}
+                  />
+                </div>
+              </div>
+            }
           />
         </SettingsContent.Body>
 
@@ -120,9 +145,16 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId } }) => {
+  async ({ params: { extractorId }, request }) => {
+    const params = new URLSearchParams(request.url);
     const response = await suggestionsAPI.get(
-      { filter: { extractorId: extractorId! }, page: { number: 1, size: 20 } },
+      {
+        filter: { extractorId: extractorId! },
+        page: {
+          number: params.has('page') ? Number.parseInt(params.get('page') as string) : 1,
+          size: params.has('page') ? Number.parseInt(params.get('size') as string) : 20,
+        },
+      },
       headers
     );
     const extractors = await extractorsAPI.getById(extractorId!, headers);
