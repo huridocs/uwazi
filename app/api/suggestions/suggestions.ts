@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import entities from 'api/entities/entities';
