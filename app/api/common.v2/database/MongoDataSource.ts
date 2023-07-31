@@ -207,24 +207,6 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     }
   }
 
-  private async updateSyncLogs(conditions: any[], deleted: boolean = false) {
-    if (conditions.length === 0) {
-      return;
-    }
-    const mongoIds = await this.getModifiedIds({ $or: conditions });
-    return this.db.collection('updatelogs').updateMany(
-      { mongoId: { $in: mongoIds } },
-      {
-        $set: {
-          timestamp: Date.now(),
-          namespace: this.collectionName,
-          deleted,
-        },
-      },
-      { session: this.getSession() }
-    );
-  }
-
   private async upsertSyncLogs(conditions: any[], deleted: boolean = false) {
     if (conditions.length === 0) {
       return;
