@@ -635,7 +635,7 @@ describe('collection with automatic log to updatelogs', () => {
     ];
 
     it.each(casesForUpdates)(
-      '$method should log changes to updatelogs',
+      '$method should log changes to updatelogs if any',
       async ({
         callback,
         expectedDBState,
