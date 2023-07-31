@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+/* eslint-disable max-statements */
+import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   ActionFunction,
@@ -24,19 +25,57 @@ import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
+import { socket } from 'app/socket';
+
+type ixStatus =
+  | 'ready'
+  | 'sending_labeled_data'
+  | 'processing_model'
+  | 'processing_suggestions'
+  | 'cancel'
+  | 'error';
+
+const ixmessages = {
+  ready: 'Find suggestions',
+  sending_labeled_data: 'Sending labeled data...',
+  processing_model: 'Training model...',
+  processing_suggestions: 'Finding suggestions',
+  cancel: 'Canceling...',
+  error: 'Error',
+};
 
 const IXSuggestions = () => {
-  const { suggestions, extractor, templates, aggregation } = useLoaderData() as {
+  const { suggestions, extractor, templates, aggregation, currentStatus } = useLoaderData() as {
     suggestions: EntitySuggestionType[];
     extractor: IXExtractorInfo;
     templates: ClientTemplateSchema[];
     aggregation: any;
+    currentStatus: ixStatus;
   };
   const [searchParams] = useSearchParams();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
+  const [status, setStatus] = useState<ixStatus>(currentStatus);
+
+  useEffect(() => {
+    socket.on(
+      'ix_model_status',
+      (extractorId: string, modelStatus: string, _: string, data: any) => {
+        if (extractorId === extractor._id) {
+          setStatus({ key: modelStatus, data });
+          if ((data && data.total === data.processed) || modelStatus === 'ready') {
+            setStatus('ready');
+          }
+        }
+      }
+    );
+
+    return () => {
+      socket.off('ix_model_status');
+    };
+  }, []);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
@@ -60,6 +99,13 @@ const IXSuggestions = () => {
         details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
       });
     }
+  };
+
+  const trainModelAction = async () => {
+    try {
+      setStatus('sending_labeled_data');
+      await suggestionsAPI.findSuggestions(extractor._id);
+    } catch (error) {}
   };
 
   return (
@@ -89,7 +135,7 @@ const IXSuggestions = () => {
                 onFiltersButtonClicked={() => {
                   setShowSidepanel(true);
                 }}
-              ></SuggestionsTitle>
+              />
             }
             enableSelection
             onSelection={setSelected}
@@ -114,10 +160,8 @@ const IXSuggestions = () => {
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer
-          className={`flex gap-2 ${Boolean(selected.length) ? 'bg-gray-200' : ''}`}
-        >
-          {Boolean(selected.length) ? (
+        <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
+          {selected.length ? (
             <div className="flex items-center justify-center space-x-4">
               <Button size="small" type="button" styling="outline" onClick={() => {}}>
                 <Translate>Accept suggestion</Translate>
@@ -128,9 +172,19 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <Button size="small" type="button" onClick={() => {}}>
-              <Translate>Find suggestions</Translate>
-            </Button>
+            <div className="flex items-center justify-center space-x-4">
+              <Button
+                size="small"
+                type="button"
+                disabled={status !== 'ready'}
+                onClick={trainModelAction}
+              >
+                <Translate>Find suggestions</Translate>
+              </Button>
+              <div className="text-sm font-semibold text-center text-gray-900">
+                <Translate>{ixmessages[status]}</Translate>
+              </div>
+            </div>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
@@ -146,28 +200,38 @@ const IXSuggestions = () => {
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId }, request }) => {
+    console.log('loader');
+    if (!extractorId) throw new Error('extractorId is required');
+    console.log('loader 1');
     const params = new URLSearchParams(request.url);
     const response = await suggestionsAPI.get(
       {
         filter: { extractorId: extractorId! },
         page: {
-          number: params.has('page') ? Number.parseInt(params.get('page') as string) : 1,
-          size: params.has('page') ? Number.parseInt(params.get('size') as string) : 20,
+          number: params.has('page') ? Number.parseInt(params.get('page') as string, 10) : 1,
+          size: params.has('page') ? Number.parseInt(params.get('size') as string, 10) : 20,
         },
       },
       headers
     );
-    const extractors = await extractorsAPI.getById(extractorId!, headers);
-    const aggregation = await suggestionsAPI.aggregation({
-      filter: { extractorId: extractorId! },
-    });
+    console.log('loader 2');
+    const extractors = await extractorsAPI.getById(extractorId, headers);
+    const aggregation = await suggestionsAPI.aggregation(
+      {
+        filter: { extractorId: extractorId! },
+      },
+      headers
+    );
+    console.log('loader 3');
+    const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-
+    console.log('loader');
     return {
       suggestions: response.suggestions,
       extractor: extractors[0],
       templates,
-      aggregation: aggregation,
+      aggregation,
+      currentStatus: currentStatus.status,
     };
   };
 

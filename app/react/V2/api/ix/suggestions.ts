@@ -44,4 +44,16 @@ const accept = async (
   return response.json;
 };
 
-export { get, accept, aggregation };
+const findSuggestions = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  const params = new RequestParams({ extractorId }, headers);
+  const response = await api.post('suggestions/train', params);
+  return response.json;
+};
+
+const status = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  const params = new RequestParams({ extractorId }, headers);
+  const { json: response } = await api.post('suggestions/status', params);
+  return response;
+};
+
+export { get, accept, aggregation, findSuggestions, status };
