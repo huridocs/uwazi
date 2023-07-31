@@ -33,6 +33,22 @@ export interface EntitySuggestionType {
   date: number;
 }
 
+export interface IXSuggestionAggregation {
+  total: number;
+  labeled: {
+    _count: number;
+    match: number;
+    mismatch: number;
+  };
+  nonLabeled: {
+    _count: number;
+    noSuggestion: number;
+    noContext: number;
+    obsolete: number;
+    others: number;
+  };
+}
+
 export interface IXSuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
@@ -75,6 +91,7 @@ export interface IXSuggestionsQuery {
     number: number;
     size: number;
   };
+  [k: string]: unknown | undefined;
 }
 
 export interface SuggestionCustomFilter {
@@ -90,24 +107,8 @@ export interface SuggestionCustomFilter {
   };
 }
 
-export interface IXFilterAggregationResponse {
-  labeled: {
-    _count: number,
-    match: number,
-    mismatch: number,
-  },
-  nonLabeled: {
-    _count: number,
-    noSuggestion: number,
-    noContext: number,
-    obsolete: number,
-    others: number,
-  },
-}
-
 export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;
-  entityTemplates?: string[];
   customFilter?: SuggestionCustomFilter;
 }

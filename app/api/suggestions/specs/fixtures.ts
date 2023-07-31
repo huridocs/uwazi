@@ -749,7 +749,12 @@ const fixtures: DBFixture = {
 
 const stateFilterFixtures: DBFixture = {
   settings: _.cloneDeep(ixSettings),
-  templates: [factory.template('template1', [factory.property('testprop', 'text')])],
+  templates: [
+    factory.template('template1', [
+      factory.property('testprop', 'text'),
+      factory.property('unusedprop', 'text'),
+    ]),
+  ],
   entities: [
     ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-match', 'template1', {
       testprop: [{ value: 'test-labeled-match' }],
@@ -896,7 +901,10 @@ const stateFilterFixtures: DBFixture = {
     ),
   ],
   ixmodels: [factory.ixModel('test_model', 'test_extractor', 1000)],
-  ixextractors: [factory.ixExtractor('test_extractor', 'testprop', ['template1'])],
+  ixextractors: [
+    factory.ixExtractor('test_extractor', 'testprop', ['template1']),
+    factory.ixExtractor('unused_extractor', 'unused_prop', ['template1']),
+  ],
   ixsuggestions: [
     factory.ixSuggestion(
       'label-match-suggestion-en',
@@ -1100,6 +1108,20 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unlabeled-error',
         segment: 'test-unlabeled-error',
         error: 'some error happened',
+      }
+    ),
+    factory.ixSuggestion(
+      'unusedsuggestion',
+      'unused_extractor',
+      'unused',
+      'template1',
+      'unused-file',
+      'unusedprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unused',
       }
     ),
   ],

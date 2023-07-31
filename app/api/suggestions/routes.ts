@@ -11,7 +11,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import {
-  IXFilterAggregationResponse,
+  IXSuggestionAggregation,
   IXSuggestionsQuery,
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
@@ -109,7 +109,7 @@ export const suggestionsRoutes = (app: Application) => {
       req: Request & {
         query: IXSuggestionsQuery;
       },
-      res: Response<IXFilterAggregationResponse>
+      res: Response<IXSuggestionAggregation>
     ) => {
       const customFilter: SuggestionCustomFilter = req.query.filter.customFilter || {
         labeled: { match: false, mismatch: false },
@@ -121,6 +121,7 @@ export const suggestionsRoutes = (app: Application) => {
         },
       };
       const dummyAnswer = {
+        total: 1,
         labeled: {
           _count: 1,
           match: +customFilter.labeled.match,

@@ -3,49 +3,61 @@ import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
 import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
 
-// eslint-disable-next-line max-statements
-const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
+export const baseQueryFragment = (extractorId: ObjectId, ignoreProcessing = true) => {
+  const query: FilterQuery<IXSuggestionType> = {
+    extractorId,
+  };
+  if (ignoreProcessing) {
+    query.status = { $ne: 'processing' };
+  }
+  return query;
+};
+
+export const filterFragments = {
+  labeled: {
+    _fragment: { 'state.labeled': true },
+    match: { 'state.labeled': true, 'state.match': true },
+    mismatch: { 'state.labeled': true, 'state.match': false },
+  },
+  nonLabeled: {
+    _fragment: { 'state.labeled': false },
+    noSuggestion: { 'state.labeled': false, 'state.withSuggestion': false },
+    noContext: { 'state.labeled': false, 'state.hasContext': false },
+    obsolete: { 'state.labeled': false, 'state.obsolete': true },
+    others: { 'state.labeled': false, 'state.error': true },
+  },
+};
+
+export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   const orFilters = [];
   if (customFilter.labeled.match) {
-    orFilters.push({ 'state.labeled': true, 'state.match': true });
+    orFilters.push(filterFragments.labeled.match);
   }
   if (customFilter.labeled.mismatch) {
-    orFilters.push({ 'state.labeled': true, 'state.match': false });
+    orFilters.push(filterFragments.labeled.mismatch);
   }
 
   if (customFilter.nonLabeled.noSuggestion) {
-    orFilters.push({ 'state.labeled': false, 'state.withSuggestion': false });
+    orFilters.push(filterFragments.nonLabeled.noSuggestion);
   }
   if (customFilter.nonLabeled.noContext) {
-    orFilters.push({
-      'state.labeled': false,
-      'state.hasContext': false,
-    });
+    orFilters.push(filterFragments.nonLabeled.noContext);
   }
   if (customFilter.nonLabeled.obsolete) {
-    orFilters.push({
-      'state.labeled': false,
-      'state.obsolete': true,
-    });
+    orFilters.push(filterFragments.nonLabeled.obsolete);
   }
   if (customFilter.nonLabeled.others) {
-    orFilters.push({
-      'state.labeled': false,
-      'state.error': true,
-    });
+    orFilters.push(filterFragments.nonLabeled.others);
   }
   return orFilters;
 };
 
 export const getMatchStage = (
-  filters: FilterQuery<IXSuggestionType>,
+  extractorId: ObjectId,
   customFilter: SuggestionCustomFilter | undefined,
   countOnly = false
 ) => {
-  const matchQuery = {
-    ...filters,
-    status: { $ne: 'processing' },
-  };
+  const matchQuery: FilterQuery<IXSuggestionType> = baseQueryFragment(extractorId);
   if (customFilter) {
     const orFilters = translateCustomFilter(customFilter);
     if (orFilters.length > 0) matchQuery.$or = orFilters;
@@ -203,12 +215,11 @@ export const getEntityTemplateFilterStage = (entityTemplates: string[] | undefin
       ]
     : [];
 
-export const groupByAndSort = (field: string) => [
+export const groupByAndCount = (field: string) => [
   {
     $group: {
       _id: field,
       count: { $sum: 1 },
     },
   },
-  { $sort: { _id: 1 } },
 ];
