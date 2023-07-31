@@ -11,9 +11,9 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
 import { objectIdSchema } from 'shared/types/commonSchemas';
 import {
+  IXAggregationQuery,
   IXSuggestionAggregation,
   IXSuggestionsQuery,
-  SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
 import { serviceMiddleware } from './serviceMiddleware';
 
@@ -95,47 +95,27 @@ export const suggestionsRoutes = (app: Application) => {
     parseQuery,
     validateAndCoerceRequest({
       type: 'object',
+      definitions: { objectIdSchema },
       properties: {
         query: {
           type: 'object',
-          required: ['filter'],
+          additionalProperties: false,
+          required: ['extractorId'],
           properties: {
-            filter: SuggestionsQueryFilterSchema,
+            extractorId: objectIdSchema,
           },
         },
       },
     }),
     async (
       req: Request & {
-        query: IXSuggestionsQuery;
+        query: IXAggregationQuery;
       },
       res: Response<IXSuggestionAggregation>
     ) => {
-      const customFilter: SuggestionCustomFilter = req.query.filter.customFilter || {
-        labeled: { match: false, mismatch: false },
-        nonLabeled: {
-          noSuggestion: false,
-          noContext: false,
-          obsolete: false,
-          others: false,
-        },
-      };
-      const dummyAnswer = {
-        total: 1,
-        labeled: {
-          _count: 1,
-          match: +customFilter.labeled.match,
-          mismatch: +customFilter.labeled.mismatch,
-        },
-        nonLabeled: {
-          _count: 1,
-          noSuggestion: +customFilter.nonLabeled.noSuggestion,
-          noContext: +customFilter.nonLabeled.noContext,
-          obsolete: +customFilter.nonLabeled.obsolete,
-          others: +customFilter.nonLabeled.others,
-        },
-      };
-      res.json(dummyAnswer);
+      const { extractorId } = req.query;
+      const aggregation = await Suggestions.aggregate(extractorId);
+      res.json(aggregation);
     }
   );
 

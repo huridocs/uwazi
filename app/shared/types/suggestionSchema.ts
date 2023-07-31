@@ -167,6 +167,17 @@ export const IXSuggestionsQuerySchema = {
   required: ['filter'],
 };
 
+export const IXAggregationQuerySchema = {
+  type: 'object',
+  title: 'IXAggregationQuery',
+  additionalProperties: false,
+  definitions: { objectIdSchema },
+  properties: {
+    extractorId: objectIdSchema,
+  },
+  required: ['extractorId'],
+};
+
 export const IXSuggestionAggregationSchema = {
   type: 'object',
   title: 'IXSuggestionAggregation',

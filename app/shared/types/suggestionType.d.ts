@@ -33,6 +33,10 @@ export interface EntitySuggestionType {
   date: number;
 }
 
+export interface IXAggregationQuery {
+  extractorId: ObjectIdSchema;
+}
+
 export interface IXSuggestionAggregation {
   total: number;
   labeled: {

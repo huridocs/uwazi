@@ -182,10 +182,10 @@ async function getLabeledCounts(extractorId: ObjectId) {
   ];
   const labeledAggregation: { _id: boolean; count: number }[] =
     await IXSuggestionsModel.db.aggregate(labeledAggregationQuery);
-  const matchCount = labeledAggregation.find((aggregation: any) => aggregation._id === true)!.count;
-  const mismatchCount = labeledAggregation.find(
-    (aggregation: any) => aggregation._id === false
-  )!.count;
+  const matchCount =
+    labeledAggregation.find((aggregation: any) => aggregation._id === true)?.count || 0;
+  const mismatchCount =
+    labeledAggregation.find((aggregation: any) => aggregation._id === false)?.count || 0;
   const labeledCount = matchCount + mismatchCount;
   return { labeledCount, matchCount, mismatchCount };
 }
