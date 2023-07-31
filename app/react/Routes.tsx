@@ -123,7 +123,6 @@ const getRoutesLayout = (
       <Route
         path="metadata_extraction/suggestions/:extractorId/*"
         loader={IXSuggestionsLoader(headers)}
-        action={IXSuggestionsAction()}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
       <Route path="connections">
