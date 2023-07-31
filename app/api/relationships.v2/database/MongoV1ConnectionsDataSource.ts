@@ -1,51 +1,10 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
-import {
-  V1ConnectionsDataSource,
-  V1ConnectionDBO,
-  V1ConnectionDBOWithEntityInfo,
-} from '../contracts/V1ConnectionsDataSource';
-import {
-  V1Connection,
-  V1ConnectionDisplayed,
-  V1SelectionRectangle,
-  V1TextReference,
-} from '../model/V1Connection';
-
-const mapReference = (dbo: V1ConnectionDBO): V1TextReference | undefined =>
-  dbo.reference
-    ? new V1TextReference(
-        dbo.reference.text,
-        dbo.reference.selectionRectangles.map(
-          (rect): V1SelectionRectangle =>
-            new V1SelectionRectangle(rect.page, rect.top, rect.left, rect.height, rect.width)
-        )
-      )
-    : undefined;
-
-const mapConnections = (dbo: V1ConnectionDBO): V1Connection =>
-  new V1Connection(
-    dbo._id.toString(),
-    dbo.entity,
-    dbo.hub.toString(),
-    dbo.template?.toString(),
-    dbo.file,
-    mapReference(dbo)
-  );
-
-const mapConnectionsWithEntityInfo = (dbo: V1ConnectionDBOWithEntityInfo): V1ConnectionDisplayed =>
-  new V1ConnectionDisplayed(
-    dbo._id.toString(),
-    dbo.entity,
-    dbo.hub.toString(),
-    dbo.template?.toString(),
-    dbo.entityTemplateId.toString(),
-    dbo.entityTitle,
-    dbo.templateName,
-    dbo.file,
-    mapReference(dbo)
-  );
+import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
+import { V1Connection, ReadableV1Connection } from '../model/V1Connection';
+import { V1ConnectionDBO, V1ConnectionDBOWithEntityInfo } from './schemas/v1ConnectionTypes';
+import { mapConnectionToApp, mapConnectionsWithEntityInfoToApp } from './v1ConnectionMappers';
 
 export class MongoV1ConnectionsDataSource
   extends MongoDataSource<V1ConnectionDBO>
@@ -55,12 +14,12 @@ export class MongoV1ConnectionsDataSource
 
   all(): MongoResultSet<V1ConnectionDBO, V1Connection> {
     const cursor = this.getCollection().find({});
-    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
+    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnectionToApp);
   }
 
   getConnectedToHubs(
     hubIds: string[]
-  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed> {
+  ): MongoResultSet<V1ConnectionDBOWithEntityInfo, ReadableV1Connection> {
     const collection = this.getCollection();
     const cursor = collection.aggregate<V1ConnectionDBOWithEntityInfo>([
       {
@@ -99,9 +58,9 @@ export class MongoV1ConnectionsDataSource
         $unset: ['entityInfo', 'pickedEntity', 'relTypeInfo', 'pickedRelType'],
       },
     ]);
-    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, V1ConnectionDisplayed>(
+    return new MongoResultSet<V1ConnectionDBOWithEntityInfo, ReadableV1Connection>(
       cursor,
-      mapConnectionsWithEntityInfo
+      mapConnectionsWithEntityInfoToApp
     );
   }
 
@@ -110,6 +69,6 @@ export class MongoV1ConnectionsDataSource
       entity: connection.entity,
       template: connection.template ? MongoIdHandler.mapToDb(connection.template) : undefined,
     });
-    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnections);
+    return new MongoResultSet<V1ConnectionDBO, V1Connection>(cursor, mapConnectionToApp);
   }
 }

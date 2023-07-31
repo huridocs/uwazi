@@ -38,7 +38,28 @@ abstract class Pointer {
   }
 }
 
+interface WithEntityData {
+  entityTitle: string;
+  entityTemplateName: string;
+}
+
+interface WithRelationshipTypeData {
+  relationshipTypeName: string;
+}
+
 class EntityPointer extends Pointer {}
+
+class ReadableEntityPointer extends EntityPointer implements WithEntityData {
+  readonly entityTitle: string;
+
+  readonly entityTemplateName: string;
+
+  constructor(entity: string, entityTitle: string, entityTemplateName: string) {
+    super(entity);
+    this.entityTitle = entityTitle;
+    this.entityTemplateName = entityTemplateName;
+  }
+}
 
 class FilePointer extends EntityPointer {
   readonly file: string;
@@ -46,6 +67,18 @@ class FilePointer extends EntityPointer {
   constructor(entity: string, file: string) {
     super(entity);
     this.file = file;
+  }
+}
+
+class ReadableFilePointer extends FilePointer implements WithEntityData {
+  readonly entityTitle: string;
+
+  readonly entityTemplateName: string;
+
+  constructor(entity: string, file: string, entityTitle: string, entityTemplateName: string) {
+    super(entity, file);
+    this.entityTitle = entityTitle;
+    this.entityTemplateName = entityTemplateName;
   }
 }
 
@@ -64,16 +97,73 @@ class TextReferencePointer extends FilePointer {
   }
 }
 
-class Relationship {
+class ReadableTextReferencePointer extends TextReferencePointer implements WithEntityData {
+  readonly entityTitle: string;
+
+  readonly entityTemplateName: string;
+
+  constructor(
+    entity: string,
+    file: string,
+    selections: Selection[],
+    text: string,
+    entityTitle: string,
+    entityTemplateName: string
+  ) {
+    super(entity, file, selections, text);
+    this.entityTitle = entityTitle;
+    this.entityTemplateName = entityTemplateName;
+  }
+}
+
+type ReadablePointers = ReadableEntityPointer | ReadableFilePointer | ReadableTextReferencePointer;
+
+const hasEntityData = (pointer: Pointer): pointer is ReadablePointers =>
+  pointer instanceof ReadableEntityPointer ||
+  pointer instanceof ReadableFilePointer ||
+  pointer instanceof ReadableTextReferencePointer;
+
+const appendEntityDataToPointer = (
+  pointer: Pointer,
+  entityTitle: string,
+  entityTemplateName: string
+): ReadablePointers => {
+  if (hasEntityData(pointer)) {
+    throw new Error('Pointer already has entity data, cannot reassign.');
+  }
+
+  if (pointer instanceof TextReferencePointer) {
+    return new ReadableTextReferencePointer(
+      pointer.entity,
+      pointer.file,
+      pointer.selections,
+      pointer.text,
+      entityTitle,
+      entityTemplateName
+    );
+  }
+
+  if (pointer instanceof FilePointer) {
+    return new ReadableFilePointer(pointer.entity, pointer.file, entityTitle, entityTemplateName);
+  }
+
+  if (pointer instanceof EntityPointer) {
+    return new ReadableEntityPointer(pointer.entity, entityTitle, entityTemplateName);
+  }
+
+  throw new Error('Unknown pointer type');
+};
+
+abstract class BaseRelationship<PointerBase extends Pointer> {
   readonly _id: string;
 
-  readonly from: Pointer;
+  readonly from: PointerBase;
 
-  readonly to: Pointer;
+  readonly to: PointerBase;
 
   readonly type: string;
 
-  constructor(_id: string, from: Pointer, to: Pointer, type: string) {
+  constructor(_id: string, from: PointerBase, to: PointerBase, type: string) {
     this._id = _id;
     this.from = from;
     this.to = to;
@@ -88,4 +178,51 @@ class Relationship {
   }
 }
 
-export { Relationship, EntityPointer, FilePointer, TextReferencePointer, Selection };
+class Relationship extends BaseRelationship<Pointer> {}
+
+class ReadableRelationship
+  extends BaseRelationship<ReadablePointers>
+  implements WithRelationshipTypeData
+{
+  readonly relationshipTypeName: string;
+
+  constructor(
+    _id: string,
+    from: ReadablePointers,
+    to: ReadablePointers,
+    type: string,
+    relationshipTypeName: string
+  ) {
+    super(_id, from, to, type);
+    this.relationshipTypeName = relationshipTypeName;
+  }
+
+  static fromRelationship(
+    relationship: Relationship,
+    fromEntityTitle: string,
+    fromTemplateName: string,
+    toEntityTitle: string,
+    toTemplateName: string,
+    relationshipTypeName: string
+  ): ReadableRelationship {
+    return new ReadableRelationship(
+      relationship._id,
+      appendEntityDataToPointer(relationship.from, fromEntityTitle, fromTemplateName),
+      appendEntityDataToPointer(relationship.to, toEntityTitle, toTemplateName),
+      relationship.type,
+      relationshipTypeName
+    );
+  }
+}
+
+export {
+  Relationship,
+  ReadableRelationship,
+  EntityPointer,
+  ReadableEntityPointer,
+  FilePointer,
+  ReadableFilePointer,
+  TextReferencePointer,
+  ReadableTextReferencePointer,
+  Selection,
+};

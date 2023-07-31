@@ -25,6 +25,7 @@ const Primary: Story = {
         data={args.data}
         title={args.title}
         initialState={args.initialState}
+        footer={args.footer}
       />
     </div>
   ),
@@ -88,7 +89,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -96,7 +97,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -116,6 +117,7 @@ const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
+    footer: <span className="text-sm italic text-gray-500">* Table footer</span>,
     columns: [
       columnHelper.accessor('title', { header: 'Title', id: 'title' }),
       columnHelper.accessor('description', { header: 'Description' }),
