@@ -48,6 +48,10 @@ export class MongoRelationshipsDataSource
     await this.getCollection().deleteMany({ _id: { $in: ids } });
   }
 
+  async deleteAll() {
+    await this.getCollection().deleteMany({});
+  }
+
   getByFiles(fileIds: string[]) {
     const files = idsToDb(fileIds);
     const cursor = this.getCollection().find({

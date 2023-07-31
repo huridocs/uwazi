@@ -18,10 +18,6 @@ export class MongoTemplatesDataSource
 
   private _nameToPropertyMap?: Record<string, Property>;
 
-  private _allTemplates?: Template[];
-
-  private _allTemplatesById?: Record<string, Template>;
-
   getAllRelationshipProperties() {
     const cursor = this.getCollection().aggregate([
       {
@@ -104,11 +100,15 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(cursor, template => MongoIdHandler.mapToApp(template._id));
   }
 
-  async getById(id: Template['id']): Promise<Template | undefined> {
-    const [template] = await this.getCollection()
-      .find({ _id: MongoIdHandler.mapToDb(id) })
-      .toArray();
+  getByIds(ids: Template['id'][]) {
+    const templatesCursor = this.getCollection().find({
+      _id: { $in: ids.map(MongoIdHandler.mapToDb) },
+    });
 
-    return TemplateMappers.toApp(template);
+    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+  }
+
+  async getById(id: Template['id']): Promise<Template | undefined> {
+    return (await this.getByIds([id]).first()) || undefined;
   }
 }

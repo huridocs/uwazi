@@ -105,11 +105,10 @@ const Users = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex gap-2 p-2 pt-1">
+          <div className="flex gap-2">
             {selectedUsers.length ? (
               <>
                 <Button
-                  size="small"
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
@@ -124,7 +123,6 @@ const Users = () => {
                 </Button>
 
                 <Button
-                  size="small"
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
@@ -142,7 +140,6 @@ const Users = () => {
 
             {selectedUsers.length || selectedGroups.length ? (
               <Button
-                size="small"
                 color="error"
                 onClick={() => {
                   setConfirmationModalProps({
@@ -159,7 +156,6 @@ const Users = () => {
 
             {!selectedUsers.length && !selectedGroups.length ? (
               <Button
-                size="small"
                 onClick={() => {
                   setSidepanelData(undefined);
                   setShowSidepanel(true);
