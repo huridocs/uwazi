@@ -52,7 +52,7 @@ const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplate
 );
 
 const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
-  <Link to={`suggestions/${cell.getValue()}?page=1&size=20`}>
+  <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
       <Translate>Review</Translate>
     </Button>
@@ -103,7 +103,7 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
 
 const suggestionsTableColumnsBuilder: Function = (
   templates: ClientTemplateSchema[],
-  acceptSuggestionAction: (suggestion: any) => void
+  acceptSuggestions: (suggestion: any) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   return [
@@ -151,7 +151,7 @@ const suggestionsTableColumnsBuilder: Function = (
               size="small"
               color={color === 'green' ? 'success' : 'primary'}
               disabled={color === 'green'}
-              onClick={() => cell.column.columnDef.meta!.action!(cell.row.original)}
+              onClick={() => cell.column.columnDef.meta!.action!([cell.row.original])}
             >
               <Translate>Accept</Translate>
             </Button>
@@ -160,7 +160,7 @@ const suggestionsTableColumnsBuilder: Function = (
         );
       },
       meta: {
-        action: acceptSuggestionAction,
+        action: acceptSuggestions,
         headerClassName: 'w-1/12 text-center',
         contentClassName: 'text-center',
       },

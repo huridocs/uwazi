@@ -36,10 +36,9 @@ const aggregation = async (
 };
 
 const accept = async (
-  suggestion: { _id: ObjectIdSchema; sharedId: string; entityId: string },
-  allLanguages: boolean = false
+  suggestions: { _id: ObjectIdSchema; sharedId: string; entityId: string }[]
 ) => {
-  const params = new RequestParams({ suggestion, allLanguages });
+  const params = new RequestParams({ suggestions });
   const response = await api.post('suggestions/accept', params);
   return response.json;
 };

@@ -1,13 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import {
-  ActionFunction,
-  LoaderFunction,
-  useLoaderData,
-  useRevalidator,
-  useSearchParams,
-} from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
@@ -63,10 +57,12 @@ const IXSuggestions = () => {
     socket.on(
       'ix_model_status',
       (extractorId: string, modelStatus: string, _: string, data: any) => {
+        console.log('Status changed to: ', modelStatus);
         if (extractorId === extractor._id) {
-          setStatus({ key: modelStatus, data });
+          setStatus(modelStatus as ixStatus);
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus('ready');
+            revalidator.revalidate();
           }
         }
       }
@@ -80,13 +76,15 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const acceptSuggestionAction = async (suggestion: EntitySuggestionType) => {
+  const acceptSuggestions = async (suggestions: EntitySuggestionType[]) => {
     try {
-      await suggestionsAPI.accept({
-        _id: suggestion._id as ObjectIdSchema,
-        sharedId: suggestion.sharedId,
-        entityId: suggestion.entityId,
-      });
+      await suggestionsAPI.accept(
+        suggestions.map(suggestion => ({
+          _id: suggestion._id as ObjectIdSchema,
+          sharedId: suggestion.sharedId,
+          entityId: suggestion.entityId,
+        }))
+      );
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -104,7 +102,8 @@ const IXSuggestions = () => {
   const trainModelAction = async () => {
     try {
       setStatus('sending_labeled_data');
-      await suggestionsAPI.findSuggestions(extractor._id);
+      const response = await suggestionsAPI.findSuggestions(extractor._id);
+      setStatus(response.status);
     } catch (error) {}
   };
 
@@ -127,7 +126,7 @@ const IXSuggestions = () => {
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={suggestions}
-            columns={suggestionsTableColumnsBuilder(filteredTemplates(), acceptSuggestionAction)}
+            columns={suggestionsTableColumnsBuilder(filteredTemplates(), acceptSuggestions)}
             title={
               <SuggestionsTitle
                 propertyName={extractor.property}
@@ -163,7 +162,14 @@ const IXSuggestions = () => {
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
             <div className="flex items-center justify-center space-x-4">
-              <Button size="small" type="button" styling="outline" onClick={() => {}}>
+              <Button
+                size="small"
+                type="button"
+                styling="outline"
+                onClick={() => {
+                  acceptSuggestions(selected.map(suggestion => suggestion.original));
+                }}
+              >
                 <Translate>Accept suggestion</Translate>
               </Button>
               <div className="text-sm font-semibold text-center text-gray-900">
@@ -199,17 +205,16 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId }, request }) => {
+  async ({ params: { extractorId } }) => {
     console.log('loader');
     if (!extractorId) throw new Error('extractorId is required');
     console.log('loader 1');
-    const params = new URLSearchParams(request.url);
     const response = await suggestionsAPI.get(
       {
         filter: { extractorId: extractorId! },
         page: {
-          number: params.has('page') ? Number.parseInt(params.get('page') as string, 10) : 1,
-          size: params.has('page') ? Number.parseInt(params.get('size') as string, 10) : 20,
+          number: 1,
+          size: 20,
         },
       },
       headers
@@ -235,16 +240,4 @@ const IXSuggestionsLoader =
     };
   };
 
-const IXSuggestionsAction =
-  (): ActionFunction =>
-  async ({ request, params: { extractorId } }) => {
-    const formData = await request.formData();
-    const formValues = JSON.parse(formData.get('data') as string);
-
-    return suggestionsAPI.get({
-      page: { number: 1, size: 20 },
-      filter: { extractorId: extractorId!, customFilter: formValues },
-    });
-  };
-
-export { IXSuggestions, IXSuggestionsLoader, IXSuggestionsAction };
+export { IXSuggestions, IXSuggestionsLoader };

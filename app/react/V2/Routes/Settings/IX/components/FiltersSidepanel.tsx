@@ -66,12 +66,7 @@ const FiltersSidepanel = ({
   });
 
   const submitFilters = async (filters: Filter) => {
-    const formData = new FormData();
-    formData.set('intent', 'filter-suggestions');
-    formData.set('data', JSON.stringify(filters));
-    fetcher.submit(formData, { method: 'post' });
-    setShowSidepanel(false);
-    reset(defaultFilter);
+    console.log('Submitting filters: ', filters);
   };
 
   const checkOption = (e: any, optionName: any) => {
