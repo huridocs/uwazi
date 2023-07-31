@@ -1,7 +1,7 @@
 import { RequestParams } from 'app/utils/RequestParams';
 import api from 'app/utils/api';
 import { SuggestionsStats } from 'shared/types/suggestionStats';
-import { IXExtractorInfo } from './ExtractorModal';
+import { IXExtractorInfo } from 'V2/shared/types';
 
 const getSuggestions = async (requestParams: RequestParams) => {
   const { json: response } = await api.get('suggestions', requestParams);

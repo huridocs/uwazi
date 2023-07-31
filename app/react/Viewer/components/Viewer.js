@@ -18,6 +18,7 @@ import RelationshipMetadata from 'app/Relationships/components/RelationshipMetad
 import ShowIf from 'app/App/ShowIf';
 import { NeedAuthorization } from 'app/Auth';
 import { FeatureToggle } from 'app/components/Elements/FeatureToggle';
+import V2NewRelationshipsBoard from 'app/Entities/components/V2NewRelationshipsBoard';
 import { PaginatorWithPage } from './Paginator';
 import { addReference as addReferenceAction } from '../actions/referencesActions';
 import {
@@ -147,7 +148,12 @@ class Viewer extends Component {
         </ShowIf>
         <main className={className}>
           <div className="main-wrapper">
-            <ShowIf if={!['connections', 'relationships'].includes(sidepanelTab) && !targetDoc}>
+            <ShowIf
+              if={
+                !['connections', 'relationships', 'newrelationships'].includes(sidepanelTab) &&
+                !targetDoc
+              }
+            >
               {raw || firstRender ? (
                 <div className={`${determineDirection(file)} raw-text`}>{pageText}</div>
               ) : (
@@ -161,6 +167,9 @@ class Viewer extends Component {
             </ShowIf>
             <ShowIf if={sidepanelTab === 'connections' || sidepanelTab === 'relationships'}>
               <ConnectionsList hideFooter searchCentered />
+            </ShowIf>
+            <ShowIf if={this.props.newRelationshipsEnabled && sidepanelTab === 'newrelationships'}>
+              <V2NewRelationshipsBoard sharedId={doc.get('sharedId')} />
             </ShowIf>
             <TargetDocument />
             <Footer />
@@ -214,6 +223,8 @@ Viewer.defaultProps = {
   doc: Map(),
   file: {},
   user: Map({}),
+  // relationships v2
+  newRelationshipsEnabled: false,
 };
 Viewer.propTypes = {
   searchTerm: PropTypes.string,
@@ -237,6 +248,8 @@ Viewer.propTypes = {
   locale: PropTypes.string.isRequired,
   file: PropTypes.object,
   user: PropTypes.instanceOf(Map),
+  // relationships v2
+  newRelationshipsEnabled: PropTypes.bool,
 };
 Viewer.contextTypes = {
   store: PropTypes.object,
@@ -256,6 +269,8 @@ const mapStateToProps = state => {
       !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
     ),
     user: state.user,
+    // relationships v2
+    newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
 const mapDispatchToProps = dispatch =>

@@ -32,7 +32,10 @@ export class MongoPermissionsDataSource
             isRestricted(entry)
               ? {
                   ...entry,
-                  refId: MongoIdHandler.mapToApp(entry.refId),
+                  refId:
+                    typeof entry.refId === 'string'
+                      ? entry.refId
+                      : MongoIdHandler.mapToApp(entry.refId),
                 }
               : entry
           ) ?? []

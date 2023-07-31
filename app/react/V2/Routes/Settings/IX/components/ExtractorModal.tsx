@@ -2,27 +2,21 @@ import React, { useEffect, useState } from 'react';
 import Modal from 'app/Layout/Modal';
 import { Translate } from 'app/I18N';
 import { MultiSelect } from 'app/Forms';
-import { TemplateSchema } from 'shared/types/templateType';
+import { ClientTemplateSchema } from 'app/istore';
 import Icons from 'app/Templates/components/Icons';
+import { IXExtractorInfo } from 'V2/shared/types';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
-export interface IXExtractorInfo {
-  _id?: string;
-  name: string;
-  property: string;
-  templates: string[];
-}
-
-export interface ExtractorModalProps {
+interface ExtractorModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAccept: (extractorInfo: IXExtractorInfo) => void;
-  templates: TemplateSchema[];
+  templates: ClientTemplateSchema[];
   extractor?: IXExtractorInfo;
 }
 
-export const ExtractorModal = ({
+const ExtractorModal = ({
   isOpen,
   onClose,
   onAccept,
@@ -32,13 +26,15 @@ export const ExtractorModal = ({
   const [name, setName] = useState('');
   const [values, setValues] = useState<string[]>([]);
   const [isEditing, setEditing] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (extractor) {
       setEditing(true);
       setName(extractor.name);
       const initialValues = extractor.templates.map(
-        template => template + '-' + extractor.property
+        template => `${template}-${extractor.property}`
       );
       setValues(initialValues);
     } else {
@@ -59,7 +55,7 @@ export const ExtractorModal = ({
         type: prop.type,
         icon: { type: 'Icons', _id: Icons[prop.type] },
       }))
-      .filter(p => SUPPORTED_PROPERTIES.includes(p.type))
+      .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
       .concat(
         !filter || filter === 'title'
           ? [
@@ -74,8 +70,23 @@ export const ExtractorModal = ({
       ),
   }));
 
-  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+  const handleClose = () => {
     setEditing(false);
+    setName('');
+    setValues([]);
+    setIsDisabled(false);
+    onClose();
+  };
+
+  // eslint-disable-next-line max-statements
+  const handleSubmit = (submittedName: string, submitedValues: string[]) => {
+    if (!submittedName.length) {
+      setError(true);
+      return;
+    }
+
+    setEditing(false);
+    setIsDisabled(true);
     const result: null | IXExtractorInfo = submitedValues.length
       ? {
           _id: undefined,
@@ -90,33 +101,42 @@ export const ExtractorModal = ({
     }
 
     if (result === null) {
-      onClose();
+      handleClose();
     } else {
       onAccept(result);
+      handleClose();
     }
   };
 
-  const handleClose = () => {
-    setEditing(false);
-    setName('');
-    setValues([]);
-    onClose();
-  };
-
   const onAllTemplatedCheckboxChanged = () => {
-    const templatesIds = templates.map(template => template._id);
     const properties = new Set();
+    const newValues: string[] = [];
+
     values.forEach(value => {
       properties.add(value.split('-')[1]);
     });
-    const newValues: string[] = [];
-    templatesIds.forEach(template => {
+
+    const validTemplateIds: string[] = templates
+      .filter(template => {
+        const isTitle = properties.has('title');
+
+        if (isTitle) return true;
+
+        const hasMatchingProperty = template.properties.filter(property =>
+          properties.has(property.name)
+        ).length;
+
+        return hasMatchingProperty > 0;
+      })
+      .map(template => template._id);
+
+    validTemplateIds.forEach(id => {
       const arrProps = Array.from(properties);
       arrProps.forEach(prop => {
-        newValues.push(template + '-' + prop);
+        newValues.push(`${id}-${prop}`);
       });
     });
-    console.log(newValues);
+
     setValues(newValues);
   };
 
@@ -131,7 +151,12 @@ export const ExtractorModal = ({
           )}
         </div>
         <div className="all-templates-button">
-          <button className="btn" onClick={onAllTemplatedCheckboxChanged}>
+          <button
+            type="button"
+            className="btn"
+            onClick={onAllTemplatedCheckboxChanged}
+            disabled={!values.length}
+          >
             <Translate>From all templates</Translate>
           </button>
         </div>
@@ -141,9 +166,19 @@ export const ExtractorModal = ({
           value={name}
           type="text"
           className="form-control extractor-name-input"
-          onChange={event => setName(event.target.value)}
+          onChange={event => {
+            setName(event.target.value);
+            setError(false);
+          }}
           placeholder="Extractor name"
         />
+        {error && (
+          <div className="tw-content">
+            <Translate className="block mt-1 text-sm font-medium text-error-700">
+              This field is required
+            </Translate>
+          </div>
+        )}
         <div className="property-selection">
           <MultiSelect
             className="ix-extraction-multiselect"
@@ -171,6 +206,7 @@ export const ExtractorModal = ({
             type="button"
             className="btn btn-default action-button btn-extra-padding"
             onClick={() => handleSubmit(name, values)}
+            disabled={isDisabled}
           >
             {isEditing ? <Translate>Save</Translate> : <Translate>Add</Translate>}
           </button>
@@ -180,7 +216,4 @@ export const ExtractorModal = ({
   );
 };
 
-export interface ExtractorModalStateType {
-  configurationModalIsOpen: boolean;
-  extractorModelIsOpen: boolean;
-}
+export { ExtractorModal };
