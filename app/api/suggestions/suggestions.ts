@@ -1,6 +1,5 @@
 /* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
-import { FilterQuery } from 'mongoose';
 
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
@@ -17,6 +16,7 @@ import {
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import {
+  IXSuggestionAggregation,
   IXSuggestionsFilter,
   IXSuggestionType,
   SuggestionCustomFilter,
@@ -25,11 +25,14 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
 import { registerEventListeners } from './eventListeners';
 import {
+  baseQueryFragment,
+  filterFragments,
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
   getMatchStage,
+  groupByAndCount,
 } from './pipelineStages';
 import { updateStates } from './updateState';
 
@@ -127,14 +130,14 @@ const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
 };
 
 const buildListQuery = (
-  filters: FilterQuery<IXSuggestionType>,
+  extractorId: ObjectId,
   customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
   offset: number,
   limit: number
 ) => {
   const pipeline = [
-    ...getMatchStage(filters, customFilter),
+    ...getMatchStage(extractorId, customFilter),
     { $sort: { date: 1, state: -1 } },
     { $skip: offset },
     { $limit: limit },
@@ -167,72 +170,56 @@ const buildListQuery = (
   return pipeline;
 };
 
-// const buildTemplateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
-//   const { entityTemplate, ...filters } = _filters;
-//   const pipeline = [...getMatchStage(filters), ...groupByAndSort('$entityTemplate')];
-//   return pipeline;
-// };
+async function getLabeledCounts(extractorId: ObjectId) {
+  const labeledAggregationQuery = [
+    {
+      $match: {
+        ...baseQueryFragment(extractorId),
+        ...filterFragments.labeled._fragment,
+      },
+    },
+    ...groupByAndCount('$state.match'),
+  ];
+  const labeledAggregation: { _id: boolean; count: number }[] =
+    await IXSuggestionsModel.db.aggregate(labeledAggregationQuery);
+  const matchCount =
+    labeledAggregation.find((aggregation: any) => aggregation._id === true)?.count || 0;
+  const mismatchCount =
+    labeledAggregation.find((aggregation: any) => aggregation._id === false)?.count || 0;
+  const labeledCount = matchCount + mismatchCount;
+  return { labeledCount, matchCount, mismatchCount };
+}
 
-// const buildStateAggregationsQuery = (_filters: FilterQuery<IXSuggestionType>) => {
-//   const { state, ...filters } = _filters;
-//   const pipeline = [...getMatchStage(filters), ...groupByAndSort('$state')];
-//   return pipeline;
-// };
-
-// const fetchAndAggregateSuggestions = async (
-//   _filters: Omit<IXSuggestionsFilter, 'language'>,
-//   setLanguages: LanguagesListSchema | undefined,
-//   offset: number,
-//   limit: number
-// ) => {
-//   const {
-//     states,
-//     entityTemplates,
-//     ...filters
-//   }: {
-//     states?: string[];
-//     entityTemplates?: string[];
-//     extractorId?: ObjectIdSchema;
-//     state?: { $in: string[] };
-//     entityTemplate?: { $in: string[] };
-//   } = _filters;
-//   if (states) filters.state = { $in: _filters.states || [] };
-//   if (entityTemplates) filters.entityTemplate = { $in: _filters.entityTemplates || [] };
-
-//   const count = await IXSuggestionsModel.db
-//     .aggregate([{ $match: { ...filters, status: { $ne: 'processing' } } }, { $count: 'count' }])
-//     .then(result => (result?.length ? result[0].count : 0));
-
-//   const suggestions = await IXSuggestionsModel.db.aggregate(
-//     buildListQuery(filters, setLanguages, offset, limit)
-//   );
-
-//   const templateAggregations = await IXSuggestionsModel.db.aggregate(
-//     buildTemplateAggregationsQuery(filters)
-//   );
-
-//   const stateAggregations = await IXSuggestionsModel.db.aggregate(
-//     buildStateAggregationsQuery(filters)
-//   );
-
-//   return {
-//     suggestions,
-//     aggregations: { template: templateAggregations, state: stateAggregations },
-//     totalPages: Math.ceil(count / limit),
-//   };
-// };
+const getNonLabeledCounts = async (_extractorId: ObjectId) => {
+  const extractorId = new ObjectId(_extractorId);
+  const unlabeledMatch = {
+    ...baseQueryFragment(extractorId),
+    ...filterFragments.nonLabeled._fragment,
+  };
+  const nonLabeledCount = await IXSuggestionsModel.count(unlabeledMatch);
+  const noContextCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.noContext,
+  });
+  const noSuggestionCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.noSuggestion,
+  });
+  const obsoleteCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.obsolete,
+  });
+  const othersCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.others,
+  });
+  return { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount };
+};
 
 const readFilter = (filter: IXSuggestionsFilter) => {
-  const { customFilter, entityTemplates, extractorId } = filter;
-  const filters: FilterQuery<IXSuggestionType> = {
-    extractorId: new ObjectId(extractorId),
-  };
-  if (entityTemplates?.length) {
-    filters.entityTemplate = { $in: entityTemplates };
-  }
-  filters.extractorId = new ObjectId(filter.extractorId);
-
-  return { customFilter, filters };
+  const { customFilter, extractorId: _extractorId } = filter;
+  const extractorId = new ObjectId(_extractorId);
+  return { customFilter, extractorId };
 };
 
 const Suggestions = {
@@ -248,19 +235,42 @@ const Suggestions = {
     const DEFAULT_LIMIT = 30;
     const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
-    const { customFilter, filters } = readFilter(filter);
+    const { customFilter, extractorId } = readFilter(filter);
 
     const count = await IXSuggestionsModel.db
-      .aggregate(getMatchStage(filters, customFilter, true))
+      .aggregate(getMatchStage(extractorId, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
     const suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(filters, customFilter, setLanguages, offset, limit)
+      buildListQuery(extractorId, customFilter, setLanguages, offset, limit)
     );
 
     return {
       suggestions,
       totalPages: Math.ceil(count / limit),
+    };
+  },
+
+  aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
+    const extractorId = new ObjectId(_extractorId);
+    const { labeledCount, matchCount, mismatchCount } = await getLabeledCounts(extractorId);
+    const { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount } =
+      await getNonLabeledCounts(extractorId);
+    const totalCount = labeledCount + nonLabeledCount;
+    return {
+      total: totalCount,
+      labeled: {
+        _count: labeledCount,
+        match: matchCount,
+        mismatch: mismatchCount,
+      },
+      nonLabeled: {
+        _count: nonLabeledCount,
+        noContext: noContextCount,
+        noSuggestion: noSuggestionCount,
+        obsolete: obsoleteCount,
+        others: othersCount,
+      },
     };
   },
 

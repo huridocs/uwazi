@@ -143,7 +143,6 @@ export const SuggestionsQueryFilterSchema = {
   properties: {
     language: { type: 'string' },
     extractorId: objectIdSchema,
-    entityTemplates: { type: 'array', items: { type: 'string' } },
     customFilter: SuggestionCustomFilterSchema,
   },
   required: ['extractorId'],
@@ -166,4 +165,47 @@ export const IXSuggestionsQuerySchema = {
     },
   },
   required: ['filter'],
+};
+
+export const IXAggregationQuerySchema = {
+  type: 'object',
+  title: 'IXAggregationQuery',
+  additionalProperties: false,
+  definitions: { objectIdSchema },
+  properties: {
+    extractorId: objectIdSchema,
+  },
+  required: ['extractorId'],
+};
+
+export const IXSuggestionAggregationSchema = {
+  type: 'object',
+  title: 'IXSuggestionAggregation',
+  additionalProperties: false,
+  required: ['labeled', 'nonLabeled', 'total'],
+  properties: {
+    total: { type: 'number' },
+    labeled: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_count', 'match', 'mismatch'],
+      properties: {
+        _count: { type: 'number' },
+        match: { type: 'number' },
+        mismatch: { type: 'number' },
+      },
+    },
+    nonLabeled: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
+      properties: {
+        _count: { type: 'number' },
+        noSuggestion: { type: 'number' },
+        noContext: { type: 'number' },
+        obsolete: { type: 'number' },
+        others: { type: 'number' },
+      },
+    },
+  },
 };

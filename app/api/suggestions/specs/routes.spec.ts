@@ -7,10 +7,10 @@ import { search } from 'api/search';
 import {
   factory,
   fixtures,
-  personTemplateId,
   shared2enId,
   shared2esId,
   shared6enId,
+  stateFilterFixtures,
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
@@ -35,29 +35,30 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
-describe('suggestions routes', () => {
-  let user: { username: string; role: string } | undefined;
-  const getUser = () => user;
+let user: { username: string; role: string } | undefined;
+const getUser = () => user;
 
+beforeEach(async () => {
+  user = { username: 'user 1', role: 'admin' };
+  jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+});
+
+const app: Application = setUpApp(
+  suggestionsRoutes,
+  (req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = getUser();
+    next();
+  }
+);
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
+describe('suggestions routes', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     await Suggestions.updateStates({});
-  });
-  beforeEach(async () => {
-    user = { username: 'user 1', role: 'admin' };
-    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-  });
-
-  const app: Application = setUpApp(
-    suggestionsRoutes,
-    (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = getUser();
-      next();
-    }
-  );
-
-  afterAll(async () => {
-    await testingEnvironment.tearDown();
   });
 
   describe('GET /api/suggestions', () => {
@@ -238,44 +239,6 @@ describe('suggestions routes', () => {
           }),
         ]);
       });
-
-      it('should filter by entity template', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-              entityTemplates: [personTemplateId.toString()],
-            },
-          })
-          .expect(200);
-        expect(response.body.suggestions).toMatchObject([
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared4',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared3',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared1',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared1',
-            language: 'es',
-          },
-        ]);
-      });
     });
 
     describe('validation', () => {
@@ -382,6 +345,62 @@ describe('suggestions routes', () => {
         })
         .expect(401);
       expect(response.unauthorized).toBe(true);
+    });
+  });
+});
+
+describe('aggregation routes', () => {
+  describe('GET /api/suggestions/aggregation', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(stateFilterFixtures);
+      await Suggestions.updateStates({});
+    });
+
+    describe('validation', () => {
+      it('should return a validation error if params are not valid', async () => {
+        const invalidQuery = { additionParam: true };
+        const response = await request(app).get('/api/suggestions/aggregation').query(invalidQuery);
+        expect(response.status).toBe(400);
+
+        const emptyQuery = {};
+        const response2 = await request(app).get('/api/suggestions/aggregation').query(emptyQuery);
+        expect(response2.status).toBe(400);
+      });
+    });
+
+    describe('authentication', () => {
+      it('should reject with unauthorized when the user does not have the admin role', async () => {
+        user = { username: 'user 1', role: 'editor' };
+        const response = await request(app)
+          .get('/api/suggestions/aggregation')
+          .query({})
+          .expect(401);
+        expect(response.unauthorized).toBe(true);
+      });
+    });
+
+    it('should return the aggregation of suggestions', async () => {
+      const response = await request(app)
+        .get('/api/suggestions/aggregation')
+        .query({
+          extractorId: factory.id('test_extractor').toString(),
+        })
+        .expect(200);
+      expect(response.body).toEqual({
+        total: 12,
+        labeled: {
+          _count: 4,
+          match: 2,
+          mismatch: 2,
+        },
+        nonLabeled: {
+          _count: 8,
+          noSuggestion: 2,
+          noContext: 4,
+          obsolete: 2,
+          others: 2,
+        },
+      });
     });
   });
 });

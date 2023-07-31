@@ -16,11 +16,49 @@ const blankCustomFilter: SuggestionCustomFilter = {
   },
 };
 
+beforeAll(async () => {
+  await db.setupFixturesAndContext(stateFilterFixtures);
+  await Suggestions.updateStates({});
+});
+
+afterAll(async () => db.disconnect());
+
 describe('suggestions with CustomFilters', () => {
   describe('get()', () => {
-    beforeAll(async () => {
-      await db.setupFixturesAndContext(stateFilterFixtures);
-      await Suggestions.updateStates({});
+    it('should return all suggestions (except processing) when no custom filter is provided', async () => {
+      const result = await Suggestions.get(
+        {
+          extractorId: factory.id('test_extractor').toString(),
+        },
+        {}
+      );
+      expect(result.suggestions).toMatchObject([
+        { sharedId: 'unlabeled-obsolete', language: 'en' },
+        { sharedId: 'unlabeled-obsolete', language: 'es' },
+        { sharedId: 'labeled-match', language: 'en' },
+        { sharedId: 'labeled-match', language: 'es' },
+        { sharedId: 'labeled-mismatch', language: 'en' },
+        { sharedId: 'labeled-mismatch', language: 'es' },
+        { sharedId: 'unlabeled-error', language: 'en' },
+        { sharedId: 'unlabeled-error', language: 'es' },
+        { sharedId: 'unlabeled-no-context', language: 'en' },
+        { sharedId: 'unlabeled-no-context', language: 'es' },
+        { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+        { sharedId: 'unlabeled-no-suggestion', language: 'es' },
+      ]);
+    });
+
+    it('should be able to paginate', async () => {
+      const result = await Suggestions.get(
+        {
+          extractorId: factory.id('test_extractor').toString(),
+        },
+        { page: { number: 3, size: 2 } }
+      );
+      expect(result.suggestions).toMatchObject([
+        { sharedId: 'labeled-mismatch', language: 'es' },
+        { sharedId: 'labeled-mismatch', language: 'en' },
+      ]);
     });
 
     it.each([
@@ -160,9 +198,26 @@ describe('suggestions with CustomFilters', () => {
         expect(result.suggestions).toMatchObject(expectedSuggestions);
       }
     );
+  });
 
-    afterAll(async () => {
-      await db.disconnect();
+  describe('aggreagate()', () => {
+    it('should return correct aggregation', async () => {
+      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 12,
+        labeled: {
+          _count: 4,
+          match: 2,
+          mismatch: 2,
+        },
+        nonLabeled: {
+          _count: 8,
+          noSuggestion: 2,
+          noContext: 4,
+          obsolete: 2,
+          others: 2,
+        },
+      });
     });
   });
 });
