@@ -302,7 +302,16 @@ describe('InformationExtraction', () => {
         expect.objectContaining({
           entityId: 'A1',
           status: 'processing',
-          // state: SuggestionState.processing,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: true,
+            obsolete: false,
+            error: false,
+          },
         })
       );
     });
@@ -380,7 +389,16 @@ describe('InformationExtraction', () => {
           suggestedValue: 'suggestion_text_1',
           segment: 'segment_text_1',
           status: 'ready',
-          // state: SuggestionState.labelMismatch,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
         })
       );
     });
@@ -445,7 +463,16 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_other_language',
-          // state: SuggestionState.labelMismatch,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
         })
       );
 
@@ -455,7 +482,16 @@ describe('InformationExtraction', () => {
           propertyName: 'property1',
           status: 'ready',
           suggestedValue: 'text_in_eng_language',
-          // state: SuggestionState.valueMismatch,
+          state: {
+            labeled: false,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
         })
       );
     });
@@ -492,7 +528,16 @@ describe('InformationExtraction', () => {
           segment: '',
           status: 'failed',
           error: 'Issue calculation suggestion',
-          // state: SuggestionState.error,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: false,
+            match: false,
+            hasContext: false,
+            processing: false,
+            obsolete: false,
+            error: true,
+          },
         })
       );
     });
