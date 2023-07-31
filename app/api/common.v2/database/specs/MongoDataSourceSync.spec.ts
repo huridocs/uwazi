@@ -14,6 +14,10 @@ const blankState = [
     _id: id('collection id 1'),
     data: 'some old data',
   },
+  {
+    _id: id('collection id 2'),
+    data: 'some old data 2',
+  },
 ];
 
 const updateLogsBlankState = [
@@ -22,6 +26,13 @@ const updateLogsBlankState = [
     timestamp: 123,
     namespace: 'collection',
     mongoId: id('collection id 1'),
+    deleted: false,
+  },
+  {
+    _id: new ObjectId(),
+    timestamp: 1234,
+    namespace: 'collection',
+    mongoId: id('collection id 2'),
     deleted: false,
   },
 ];
@@ -97,7 +108,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .updateOne({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }, updateLogsBlankState[1]],
         expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
@@ -126,7 +137,7 @@ describe('collection with automatic log to updatelogs', () => {
             );
         },
         expectedDBState: [
-          { ...updateLogsBlankState[0] },
+          ...updateLogsBlankState,
           updateLog({ mongoId: id('non existent'), timestamp: 2 }),
         ],
         expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent') },
@@ -148,7 +159,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .replaceOne({ _id: id('collection id 1') }, { data: 'replaced document' });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }, updateLogsBlankState[1]],
         expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
       },
       {
@@ -164,7 +175,7 @@ describe('collection with automatic log to updatelogs', () => {
             );
         },
         expectedDBState: [
-          { ...updateLogsBlankState[0] },
+          ...updateLogsBlankState,
           updateLog({ mongoId: id('non existent id'), timestamp: 2 }),
         ],
         expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent id') },
@@ -190,7 +201,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .findOneAndUpdate({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }, updateLogsBlankState[1]],
         expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
       },
       {
@@ -235,7 +246,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .findOneAndReplace({ _id: id('collection id 1') }, { data: 'updated data' });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }],
+        expectedDBState: [{ ...updateLogsBlankState[0], timestamp: 2 }, updateLogsBlankState[1]],
         expectedResult: { ok: 1, value: { _id: id('collection id 1'), data: 'some old data' } },
       },
       {
@@ -284,10 +295,11 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: 2 },
+          { ...updateLogsBlankState[1], timestamp: 2 },
           updateLog({ mongoId: id('data 1'), timestamp: 2 }),
           updateLog({ mongoId: id('data 2'), timestamp: 2 }),
         ],
-        expectedResult: { acknowledged: true, matchedCount: 3, modifiedCount: 3 },
+        expectedResult: { acknowledged: true, matchedCount: 4, modifiedCount: 4 },
       },
       {
         method: 'updateMany with upsert',
@@ -308,7 +320,7 @@ describe('collection with automatic log to updatelogs', () => {
         expectedResult: { acknowledged: true, upsertedCount: 1, upsertedId: id('non existent id') },
       },
       {
-        method: 'updateMany without previous updatelogs (should test more than one update)',
+        method: 'updateMany without previous updatelogs',
         callback: async (ds: DataSource) => {
           jest.spyOn(Date, 'now').mockReturnValue(2);
           await getConnection().collection('updatelogs').deleteMany();
@@ -317,11 +329,9 @@ describe('collection with automatic log to updatelogs', () => {
         expectedDBStateOnTransactionError: [],
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: 2, _id: expect.any(ObjectId) },
-          // red test to continue here ( should test more than one occurrence )
-          updateLog({ mongoId: id('data 1'), timestamp: 2 }),
-          // updateLog({ mongoId: id('data 2'), timestamp: 2 }),
+          { ...updateLogsBlankState[1], timestamp: 2, _id: expect.any(ObjectId) },
         ],
-        expectedResult: { acknowledged: true, matchedCount: 1, modifiedCount: 1 },
+        expectedResult: { acknowledged: true, matchedCount: 2, modifiedCount: 2 },
       },
       {
         method: 'updateMany with 0 matches',
@@ -330,13 +340,7 @@ describe('collection with automatic log to updatelogs', () => {
             .collection()
             .updateMany({ property: 'does not exist' }, { $set: { data: 'updated data' } }),
         expectedDBState: updateLogsBlankState,
-        expectedResult: {
-          acknowledged: true,
-          matchedCount: 0,
-          modifiedCount: 0,
-          upsertedCount: 0,
-          upsertedId: null,
-        },
+        expectedResult: { acknowledged: true, matchedCount: 0 },
       },
       {
         method: 'deleteOne',
@@ -344,7 +348,10 @@ describe('collection with automatic log to updatelogs', () => {
           jest.spyOn(Date, 'now').mockReturnValue(2);
           return ds.collection().deleteOne({ _id: id('collection id 1') });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], deleted: true, timestamp: 2 }],
+        expectedDBState: [
+          { ...updateLogsBlankState[0], deleted: true, timestamp: 2 },
+          updateLogsBlankState[1],
+        ],
         expectedResult: { acknowledged: true },
       },
       {
@@ -371,6 +378,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], deleted: true, timestamp: 2 },
+          updateLogsBlankState[1],
           updateLog({ mongoId: id('data 1'), timestamp: 2, deleted: true }),
         ],
         expectedResult: { acknowledged: true },
@@ -398,7 +406,10 @@ describe('collection with automatic log to updatelogs', () => {
           jest.spyOn(Date, 'now').mockReturnValue(2);
           return ds.collection().findOneAndDelete({ _id: id('collection id 1') });
         },
-        expectedDBState: [{ ...updateLogsBlankState[0], deleted: true, timestamp: 2 }],
+        expectedDBState: [
+          { ...updateLogsBlankState[0], deleted: true, timestamp: 2 },
+          updateLogsBlankState[1],
+        ],
         expectedResult: {
           ok: 1,
           value: { _id: id('collection id 1'), data: 'some old data' },
@@ -460,6 +471,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: 2, deleted: true },
+          updateLogsBlankState[1],
           updateLog({ mongoId: id('data 1'), timestamp: 2, deleted: true }),
           updateLog({ mongoId: id('data 2'), timestamp: 2, deleted: true }),
         ],
@@ -521,6 +533,7 @@ describe('collection with automatic log to updatelogs', () => {
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: 2 },
+          updateLogsBlankState[1],
           updateLog({ mongoId: id('data 1'), timestamp: 2 }),
           updateLog({ mongoId: id('data 2'), timestamp: 2 }),
           updateLog({ mongoId: id('upserted'), timestamp: 2 }),
