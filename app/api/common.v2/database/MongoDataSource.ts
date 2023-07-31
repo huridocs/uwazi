@@ -3,12 +3,15 @@ import {
   Collection,
   Db,
   Document,
+  Filter,
   InsertManyResult,
   InsertOneResult,
   ObjectId,
+  WithId,
 } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
+import { MongoResultSet } from './MongoResultSet';
 
 type MaxAmountOfParameters<F extends (...args: any) => any> = Required<Parameters<F>>['length'];
 
@@ -186,13 +189,6 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     return this.collectionProxy;
   }
 
-  private async getModifiedIds(condition: any) {
-    return this.getCollection()
-      .find(condition, { projection: { _id: 1 } })
-      .toArray()
-      .then(modifiedDocuments => modifiedDocuments.map(d => d._id));
-  }
-
   private async insertSyncLogs(mongoIds: ObjectId[]) {
     if (mongoIds.length !== 0) {
       await this.db.collection('updatelogs').insertMany(
@@ -207,27 +203,28 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     }
   }
 
-  private async upsertSyncLogs(conditions: any[], deleted: boolean = false) {
+  private async upsertSyncLogs(
+    conditions: Filter<WithId<CollectionSchema>>[],
+    deleted: boolean = false
+  ) {
     if (conditions.length === 0) {
       return;
     }
-    const mongoIds = await this.getModifiedIds({ $or: conditions });
 
-    await mongoIds.reduce(async (prev, _id) => {
-      await prev;
+    const modifiedDocuments = this.getCollection().find(
+      { $or: conditions },
+      { projection: { _id: 1 } }
+    );
+
+    await new MongoResultSet(modifiedDocuments, d => d).forEach(async ({ _id }) => {
       await this.db.collection('updatelogs').updateMany(
         { mongoId: _id },
         {
-          $set: {
-            timestamp: Date.now(),
-            mongoId: _id,
-            namespace: this.collectionName,
-            deleted,
-          },
+          $set: { timestamp: Date.now(), mongoId: _id, namespace: this.collectionName, deleted },
         },
         { session: this.getSession(), upsert: true }
       );
-    }, Promise.resolve());
+    });
   }
 
   protected getCollection() {
