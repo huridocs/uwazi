@@ -1,16 +1,14 @@
 /* eslint-disable max-statements */
-import { getIdMapper } from 'api/utils/fixturesFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { getClient, getConnection } from '../getConnectionForCurrentTenant';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
 import { MongoTransactionManager } from '../MongoTransactionManager';
-
-const idMapper = getIdMapper();
+import { getClient, getConnection } from '../getConnectionForCurrentTenant';
 
 const blankState = [
   {
-    _id: idMapper('update log 1'),
+    _id: new ObjectId(),
     data: 'some old data',
   },
 ];
@@ -144,9 +142,6 @@ describe('session scoped collection', () => {
             throw new Error('make it fail');
           });
         } catch (e) {
-          if (e.message !== 'make it fail') {
-            throw e;
-          }
           expect(e.message).toEqual('make it fail');
           expect(await testingDB.mongodb?.collection('collection').find({}).toArray()).toEqual(
             expectedOnAbort
