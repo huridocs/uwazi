@@ -1,7 +1,13 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
+import {
+  LoaderFunction,
+  useLoaderData,
+  useLocation,
+  useRevalidator,
+  useSearchParams,
+} from 'react-router-dom';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
@@ -21,6 +27,8 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { socket } from 'app/socket';
 
+const SUGGESTIONS_PER_PAGE = 1;
+
 type ixStatus =
   | 'ready'
   | 'sending_labeled_data'
@@ -39,15 +47,19 @@ const ixmessages = {
 };
 
 const IXSuggestions = () => {
-  const { suggestions, extractor, templates, aggregation, currentStatus } = useLoaderData() as {
-    suggestions: EntitySuggestionType[];
-    extractor: IXExtractorInfo;
-    templates: ClientTemplateSchema[];
-    aggregation: any;
-    currentStatus: ixStatus;
-  };
-  const [searchParams] = useSearchParams();
+  const { suggestions, extractor, templates, aggregation, currentStatus, totalPages } =
+    useLoaderData() as {
+      totalPages: number;
+      suggestions: EntitySuggestionType[];
+      extractor: IXExtractorInfo;
+      templates: ClientTemplateSchema[];
+      aggregation: any;
+      currentStatus: ixStatus;
+    };
+
+  const location = useLocation();
   const [showSidepanel, setShowSidepanel] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -57,7 +69,6 @@ const IXSuggestions = () => {
     socket.on(
       'ix_model_status',
       (extractorId: string, modelStatus: string, _: string, data: any) => {
-        console.log('Status changed to: ', modelStatus);
         if (extractorId === extractor._id) {
           setStatus(modelStatus as ixStatus);
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
@@ -139,19 +150,23 @@ const IXSuggestions = () => {
             enableSelection
             onSelection={setSelected}
             footer={
-              <div className="flex h-4">
-                <div className="flex-none">
+              <div className="flex justify-between h-6">
+                <div className="">
                   <div className="text-sm font-semibold text-center text-gray-900">
-                    <span className="font-light text-gray-500">Showing</span> 1-
-                    {searchParams.get('size') + ' '}
+                    <span className="font-light text-gray-500">Showing</span> 1-20{' '}
                     <span className="font-light text-gray-500">of</span> 200
                   </div>
                 </div>
-                <div className="self-end flex-1">
+                <div className="">
                   <Paginator
-                    totalPages="200"
-                    currentPage="1"
-                    buildUrl={(page: any) => 'http://localhost:3000'}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    buildUrl={(page: any) => {
+                      if (page !== currentPage) {
+                        setCurrentPage(page);
+                      }
+                      return location.pathname + '?page=' + page;
+                    }}
                   />
                 </div>
               </div>
@@ -205,34 +220,27 @@ const IXSuggestions = () => {
 
 const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId } }) => {
-    console.log('loader');
+  async ({ params: { extractorId }, request }) => {
     if (!extractorId) throw new Error('extractorId is required');
-    console.log('loader 1');
+    const searchParams = new URLSearchParams(request.url);
+    console.log(searchParams.has('page') ? 'Using page number' : 'Defaulting to 1');
     const response = await suggestionsAPI.get(
       {
-        filter: { extractorId: extractorId! },
+        filter: { extractorId },
         page: {
-          number: 1,
-          size: 20,
+          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+          size: SUGGESTIONS_PER_PAGE,
         },
       },
       headers
     );
-    console.log('loader 2');
     const extractors = await extractorsAPI.getById(extractorId, headers);
-    const aggregation = await suggestionsAPI.aggregation(
-      {
-        filter: { extractorId: extractorId! },
-      },
-      headers
-    );
-    console.log('loader 3');
+    const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
-    console.log('loader');
     return {
       suggestions: response.suggestions,
+      totalPages: response.totalPages,
       extractor: extractors[0],
       templates,
       aggregation,

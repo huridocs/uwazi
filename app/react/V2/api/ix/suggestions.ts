@@ -20,17 +20,8 @@ const get = async (
   return response.json;
 };
 
-const aggregation = async (
-  parameters: {
-    filter: {
-      extractorId: string;
-      language?: string;
-      entityTemplates?: string[];
-    };
-  },
-  headers?: IncomingHttpHeaders
-) => {
-  const params = new RequestParams(parameters, headers);
+const aggregation = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  const params = new RequestParams({ extractorId }, headers);
   const response = await api.get('suggestions/aggregation', params);
   return response.json;
 };
