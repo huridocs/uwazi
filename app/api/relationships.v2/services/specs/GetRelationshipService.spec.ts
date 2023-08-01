@@ -4,6 +4,7 @@ import { getClient, getConnection } from 'api/common.v2/database/getConnectionFo
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
+import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { User } from 'api/users.v2/model/User';
@@ -56,6 +57,7 @@ const createService = (_user?: User) => {
   const connection = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
+  const relationshipTypesDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
   const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
   const authService = new AuthorizationService(
@@ -68,7 +70,13 @@ const createService = (_user?: User) => {
     settingsDS,
     transactionManager
   );
-  return new GetRelationshipService(relationshipsDS, authService, entitiesDS);
+  return new GetRelationshipService(
+    relationshipsDS,
+    authService,
+    entitiesDS,
+    templatesDS,
+    relationshipTypesDS
+  );
 };
 
 beforeEach(async () => {
@@ -83,13 +91,30 @@ describe('getByEntity()', () => {
   it('should return all the relationships for the entity', async () => {
     const service = createService();
     const relationshipsData = await service.getByEntity('entity2');
-    expect(relationshipsData).toEqual({
-      relationships: [
-        fixtureFactory.v2.application.relationship('rel1', 'entity1', 'entity2', 'reltype'),
-        fixtureFactory.v2.application.relationship('rel2', 'entity2', 'entity3', 'reltype'),
-      ],
-      titleMap: { entity1: 'entity1', entity2: 'entity2', entity3: 'entity3' },
-    });
+    expect(relationshipsData).toEqual([
+      fixtureFactory.v2.application.readableRelationship(
+        'rel1',
+        'entity1',
+        'entity1',
+        'template1',
+        'entity2',
+        'entity2',
+        'template1',
+        'reltype',
+        'reltype'
+      ),
+      fixtureFactory.v2.application.readableRelationship(
+        'rel2',
+        'entity2',
+        'entity2',
+        'template1',
+        'entity3',
+        'entity3',
+        'template1',
+        'reltype',
+        'reltype'
+      ),
+    ]);
   });
 
   it('should check for user read access in the involved entities', async () => {
@@ -98,11 +123,18 @@ describe('getByEntity()', () => {
     );
     const relationshipsData = await service.getByEntity('entity2');
 
-    expect(relationshipsData).toEqual({
-      relationships: [
-        fixtureFactory.v2.application.relationship('rel1', 'entity1', 'entity2', 'reltype'),
-      ],
-      titleMap: { entity1: 'entity1', entity2: 'entity2' },
-    });
+    expect(relationshipsData).toEqual([
+      fixtureFactory.v2.application.readableRelationship(
+        'rel1',
+        'entity1',
+        'entity1',
+        'template1',
+        'entity2',
+        'entity2',
+        'template1',
+        'reltype',
+        'reltype'
+      ),
+    ]);
   });
 });
