@@ -31,7 +31,7 @@ export class MongoTranslationsSyncDataSource
 
   // eslint-disable-next-line class-methods-use-this
   async get(_query: any, _select?: any, _options?: any): Promise<TranslationDBO[]> {
-    return Promise.resolve([]);
+    throw new Error('MongoTranslationsSyncDataSource.get is not implemented');
   }
 
   async getById(translationId: string): Promise<TranslationDBO | null> {
