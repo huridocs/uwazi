@@ -17,7 +17,10 @@ interface SettingsHeaderProps extends PropsWithChildren {
 }
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex flex-col h-full `} data-testid="settings-content">
+  <div
+    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0`}
+    data-testid="settings-content"
+  >
     {children}
   </div>
 );
@@ -57,7 +60,7 @@ SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
 
 SettingsContent.Footer = ({ children, className }: SettingsContentProps) => (
   <div
-    className={`fixed bottom-0 left-0 w-full p-1 bg-white border-t border-gray-200 lg:sticky z-1 ${
+    className={`fixed bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 lg:sticky z-1 ${
       className || ''
     }`}
     data-testid="settings-content-footer"
