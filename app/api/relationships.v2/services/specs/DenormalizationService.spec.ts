@@ -383,9 +383,7 @@ describe('denormalizeAfterCreatingRelationships()', () => {
         expect(updateMock).toHaveBeenCalledWith(
           expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
         );
-        expect(indexMock).toHaveBeenCalledWith(
-          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
-        );
+        expect(indexMock).not.toHaveBeenCalled();
       }
     );
   });
@@ -431,9 +429,7 @@ describe('denormalizeBeforeDeletingFiles()', () => {
         expect(updateMock).toHaveBeenCalledWith(
           expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
         );
-        expect(indexMock).toHaveBeenCalledWith(
-          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
-        );
+        expect(indexMock).not.toHaveBeenCalled();
       }
     );
   });
@@ -537,7 +533,7 @@ describe('denormalizeAfterCreatingOrUpdatingProperty()', () => {
     ]);
 
     await triggerCommit();
-    expect(indexMock).toHaveBeenCalledWith(['entity1', 'entity1', 'entity10', 'entity10']);
+    expect(indexMock).not.toHaveBeenCalled();
     expect(updateMock).toHaveBeenCalledWith(['entity1', 'entity1', 'entity10', 'entity10']);
   });
 });
