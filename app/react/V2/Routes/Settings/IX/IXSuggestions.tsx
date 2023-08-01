@@ -58,8 +58,8 @@ const IXSuggestions = () => {
     };
 
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const [showSidepanel, setShowSidepanel] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -153,18 +153,16 @@ const IXSuggestions = () => {
               <div className="flex justify-between h-6">
                 <div className="">
                   <div className="text-sm font-semibold text-center text-gray-900">
-                    <span className="font-light text-gray-500">Showing</span> 1-20{' '}
-                    <span className="font-light text-gray-500">of</span> 200
+                    <span className="font-light text-gray-500">Showing</span> 1-
+                    {SUGGESTIONS_PER_PAGE}
+                    <span className="font-light text-gray-500">of</span> {totalPages}
                   </div>
                 </div>
-                <div className="">
+                <div>
                   <Paginator
                     totalPages={totalPages}
-                    currentPage={currentPage}
+                    currentPage={searchParams.has('page') ? Number(searchParams.get('page')) : 1}
                     buildUrl={(page: any) => {
-                      if (page !== currentPage) {
-                        setCurrentPage(page);
-                      }
                       return location.pathname + '?page=' + page;
                     }}
                   />
@@ -222,8 +220,7 @@ const IXSuggestionsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId }, request }) => {
     if (!extractorId) throw new Error('extractorId is required');
-    const searchParams = new URLSearchParams(request.url);
-    console.log(searchParams.has('page') ? 'Using page number' : 'Defaulting to 1');
+    const searchParams = new URLSearchParams(request.url.split('?')[1]);
     const response = await suggestionsAPI.get(
       {
         filter: { extractorId },
