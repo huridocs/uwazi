@@ -25,6 +25,13 @@ type MethodsOptionsArgPosition = {
     : null;
 };
 
+export interface UpdateLog {
+  timestamp: number;
+  namespace: string;
+  mongoId: ObjectId;
+  deleted: boolean;
+}
+
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
 
@@ -102,16 +109,14 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     return paddedArgs;
   }
 
-  private scopeCollectionToSession(collection: Collection<CollectionSchema>) {
-    if (this.collectionProxy) {
-      return this.collectionProxy;
-    }
-
+  private scopeCollectionToSession<T extends Document>(
+    collection: Collection<T>,
+    updatelogs = true
+  ) {
     const self = this;
-
-    this.collectionProxy = new Proxy<Collection<CollectionSchema>>(collection, {
+    return new Proxy<Collection<T>>(collection, {
       get(target, property, receiver) {
-        const propertyName = <keyof Collection<CollectionSchema>>property;
+        const propertyName = <keyof Collection<T>>property;
         if (
           typeof property === 'string' &&
           Object.keys(MongoDataSource.scopedMethods).includes(property as keyof Collection) &&
@@ -123,60 +128,62 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
             const originalMethod = () =>
               original.apply(receiver, self.appendSessionToOptions(args, propertyName));
 
-            const condition = args[0];
-            if (property === 'insertMany') {
-              return originalMethod().then(async (result: InsertManyResult<CollectionSchema>) =>
-                self.insertSyncLogs(Object.values(result.insertedIds)).then(() => result)
-              );
-            }
-            if (property === 'insertOne') {
-              return originalMethod().then(async (result: InsertOneResult<CollectionSchema>) =>
-                self.insertSyncLogs([result.insertedId]).then(() => result)
-              );
-            }
-            if (
-              property === 'updateOne' ||
-              property === 'replaceOne' ||
-              property === 'findOneAndUpdate' ||
-              property === 'findOneAndReplace' ||
-              property === 'updateMany'
-            ) {
-              return originalMethod().then(async (result: any) =>
-                self.upsertSyncLogs([condition]).then(() => result)
-              );
-            }
+            if (updatelogs) {
+              const condition = args[0];
+              if (property === 'insertMany') {
+                return originalMethod().then(async (result: InsertManyResult<CollectionSchema>) =>
+                  self.insertSyncLogs(Object.values(result.insertedIds)).then(() => result)
+                );
+              }
+              if (property === 'insertOne') {
+                return originalMethod().then(async (result: InsertOneResult<CollectionSchema>) =>
+                  self.insertSyncLogs([result.insertedId]).then(() => result)
+                );
+              }
+              if (
+                property === 'updateOne' ||
+                property === 'replaceOne' ||
+                property === 'findOneAndUpdate' ||
+                property === 'findOneAndReplace' ||
+                property === 'updateMany'
+              ) {
+                return originalMethod().then(async (result: any) =>
+                  self.upsertSyncLogs([condition]).then(() => result)
+                );
+              }
 
-            if (
-              property === 'deleteOne' ||
-              property === 'deleteMany' ||
-              property === 'findOneAndDelete'
-            ) {
-              return self.upsertSyncLogs([condition], true).then(() => originalMethod());
-            }
+              if (
+                property === 'deleteOne' ||
+                property === 'deleteMany' ||
+                property === 'findOneAndDelete'
+              ) {
+                return self.upsertSyncLogs([condition], true).then(() => originalMethod());
+              }
 
-            if (property === 'bulkWrite') {
-              const operations = args[0];
+              if (property === 'bulkWrite') {
+                const operations = args[0];
 
-              const updateConditions = operations
-                .map((op: any) => op.updateOne?.filter || op.updateMany?.filter)
-                .filter((op: any) => op);
+                const updateConditions = operations
+                  .map((op: any) => op.updateOne?.filter || op.updateMany?.filter)
+                  .filter((op: any) => op);
 
-              const deleteConditions = operations
-                .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
-                .filter((op: any) => op);
+                const deleteConditions = operations
+                  .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
+                  .filter((op: any) => op);
 
-              return self
-                .upsertSyncLogs(deleteConditions, true)
-                .then(() => originalMethod())
-                .then(async (result: BulkWriteResult) => {
-                  await Promise.all([
-                    self.upsertSyncLogs(updateConditions),
-                    self.insertSyncLogs(
-                      Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
-                    ),
-                  ]);
-                  return result;
-                });
+                return self
+                  .upsertSyncLogs(deleteConditions, true)
+                  .then(() => originalMethod())
+                  .then(async (result: BulkWriteResult) => {
+                    await Promise.all([
+                      self.upsertSyncLogs(updateConditions),
+                      self.insertSyncLogs(
+                        Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
+                      ),
+                    ]);
+                    return result;
+                  });
+              }
             }
             return originalMethod();
           };
@@ -185,8 +192,6 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
         return Reflect.get(target, property, receiver);
       },
     });
-
-    return this.collectionProxy;
   }
 
   private async insertSyncLogs(mongoIds: ObjectId[]) {
@@ -216,19 +221,27 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
       { projection: { _id: 1 } }
     );
 
+    const stream = new BulkWriteStream(
+      this.scopeCollectionToSession<UpdateLog>(this.db.collection('updatelogs'), false)
+    );
+
     await new MongoResultSet(modifiedDocuments, d => d).forEach(async ({ _id }) => {
-      await this.db.collection('updatelogs').updateMany(
+      await stream.updateOne(
         { mongoId: _id },
-        {
-          $set: { timestamp: Date.now(), mongoId: _id, namespace: this.collectionName, deleted },
-        },
-        { session: this.getSession(), upsert: true }
+        { $set: { timestamp: Date.now(), mongoId: _id, namespace: this.collectionName, deleted } },
+        true
       );
     });
+    await stream.flush();
   }
 
   protected getCollection() {
-    return this.scopeCollectionToSession(this.db.collection(this.collectionName));
+    if (!this.collectionProxy) {
+      this.collectionProxy = this.scopeCollectionToSession<CollectionSchema>(
+        this.db.collection(this.collectionName)
+      );
+    }
+    return this.collectionProxy;
   }
 
   protected getSession() {
