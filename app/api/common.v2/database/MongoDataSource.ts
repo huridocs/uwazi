@@ -109,6 +109,82 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     return paddedArgs;
   }
 
+  private updateLogsWrapper(originalMethod): { [method in keyof Collection]: Collection[method] } {
+    const self = this;
+    return {
+      insertMany() {
+        return originalMethod().then(async (result: InsertManyResult<CollectionSchema>) =>
+          self.insertSyncLogs(Object.values(result.insertedIds)).then(() => result)
+        );
+      },
+      insertOne() {
+        return originalMethod().then(async (result: InsertOneResult<CollectionSchema>) =>
+          self.insertSyncLogs([result.insertedId]).then(() => result)
+        );
+      },
+      updateOne(filter) {
+        return originalMethod().then(async (result: any) =>
+          self.upsertSyncLogs([filter]).then(() => result)
+        );
+      },
+      updateMany(filter) {
+        return originalMethod().then(async (result: any) =>
+          self.upsertSyncLogs([filter]).then(() => result)
+        );
+      },
+      replaceOne(filter) {
+        return originalMethod().then(async (result: any) =>
+          self.upsertSyncLogs([filter]).then(() => result)
+        );
+      },
+      findOneAndUpdate(filter) {
+        return originalMethod().then(async (result: any) =>
+          self.upsertSyncLogs([filter]).then(() => result)
+        );
+      },
+      findOneAndReplace(filter) {
+        return originalMethod().then(async (result: any) =>
+          self.upsertSyncLogs([filter]).then(() => result)
+        );
+      },
+
+      async findOneAndDelete(filter) {
+        return self.upsertSyncLogs([filter], true).then(() => originalMethod());
+      },
+
+      async deleteOne(filter) {
+        return self.upsertSyncLogs([filter], true).then(() => originalMethod());
+      },
+
+      async deleteMany(filter) {
+        return self.upsertSyncLogs([filter], true).then(() => originalMethod());
+      },
+
+      async bulkWrite(operations) {
+        const updateConditions = operations
+          .map((op: any) => op.updateOne?.filter || op.updateMany?.filter)
+          .filter((op: any) => op);
+
+        const deleteConditions = operations
+          .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
+          .filter((op: any) => op);
+
+        return self
+          .upsertSyncLogs(deleteConditions, true)
+          .then(() => originalMethod())
+          .then(async (result: BulkWriteResult) => {
+            await Promise.all([
+              self.upsertSyncLogs(updateConditions),
+              self.insertSyncLogs(
+                Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
+              ),
+            ]);
+            return result;
+          });
+      },
+    };
+  }
+
   private scopeCollectionToSession<T extends Document>(
     collection: Collection<T>,
     updatelogs = true
@@ -129,60 +205,20 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
               original.apply(receiver, self.appendSessionToOptions(args, propertyName));
 
             if (updatelogs) {
-              const condition = args[0];
-              if (property === 'insertMany') {
-                return originalMethod().then(async (result: InsertManyResult<CollectionSchema>) =>
-                  self.insertSyncLogs(Object.values(result.insertedIds)).then(() => result)
-                );
-              }
-              if (property === 'insertOne') {
-                return originalMethod().then(async (result: InsertOneResult<CollectionSchema>) =>
-                  self.insertSyncLogs([result.insertedId]).then(() => result)
-                );
-              }
               if (
+                property === 'insertMany' ||
+                property === 'insertOne' ||
                 property === 'updateOne' ||
+                property === 'updateMany' ||
                 property === 'replaceOne' ||
                 property === 'findOneAndUpdate' ||
                 property === 'findOneAndReplace' ||
-                property === 'updateMany'
-              ) {
-                return originalMethod().then(async (result: any) =>
-                  self.upsertSyncLogs([condition]).then(() => result)
-                );
-              }
-
-              if (
+                property === 'findOneAndDelete' ||
                 property === 'deleteOne' ||
                 property === 'deleteMany' ||
-                property === 'findOneAndDelete'
+                property === 'bulkWrite'
               ) {
-                return self.upsertSyncLogs([condition], true).then(() => originalMethod());
-              }
-
-              if (property === 'bulkWrite') {
-                const operations = args[0];
-
-                const updateConditions = operations
-                  .map((op: any) => op.updateOne?.filter || op.updateMany?.filter)
-                  .filter((op: any) => op);
-
-                const deleteConditions = operations
-                  .map((op: any) => op.deleteOne?.filter || op.deleteMany?.filter)
-                  .filter((op: any) => op);
-
-                return self
-                  .upsertSyncLogs(deleteConditions, true)
-                  .then(() => originalMethod())
-                  .then(async (result: BulkWriteResult) => {
-                    await Promise.all([
-                      self.upsertSyncLogs(updateConditions),
-                      self.insertSyncLogs(
-                        Object.values(result.upsertedIds).concat(Object.values(result.insertedIds))
-                      ),
-                    ]);
-                    return result;
-                  });
+                return self.updateLogsWrapper(originalMethod)[property](args[0], args[1], args[2]);
               }
             }
             return originalMethod();
