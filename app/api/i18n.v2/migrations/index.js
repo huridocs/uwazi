@@ -67,7 +67,7 @@ export default {
 
   async up(db) {
     timeoffset = 1;
-    // process.stdout.write(`${this.name}...\r\n`);
+    process.stdout.write(`${this.name}...\r\n`);
     await this.createIndexes(db);
     const newTranslations = await db.collection(newTranslationsCollection);
     await newTranslations.deleteMany({});
