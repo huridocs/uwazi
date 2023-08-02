@@ -8,14 +8,12 @@ import { setTargetDocument } from 'app/Connections/actions/actions';
 import SearchForm from 'app/Connections/components/SearchForm';
 import SearchResults from 'app/Connections/components/SearchResults';
 import { Icon } from 'app/UI';
-import { objectIndex as _objectIndex } from 'shared/data_utils/objectIndex';
+import { sortByStrings } from 'shared/data_utils/objectSorting';
 import {
   deleteRelationships,
   getRelationshipsByEntity,
   saveRelationship,
 } from '../actions/V2NewRelationshipsActions';
-
-const objectIndex = _.memoize(_objectIndex);
 
 const bg = i => (i % 2 === 0 ? '#f2f2f2' : '#ffffff');
 
@@ -28,15 +26,23 @@ class V2NewRelationshipsBoard extends Component {
   }
 
   async componentDidMount() {
-    const { relationships, titleMap } = await getRelationshipsByEntity(this.props.sharedId);
+    const relationships = await getRelationshipsByEntity(this.props.sharedId);
+
     const [fromThis, toThis] = _.partition(
       relationships,
       r => r.from.entity === this.props.sharedId
     );
-    fromThis.sort((a, b) => a.to.entity.localeCompare(b.to.entity));
-    toThis.sort((a, b) => a.from.entity.localeCompare(b.from.entity));
+    sortByStrings(fromThis, [
+      r => r.from.entityTitle,
+      r => r.relationshipTypeName,
+      r => r.to.entityTitle,
+    ]);
+    sortByStrings(toThis, [
+      r => r.from.entityTitle,
+      r => r.relationshipTypeName,
+      r => r.to.entityTitle,
+    ]);
     this.relationships = [...fromThis, ...toThis];
-    this.entityTitlesBySharedId = titleMap;
     this.forceUpdate();
   }
 
@@ -67,12 +73,6 @@ class V2NewRelationshipsBoard extends Component {
     };
   }
 
-  showEntityName(sharedId) {
-    return sharedId in this.entityTitlesBySharedId
-      ? this.entityTitlesBySharedId[sharedId]
-      : sharedId;
-  }
-
   showReferenceText(relationship, i) {
     if (relationship.from.text || relationship.to.text) {
       return (
@@ -88,11 +88,6 @@ class V2NewRelationshipsBoard extends Component {
 
   render() {
     const { searchResults, uiState, relationTypes, targetDocument } = this.props;
-    const relTypesById = objectIndex(
-      relationTypes,
-      rt => rt._id,
-      rt => rt
-    );
 
     return (
       <div className="v2_new_rel_board" no-translate>
@@ -110,15 +105,21 @@ class V2NewRelationshipsBoard extends Component {
             {this.relationships.map((r, i) => (
               <>
                 <tr style={{ height: '40px', background: bg(i) }}>
-                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.from.entity)}</td>
+                  <td style={{ padding: '5px 8px' }}>
+                    {r.from.entityTitle}
+                    {` (${r.from.entityTemplateName})`}
+                  </td>
                   <td>
                     <Icon icon="arrow-right" />
                   </td>
-                  <td style={{ padding: '5px 8px' }}>{relTypesById[r.type].name}</td>
+                  <td style={{ padding: '5px 8px' }}>{r.relationshipTypeName}</td>
                   <td>
                     <Icon icon="arrow-right" />
                   </td>
-                  <td style={{ padding: '5px 8px' }}>{this.showEntityName(r.to.entity)}</td>
+                  <td style={{ padding: '5px 8px' }}>
+                    {r.to.entityTitle}
+                    {` (${r.to.entityTemplateName})`}
+                  </td>
                   <td>
                     <button type="button" onClick={this.deleteRelationship(r._id).bind(this)}>
                       X

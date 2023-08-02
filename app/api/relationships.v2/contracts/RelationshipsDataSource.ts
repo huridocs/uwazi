@@ -6,6 +6,7 @@ import { Relationship } from '../model/Relationship';
 export interface RelationshipsDataSource {
   insert(relationships: Relationship[]): Promise<Relationship[]>;
   delete(_ids: string[]): Promise<void>;
+  deleteAll(): Promise<void>;
   exists(_ids: string[]): Promise<boolean>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByFiles(fileIds: string[]): ResultSet<Relationship>;

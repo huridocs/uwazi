@@ -17,7 +17,10 @@ interface SettingsHeaderProps extends PropsWithChildren {
 }
 
 const SettingsContent = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex flex-col h-full `} data-testid="settings-content">
+  <div
+    className={`${className || ''} flex flex-col h-full pb-14 lg:pb-0`}
+    data-testid="settings-content"
+  >
     {children}
   </div>
 );
