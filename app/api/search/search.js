@@ -512,6 +512,13 @@ const processResponse = async (response, templates, dictionaries, language, filt
   const processRelationshipsV2InMetadata = v2.createRelationshipsV2ResponseProcessor(
     await v2.checkFeatureEnabled()
   );
+
+  const processObsoleteMetadata = await v2.createObsoleteMetadataResponseProcessor(
+    response.body.hits.hits,
+    language,
+    await v2.checkFeatureEnabled()
+  );
+
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
     result._explanation = hit._explanation;
@@ -519,6 +526,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result._id = hit._id;
     result.permissions = permissionsInformation(hit, user);
     result.metadata = processRelationshipsV2InMetadata(hit);
+    result.obsoleteMetadata = processObsoleteMetadata(hit);
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(

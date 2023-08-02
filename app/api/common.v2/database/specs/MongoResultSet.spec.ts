@@ -30,6 +30,7 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+// eslint-disable-next-line max-statements
 describe('when built from a $type cursor', () => {
   describe('next()', () => {
     it('should provide the next item as a normal mongo cursor', async () => {
@@ -59,6 +60,21 @@ describe('when built from a $type cursor', () => {
     const cursor = buildCursor();
     const resultSet = new MongoResultSet(cursor!, elem => elem.name);
     expect(await resultSet.all()).toEqual(testDocuments.map(elem => elem.name));
+  });
+
+  describe('using indexed(...)', () => {
+    it('should create an index/map of the whole result set', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, elem => elem);
+
+      const index = await resultSet.indexed(elem => elem.name);
+
+      for (let i = 1; i <= 6; i += 1) {
+        expect(index[`doc${i}`]).toEqual(testDocuments.find(d => d.name === `doc${i}`));
+      }
+
+      expect(Object.keys(index).length).toBe(6);
+    });
   });
 
   it.each([

@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { AggregationCursor, FindCursor } from 'mongodb';
 import { BreakLoopSignal, ResultSet } from '../contracts/ResultSet';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 
 interface MapperFunc<T, U> {
   (elem: T): U | Promise<U>;
@@ -52,6 +53,11 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     const results = await this.mongoCursor.toArray();
     const mapped = await Promise.all(results.map(async item => this.mapper(item)));
     return mapped;
+  }
+
+  async indexed<K extends string | number>(getKey: (item: U) => K) {
+    const results = await this.all();
+    return objectIndex(results, getKey, i => i);
   }
 
   async forEach(callback: (item: U) => BreakLoopSignal) {

@@ -492,3 +492,23 @@ it('should update the denormalizations value in all related entities', async () 
     },
   ]);
 });
+
+it('should return records containing the obsoleteMetadata', async () => {
+  const db = getConnection();
+  const transactionManager = new MongoTransactionManager(getClient());
+  const ds = new MongoEntitiesDataSource(
+    db,
+    new MongoTemplatesDataSource(db, transactionManager),
+    partialImplementation<MongoSettingsDataSource>({
+      async getLanguageKeys() {
+        return Promise.resolve(['en', 'pt']);
+      },
+    }),
+    transactionManager
+  );
+
+  expect(await ds.getObsoleteMetadata(['entity3', 'inherit_target_1'], 'en').all()).toEqual([
+    { sharedId: 'entity3', obsoleteMetadata: ['relProp3'] },
+    { sharedId: 'inherit_target_1', obsoleteMetadata: [] },
+  ]);
+});
