@@ -4,7 +4,7 @@ import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
-import { Row, createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
@@ -117,32 +117,34 @@ const LanguagesList = () => {
       )
     );
   };
-  const columnHelper = createColumnHelper<LanguageSchema>();
+
+  // Helper typed as any because of https://github.com/TanStack/table/issues/4224
+  const columnHelper = createColumnHelper<any>();
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
       header: LabelHeader,
       cell: LanguageLabel,
       meta: { headerClassName: 'w-9/12' },
-    }),
+    }) as ColumnDef<LanguageSchema, 'label'>,
     columnHelper.accessor('default', {
       header: DefaultHeader,
       cell: DefaultButton,
       enableSorting: false,
       meta: { action: setDefaultLanguage, headerClassName: 'text-center w-1/12' },
-    }),
+    }) as ColumnDef<LanguageSchema, 'default'>,
     columnHelper.accessor('key', {
       header: ResetHeader,
       cell: ResetButton,
       enableSorting: false,
       meta: { action: resetModal, headerClassName: 'text-center w-1/12' },
-    }),
+    }) as ColumnDef<LanguageSchema, 'key'>,
     columnHelper.accessor('_id', {
       header: UninstallHeader,
       cell: UninstallButton,
       enableSorting: false,
       meta: { action: uninstallModal, headerClassName: 'text-center w-1/12' },
-    }),
+    }) as ColumnDef<LanguageSchema, '_id'>,
   ];
 
   return (
