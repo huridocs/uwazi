@@ -57,8 +57,7 @@ const IXSuggestions = () => {
       currentStatus: ixStatus;
     };
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const [searchParams] = useSearchParams();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
