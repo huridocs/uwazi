@@ -59,6 +59,7 @@ describe('export routes', () => {
         next();
       };
 
+    // eslint-disable-next-line max-statements
     it('should fetch, process and download the search results', async () => {
       mockedAuthMiddleware.mockImplementation(
         () => (_req: Request, _res: Response, next: NextFunction) => {
@@ -75,10 +76,10 @@ describe('export routes', () => {
       );
 
       const res = await request(app)
-        .get('/api/export')
+        .post('/api/export')
         .set('cookie', 'locale=es')
         .set('host', 'cejil.uwazi.io')
-        .query({
+        .send({
           filters: '',
           types: '["types"]',
           fields: '',
@@ -87,6 +88,7 @@ describe('export routes', () => {
           unpublished: '',
           includeUnpublished: '',
         });
+      expect(res.status).toBe(200);
       expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(
@@ -115,7 +117,7 @@ describe('export routes', () => {
     it('should not allow logged out users to export csv without a captcha', async () => {
       const app = setUpApp(routes);
 
-      const res = await request(app).get('/api/export').set('cookie', 'locale=es').query({
+      const res = await request(app).post('/api/export').set('cookie', 'locale=es').send({
         filters: '',
         types: '["types"]',
         fields: '',

@@ -26,14 +26,14 @@ export default (app: Application) => {
     }
   };
 
-  app.get(
+  app.post(
     '/api/export',
     async (req: Request, res: Response, next: NextFunction) =>
       req.user ? next() : captchaMiddleware()(req, res, next),
     validation.validateRequest({
       type: 'object',
       properties: {
-        query: {
+        body: {
           type: 'object',
           properties: {
             filters: { type: 'string' },
@@ -55,16 +55,17 @@ export default (app: Application) => {
     async (req: Request, res: Response, next: NextFunction) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
       try {
-        req.query.filters = parseQueryProperty(req.query, 'filters');
-        req.query.types = parseQueryProperty(req.query, 'types');
-        req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
-        req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
-        req.query.allAggregations = parseQueryProperty(req.query, 'allAggregations');
+        const query: any = { ...req.body };
+        query.filters = parseQueryProperty(req.body, 'filters');
+        query.types = parseQueryProperty(req.body, 'types');
+        query.unpublished = parseQueryProperty(req.body, 'unpublished');
+        query.includeUnpublished = parseQueryProperty(req.body, 'includeUnpublished');
+        query.allAggregations = parseQueryProperty(req.body, 'allAggregations');
 
-        req.query.ids = parseQueryProperty(req.query, 'ids');
-        if (!Array.isArray(req.query.ids)) delete req.query.ids;
+        query.ids = parseQueryProperty(req.body, 'ids');
+        if (!Array.isArray(query.ids)) delete query.ids;
 
-        const results = await search.search(req.query, req.language, req.user);
+        const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
         const { dateFormat = '', site_name } = await settings.get();
 
@@ -73,7 +74,7 @@ export default (app: Application) => {
         const fileStream = createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
-        await exporter.export(results, fileStream, req.hostname, req.query.types, exporterOptions);
+        await exporter.export(results, fileStream, req.hostname, query.types, exporterOptions);
 
         res.download(temporalFilePath, generateExportFileName(site_name), err => {
           if (err) next(err);
