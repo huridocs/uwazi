@@ -14,7 +14,7 @@ import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { EntitySuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
+import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { Button, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -87,13 +87,13 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const acceptSuggestions = async (suggestions: EntitySuggestionType[]) => {
+  const acceptSuggestions = async (acceptedSuggestions: EntitySuggestionType[]) => {
     try {
       await suggestionsAPI.accept(
-        suggestions.map(suggestion => ({
-          _id: suggestion._id as ObjectIdSchema,
-          sharedId: suggestion.sharedId,
-          entityId: suggestion.entityId,
+        acceptedSuggestions.map(acceptedSuggestion => ({
+          _id: acceptedSuggestion._id as ObjectIdSchema,
+          sharedId: acceptedSuggestion.sharedId,
+          entityId: acceptedSuggestion.entityId,
         }))
       );
       revalidator.revalidate();
@@ -182,8 +182,8 @@ const IXSuggestions = () => {
                 size="small"
                 type="button"
                 styling="outline"
-                onClick={() => {
-                  acceptSuggestions(selected.map(suggestion => suggestion.original));
+                onClick={async () => {
+                  await acceptSuggestions(selected.map(suggestion => suggestion.original));
                 }}
               >
                 <Translate>Accept suggestion</Translate>
