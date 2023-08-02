@@ -49,13 +49,13 @@ const SuggestionsTitle = ({
           <span className="italic font-normal">
             <Translate>for</Translate>
           </span>
-          {templates.map(template => (
+          {templates.map(templateToDisplay => (
             <Pill
               color="gray"
               className="inline-flex items-center text-xs font-medium"
-              key={template._id}
+              key={templateToDisplay._id}
             >
-              {template.name}
+              {templateToDisplay.name}
             </Pill>
           ))}
         </div>

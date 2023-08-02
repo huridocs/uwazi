@@ -44,8 +44,9 @@ const SuggestedValue = ({
 
   const getSuggestedValue = () => {
     if (suggestion.suggestedValue === '') return '-';
-    if (property?.type === 'date')
+    if (property?.type === 'date') {
       return propertyValueFormatter.date(suggestion.suggestedValue!.toString());
+    }
     return suggestion.suggestedValue!.toString();
   };
 
