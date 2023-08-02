@@ -1,28 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React from 'react';
 import { Translate, t } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher, useSearchParams } from 'react-router-dom';
+import { SuggestionCustomFilter } from 'shared/types/suggestionType';
 
 interface FiltersSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   aggregation: any;
-}
-
-interface Filter {
-  labeled: {
-    match: boolean;
-    mismatch: boolean;
-  };
-  nonLabeled: {
-    noSuggestion: boolean;
-    noContext: boolean;
-    obsolete: boolean;
-    others: boolean;
-  };
 }
 
 const header = (label: string, total: number) => {
@@ -40,9 +28,9 @@ const FiltersSidepanel = ({
   setShowSidepanel,
   aggregation,
 }: FiltersSidepanelProps) => {
-  const fetcher = useFetcher();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const defaultFilter: Filter = {
+  let defaultFilter: SuggestionCustomFilter = {
     labeled: {
       match: false,
       mismatch: false,
@@ -55,18 +43,23 @@ const FiltersSidepanel = ({
     },
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    setValue,
-  } = useForm({
+  try {
+    if (searchParams.has('filter')) {
+      defaultFilter = JSON.parse(searchParams.get('filter')!);
+    }
+  } catch (e) {}
+
+  const { register, handleSubmit, reset, setValue } = useForm({
     defaultValues: defaultFilter,
   });
 
-  const submitFilters = async (filters: Filter) => {
-    console.log('Submitting filters: ', filters);
+  const submitFilters = async (filters: SuggestionCustomFilter) => {
+    setSearchParams((prev: URLSearchParams) => {
+      prev.set('page', '1');
+      prev.set('filter', JSON.stringify(filters));
+      return prev;
+    });
+    setShowSidepanel(false);
   };
 
   const checkOption = (e: any, optionName: any) => {
@@ -182,6 +175,11 @@ const FiltersSidepanel = ({
             type="button"
             styling="outline"
             onClick={() => {
+              setSearchParams(prev => {
+                prev.delete('filter');
+                return prev;
+              });
+              setShowSidepanel(false);
               reset(defaultFilter);
             }}
           >

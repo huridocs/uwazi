@@ -28,7 +28,7 @@ const calculateMorePages = (currentPage: number, totalPages: number) => {
 
 const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: PaginatorProps) => {
   const isFirstPage = currentPage === 1;
-  const isLastPage = currentPage === totalPages;
+  const isLastPage = totalPages < 1 || currentPage === totalPages;
   const shouldDisplayShowMore = currentPage + 1 !== totalPages && !isLastPage;
   const [showMore, setShowMore] = useState<Boolean>(totalPages - currentPage < 6);
 

@@ -14,7 +14,7 @@ import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { EntitySuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { Button, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -57,6 +57,7 @@ const IXSuggestions = () => {
       currentStatus: ixStatus;
     };
 
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
@@ -162,7 +163,10 @@ const IXSuggestions = () => {
                     totalPages={totalPages}
                     currentPage={searchParams.has('page') ? Number(searchParams.get('page')) : 1}
                     buildUrl={(page: any) => {
-                      return location.pathname + '?page=' + page;
+                      const innerSearchParams = new URLSearchParams(location.search);
+                      innerSearchParams.delete('page');
+                      innerSearchParams.set('page', page);
+                      return location.pathname + '?' + innerSearchParams.toString();
                     }}
                   />
                 </div>
@@ -220,9 +224,13 @@ const IXSuggestionsLoader =
   async ({ params: { extractorId }, request }) => {
     if (!extractorId) throw new Error('extractorId is required');
     const searchParams = new URLSearchParams(request.url.split('?')[1]);
+    const filter: any = { extractorId };
+    if (searchParams.has('filter')) {
+      filter.customFilter = JSON.parse(searchParams.get('filter')!);
+    }
     const response = await suggestionsAPI.get(
       {
-        filter: { extractorId },
+        filter,
         page: {
           number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
           size: SUGGESTIONS_PER_PAGE,
