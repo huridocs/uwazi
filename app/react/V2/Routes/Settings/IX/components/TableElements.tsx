@@ -119,7 +119,11 @@ const suggestionsTableColumnsBuilder: Function = (
       cell: ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
         const segment = cell.getValue();
         if (segment === '') {
-          return <span className="text-xs font-normal text-orange-500">No context</span>;
+          return (
+            <span className="text-xs font-normal text-orange-500">
+              <Translate>No context</Translate>
+            </span>
+          );
         }
         return segment;
       },

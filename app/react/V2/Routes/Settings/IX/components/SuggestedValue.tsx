@@ -4,6 +4,7 @@ import { Popover } from '@headlessui/react';
 import { propertyValueFormatter } from 'app/V2/shared/helpers';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
+import { Translate } from 'app/I18N';
 
 const SuggestedValue = ({
   value,
@@ -74,10 +75,16 @@ const SuggestedValue = ({
         >
           <div className="px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 max-w-xs">
             <div>
-              <span className="font-bold">Current value:</span> {getCurrentValue()}
+              <span className="font-bold">
+                <Translate>Current value:</Translate>
+              </span>{' '}
+              {getCurrentValue()}
             </div>
             <div>
-              <span className="font-bold">Suggestion:</span> {getSuggestedValue()}
+              <span className="font-bold">
+                <Translate>Suggestion:</Translate>
+              </span>{' '}
+              {getSuggestedValue()}
             </div>
           </div>
           <span

@@ -153,9 +153,15 @@ const IXSuggestions = () => {
               <div className="flex justify-between h-6">
                 <div className="">
                   <div className="text-sm font-semibold text-center text-gray-900">
-                    <span className="font-light text-gray-500">Showing</span> 1-
+                    <span className="font-light text-gray-500">
+                      <Translate>Showing</Translate>
+                    </span>{' '}
+                    1-
                     {SUGGESTIONS_PER_PAGE}
-                    <span className="font-light text-gray-500">of</span> {totalPages}
+                    <span className="font-light text-gray-500">
+                      <Translate>of</Translate>
+                    </span>{' '}
+                    {totalPages}
                   </div>
                 </div>
                 <div>
@@ -189,8 +195,14 @@ const IXSuggestions = () => {
                 <Translate>Accept suggestion</Translate>
               </Button>
               <div className="text-sm font-semibold text-center text-gray-900">
-                <span className="font-light text-gray-500">Selected</span> {selected.length}{' '}
-                <span className="font-light text-gray-500">of</span> 20
+                <span className="font-light text-gray-500">
+                  <Translate>Selected</Translate>
+                </span>{' '}
+                {selected.length}{' '}
+                <span className="font-light text-gray-500">
+                  <Translate>of</Translate>
+                </span>{' '}
+                {SUGGESTIONS_PER_PAGE}
               </div>
             </div>
           ) : (
