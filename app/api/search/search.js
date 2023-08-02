@@ -509,15 +509,8 @@ const permissionsInformation = (hit, user) => {
 
 const processResponse = async (response, templates, dictionaries, language, filters) => {
   const user = permissionsContext.getUserInContext();
-  const processRelationshipsV2InMetadata = v2.createRelationshipsV2ResponseProcessor(
-    await v2.checkFeatureEnabled()
-  );
 
-  const processObsoleteMetadata = await v2.createObsoleteMetadataResponseProcessor(
-    response.body.hits.hits,
-    language,
-    await v2.checkFeatureEnabled()
-  );
+  const v2processors = await v2.createResponseProcessors(response.body.hits.hits, language);
 
   const rows = response.body.hits.hits.map(hit => {
     const result = hit._source;
@@ -525,8 +518,8 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.snippets = snippetsFromSearchHit(hit);
     result._id = hit._id;
     result.permissions = permissionsInformation(hit, user);
-    result.metadata = processRelationshipsV2InMetadata(hit);
-    result.obsoleteMetadata = processObsoleteMetadata(hit);
+    result.metadata = v2processors.metadata(hit);
+    result.obsoleteMetadata = v2processors.obsoleteMetadata(hit);
     return result;
   });
   const sanitizedAggregations = await _sanitizeAggregations(

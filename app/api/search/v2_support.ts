@@ -59,6 +59,14 @@ async function createObsoleteMetadataResponseProcessor(
   return (hit: any) => obsoleteMetadataByEntity[hit._source.sharedId]?.obsoleteMetadata ?? [];
 }
 
+async function createResponseProcessors(hits: any[], language: string) {
+  const featureEnabled = await checkFeatureEnabled();
+  return {
+    metadata: createRelationshipsV2ResponseProcessor(featureEnabled),
+    obsoleteMetadata: await createObsoleteMetadataResponseProcessor(hits, language, featureEnabled),
+  };
+}
+
 function deducePropertyContent(property: PropertySchema, featureEnabled = false) {
   if (featureEnabled && property.type === propertyTypes.newRelationship) {
     // Placeholder: the content is not used if the aggregation values are entities.
@@ -106,8 +114,7 @@ function getTypeToAggregate(
 
 export {
   checkFeatureEnabled,
-  createRelationshipsV2ResponseProcessor,
-  createObsoleteMetadataResponseProcessor,
+  createResponseProcessors,
   deducePropertyContent,
   getAggregatedIndexedPropertyPath,
   findDenormalizedProperty,
