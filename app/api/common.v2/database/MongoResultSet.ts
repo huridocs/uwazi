@@ -55,7 +55,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
     return mapped;
   }
 
-  async indexed<K extends string | number>(getKey: (item: U) => K) {
+  async indexed(getKey: (item: U) => string | number) {
     const results = await this.all();
     return objectIndex(results, getKey, i => i);
   }
