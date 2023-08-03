@@ -1,5 +1,4 @@
 import superagent from 'superagent';
-import { toUrlParams } from 'shared/JSONRequest';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { t } from 'app/I18N';
@@ -43,9 +42,12 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
-const requestHandler = (params: any, dispatch: Dispatch<any>, captcha?: CaptchaValue) => {
+const requestHandler = (_params: any, dispatch: Dispatch<any>, captcha?: CaptchaValue) => {
+  const params = { ..._params };
+  if (params.ids) params.ids = params.ids.toJS();
   let request = superagent
-    .get(`/api/export${toUrlParams(params)}`)
+    .post('/api/export')
+    .send(params)
     .set('Accept', 'text/csv')
     .set('X-Requested-With', 'XMLHttpRequest');
 
