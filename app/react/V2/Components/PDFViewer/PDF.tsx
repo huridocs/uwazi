@@ -53,4 +53,5 @@ const PDF = ({ fileUrl, onSelect = () => {}, onDeselect }: PDFProps) => {
   );
 };
 
+export type { PDFProps };
 export default PDF;
