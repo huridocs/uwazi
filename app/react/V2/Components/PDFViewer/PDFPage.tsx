@@ -1,10 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy } from 'pdfjs-dist';
+import { Highlight } from 'react-text-selection-handler';
+import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { EventBus, PDFJSViewer } from './pdfjs';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
+  highlights?: {
+    key: string;
+    textSelection: TextSelection;
+    color?: string;
+  }[];
 }
 
 const renderPage = async (file: PDFDocumentProxy, page: number, container: HTMLDivElement) => {
@@ -24,7 +31,7 @@ const renderPage = async (file: PDFDocumentProxy, page: number, container: HTMLD
   await pageViewer.draw();
 };
 
-const PDFPage = ({ pdf, page }: PDFPageProps) => {
+const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
   const pageContainerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string>();
 
@@ -39,7 +46,17 @@ const PDFPage = ({ pdf, page }: PDFPageProps) => {
   return error ? (
     <div>{error}</div>
   ) : (
-    <div className="relative" id={`page-${page}-container`} ref={pageContainerRef} />
+    <>
+      <div className="relative" id={`page-${page}-container`} ref={pageContainerRef} />
+
+      {highlights?.map(highlight => (
+        <Highlight
+          key={highlight.id}
+          textSelection={highlight.textSelection}
+          color={highlight.color}
+        />
+      ))}
+    </>
   );
 };
 
