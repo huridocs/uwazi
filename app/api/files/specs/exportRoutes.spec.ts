@@ -80,26 +80,20 @@ describe('export routes', () => {
         .set('cookie', 'locale=es')
         .set('host', 'cejil.uwazi.io')
         .send({
-          filters: '',
-          types: '["types"]',
-          fields: '',
-          aggregations: '',
-          select: '',
-          unpublished: '',
-          includeUnpublished: '',
+          filters: {},
+          types: ['types'],
+          unpublished: false,
+          includeUnpublished: false,
         });
       expect(res.status).toBe(200);
       expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
       expect(search.search).toHaveBeenCalledWith(
         {
-          filters: '',
+          filters: {},
           types: ['types'],
-          fields: '',
-          aggregations: '',
-          select: '',
-          unpublished: '',
-          includeUnpublished: '',
+          unpublished: false,
+          includeUnpublished: false,
         },
         'somelanguage',
         { username: 'someuser' }
@@ -117,15 +111,15 @@ describe('export routes', () => {
     it('should not allow logged out users to export csv without a captcha', async () => {
       const app = setUpApp(routes);
 
-      const res = await request(app).post('/api/export').set('cookie', 'locale=es').send({
-        filters: '',
-        types: '["types"]',
-        fields: '',
-        aggregations: '',
-        select: '',
-        unpublished: '',
-        includeUnpublished: '',
-      });
+      const res = await request(app)
+        .post('/api/export')
+        .set('cookie', 'locale=es')
+        .send({
+          filters: {},
+          types: ['types'],
+          unpublished: false,
+          includeUnpublished: false,
+        });
 
       expect(res.header['content-type'].match(/text\/csv/)).toBe(null);
       expect(res.status).toBe(403);

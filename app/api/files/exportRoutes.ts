@@ -1,3 +1,8 @@
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+
 import { Application, Request, Response, NextFunction } from 'express';
 import { errorLog } from 'api/log';
 import { search } from 'api/search';
@@ -6,15 +11,8 @@ import settings from 'api/settings';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
-// eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 export default (app: Application) => {
-  const parseQueryProperty = (query: any, property: string): string[] =>
-    query[property] ? JSON.parse(query[property]) : query[property];
-
   const generateExportFileName = (databaseName: string = '') =>
     `${databaseName}-${new Date().toISOString()}.csv`;
 
@@ -36,17 +34,17 @@ export default (app: Application) => {
         body: {
           type: 'object',
           properties: {
-            filters: { type: 'string' },
-            types: { type: 'string' },
-            allAggregations: { type: 'string' },
-            userSelectedSorting: { type: 'string' },
+            filters: { type: 'object' },
+            types: { type: 'array', items: { type: 'string' } },
+            allAggregations: { type: 'boolean' },
+            userSelectedSorting: { type: 'boolean' },
             order: { type: 'string' },
             sort: { type: 'string' },
-            limit: { type: 'string' },
+            limit: { type: 'number' },
             searchTerm: { type: 'string' },
-            includeUnpublished: { type: 'string' },
-            unpublished: { type: 'string' },
-            ids: { type: 'string' },
+            includeUnpublished: { type: 'boolean' },
+            unpublished: { type: 'boolean' },
+            ids: { type: 'array', items: { type: 'string' } },
           },
         },
       },
@@ -56,14 +54,6 @@ export default (app: Application) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
       try {
         const query: any = { ...req.body };
-        query.filters = parseQueryProperty(req.body, 'filters');
-        query.types = parseQueryProperty(req.body, 'types');
-        query.unpublished = parseQueryProperty(req.body, 'unpublished');
-        query.includeUnpublished = parseQueryProperty(req.body, 'includeUnpublished');
-        query.allAggregations = parseQueryProperty(req.body, 'allAggregations');
-
-        query.ids = parseQueryProperty(req.body, 'ids');
-        if (!Array.isArray(query.ids)) delete query.ids;
 
         const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
