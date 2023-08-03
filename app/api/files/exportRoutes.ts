@@ -9,6 +9,7 @@ import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
+import { csvExportParamsSchema } from 'shared/types/searchParams';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
 
@@ -28,28 +29,7 @@ export default (app: Application) => {
     '/api/export',
     async (req: Request, res: Response, next: NextFunction) =>
       req.user ? next() : captchaMiddleware()(req, res, next),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        body: {
-          type: 'object',
-          properties: {
-            filters: { type: 'object' },
-            customFilters: { type: 'object' },
-            types: { type: 'array', items: { type: 'string' } },
-            allAggregations: { type: 'boolean' },
-            userSelectedSorting: { type: 'boolean' },
-            order: { type: 'string' },
-            sort: { type: 'string' },
-            limit: { type: 'number' },
-            searchTerm: { type: 'string' },
-            includeUnpublished: { type: 'boolean' },
-            unpublished: { type: 'boolean' },
-            ids: { type: 'array', items: { type: 'string' } },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(csvExportParamsSchema),
     // eslint-disable-next-line max-statements
     async (req: Request, res: Response, next: NextFunction) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));

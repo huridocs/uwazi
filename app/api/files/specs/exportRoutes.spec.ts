@@ -20,7 +20,9 @@ const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMi
 const queryParams = {
   filters: {},
   customFilters: {
-    someCustomFilter: 'someCustomFilterValue',
+    permissions: {
+      values: [],
+    },
   },
   types: ['types'],
   unpublished: false,
