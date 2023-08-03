@@ -15,6 +15,7 @@ const newTranslationsCollection = 'translationsV2';
 
 describe('translations v2 support', () => {
   beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     await testingDB.setupFixturesAndContext({
       ...fixtures,
       translations: [
