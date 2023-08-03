@@ -59,7 +59,6 @@ describe('export routes', () => {
         next();
       };
 
-    // eslint-disable-next-line max-statements
     it('should fetch, process and download the search results', async () => {
       mockedAuthMiddleware.mockImplementation(
         () => (_req: Request, _res: Response, next: NextFunction) => {
