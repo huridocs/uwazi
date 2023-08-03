@@ -35,6 +35,7 @@ export default (app: Application) => {
           type: 'object',
           properties: {
             filters: { type: 'object' },
+            customFilters: { type: 'object' },
             types: { type: 'array', items: { type: 'string' } },
             allAggregations: { type: 'boolean' },
             userSelectedSorting: { type: 'boolean' },

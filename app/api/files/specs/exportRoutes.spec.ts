@@ -17,6 +17,16 @@ jest.mock('../../auth/authMiddleware.ts');
 
 const mockedAuthMiddleware = authMiddleware as jest.MockedFunction<typeof authMiddleware>;
 
+const queryParams = {
+  filters: {},
+  customFilters: {
+    someCustomFilter: 'someCustomFilterValue',
+  },
+  types: ['types'],
+  unpublished: false,
+  includeUnpublished: false,
+};
+
 describe('export routes', () => {
   describe('/api/export', () => {
     let exportMock: jest.Mock;
@@ -78,33 +88,23 @@ describe('export routes', () => {
         .post('/api/export')
         .set('cookie', 'locale=es')
         .set('host', 'cejil.uwazi.io')
-        .send({
-          filters: {},
-          types: ['types'],
-          unpublished: false,
-          includeUnpublished: false,
-        });
-      expect(res.status).toBe(200);
+        .send(queryParams)
+        .expect(200);
       expect(res.header['content-type']).toEqual('text/csv; charset=UTF-8');
       expect(res.header['content-disposition'].match(/^attachment; filename=(.*)/)).not.toBe(null);
-      expect(search.search).toHaveBeenCalledWith(
-        {
-          filters: {},
-          types: ['types'],
-          unpublished: false,
-          includeUnpublished: false,
-        },
-        'somelanguage',
-        { username: 'someuser' }
-      );
-      expect(exportMock.mock.calls[0][0]).toEqual({ rows: ['searchresults'] });
-      expect(exportMock.mock.calls[0][1] instanceof Writable).toBe(true);
-      expect(exportMock.mock.calls[0][2]).toEqual('cejil.uwazi.io');
-      expect(exportMock.mock.calls[0][3]).toEqual(['types']);
-      expect(exportMock.mock.calls[0][4]).toEqual({
-        dateFormat: 'yyyy-MM-dd',
-        language: 'somelanguage',
+      expect(search.search).toHaveBeenCalledWith(queryParams, 'somelanguage', {
+        username: 'someuser',
       });
+      expect(exportMock.mock.calls[0]).toEqual([
+        { rows: ['searchresults'] },
+        expect.any(Writable),
+        'cejil.uwazi.io',
+        ['types'],
+        {
+          dateFormat: 'yyyy-MM-dd',
+          language: 'somelanguage',
+        },
+      ]);
     });
 
     it('should not allow logged out users to export csv without a captcha', async () => {
@@ -113,12 +113,7 @@ describe('export routes', () => {
       const res = await request(app)
         .post('/api/export')
         .set('cookie', 'locale=es')
-        .send({
-          filters: {},
-          types: ['types'],
-          unpublished: false,
-          includeUnpublished: false,
-        });
+        .send(queryParams);
 
       expect(res.header['content-type'].match(/text\/csv/)).toBe(null);
       expect(res.status).toBe(403);
