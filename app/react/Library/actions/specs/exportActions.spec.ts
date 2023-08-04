@@ -13,9 +13,9 @@ import * as actions from '../exportActions';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
+const mockUpload = superagent.post(`${APIURL}export`);
 
 const mockSuperAgent = (response?: any, err?: any) => {
-  const mockUpload = superagent.get(`${APIURL}export`);
   // eslint-disable-next-line @typescript-eslint/promise-function-async
   jest.spyOn(mockUpload, 'catch').mockImplementation(cb => {
     if (!cb) throw new Error('mock upload catch cb is not a function');
@@ -28,8 +28,9 @@ const mockSuperAgent = (response?: any, err?: any) => {
     cb(response);
     return mockUpload;
   });
+  jest.spyOn(mockUpload, 'send').mockReturnValue(mockUpload);
   const requestSet = spyOn(mockUpload, 'set').and.returnValue(mockUpload);
-  spyOn(superagent, 'get').and.returnValue(mockUpload);
+  spyOn(superagent, 'post').and.returnValue(mockUpload);
 
   return { requestSet };
 };
@@ -108,13 +109,16 @@ describe('exportActions', () => {
     const testURL = (storeKey: string, done: () => {}) => {
       mockSuperAgent(apiResponse);
       store.dispatch(actions.exportDocuments(storeKey)).then(() => {
-        expect(superagent.get).toHaveBeenCalledWith(
-          `/api/export?filters=${encodeURIComponent(
-            JSON.stringify(expectedFilters)
-          )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
-            JSON.stringify(expectedTypes)
-          )}&limit=10000${storeKey === 'uploads' ? '&unpublished=true' : ''}`
-        );
+        expect(superagent.post).toHaveBeenCalledWith('/api/export');
+        expect(mockUpload.send).toHaveBeenCalledWith({
+          filters: expectedFilters,
+          searchTerm: 'batman',
+          order: 'desc',
+          sort: 'creationDate',
+          types: expectedTypes,
+          limit: 10000,
+          unpublished: storeKey === 'uploads' ? true : undefined,
+        });
         done();
       });
     };
@@ -163,13 +167,16 @@ describe('exportActions', () => {
 
       mockSuperAgent(apiResponse);
       selectedStore.dispatch<any>(actions.exportDocuments('library')).then(() => {
-        expect(superagent.get).toHaveBeenCalledWith(
-          `/api/export?filters=${encodeURIComponent(
-            JSON.stringify(expectedFilters)
-          )}&searchTerm=batman&order=desc&sort=creationDate&types=${encodeURIComponent(
-            JSON.stringify(expectedTypes)
-          )}&limit=10000&ids=${encodeURIComponent(JSON.stringify(['1', '2']))}`
-        );
+        expect(superagent.post).toHaveBeenCalledWith('/api/export');
+        expect(mockUpload.send).toHaveBeenCalledWith({
+          filters: expectedFilters,
+          searchTerm: 'batman',
+          order: 'desc',
+          sort: 'creationDate',
+          types: expectedTypes,
+          limit: 10000,
+          ids: ['1', '2'],
+        });
         done();
       });
     });
