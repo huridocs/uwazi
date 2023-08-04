@@ -1,7 +1,7 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
-import { createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
 import { Table } from 'V2/Components/UI';
@@ -42,24 +42,24 @@ const TranslationsList = () => {
     return contexts.contentContexts.push({ ...contextTranslations });
   });
 
-  const columnHelper = createColumnHelper<ClientTranslationContextSchema>();
-
+  // Helper typed as any because of https://github.com/TanStack/table/issues/4224
+  const columnHelper = createColumnHelper<any>();
   const columns = [
     columnHelper.accessor('label', {
       header: LabelHeader,
       meta: { className: 'w-1/3' },
-    }),
+    }) as ColumnDef<ClientTranslationContextSchema, 'label'>,
     columnHelper.accessor('type', {
       header: TypeHeader,
       cell: ContextPill,
       meta: { className: 'w-2/3' },
-    }),
+    }) as ColumnDef<ClientTranslationContextSchema, 'type'>,
     columnHelper.accessor('id', {
       header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
       meta: { className: 'text-center w-0' },
-    }),
+    }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
   ];
 
   return (

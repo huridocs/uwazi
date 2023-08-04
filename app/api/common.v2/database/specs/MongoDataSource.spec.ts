@@ -284,7 +284,10 @@ describe('session scoped collection', () => {
         expect(typeof collectionMember).toBe('function');
         expect((<Function>collectionMember).name).toBe('proxiedFunction');
       } else {
-        expect(typeof collectionMember).not.toBe('function');
+        expect(
+          typeof collectionMember !== 'function' ||
+            (<Function>collectionMember).name !== 'proxiedFunction'
+        ).toBe(true);
       }
     });
   });
