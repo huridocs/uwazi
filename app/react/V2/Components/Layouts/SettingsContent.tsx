@@ -10,7 +10,7 @@ interface SettingsContentProps extends PropsWithChildren {
 }
 
 interface SettingsHeaderProps extends PropsWithChildren {
-  title?: string | React.ReactNode;
+  title?: string;
   contextId?: string;
   className?: string;
   path?: Map<string, string>;
@@ -41,13 +41,9 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
       ))}
       {title !== undefined && (
         <Breadcrumb.Item className="max-w-xs">
-          {typeof title === 'string' ? (
-            <Translate context={contextId || 'System'} className="max-w-xs truncate">
-              {title}
-            </Translate>
-          ) : (
-            <>{title}</>
-          )}
+          <Translate context={contextId || 'System'} className="max-w-xs truncate">
+            {title}
+          </Translate>
         </Breadcrumb.Item>
       )}
     </Breadcrumb>

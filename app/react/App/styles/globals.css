@@ -2649,6 +2649,11 @@ input:checked + .toggle-bg {
   border-bottom-right-radius: 0.5rem;
 }
 
+.rounded-r-md {
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+}
+
 .rounded-r-none {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -2662,6 +2667,26 @@ input:checked + .toggle-bg {
 .rounded-t-lg {
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+}
+
+.rounded-l-sm {
+  border-top-left-radius: 0.125rem;
+  border-bottom-left-radius: 0.125rem;
+}
+
+.rounded-r-sm {
+  border-top-right-radius: 0.125rem;
+  border-bottom-right-radius: 0.125rem;
+}
+
+.rounded-r-\[4px\] {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.rounded-l-\[4px\] {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 
 .border {
@@ -2705,6 +2730,10 @@ input:checked + .toggle-bg {
   border-left-width: 2px;
 }
 
+.border-r {
+  border-right-width: 1px;
+}
+
 .border-r-0 {
   border-right-width: 0px;
 }
@@ -2719,10 +2748,6 @@ input:checked + .toggle-bg {
 
 .border-t-4 {
   border-top-width: 4px;
-}
-
-.border-r {
-  border-right-width: 1px;
 }
 
 .border-dashed {
@@ -3668,6 +3693,10 @@ input:checked + .toggle-bg {
 
 .leading-tight {
   line-height: 1.25;
+}
+
+.leading-snug {
+  line-height: 1.375;
 }
 
 .\!text-gray-300 {

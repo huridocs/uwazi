@@ -30,7 +30,7 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  let defaultFilter: SuggestionCustomFilter = {
+  const defaultFilter: SuggestionCustomFilter = {
     labeled: {
       match: false,
       mismatch: false,
@@ -43,13 +43,16 @@ const FiltersSidepanel = ({
     },
   };
 
+  let initialFilters: SuggestionCustomFilter = defaultFilter;
+
   try {
     if (searchParams.has('filter')) {
-      defaultFilter = JSON.parse(searchParams.get('filter')!);
+      initialFilters = JSON.parse(searchParams.get('filter')!);
     }
   } catch (e) {}
 
   const { register, handleSubmit, reset, setValue } = useForm({
+    values: initialFilters,
     defaultValues: defaultFilter,
   });
 
@@ -65,6 +68,15 @@ const FiltersSidepanel = ({
   const checkOption = (e: any, optionName: any) => {
     const checked = e.target.checked;
     setValue(optionName, checked);
+  };
+
+  const clearFilters = () => {
+    setSearchParams(prev => {
+      prev.delete('filter');
+      return prev;
+    });
+    setShowSidepanel(false);
+    reset();
   };
 
   return (
@@ -170,19 +182,7 @@ const FiltersSidepanel = ({
           </Card>
         </div>
         <div className="flex gap-2">
-          <Button
-            className="flex-grow"
-            type="button"
-            styling="outline"
-            onClick={() => {
-              setSearchParams(prev => {
-                prev.delete('filter');
-                return prev;
-              });
-              setShowSidepanel(false);
-              reset(defaultFilter);
-            }}
-          >
+          <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
             <Translate>Clear all</Translate>
           </Button>
           <Button className="flex-grow" type="submit">

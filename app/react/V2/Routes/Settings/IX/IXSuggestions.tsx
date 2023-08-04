@@ -27,7 +27,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { socket } from 'app/socket';
 
-const SUGGESTIONS_PER_PAGE = 1;
+const SUGGESTIONS_PER_PAGE = 3;
 
 type ixStatus =
   | 'ready'
@@ -63,16 +63,20 @@ const IXSuggestions = () => {
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
-  const [status, setStatus] = useState<ixStatus>(currentStatus);
+  const [status, setStatus] = useState<{
+    status: ixStatus;
+    data?: { processed: number; total: number };
+  }>({ status: currentStatus });
 
   useEffect(() => {
     socket.on(
       'ix_model_status',
       (extractorId: string, modelStatus: string, _: string, data: any) => {
         if (extractorId === extractor._id) {
-          setStatus(modelStatus as ixStatus);
+          console.log('Data: ', data);
+          setStatus({ status: modelStatus as ixStatus, data });
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
-            setStatus('ready');
+            setStatus({ status: 'ready' });
             revalidator.revalidate();
           }
         }
@@ -112,9 +116,9 @@ const IXSuggestions = () => {
 
   const trainModelAction = async () => {
     try {
-      setStatus('sending_labeled_data');
+      setStatus({ status: 'sending_labeled_data' });
       const response = await suggestionsAPI.findSuggestions(extractor._id);
-      setStatus(response.status);
+      setStatus({ status: response.status });
     } catch (error) {}
   };
 
@@ -126,12 +130,8 @@ const IXSuggestions = () => {
     >
       <SettingsContent>
         <SettingsContent.Header
-          title={
-            <>
-              <Translate>Metadata extraction</Translate> <ChevronRightIcon className="w-4 mx-2" />{' '}
-              {extractor.name}
-            </>
-          }
+          path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}
+          title={extractor.name}
         />
 
         <SettingsContent.Body>
@@ -210,14 +210,21 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                disabled={status !== 'ready'}
+                disabled={status.status !== 'ready'}
                 onClick={trainModelAction}
               >
                 <Translate>Find suggestions</Translate>
               </Button>
-              <div className="text-sm font-semibold text-center text-gray-900">
-                <Translate>{ixmessages[status]}</Translate>
-              </div>
+              {status.status !== 'ready' ? (
+                <div className="text-sm font-semibold text-center text-gray-900">
+                  <Translate>{ixmessages[status.status]}</Translate>
+                  {status.data ? (
+                    <span className="ml-2">
+                      {status.data.processed} / {status.data.total}
+                    </span>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           )}
         </SettingsContent.Footer>
