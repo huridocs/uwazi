@@ -8,7 +8,6 @@ import {
   useRevalidator,
   useSearchParams,
 } from 'react-router-dom';
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Row } from '@tanstack/react-table';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
