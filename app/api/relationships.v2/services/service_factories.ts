@@ -19,13 +19,9 @@ import { UserRole } from 'shared/types/userSchema';
 
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import { Queue } from 'api/queue.v2/application/Queue';
-import RedisSMQ from 'rsmq';
-import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { tenants } from 'api/tenants';
-import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
-import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
@@ -64,19 +60,8 @@ const userFromRequest = (request: Request) => {
 };
 
 const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelationshipPropertyUpdateStrategy> =
-  async () => {
-    const redisClient = await ApplicationRedisClient.getInstance();
-    const RSMQ = new RedisSMQ({ client: redisClient });
-
-    return new QueuedRelationshipPropertyUpdateStrategy(
-      new JobsRouter(
-        queueName =>
-          new Queue(queueName, RSMQ, StringJobSerializer, {
-            namespace: tenants.current().name,
-          })
-      )
-    );
-  };
+  async () =>
+    new QueuedRelationshipPropertyUpdateStrategy(await DefaultDispatcher(tenants.current().name));
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
