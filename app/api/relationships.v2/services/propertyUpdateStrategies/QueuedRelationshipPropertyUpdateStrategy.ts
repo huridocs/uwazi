@@ -1,6 +1,7 @@
 import { JobsDispatcher } from 'api/queue.v2/contracts/JobsDispatcher';
 import { RelationshipPropertyUpdateStrategy as Strategy } from './RelationshipPropertyUpdateStrategy';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
+import { UpdateTemplateRelationshipPropertiesJob } from './UpdateTemplateRelationshipPropertiesJob';
 
 export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
   private dispatcher: JobsDispatcher;
@@ -15,5 +16,9 @@ export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
         this.dispatcher.dispatch(new UpdateRelationshipPropertiesJob(entityId))
       )
     );
+  }
+
+  async updateByTemplate(candidatesTemplate: string): Promise<void> {
+    await this.dispatcher.dispatch(new UpdateTemplateRelationshipPropertiesJob(candidatesTemplate));
   }
 }

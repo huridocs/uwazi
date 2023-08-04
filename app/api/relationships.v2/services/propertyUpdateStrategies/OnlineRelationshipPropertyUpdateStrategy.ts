@@ -32,4 +32,8 @@ export class OnlineRelationshipPropertyUpdateStrategy implements Strategy {
       });
     });
   }
+
+  async updateByTemplate(_candidatesTemplate: string): Promise<void> {
+    throw new Error('not implemented');
+  }
 }
