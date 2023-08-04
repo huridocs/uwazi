@@ -39,28 +39,40 @@ it('should throw an error if a dependency is missing', async () => {
   }
 });
 
-it('should schedule a job per entity in the template', async () => {
-  const memoryAdapter = new MemoryQueueAdapter();
+describe('when handled', () => {
+  const expectedBatches = [['entity1', 'entity2'], ['entity4']];
+  let memoryAdapter: MemoryQueueAdapter;
+  let heartbeatCallback: jest.Mock;
 
-  const job = new UpdateTemplateRelationshipPropertiesJob(
-    fixturesFactory.id('template1').toHexString()
-  );
-  job.entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
-  job.dispatcher = new Queue('test queue', memoryAdapter, StringJobSerializer, {
-    namespace: tenants.current().name,
+  beforeEach(async () => {
+    memoryAdapter = new MemoryQueueAdapter();
+
+    const job = new UpdateTemplateRelationshipPropertiesJob(
+      fixturesFactory.id('template1').toHexString()
+    );
+    job.entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+    job.dispatcher = new Queue('test queue', memoryAdapter, StringJobSerializer, {
+      namespace: tenants.current().name,
+    });
+
+    UpdateTemplateRelationshipPropertiesJob.BATCH_SIZE = 2;
+
+    heartbeatCallback = jest.fn().mockResolvedValue(undefined);
+
+    await job.handle(heartbeatCallback);
   });
 
-  const heartbeatCallback = jest.fn().mockResolvedValue(undefined);
+  it('should schedule a job per entity batch in the template', async () => {
+    const jobs = memoryAdapter.getQueue('test queue').data;
 
-  await job.handle(heartbeatCallback);
-
-  const jobs = memoryAdapter.getQueue('test queue').data;
-
-  jobs.forEach((data, index) => {
-    const parsedData = JSON.parse(data.message);
-    expect(parsedData.name).toBe(UpdateRelationshipPropertiesJob.name);
-    expect(parsedData.data.entityIds).toEqual([`entity${['1', '2', '4'][index]}`]);
+    jobs.forEach((data, index) => {
+      const parsedData = JSON.parse(data.message);
+      expect(parsedData.name).toBe(UpdateRelationshipPropertiesJob.name);
+      expect(parsedData.data.entityIds).toEqual(expectedBatches[index]);
+    });
   });
 
-  expect(heartbeatCallback).toHaveBeenCalledTimes(3);
+  it('should call the heartbeatCallback once per batch', async () => {
+    expect(heartbeatCallback).toHaveBeenCalledTimes(expectedBatches.length);
+  });
 });

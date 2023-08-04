@@ -5,6 +5,8 @@ import { Template } from 'api/templates.v2/model/Template';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
 
 export class UpdateTemplateRelationshipPropertiesJob extends Job {
+  static BATCH_SIZE = 200;
+
   private template: Template['id'];
 
   entitiesDataSource?: EntitiesDataSource;
@@ -25,9 +27,11 @@ export class UpdateTemplateRelationshipPropertiesJob extends Job {
       throw new Error('Missing dependency: dispatcher');
     }
 
-    await this.entitiesDataSource.getIdsByTemplate(this.template).forEach(async sharedId => {
-      await this.dispatcher!.dispatch(new UpdateRelationshipPropertiesJob([sharedId]));
-      await heartbeat();
-    });
+    await this.entitiesDataSource
+      .getIdsByTemplate(this.template)
+      .forEachBatch(UpdateTemplateRelationshipPropertiesJob.BATCH_SIZE, async sharedIds => {
+        await this.dispatcher!.dispatch(new UpdateRelationshipPropertiesJob(sharedIds));
+        await heartbeat();
+      });
   }
 }
