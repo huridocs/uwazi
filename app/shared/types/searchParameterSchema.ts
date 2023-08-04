@@ -60,6 +60,13 @@ const csvExportParamsProperties = {
   ids: { type: 'array', items: { type: 'string' } },
 };
 
+export const csvExportBodySchema = {
+  type: 'object',
+  title: 'csvExportBody',
+  additionalProperties: false,
+  properties: csvExportParamsProperties,
+};
+
 export const searchParamsSchema = {
   type: 'object',
   title: 'searchParams',
@@ -76,11 +83,7 @@ export const csvExportParamsSchema = {
   type: 'object',
   title: 'csvExportParams',
   properties: {
-    body: {
-      type: 'object',
-      additionalProperties: false,
-      properties: csvExportParamsProperties,
-    },
+    body: csvExportBodySchema,
   },
 };
 

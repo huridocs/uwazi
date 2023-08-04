@@ -1,3 +1,5 @@
+import { List } from 'immutable';
+
 import superagent from 'superagent';
 import { actions } from 'app/BasicReducer';
 import { notify } from 'app/Notifications/actions/notificationsActions';
@@ -6,6 +8,7 @@ import { Dispatch } from 'redux';
 import { IImmutable } from 'shared/types/Immutable';
 import { CaptchaValue } from 'shared/types/Captcha';
 import { EntitySchema } from 'shared/types/entityType';
+import { CsvExportBody } from 'shared/types/searchParameterType';
 import { processFilters } from './libraryActions';
 import { ExportStore } from '../reducers/ExportStoreType';
 
@@ -42,7 +45,11 @@ function extractFileName(contentDisposition: string) {
   return contentDisposition.substring(startIndex, endIndex);
 }
 
-const requestHandler = (_params: any, dispatch: Dispatch<any>, captcha?: CaptchaValue) => {
+const requestHandler = (
+  _params: CsvExportBody & { ids?: List<string> },
+  dispatch: Dispatch<any>,
+  captcha?: CaptchaValue
+) => {
   const params = { ..._params };
   if (params.ids) params.ids = params.ids.toJS();
   let request = superagent

@@ -1,15 +1,17 @@
+import { Application, Request, Response, NextFunction } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import { createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import QueryString from 'qs';
 
-import { Application, Request, Response, NextFunction } from 'express';
 import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
-import { csvExportParamsSchema } from 'shared/types/searchParams';
+import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
+import { CsvExportBody } from 'shared/types/searchParameterType';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
 
@@ -31,10 +33,14 @@ export default (app: Application) => {
       req.user ? next() : captchaMiddleware()(req, res, next),
     validation.validateRequest(csvExportParamsSchema),
     // eslint-disable-next-line max-statements
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (
+      req: Request<any, any, CsvExportBody, QueryString.ParsedQs, Record<string, any>>,
+      res: Response,
+      next: NextFunction
+    ) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
       try {
-        const query: any = { ...req.body };
+        const query = req.body;
 
         const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
