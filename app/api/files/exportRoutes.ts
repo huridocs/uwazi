@@ -1,20 +1,21 @@
 import { Application, Request, Response, NextFunction } from 'express';
+// eslint-disable-next-line node/no-restricted-import
+import { createWriteStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+import QueryString from 'qs';
+
 import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
 import captchaMiddleware from 'api/auth/captchaMiddleware';
+import { csvExportParamsSchema } from 'shared/types/searchParameterSchema';
+import { CsvExportBody } from 'shared/types/searchParameterType';
 import { temporalFilesPath, generateFileName } from './filesystem';
 import { validation } from '../utils';
-// eslint-disable-next-line node/no-restricted-import
-import { createWriteStream } from 'fs';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 export default (app: Application) => {
-  const parseQueryProperty = (query: any, property: string): string[] =>
-    query[property] ? JSON.parse(query[property]) : query[property];
-
   const generateExportFileName = (databaseName: string = '') =>
     `${databaseName}-${new Date().toISOString()}.csv`;
 
@@ -26,45 +27,22 @@ export default (app: Application) => {
     }
   };
 
-  app.get(
+  app.post(
     '/api/export',
     async (req: Request, res: Response, next: NextFunction) =>
       req.user ? next() : captchaMiddleware()(req, res, next),
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            filters: { type: 'string' },
-            types: { type: 'string' },
-            allAggregations: { type: 'string' },
-            userSelectedSorting: { type: 'string' },
-            order: { type: 'string' },
-            sort: { type: 'string' },
-            limit: { type: 'string' },
-            searchTerm: { type: 'string' },
-            includeUnpublished: { type: 'string' },
-            unpublished: { type: 'string' },
-            ids: { type: 'string' },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(csvExportParamsSchema),
     // eslint-disable-next-line max-statements
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (
+      req: Request<any, any, CsvExportBody, QueryString.ParsedQs, Record<string, any>>,
+      res: Response,
+      next: NextFunction
+    ) => {
       const temporalFilePath = temporalFilesPath(generateFileName({ originalname: 'export.csv' }));
       try {
-        req.query.filters = parseQueryProperty(req.query, 'filters');
-        req.query.types = parseQueryProperty(req.query, 'types');
-        req.query.unpublished = parseQueryProperty(req.query, 'unpublished');
-        req.query.includeUnpublished = parseQueryProperty(req.query, 'includeUnpublished');
-        req.query.allAggregations = parseQueryProperty(req.query, 'allAggregations');
+        const query = req.body;
 
-        req.query.ids = parseQueryProperty(req.query, 'ids');
-        if (!Array.isArray(req.query.ids)) delete req.query.ids;
-
-        const results = await search.search(req.query, req.language, req.user);
+        const results = await search.search(query, req.language, req.user);
         // eslint-disable-next-line camelcase
         const { dateFormat = '', site_name } = await settings.get();
 
@@ -73,7 +51,7 @@ export default (app: Application) => {
         const fileStream = createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
-        await exporter.export(results, fileStream, req.hostname, req.query.types, exporterOptions);
+        await exporter.export(results, fileStream, req.hostname, query.types, exporterOptions);
 
         res.download(temporalFilePath, generateExportFileName(site_name), err => {
           if (err) next(err);
