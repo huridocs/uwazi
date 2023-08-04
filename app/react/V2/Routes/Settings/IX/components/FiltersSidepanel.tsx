@@ -99,7 +99,9 @@ const FiltersSidepanel = ({
                   <Translate>Accuracy</Translate>
                 </div>
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">80%</div>
+                <div className="flex-none">
+                  {(aggregation.labeled.match / aggregation.labeled._count) * 100}%
+                </div>
               </div>
               <div className="flex items-center space-x-1 text-indigo-700">
                 <Checkbox
@@ -132,7 +134,9 @@ const FiltersSidepanel = ({
                   <Translate>Pending</Translate>
                 </div>
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">10%</div>
+                <div className="flex-none">
+                  {(aggregation.nonLabeled._count / aggregation.total) * 100}%
+                </div>
               </div>
               <div className="flex items-center space-x-1 text-indigo-700">
                 <Checkbox
