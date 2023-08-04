@@ -5,11 +5,13 @@ import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Translate } from 'app/I18N';
 import { PDFJS, CMAP_URL } from './pdfjs';
+import { TextHighlight } from './types';
 
 const PDFPage = loadable(async () => import(/* webpackChunkName: "LazyLoadPDFPage" */ './PDFPage'));
 
 interface PDFProps {
   fileUrl: string;
+  highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
 }
@@ -21,7 +23,7 @@ const getPDFFile = async (fileUrl: string) =>
     cMapPacked: true,
   }).promise;
 
-const PDF = ({ fileUrl, onSelect = () => {}, onDeselect }: PDFProps) => {
+const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps) => {
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
 
@@ -38,16 +40,22 @@ const PDF = ({ fileUrl, onSelect = () => {}, onDeselect }: PDFProps) => {
   return error ? (
     <div>{error}</div>
   ) : (
+    //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
       <div id="pdf-container">
         {pdf &&
-          Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(page => (
-            <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
-              <SelectionRegion regionId={page.toString()}>
-                <PDFPage pdf={pdf} page={page} />
-              </SelectionRegion>
-            </Suspense>
-          ))}
+          Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
+            const page = number.toString();
+            const pageHighlights = highlights && highlights[page] ? highlights[page] : undefined;
+            return (
+              <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
+                {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
+                <SelectionRegion regionId={page}>
+                  <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
+                </SelectionRegion>
+              </Suspense>
+            );
+          })}
       </div>
     </HandleTextSelection>
   );

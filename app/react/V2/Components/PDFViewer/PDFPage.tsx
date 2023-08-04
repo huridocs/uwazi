@@ -1,17 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from 'react-text-selection-handler';
-import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { EventBus, PDFJSViewer } from './pdfjs';
+import { TextHighlight } from './types';
 
 interface PDFPageProps {
   pdf: PDFDocumentProxy;
   page: number;
-  highlights?: {
-    key: string;
-    textSelection: TextSelection;
-    color?: string;
-  }[];
+  highlights?: TextHighlight[];
 }
 
 const renderPage = async (file: PDFDocumentProxy, page: number, container: HTMLDivElement) => {
@@ -51,7 +47,7 @@ const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
 
       {highlights?.map(highlight => (
         <Highlight
-          key={highlight.id}
+          key={highlight.key}
           textSelection={highlight.textSelection}
           color={highlight.color}
         />
