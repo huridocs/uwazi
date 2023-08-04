@@ -92,7 +92,8 @@ const createUpdateStrategy = async (
       return new OnlineRelationshipPropertyUpdateStrategy(
         indexEntitiesCallback,
         updater,
-        transactionManager
+        transactionManager,
+        DefaultEntitiesDataSource(transactionManager)
       );
     default:
       throw new Error(`${strategyKey} is not a valid DenormalizationStrategy`);
