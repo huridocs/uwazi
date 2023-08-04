@@ -59,7 +59,7 @@ it('should schedule a job per entity in the template', async () => {
   jobs.forEach((data, index) => {
     const parsedData = JSON.parse(data.message);
     expect(parsedData.name).toBe(UpdateRelationshipPropertiesJob.name);
-    expect(parsedData.data.entityId).toBe(`entity${['1', '2', '4'][index]}`);
+    expect(parsedData.data.entityIds).toEqual([`entity${['1', '2', '4'][index]}`]);
   });
 
   expect(heartbeatCallback).toHaveBeenCalledTimes(3);

@@ -19,11 +19,11 @@ it('should enqueue a job per entity', async () => {
 
   expect(enqueued1).toBeInstanceOf(UpdateRelationshipPropertiesJob);
   // @ts-ignore
-  expect(enqueued1.entityId).toBe('sharedId1');
+  expect(enqueued1.entityIds).toEqual(['sharedId1']);
 
   expect(enqueued2).toBeInstanceOf(UpdateRelationshipPropertiesJob);
   // @ts-ignore
-  expect(enqueued2.entityId).toBe('sharedId2');
+  expect(enqueued2.entityIds).toEqual(['sharedId2']);
 
   expect(enqueued3).toBe(null);
 });

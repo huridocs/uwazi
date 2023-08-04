@@ -26,7 +26,7 @@ export class UpdateTemplateRelationshipPropertiesJob extends Job {
     }
 
     await this.entitiesDataSource.getIdsByTemplate(this.template).forEach(async sharedId => {
-      await this.dispatcher!.dispatch(new UpdateRelationshipPropertiesJob(sharedId));
+      await this.dispatcher!.dispatch(new UpdateRelationshipPropertiesJob([sharedId]));
       await heartbeat();
     });
   }

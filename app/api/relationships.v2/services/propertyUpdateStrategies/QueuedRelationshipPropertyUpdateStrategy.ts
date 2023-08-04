@@ -13,7 +13,7 @@ export class QueuedRelationshipPropertyUpdateStrategy implements Strategy {
   async update(entityIds: string[]): Promise<void> {
     await Promise.all(
       entityIds.map(async entityId =>
-        this.dispatcher.dispatch(new UpdateRelationshipPropertiesJob(entityId))
+        this.dispatcher.dispatch(new UpdateRelationshipPropertiesJob([entityId]))
       )
     );
   }

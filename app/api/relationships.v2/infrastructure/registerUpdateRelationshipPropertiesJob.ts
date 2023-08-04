@@ -3,13 +3,13 @@ import { Queue } from 'api/queue.v2/application/Queue';
 import { tenants } from 'api/tenants';
 import { search } from 'api/search';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories';
-import { UpdateRelationshipPropertiesJob } from '../services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
-import { UpdateTemplateRelationshipPropertiesJob } from '../services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
 import { JobsRouter } from 'api/queue.v2/infrastructure/JobsRouter';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
 import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import RedisSMQ from 'rsmq';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { UpdateTemplateRelationshipPropertiesJob } from '../services/propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
+import { UpdateRelationshipPropertiesJob } from '../services/propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 
 export function registerUpdateRelationshipPropertiesJob(queue: Queue) {
   queue.register(
@@ -20,8 +20,11 @@ export function registerUpdateRelationshipPropertiesJob(queue: Queue) {
           .run(async () => {
             const transactionManager = DefaultTransactionManager();
             const updater = EntityRelationshipsUpdateService(transactionManager);
-            const indexEntity = async (sharedId: string) =>
-              tenants.run(async () => search.indexEntities({ sharedId }), namespace);
+            const indexEntity = async (sharedIds: string[]) =>
+              tenants.run(
+                async () => search.indexEntities({ sharedId: { $in: sharedIds } }),
+                namespace
+              );
 
             resolve({
               updater,

@@ -4,7 +4,7 @@ import { TransactionManager } from 'api/common.v2/contracts/TransactionManager';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 
 it('should throw an error if a dependency is missing', async () => {
-  const job = new UpdateRelationshipPropertiesJob('entity');
+  const job = new UpdateRelationshipPropertiesJob(['entity']);
 
   try {
     await job.handle();
@@ -15,7 +15,7 @@ it('should throw an error if a dependency is missing', async () => {
 });
 
 it('should execute the updater and reindex the entity', async () => {
-  const job = new UpdateRelationshipPropertiesJob('entity');
+  const job = new UpdateRelationshipPropertiesJob(['entity']);
   job.indexEntity = jest.fn();
   job.updater = partialImplementation<EntityRelationshipsUpdateService>({
     update: jest.fn(),
@@ -35,5 +35,5 @@ it('should execute the updater and reindex the entity', async () => {
 
   await job.handle();
   expect(job.updater.update).toHaveBeenCalledWith(['entity']);
-  expect(job.indexEntity).toHaveBeenCalledWith('entity');
+  expect(job.indexEntity).toHaveBeenCalledWith(['entity']);
 });
