@@ -314,14 +314,15 @@ beforeEach(async () => {
   const transactionManager = new MongoTransactionManager(getClient());
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
+  const entitiesDataSource = new MongoEntitiesDataSource(
+    db,
+    templatesDataSource,
+    new MongoSettingsDataSource(db, transactionManager),
+    transactionManager
+  );
   service = new DenormalizationService(
     relationshipsDataSource,
-    new MongoEntitiesDataSource(
-      db,
-      templatesDataSource,
-      new MongoSettingsDataSource(db, transactionManager),
-      transactionManager
-    ),
+    entitiesDataSource,
     templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
@@ -329,7 +330,8 @@ beforeEach(async () => {
     new OnlineRelationshipPropertyUpdateStrategy(
       async () => {},
       partialImplementation<EntityRelationshipsUpdateService>({}),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      entitiesDataSource
     )
   );
 });
