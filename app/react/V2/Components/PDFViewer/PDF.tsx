@@ -46,7 +46,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps)
         {pdf &&
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const page = number.toString();
-            const pageHighlights = highlights && highlights[page] ? highlights[page] : undefined;
+            const pageHighlights = highlights ? highlights[page] : undefined;
             return (
               <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
                 {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
