@@ -281,7 +281,7 @@ const IXSuggestions = () => {
       <PDFSidepanel
         showSidepanel={sidepanel === 'pdf'}
         setShowSidepanel={closeSidepanel}
-        fileID={suggestion?.fileId || ''}
+        suggestion={suggestion}
       />
     </div>
   );
