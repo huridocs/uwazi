@@ -229,7 +229,7 @@ const IXSuggestions = () => {
                 styling={status.status === 'ready' ? 'solid' : 'outline'}
                 onClick={trainModelOrCancelAction}
               >
-                {status.status == 'ready' ? (
+                {status.status === 'ready' ? (
                   <Translate>Find suggestions</Translate>
                 ) : (
                   <Translate>Cancel</Translate>
