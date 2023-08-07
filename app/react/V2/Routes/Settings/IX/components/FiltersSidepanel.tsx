@@ -13,15 +13,13 @@ interface FiltersSidepanelProps {
   aggregation: any;
 }
 
-const header = (label: string, total: number) => {
-  return (
-    <div className="flex items-center space-x-2 text-indigo-700">
-      <div className="flex-none">{label}</div>
-      <div className="flex-1 border-t border-dashed border-t-gray-200" />
-      <div className="flex-none">{total}</div>
-    </div>
-  );
-};
+const header = (label: string, total: number) => (
+  <div className="flex items-center space-x-2 text-indigo-700">
+    <div className="flex-none">{label}</div>
+    <div className="flex-1 border-t border-dashed border-t-gray-200" />
+    <div className="flex-none">{total}</div>
+  </div>
+);
 
 const FiltersSidepanel = ({
   showSidepanel,

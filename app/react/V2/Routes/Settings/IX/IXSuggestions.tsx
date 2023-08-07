@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
@@ -9,22 +10,23 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
+import { useSetRecoilState } from 'recoil';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { Button, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
-import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { ClientTemplateSchema } from 'app/istore';
-import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { socket } from 'app/socket';
+import { SuggestionsTitle } from './components/SuggestionsTitle';
+import { FiltersSidepanel } from './components/FiltersSidepanel';
+import { suggestionsTableColumnsBuilder } from './components/TableElements';
+import { PDFSidepanel } from './components/PDFSidepanel';
 
 const SUGGESTIONS_PER_PAGE = 10;
 
@@ -58,7 +60,8 @@ const IXSuggestions = () => {
 
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const [showSidepanel, setShowSidepanel] = useState(false);
+  const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
+  const [suggestion, setSuggestion] = useState<EntitySuggestionType>();
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -73,7 +76,6 @@ const IXSuggestions = () => {
       'ix_model_status',
       (extractorId: string, modelStatus: string, _: string, data: any) => {
         if (extractorId === extractor._id) {
-          console.log('Data: ', data);
           setStatus({ status: modelStatus as ixStatus, data });
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus({ status: 'ready' });
@@ -139,14 +141,26 @@ const IXSuggestions = () => {
       <div className="text-sm font-semibold text-center text-gray-900">
         <span className="font-light text-gray-500">
           <Translate>Showing</Translate>
-        </span>{' '}
-        {from}-{from + suggestions.length - 1}{' '}
+        </span>
+        &nbsp;
+        {from}-{from + suggestions.length - 1}
+        &nbsp;
         <span className="font-light text-gray-500">
           <Translate>of</Translate>
-        </span>{' '}
+        </span>
+        &nbsp;
         {totalPages}
       </div>
     );
+  };
+
+  const openPDFSidepanel = (selectedSuggestion: EntitySuggestionType) => {
+    setSuggestion(selectedSuggestion);
+    setSidepanel('pdf');
+  };
+
+  const closeSidepanel = () => {
+    setSidepanel('none');
   };
 
   return (
@@ -164,13 +178,17 @@ const IXSuggestions = () => {
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={suggestions}
-            columns={suggestionsTableColumnsBuilder(filteredTemplates(), acceptSuggestions)}
+            columns={suggestionsTableColumnsBuilder(
+              filteredTemplates(),
+              acceptSuggestions,
+              openPDFSidepanel
+            )}
             title={
               <SuggestionsTitle
                 propertyName={extractor.property}
                 templates={filteredTemplates()}
                 onFiltersButtonClicked={() => {
-                  setShowSidepanel(true);
+                  setSidepanel('filters');
                 }}
               />
             }
@@ -187,7 +205,7 @@ const IXSuggestions = () => {
                       const innerSearchParams = new URLSearchParams(location.search);
                       innerSearchParams.delete('page');
                       innerSearchParams.set('page', page);
-                      return location.pathname + '?' + innerSearchParams.toString();
+                      return `${location.pathname}?${innerSearchParams.toString()}`;
                     }}
                   />
                 </div>
@@ -198,7 +216,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -212,16 +230,19 @@ const IXSuggestions = () => {
               <div className="text-sm font-semibold text-center text-gray-900">
                 <span className="font-light text-gray-500">
                   <Translate>Selected</Translate>
-                </span>{' '}
-                {selected.length}{' '}
+                </span>
+                &nbsp;
+                {selected.length}
+                &nbsp;
                 <span className="font-light text-gray-500">
                   <Translate>of</Translate>
-                </span>{' '}
+                </span>
+                &nbsp;
                 {SUGGESTIONS_PER_PAGE}
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -250,10 +271,17 @@ const IXSuggestions = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+
       <FiltersSidepanel
-        showSidepanel={showSidepanel}
-        setShowSidepanel={setShowSidepanel}
+        showSidepanel={sidepanel === 'filters'}
+        setShowSidepanel={closeSidepanel}
         aggregation={aggregation}
+      />
+
+      <PDFSidepanel
+        showSidepanel={sidepanel === 'pdf'}
+        setShowSidepanel={closeSidepanel}
+        fileID={suggestion?.fileId || ''}
       />
     </div>
   );
