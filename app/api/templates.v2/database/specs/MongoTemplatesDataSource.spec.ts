@@ -170,3 +170,39 @@ describe('when requesting a property by name', () => {
     expect(tds['_nameToPropertyMap']).not.toBeUndefined();
   });
 });
+
+describe('getByIds()', () => {
+  it('should return the templates', async () => {
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      new MongoTransactionManager(getClient())
+    );
+    const result = await dataSource
+      .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
+      .all();
+    expect(result).toMatchObject([
+      {
+        id: factory.id('template1').toString(),
+        name: 'template1',
+      },
+      {
+        id: factory.id('template2').toString(),
+        name: 'template2',
+      },
+    ]);
+  });
+});
+
+describe('getById()', () => {
+  it('should return the template', async () => {
+    const dataSource = new MongoTemplatesDataSource(
+      getConnection(),
+      new MongoTransactionManager(getClient())
+    );
+    const result = await dataSource.getById(factory.id('template1').toString());
+    expect(result).toMatchObject({
+      id: factory.id('template1').toString(),
+      name: 'template1',
+    });
+  });
+});

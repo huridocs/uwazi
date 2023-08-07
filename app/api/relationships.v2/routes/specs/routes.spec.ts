@@ -15,6 +15,7 @@ const factory = getFixturesFactory();
 const adminUser = factory.user('admin', UserRole.ADMIN, 'admin');
 
 const fixtures: DBFixture = {
+  templates: [factory.template('template1')],
   entities: [
     factory.entity(
       'entity1',
@@ -29,7 +30,7 @@ const fixtures: DBFixture = {
       { permissions: [{ refId: factory.id('user1'), type: 'user', level: 'write' }] }
     ),
   ],
-  relationtypes: [{ _id: factory.id('type1') }, { _id: factory.id('type2') }],
+  relationtypes: [factory.relationType('type1'), factory.relationType('type2')],
   relationships: [
     {
       _id: factory.id('relationship1'),
@@ -73,24 +74,22 @@ describe('GET relationships', () => {
     await request(app).get(URL).expect(404);
   });
 
-  it('should return the relationships', async () => {
+  it('should return the relationships with readable data', async () => {
     const app = setUpApp(routes, (req: Request, _res: Response, next: NextFunction) => {
       (req as any).user = adminUser;
       next();
     });
 
     const response = await request(app).get(`${URL}?sharedId=entity2`).expect(200);
-    expect(response.body).toEqual({
-      relationships: [
-        {
-          _id: factory.id('relationship1').toString(),
-          from: { entity: 'entity1' },
-          to: { entity: 'entity2' },
-          type: factory.id('type2').toString(),
-        },
-      ],
-      titleMap: { entity1: 'entity1', entity2: 'entity2' },
-    });
+    expect(response.body).toEqual([
+      {
+        _id: factory.id('relationship1').toString(),
+        from: { entity: 'entity1', entityTitle: 'entity1', entityTemplateName: 'template1' },
+        to: { entity: 'entity2', entityTitle: 'entity2', entityTemplateName: 'template1' },
+        type: factory.id('type2').toString(),
+        relationshipTypeName: 'type2',
+      },
+    ]);
   });
 });
 

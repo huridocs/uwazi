@@ -164,7 +164,7 @@ const LanguagesList = () => {
           </div>
         </SettingsContent.Body>
         <SettingsContent.Footer>
-          <div className="flex gap-2 p-2 pt-1">
+          <div className="flex gap-2">
             <Button
               onClick={() => {
                 setShowInstallModal(true);
