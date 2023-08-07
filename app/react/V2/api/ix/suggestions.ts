@@ -46,4 +46,10 @@ const status = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   return response;
 };
 
-export { get, accept, aggregation, findSuggestions, status };
+const cancel = async (extractorId: string, headers?: IncomingHttpHeaders) => {
+  const params = new RequestParams({ extractorId }, headers);
+  const { json: response } = await api.post('suggestions/stop', params);
+  return response;
+};
+
+export { get, accept, aggregation, findSuggestions, status, cancel };

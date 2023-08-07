@@ -26,7 +26,7 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { socket } from 'app/socket';
 
-const SUGGESTIONS_PER_PAGE = 3;
+const SUGGESTIONS_PER_PAGE = 10;
 
 type ixStatus =
   | 'ready'
@@ -64,6 +64,7 @@ const IXSuggestions = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const [status, setStatus] = useState<{
     status: ixStatus;
+    message?: string;
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
 
@@ -113,12 +114,39 @@ const IXSuggestions = () => {
     }
   };
 
-  const trainModelAction = async () => {
+  const trainModelOrCancelAction = async () => {
     try {
-      setStatus({ status: 'sending_labeled_data' });
-      const response = await suggestionsAPI.findSuggestions(extractor._id);
-      setStatus({ status: response.status });
+      if (status.status === 'ready') {
+        setStatus({ status: 'sending_labeled_data' });
+        const response = await suggestionsAPI.findSuggestions(extractor._id);
+        setStatus(response);
+      } else {
+        await suggestionsAPI.cancel(extractor._id);
+        if (status.status === 'error') {
+          setStatus({ status: 'ready' });
+        } else {
+          setStatus({ status: 'cancel' });
+        }
+        revalidator.revalidate();
+      }
     } catch (error) {}
+  };
+
+  const showPageNumbers = () => {
+    const page = searchParams.has('page') ? Number(searchParams.get('page')) : 1;
+    const from = (page - 1) * SUGGESTIONS_PER_PAGE + 1;
+    return (
+      <div className="text-sm font-semibold text-center text-gray-900">
+        <span className="font-light text-gray-500">
+          <Translate>Showing</Translate>
+        </span>{' '}
+        {from}-{from + suggestions.length - 1}{' '}
+        <span className="font-light text-gray-500">
+          <Translate>of</Translate>
+        </span>{' '}
+        {totalPages}
+      </div>
+    );
   };
 
   return (
@@ -150,19 +178,7 @@ const IXSuggestions = () => {
             onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
-                <div className="">
-                  <div className="text-sm font-semibold text-center text-gray-900">
-                    <span className="font-light text-gray-500">
-                      <Translate>Showing</Translate>
-                    </span>{' '}
-                    1-
-                    {SUGGESTIONS_PER_PAGE}
-                    <span className="font-light text-gray-500">
-                      <Translate>of</Translate>
-                    </span>{' '}
-                    {totalPages}
-                  </div>
-                </div>
+                <div className="">{showPageNumbers()}</div>
                 <div>
                   <Paginator
                     totalPages={totalPages}
@@ -209,14 +225,20 @@ const IXSuggestions = () => {
               <Button
                 size="small"
                 type="button"
-                disabled={status.status !== 'ready'}
-                onClick={trainModelAction}
+                disabled={status.status === 'cancel'}
+                styling={status.status === 'ready' ? 'solid' : 'outline'}
+                onClick={trainModelOrCancelAction}
               >
-                <Translate>Find suggestions</Translate>
+                {status.status == 'ready' ? (
+                  <Translate>Find suggestions</Translate>
+                ) : (
+                  <Translate>Cancel</Translate>
+                )}
               </Button>
               {status.status !== 'ready' ? (
                 <div className="text-sm font-semibold text-center text-gray-900">
                   <Translate>{ixmessages[status.status]}</Translate>
+                  {status.message && status.status === 'error' ? ` : ${status.message}` : ''}
                   {status.data ? (
                     <span className="ml-2">
                       {status.data.processed} / {status.data.total}
