@@ -20,6 +20,7 @@ const renderPage = async (file: PDFDocumentProxy, page: number, container: HTMLD
     id: page,
     scale: 1,
     defaultViewport,
+    annotationMode: 0,
     eventBus: new EventBus(),
   });
 
