@@ -216,13 +216,15 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
                 styling="outline"
                 onClick={async () => {
-                  await acceptSuggestions(selected.map(suggestion => suggestion.original));
+                  await acceptSuggestions(
+                    selected.map(selectedSuggestion => selectedSuggestion.original)
+                  );
                 }}
               >
                 <Translate>Accept suggestion</Translate>
@@ -242,7 +244,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
