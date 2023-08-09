@@ -80,7 +80,7 @@ const Table = <T,>({
 
   return (
     <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
-      <table className="w-full text-sm text-left">
+      <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
             {title}
