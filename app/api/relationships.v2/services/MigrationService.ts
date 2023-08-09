@@ -1,13 +1,15 @@
+/* eslint-disable max-lines */
 // eslint-disable-next-line max-classes-per-file
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { SaveStream } from 'api/common.v2/contracts/SaveStream';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { V1RelationshipProperty } from 'api/templates.v2/model/V1RelationshipProperty';
 import { objectIndexToArrays, objectIndexToSets } from 'shared/data_utils/objectIndex';
+import { TestOneHubRequest } from 'shared/types/api.v2/relationships.testOneHub';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { HubDataSource } from '../contracts/HubDataSource';
 import { V1ConnectionsDataSource } from '../contracts/V1ConnectionsDataSource';
-import { V1Connection, V1ConnectionDisplayed, V1TextReference } from '../model/V1Connection';
+import { V1Connection, ReadableV1Connection, V1TextReference } from '../model/V1Connection';
 import {
   EntityPointer,
   FilePointer,
@@ -15,20 +17,23 @@ import {
   Relationship,
   Selection,
 } from '../model/Relationship';
-
-const UNUSED_HUB_LIMIT = 10;
+import { MigrationHubRecordDataSource } from '../contracts/MigrationHubRecordDataSource';
+import { MigrationHubRecord } from '../model/MigrationHubRecord';
 
 const HUB_BATCH_SIZE = 1000;
 
 class MissingFileNotRepairedError extends Error {}
 
+type MigrationPlan = TestOneHubRequest['migrationPlan'];
+
 class RelationshipMatcher {
   readonly fieldLibrary: Record<string, Record<string, Set<string | undefined>>>;
 
-  constructor(v1RelationshipFields: V1RelationshipProperty[]) {
+  constructor(migrationPlan: MigrationPlan) {
+    const filteredPlan = migrationPlan.filter(field => !field.ignored);
     const groupedByTemplate = objectIndexToArrays(
-      v1RelationshipFields,
-      field => field.template,
+      filteredPlan,
+      field => field.sourceTemplateId,
       field => field
     );
     this.fieldLibrary = Object.fromEntries(
@@ -36,14 +41,14 @@ class RelationshipMatcher {
         template,
         objectIndexToSets(
           fields,
-          field => field.relationType,
-          field => field.content
+          field => field.relationTypeId,
+          field => field.targetTemplateId
         ),
       ])
     );
   }
 
-  matches(first: V1ConnectionDisplayed, second: V1ConnectionDisplayed) {
+  matches(first: ReadableV1Connection, second: ReadableV1Connection) {
     const sourceEntityTemplate = first.entityTemplate;
     const relationshipType = second.template;
     const targetEntityTemplate = second.entityTemplate;
@@ -98,6 +103,8 @@ export class MigrationService {
 
   private relationshipsDS: RelationshipsDataSource;
 
+  private hubRecordDS: MigrationHubRecordDataSource;
+
   private logger: Logger;
 
   constructor(
@@ -106,6 +113,7 @@ export class MigrationService {
     v1ConnectionsDS: V1ConnectionsDataSource,
     templatesDS: TemplatesDataSource,
     relationshipsDS: RelationshipsDataSource,
+    hubRecordDS: MigrationHubRecordDataSource,
     logger: Logger
   ) {
     this.idGenerator = idGenerator;
@@ -113,6 +121,7 @@ export class MigrationService {
     this.v1ConnectionsDS = v1ConnectionsDS;
     this.templatesDS = templatesDS;
     this.relationshipsDS = relationshipsDS;
+    this.hubRecordDS = hubRecordDS;
     this.logger = logger;
   }
 
@@ -126,14 +135,6 @@ export class MigrationService {
       JSON.stringify(second, null, 2),
     ];
     this.logger.error(message);
-  }
-
-  private async readV1RelationshipFields(): Promise<RelationshipMatcher> {
-    const relProps = (await this.templatesDS.getAllProperties().all()).filter(
-      p => p instanceof V1RelationshipProperty
-    );
-    const matcher = new RelationshipMatcher(relProps as V1RelationshipProperty[]);
-    return matcher;
   }
 
   private async gatherHubs(): Promise<void> {
@@ -207,10 +208,10 @@ export class MigrationService {
   }
 
   private async transformPair(
-    first: V1ConnectionDisplayed,
-    second: V1ConnectionDisplayed,
+    first: ReadableV1Connection,
+    second: ReadableV1Connection,
     matcher: RelationshipMatcher,
-    usedConnections: { [id: string]: V1ConnectionDisplayed },
+    usedConnections: { [id: string]: ReadableV1Connection },
     transform: boolean,
     transformed: Relationship[],
     stats: Statistics
@@ -231,7 +232,7 @@ export class MigrationService {
   }
 
   private async transformHub(
-    connections: V1ConnectionDisplayed[],
+    connections: ReadableV1Connection[],
     matcher: RelationshipMatcher,
     transform: boolean = false
   ): Promise<{
@@ -241,7 +242,7 @@ export class MigrationService {
     const stats = new Statistics();
     stats.total = connections.length;
     stats.totalTextReferences = connections.filter(c => c.file).length;
-    const usedConnections: Record<string, V1ConnectionDisplayed> = {};
+    const usedConnections: Record<string, ReadableV1Connection> = {};
     const transformed: Relationship[] = [];
     await connections.reduce(async (batchPromise, first) => {
       await batchPromise;
@@ -264,12 +265,12 @@ export class MigrationService {
   }
 
   private async recordUnusedConnections(
-    hubsWithUnusedConnections: V1ConnectionDisplayed[][],
+    unusedHubsSaveStream: SaveStream<MigrationHubRecord>,
     stats: Statistics,
-    group: V1ConnectionDisplayed[]
+    group: ReadableV1Connection[]
   ): Promise<void> {
-    if (hubsWithUnusedConnections.length < UNUSED_HUB_LIMIT && stats.total !== stats.used) {
-      hubsWithUnusedConnections.push(group);
+    if (stats.total !== stats.used) {
+      await unusedHubsSaveStream.push(new MigrationHubRecord(group[0].hub, group));
     }
   }
 
@@ -283,7 +284,7 @@ export class MigrationService {
     hubIdBatch: string[],
     matcher: RelationshipMatcher,
     stats: Statistics,
-    hubsWithUnusedConnections: V1ConnectionDisplayed[][],
+    unusedHubsSaveStream: SaveStream<MigrationHubRecord>,
     transform: boolean = false,
     write: boolean = false
   ): Promise<void> {
@@ -304,7 +305,7 @@ export class MigrationService {
       );
       stats.add(groupStats);
       transformed.push(...groupTransformed);
-      return this.recordUnusedConnections(hubsWithUnusedConnections, stats, group);
+      return this.recordUnusedConnections(unusedHubsSaveStream, groupStats, group);
     }, Promise.resolve());
     await this.writeTransformed(write, transformed);
   }
@@ -315,19 +316,19 @@ export class MigrationService {
     write: boolean = false
   ): Promise<{
     stats: Statistics;
-    hubsWithUnusedConnections: V1ConnectionDisplayed[][];
   }> {
     const hubCursor = this.hubsDS.all();
+    const unusedHubsSaveStream = this.hubRecordDS.openSaveStream();
     const stats = new Statistics();
-    const hubsWithUnusedConnections: V1ConnectionDisplayed[][] = [];
     await hubCursor.forEachBatch(HUB_BATCH_SIZE, async hubIdBatch =>
-      this.transformBatch(hubIdBatch, matcher, stats, hubsWithUnusedConnections, transform, write)
+      this.transformBatch(hubIdBatch, matcher, stats, unusedHubsSaveStream, transform, write)
     );
-    return { stats, hubsWithUnusedConnections };
+    await unusedHubsSaveStream.flush();
+    return { stats };
   }
 
-  async testOneHub(hubId: string) {
-    const matcher = await this.readV1RelationshipFields();
+  async testOneHub(hubId: string, plan: MigrationPlan) {
+    const matcher = new RelationshipMatcher(plan);
 
     const connected = await this.v1ConnectionsDS.getConnectedToHubs([hubId]).all();
     const { stats, transformed } = await this.transformHub(connected, matcher, true);
@@ -343,15 +344,23 @@ export class MigrationService {
     };
   }
 
-  async migrate(dryRun: boolean) {
+  async setupDB(transformAndWrite: boolean) {
     await this.hubsDS.create();
+    await this.hubRecordDS.deleteAll();
+    if (transformAndWrite) {
+      await this.relationshipsDS.deleteAll();
+    }
+  }
 
-    const matcher = await this.readV1RelationshipFields();
-    await this.gatherHubs();
+  async migrate(dryRun: boolean, plan: MigrationPlan) {
     const transformAndWrite = !dryRun;
+    await this.setupDB(transformAndWrite);
+
+    const matcher = new RelationshipMatcher(plan);
+    await this.gatherHubs();
+
     const transformResult = await this.transformHubs(matcher, transformAndWrite, transformAndWrite);
     const { total, used, totalTextReferences, usedTextReferences, errors } = transformResult.stats;
-    const { hubsWithUnusedConnections } = transformResult;
 
     await this.hubsDS.drop();
 
@@ -361,7 +370,6 @@ export class MigrationService {
       totalTextReferences,
       usedTextReferences,
       errors,
-      hubsWithUnusedConnections,
     };
   }
 }

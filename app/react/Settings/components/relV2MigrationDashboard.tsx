@@ -1,20 +1,29 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 
 import { ClientTemplateSchema, IStore, RelationshipTypesType } from 'app/istore';
 import {
+  getCurrentPlan,
+  getHubrecordPage,
   sendMigrationRequest as _sendMigrationRequest,
   testOneHub as _testOneHub,
+  createRelationshipMigrationField,
+  updateRelationshipMigrationField,
+  deleteRelationshipMigrationField,
 } from 'app/Entities/actions/V2NewRelationshipsActions';
 import { Icon } from 'app/UI';
 import { objectIndex } from 'shared/data_utils/objectIndex';
+import {
+  GetRelationshipMigrationFieldsResponse,
+  ResponseElement,
+} from 'shared/types/api.v2/relationshipMigrationField.get';
+import { PlanElement } from 'shared/types/api.v2/relationships.migrate';
+import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
+import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 
-type RelationshipType = {
-  template?: string;
-  relationType?: string;
-  content?: string;
-};
+const UNUSED_RECORDS_PAGE_SIZE = 10;
 
 type MigrationSummaryType = {
   total: number;
@@ -24,7 +33,6 @@ type MigrationSummaryType = {
   usedTextReferences: number;
   time: number;
   dryRun: boolean;
-  hubsWithUnusedConnections: OriginalEntityInfo[][];
 };
 
 type OriginalEntityInfo = {
@@ -51,32 +59,33 @@ type hubTestResult = {
   original: OriginalEntityInfo[];
 };
 
-const inferFromV1 = (
-  templates: ClientTemplateSchema[],
+const mapPlanElementFromApiResponse = (
+  response: ResponseElement,
   templateIndex: Record<string, ClientTemplateSchema>,
   relationTypeIndex: Record<string, RelationshipTypesType>
-) => {
-  const arr =
-    templates
-      .map(t => t.properties?.map(p => ({ ...p, template: t._id })) || [])
-      .flat()
-      .filter(p => p.type === 'relationship')
-      .map(p => ({
-        template: templateIndex[p.template].name,
-        relationType: p.relationType ? relationTypeIndex[p.relationType].name : undefined,
-        content: p.content ? templateIndex[p.content].name : 'ALL',
-      })) || [];
-
-  const unique = _.uniqWith(
-    arr,
-    (a, b) =>
-      a.template === b.template && a.relationType === b.relationType && a.content === b.content
-  );
-
-  const sorted = _.sortBy(unique, ['template', 'relationType', 'content']);
-
-  return sorted;
+): PlanElement => {
+  const template = templateIndex[response.sourceTemplate];
+  const relationType = relationTypeIndex[response.relationType];
+  const targetTemplate = response.targetTemplate
+    ? templateIndex[response.targetTemplate]
+    : undefined;
+  return {
+    sourceTemplate: template.name,
+    sourceTemplateId: response.sourceTemplate,
+    relationType: relationType.name,
+    relationTypeId: response.relationType,
+    targetTemplate: targetTemplate?.name || 'ALL',
+    targetTemplateId: response.targetTemplate,
+    inferred: response.infered,
+    ignored: response.ignored,
+  };
 };
+
+const mapGetPlanResponse = (
+  response: GetRelationshipMigrationFieldsResponse,
+  templateIndex: Record<string, ClientTemplateSchema>,
+  relationTypeIndex: Record<string, RelationshipTypesType>
+) => response.map(r => mapPlanElementFromApiResponse(r, templateIndex, relationTypeIndex));
 
 const formatTime = (time: number) => {
   const floored = Math.floor(time);
@@ -93,15 +102,87 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
 
   private hubTestResult?: hubTestResult;
 
-  async performDryRun() {
-    const summary = await _sendMigrationRequest(true);
+  private showMigrationConfirm = false;
+
+  private currentPlan: PlanElement[] = [];
+
+  private templateIndex: Record<string, ClientTemplateSchema> = {};
+
+  private relationTypeIndex: Record<string, RelationshipTypesType> = {};
+
+  private templatesNameSorted: ClientTemplateSchema[] = [];
+
+  private relationTypesNameSorted: RelationshipTypesType[] = [];
+
+  private newPlanElement: PlanElement = {
+    sourceTemplate: '',
+    sourceTemplateId: '',
+    relationType: '',
+    relationTypeId: '',
+    targetTemplate: '',
+    targetTemplateId: '',
+    inferred: false,
+    ignored: false,
+  };
+
+  private unusedConnectionsPage = 1;
+
+  private unusedConnectionsInfo?: GetMigrationHubRecordsResponse;
+
+  async componentDidMount() {
+    this.templateIndex = objectIndex(
+      this.props.templates,
+      t => t._id,
+      t => t
+    );
+    this.templatesNameSorted = _.orderBy(this.props.templates, t => t.name);
+    this.relationTypeIndex = objectIndex(
+      this.props.relationTypes,
+      t => t._id,
+      t => t
+    );
+    this.relationTypesNameSorted = _.orderBy(this.props.relationTypes, t => t.name);
+    const response = (await getCurrentPlan()) as GetRelationshipMigrationFieldsResponse;
+    const mapped = mapGetPlanResponse(response, this.templateIndex, this.relationTypeIndex);
+    const ordered = _.orderBy(mapped, ['sourceTemplate', 'relationType', 'targetTemplate']);
+    this.currentPlan = ordered;
+    this.newPlanElement = {
+      sourceTemplate: this.templatesNameSorted[0].name,
+      sourceTemplateId: this.templatesNameSorted[0]._id,
+      relationType: this.relationTypesNameSorted[0].name,
+      relationTypeId: this.relationTypesNameSorted[0]._id,
+      targetTemplate: this.templatesNameSorted[1].name,
+      targetTemplateId: this.templatesNameSorted[1]._id,
+    };
+    await this.getUnusedConnections();
+    this.forceUpdate();
+  }
+
+  async getUnusedConnections(update: boolean = false) {
+    this.unusedConnectionsInfo = await getHubrecordPage(
+      this.unusedConnectionsPage,
+      UNUSED_RECORDS_PAGE_SIZE
+    );
+    if (update) {
+      this.forceUpdate();
+    }
+  }
+
+  async sendMigrationRequest(dryRun: boolean) {
+    const summary = await _sendMigrationRequest(dryRun, this.currentPlan);
     this.migrationSummary = summary;
+    this.unusedConnectionsPage = 1;
+    await this.getUnusedConnections();
+  }
+
+  async performDryRun() {
+    await this.sendMigrationRequest(true);
     this.forceUpdate();
   }
 
   async performMigration() {
-    const summary = await _sendMigrationRequest();
-    this.migrationSummary = summary;
+    await this.sendMigrationRequest(false);
+    this.showMigrationConfirm = false;
     this.forceUpdate();
   }
 
@@ -110,22 +191,126 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
   }
 
   async testOneHub() {
-    const testresult = await _testOneHub(this.testedHub);
+    const testresult = await _testOneHub(this.testedHub, this.currentPlan);
     this.hubTestResult = testresult;
     this.forceUpdate();
   }
 
+  readyMigration() {
+    this.showMigrationConfirm = true;
+    this.forceUpdate();
+  }
+
+  cancelMigration() {
+    this.showMigrationConfirm = false;
+    this.forceUpdate();
+  }
+
+  async toggleIgnore(pe: PlanElement) {
+    pe.ignored = !pe.ignored;
+    updateRelationshipMigrationField(pe)
+      .then(() => {
+        this.forceUpdate();
+      })
+      .catch(() => {
+        pe.ignored = !pe.ignored;
+        this.forceUpdate();
+      });
+  }
+
+  storeNewPlanElementSourceTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.sourceTemplateId = event.target.value;
+    this.newPlanElement.sourceTemplate = this.templateIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  storeNewPlanElementRelationType(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.relationTypeId = event.target.value;
+    this.newPlanElement.relationType = this.relationTypeIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  storeNewPlanElementTargetTemplate(event: React.ChangeEvent<HTMLSelectElement>) {
+    this.newPlanElement.targetTemplateId = event.target.value;
+    this.newPlanElement.targetTemplate = this.templateIndex[event.target.value].name;
+    this.forceUpdate();
+  }
+
+  async addNewPlanElement() {
+    createRelationshipMigrationField(this.newPlanElement).then(
+      (created: CreateRelationshipMigRationFieldResponse) => {
+        this.currentPlan.push(
+          mapPlanElementFromApiResponse(created, this.templateIndex, this.relationTypeIndex)
+        );
+        this.forceUpdate();
+      }
+    );
+  }
+
+  async removePlanElement(index: number) {
+    const pe = this.currentPlan[index];
+    deleteRelationshipMigrationField(pe).then(() => {
+      this.currentPlan.splice(index, 1);
+      this.forceUpdate();
+    });
+  }
+
+  renderUnusedConnections() {
+    if (!this.unusedConnectionsInfo) {
+      return <div />;
+    }
+    const maxPage = Math.ceil(this.unusedConnectionsInfo.fullCount / UNUSED_RECORDS_PAGE_SIZE);
+    return (
+      this.unusedConnectionsInfo && (
+        <div>
+          <div>
+            <button
+              type="button"
+              disabled={this.unusedConnectionsPage === 1}
+              onClick={async () => {
+                this.unusedConnectionsPage -= 1;
+                await this.getUnusedConnections(true);
+              }}
+            >
+              ←
+            </button>
+            <span>
+              {this.unusedConnectionsPage}/{maxPage}
+            </span>
+            <button
+              type="button"
+              disabled={this.unusedConnectionsPage === maxPage}
+              onClick={async () => {
+                this.unusedConnectionsPage += 1;
+                await this.getUnusedConnections(true);
+              }}
+            >
+              →
+            </button>
+          </div>
+          {this.unusedConnectionsInfo.hubRecords.map((records, index) => (
+            <div key={`UnusedConnectionList_${records.hubId}`}>
+              <div>
+                {index + 1}---------------------------:{records.hubId}
+              </div>
+              {records.connections.map(connection => (
+                <div key={`unusedConnection_${records.hubId}_${connection.id}`}>
+                  &emsp;
+                  {`(${connection.templateName})`}
+                  <Icon icon="link" />
+                  {`${connection.entityTitle}(${
+                    this.templateIndex[connection.entityTemplate].name
+                  })`}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )
+    );
+  }
+
   render() {
-    const templatesById = objectIndex(
-      this.props.templates,
-      t => t._id,
-      t => t
-    );
-    const relationTypesById = objectIndex(
-      this.props.relationTypes,
-      t => t._id,
-      t => t
-    );
     const oneHubTestEntityTitlesBySharedId = objectIndex(
       this.hubTestResult?.original || [],
       t => t.entity,
@@ -141,18 +326,13 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
       t => t.template,
       t => t.templateName
     );
-    const inferedRelationships: RelationshipType[] = inferFromV1(
-      this.props.templates,
-      templatesById,
-      relationTypesById
-    );
     const displayEntityTitleAndNameFromOriginal = (orig: OriginalEntityInfo) =>
       `${oneHubTestEntityTitlesBySharedId[orig.entity]}(${
-        templatesById[orig.entityTemplate].name
+        this.templateIndex[orig.entityTemplate].name
       })`;
     const displayEntityTitleAndNameFromTransformed = (entity: string) =>
       `${oneHubTestEntityTitlesBySharedId[entity]}(${
-        templatesById[oneHubTestEntityTemplatesBySharedId[entity]].name
+        this.templateIndex[oneHubTestEntityTemplatesBySharedId[entity]].name
       })`;
 
     return (
@@ -166,9 +346,20 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
               Dry Run
             </button>
             &emsp;
-            <button type="button" className="btn" onClick={this.performMigration.bind(this)}>
+            <button type="button" className="btn" onClick={this.readyMigration.bind(this)}>
               Migrate
             </button>
+            {this.showMigrationConfirm && (
+              <>
+                <div>This will clean all your existing v2 relationships. Are you sure?</div>
+                <button type="button" className="btn" onClick={this.performMigration.bind(this)}>
+                  Perform
+                </button>
+                <button type="button" className="btn" onClick={this.cancelMigration.bind(this)}>
+                  Cancel
+                </button>
+              </>
+            )}
             <br />
             <br />
             {this.migrationSummary && (
@@ -193,40 +384,77 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </div>
                 <div>Errors: {this.migrationSummary.errors}</div>
                 <br />
-                <div>
-                  First {this.migrationSummary.hubsWithUnusedConnections.length} hubs with unused
-                  connections:
-                </div>
-                {this.migrationSummary.hubsWithUnusedConnections.map((connectionList, index) => (
-                  <div key={`UnusedConnectionList_${index}`}>
-                    <div>{index + 1}---------------------------:</div>
-                    {connectionList.map((connection, connectionIndex) => (
-                      <div key={`unusedConnection_${index}_${connectionIndex}`}>
-                        &emsp;
-                        {connection.templateName}
-                        <Icon icon="link" />
-                        {`${connection.entityTitle}(${
-                          templatesById[connection.entityTemplate].name
-                        })`}
-                      </div>
-                    ))}
-                  </div>
-                ))}
               </div>
             )}
             <br />
-            <div>Relationships infered from v1 relationship properties:</div>
-            {inferedRelationships.map(p => (
-              <div key={`${p.template}_${p.relationType}_${p.content}`}>
-                {p.template}&emsp;
+            <div>Current migration plan:</div>
+            {this.currentPlan.map((p, index) => (
+              <div key={`${p.sourceTemplate}_${p.relationType}_${p.targetTemplate}`}>
+                {p.sourceTemplate}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
-                {p.relationType}&emsp;
+                {`(${p.relationType})`}&emsp;
                 <Icon icon="arrow-right" />
                 &emsp;
-                {p.content}
+                {p.targetTemplate}
+                &emsp; -- &emsp;
+                {[p.inferred ? 'inferred' : 'user defined', p.ignored ? 'ignored' : undefined]
+                  .filter(x => x)
+                  .join(', ')}
+                &emsp;
+                <button
+                  type="button"
+                  onClick={this.toggleIgnore.bind(this, p)}
+                  className={`btn btn-xs${p.ignored ? ' btn-danger' : ' btn-success'} }`}
+                >
+                  {`${p.ignored ? 'Unignore' : 'Ignore'}`}
+                </button>
+                {!p.inferred && (
+                  <button
+                    type="button"
+                    onClick={this.removePlanElement.bind(this, index)}
+                    className="btn btn-xs"
+                  >
+                    Remove
+                  </button>
+                )}
               </div>
             ))}
+            <div>
+              <select
+                value={this.newPlanElement.sourceTemplateId}
+                onChange={this.storeNewPlanElementSourceTemplate.bind(this)}
+              >
+                {this.templatesNameSorted.map(t => (
+                  <option key={`sourceDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={this.newPlanElement.relationTypeId}
+                onChange={this.storeNewPlanElementRelationType.bind(this)}
+              >
+                {this.relationTypesNameSorted.map(t => (
+                  <option key={`relationDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={this.newPlanElement.targetTemplateId}
+                onChange={this.storeNewPlanElementTargetTemplate.bind(this)}
+              >
+                {this.templatesNameSorted.map(t => (
+                  <option key={`targetDropdown_${t._id}`} value={t._id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+              <button type="button" onClick={this.addNewPlanElement.bind(this)}>
+                Add
+              </button>
+            </div>
             <br />
             <br />
             <button type="button" onClick={this.testOneHub.bind(this)}>
@@ -276,6 +504,9 @@ class _NewRelMigrationDashboard extends React.Component<ComponentPropTypes> {
                 </table>
               </div>
             )}
+            <br />
+            <br />
+            {this.renderUnusedConnections()}
           </div>
         </div>
       </div>
