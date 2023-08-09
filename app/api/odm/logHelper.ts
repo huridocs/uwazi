@@ -1,11 +1,12 @@
 /* eslint-disable max-classes-per-file */
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
-import mongoose from 'mongoose';
+import { SyncDBDataSource } from 'api/common.v2/contracts/SyncDBDataSource';
 import { model as updatelogsModel } from 'api/updatelogs';
+import mongoose from 'mongoose';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
-import { models, UwaziFilterQuery, DataType, SyncDBDataSource } from './model';
+import { DataType, UwaziFilterQuery, models } from './model';
 
 const getBatchSteps = async <T>(
   model: SyncDBDataSource<T>,

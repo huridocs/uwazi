@@ -1,4 +1,5 @@
-import { DeleteResult, ObjectId } from 'mongodb';
+import { SyncDBDataSource } from 'api/common.v2/contracts/SyncDBDataSource';
+import { ObjectId } from 'mongodb';
 import mongoose, { FilterQuery, QueryOptions, Schema, UpdateQuery } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
@@ -21,14 +22,6 @@ export type EnforcedWithId<T> = T & { _id: ObjectId };
 export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
-
-export interface SyncDBDataSource<T> {
-  save(document: Partial<T>): Promise<T>;
-  saveMultiple(documents: Partial<T>[]): Promise<T[]>;
-  getById(documentId: string): Promise<T | null>;
-  get(query: any, select?: any, options?: any): Promise<T[]>;
-  delete(query: { _id: string }): Promise<DeleteResult>;
-}
 
 export class OdmModel<T> implements SyncDBDataSource<T> {
   db: MultiTenantMongooseModel<T>;

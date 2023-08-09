@@ -1,5 +1,5 @@
+import { SyncDBDataSource } from 'api/common.v2/contracts/SyncDBDataSource';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { SyncDBDataSource } from 'api/odm';
 import { DeleteResult, ObjectId, OptionalId } from 'mongodb';
 import { TranslationDBO } from '../schemas/TranslationDBO';
 
