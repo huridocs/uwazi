@@ -42,10 +42,22 @@ describe('Information Extraction', () => {
   });
 
   describe('labeling entities', () => {
-    it('should label the title property for the first two entities', () => {
+    it('should label the title property for the first six entities', () => {
       labelEntityTitle(0, 'Lorem Ipsum');
       cy.get('a[aria-label="Library"]').click();
       labelEntityTitle(1, 'Uwazi Heroes Investigation');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(2, 'The Lizard');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(3, 'Batman v Superman: Dawn of Justice');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(4, 'The Amazing Spider-Man');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(5, 'Spider-Man: Shattered Dimensions');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(6, 'The Spectacular Spider-Man');
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(7, 'Spider-Man: Into the');
     });
   });
 
@@ -172,28 +184,33 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Review').eq(0).click();
     });
 
-    it('should show title initial suggestion states as Empty / Label', () => {
-      cy.get('.suggestion-templates span').eq(1).should('be.visible');
-      cy.get('.training-dashboard').should('be.visible');
-      cy.get('table').should('be.visible');
-      cy.get('.settings-content').toMatchImageSnapshot();
+    it('should show title initial suggestion should be default', () => {
+      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.contains('thead tr th:nth-child(2) div span', 'Document').click(); // Sort the results
+      cy.get('tbody tr').eq(5).should('be.visible');
     });
 
     it('should find suggestions successfully', { defaultCommandTimeout: 6000 }, () => {
-      cy.get('.suggestion-templates span').eq(1).should('be.visible');
-      cy.get('.training-dashboard').should('be.visible');
-      cy.get('table').should('be.visible');
-      cy.contains('button', 'Find suggestions').click();
+      cy.intercept('GET', 'api/suggestions*').as('getSuggestions');
       cy.get('table tr').should('have.length.above', 1);
-      cy.get('.settings-content').toMatchImageSnapshot();
+      cy.contains('button', 'Find suggestions').click();
+      cy.wait('@getSuggestions');
+      cy.get('tbody tr').eq(5).should('be.visible');
+    });
+
+    it('should accept a single suggestion', () => {
+      cy.intercept('POST', 'api/suggestions/accept').as('accept');
+      cy.contains('button', 'Accept').eq(0).click();
+      cy.wait('@accept');
     });
 
     it('should show filters sidepanel', () => {
-      cy.get('.suggestion-templates span').eq(1).should('be.visible');
-      cy.get('.training-dashboard').should('be.visible');
-      cy.get('table').should('be.visible');
-      cy.contains('button', 'Show Filters').click();
-      cy.get('.settings-content .sidepanel-body').toMatchImageSnapshot();
+      cy.intercept('GET', 'api/suggestions*').as('getSuggestions');
+      cy.contains('button', 'Stats & Filters').click();
+      cy.contains('span', 'Match').click();
+      cy.contains('button', 'Apply').click();
+      cy.wait('@getSuggestions');
+      cy.get('tbody tr').should('have.length', 1);
     });
   });
 });
