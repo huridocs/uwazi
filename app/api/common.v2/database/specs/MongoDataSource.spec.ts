@@ -261,11 +261,4 @@ describe('session scoped collection', () => {
       }
     );
   });
-
-  xit('should always return the same instance of the collection', () => {
-    const transactionManager = new MongoTransactionManager(getClient());
-    const dataSource = new DataSource(getConnection(), transactionManager);
-
-    expect(dataSource.collection()).toBe(dataSource.collection());
-  });
 });
