@@ -384,7 +384,6 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 Install the Google Authenticator app on your mobile device,Установите приложение Google Authenticator на своем мобильном устройстве
-Instruction to reset password sent to user,Instruction to reset password sent to user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -628,6 +627,7 @@ RAW,RAW
 Re-uploaded document,Re-uploaded document
 Receiving email,Электронная почта получателя
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
+Reference,Reference
 References,Ссылки
 Reject,Отклонить
 Relationship,Взаимосвязь

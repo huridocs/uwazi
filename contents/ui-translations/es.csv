@@ -1,4 +1,5 @@
 Key,Spanish
+% of sentences above threshold,% of sentences above threshold
 (view page),(ver página)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
@@ -384,7 +385,6 @@ Install browser extension (dynamic link),Instalar extensión de navegador (enlac
 Install Language(s),Instalar Idioma(s)
 INSTALL the browser extension,INSTALAR la extensión de navegador
 Install the Google Authenticator app on your mobile device,Instala la aplicación Google Authenticator en tu dispositivo móvil.
-Instruction to reset password sent to user,Instruction to reset password sent to user
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,"Se han enviado las instrucciones para restablecer tu contraseña, por favor revisa tu correo electrónico."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -628,6 +628,7 @@ RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
+Reference,Reference
 References,Referencias
 Reject,Rechazar
 Relationship,Relación
