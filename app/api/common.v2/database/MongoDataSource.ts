@@ -1,15 +1,8 @@
-import { Db, Document, ObjectId } from 'mongodb';
+import { Db, Document } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
 import { SyncedScopedCollection } from './SyncedScopedCollection';
-
-export interface UpdateLog {
-  timestamp: number;
-  namespace: string;
-  mongoId: ObjectId;
-  deleted: boolean;
-}
 
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
