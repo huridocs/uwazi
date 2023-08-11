@@ -821,7 +821,7 @@ const mapStateToProps = (state, ownProps) => {
     currentSidepanelView: state.library.sidepanel.view,
     selectedDocument,
     // relationships v2
-    newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
+    newRelationshipsEnabled: !!state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
 
