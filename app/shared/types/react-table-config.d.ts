@@ -36,6 +36,7 @@ declare module '@tanstack/table-core' {
     action?: Function;
     headerClassName?: string;
     contentClassName?: string;
+    data?: any;
   }
 }
 

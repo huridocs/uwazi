@@ -56,8 +56,6 @@ describe('Information Extraction', () => {
       labelEntityTitle(5, 'Spider-Man: Shattered Dimensions');
       cy.get('a[aria-label="Library"]').click();
       labelEntityTitle(6, 'The Spectacular Spider-Man');
-      cy.get('a[aria-label="Library"]').click();
-      labelEntityTitle(7, 'Spider-Man: Into the');
     });
   });
 
@@ -211,6 +209,14 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Apply').click();
       cy.wait('@getSuggestions');
       cy.get('tbody tr').should('have.length', 1);
+    });
+
+    it('should label one more entity', () => {
+      cy.get('a[aria-label="Library"]').click();
+      labelEntityTitle(7, 'Spider-Man: Into the');
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      cy.contains('a', 'Metadata Extraction').click();
+      cy.contains('button', 'Review').eq(0).click();
     });
   });
 });
