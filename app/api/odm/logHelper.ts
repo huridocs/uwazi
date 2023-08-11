@@ -1,7 +1,7 @@
 /* eslint-disable max-classes-per-file */
 //@ts-ignore
 import PromisePool from '@supercharge/promise-pool';
-import { SyncDBDataSource } from 'api/common.v2/contracts/SyncDBDataSource';
+import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
 import { model as updatelogsModel } from 'api/updatelogs';
 import mongoose from 'mongoose';
 import { EntitySchema } from 'shared/types/entityType';

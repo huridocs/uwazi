@@ -1,4 +1,4 @@
-import { SyncDBDataSource } from 'api/common.v2/contracts/SyncDBDataSource';
+import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
 import { ObjectId } from 'mongodb';
 import mongoose, { FilterQuery, QueryOptions, Schema, UpdateQuery } from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
