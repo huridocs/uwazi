@@ -1,5 +1,7 @@
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { propertyTypes } from 'shared/propertyTypes';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -33,6 +35,35 @@ function createRelationshipsV2ResponseProcessor(featureEnabled = false) {
     });
 
     return mappedMetadata;
+  };
+}
+
+async function createObsoleteMetadataResponseProcessor(
+  hits: any[],
+  language: string,
+  featureEnabled = false
+) {
+  if (!featureEnabled) {
+    return () => undefined;
+  }
+
+  const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
+
+  const obsoleteMetadataByEntity = await entitiesDataSource
+    .getObsoleteMetadata(
+      hits.map(h => h._source.sharedId),
+      language
+    )
+    .indexed(entity => entity.sharedId);
+
+  return (hit: any) => obsoleteMetadataByEntity[hit._source.sharedId]?.obsoleteMetadata ?? [];
+}
+
+async function createResponseProcessors(hits: any[], language: string) {
+  const featureEnabled = await checkFeatureEnabled();
+  return {
+    metadata: createRelationshipsV2ResponseProcessor(featureEnabled),
+    obsoleteMetadata: await createObsoleteMetadataResponseProcessor(hits, language, featureEnabled),
   };
 }
 
@@ -83,7 +114,7 @@ function getTypeToAggregate(
 
 export {
   checkFeatureEnabled,
-  createRelationshipsV2ResponseProcessor,
+  createResponseProcessors,
   deducePropertyContent,
   getAggregatedIndexedPropertyPath,
   findDenormalizedProperty,

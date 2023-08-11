@@ -127,8 +127,6 @@ export class DenormalizationService {
     }
 
     this.transactionManager.onCommitted(async () => {
-      const candidateIds = candidates.map(c => c.sharedId);
-      await this.indexEntities(candidateIds);
       await this.updateStrategy.update(candidates.map(c => c.sharedId));
     });
   }
