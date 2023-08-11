@@ -237,7 +237,6 @@
     "url-join": "^4.0.1",
     "winston": "3.9.0",
     "world-countries": "4.0.0",
-    "wrap-range-text": "^1.0.1",
     "xml-js": "^1.6.11",
     "yargs": "^17.7.2",
     "yauzl": "^2.10.0",
