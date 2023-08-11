@@ -128,12 +128,10 @@ export class DenormalizationService {
     }
 
     this.transactionManager.onCommitted(async () => {
-      const candidateIds = candidates.map(c => c.sharedId);
-      await this.indexEntities(candidateIds);
       if (updatePropertiesCallback) {
         await updatePropertiesCallback(ids);
       } else {
-        await this.updateStrategy.update(candidateIds);
+        await this.updateStrategy.update(candidates.map(c => c.sharedId));
       }
     });
   }
