@@ -54,10 +54,6 @@ import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
-import {
-  IXSuggestions as OldIXSuggestions,
-  IXSuggestionsLoader as OldIXSuggestionsLoader,
-} from './MetadataExtraction/SuggestionsContainer';
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
@@ -110,11 +106,6 @@ const getRoutesLayout = (
         path="metadata_extraction"
         element={adminsOnlyRoute(<IXDashboard />)}
         loader={dashboardLoader(headers)}
-      />
-      <Route
-        path="metadata_extraction/suggestions-old/:extractorId"
-        loader={OldIXSuggestionsLoader(headers)}
-        element={adminsOnlyRoute(<OldIXSuggestions />)}
       />
       <Route
         path="metadata_extraction/suggestions/:extractorId"
