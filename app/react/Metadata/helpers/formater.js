@@ -555,6 +555,9 @@ export default {
         translateContext: template.get('_id'),
         ...property.toJS(),
         ...this[methodType](property, value, thesauri, { ...options, doc }),
+        ...(doc.obsoleteMetadata
+          ? { obsolete: doc.obsoleteMetadata.includes(property.get('name')) }
+          : {}),
       };
     }
 
@@ -565,6 +568,9 @@ export default {
       value,
       showInCard,
       translateContext: template.get('_id'),
+      ...(doc.obsoleteMetadata
+        ? { obsolete: doc.obsoleteMetadata.includes(property.get('name')) }
+        : {}),
     };
   },
 

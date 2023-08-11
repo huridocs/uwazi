@@ -147,4 +147,16 @@ export class MongoEntitiesDataSource
 
     await stream.flush();
   }
+
+  getObsoleteMetadata(sharedIds: string[], language: string) {
+    const cursor = this.getCollection().find(
+      { sharedId: { $in: sharedIds }, language },
+      { projection: { sharedId: 1, obsoleteMetadata: 1 } }
+    );
+
+    return new MongoResultSet(cursor, result => ({
+      sharedId: result.sharedId,
+      obsoleteMetadata: result.obsoleteMetadata ?? [],
+    }));
+  }
 }
