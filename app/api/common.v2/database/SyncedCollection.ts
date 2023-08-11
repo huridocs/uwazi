@@ -38,7 +38,7 @@ import { BulkWriteStream } from './BulkWriteStream';
 import { MongoResultSet } from './MongoResultSet';
 import { CollectionWrapper } from './CollectionWrapper';
 
-export class SyncedScopedCollection<TSchema extends Document = Document>
+export class SyncedCollection<TSchema extends Document = Document>
   extends CollectionWrapper<TSchema>
   implements Collection<TSchema>
 {

@@ -2,7 +2,7 @@ import { Db, Document } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 import { SessionScopedCollection } from './SessionScopedCollection';
-import { SyncedScopedCollection } from './SyncedScopedCollection';
+import { SyncedCollection } from './SyncedCollection';
 
 export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   protected db: Db;
@@ -17,7 +17,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   }
 
   protected getCollection() {
-    return new SyncedScopedCollection<CollectionSchema>(
+    return new SyncedCollection<CollectionSchema>(
       new SessionScopedCollection<CollectionSchema>(
         this.db.collection(this.collectionName),
         this.transactionManager
