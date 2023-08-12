@@ -116,7 +116,8 @@ export class DenormalizationService {
           }
       )[]
     >,
-    invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>
+    invalidateMetadataCacheCallback?: (id: Id[]) => Promise<void>,
+    updatePropertiesCallback?: (id: Id[]) => Promise<void>
   ) {
     const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
 
@@ -127,7 +128,11 @@ export class DenormalizationService {
     }
 
     this.transactionManager.onCommitted(async () => {
-      await this.updateStrategy.update(candidates.map(c => c.sharedId));
+      if (updatePropertiesCallback) {
+        await updatePropertiesCallback(ids);
+      } else {
+        await this.updateStrategy.update(candidates.map(c => c.sharedId));
+      }
     });
   }
 
@@ -197,7 +202,8 @@ export class DenormalizationService {
     return this.runQueriesAndInvalidateMetadataCaches(
       [templateId],
       async id => this.getCandidateEntitiesForTemplate(id, propertyNames),
-      async () => this.invalidateMetadataCacheForTemplate([templateId], propertyNames)
+      async () => this.invalidateMetadataCacheForTemplate([templateId], propertyNames),
+      async () => this.updateStrategy.updateByTemplate(templateId)
     );
   }
 }
