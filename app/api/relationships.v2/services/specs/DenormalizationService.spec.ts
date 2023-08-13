@@ -307,6 +307,8 @@ let db: Db;
 let service: DenormalizationService;
 let indexMock: jest.Mock;
 let updateMock: jest.Mock;
+let updateByTemplateMock: jest.Mock;
+
 let triggerCommit: () => Promise<unknown>;
 
 beforeEach(async () => {
@@ -314,27 +316,29 @@ beforeEach(async () => {
 
   indexMock = jest.fn();
   updateMock = jest.fn();
+  updateByTemplateMock = jest.fn();
 
   db = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
   triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
-
+  const entitiesDataSource = new MongoEntitiesDataSource(
+    db,
+    templatesDataSource,
+    new MongoSettingsDataSource(db, transactionManager),
+    transactionManager
+  );
   service = new DenormalizationService(
     relationshipsDataSource,
-    new MongoEntitiesDataSource(
-      db,
-      templatesDataSource,
-      new MongoSettingsDataSource(db, transactionManager),
-      transactionManager
-    ),
+    entitiesDataSource,
     templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
     indexMock,
     partialImplementation<RelationshipPropertyUpdateStrategy>({
       update: updateMock,
+      updateByTemplate: updateByTemplateMock,
     })
   );
 });
@@ -534,6 +538,6 @@ describe('denormalizeAfterCreatingOrUpdatingProperty()', () => {
 
     await triggerCommit();
     expect(indexMock).not.toHaveBeenCalled();
-    expect(updateMock).toHaveBeenCalledWith(['entity1', 'entity1', 'entity10', 'entity10']);
+    expect(updateByTemplateMock).toHaveBeenCalledWith(factory.id('template1').toHexString());
   });
 });
