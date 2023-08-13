@@ -43,7 +43,7 @@ const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps)
     //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
       <div id="pdf-container">
-        {pdf &&
+        {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const page = number.toString();
             const pageHighlights = highlights ? highlights[page] : undefined;
@@ -55,7 +55,10 @@ const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps)
                 </SelectionRegion>
               </Suspense>
             );
-          })}
+          })
+        ) : (
+          <Translate>Loading</Translate>
+        )}
       </div>
     </HandleTextSelection>
   );
