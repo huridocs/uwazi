@@ -54,9 +54,9 @@ const Sidepanel = ({
       break;
 
     case 'large':
-      transitionRight = '-translate-x-[700px]';
-      transitionLeft = '-translate-x-[-700px]';
-      width = 'md:w-[700px]';
+      transitionRight = 'md:-translate-x-[768px] lg:-translate-x-1/2';
+      transitionLeft = 'md:-translate-x-[-768px] lg:-translate-x-[-50%]';
+      width = 'md:w-[768px] lg:w-1/2';
       break;
 
     default:
@@ -69,9 +69,9 @@ const Sidepanel = ({
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full">
+      <Transition show={isOpen} className="flex fixed top-0 left-0 z-10 w-full h-full">
         <Transition.Child
-          className="w-0 transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
+          className="w-0 bg-gray-900 transition-opacity duration-200 ease-in md:flex-grow"
           enterFrom="opacity-0"
           enterTo="opacity-50"
           leaveTo="opacity-0"
@@ -79,7 +79,7 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="aside"
-          className={`transition transform duration-200 ease-in bg-white border-l-2 p-4 w-full ${width}`}
+          className={`p-4 w-full bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
@@ -97,8 +97,7 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="aside"
-      className={`transition transform ease-in duration-200 fixed h-full w-full top-0 right-0
-      bg-white border-l-2 p-4 shadow-lg z-10 ${width}`}
+      className={`fixed top-0 right-0 z-10 p-4 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
