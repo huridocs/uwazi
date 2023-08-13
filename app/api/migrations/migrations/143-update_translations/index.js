@@ -10,7 +10,6 @@ const newKeys = [
   { key: 'Apply' },
   { key: 'Current value:' },
   { key: 'Suggestion:' },
-  { key: 'Stats & Filters' },
   { key: 'Current Value/Suggestion' },
   { key: 'No context' },
 ];
