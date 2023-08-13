@@ -216,7 +216,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -244,7 +244,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -298,23 +298,25 @@ const IXSuggestionsLoader =
     if (searchParams.has('filter')) {
       filter.customFilter = JSON.parse(searchParams.get('filter')!);
     }
-    const response = await suggestionsAPI.get(
-      {
-        filter,
-        page: {
-          number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
-          size: SUGGESTIONS_PER_PAGE,
+    const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
+      await suggestionsAPI.get(
+        {
+          filter,
+          page: {
+            number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
+            size: SUGGESTIONS_PER_PAGE,
+          },
         },
-      },
-      headers
-    );
+        headers
+      );
+
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
     return {
-      suggestions: response.suggestions,
-      totalPages: response.totalPages,
+      suggestions: suggestionsList.suggestions,
+      totalPages: suggestionsList.totalPages,
       extractor: extractors[0],
       templates,
       aggregation,
