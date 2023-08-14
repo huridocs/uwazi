@@ -19,6 +19,7 @@ export const IGNORED_ENDPOINTS = [
   '/api/semantic-search/notify-updates',
   '/api/sync',
   '/api/sync/upload',
+  '/api/export',
 ];
 export const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/document',
