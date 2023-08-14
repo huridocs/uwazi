@@ -64,10 +64,6 @@ interface PDFSidepanelProps {
   suggestion: EntitySuggestionType | undefined;
 }
 
-/*****/
-//- use property ID instead of name to filter file extracted metadata ??
-/*****/
-
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
   const [entityFile, setEntityFile] = useState<FileType>();
   const [highlights, setHighlights] = useState<Highlights>();

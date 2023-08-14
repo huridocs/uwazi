@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import {
   DatePropertyIcon,
   MarkdownPropertyIcon,
@@ -58,11 +58,15 @@ const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']
 
 const CurrentValueCell = ({
   cell,
-}: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => (
+  allProperties,
+}: {
+  cell: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>;
+  allProperties: ClientPropertySchema[];
+}) => (
   <SuggestedValue
     value={cell.getValue()}
     suggestion={cell.row.original}
-    templateProperties={cell.column.columnDef.meta?.data}
+    templateProperties={allProperties}
   />
 );
 
@@ -181,8 +185,8 @@ const suggestionsTableColumnsBuilder: Function = (
     }) as ColumnDef<EntitySuggestionType, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
-      cell: CurrentValueCell,
-      meta: { headerClassName: 'w-3/12', data: allProperties },
+      cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
+      meta: { headerClassName: 'w-3/12' },
     }) as ColumnDef<EntitySuggestionType, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
