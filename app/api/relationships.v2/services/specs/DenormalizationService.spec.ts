@@ -9,9 +9,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { DenormalizationService } from '../DenormalizationService';
-import { OnlineRelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
+import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
 
 const factory = getFixturesFactory();
 
@@ -306,31 +305,41 @@ const fixtures: DBFixture = {
 
 let db: Db;
 let service: DenormalizationService;
+let indexMock: jest.Mock;
+let updateMock: jest.Mock;
+let updateByTemplateMock: jest.Mock;
+
+let triggerCommit: () => Promise<unknown>;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
 
+  indexMock = jest.fn();
+  updateMock = jest.fn();
+  updateByTemplateMock = jest.fn();
+
   db = getConnection();
   const transactionManager = new MongoTransactionManager(getClient());
+  triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);
+  const entitiesDataSource = new MongoEntitiesDataSource(
+    db,
+    templatesDataSource,
+    new MongoSettingsDataSource(db, transactionManager),
+    transactionManager
+  );
   service = new DenormalizationService(
     relationshipsDataSource,
-    new MongoEntitiesDataSource(
-      db,
-      templatesDataSource,
-      new MongoSettingsDataSource(db, transactionManager),
-      transactionManager
-    ),
+    entitiesDataSource,
     templatesDataSource,
     new MongoSettingsDataSource(db, transactionManager),
     transactionManager,
-    async () => {},
-    new OnlineRelationshipPropertyUpdateStrategy(
-      async () => {},
-      partialImplementation<EntityRelationshipsUpdateService>({}),
-      new MongoTransactionManager(getClient())
-    )
+    indexMock,
+    partialImplementation<RelationshipPropertyUpdateStrategy>({
+      update: updateMock,
+      updateByTemplate: updateByTemplateMock,
+    })
   );
 });
 
@@ -372,6 +381,13 @@ describe('denormalizeAfterCreatingRelationships()', () => {
             }),
           ])
         );
+
+        await triggerCommit();
+
+        expect(updateMock).toHaveBeenCalledWith(
+          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
+        );
+        expect(indexMock).not.toHaveBeenCalled();
       }
     );
   });
@@ -411,6 +427,13 @@ describe('denormalizeBeforeDeletingFiles()', () => {
             }),
           ])
         );
+
+        await triggerCommit();
+
+        expect(updateMock).toHaveBeenCalledWith(
+          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
+        );
+        expect(indexMock).not.toHaveBeenCalled();
       }
     );
   });
@@ -469,6 +492,11 @@ describe('denormalizeAfterUpdatingEntities()', () => {
           obsoleteMetadata: [],
         },
       ]);
+
+      await triggerCommit();
+
+      expect(updateMock).not.toHaveBeenCalled();
+      expect(indexMock).toHaveBeenCalledWith(['entity1', 'entity1']);
     });
   });
 });
@@ -507,5 +535,9 @@ describe('denormalizeAfterCreatingOrUpdatingProperty()', () => {
         obsoleteMetadata: ['relationshipProp1', 'relationshipProp1_with_inherit'],
       },
     ]);
+
+    await triggerCommit();
+    expect(indexMock).not.toHaveBeenCalled();
+    expect(updateByTemplateMock).toHaveBeenCalledWith(factory.id('template1').toHexString());
   });
 });

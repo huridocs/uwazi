@@ -6,7 +6,10 @@ import { Queue } from 'api/queue.v2/application/Queue';
 import { QueueWorker } from 'api/queue.v2/application/QueueWorker';
 import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
-import { registerUpdateRelationshipPropertiesJob } from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
+import {
+  registerUpdateRelationshipPropertiesJob,
+  registerUpdateTemplateRelationshipPropertiesJob,
+} from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
 import RedisSMQ from 'rsmq';
 
 let dbAuth = {};
@@ -30,6 +33,7 @@ DB.connect(config.DBHOST, dbAuth)
     const queue = new Queue(config.queueName, RSMQ, StringJobSerializer);
 
     registerUpdateRelationshipPropertiesJob(queue);
+    registerUpdateTemplateRelationshipPropertiesJob(queue);
 
     const queueWorker = new QueueWorker(queue);
 

@@ -1,5 +1,6 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import testingDB from 'api/utils/testing_db';
 import { elastic } from '../elastic';
 import { search } from '../search';
 import { fixturesTimeOut } from './fixtures_elastic';
@@ -204,6 +205,44 @@ describe('searching', () => {
         metadata: {
           select: [{ value: 'value1' }],
         },
+      },
+    ]);
+  });
+
+  it('should add the obsoleteMetadata information to the result', async () => {
+    // Marking the metadata here so it's not indexed.
+    await testingDB.mongodb
+      ?.collection('entities')
+      .updateMany(
+        { template: fixturesFactory.id('template1') },
+        { $set: { obsoleteMetadata: ['relProp1'] } }
+      );
+
+    await testingDB.mongodb
+      ?.collection('entities')
+      .updateMany(
+        { template: fixturesFactory.id('template2') },
+        { $set: { obsoleteMetadata: ['someOtherProp'] } }
+      );
+
+    const results = await search.search({}, 'en');
+
+    expect(results.rows).toMatchObject([
+      {
+        sharedId: 'entity1',
+        obsoleteMetadata: ['relProp1'],
+      },
+      {
+        sharedId: 'entity2',
+        obsoleteMetadata: ['someOtherProp'],
+      },
+      {
+        sharedId: 'entity3',
+        obsoleteMetadata: [],
+      },
+      {
+        sharedId: 'entity4',
+        obsoleteMetadata: [],
       },
     ]);
   });

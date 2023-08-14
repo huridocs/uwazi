@@ -3,10 +3,10 @@ import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/Entit
 import { Job } from 'api/queue.v2/contracts/Job';
 
 interface IndexEntitiesCallback {
-  (sharedId: string): Promise<void>;
+  (sharedIds: string[]): Promise<void>;
 }
 export class UpdateRelationshipPropertiesJob extends Job {
-  private entityId: string;
+  private entityIds: string[];
 
   updater?: EntityRelationshipsUpdateService;
 
@@ -14,9 +14,9 @@ export class UpdateRelationshipPropertiesJob extends Job {
 
   indexEntity?: IndexEntitiesCallback;
 
-  constructor(entityId: string) {
+  constructor(entityIds: string[]) {
     super();
-    this.entityId = entityId;
+    this.entityIds = entityIds;
   }
 
   async handle() {
@@ -35,10 +35,10 @@ export class UpdateRelationshipPropertiesJob extends Job {
     const { updater, transactionManager, indexEntity } = this;
 
     await transactionManager.run(async () => {
-      await updater.update([this.entityId]);
+      await updater.update(this.entityIds);
 
       transactionManager.onCommitted(async () => {
-        await indexEntity(this.entityId);
+        await indexEntity(this.entityIds);
       });
     });
   }
