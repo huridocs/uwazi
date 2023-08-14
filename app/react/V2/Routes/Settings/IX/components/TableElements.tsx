@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
@@ -24,7 +24,8 @@ const propertyIcons = {
 };
 
 const extractorColumnHelper = createColumnHelper<Extractor>();
-const suggestionColumnHelper = createColumnHelper<EntitySuggestionType>();
+// Helper typed as any because of https://github.com/TanStack/table/issues/4224
+const suggestionColumnHelper = createColumnHelper<any>();
 
 const statusColor = (suggestion: EntitySuggestionType): Color => {
   if (!suggestion.suggestedValue || suggestion.suggestedValue === '') {
@@ -172,17 +173,17 @@ const suggestionsTableColumnsBuilder: Function = (
       header: TitleHeader,
       cell: TitleCell,
       meta: { headerClassName: 'w-3/12' },
-    }),
+    }) as ColumnDef<EntitySuggestionType, 'entityTitle'>,
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
       meta: { headerClassName: 'w-3/12' },
-    }),
+    }) as ColumnDef<EntitySuggestionType, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: CurrentValueCell,
       meta: { headerClassName: 'w-3/12', data: allProperties },
-    }),
+    }) as ColumnDef<EntitySuggestionType, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
