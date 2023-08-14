@@ -61,7 +61,7 @@ const IXSuggestions = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
-  const [suggestion, setSuggestion] = useState<EntitySuggestionType>();
+  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<EntitySuggestionType>();
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const revalidator = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -155,7 +155,7 @@ const IXSuggestions = () => {
   };
 
   const openPDFSidepanel = (selectedSuggestion: EntitySuggestionType) => {
-    setSuggestion(selectedSuggestion);
+    setSidepanelSuggestion(selectedSuggestion);
     setSidepanel('pdf');
   };
 
@@ -283,7 +283,7 @@ const IXSuggestions = () => {
       <PDFSidepanel
         showSidepanel={sidepanel === 'pdf'}
         setShowSidepanel={closeSidepanel}
-        suggestion={suggestion}
+        suggestion={sidepanelSuggestion}
       />
     </div>
   );

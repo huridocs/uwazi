@@ -65,7 +65,6 @@ interface PDFSidepanelProps {
 }
 
 /*****/
-//- change to use suggestion ID and the suggestions from the loader
 //- use property ID instead of name to filter file extracted metadata ??
 /*****/
 
