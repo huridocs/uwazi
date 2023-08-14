@@ -10,6 +10,11 @@ import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
 import { TextHighlight } from 'V2/Components/PDFViewer/types';
 
+enum HighlightColors {
+  current = '#B1F7A3',
+  new = '#F27DA5',
+}
+
 type Highlights = { [page: string]: TextHighlight[] };
 
 const formatHighlights = (selections: ExtractedMetadataSchema[], property: string): Highlights => {
@@ -17,14 +22,13 @@ const formatHighlights = (selections: ExtractedMetadataSchema[], property: strin
     .selection;
 
   const highlights = selectionsForProperty?.selectionRectangles?.reduce(
-    (selectionsByPage, selection) => {
-      const { page } = selection;
-      if (!page) return {};
+    (selectionsByPage, selection, index) => {
+      const page = selection.page as string;
 
       if (selectionsByPage[page]) {
         return selectionsByPage[page].push({
-          color: 'red',
-          key: '1',
+          color: HighlightColors.current,
+          key: `${page}-${index}`,
           textSelection: {
             text: selectionsForProperty?.text,
             selectionRectangles: selectionsForProperty?.selectionRectangles?.map(rectangle => ({
@@ -39,8 +43,8 @@ const formatHighlights = (selections: ExtractedMetadataSchema[], property: strin
         ...selectionsByPage,
         [page]: [
           {
-            color: 'red',
-            key: page,
+            color: HighlightColors.current,
+            key: `${page}-${index}`,
             textSelection: {
               text: selectionsForProperty?.text,
               selectionRectangles: selectionsForProperty?.selectionRectangles?.map(rectangle => ({
@@ -52,7 +56,7 @@ const formatHighlights = (selections: ExtractedMetadataSchema[], property: strin
         ],
       };
     },
-    {}
+    { 1: [] }
   );
 
   return highlights;
