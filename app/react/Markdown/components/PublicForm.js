@@ -78,8 +78,8 @@ class PublicFormComponent extends Component {
       this.props.template.toJS()
     );
     try {
-      const submitResult = await submit(values, remote);
       this.setState({ submiting: true });
+      const submitResult = await submit(values, remote);
       await submitResult.promise;
       this.resetForm();
       this.setState({ submiting: false, files: [] });
