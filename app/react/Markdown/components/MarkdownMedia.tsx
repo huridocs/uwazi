@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
@@ -290,6 +292,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       }
       setMediaURL(config.url);
     }
+
+    return () => {
+      if (config.url.startsWith('/api/files/')) {
+        console.log('running effect cleanup: ', mediaURL);
+        setErrorFlag(false);
+        URL.revokeObjectURL(mediaURL);
+      }
+    };
   }, [config.url]);
 
   useEffect(() => {
@@ -302,13 +312,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       setMediaURL(temporalResource);
     }
   }, [temporalResource, mediaURL]);
-
-  useEffect(() => () => {
-    if (config.url.startsWith('/api/files/')) {
-      setErrorFlag(false);
-      URL.revokeObjectURL(mediaURL);
-    }
-  });
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
