@@ -1,10 +1,13 @@
+/* eslint-disable max-lines */
 import {
   AggregateOptions,
   AggregationCursor,
   AnyBulkWriteOperation,
   BulkWriteOptions,
   BulkWriteResult,
+  ClientSession,
   Collection,
+  CommandOperationOptions,
   CountDocumentsOptions,
   DeleteOptions,
   DeleteResult,
@@ -45,7 +48,9 @@ export class SessionScopedCollection<TSchema extends Document = Document>
     this.transactionManager = transactionManager;
   }
 
-  private appendSession(options: InsertOneOptions | undefined): InsertOneOptions {
+  private appendSession<S extends CommandOperationOptions>(
+    options?: S
+  ): { session: ClientSession | undefined } {
     return {
       ...options,
       session: this.transactionManager.getSession(),
@@ -140,26 +145,89 @@ export class SessionScopedCollection<TSchema extends Document = Document>
     return this.collection.distinct(key, filter, this.appendSession(options));
   }
 
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndDelete(filter: Filter<TSchema>): Promise<ModifyResult<TSchema>>;
+
   async findOneAndDelete(
     filter: Filter<TSchema>,
-    options?: FindOneAndDeleteOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options?: FindOneAndDeleteOptions & { includeResultMetadata?: boolean }
+  ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     return this.collection.findOneAndDelete(filter, this.appendSession(options));
   }
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>
+  ): Promise<ModifyResult<TSchema>>;
 
   async findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options?: FindOneAndReplaceOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options?: FindOneAndDeleteOptions & { includeResultMetadata?: boolean }
+  ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     return this.collection.findOneAndReplace(filter, replacement, this.appendSession(options));
   }
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>
+  ): Promise<ModifyResult<TSchema>>;
 
   async findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options?: FindOneAndUpdateOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options?: FindOneAndDeleteOptions & { includeResultMetadata?: boolean }
+  ): Promise<WithId<TSchema> | ModifyResult<TSchema> | null> {
     return this.collection.findOneAndUpdate(filter, update, this.appendSession(options));
   }
 

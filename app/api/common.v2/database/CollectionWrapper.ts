@@ -28,6 +28,7 @@ import {
   OperationOptions,
   OrderedBulkOperation,
   UnorderedBulkOperation,
+  ListSearchIndexesCursor,
 } from 'mongodb';
 
 export abstract class CollectionWrapper<TSchema extends Document = Document> {
@@ -165,6 +166,26 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
     _filter?: Filter<TSchema> | undefined,
     _options?: CountOptions | undefined
   ): Promise<number> {
+    throw new Error('Method not implemented.');
+  }
+
+  listSearchIndexes(): ListSearchIndexesCursor {
+    throw new Error('Method not implemented.');
+  }
+
+  async createSearchIndex(): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+
+  async createSearchIndexes(): Promise<string[]> {
+    throw new Error('Method not implemented.');
+  }
+
+  async dropSearchIndex(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  async updateSearchIndex(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   AggregateOptions,
   AggregationCursor,
@@ -216,30 +217,93 @@ export class SyncedCollection<TSchema extends Document = Document>
     return this.collection.distinct(key, filter, options);
   }
 
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndDelete(
+    filter: Filter<TSchema>,
+    options: FindOneAndDeleteOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndDelete(filter: Filter<TSchema>): Promise<ModifyResult<TSchema>>;
+
   async findOneAndDelete(
     filter: Filter<TSchema>,
-    options?: FindOneAndDeleteOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options: FindOneAndDeleteOptions & { includeResultMetadata?: boolean } = {}
+  ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     await this.upsertSyncLogs([filter], true);
     const result = await this.collection.findOneAndDelete(filter, options);
     return result;
   }
 
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>,
+    options: FindOneAndReplaceOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndReplace(
+    filter: Filter<TSchema>,
+    replacement: WithoutId<TSchema>
+  ): Promise<ModifyResult<TSchema>>;
+
   async findOneAndReplace(
     filter: Filter<TSchema>,
     replacement: WithoutId<TSchema>,
-    options?: FindOneAndReplaceOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options: FindOneAndDeleteOptions & { includeResultMetadata?: boolean } = {}
+  ): Promise<ModifyResult<TSchema> | WithId<TSchema> | null> {
     const result = await this.collection.findOneAndReplace(filter, replacement, options);
     await this.upsertSyncLogs([filter]);
     return result;
   }
 
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions & { includeResultMetadata: true }
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions & { includeResultMetadata: false }
+  ): Promise<WithId<TSchema> | null>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>,
+    options: FindOneAndUpdateOptions
+  ): Promise<ModifyResult<TSchema>>;
+
+  findOneAndUpdate(
+    filter: Filter<TSchema>,
+    update: UpdateFilter<TSchema>
+  ): Promise<ModifyResult<TSchema>>;
+
   async findOneAndUpdate(
     filter: Filter<TSchema>,
     update: UpdateFilter<TSchema>,
-    options?: FindOneAndUpdateOptions | undefined
-  ): Promise<ModifyResult<TSchema>> {
+    options: FindOneAndDeleteOptions & { includeResultMetadata?: boolean } = {}
+  ): Promise<WithId<TSchema> | ModifyResult<TSchema> | null> {
     const result = await this.collection.findOneAndUpdate(filter, update, options);
     await this.upsertSyncLogs([filter]);
     return result;
