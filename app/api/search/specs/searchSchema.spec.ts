@@ -1,6 +1,6 @@
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { validation } from 'api/utils';
-import { searchParamsSchema } from 'shared/types/searchParams';
+import { searchParamsSchema } from 'shared/types/searchParameterSchema';
 
 describe('search schema', () => {
   const validQuery = {

@@ -1,5 +1,5 @@
 import { ClientSettings } from 'app/apiResponseTypes';
-import { SearchParams } from 'shared/types/searchParams.d';
+import { SearchParams } from 'shared/types/searchParameterType';
 
 export const tocGenerationUtils = {
   aggregations(params: SearchParams, settings: ClientSettings) {
