@@ -64,7 +64,8 @@ function setUpService() {
     new OnlineRelationshipPropertyUpdateStrategy(
       async () => {},
       new EntityRelationshipsUpdateService(entityDS, templatesDS, relationshipsDS),
-      new MongoTransactionManager(getClient())
+      new MongoTransactionManager(getClient()),
+      entityDS
     )
   );
   return new CreateTemplateService(

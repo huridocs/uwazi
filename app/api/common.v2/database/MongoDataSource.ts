@@ -2,15 +2,13 @@ import { Collection, Db, Document } from 'mongodb';
 import { BulkWriteStream } from './BulkWriteStream';
 import { MongoTransactionManager } from './MongoTransactionManager';
 
-type MaxAmountOfParameters<F extends (...args: any) => any> = Required<Parameters<F>>['length'];
-
 /**
  * Map of collection members to position of its options argument.
  * Position is based on 1.
  */
 type MethodsOptionsArgPosition = {
   [method in keyof Collection]: Collection[method] extends (...args: any) => any
-    ? MaxAmountOfParameters<Collection[method]>
+    ? number | null
     : null;
 };
 
@@ -63,6 +61,11 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
     initializeUnorderedBulkOp: 1,
     initializeOrderedBulkOp: 1,
     count: 2,
+    listSearchIndexes: null,
+    createSearchIndex: null,
+    createSearchIndexes: null,
+    dropSearchIndex: null,
+    updateSearchIndex: null,
     dbName: null,
     collectionName: null,
     namespace: null,
@@ -75,6 +78,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
 
   private appendSessionToOptions(args: any[], method: keyof MethodsOptionsArgPosition) {
     const optionsPosition = MongoDataSource.scopedMethods[method]! - 1;
+
     const minArgumentsLength = optionsPosition;
     const missingArgumentsLength = minArgumentsLength - args.length;
 
