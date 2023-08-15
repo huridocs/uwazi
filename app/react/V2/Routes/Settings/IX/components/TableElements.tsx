@@ -15,6 +15,8 @@ import {
 import { Extractor } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
+import { EmbededButton } from 'app/V2/Components/UI/EmbededButton';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 const propertyIcons = {
   text: <TextPropertyIcon className="w-4" />,
@@ -34,7 +36,19 @@ const statusColor = (suggestion: EntitySuggestionType): Color => {
   if (suggestion.currentValue === suggestion.suggestedValue) {
     return 'green';
   }
-  return 'yellow';
+  return 'orange';
+};
+
+const getIcon = (color: Color) => {
+  switch (color) {
+    case 'orange':
+    case 'green':
+      return <CheckCircleIcon />;
+    case 'red':
+      return <Dot color={color} />;
+    default:
+      return '';
+  }
 };
 
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
@@ -74,17 +88,16 @@ const AcceptButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
   const color = statusColor(cell.row.original);
   const action = cell.column.columnDef.meta?.action;
   return (
-    <div className="flex gap-1 justify-between items-center">
-      <Button
-        styling="outline"
-        size="small"
-        color={color === 'green' ? 'success' : 'primary'}
-        disabled={color === 'green'}
+    <div className="flex items-center justify-center gap-1">
+      <EmbededButton
+        icon={getIcon(color)}
+        color={color}
+        disabled={color === 'green' || color === 'red'}
+        collapsed={color === 'green'}
         onClick={() => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
-      </Button>
-      <Dot color={color} />
+      </EmbededButton>
     </div>
   );
 };
@@ -163,7 +176,7 @@ const extractorsTableColumns = [
   }),
 ];
 
-type Color = 'red' | 'green' | 'yellow';
+type Color = 'red' | 'green' | 'orange';
 
 const suggestionsTableColumnsBuilder: Function = (
   templates: ClientTemplateSchema[],

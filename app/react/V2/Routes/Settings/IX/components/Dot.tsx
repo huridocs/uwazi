@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Dot = ({ color }: { color?: 'red' | 'yellow' | 'green' }) => {
+const Dot = ({ color }: { color?: 'red' | 'orange' | 'green' }) => {
   let colorClass = 'bg-green-400';
   switch (color) {
     case 'red':
@@ -9,7 +9,7 @@ const Dot = ({ color }: { color?: 'red' | 'yellow' | 'green' }) => {
     case 'green':
       colorClass = 'bg-green-400';
       break;
-    case 'yellow':
+    case 'orange':
       colorClass = 'bg-orange-300';
       break;
     default:
