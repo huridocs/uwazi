@@ -180,7 +180,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "^3.8.162",
+    "pdfjs-dist": "^3.9.179",
     "postcss-loader": "^7.3.3",
     "postcss-prefix-selector": "^1.16.0",
     "prom-client": "^14.2.0",
