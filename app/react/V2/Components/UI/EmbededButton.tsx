@@ -47,8 +47,8 @@ const EmbededButton = ({
       focus:outline-none hover:border-none ${className}`}
       form={form}
     >
-      <div className="flex flex-row items-center justify-center gap-1">
-        <div className={`w-3 h-3 text-sm`}>{icon}</div>
+      <div className="flex flex-row gap-1 justify-center items-center">
+        <div className="w-3 h-3 text-sm">{icon}</div>
         {!collapsed ? (
           <div className={`text-sm font-medium ${color === 'red' ? 'text-gray-300' : ''}`}>
             {children}

@@ -7,7 +7,7 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Translate } from 'app/I18N';
 
 const meta: Meta<typeof EmbededButton> = {
-  title: 'Components/EmbededButton',
+  title: 'Components/Buttons/EmbededButton',
   component: EmbededButton,
 };
 
