@@ -54,6 +54,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     return () => {
       setEntityFile(undefined);
       setHighlights(undefined);
+      setSelectedText(undefined);
     };
   }, [suggestion]);
 
@@ -82,6 +83,12 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           </Button>
           <InputField id={propertyLabel} className="grow" label={propertyLabel} hideLabel />
         </div>
+
+        {selectedText && !selectedText.selectionRectangles && (
+          <Translate className="mb-1 italic text-error-700">
+            Could not detect the area for the selected text
+          </Translate>
+        )}
 
         <div className="flex-grow">
           <PDF
