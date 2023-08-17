@@ -1734,6 +1734,10 @@ input:checked + .toggle-bg {
   margin: 1rem;
 }
 
+.m-auto {
+  margin: auto;
+}
+
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -1877,6 +1881,14 @@ input:checked + .toggle-bg {
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.mr-0 {
+  margin-right: 0px;
+}
+
+.mr-auto {
+  margin-right: auto;
 }
 
 .block {
@@ -4765,6 +4777,10 @@ input:checked + .toggle-bg {
 .enabled\:hover\:text-white:hover:enabled {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.enabled\:hover\:underline:hover:enabled {
+  text-decoration-line: underline;
 }
 
 .disabled\:cursor-not-allowed:disabled {

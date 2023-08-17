@@ -110,6 +110,18 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           <InputField id={propertyLabel} className="grow" label={propertyLabel} hideLabel />
         </div>
 
+        <button
+          type="button"
+          disabled={Boolean(!highlights)}
+          className="mt-1 mr-0 ml-auto text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
+          onClick={() => {
+            setHighlights(undefined);
+            setSelectedText(undefined);
+          }}
+        >
+          <Translate>Clear Selection</Translate>
+        </button>
+
         {selectedText && !selectedText.selectionRectangles && (
           <Translate className="mb-1 italic text-error-700">
             Could not detect the area for the selected text
