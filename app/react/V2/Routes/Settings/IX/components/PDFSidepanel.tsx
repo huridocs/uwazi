@@ -3,64 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import * as filesAPI from 'V2/api/files';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
-import { TextHighlight } from 'V2/Components/PDFViewer/types';
-
-enum HighlightColors {
-  current = '#B1F7A3',
-  new = '#F27DA5',
-}
-
-type Highlights = { [page: string]: TextHighlight[] };
-
-const formatHighlights = (selections: ExtractedMetadataSchema[], property: string): Highlights => {
-  const selectionsForProperty = selections.filter(selection => selection.name === property)[0]
-    .selection;
-
-  const highlights = selectionsForProperty?.selectionRectangles?.reduce(
-    (selectionsByPage, selection, index) => {
-      const page = selection.page as string;
-
-      if (selectionsByPage[page]) {
-        return selectionsByPage[page].push({
-          color: HighlightColors.current,
-          key: `${page}-${index}`,
-          textSelection: {
-            text: selectionsForProperty?.text,
-            selectionRectangles: selectionsForProperty?.selectionRectangles?.map(rectangle => ({
-              ...rectangle,
-              regionId: rectangle.page,
-            })),
-          },
-        });
-      }
-
-      return {
-        ...selectionsByPage,
-        [page]: [
-          {
-            color: HighlightColors.current,
-            key: `${page}-${index}`,
-            textSelection: {
-              text: selectionsForProperty?.text,
-              selectionRectangles: selectionsForProperty?.selectionRectangles?.map(rectangle => ({
-                ...rectangle,
-                regionId: rectangle.page,
-              })),
-            },
-          },
-        ],
-      };
-    },
-    { 1: [] }
-  );
-
-  return highlights;
-};
+import { Highlights } from '../types';
+import { highlightsForProperty } from '../functions/handleTextSelection';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -79,7 +27,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         .then(response => {
           const [file] = response;
           if (file.extractedMetadata) {
-            setHighlights(formatHighlights(file.extractedMetadata, suggestion.propertyName));
+            setHighlights(highlightsForProperty(file.extractedMetadata, suggestion.propertyName));
           }
           setEntityFile(file);
         })
