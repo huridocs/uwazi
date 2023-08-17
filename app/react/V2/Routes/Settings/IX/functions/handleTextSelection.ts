@@ -1,14 +1,11 @@
+import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { Highlights } from '../types';
 
-enum HighlightColors {
-  CURRENT = '#B1F7A3',
-  NEW = '#F27DA5',
-}
-
-const highlightsForProperty = (
+const getHighlightsFromFile = (
   selections: ExtractedMetadataSchema[],
-  property: string
+  property: string,
+  color: string = 'lightyellow'
 ): Highlights => {
   const selectionsForProperty = selections.filter(selection => selection.name === property)[0];
 
@@ -44,7 +41,7 @@ const highlightsForProperty = (
             ],
             text: selectionText,
           },
-          color: HighlightColors.CURRENT,
+          color,
         },
       ];
     }
@@ -53,4 +50,50 @@ const highlightsForProperty = (
   return highlights;
 };
 
-export { highlightsForProperty };
+const getHighlightsFromSelection = (
+  selection: TextSelection,
+  color: string = 'lightyellow'
+): Highlights => {
+  const highlights: Highlights = {};
+
+  const { text } = selection;
+
+  selection.selectionRectangles.forEach(rectangle => {
+    const page = rectangle.regionId;
+
+    if (!page) return;
+
+    if (highlights[page]) {
+      highlights[page][0].textSelection.selectionRectangles.push({
+        left: rectangle.left!,
+        top: rectangle.top!,
+        width: rectangle.width!,
+        height: rectangle.height!,
+        regionId: page,
+      });
+    } else {
+      highlights[page] = [
+        {
+          key: `${page}`,
+          textSelection: {
+            selectionRectangles: [
+              {
+                left: rectangle.left!,
+                top: rectangle.top!,
+                width: rectangle.width!,
+                height: rectangle.height!,
+                regionId: page,
+              },
+            ],
+            text,
+          },
+          color,
+        },
+      ];
+    }
+  });
+
+  return highlights;
+};
+
+export { getHighlightsFromFile, getHighlightsFromSelection };

@@ -1,75 +1,115 @@
-import { highlightsForProperty } from '../handleTextSelection';
-
-const selections = [
-  {
-    name: 'property1',
-    selection: {
-      text: 'selection text 1',
-      selectionRectangles: [
-        {
-          top: 1,
-          left: 1,
-          width: 1,
-          height: 1,
-          page: '1',
-        },
-      ],
-    },
-  },
-  {
-    name: 'property2',
-    selection: {
-      text: 'a long text spanning several pages',
-      selectionRectangles: [
-        {
-          top: 2,
-          left: 2,
-          width: 2,
-          height: 2,
-          page: '1',
-        },
-        {
-          top: 3,
-          left: 3,
-          width: 3,
-          height: 3,
-          page: '1',
-        },
-        {
-          top: 1,
-          left: 1,
-          width: 1,
-          height: 1,
-          page: '3',
-        },
-        {
-          top: 2,
-          left: 2,
-          width: 2,
-          height: 2,
-          page: '3',
-        },
-        {
-          top: 5,
-          left: 5,
-          width: 5,
-          height: 5,
-          page: '4',
-        },
-      ],
-    },
-  },
-];
+import { getHighlightsFromFile, getHighlightsFromSelection } from '../handleTextSelection';
+import { selectionsFromFile, selections } from './fixtures';
 
 describe('PDF selections handlers', () => {
-  describe('highlights for a property', () => {
+  describe('highlights from text selection', () => {
+    it('should format the selection as a highligh', () => {
+      const result = getHighlightsFromSelection(selections[0]);
+      expect(result).toEqual({
+        1: [
+          {
+            textSelection: {
+              text: 'selection 1',
+              selectionRectangles: [
+                {
+                  height: 1,
+                  left: 1,
+                  top: 1,
+                  width: 1,
+                  regionId: '1',
+                },
+              ],
+            },
+            color: 'lightyellow',
+            key: '1',
+          },
+        ],
+      });
+    });
+
+    it('should organize it by page', () => {
+      const result = getHighlightsFromSelection(selections[1]);
+      expect(result).toEqual({
+        1: [
+          {
+            textSelection: {
+              text: 'selection 2 in multiple pages',
+              selectionRectangles: [
+                {
+                  left: 1,
+                  top: 1,
+                  width: 1,
+                  height: 1,
+                  regionId: '1',
+                },
+                {
+                  left: 2,
+                  top: 2,
+                  width: 2,
+                  height: 2,
+                  regionId: '1',
+                },
+              ],
+            },
+            color: 'lightyellow',
+            key: '1',
+          },
+        ],
+        2: [
+          {
+            textSelection: {
+              text: 'selection 2 in multiple pages',
+              selectionRectangles: [
+                {
+                  left: 1,
+                  top: 1,
+                  width: 1,
+                  height: 1,
+                  regionId: '2',
+                },
+                {
+                  left: 2,
+                  top: 2,
+                  width: 2,
+                  height: 2,
+                  regionId: '2',
+                },
+              ],
+            },
+            color: 'lightyellow',
+            key: '2',
+          },
+        ],
+        3: [
+          {
+            textSelection: {
+              text: 'selection 2 in multiple pages',
+              selectionRectangles: [
+                {
+                  left: 1,
+                  top: 1,
+                  width: 1,
+                  height: 1,
+                  regionId: '3',
+                },
+              ],
+            },
+            color: 'lightyellow',
+            key: '3',
+          },
+        ],
+      });
+    });
+  });
+
+  describe('highlights from file extracted metadata', () => {
     it('should filter the selections by the property and format it correctly', () => {
-      const results = highlightsForProperty(selections, 'property1');
+      const results = getHighlightsFromFile(selectionsFromFile, 'property1');
       expect(results).toEqual({
         1: [
           {
             textSelection: {
-              text: selections[0].selection.text,
+              text: 'selection text 1',
               selectionRectangles: [
                 {
                   height: 1,
@@ -80,7 +120,7 @@ describe('PDF selections handlers', () => {
                 },
               ],
             },
-            color: '#B1F7A3',
+            color: 'lightyellow',
             key: '1',
           },
         ],
@@ -88,12 +128,12 @@ describe('PDF selections handlers', () => {
     });
 
     it('should organize selections by page', () => {
-      const results = highlightsForProperty(selections, 'property2');
+      const results = getHighlightsFromFile(selectionsFromFile, 'property2');
 
       expect(results).toEqual({
         1: [
           {
-            color: '#B1F7A3',
+            color: 'lightyellow',
             key: '1',
             textSelection: {
               text: 'a long text spanning several pages',
@@ -118,7 +158,7 @@ describe('PDF selections handlers', () => {
         ],
         3: [
           {
-            color: '#B1F7A3',
+            color: 'lightyellow',
             key: '3',
             textSelection: {
               text: 'a long text spanning several pages',
@@ -143,7 +183,7 @@ describe('PDF selections handlers', () => {
         ],
         4: [
           {
-            color: '#B1F7A3',
+            color: 'lightyellow',
             key: '4',
             textSelection: {
               text: 'a long text spanning several pages',

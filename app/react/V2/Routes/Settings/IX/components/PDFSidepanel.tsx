@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
@@ -11,7 +11,10 @@ import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
 import { Highlights } from '../types';
-import { highlightsForProperty } from '../functions/handleTextSelection';
+import {
+  getHighlightsFromFile,
+  getHighlightsFromSelection,
+} from '../functions/handleTextSelection';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -19,11 +22,17 @@ interface PDFSidepanelProps {
   suggestion: EntitySuggestionType | undefined;
 }
 
+enum HighlightColors {
+  CURRENT = '#B1F7A3',
+  NEW = '#F27DA5',
+}
+
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
   };
   const [entityFile, setEntityFile] = useState<FileType>();
+  const [entity, setEntity] = useState<ClientEntitySchema>();
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
 
@@ -42,7 +51,13 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         .then(response => {
           const [file] = response;
           if (file.extractedMetadata) {
-            setHighlights(highlightsForProperty(file.extractedMetadata, suggestion.propertyName));
+            setHighlights(
+              getHighlightsFromFile(
+                file.extractedMetadata,
+                suggestion.propertyName,
+                HighlightColors.CURRENT
+              )
+            );
           }
           setEntityFile(file);
         })
@@ -57,6 +72,15 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       setSelectedText(undefined);
     };
   }, [suggestion]);
+
+  // useEffect(() => {
+  //   if (suggestion) {
+  //   }
+
+  //   return () => {
+  //     setEntity(undefined);
+  //   };
+  // });
 
   return (
     <Sidepanel
@@ -75,7 +99,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             size="small"
             color="primary"
             onClick={() => {
-              console.log(selectedText);
+              if (selectedText) {
+                setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
+              }
             }}
             disabled={!selectedText?.selectionRectangles}
           >
