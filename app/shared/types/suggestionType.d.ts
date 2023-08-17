@@ -11,6 +11,7 @@ export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
   extractorId: string;
+  entityTemplateId: string;
   sharedId: string;
   fileId: string;
   entityTitle: string;

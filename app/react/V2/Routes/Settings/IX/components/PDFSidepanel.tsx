@@ -1,6 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { Translate } from 'app/I18N';
+import { useLoaderData } from 'react-router-dom';
+import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
+import { Translate, t } from 'app/I18N';
+import { ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
@@ -17,8 +20,20 @@ interface PDFSidepanelProps {
 }
 
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
+  const { templates } = useLoaderData() as {
+    templates: ClientTemplateSchema[];
+  };
   const [entityFile, setEntityFile] = useState<FileType>();
+  const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
+
+  const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
+  const propertyName =
+    suggestion?.propertyName === 'title'
+      ? 'Title'
+      : entityTemplate?.properties.find(propery => propery.name === suggestion?.propertyName)
+          ?.label;
+  const propertyLabel = t(entityTemplate?._id, propertyName, null, false);
 
   useEffect(() => {
     if (suggestion) {
@@ -51,10 +66,31 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
       <form className="flex flex-col h-full">
-        <InputField id="1" label="Metadata property name" />
+        <Translate className="mb-1 font-bold">{propertyLabel}</Translate>
+        <div className="flex flex-wrap gap-1">
+          <Button
+            type="button"
+            styling="light"
+            size="small"
+            color="primary"
+            onClick={() => {
+              console.log(selectedText);
+            }}
+            disabled={!selectedText?.selectionRectangles}
+          >
+            <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
+          </Button>
+          <InputField id={propertyLabel} className="grow" label={propertyLabel} hideLabel />
+        </div>
 
         <div className="flex-grow">
-          <PDF fileUrl={`/api/files/${entityFile?.filename}`} highlights={highlights} />
+          <PDF
+            fileUrl={`/api/files/${entityFile?.filename}`}
+            highlights={highlights}
+            onSelect={selection => {
+              setSelectedText(selection);
+            }}
+          />
         </div>
 
         <div className="flex gap-2">
