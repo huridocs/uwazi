@@ -37,11 +37,26 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [highlights, setHighlights] = useState<Highlights>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  const propertyName =
-    suggestion?.propertyName === 'title'
-      ? 'Title'
-      : entityTemplate?.properties.find(propery => propery.name === suggestion?.propertyName)
-          ?.label;
+  let propertyName = 'Title';
+  let propertyType = 'text';
+
+  if (suggestion && suggestion?.propertyName !== 'title') {
+    const property = entityTemplate?.properties.find(
+      propery => propery.name === suggestion?.propertyName
+    );
+
+    if (!property) {
+      throw new Error('Property not found');
+    }
+
+    propertyName = property?.label;
+    propertyType = property?.type;
+
+    if (propertyType === 'numeric') {
+      propertyType = 'number';
+    }
+  }
+
   const propertyLabel = t(entityTemplate?._id, propertyName, null, false);
 
   useEffect(() => {
@@ -73,15 +88,6 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     };
   }, [suggestion]);
 
-  // useEffect(() => {
-  //   if (suggestion) {
-  //   }
-
-  //   return () => {
-  //     setEntity(undefined);
-  //   };
-  // });
-
   return (
     <Sidepanel
       isOpen={entityFile !== undefined && showSidepanel}
@@ -107,13 +113,19 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           >
             <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
           </Button>
-          <InputField id={propertyLabel} className="grow" label={propertyLabel} hideLabel />
+          <InputField
+            id={propertyLabel}
+            className="grow"
+            label={propertyLabel}
+            hideLabel
+            type={propertyType}
+          />
         </div>
 
         <button
           type="button"
           disabled={Boolean(!highlights)}
-          className="mt-1 mr-0 ml-auto text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
+          className="mt-1 ml-auto mr-0 text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
           onClick={() => {
             setHighlights(undefined);
             setSelectedText(undefined);
