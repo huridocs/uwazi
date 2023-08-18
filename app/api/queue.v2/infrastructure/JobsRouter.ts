@@ -1,10 +1,10 @@
 import { config } from 'api/config';
-import { Queue } from '../application/Queue';
-import { Job } from '../contracts/Job';
-import { JobsDispatcher } from '../contracts/JobsDispatcher';
+import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
+import { Dispatchable } from '../application/contracts/Dispatchable';
+import { RedisQueue } from './RedisQueue';
 
 interface QueueFactory {
-  (name: string): Queue;
+  (name: string): RedisQueue;
 }
 
 export class JobsRouter implements JobsDispatcher {
@@ -19,8 +19,11 @@ export class JobsRouter implements JobsDispatcher {
     return this.queueFactory(queueName);
   }
 
-  async dispatch(job: Job): Promise<void> {
+  async dispatch<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Parameters<T['handleDispatch']>[1]
+  ): Promise<void> {
     const queue = this.routeJob();
-    return queue.dispatch(job);
+    return queue.dispatch(dispatchable, params);
   }
 }

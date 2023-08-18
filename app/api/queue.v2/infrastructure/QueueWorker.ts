@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
-import { DeliveryGuarantee, Job } from '../contracts/Job';
-import { Queue } from './Queue';
+import { Dispatchable } from '../application/contracts/Dispatchable';
+import { DispatchableClass } from '../application/contracts/JobsDispatcher';
+import { Job, RedisQueue } from './RedisQueue';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -10,14 +11,20 @@ const optionsDefaults: Required<WorkerOptions> = {
   waitTime: 1000,
 };
 
+interface Registry {
+  [name: string]: (namespace: string) => Promise<Dispatchable>;
+}
+
 export class QueueWorker {
-  private queue: Queue;
+  private queue: RedisQueue;
 
   private options: Required<WorkerOptions>;
 
   private stoppedCallback?: Function;
 
-  constructor(queue: Queue, options: WorkerOptions = {}) {
+  private registry: Registry = {};
+
+  constructor(queue: RedisQueue, options: WorkerOptions = {}) {
     this.queue = queue;
     this.options = { ...optionsDefaults, ...options };
   }
@@ -42,20 +49,17 @@ export class QueueWorker {
     return job;
   }
 
-  private async processAtLeastOnce(job: Job) {
+  private async processJob(job: Job) {
     const heartbeatCallback = async () => this.queue.progress(job);
 
-    await job.handle(heartbeatCallback);
-    await this.queue.complete(job);
-  }
-
-  private async processJob(job: Job) {
-    console.log('Processing', job);
-    switch (job.deliveryGuarantee) {
-      case DeliveryGuarantee.AtLeastOnce:
-      default:
-        return this.processAtLeastOnce(job);
+    if (!this.registry[job.name]) {
+      throw new Error(`Unregistered job ${job.name}`);
     }
+
+    const dispatchable = await this.registry[job.name](job.namespace);
+
+    await dispatchable.handleDispatch(heartbeatCallback, job.params);
+    await this.queue.complete(job);
   }
 
   async start() {
@@ -79,5 +83,12 @@ export class QueueWorker {
     return new Promise<void>(resolve => {
       this.stoppedCallback = resolve;
     });
+  }
+
+  register<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    factory: (namespace: string) => Promise<T>
+  ) {
+    this.registry[dispatchable.name] = factory;
   }
 }

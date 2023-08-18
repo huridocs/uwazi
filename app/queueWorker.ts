@@ -2,10 +2,9 @@
 /* eslint-disable no-console */
 import { config } from 'api/config';
 import { DB } from 'api/odm';
-import { Queue } from 'api/queue.v2/application/Queue';
-import { QueueWorker } from 'api/queue.v2/application/QueueWorker';
 import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
-import { StringJobSerializer } from 'api/queue.v2/infrastructure/StringJobSerializer';
+import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
+import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
 import {
   registerUpdateRelationshipPropertiesJob,
   registerUpdateTemplateRelationshipPropertiesJob,
@@ -30,12 +29,12 @@ DB.connect(config.DBHOST, dbAuth)
     const redisClient = await ApplicationRedisClient.getInstance();
     console.info('[📥 Redis] Connected');
     const RSMQ = new RedisSMQ({ client: redisClient });
-    const queue = new Queue(config.queueName, RSMQ, StringJobSerializer);
-
-    registerUpdateRelationshipPropertiesJob(queue);
-    registerUpdateTemplateRelationshipPropertiesJob(queue);
+    const queue = new RedisQueue(config.queueName, RSMQ);
 
     const queueWorker = new QueueWorker(queue);
+
+    registerUpdateRelationshipPropertiesJob(queueWorker);
+    registerUpdateTemplateRelationshipPropertiesJob(queueWorker);
 
     process.on('SIGINT', async () => {
       console.info('[⚙️ Queue worker] Stopping');
