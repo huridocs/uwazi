@@ -5,11 +5,12 @@ import { DB } from 'api/odm';
 import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
 import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
-import {
-  registerUpdateRelationshipPropertiesJob,
-  registerUpdateTemplateRelationshipPropertiesJob,
-} from 'api/relationships.v2/infrastructure/registerUpdateRelationshipPropertiesJob';
+
 import RedisSMQ from 'rsmq';
+import { tenants } from 'api/tenants';
+import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
+import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { registerJobs } from './queueRegistry';
 
 let dbAuth = {};
 
@@ -19,6 +20,24 @@ if (process.env.DBUSER) {
     user: process.env.DBUSER,
     pass: process.env.DBPASS,
   };
+}
+
+function register<T extends Dispatchable>(
+  this: QueueWorker,
+  dispatchable: DispatchableClass<T>,
+  factory: (namespace: string) => Promise<T>
+) {
+  this.register(
+    dispatchable,
+    async namespace =>
+      new Promise((resolve, reject) => {
+        tenants
+          .run(async () => {
+            resolve(await factory(namespace));
+          }, namespace)
+          .catch(reject);
+      })
+  );
 }
 
 console.info('[💾 MongoDB] Connecting');
@@ -33,8 +52,7 @@ DB.connect(config.DBHOST, dbAuth)
 
     const queueWorker = new QueueWorker(queue);
 
-    registerUpdateRelationshipPropertiesJob(queueWorker);
-    registerUpdateTemplateRelationshipPropertiesJob(queueWorker);
+    registerJobs(register.bind(queueWorker));
 
     process.on('SIGINT', async () => {
       console.info('[⚙️ Queue worker] Stopping');
