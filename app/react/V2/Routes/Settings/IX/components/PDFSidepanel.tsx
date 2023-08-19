@@ -15,6 +15,7 @@ import {
   getHighlightsFromFile,
   getHighlightsFromSelection,
 } from '../functions/handleTextSelection';
+import { EmptySelectionError } from './EmptySelectionError';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -99,48 +100,47 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       title={entityFile?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
-      <form className="flex flex-col h-full">
+      <form className="flex flex-col gap-4 h-full">
         <p className="mb-1 font-bold">{t(entityTemplate?._id, propertyLabel, null, false)}</p>
-        <div className="flex flex-wrap gap-1">
-          <Button
+        <div className="sm:text-right">
+          <div className="flex flex-wrap gap-1">
+            <Button
+              type="button"
+              styling="light"
+              size="small"
+              color="primary"
+              onClick={() => {
+                if (selectedText) {
+                  setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
+                }
+              }}
+              disabled={!selectedText?.selectionRectangles.length}
+            >
+              <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
+            </Button>
+
+            <InputField
+              className="grow"
+              id={propertyLabel}
+              label={propertyLabel}
+              hideLabel
+              type={propertyType}
+            />
+          </div>
+
+          <button
             type="button"
-            styling="light"
-            size="small"
-            color="primary"
+            disabled={Boolean(!highlights)}
+            className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
             onClick={() => {
-              if (selectedText) {
-                setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
-              }
+              setHighlights(undefined);
             }}
-            disabled={!selectedText?.selectionRectangles}
           >
-            <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
-          </Button>
-          <InputField
-            id={propertyLabel}
-            className="grow"
-            label={propertyLabel}
-            hideLabel
-            type={propertyType}
-          />
+            <Translate>Clear Selection</Translate>
+          </button>
         </div>
 
-        <button
-          type="button"
-          disabled={Boolean(!highlights)}
-          className="mt-1 mr-0 ml-auto text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
-          onClick={() => {
-            setHighlights(undefined);
-          }}
-        >
-          <Translate>Clear Selection</Translate>
-        </button>
-
-        {selectedText && !selectedText.selectionRectangles && (
-          <Translate className="mb-1 italic text-error-700">
-            Could not detect the area for the selected text
-          </Translate>
-        )}
+        {selectedText && !selectedText.selectionRectangles.length && <EmptySelectionError />}
 
         <div className="flex-grow">
           {entityFile && (
