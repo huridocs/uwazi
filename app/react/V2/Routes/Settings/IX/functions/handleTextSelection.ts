@@ -9,11 +9,11 @@ const getHighlightsFromFile = (
 ): Highlights => {
   const selectionsForProperty = selections.filter(selection => selection.name === property)[0];
 
-  const selectionText = selectionsForProperty.selection?.text;
+  const selectionText = selectionsForProperty?.selection?.text;
 
   const highlights: Highlights = {};
 
-  selectionsForProperty.selection?.selectionRectangles?.forEach(rectangle => {
+  selectionsForProperty?.selection?.selectionRectangles?.forEach(rectangle => {
     const { page } = rectangle;
     if (!page) return;
 

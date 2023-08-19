@@ -201,5 +201,10 @@ describe('PDF selections handlers', () => {
         ],
       });
     });
+
+    it('should return an empty object if there are no selections for the property', () => {
+      const results = getHighlightsFromFile(selectionsFromFile, 'propertyWithNoSelections');
+      expect(results).toEqual({});
+    });
   });
 });
