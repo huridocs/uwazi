@@ -37,8 +37,8 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [highlights, setHighlights] = useState<Highlights>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  let propertyName = 'Title';
-  let propertyType = 'text';
+  let propertyLabel = 'Title';
+  let propertyType: 'text' | 'number' | 'date' = 'text';
 
   if (suggestion && suggestion?.propertyName !== 'title') {
     const property = entityTemplate?.properties.find(
@@ -49,15 +49,16 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       throw new Error('Property not found');
     }
 
-    propertyName = property?.label;
-    propertyType = property?.type;
+    propertyLabel = t(entityTemplate?._id, property.label, null, false);
 
-    if (propertyType === 'numeric') {
+    if (property.type === 'numeric') {
       propertyType = 'number';
     }
-  }
 
-  const propertyLabel = t(entityTemplate?._id, propertyName, null, false);
+    if (property.type === 'date') {
+      propertyType = 'date';
+    }
+  }
 
   useEffect(() => {
     if (suggestion) {
@@ -65,15 +66,6 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         .getById(suggestion?.fileId)
         .then(response => {
           const [file] = response;
-          if (file.extractedMetadata) {
-            setHighlights(
-              getHighlightsFromFile(
-                file.extractedMetadata,
-                suggestion.propertyName,
-                HighlightColors.CURRENT
-              )
-            );
-          }
           setEntityFile(file);
         })
         .catch(e => {
@@ -83,21 +75,32 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
     return () => {
       setEntityFile(undefined);
-      setHighlights(undefined);
-      setSelectedText(undefined);
     };
   }, [suggestion]);
 
+  useEffect(() => {
+    if (entityFile?.extractedMetadata && suggestion && showSidepanel) {
+      setSelectedText(undefined);
+      setHighlights(
+        getHighlightsFromFile(
+          entityFile.extractedMetadata,
+          suggestion.propertyName,
+          HighlightColors.CURRENT
+        )
+      );
+    }
+  }, [entityFile, showSidepanel, suggestion]);
+
   return (
     <Sidepanel
-      isOpen={entityFile !== undefined && showSidepanel}
+      isOpen={showSidepanel}
       withOverlay
       size="large"
       title={entityFile?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
       <form className="flex flex-col h-full">
-        <Translate className="mb-1 font-bold">{propertyLabel}</Translate>
+        <p className="mb-1 font-bold">{t(entityTemplate?._id, propertyLabel, null, false)}</p>
         <div className="flex flex-wrap gap-1">
           <Button
             type="button"
@@ -125,10 +128,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         <button
           type="button"
           disabled={Boolean(!highlights)}
-          className="mt-1 ml-auto mr-0 text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
+          className="mt-1 mr-0 ml-auto text-sm enabled:hover:underline disabled:text-gray-500 w-fit"
           onClick={() => {
             setHighlights(undefined);
-            setSelectedText(undefined);
           }}
         >
           <Translate>Clear Selection</Translate>
@@ -141,13 +143,15 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         )}
 
         <div className="flex-grow">
-          <PDF
-            fileUrl={`/api/files/${entityFile?.filename}`}
-            highlights={highlights}
-            onSelect={selection => {
-              setSelectedText(selection);
-            }}
-          />
+          {entityFile && (
+            <PDF
+              fileUrl={`/api/files/${entityFile.filename}`}
+              highlights={highlights}
+              onSelect={selection => {
+                setSelectedText(selection);
+              }}
+            />
+          )}
         </div>
 
         <div className="flex gap-2">

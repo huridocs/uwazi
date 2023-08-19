@@ -1734,10 +1734,6 @@ input:checked + .toggle-bg {
   margin: 1rem;
 }
 
-.m-auto {
-  margin: auto;
-}
-
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -1847,6 +1843,10 @@ input:checked + .toggle-bg {
   margin-left: auto;
 }
 
+.mr-0 {
+  margin-right: 0px;
+}
+
 .mr-2 {
   margin-right: 0.5rem;
 }
@@ -1881,14 +1881,6 @@ input:checked + .toggle-bg {
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.mr-0 {
-  margin-right: 0px;
-}
-
-.mr-auto {
-  margin-right: auto;
 }
 
 .block {
