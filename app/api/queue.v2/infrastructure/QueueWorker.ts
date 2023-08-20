@@ -2,6 +2,7 @@
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
 import { Job, RedisQueue } from './RedisQueue';
+import { UnregisteredJobError } from './errors';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -18,18 +19,25 @@ interface Registry {
 export class QueueWorker {
   private queue: RedisQueue;
 
+  private logger: (level: 'info' | 'error', message: string | object) => void;
+
   private options: Required<WorkerOptions>;
 
   private stoppedCallback?: Function;
 
   private registry: Registry = {};
 
-  constructor(queue: RedisQueue, options: WorkerOptions = {}) {
+  constructor(
+    queue: RedisQueue,
+    logger: (level: 'info' | 'error', message: string | object) => void
+  ) {
     this.queue = queue;
-    this.options = { ...optionsDefaults, ...options };
+    this.options = { ...optionsDefaults };
+    this.logger = logger;
   }
 
   private async sleep() {
+    this.logger('info', { message: 'Sleeping', waitTime: this.options.waitTime });
     return new Promise(resolve => {
       setTimeout(resolve, this.options.waitTime);
     });
@@ -40,7 +48,6 @@ export class QueueWorker {
 
     while (!this.isStopping() && !job) {
       await this.sleep();
-
       job = await this.queue.peek();
     }
 
@@ -53,13 +60,24 @@ export class QueueWorker {
     const heartbeatCallback = async () => this.queue.progress(job);
 
     if (!this.registry[job.name]) {
-      throw new Error(`Unregistered job ${job.name}`);
+      throw new UnregisteredJobError(job.name);
     }
 
     const dispatchable = await this.registry[job.name](job.namespace);
 
-    await dispatchable.handleDispatch(heartbeatCallback, job.params);
-    await this.queue.complete(job);
+    try {
+      this.logger('info', { message: 'Processing job', ...job });
+      await dispatchable.handleDispatch(heartbeatCallback, job.params);
+      this.logger('info', { message: 'Processed job', ...job });
+      await this.queue.complete(job);
+    } catch (e) {
+      this.logger('error', {
+        name: e.name,
+        message: e.message,
+        stack: e.stack,
+        job,
+      });
+    }
   }
 
   async start() {
@@ -90,5 +108,9 @@ export class QueueWorker {
     factory: (namespace: string) => Promise<T>
   ) {
     this.registry[dispatchable.name] = factory;
+  }
+
+  getRegisteredJobs() {
+    return Object.keys(this.registry);
   }
 }

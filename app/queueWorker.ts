@@ -40,35 +40,48 @@ function register<T extends Dispatchable>(
   );
 }
 
-console.info('[💾 MongoDB] Connecting');
+function log(level: 'info' | 'error', message: string | object) {
+  process.stdout.write(
+    `${JSON.stringify({
+      time: new Date().toISOString(),
+      level,
+      pid: process.pid,
+      ...(typeof message === 'string' ? { message } : message),
+    })}\n`
+  );
+}
+
+log('info', 'Starting worker');
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
-    console.info('[💾 MongoDB] Connected');
-    console.info('[📥 Redis] Connecting');
+    log('info', 'Connected to MongoDB');
     const redisClient = await ApplicationRedisClient.getInstance();
-    console.info('[📥 Redis] Connected');
+    log('info', 'Connected to Redis');
     const RSMQ = new RedisSMQ({ client: redisClient });
     const queue = new RedisQueue(config.queueName, RSMQ);
-
-    const queueWorker = new QueueWorker(queue);
+    const queueWorker = new QueueWorker(queue, log);
 
     registerJobs(register.bind(queueWorker));
+    log('info', { message: 'Registered jobs', jobs: queueWorker.getRegisteredJobs() });
 
     process.on('SIGINT', async () => {
-      console.info('[⚙️ Queue worker] Stopping');
+      log('info', 'SIGINT received. Stopping worker');
       await queueWorker.stop();
     });
 
-    console.info('[⚙️ Queue worker] Started');
+    process.on('SIGTERM', async () => {
+      log('info', 'SIGTERM received. Stopping worker');
+      await queueWorker.stop();
+    });
+
+    log('info', 'Queue worker started');
     await queueWorker.start();
-    console.info('[⚙️ Queue worker] Stopped');
+    log('info', 'Queue worker stopped');
 
-    console.info('[📥 Redis] Disconnecting');
     await ApplicationRedisClient.close();
-    console.info('[📥 Redis] Disconnected');
+    log('info', 'Disconnected from Redis');
 
-    console.info('[💾 MongoDb] Disconnecting');
     await DB.disconnect();
-    console.info('[💾 MongoDb] Disconnected');
+    log('info', 'Disconected from MongoDB');
   })
-  .catch(console.error);
+  .catch(e => log('error', e));
