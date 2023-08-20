@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
@@ -36,6 +36,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
   let propertyLabel = 'Title';
@@ -142,13 +143,16 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
         {selectedText && !selectedText.selectionRectangles.length && <EmptySelectionError />}
 
-        <div className="flex-grow">
+        <div ref={pdfContainerRef} className="grow">
           {entityFile && (
             <PDF
               fileUrl={`/api/files/${entityFile.filename}`}
               highlights={highlights}
               onSelect={selection => {
                 setSelectedText(selection);
+              }}
+              size={{
+                height: pdfContainerRef.current?.clientHeight,
               }}
             />
           )}

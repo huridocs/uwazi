@@ -43,7 +43,7 @@ const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
   return error ? (
     <div>{error}</div>
   ) : (
-    <div className="relative" id={`page-${page}-container`} ref={pageContainerRef}>
+    <div className="relative" ref={pageContainerRef}>
       {highlights?.map(highlight => (
         <Highlight
           key={highlight.key}

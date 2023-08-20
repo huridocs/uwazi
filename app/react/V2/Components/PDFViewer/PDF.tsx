@@ -14,6 +14,8 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
+  scrollToPage?: string;
+  size?: { height?: number | string; width?: number | string; overflow?: string };
 }
 
 const getPDFFile = async (fileUrl: string) =>
@@ -23,7 +25,14 @@ const getPDFFile = async (fileUrl: string) =>
     cMapPacked: true,
   }).promise;
 
-const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps) => {
+const PDF = ({
+  fileUrl,
+  highlights,
+  onSelect = () => {},
+  onDeselect,
+  scrollToPage,
+  size,
+}: PDFProps) => {
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
 
@@ -37,22 +46,40 @@ const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps)
       });
   }, [fileUrl]);
 
+  useEffect(() => {
+    if (scrollToPage && pdf) {
+      const element = document.getElementById(`page-${scrollToPage}-container`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [pdf, scrollToPage]);
+
   return error ? (
     <div>{error}</div>
   ) : (
     //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
-      <div id="pdf-container">
+      <div
+        id="pdf-container"
+        style={{
+          height: `${size?.height}px` || 'auto',
+          width: `${size?.width}px` || 'auto',
+          overflow: size?.overflow || 'auto',
+        }}
+      >
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const page = number.toString();
             const pageHighlights = highlights ? highlights[page] : undefined;
             return (
               <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
-                {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
-                <SelectionRegion regionId={page}>
-                  <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
-                </SelectionRegion>
+                <div id={`page-${page}-container`}>
+                  {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
+                  <SelectionRegion regionId={page}>
+                    <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
+                  </SelectionRegion>
+                </div>
               </Suspense>
             );
           })

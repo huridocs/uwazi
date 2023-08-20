@@ -16,12 +16,14 @@ type Story = StoryObj<typeof PDF>;
 const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
-      <div className="tw-content">
+      <div className="tw-content" style={{ height: '1000px', width: 'auto' }}>
         <PDF
           fileUrl="/sample.pdf"
           onSelect={args.onSelect}
           onDeselect={args.onDeselect}
           highlights={args.highlights}
+          scrollToPage={args.scrollToPage}
+          size={{ height: 1000, width: 'auto' }}
         />
       </div>
     </Provider>
@@ -39,6 +41,13 @@ const WithSelections: Story = {
   },
 };
 
-export { Basic, WithSelections };
+const WithScroll: Story = {
+  ...Primary,
+  args: {
+    scrollToPage: '3',
+  },
+};
+
+export { Basic, WithSelections, WithScroll };
 
 export default meta;
