@@ -1,7 +1,7 @@
 import { QueueMessage } from 'rsmq';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { QueueAdapter } from '../application/contracts/QueueAdapter';
+import { QueueAdapter } from '../infrastructure/QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
