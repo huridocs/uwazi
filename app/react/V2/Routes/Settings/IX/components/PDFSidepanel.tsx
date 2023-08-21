@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -91,6 +90,11 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         )
       );
     }
+
+    return () => {
+      setSelectedText(undefined);
+      setHighlights(undefined);
+    };
   }, [entityFile, showSidepanel, suggestion]);
 
   return (
