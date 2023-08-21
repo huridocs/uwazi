@@ -43,7 +43,7 @@ describe('templates routes', () => {
     request(app).post(route).send(body).expect(expectedCode);
 
   beforeEach(async () => {
-    await testingEnvironment.setUp(fixtures);
+    await testingEnvironment.setUp(fixtures, 'templates_index');
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve('ok'));
   });
 
