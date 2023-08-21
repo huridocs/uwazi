@@ -3,14 +3,14 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
-import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
+import { Queue } from 'api/queue.v2/infrastructure/Queue';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
 import { QueueAdapter } from 'api/queue.v2/infrastructure/QueueAdapter';
+import testingDB from 'api/utils/testing_db';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
-import testingDB from 'api/utils/testing_db';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -41,7 +41,7 @@ describe('when handled', () => {
     );
 
     const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
-    const dispatcher = new RedisQueue('test queue', memoryAdapter, {
+    const dispatcher = new Queue('test queue', memoryAdapter, {
       namespace: tenants.current().name,
     });
 

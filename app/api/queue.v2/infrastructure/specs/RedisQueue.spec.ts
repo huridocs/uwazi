@@ -4,7 +4,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MongoQueueAdapter } from '../MongoQueueAdapter';
-import { RedisQueue } from '../RedisQueue';
+import { Queue } from '../Queue';
 
 async function sleep(ms: number) {
   return new Promise(resolve => {
@@ -40,7 +40,7 @@ afterAll(async () => {
 
 it('should enqueue and dequeue a job, including the namespace', async () => {
   const adapter = createAdapter();
-  const queue = new RedisQueue('queue name', adapter, {
+  const queue = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });
 
@@ -58,9 +58,9 @@ it('should enqueue and dequeue a job, including the namespace', async () => {
 
 it('should return the job only once during the lockWindow', async () => {
   const adapter = createAdapter();
-  const producer = new RedisQueue('queue name', adapter, { namespace: 'namespace' });
-  const consumer1 = new RedisQueue('queue name', adapter);
-  const consumer2 = new RedisQueue('queue name', adapter);
+  const producer = new Queue('queue name', adapter, { namespace: 'namespace' });
+  const consumer1 = new Queue('queue name', adapter);
+  const consumer2 = new Queue('queue name', adapter);
 
   const params = { data: { pieceOfData: ['a', 'b', 'c'] }, aNumber: 2 };
   await producer.dispatch(TestJob, params);
@@ -82,11 +82,11 @@ it('should return the job only once during the lockWindow', async () => {
 
 it('should refresh the lock if progress is reported', async () => {
   const adapter = createAdapter();
-  const producer = new RedisQueue('queue name', adapter, {
+  const producer = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });
-  const consumer1 = new RedisQueue('queue name', adapter);
-  const consumer2 = new RedisQueue('queue name', adapter);
+  const consumer1 = new Queue('queue name', adapter);
+  const consumer2 = new Queue('queue name', adapter);
 
   const params = { data: { pieceOfData: ['a', 'b', 'c'] }, aNumber: 2 };
   await producer.dispatch(TestJob, params);
@@ -111,7 +111,7 @@ it('should refresh the lock if progress is reported', async () => {
 
 it('should delete a message if marked as completed', async () => {
   const adapter = createAdapter();
-  const queue = new RedisQueue('queue name', adapter, {
+  const queue = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });
 

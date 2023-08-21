@@ -6,7 +6,7 @@ import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contra
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { RedisQueue } from '../RedisQueue';
+import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
 import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
@@ -47,13 +47,13 @@ afterAll(async () => {
 it('should process all the jobs', async () => {
   const output: string[] = [];
   const adapter = createAdapter();
-  const producerQueue1 = new RedisQueue('name', adapter, {
+  const producerQueue1 = new Queue('name', adapter, {
     namespace: 'namespace1',
   });
-  const producerQueue2 = new RedisQueue('name', adapter, {
+  const producerQueue2 = new Queue('name', adapter, {
     namespace: 'namespace2',
   });
-  const consumerQueue = new RedisQueue('name', adapter);
+  const consumerQueue = new Queue('name', adapter);
 
   const worker = new QueueWorker(consumerQueue, () => {});
 
@@ -104,13 +104,13 @@ it('should process all the jobs', async () => {
 it('should finish the in-progress job before stopping', async () => {
   const output: string[] = [];
   const adapter = createAdapter();
-  const producerQueue1 = new RedisQueue('name', adapter, {
+  const producerQueue1 = new Queue('name', adapter, {
     namespace: 'namespace1',
   });
-  const producerQueue2 = new RedisQueue('name', adapter, {
+  const producerQueue2 = new Queue('name', adapter, {
     namespace: 'namespace2',
   });
-  const consumerQueue = new RedisQueue('name', adapter);
+  const consumerQueue = new Queue('name', adapter);
 
   const worker = new QueueWorker(consumerQueue, () => {});
 
@@ -181,7 +181,7 @@ it('should log and continue if a job fails', async () => {
   const logMock = jest.fn();
 
   const adapter = createAdapter();
-  const queue = new RedisQueue('name', adapter, { namespace: 'namespace' });
+  const queue = new Queue('name', adapter, { namespace: 'namespace' });
   const queueWorker = new QueueWorker(queue, logMock);
 
   queueWorker.register(FailOnceJob, async () => new FailOnceJob());

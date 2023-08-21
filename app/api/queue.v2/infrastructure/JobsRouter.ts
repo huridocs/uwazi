@@ -1,10 +1,10 @@
 import { config } from 'api/config';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
 import { Dispatchable } from '../application/contracts/Dispatchable';
-import { RedisQueue } from './RedisQueue';
+import { Queue } from './Queue';
 
 interface QueueFactory {
-  (name: string): RedisQueue;
+  (name: string): Queue;
 }
 
 export class JobsRouter implements JobsDispatcher {

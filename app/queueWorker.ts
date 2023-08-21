@@ -3,7 +3,7 @@
 import { config } from 'api/config';
 import { DB } from 'api/odm';
 import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
-import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
+import { Queue } from 'api/queue.v2/infrastructure/Queue';
 
 import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
@@ -63,7 +63,7 @@ DB.connect(config.DBHOST, dbAuth)
       getSharedConnection(),
       new MongoTransactionManager(getSharedClient())
     );
-    const queue = new RedisQueue(config.queueName, adapter);
+    const queue = new Queue(config.queueName, adapter);
     const queueWorker = new QueueWorker(queue, log);
 
     registerJobs(register.bind(queueWorker));

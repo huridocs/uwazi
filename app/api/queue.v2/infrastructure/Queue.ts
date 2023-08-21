@@ -20,7 +20,7 @@ export interface Job {
   namespace: string;
 }
 
-export class RedisQueue implements JobsDispatcher {
+export class Queue implements JobsDispatcher {
   private queueName: string;
 
   private adapter: QueueAdapter;

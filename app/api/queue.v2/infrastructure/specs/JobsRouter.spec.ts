@@ -1,11 +1,11 @@
 /* eslint-disable max-statements */
 import { config } from 'api/config';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
-import { JobsRouter } from '../JobsRouter';
-import { RedisQueue } from '../RedisQueue';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { Queue } from '../Queue';
+import { JobsRouter } from '../JobsRouter';
 import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
 class ExampleJob implements Dispatchable {
@@ -30,10 +30,10 @@ afterAll(async () => {
 it('should dispatch the job to the configured queue', async () => {
   const adapter = createAdapter();
 
-  const queues: Record<string, RedisQueue> = {};
+  const queues: Record<string, Queue> = {};
 
   const router = new JobsRouter(name => {
-    const queue = new RedisQueue(name, adapter);
+    const queue = new Queue(name, adapter);
     queues[name] = queue;
     return queue;
   });

@@ -4,7 +4,7 @@ import {
   getSharedConnection,
 } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsRouter } from '../infrastructure/JobsRouter';
-import { RedisQueue } from '../infrastructure/RedisQueue';
+import { Queue } from '../infrastructure/Queue';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
 
 export async function DefaultDispatcher(namespace: string) {
@@ -14,7 +14,7 @@ export async function DefaultDispatcher(namespace: string) {
   );
   return new JobsRouter(
     queueName =>
-      new RedisQueue(queueName, mongoAdapter, {
+      new Queue(queueName, mongoAdapter, {
         namespace,
       })
   );

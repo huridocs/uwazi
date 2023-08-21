@@ -1,4 +1,4 @@
-import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
+import { Queue } from 'api/queue.v2/infrastructure/Queue';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
@@ -21,7 +21,7 @@ afterAll(async () => {
 
 it('should enqueue a job per entity', async () => {
   const adapter = createAdapter();
-  const queue = new RedisQueue('jobs', adapter);
+  const queue = new Queue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.update(['sharedId1', 'sharedId2']);
@@ -40,7 +40,7 @@ it('should enqueue a job per entity', async () => {
 
 it('should enqueue a job for the template', async () => {
   const adapter = createAdapter();
-  const queue = new RedisQueue('jobs', adapter);
+  const queue = new Queue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.updateByTemplate('template1');

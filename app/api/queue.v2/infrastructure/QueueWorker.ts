@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { Job, RedisQueue } from './RedisQueue';
+import { Job, Queue } from './Queue';
 import { UnregisteredJobError } from './errors';
 
 interface WorkerOptions {
@@ -17,7 +17,7 @@ interface Registry {
 }
 
 export class QueueWorker {
-  private queue: RedisQueue;
+  private queue: Queue;
 
   private logger: (level: 'info' | 'error', message: string | object) => void;
 
@@ -27,10 +27,7 @@ export class QueueWorker {
 
   private registry: Registry = {};
 
-  constructor(
-    queue: RedisQueue,
-    logger: (level: 'info' | 'error', message: string | object) => void
-  ) {
+  constructor(queue: Queue, logger: (level: 'info' | 'error', message: string | object) => void) {
     this.queue = queue;
     this.options = { ...optionsDefaults };
     this.logger = logger;
