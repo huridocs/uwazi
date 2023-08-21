@@ -238,13 +238,11 @@ const GetMigrationHubRecordsService = () => {
 };
 
 const UpdateRelationshipPropertiesJob = () => {
+  const tenant = tenants.current().name;
   const transactionManager = DefaultTransactionManager();
   const updater = EntityRelationshipsUpdateService(transactionManager);
   const indexEntity = async (sharedIds: string[]) =>
-    tenants.run(
-      async () => search.indexEntities({ sharedId: { $in: sharedIds } }),
-      tenants.current().name
-    );
+    tenants.run(async () => search.indexEntities({ sharedId: { $in: sharedIds } }), tenant);
 
   return new GenericUpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
 };
