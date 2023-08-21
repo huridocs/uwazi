@@ -99,12 +99,12 @@ it('should only return non-locked jobs', async () => {
     OTHER_QUEUE_JOB,
     {
       ...job,
-      lockedUntil: NOW_VALUE + 10,
+      lockedUntil: NOW_VALUE + 1000,
     },
   ]);
 });
 
-it('should atomically get a job and lock it for 10ms', async () => {
+it('should atomically get a job and lock it for 1000ms', async () => {
   const adapter = createAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
@@ -126,7 +126,7 @@ it('should atomically get a job and lock it for 10ms', async () => {
     OTHER_QUEUE_JOB,
     {
       ...job,
-      lockedUntil: NOW_VALUE + 10,
+      lockedUntil: NOW_VALUE + 1000,
     },
   ]);
 });
@@ -141,9 +141,9 @@ const job1 = {
 const job2 = {
   _id: new ObjectId(),
   queue: 'queue name',
-  message: 'a simple message',
+  message: 'another simple message',
   lockedUntil: 0,
-  cretedAt: 2,
+  createdAt: 2,
 };
 
 it.each([

@@ -38,8 +38,8 @@ export class MongoQueueAdapter extends MongoDataSource implements QueueAdapter {
   async receiveMessageAsync(options: { qname: string }): Promise<{} | QueueMessage> {
     const result = await this.getCollection().findOneAndUpdate(
       { queue: options.qname, lockedUntil: { $lt: Date.now() } },
-      { $set: { lockedUntil: Date.now() + 10 } },
-      { sort: { createdAt: -1 } }
+      { $set: { lockedUntil: Date.now() + 1000 } },
+      { sort: { createdAt: 1 } }
     );
 
     return result.value

@@ -1,11 +1,26 @@
-import { MemoryQueueAdapter } from 'api/queue.v2/infrastructure/MemoryQueueAdapter';
 import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
-import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
-import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
+import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
+import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
+
+function createAdapter() {
+  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
+}
+
+beforeEach(async () => {
+  await testingEnvironment.setUp({});
+});
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
 
 it('should enqueue a job per entity', async () => {
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
   const queue = new RedisQueue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
@@ -24,7 +39,7 @@ it('should enqueue a job per entity', async () => {
 });
 
 it('should enqueue a job for the template', async () => {
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
   const queue = new RedisQueue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 

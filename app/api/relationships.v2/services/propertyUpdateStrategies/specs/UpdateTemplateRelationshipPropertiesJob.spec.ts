@@ -2,11 +2,15 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { MemoryQueueAdapter } from 'api/queue.v2/infrastructure/MemoryQueueAdapter';
 import { tenants } from 'api/tenants';
 import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
-import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
+import { QueueAdapter } from 'api/queue.v2/infrastructure/QueueAdapter';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
+import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
+import testingDB from 'api/utils/testing_db';
 
 const fixturesFactory = getFixturesFactory();
 
@@ -27,11 +31,14 @@ afterAll(async () => {
 
 describe('when handled', () => {
   const expectedBatches = [['entity1', 'entity2'], ['entity4']];
-  let memoryAdapter: MemoryQueueAdapter;
+  let memoryAdapter: QueueAdapter;
   let heartbeatCallback: jest.Mock;
 
   beforeEach(async () => {
-    memoryAdapter = new MemoryQueueAdapter();
+    memoryAdapter = new MongoQueueAdapter(
+      getConnection(),
+      new MongoTransactionManager(getClient())
+    );
 
     const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
     const dispatcher = new RedisQueue('test queue', memoryAdapter, {
@@ -50,9 +57,9 @@ describe('when handled', () => {
   });
 
   it('should schedule a job per entity batch in the template', async () => {
-    const jobs = memoryAdapter.getQueue('test queue').data;
+    const jobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
 
-    jobs.forEach((data, index) => {
+    jobs!.forEach((data, index) => {
       const parsedData = JSON.parse(data.message);
       expect(parsedData.name).toBe(UpdateRelationshipPropertiesJob.name);
       expect(parsedData.params.entityIds).toEqual(expectedBatches[index]);

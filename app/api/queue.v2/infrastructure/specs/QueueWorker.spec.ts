@@ -1,14 +1,23 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
-import { MemoryQueueAdapter } from 'api/queue.v2/infrastructure/MemoryQueueAdapter';
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { RedisQueue } from '../RedisQueue';
 import { QueueWorker } from '../QueueWorker';
+import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
 async function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
+}
+
+function createAdapter() {
+  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
 }
 
 class TestJob implements Dispatchable {
@@ -27,9 +36,17 @@ class TestJob implements Dispatchable {
   }
 }
 
-it('should process all the jobs', done => {
+beforeEach(async () => {
+  await testingEnvironment.setUp({});
+});
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
+it('should process all the jobs', async () => {
   const output: string[] = [];
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
   const producerQueue1 = new RedisQueue('name', adapter, {
     namespace: 'namespace1',
   });
@@ -45,59 +62,48 @@ it('should process all the jobs', done => {
     async namespace => new TestJob(message => output.push(`${namespace} ${message}`))
   );
 
-  const dispatch = async (params: any, i: number) =>
+  const dispatch = async (params: any, i: number) => {
+    await sleep(5);
     (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+  };
 
-  Promise.all(
-    [
-      { data: { pieceOfData: ['.'] }, aNumber: 1 },
-      { data: { pieceOfData: ['.', '.'] }, aNumber: 2 },
-      { data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 },
-    ].map(dispatch)
-  )
-    .then(() => {
-      output.push('finished enqueueing jobs pre worker.start');
-      worker.start().then(done).catch(done);
-      Promise.all(
-        [
-          { data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 },
-          { data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 },
-          { data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 },
-        ].map(dispatch)
+  await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
+  await dispatch({ data: { pieceOfData: ['.', '.'] }, aNumber: 2 }, 1);
+  await dispatch({ data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 }, 2);
+  output.push('finished enqueueing jobs pre worker.start');
+  await sleep(5);
+  await Promise.all([
+    worker.start(),
+    dispatch({ data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 }, 0)
+      .then(
+        void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 }, 1).then(
+          void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 }, 2)
+        )
       )
-        .then(() => {
-          output.push('finished enqueueing jobs post worker.start');
-          sleep(6 * 100)
-            .then(() => {
-              worker
-                .stop()
-                .then(() => {
-                  output.push('worker stopped');
+      .then(async () => {
+        output.push('finished enqueueing jobs post worker.start');
+        await sleep(2000);
+        await worker.stop();
+        output.push('worker stopped');
+      }),
+  ]);
 
-                  expect(output).toEqual([
-                    'finished enqueueing jobs pre worker.start',
-                    'finished enqueueing jobs post worker.start',
-                    'namespace1 1, .',
-                    'namespace2 2, .|.',
-                    'namespace1 3, .|.|.',
-                    'namespace1 4, .|.|.|.',
-                    'namespace2 5, .|.|.|.|.',
-                    'namespace1 6, .|.|.|.|.|.',
-                    'worker stopped',
-                  ]);
-                })
-                .catch(done);
-            })
-            .catch(done);
-        })
-        .catch(done);
-    })
-    .catch(done);
+  expect(output).toEqual([
+    'finished enqueueing jobs pre worker.start',
+    'finished enqueueing jobs post worker.start',
+    'namespace1 1, .',
+    'namespace2 2, .|.',
+    'namespace1 3, .|.|.',
+    'namespace1 4, .|.|.|.',
+    'namespace2 5, .|.|.|.|.',
+    'namespace1 6, .|.|.|.|.|.',
+    'worker stopped',
+  ]);
 }, 10000);
 
-it('should finish the in-progress job before stopping', done => {
+it('should finish the in-progress job before stopping', async () => {
   const output: string[] = [];
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
   const producerQueue1 = new RedisQueue('name', adapter, {
     namespace: 'namespace1',
   });
@@ -113,54 +119,44 @@ it('should finish the in-progress job before stopping', done => {
     async namespace => new TestJob(message => output.push(`${namespace} ${message}`))
   );
 
-  const dispatch = async (params: any, i: number) =>
-    (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+  const dispatch = async (params: any, i: number) => {
+    await sleep(2);
+    return (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+  };
 
-  Promise.all(
-    [
-      { data: { pieceOfData: ['.'] }, aNumber: 1 },
-      { data: { pieceOfData: ['.', '.'] }, aNumber: 2 },
-      { data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 },
-    ].map(dispatch)
-  )
-    .then(() => {
-      output.push('finished enqueueing jobs pre worker.start');
-      worker.start().then(done).catch(done);
-      Promise.all(
-        [
-          { data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 },
-          { data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 },
-          { data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 },
-        ].map(dispatch)
+  await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
+  await dispatch({ data: { pieceOfData: ['.', '.'] }, aNumber: 2 }, 1);
+  await dispatch({ data: { pieceOfData: ['.', '.', '.'] }, aNumber: 3 }, 2);
+
+  output.push('finished enqueueing jobs pre worker.start');
+
+  await Promise.all([
+    worker.start(),
+    dispatch({ data: { pieceOfData: ['.', '.', '.', '.'] }, aNumber: 4 }, 0)
+      .then(
+        void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.'] }, aNumber: 5 }, 1).then(
+          void dispatch({ data: { pieceOfData: ['.', '.', '.', '.', '.', '.'] }, aNumber: 6 }, 2)
+        )
       )
-        .then(() => {
-          output.push('finished enqueueing jobs post worker.start');
-          sleep(3 * 50 + 10)
-            .then(() => {
-              output.push('stopping worker');
-              worker
-                .stop()
-                .then(() => {
-                  output.push('worker stopped');
+      .then(async () => {
+        output.push('finished enqueueing jobs post worker.start');
+        await sleep(4 * 50 + 10);
+        output.push('stopping worker');
+        await worker.stop();
+        output.push('worker stopped');
+      }),
+  ]);
 
-                  expect(output).toEqual([
-                    'finished enqueueing jobs pre worker.start',
-                    'finished enqueueing jobs post worker.start',
-                    'namespace1 1, .',
-                    'namespace2 2, .|.',
-                    'namespace1 3, .|.|.',
-                    'stopping worker',
-                    'namespace1 4, .|.|.|.',
-                    'worker stopped',
-                  ]);
-                })
-                .catch(done);
-            })
-            .catch(done);
-        })
-        .catch(done);
-    })
-    .catch(done);
+  expect(output).toEqual([
+    'finished enqueueing jobs pre worker.start',
+    'finished enqueueing jobs post worker.start',
+    'namespace1 1, .',
+    'namespace2 2, .|.',
+    'namespace1 3, .|.|.',
+    'stopping worker',
+    'namespace1 4, .|.|.|.',
+    'worker stopped',
+  ]);
 }, 10000);
 
 it('should log and continue if a job fails', async () => {
@@ -184,7 +180,7 @@ it('should log and continue if a job fails', async () => {
 
   const logMock = jest.fn();
 
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
   const queue = new RedisQueue('name', adapter, { namespace: 'namespace' });
   const queueWorker = new QueueWorker(queue, logMock);
 
@@ -192,7 +188,7 @@ it('should log and continue if a job fails', async () => {
 
   await queue.dispatch(FailOnceJob, undefined);
 
-  await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
+  await Promise.all([queueWorker.start(), sleep(1100).then(async () => queueWorker.stop())]);
 
   expect(FailOnceJob.executions).toEqual(['failing', 'successful']);
   expect(logMock).toHaveBeenCalledWith(

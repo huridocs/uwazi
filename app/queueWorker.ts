@@ -2,14 +2,18 @@
 /* eslint-disable no-console */
 import { config } from 'api/config';
 import { DB } from 'api/odm';
-import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
 import { RedisQueue } from 'api/queue.v2/infrastructure/RedisQueue';
 
-import RedisSMQ from 'rsmq';
 import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
+import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
+import {
+  getSharedClient,
+  getSharedConnection,
+} from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { registerJobs } from './queueRegistry';
 
 let dbAuth = {};
@@ -55,10 +59,11 @@ log('info', 'Starting worker');
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     log('info', 'Connected to MongoDB');
-    const redisClient = await ApplicationRedisClient.getInstance();
-    log('info', 'Connected to Redis');
-    const RSMQ = new RedisSMQ({ client: redisClient });
-    const queue = new RedisQueue(config.queueName, RSMQ);
+    const adapter = new MongoQueueAdapter(
+      getSharedConnection(),
+      new MongoTransactionManager(getSharedClient())
+    );
+    const queue = new RedisQueue(config.queueName, adapter);
     const queueWorker = new QueueWorker(queue, log);
 
     registerJobs(register.bind(queueWorker));
@@ -78,10 +83,9 @@ DB.connect(config.DBHOST, dbAuth)
     await queueWorker.start();
     log('info', 'Queue worker stopped');
 
-    await ApplicationRedisClient.close();
-    log('info', 'Disconnected from Redis');
-
     await DB.disconnect();
     log('info', 'Disconected from MongoDB');
+
+    process.exit(0);
   })
   .catch(e => log('error', e));

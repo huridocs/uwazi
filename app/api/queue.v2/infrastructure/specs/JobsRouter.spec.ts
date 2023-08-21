@@ -1,9 +1,12 @@
 /* eslint-disable max-statements */
 import { config } from 'api/config';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
-import { MemoryQueueAdapter } from '../MemoryQueueAdapter';
 import { JobsRouter } from '../JobsRouter';
 import { RedisQueue } from '../RedisQueue';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
 class ExampleJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
@@ -12,8 +15,20 @@ class ExampleJob implements Dispatchable {
   }
 }
 
+function createAdapter() {
+  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
+}
+
+beforeEach(async () => {
+  await testingEnvironment.setUp({});
+});
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
 it('should dispatch the job to the configured queue', async () => {
-  const adapter = new MemoryQueueAdapter();
+  const adapter = createAdapter();
 
   const queues: Record<string, RedisQueue> = {};
 
