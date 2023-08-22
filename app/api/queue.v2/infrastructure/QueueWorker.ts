@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+import { performance } from 'perf_hooks';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
 import { Job, Queue } from './Queue';
@@ -12,10 +13,15 @@ const optionsDefaults: Required<WorkerOptions> = {
   waitTime: 1000,
 };
 
+const defaultPerformance = {
+  count: 0,
+  processingTime: 0,
+  batchStart: 0,
+};
+
 interface Registry {
   [name: string]: (namespace: string) => Promise<Dispatchable>;
 }
-
 export class QueueWorker {
   private queue: Queue;
 
@@ -27,7 +33,11 @@ export class QueueWorker {
 
   private registry: Registry = {};
 
-  private timesThatSleepped = 0;
+  private timesSlept = 0;
+
+  private performance = {
+    ...defaultPerformance,
+  };
 
   constructor(queue: Queue, logger: (level: 'info' | 'error', message: string | object) => void) {
     this.queue = queue;
@@ -35,12 +45,28 @@ export class QueueWorker {
     this.logger = logger;
   }
 
+  private logAndResetMetrics() {
+    this.logger('info', {
+      message: 'Performance metrics',
+      processingTime: this.performance.processingTime,
+      count: this.performance.count,
+      totalTime: performance.now() - this.performance.batchStart,
+    });
+    this.performance = { ...defaultPerformance };
+  }
+
+  private logProcess(start: number) {
+    this.performance.processingTime += performance.now() - start;
+    this.performance.count += 1;
+  }
+
   private async sleep() {
-    if (!this.timesThatSleepped) {
+    if (this.timesSlept === 0) {
+      this.logAndResetMetrics();
       this.logger('info', { message: 'Sleeping', waitTime: this.options.waitTime });
-      this.timesThatSleepped += 1;
     }
 
+    this.timesSlept += 1;
     return new Promise(resolve => {
       setTimeout(resolve, this.options.waitTime);
     });
@@ -56,8 +82,11 @@ export class QueueWorker {
 
     if (this.isStopping()) return null;
 
-    this.logger('info', { message: 'Resumed', timesThatSleepped: this.timesThatSleepped });
-    this.timesThatSleepped = 0;
+    if (this.timesSlept) {
+      this.logger('info', { message: 'Resumed', timesSlept: this.timesSlept });
+      this.timesSlept = 0;
+    }
+
     return job;
   }
 
@@ -70,6 +99,7 @@ export class QueueWorker {
   }
 
   private async processJob(job: Job) {
+    const start = performance.now();
     const dispatchable = await this.createDispatchable(job);
     const heartbeatCallback = async () => this.queue.progress(job);
 
@@ -85,10 +115,13 @@ export class QueueWorker {
         stack: e.stack,
         job,
       });
+    } finally {
+      this.logProcess(start);
     }
   }
 
   async start() {
+    this.performance.batchStart = performance.now();
     let job = await this.peekJob();
     while (job) {
       await this.processJob(job);
