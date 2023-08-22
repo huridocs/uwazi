@@ -1,15 +1,9 @@
 import { Queue } from 'api/queue.v2/infrastructure/Queue';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
-
-function createAdapter() {
-  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
-}
 
 beforeEach(async () => {
   await testingEnvironment.setUp({});
@@ -20,7 +14,7 @@ afterAll(async () => {
 });
 
 it('should enqueue a job per entity', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
@@ -39,7 +33,7 @@ it('should enqueue a job per entity', async () => {
 });
 
 it('should enqueue a job for the template', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('jobs', adapter);
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 

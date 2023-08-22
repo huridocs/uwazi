@@ -1,10 +1,7 @@
-/* eslint-disable max-statements */
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoQueueAdapter } from '../MongoQueueAdapter';
+import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 
 const OTHER_QUEUE_JOB = {
   _id: new ObjectId(),
@@ -23,14 +20,10 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-function createAdapter() {
-  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
-}
-
 it('should create a job in the given queue with the given message', async () => {
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
 
   const result = await adapter.pushJob('queue name', 'a simple message');
 
@@ -48,7 +41,7 @@ it('should create a job in the given queue with the given message', async () => 
 });
 
 it('should return an empty object if now jobs in the queue', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
 
   const result = await adapter.pickJob('queue name');
 
@@ -56,7 +49,7 @@ it('should return an empty object if now jobs in the queue', async () => {
 });
 
 it('should only return non-locked jobs', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   let NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
   const job = {
@@ -92,7 +85,7 @@ it('should only return non-locked jobs', async () => {
 });
 
 it('should atomically get a job and lock it for 1000ms', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
   const job = {
@@ -137,7 +130,7 @@ it.each([
   { first: job1, second: job2 },
   { first: job2, second: job1 },
 ])('should get the oldest job possible', async ({ first, second }) => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
 
@@ -150,7 +143,7 @@ it.each([
 });
 
 it('should increment the lock of a job the given amount of seconds', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
   const job = {
@@ -173,7 +166,7 @@ it('should increment the lock of a job the given amount of seconds', async () =>
 });
 
 it('should delete a job', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
   const job = {

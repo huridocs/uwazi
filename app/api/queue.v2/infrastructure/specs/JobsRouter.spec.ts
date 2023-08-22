@@ -2,21 +2,15 @@
 import { config } from 'api/config';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { Queue } from '../Queue';
 import { JobsRouter } from '../JobsRouter';
-import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
 class ExampleJob implements Dispatchable {
   // eslint-disable-next-line class-methods-use-this
   async handleDispatch(): Promise<void> {
     throw new Error('Method not implemented.');
   }
-}
-
-function createAdapter() {
-  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
 }
 
 beforeEach(async () => {
@@ -28,7 +22,7 @@ afterAll(async () => {
 });
 
 it('should dispatch the job to the configured queue', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
 
   const queues: Record<string, Queue> = {};
 

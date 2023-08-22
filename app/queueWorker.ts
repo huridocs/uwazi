@@ -8,12 +8,7 @@ import { Queue } from 'api/queue.v2/infrastructure/Queue';
 import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
-import { MongoQueueAdapter } from 'api/queue.v2/infrastructure/MongoQueueAdapter';
-import {
-  getSharedClient,
-  getSharedConnection,
-} from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { registerJobs } from './queueRegistry';
 
 let dbAuth = {};
@@ -59,10 +54,7 @@ log('info', 'Starting worker');
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     log('info', 'Connected to MongoDB');
-    const adapter = new MongoQueueAdapter(
-      getSharedConnection(),
-      new MongoTransactionManager(getSharedClient())
-    );
+    const adapter = DefaultQueueAdapter();
     const queue = new Queue(config.queueName, adapter);
     const queueWorker = new QueueWorker(queue, log);
 

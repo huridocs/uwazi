@@ -1,18 +1,12 @@
-/* eslint-disable max-statements */
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoQueueAdapter } from '../MongoQueueAdapter';
+import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { Queue } from '../Queue';
 
 async function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
-}
-function createAdapter() {
-  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
 }
 
 class TestJob implements Dispatchable {
@@ -39,7 +33,7 @@ afterAll(async () => {
 });
 
 it('should enqueue and dequeue a job, including the namespace', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });
@@ -57,7 +51,7 @@ it('should enqueue and dequeue a job, including the namespace', async () => {
 });
 
 it('should return the job only once during the lockWindow', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const producer = new Queue('queue name', adapter, { namespace: 'namespace' });
   const consumer1 = new Queue('queue name', adapter);
   const consumer2 = new Queue('queue name', adapter);
@@ -81,7 +75,7 @@ it('should return the job only once during the lockWindow', async () => {
 });
 
 it('should refresh the lock if progress is reported', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const producer = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });
@@ -110,7 +104,7 @@ it('should refresh the lock if progress is reported', async () => {
 });
 
 it('should delete a message if marked as completed', async () => {
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('queue name', adapter, {
     namespace: 'namespace',
   });

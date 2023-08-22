@@ -1,23 +1,16 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable max-statements */
 /* eslint-disable no-void */
 /* eslint-disable max-classes-per-file */
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { Queue } from '../Queue';
 import { QueueWorker } from '../QueueWorker';
-import { MongoQueueAdapter } from '../MongoQueueAdapter';
 
 async function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
   });
-}
-
-function createAdapter() {
-  return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
 }
 
 class TestJob implements Dispatchable {
@@ -46,7 +39,7 @@ afterAll(async () => {
 
 it('should process all the jobs', async () => {
   const output: string[] = [];
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const producerQueue1 = new Queue('name', adapter, {
     namespace: 'namespace1',
   });
@@ -64,7 +57,7 @@ it('should process all the jobs', async () => {
 
   const dispatch = async (params: any, i: number) => {
     await sleep(5);
-    (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+    return (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
   };
 
   await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
@@ -103,7 +96,7 @@ it('should process all the jobs', async () => {
 
 it('should finish the in-progress job before stopping', async () => {
   const output: string[] = [];
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const producerQueue1 = new Queue('name', adapter, {
     namespace: 'namespace1',
   });
@@ -180,7 +173,7 @@ it('should log and continue if a job fails', async () => {
 
   const logMock = jest.fn();
 
-  const adapter = createAdapter();
+  const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('name', adapter, { namespace: 'namespace' });
   const queueWorker = new QueueWorker(queue, logMock);
 
