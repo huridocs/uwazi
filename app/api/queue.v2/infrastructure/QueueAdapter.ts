@@ -4,9 +4,8 @@ export interface QueueMessage {
 }
 
 export interface QueueAdapter {
-  createQueueAsync(options: { qname: string; vt: number }): Promise<1>;
-  changeMessageVisibilityAsync(options: { qname: string; id: string; vt: number }): Promise<0 | 1>;
-  deleteMessageAsync(options: { qname: string; id: string }): Promise<0 | 1>;
-  receiveMessageAsync(options: { qname: string }): Promise<QueueMessage | {}>;
-  sendMessageAsync(options: { qname: string; message: string }): Promise<string>;
+  pushJob(queueName: string, message: string): Promise<string>;
+  pickJob(queueName: string): Promise<QueueMessage | {}>;
+  renewJobLock(jobId: string, seconds: number): Promise<void>;
+  completeJob(jobId: string): Promise<void>;
 }

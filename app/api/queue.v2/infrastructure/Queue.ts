@@ -3,6 +3,10 @@ import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
 import { QueueAdapter } from '../infrastructure/QueueAdapter';
 
+function isMessage(message: {} | QueueMessage): message is QueueMessage {
+  return 'id' in message;
+}
+
 interface QueueOptions {
   lockWindow?: number;
   namespace?: string;
@@ -36,39 +40,23 @@ export class Queue implements JobsDispatcher {
     };
   }
 
-  private async ensureQueue() {
-    try {
-      await this.adapter.createQueueAsync({ qname: this.queueName, vt: this.options.lockWindow });
-    } catch (e) {
-      if (e.name !== 'queueExists') {
-        throw e;
-      }
-    }
-  }
-
   async dispatch<T extends Dispatchable>(
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]
   ): Promise<void> {
-    await this.ensureQueue();
-    await this.adapter.sendMessageAsync({
-      qname: this.queueName,
-      message: JSON.stringify({
+    await this.adapter.pushJob(
+      this.queueName,
+      JSON.stringify({
         name: dispatchable.name,
         params,
         namespace: this.options.namespace,
-      }),
-    });
-  }
-
-  private isMessage(message: {} | QueueMessage): message is QueueMessage {
-    return 'id' in message;
+      })
+    );
   }
 
   async peek() {
-    await this.ensureQueue();
-    const message = await this.adapter.receiveMessageAsync({ qname: this.queueName });
-    if (this.isMessage(message)) {
+    const message = await this.adapter.pickJob(this.queueName);
+    if (isMessage(message)) {
       const deserialized = JSON.parse(message.message);
 
       return {
@@ -83,16 +71,10 @@ export class Queue implements JobsDispatcher {
   }
 
   async complete(job: Job) {
-    await this.ensureQueue();
-    await this.adapter.deleteMessageAsync({ qname: this.queueName, id: job.id! });
+    await this.adapter.completeJob(job.id);
   }
 
   async progress(job: Job) {
-    await this.ensureQueue();
-    await this.adapter.changeMessageVisibilityAsync({
-      qname: this.queueName,
-      id: job.id!,
-      vt: this.options.lockWindow,
-    });
+    await this.adapter.renewJobLock(job.id!, this.options.lockWindow);
   }
 }

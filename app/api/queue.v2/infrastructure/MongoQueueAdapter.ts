@@ -5,39 +5,24 @@ import { QueueAdapter, QueueMessage } from './QueueAdapter';
 export class MongoQueueAdapter extends MongoDataSource implements QueueAdapter {
   protected collectionName = 'jobs';
 
-  async createQueueAsync(): Promise<1> {
-    // Not needed
-    return 1;
-  }
-
-  async changeMessageVisibilityAsync(options: {
-    qname: string;
-    id: string;
-    vt: number;
-  }): Promise<0 | 1> {
-    const result = await this.getCollection().findOneAndUpdate(
+  async renewJobLock(jobId: string, seconds: number) {
+    await this.getCollection().findOneAndUpdate(
       {
-        queue: options.qname,
-        _id: new ObjectId(options.id),
+        _id: new ObjectId(jobId),
       },
-      { $set: { lockedUntil: Date.now() + options.vt * 1000 } }
+      { $set: { lockedUntil: Date.now() + seconds * 1000 } }
     );
-
-    return result.ok;
   }
 
-  async deleteMessageAsync(options: { qname: string; id: string }): Promise<0 | 1> {
-    const result = await this.getCollection().findOneAndDelete({
-      queue: options.qname,
-      _id: new ObjectId(options.id),
+  async completeJob(jobId: string) {
+    await this.getCollection().findOneAndDelete({
+      _id: new ObjectId(jobId),
     });
-
-    return result.ok;
   }
 
-  async receiveMessageAsync(options: { qname: string }): Promise<{} | QueueMessage> {
+  async pickJob(queueName: string): Promise<{} | QueueMessage> {
     const result = await this.getCollection().findOneAndUpdate(
-      { queue: options.qname, lockedUntil: { $lt: Date.now() } },
+      { queue: queueName, lockedUntil: { $lt: Date.now() } },
       { $set: { lockedUntil: Date.now() + 1000 } },
       { sort: { createdAt: 1 } }
     );
@@ -50,10 +35,10 @@ export class MongoQueueAdapter extends MongoDataSource implements QueueAdapter {
       : {};
   }
 
-  async sendMessageAsync(options: { qname: string; message: string }): Promise<string> {
+  async pushJob(queueName: string, message: string): Promise<string> {
     const result = await this.getCollection().insertOne({
-      queue: options.qname,
-      message: options.message,
+      queue: queueName,
+      message,
       lockedUntil: 0,
       createdAt: Date.now(),
     });
