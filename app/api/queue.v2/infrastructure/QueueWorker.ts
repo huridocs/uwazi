@@ -27,6 +27,8 @@ export class QueueWorker {
 
   private registry: Registry = {};
 
+  private timesThatSleepped = 0;
+
   constructor(queue: Queue, logger: (level: 'info' | 'error', message: string | object) => void) {
     this.queue = queue;
     this.options = { ...optionsDefaults };
@@ -34,7 +36,11 @@ export class QueueWorker {
   }
 
   private async sleep() {
-    this.logger('info', { message: 'Sleeping', waitTime: this.options.waitTime });
+    if (!this.timesThatSleepped) {
+      this.logger('info', { message: 'Sleeping', waitTime: this.options.waitTime });
+      this.timesThatSleepped += 1;
+    }
+
     return new Promise(resolve => {
       setTimeout(resolve, this.options.waitTime);
     });
@@ -50,17 +56,22 @@ export class QueueWorker {
 
     if (this.isStopping()) return null;
 
+    this.logger('info', { message: 'Resumed', timesThatSleepped: this.timesThatSleepped });
+    this.timesThatSleepped = 0;
     return job;
   }
 
-  private async processJob(job: Job) {
-    const heartbeatCallback = async () => this.queue.progress(job);
-
+  private async createDispatchable(job: Job) {
     if (!this.registry[job.name]) {
       throw new UnregisteredJobError(job.name);
     }
 
-    const dispatchable = await this.registry[job.name](job.namespace);
+    return this.registry[job.name](job.namespace);
+  }
+
+  private async processJob(job: Job) {
+    const dispatchable = await this.createDispatchable(job);
+    const heartbeatCallback = async () => this.queue.progress(job);
 
     try {
       this.logger('info', { message: 'Processing job', ...job });
