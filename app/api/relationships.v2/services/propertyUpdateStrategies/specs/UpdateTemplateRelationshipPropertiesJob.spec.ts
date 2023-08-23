@@ -3,10 +3,10 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
-import { Queue } from 'api/queue.v2/infrastructure/Queue';
 import { QueueAdapter } from 'api/queue.v2/infrastructure/QueueAdapter';
 import testingDB from 'api/utils/testing_db';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { NamespacedDispatcher } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 
@@ -36,9 +36,7 @@ describe('when handled', () => {
     adapter = DefaultTestingQueueAdapter();
 
     const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
-    const dispatcher = new Queue('test queue', adapter, {
-      namespace: tenants.current().name,
-    });
+    const dispatcher = new NamespacedDispatcher(tenants.current().name, 'test queue', adapter);
 
     const job = new UpdateTemplateRelationshipPropertiesJob(entitiesDataSource, dispatcher);
 

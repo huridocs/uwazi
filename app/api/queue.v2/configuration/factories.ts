@@ -6,8 +6,8 @@ import {
   getSharedConnection,
 } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { JobsRouter } from '../infrastructure/JobsRouter';
-import { Queue } from '../infrastructure/Queue';
 import { MongoQueueAdapter } from '../infrastructure/MongoQueueAdapter';
+import { NamespacedDispatcher } from '../infrastructure/NamespacedDispatcher';
 
 export function DefaultQueueAdapter() {
   return new MongoQueueAdapter(
@@ -22,9 +22,6 @@ export function DefaultTestingQueueAdapter() {
 
 export async function DefaultDispatcher(tenant: string) {
   return new JobsRouter(
-    queueName =>
-      new Queue(queueName, DefaultQueueAdapter(), {
-        namespace: tenant,
-      })
+    queueName => new NamespacedDispatcher(tenant, queueName, DefaultQueueAdapter())
   );
 }

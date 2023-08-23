@@ -4,7 +4,7 @@
 import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { Queue } from '../Queue';
+import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
 
 async function sleep(ms: number) {
@@ -40,12 +40,8 @@ afterAll(async () => {
 it('should process all the jobs', async () => {
   const output: string[] = [];
   const adapter = DefaultTestingQueueAdapter();
-  const producerQueue1 = new Queue('name', adapter, {
-    namespace: 'namespace1',
-  });
-  const producerQueue2 = new Queue('name', adapter, {
-    namespace: 'namespace2',
-  });
+  const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
+  const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
   const worker = new QueueWorker('name', adapter, () => {});
 
@@ -56,7 +52,7 @@ it('should process all the jobs', async () => {
 
   const dispatch = async (params: any, i: number) => {
     await sleep(5);
-    return (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+    return (i % 2 ? dispatcher2 : dispatcher1).dispatch(TestJob, params);
   };
 
   await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
@@ -96,12 +92,8 @@ it('should process all the jobs', async () => {
 it('should finish the in-progress job before stopping', async () => {
   const output: string[] = [];
   const adapter = DefaultTestingQueueAdapter();
-  const producerQueue1 = new Queue('name', adapter, {
-    namespace: 'namespace1',
-  });
-  const producerQueue2 = new Queue('name', adapter, {
-    namespace: 'namespace2',
-  });
+  const dispatcher1 = new NamespacedDispatcher('namespace1', 'name', adapter);
+  const dispatcher2 = new NamespacedDispatcher('namespace2', 'name', adapter);
 
   const worker = new QueueWorker('name', adapter, () => {});
 
@@ -112,7 +104,7 @@ it('should finish the in-progress job before stopping', async () => {
 
   const dispatch = async (params: any, i: number) => {
     await sleep(2);
-    return (i % 2 ? producerQueue2 : producerQueue1).dispatch(TestJob, params);
+    return (i % 2 ? dispatcher2 : dispatcher1).dispatch(TestJob, params);
   };
 
   await dispatch({ data: { pieceOfData: ['.'] }, aNumber: 1 }, 0);
@@ -172,12 +164,12 @@ it('should log and continue if a job fails', async () => {
   const logMock = jest.fn();
 
   const adapter = DefaultTestingQueueAdapter();
-  const queue = new Queue('name', adapter, { namespace: 'namespace' });
+  const dispatcher = new NamespacedDispatcher('namespace', 'name', adapter);
   const queueWorker = new QueueWorker('name', adapter, logMock);
 
   queueWorker.register(FailOnceJob, async () => new FailOnceJob());
 
-  await queue.dispatch(FailOnceJob, undefined);
+  await dispatcher.dispatch(FailOnceJob, undefined);
 
   await Promise.all([queueWorker.start(), sleep(1100).then(async () => queueWorker.stop())]);
 

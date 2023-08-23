@@ -3,7 +3,7 @@ import { config } from 'api/config';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { Queue } from '../Queue';
+import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { JobsRouter } from '../JobsRouter';
 
 class ExampleJob implements Dispatchable {
@@ -24,12 +24,7 @@ afterAll(async () => {
 it('should dispatch the job to the configured queue', async () => {
   const adapter = DefaultTestingQueueAdapter();
 
-  const router = new JobsRouter(
-    name =>
-      new Queue(name, adapter, {
-        namespace: 'namespace',
-      })
-  );
+  const router = new JobsRouter(name => new NamespacedDispatcher('namespace', name, adapter));
 
   config.queueName = 'queue1';
   await router.dispatch(ExampleJob, undefined);

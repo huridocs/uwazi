@@ -1,6 +1,6 @@
-import { Queue } from 'api/queue.v2/infrastructure/Queue';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
+import { NamespacedDispatcher } from 'api/queue.v2/infrastructure/NamespacedDispatcher';
 import { UpdateTemplateRelationshipPropertiesJob } from '../UpdateTemplateRelationshipPropertiesJob';
 import { UpdateRelationshipPropertiesJob } from '../UpdateRelationshipPropertiesJob';
 import { QueuedRelationshipPropertyUpdateStrategy } from '../QueuedRelationshipPropertyUpdateStrategy';
@@ -15,8 +15,8 @@ afterAll(async () => {
 
 it('should enqueue a job per entity', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const queue = new Queue('jobs', adapter, { namespace: 'namespace' });
-  const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
+  const dispatcher = new NamespacedDispatcher('namespace', 'jobs', adapter);
+  const strategy = new QueuedRelationshipPropertyUpdateStrategy(dispatcher);
 
   await strategy.update(['sharedId1', 'sharedId2']);
   const enqueued1 = await adapter.pickJob('jobs');
@@ -34,8 +34,8 @@ it('should enqueue a job per entity', async () => {
 
 it('should enqueue a job for the template', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const queue = new Queue('jobs', adapter, { namespace: 'namespace' });
-  const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
+  const dispatcher = new NamespacedDispatcher('namespace', 'jobs', adapter);
+  const strategy = new QueuedRelationshipPropertyUpdateStrategy(dispatcher);
 
   await strategy.updateByTemplate('template1');
   const enqueued1 = await adapter.pickJob('jobs');

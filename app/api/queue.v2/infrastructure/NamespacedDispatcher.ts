@@ -4,22 +4,28 @@ import { QueueAdapter } from '../infrastructure/QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
-  namespace?: string;
 }
 
 const optionsDefaults: Required<QueueOptions> = {
-  lockWindow: 1000,
-  namespace: '',
+  lockWindow: 1000 * 60 * 10,
 };
 
-export class Queue implements JobsDispatcher {
+export class NamespacedDispatcher implements JobsDispatcher {
+  private namespace: string;
+
   private queueName: string;
 
   private adapter: QueueAdapter;
 
   private options: Required<QueueOptions>;
 
-  constructor(queueName: string, adapter: QueueAdapter, options: QueueOptions = {}) {
+  constructor(
+    namespace: string,
+    queueName: string,
+    adapter: QueueAdapter,
+    options: QueueOptions = {}
+  ) {
+    this.namespace = namespace;
     this.queueName = queueName;
     this.adapter = adapter;
     this.options = {
@@ -32,15 +38,11 @@ export class Queue implements JobsDispatcher {
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]
   ): Promise<void> {
-    if (!this.options.namespace) {
-      throw new Error('Cannot dispatch without a namespace');
-    }
-
     await this.adapter.pushJob({
       queue: this.queueName,
       name: dispatchable.name,
       params,
-      namespace: this.options.namespace,
+      namespace: this.namespace,
       options: {
         lockWindow: this.options.lockWindow,
       },
