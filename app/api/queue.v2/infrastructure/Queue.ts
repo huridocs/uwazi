@@ -1,11 +1,6 @@
-import { QueueMessage } from 'rsmq';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { QueueAdapter } from '../infrastructure/QueueAdapter';
-
-function isMessage(message: {} | QueueMessage): message is QueueMessage {
-  return 'id' in message;
-}
+import { QueueAdapter, Job } from '../infrastructure/QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
@@ -13,16 +8,9 @@ interface QueueOptions {
 }
 
 const optionsDefaults: Required<QueueOptions> = {
-  lockWindow: 1,
+  lockWindow: 1000,
   namespace: '',
 };
-
-export interface Job {
-  id: string;
-  name: string;
-  params: any;
-  namespace: string;
-}
 
 export class Queue implements JobsDispatcher {
   private queueName: string;
@@ -44,37 +32,30 @@ export class Queue implements JobsDispatcher {
     dispatchable: DispatchableClass<T>,
     params: Parameters<T['handleDispatch']>[1]
   ): Promise<void> {
-    await this.adapter.pushJob(
-      this.queueName,
-      JSON.stringify({
-        name: dispatchable.name,
-        params,
-        namespace: this.options.namespace,
-      })
-    );
+    if (!this.options.namespace) {
+      throw new Error('Cannot dispatch without a namespace');
+    }
+
+    await this.adapter.pushJob({
+      queue: this.queueName,
+      name: dispatchable.name,
+      params,
+      namespace: this.options.namespace,
+      options: {
+        lockWindow: this.options.lockWindow,
+      },
+    });
   }
 
   async peek() {
-    const message = await this.adapter.pickJob(this.queueName);
-    if (isMessage(message)) {
-      const deserialized = JSON.parse(message.message);
-
-      return {
-        id: message.id,
-        name: deserialized.name,
-        params: deserialized.params,
-        namespace: deserialized.namespace,
-      };
-    }
-
-    return null;
+    return this.adapter.pickJob(this.queueName);
   }
 
   async complete(job: Job) {
-    await this.adapter.completeJob(job.id);
+    await this.adapter.deleteJob(job);
   }
 
   async progress(job: Job) {
-    await this.adapter.renewJobLock(job.id!, this.options.lockWindow);
+    await this.adapter.renewJobLock(job);
   }
 }

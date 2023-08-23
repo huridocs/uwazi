@@ -10,12 +10,6 @@ async function sleep(ms: number) {
 }
 
 class TestJob implements Dispatchable {
-  private logger: (message: string) => void;
-
-  constructor(logger: (message: string) => void) {
-    this.logger = logger;
-  }
-
   async handleDispatch(
     _heartbeat: HeartbeatCallback,
     _params: { data: { pieceOfData: string[] }; aNumber: number }
@@ -32,6 +26,17 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
+it('should throw an error if trying to dispatch without namespace', async () => {
+  const adapter = DefaultTestingQueueAdapter();
+  const queue = new Queue('queue name', adapter);
+
+  const params = { data: { pieceOfData: ['a', 'b', 'c'] }, aNumber: 2 };
+
+  const result = queue.dispatch(TestJob, params);
+  await expect(result).rejects.toBeInstanceOf(Error);
+  await expect(result).rejects.toMatchObject({ message: expect.stringContaining('namespace') });
+});
+
 it('should enqueue and dequeue a job, including the namespace', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('queue name', adapter, {
@@ -42,39 +47,17 @@ it('should enqueue and dequeue a job, including the namespace', async () => {
   await queue.dispatch(TestJob, params);
 
   const job = await queue.peek();
-  expect(job).toEqual({
+  expect(job).toMatchObject({
     id: expect.any(String),
     name: TestJob.name,
     params,
     namespace: 'namespace',
   });
-});
-
-it('should return the job only once during the lockWindow', async () => {
-  const adapter = DefaultTestingQueueAdapter();
-  const producer = new Queue('queue name', adapter, { namespace: 'namespace' });
-  const consumer1 = new Queue('queue name', adapter);
-  const consumer2 = new Queue('queue name', adapter);
-
-  const params = { data: { pieceOfData: ['a', 'b', 'c'] }, aNumber: 2 };
-  await producer.dispatch(TestJob, params);
-
-  const job1 = await consumer1.peek();
-  let job2 = await consumer2.peek();
-  expect(job1).toEqual({
-    id: expect.any(String),
-    name: TestJob.name,
-    params,
-    namespace: 'namespace',
-  });
-  expect(job2).toBe(null);
-
-  await sleep(1000);
-  job2 = await consumer2.peek();
-  expect(job2).toEqual(job1);
 });
 
 it('should refresh the lock if progress is reported', async () => {
+  let NOW_VALUE = 1;
+  jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
   const adapter = DefaultTestingQueueAdapter();
   const producer = new Queue('queue name', adapter, {
     namespace: 'namespace',
@@ -87,7 +70,7 @@ it('should refresh the lock if progress is reported', async () => {
 
   const job1 = await consumer1.peek();
   let job2 = await consumer2.peek();
-  expect(job1).toEqual({
+  expect(job1).toMatchObject({
     id: expect.any(String),
     name: TestJob.name,
     params,
@@ -99,8 +82,9 @@ it('should refresh the lock if progress is reported', async () => {
   job2 = await consumer2.peek();
   expect(job2).toBe(null);
   await sleep(1100);
+  NOW_VALUE = 1100;
   job2 = await consumer2.peek();
-  expect(job2).toEqual(job1);
+  expect(job2).toEqual({ ...job1, lockedUntil: NOW_VALUE + job1!.options.lockWindow });
 });
 
 it('should delete a message if marked as completed', async () => {
@@ -112,7 +96,7 @@ it('should delete a message if marked as completed', async () => {
   const params = { data: { pieceOfData: ['a', 'b', 'c'] }, aNumber: 2 };
   await queue.dispatch(TestJob, params);
   const job = await queue.peek();
-  expect(job).toEqual({
+  expect(job).toMatchObject({
     id: expect.any(String),
     name: TestJob.name,
     params,

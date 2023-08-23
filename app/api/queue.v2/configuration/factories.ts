@@ -20,11 +20,11 @@ export function DefaultTestingQueueAdapter() {
   return new MongoQueueAdapter(getConnection(), new MongoTransactionManager(getClient()));
 }
 
-export async function DefaultDispatcher(namespace: string) {
+export async function DefaultDispatcher(tenant: string) {
   return new JobsRouter(
     queueName =>
       new Queue(queueName, DefaultQueueAdapter(), {
-        namespace,
+        namespace: tenant,
       })
   );
 }

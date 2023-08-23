@@ -27,7 +27,9 @@ it('should dispatch the job to the configured queue', async () => {
   const queues: Record<string, Queue> = {};
 
   const router = new JobsRouter(name => {
-    const queue = new Queue(name, adapter);
+    const queue = new Queue(name, adapter, {
+      namespace: 'namespace',
+    });
     queues[name] = queue;
     return queue;
   });

@@ -15,7 +15,7 @@ afterAll(async () => {
 
 it('should enqueue a job per entity', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const queue = new Queue('jobs', adapter);
+  const queue = new Queue('jobs', adapter, { namespace: 'namespace' });
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.update(['sharedId1', 'sharedId2']);
@@ -34,7 +34,7 @@ it('should enqueue a job per entity', async () => {
 
 it('should enqueue a job for the template', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const queue = new Queue('jobs', adapter);
+  const queue = new Queue('jobs', adapter, { namespace: 'namespace' });
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.updateByTemplate('template1');

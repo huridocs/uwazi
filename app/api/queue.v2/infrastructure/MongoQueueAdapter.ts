@@ -1,46 +1,62 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
-import { QueueAdapter, QueueMessage } from './QueueAdapter';
+import { Job, QueueAdapter } from './QueueAdapter';
 
-export class MongoQueueAdapter extends MongoDataSource implements QueueAdapter {
+interface JobDTO {
+  _id: ObjectId;
+  queue: string;
+  name: string;
+  params: any;
+  namespace: string;
+  lockedUntil: number;
+  createdAt: number;
+  options: {
+    lockWindow: number;
+  };
+}
+
+export class MongoQueueAdapter extends MongoDataSource<JobDTO> implements QueueAdapter {
   protected collectionName = 'jobs';
 
-  async renewJobLock(jobId: string, seconds: number) {
+  async renewJobLock(job: Job) {
     await this.getCollection().findOneAndUpdate(
       {
-        _id: new ObjectId(jobId),
+        _id: new ObjectId(job.id),
       },
-      { $set: { lockedUntil: Date.now() + seconds * 1000 } }
+      { $set: { lockedUntil: Date.now() + job.options.lockWindow } }
     );
   }
 
-  async completeJob(jobId: string) {
+  async deleteJob(job: Job) {
     await this.getCollection().findOneAndDelete({
-      _id: new ObjectId(jobId),
+      _id: new ObjectId(job.id),
     });
   }
 
-  async pickJob(queueName: string): Promise<{} | QueueMessage> {
+  async pickJob(queueName: string): Promise<Job | null> {
     const result = await this.getCollection().findOneAndUpdate(
       { queue: queueName, lockedUntil: { $lt: Date.now() } },
-      { $set: { lockedUntil: Date.now() + 1000 } },
-      { sort: { createdAt: 1 } }
+      [{ $set: { lockedUntil: { $sum: [Date.now(), '$options.lockWindow'] } } }],
+      { sort: { createdAt: 1 }, returnDocument: 'after' }
     );
 
-    return result.value
-      ? {
-          id: result.value._id.toHexString(),
-          message: result.value.message,
-        }
-      : {};
+    if (result.value) {
+      const { _id, ...withoutId } = result.value;
+      return {
+        id: result.value._id.toHexString(),
+        ...withoutId,
+      };
+    }
+
+    return null;
   }
 
-  async pushJob(queueName: string, message: string): Promise<string> {
+  async pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt'>): Promise<string> {
     const result = await this.getCollection().insertOne({
-      queue: queueName,
-      message,
+      _id: new ObjectId(),
       lockedUntil: 0,
       createdAt: Date.now(),
+      ...job,
     });
 
     return result.insertedId.toHexString();

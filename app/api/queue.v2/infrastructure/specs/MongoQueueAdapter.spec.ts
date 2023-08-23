@@ -25,7 +25,15 @@ it('should create a job in the given queue with the given message', async () => 
   jest.spyOn(Date, 'now').mockImplementation(() => NOW_VALUE);
   const adapter = DefaultTestingQueueAdapter();
 
-  const result = await adapter.pushJob('queue name', 'a simple message');
+  const result = await adapter.pushJob({
+    queue: 'queue name',
+    name: 'a simple message',
+    params: {},
+    namespace: 'namespace',
+    options: {
+      lockWindow: 500,
+    },
+  });
 
   const messages = await testingDB.mongodb?.collection('jobs').find({}).toArray();
   expect(messages).toEqual([
@@ -33,19 +41,24 @@ it('should create a job in the given queue with the given message', async () => 
     {
       _id: new ObjectId(result),
       queue: 'queue name',
-      message: 'a simple message',
+      name: 'a simple message',
+      params: {},
       lockedUntil: 0,
       createdAt: NOW_VALUE,
+      namespace: 'namespace',
+      options: {
+        lockWindow: 500,
+      },
     },
   ]);
 });
 
-it('should return an empty object if now jobs in the queue', async () => {
+it('should return null if no jobs in the queue', async () => {
   const adapter = DefaultTestingQueueAdapter();
 
   const result = await adapter.pickJob('queue name');
 
-  expect(result).toEqual({});
+  expect(result).toBe(null);
 });
 
 it('should only return non-locked jobs', async () => {
@@ -55,14 +68,19 @@ it('should only return non-locked jobs', async () => {
   const job = {
     _id: new ObjectId(),
     queue: 'queue name',
-    message: 'a simple message',
+    name: 'a simple message',
+    params: {},
+    namespace: 'namespace',
     lockedUntil: 10,
+    options: {
+      lockWindow: 1000,
+    },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
 
   let result = await adapter.pickJob('queue name');
 
-  expect(result).toEqual({});
+  expect(result).toBe(null);
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([
     OTHER_QUEUE_JOB,
     job,
@@ -73,7 +91,14 @@ it('should only return non-locked jobs', async () => {
 
   expect(result).toEqual({
     id: job._id.toHexString(),
-    message: 'a simple message',
+    queue: 'queue name',
+    name: 'a simple message',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 1000 + NOW_VALUE,
+    options: {
+      lockWindow: 1000,
+    },
   });
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([
     OTHER_QUEUE_JOB,
@@ -86,13 +111,18 @@ it('should only return non-locked jobs', async () => {
 
 it('should atomically get a job and lock it for 1000ms', async () => {
   const adapter = DefaultTestingQueueAdapter();
-  const NOW_VALUE = 1;
+  const NOW_VALUE = 11;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
   const job = {
     _id: new ObjectId(),
     queue: 'queue name',
-    message: 'a simple message',
-    lockedUntil: 0,
+    name: 'a simple message',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 10,
+    options: {
+      lockWindow: 1000,
+    },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
 
@@ -100,15 +130,15 @@ it('should atomically get a job and lock it for 1000ms', async () => {
 
   expect(result).toEqual({
     id: job._id.toHexString(),
-    message: 'a simple message',
-  });
-  expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([
-    OTHER_QUEUE_JOB,
-    {
-      ...job,
-      lockedUntil: NOW_VALUE + 1000,
+    queue: 'queue name',
+    name: 'a simple message',
+    params: {},
+    namespace: 'namespace',
+    lockedUntil: 1000 + NOW_VALUE,
+    options: {
+      lockWindow: 1000,
     },
-  ]);
+  });
 });
 
 const job1 = {
@@ -138,23 +168,29 @@ it.each([
 
   const result1 = await adapter.pickJob('queue name');
   const result2 = await adapter.pickJob('queue name');
-  expect('id' in result1 && result1.id).toBe(job1._id.toHexString());
-  expect('id' in result2 && result2.id).toBe(job2._id.toHexString());
+  expect(result1 && result1.id).toBe(job1._id.toHexString());
+  expect(result2 && result2.id).toBe(job2._id.toHexString());
 });
 
-it('should increment the lock of a job the given amount of seconds', async () => {
+it('should increment the lock of a job the amount of miliseconds given by lockWindow', async () => {
   const adapter = DefaultTestingQueueAdapter();
   const NOW_VALUE = 1;
   jest.spyOn(Date, 'now').mockReturnValue(NOW_VALUE);
   const job = {
     _id: new ObjectId(),
     queue: 'queue name',
-    message: 'a simple message',
+    name: 'a simple message',
+    params: {},
     lockedUntil: 0,
+    createdAt: NOW_VALUE,
+    namespace: 'namespace',
+    options: {
+      lockWindow: 2000,
+    },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
 
-  await adapter.renewJobLock(job._id.toHexString(), 2);
+  await adapter.renewJobLock({ ...job, id: job._id.toHexString() });
 
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([
     OTHER_QUEUE_JOB,
@@ -172,12 +208,18 @@ it('should delete a job', async () => {
   const job = {
     _id: new ObjectId(),
     queue: 'queue name',
-    message: 'a simple message',
+    name: 'a simple message',
+    params: {},
     lockedUntil: 0,
+    createdAt: NOW_VALUE,
+    namespace: 'namespace',
+    options: {
+      lockWindow: 2000,
+    },
   };
   await testingDB.mongodb?.collection('jobs').insertOne(job);
 
-  await adapter.completeJob(job._id.toHexString());
+  await adapter.deleteJob({ ...job, id: job._id.toHexString() });
 
   expect(await testingDB.mongodb?.collection('jobs').find({}).toArray()).toEqual([OTHER_QUEUE_JOB]);
 });

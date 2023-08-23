@@ -2,8 +2,9 @@
 import { performance } from 'perf_hooks';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { Job, Queue } from './Queue';
+import { Queue } from './Queue';
 import { UnregisteredJobError } from './errors';
+import { Job } from './QueueAdapter';
 
 interface WorkerOptions {
   waitTime?: number;

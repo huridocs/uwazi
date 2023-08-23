@@ -1,11 +1,19 @@
-export interface QueueMessage {
+export interface Job {
   id: string;
-  message: string;
+  queue: string;
+  name: string;
+  params: any;
+  namespace: string;
+  lockedUntil: number;
+  createdAt: number;
+  options: {
+    lockWindow: number;
+  };
 }
 
 export interface QueueAdapter {
-  pushJob(queueName: string, message: string): Promise<string>;
-  pickJob(queueName: string): Promise<QueueMessage | {}>;
-  renewJobLock(jobId: string, seconds: number): Promise<void>;
-  completeJob(jobId: string): Promise<void>;
+  pushJob(job: Omit<Job, 'id' | 'lockedUntil' | 'createdAt'>): Promise<string>;
+  pickJob(queueName: string): Promise<Job | null>;
+  renewJobLock(job: Job): Promise<void>;
+  deleteJob(job: Job): Promise<void>;
 }
