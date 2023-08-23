@@ -24,15 +24,12 @@ afterAll(async () => {
 it('should dispatch the job to the configured queue', async () => {
   const adapter = DefaultTestingQueueAdapter();
 
-  const queues: Record<string, Queue> = {};
-
-  const router = new JobsRouter(name => {
-    const queue = new Queue(name, adapter, {
-      namespace: 'namespace',
-    });
-    queues[name] = queue;
-    return queue;
-  });
+  const router = new JobsRouter(
+    name =>
+      new Queue(name, adapter, {
+        namespace: 'namespace',
+      })
+  );
 
   config.queueName = 'queue1';
   await router.dispatch(ExampleJob, undefined);
@@ -40,11 +37,11 @@ it('should dispatch the job to the configured queue', async () => {
   config.queueName = 'queue2';
   await router.dispatch(ExampleJob, undefined);
 
-  const result11 = await queues.queue1.peek();
-  const result12 = await queues.queue1.peek();
+  const result11 = await adapter.pickJob('queue1');
+  const result12 = await adapter.pickJob('queue1');
 
-  const result21 = await queues.queue2.peek();
-  const result22 = await queues.queue2.peek();
+  const result21 = await adapter.pickJob('queue2');
+  const result22 = await adapter.pickJob('queue2');
 
   expect(result11).toMatchObject({
     name: ExampleJob.name,

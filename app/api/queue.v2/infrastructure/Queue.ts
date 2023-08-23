@@ -1,6 +1,6 @@
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
-import { QueueAdapter, Job } from '../infrastructure/QueueAdapter';
+import { QueueAdapter } from '../infrastructure/QueueAdapter';
 
 interface QueueOptions {
   lockWindow?: number;
@@ -45,17 +45,5 @@ export class Queue implements JobsDispatcher {
         lockWindow: this.options.lockWindow,
       },
     });
-  }
-
-  async peek() {
-    return this.adapter.pickJob(this.queueName);
-  }
-
-  async complete(job: Job) {
-    await this.adapter.deleteJob(job);
-  }
-
-  async progress(job: Job) {
-    await this.adapter.renewJobLock(job);
   }
 }

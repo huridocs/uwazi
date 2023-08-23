@@ -46,9 +46,8 @@ it('should process all the jobs', async () => {
   const producerQueue2 = new Queue('name', adapter, {
     namespace: 'namespace2',
   });
-  const consumerQueue = new Queue('name', adapter);
 
-  const worker = new QueueWorker(consumerQueue, () => {});
+  const worker = new QueueWorker('name', adapter, () => {});
 
   worker.register(
     TestJob,
@@ -103,9 +102,8 @@ it('should finish the in-progress job before stopping', async () => {
   const producerQueue2 = new Queue('name', adapter, {
     namespace: 'namespace2',
   });
-  const consumerQueue = new Queue('name', adapter);
 
-  const worker = new QueueWorker(consumerQueue, () => {});
+  const worker = new QueueWorker('name', adapter, () => {});
 
   worker.register(
     TestJob,
@@ -175,7 +173,7 @@ it('should log and continue if a job fails', async () => {
 
   const adapter = DefaultTestingQueueAdapter();
   const queue = new Queue('name', adapter, { namespace: 'namespace' });
-  const queueWorker = new QueueWorker(queue, logMock);
+  const queueWorker = new QueueWorker('name', adapter, logMock);
 
   queueWorker.register(FailOnceJob, async () => new FailOnceJob());
 

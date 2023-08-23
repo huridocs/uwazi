@@ -1,10 +1,7 @@
 /* eslint-disable max-statements */
-/* eslint-disable no-console */
 import { config } from 'api/config';
 import { DB } from 'api/odm';
 import { QueueWorker } from 'api/queue.v2/infrastructure/QueueWorker';
-import { Queue } from 'api/queue.v2/infrastructure/Queue';
-
 import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
@@ -55,8 +52,7 @@ DB.connect(config.DBHOST, dbAuth)
   .then(async () => {
     log('info', 'Connected to MongoDB');
     const adapter = DefaultQueueAdapter();
-    const queue = new Queue(config.queueName, adapter);
-    const queueWorker = new QueueWorker(queue, log);
+    const queueWorker = new QueueWorker(config.queueName, adapter, log);
 
     registerJobs(register.bind(queueWorker));
     log('info', { message: 'Registered jobs', jobs: queueWorker.getRegisteredJobs() });

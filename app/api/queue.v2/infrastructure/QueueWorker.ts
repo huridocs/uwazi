@@ -2,9 +2,8 @@
 import { performance } from 'perf_hooks';
 import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
-import { Queue } from './Queue';
 import { UnregisteredJobError } from './errors';
-import { Job } from './QueueAdapter';
+import { Job, QueueAdapter } from './QueueAdapter';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -24,7 +23,9 @@ interface Registry {
   [name: string]: (namespace: string) => Promise<Dispatchable>;
 }
 export class QueueWorker {
-  private queue: Queue;
+  private queueName: string;
+
+  private adapter: QueueAdapter;
 
   private logger: (level: 'info' | 'error', message: string | object) => void;
 
@@ -40,8 +41,13 @@ export class QueueWorker {
     ...defaultPerformance,
   };
 
-  constructor(queue: Queue, logger: (level: 'info' | 'error', message: string | object) => void) {
-    this.queue = queue;
+  constructor(
+    queueName: string,
+    adapter: QueueAdapter,
+    logger: (level: 'info' | 'error', message: string | object) => void
+  ) {
+    this.queueName = queueName;
+    this.adapter = adapter;
     this.options = { ...optionsDefaults };
     this.logger = logger;
   }
@@ -74,11 +80,11 @@ export class QueueWorker {
   }
 
   private async peekJob() {
-    let job = await this.queue.peek();
+    let job = await this.adapter.pickJob(this.queueName);
 
     while (!this.isStopping() && !job) {
       await this.sleep();
-      job = await this.queue.peek();
+      job = await this.adapter.pickJob(this.queueName);
     }
 
     if (this.isStopping()) return null;
@@ -99,16 +105,20 @@ export class QueueWorker {
     return this.registry[job.name](job.namespace);
   }
 
+  private async completeJob(job: Job) {
+    return this.adapter.deleteJob(job);
+  }
+
   private async processJob(job: Job) {
     const start = performance.now();
     const dispatchable = await this.createDispatchable(job);
-    const heartbeatCallback = async () => this.queue.progress(job);
+    const heartbeatCallback = async () => this.adapter.renewJobLock(job);
 
     try {
       this.logger('info', { message: 'Processing job', ...job });
       await dispatchable.handleDispatch(heartbeatCallback, job.params);
       this.logger('info', { message: 'Processed job', ...job });
-      await this.queue.complete(job);
+      await this.completeJob(job);
     } catch (e) {
       this.logger('error', {
         name: e.name,

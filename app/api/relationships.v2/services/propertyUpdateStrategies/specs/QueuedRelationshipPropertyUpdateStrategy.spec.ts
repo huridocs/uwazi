@@ -19,9 +19,9 @@ it('should enqueue a job per entity', async () => {
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.update(['sharedId1', 'sharedId2']);
-  const enqueued1 = await queue.peek();
-  const enqueued2 = await queue.peek();
-  const enqueued3 = await queue.peek();
+  const enqueued1 = await adapter.pickJob('jobs');
+  const enqueued2 = await adapter.pickJob('jobs');
+  const enqueued3 = await adapter.pickJob('jobs');
 
   expect(enqueued1!.name).toBe(UpdateRelationshipPropertiesJob.name);
   expect(enqueued1!.params.entityIds).toEqual(['sharedId1']);
@@ -38,8 +38,8 @@ it('should enqueue a job for the template', async () => {
   const strategy = new QueuedRelationshipPropertyUpdateStrategy(queue);
 
   await strategy.updateByTemplate('template1');
-  const enqueued1 = await queue.peek();
-  const enqueued2 = await queue.peek();
+  const enqueued1 = await adapter.pickJob('jobs');
+  const enqueued2 = await adapter.pickJob('jobs');
 
   expect(enqueued1!.name).toBe(UpdateTemplateRelationshipPropertiesJob.name);
   expect(enqueued1!.params.templateId).toBe('template1');
