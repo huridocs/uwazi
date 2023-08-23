@@ -149,20 +149,22 @@ describe('csvLoader typeParsers', () => {
       ${'December 17, 1995:December 17, 1996'} | ${'dd/MM/yyyy'} | ${{ from: '17-12-1995', to: '17-12-1996' }}
       ${'12/01/2021:12/01/2022'}               | ${'dd/MM/yyyy'} | ${{ from: '12-01-2021', to: '12-01-2022' }}
       ${'2021/12/01:2022/12/01'}               | ${'yyyy/MM/dd'} | ${{ from: '01-12-2021', to: '01-12-2022' }}
+      ${'2021/12/01:'}                         | ${'yyyy/MM/dd'} | ${{ from: '01-12-2021', to: null }}
+      ${':2021/12/01'}                         | ${'yyyy/MM/dd'} | ${{ from: null, to: '01-12-2021' }}
     `(
       "should parse '$dateProp' with format '$dateFormat' and return the to and from timestamps",
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const expected = await typeParsers.daterange(
-          { date_prop: dateProp },
-          templateProp,
-          dateFormat
-        );
+        const [
+          {
+            value: { from, to },
+          },
+        ] = await typeParsers.daterange({ date_prop: dateProp }, templateProp, dateFormat);
 
         expect({
-          from: moment.utc(expected[0].value.from, 'X').format('DD-MM-YYYY'),
-          to: moment.utc(expected[0].value.to, 'X').format('DD-MM-YYYY'),
+          from: from && moment.utc(from, 'X').format('DD-MM-YYYY'),
+          to: to && moment.utc(to, 'X').format('DD-MM-YYYY'),
         }).toEqual(expectedDate);
       }
     );
@@ -233,6 +235,14 @@ describe('csvLoader typeParsers', () => {
         dateFormat: 'dd/MM/yyyy',
         expectedDate: [],
       },
+      {
+        dateProp: '2021/12/01:|:2024/12/01',
+        dateFormat: 'dd/MM/yyyy',
+        expectedDate: [
+          { from: '01-12-2021', to: null },
+          { from: null, to: '01-12-2024' },
+        ],
+      },
     ])(
       "should parse '$dateProp' with format '$dateFormat' and return an array of to and from timestamps",
       async ({ dateProp, dateFormat, expectedDate }) => {
@@ -246,8 +256,8 @@ describe('csvLoader typeParsers', () => {
 
         expect(
           expected.map(range => ({
-            from: moment.utc(range.value.from, 'X').format('DD-MM-YYYY'),
-            to: moment.utc(range.value.to, 'X').format('DD-MM-YYYY'),
+            from: range.value.from && moment.utc(range.value.from, 'X').format('DD-MM-YYYY'),
+            to: range.value.to && moment.utc(range.value.to, 'X').format('DD-MM-YYYY'),
           }))
         ).toEqual(expectedDate);
       }
