@@ -288,7 +288,7 @@ describe('BasicReducer', () => {
       expect(newState2.toJS()).toEqual([{ _id: '2' }]);
     });
 
-    it('should delete an element from the array based on the id, by a custom index', () => {
+    it('should delete an element from the array based on a custom index', () => {
       const reducer1 = createReducer('namespace1', []);
       const reducer2 = createReducer('namespace2', []);
 
