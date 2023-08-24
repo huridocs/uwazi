@@ -4,6 +4,7 @@ import { Dispatchable } from '../application/contracts/Dispatchable';
 import { DispatchableClass } from '../application/contracts/JobsDispatcher';
 import { UnregisteredJobError } from './errors';
 import { Job, QueueAdapter } from './QueueAdapter';
+import { inspect } from 'util';
 
 interface WorkerOptions {
   waitTime?: number;
@@ -121,9 +122,7 @@ export class QueueWorker {
       await this.completeJob(job);
     } catch (e) {
       this.logger('error', {
-        name: e.name,
-        message: e.message,
-        stack: e.stack,
+        message: inspect(e),
         job,
       });
     } finally {

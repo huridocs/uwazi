@@ -7,6 +7,7 @@ import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { registerJobs } from './queueRegistry';
+import { inspect } from 'util';
 
 let dbAuth = {};
 
@@ -54,6 +55,9 @@ DB.connect(config.DBHOST, dbAuth)
     const adapter = DefaultQueueAdapter();
     const queueWorker = new QueueWorker(config.queueName, adapter, log);
 
+    await tenants.setupTenants();
+    log('info', 'Set tenants up');
+
     registerJobs(register.bind(queueWorker));
     log('info', { message: 'Registered jobs', jobs: queueWorker.getRegisteredJobs() });
 
@@ -76,4 +80,4 @@ DB.connect(config.DBHOST, dbAuth)
 
     process.exit(0);
   })
-  .catch(e => log('error', e));
+  .catch(e => log('error', inspect(e)));
