@@ -52,10 +52,9 @@ describe('when handled', () => {
   it('should schedule a job per entity batch in the template', async () => {
     const jobs = await testingDB.mongodb?.collection('jobs').find({}).toArray();
 
-    jobs!.forEach((data, index) => {
-      const parsedData = JSON.parse(data.message);
-      expect(parsedData.name).toBe(UpdateRelationshipPropertiesJob.name);
-      expect(parsedData.params.entityIds).toEqual(expectedBatches[index]);
+    jobs!.forEach((job, index) => {
+      expect(job.name).toBe(UpdateRelationshipPropertiesJob.name);
+      expect(job.params.entityIds).toEqual(expectedBatches[index]);
     });
   });
 
