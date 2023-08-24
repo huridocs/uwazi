@@ -192,26 +192,29 @@ export class CSVLoader extends EventEmitter {
       .map((l: LanguageSchema) => ({ label: l.label, language: l.key }))
       .filter(lang => Object.keys(intermediateTranslation).includes(lang.label));
 
-    await languagesToTranslate.reduce(async (prev, lang) => {
-      await prev;
-      const trans = intermediateTranslation[lang.label];
+    await languagesToTranslate.reduce(
+      async (prev, lang) => {
+        await prev;
+        const trans = intermediateTranslation[lang.label];
 
-      const [dbTranslations] = await translations.get({ locale: lang.language });
+        const [dbTranslations] = await translations.get({ locale: lang.language });
 
-      const context = (dbTranslations.contexts || []).find(
-        (ctxt: any) => ctxt.id === translationContext
-      );
+        const context = (dbTranslations.contexts || []).find(
+          (ctxt: any) => ctxt.id === translationContext
+        );
 
-      if (trans && context) {
-        Object.keys(trans).forEach(transKey => {
-          if (context.values[transKey] && trans[transKey] !== '') {
-            context.values[transKey] = trans[transKey];
-          }
-        });
-      }
+        if (trans && context) {
+          Object.keys(trans).forEach(transKey => {
+            if (context.values[transKey] && trans[transKey] !== '') {
+              context.values[transKey] = trans[transKey];
+            }
+          });
+        }
 
-      return translations.save(dbTranslations);
-    }, Promise.resolve({} as TranslationType));
+        return translations.save(dbTranslations);
+      },
+      Promise.resolve({} as TranslationType)
+    );
 
     return translations.get();
   }

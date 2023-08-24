@@ -15,11 +15,11 @@ const testDocuments = [
 ];
 
 const buildCursor = (query?: any) =>
-  testingDB.mongodb?.collection<typeof testDocuments[number]>('testDocuments').find(query || {});
+  testingDB.mongodb?.collection<(typeof testDocuments)[number]>('testDocuments').find(query || {});
 
 const buildAggregationCursor = () =>
   testingDB.mongodb
-    ?.collection<typeof testDocuments[number]>('testDocuments')
+    ?.collection<(typeof testDocuments)[number]>('testDocuments')
     .aggregate([{ $match: {} }]);
 
 beforeEach(async () => {

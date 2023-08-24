@@ -22,10 +22,11 @@ const SuggestionComponent = ({
   if (extractor) {
     const propertiesKey = extractor.property === 'title' ? 'commonProperties' : 'properties';
     property = templates
-      .map(template =>
-        ensure<IImmutable<ClientTemplateSchema>>(template)
-          .get(propertiesKey)
-          ?.find(p => p?.get('name') === extractor.property)
+      .map(
+        template =>
+          ensure<IImmutable<ClientTemplateSchema>>(template)
+            .get(propertiesKey)
+            ?.find(p => p?.get('name') === extractor.property)
       )
       .filter(v => !isUndefined(v));
   }

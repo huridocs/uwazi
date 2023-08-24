@@ -603,7 +603,7 @@ describe('entitySavingManager', () => {
         });
 
         it('should return an error if an existing main document cannot be saved', async () => {
-          jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({} as Logger));
+          jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({}) as Logger);
           jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
 
           const { errors } = await saveEntity(
