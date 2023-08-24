@@ -274,7 +274,7 @@ describe('BasicReducer', () => {
   });
 
   describe('Delete', () => {
-    it('should delete an element from the array based on the id', () => {
+    it('should delete an element from the array based on the id, when a custom index is not specified', () => {
       const reducer1 = createReducer('namespace1', []);
       const reducer2 = createReducer('namespace2', []);
 
@@ -286,6 +286,23 @@ describe('BasicReducer', () => {
 
       expect(newState1.toJS()).toEqual([{ _id: '1' }, { _id: '3' }]);
       expect(newState2.toJS()).toEqual([{ _id: '2' }]);
+    });
+
+    it('should delete an element from the array based on the id, by a custom index', () => {
+      const reducer1 = createReducer('namespace1', []);
+      const reducer2 = createReducer('namespace2', []);
+
+      const newState1 = reducer1(
+        [{ customID: '1' }, { customID: '2' }, { customID: '3' }],
+        actions.remove('namespace1', { customID: '2' }, 'customID')
+      );
+      const newState2 = reducer2(
+        [{ customID: '2' }],
+        actions.remove('namespace1', { customID: '2' }, 'customID')
+      );
+
+      expect(newState1.toJS()).toEqual([{ customID: '1' }, { customID: '3' }]);
+      expect(newState2.toJS()).toEqual([{ customID: '2' }]);
     });
   });
 });
