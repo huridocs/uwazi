@@ -248,7 +248,7 @@ describe('templates routes', () => {
 
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
-        jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({} as Logger));
+        jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({}) as Logger);
         jest.spyOn(entitiesIndex, 'updateMapping').mockImplementation(() => {
           throw new Error('not 409');
         });

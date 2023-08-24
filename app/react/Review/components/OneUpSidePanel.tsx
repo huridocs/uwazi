@@ -32,7 +32,7 @@ const defaultProps = {
   panelOpen: true,
   selectedConnection: false,
   closePanel: () => {},
-  showTab: (_tab: string) => ({} as Action),
+  showTab: (_tab: string) => ({}) as Action,
   connectionsChanged: () => {},
   deleteConnection: (_reference: any) => {},
   toggleOneUpLoadConnections: () => {},

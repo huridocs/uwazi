@@ -4,7 +4,7 @@ import Redis from 'redis';
 let clientPromise: Promise<Redis.RedisClient> | null = null;
 
 export const ApplicationRedisClient = {
-  async getInstance(createClient: typeof Redis['createClient'] = Redis.createClient) {
+  async getInstance(createClient: (typeof Redis)['createClient'] = Redis.createClient) {
     if (clientPromise) {
       return clientPromise;
     }

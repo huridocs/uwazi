@@ -15,7 +15,7 @@ describe('languageMiddleware', () => {
     req = <Request>{
       get: (headerName: string) =>
         //@ts-ignore
-        ({ 'content-language': 'es', 'accept-language': 'en-US' }[headerName]),
+        ({ 'content-language': 'es', 'accept-language': 'en-US' })[headerName],
     };
     next = jest.fn();
   });
@@ -67,7 +67,7 @@ describe('languageMiddleware', () => {
       it('should use accept-language', async () => {
         req = createRequest({
           //@ts-ignore
-          get: (headerName: string) => ({ 'accept-language': 'en-US' }[headerName]),
+          get: (headerName: string) => ({ 'accept-language': 'en-US' })[headerName],
         });
         await middleware(req, res, next);
         expect(req.language).toBe('en');
@@ -80,7 +80,7 @@ describe('languageMiddleware', () => {
     it('should set the default one "es"', async () => {
       req = createRequest({
         //@ts-ignore
-        get: (headerName: string) => ({ 'content-language': 'nonExistent' }[headerName]),
+        get: (headerName: string) => ({ 'content-language': 'nonExistent' })[headerName],
       });
 
       await middleware(req, res, next);
