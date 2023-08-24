@@ -38,8 +38,8 @@ const parseDateRange = (rangeValue: string, dateFormat: string) => {
 
   return {
     value: {
-      from: parseDateValue(from, dateFormat),
-      to: parseDateValue(to, dateFormat),
+      from: from !== '' ? parseDateValue(from, dateFormat) : null,
+      to: to !== '' ? parseDateValue(to, dateFormat) : null,
     },
   };
 };
