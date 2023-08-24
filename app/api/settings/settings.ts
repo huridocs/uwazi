@@ -149,15 +149,18 @@ export default {
     if (!currentSettings.newNameGeneration && settings.newNameGeneration) {
       await (
         await templates.get()
-      ).reduce<Promise<TemplateSchema>>(async (lastSave, template) => {
-        await lastSave;
-        return templates.save(
-          template,
-          ensure<LanguageSchema>(
-            ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
-          ).key
-        );
-      }, Promise.resolve({} as TemplateSchema));
+      ).reduce<Promise<TemplateSchema>>(
+        async (lastSave, template) => {
+          await lastSave;
+          return templates.save(
+            template,
+            ensure<LanguageSchema>(
+              ensure<LanguageSchema[]>(currentSettings.languages).find(l => l.default)
+            ).key
+          );
+        },
+        Promise.resolve({} as TemplateSchema)
+      );
     }
 
     return result;

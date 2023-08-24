@@ -11,7 +11,7 @@ describe('tocService', () => {
   let requestMock: jest.SpyInstance;
 
   beforeAll(async () => {
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
     requestMock = jest.spyOn(request, 'uploadFile');
     await testingDB.connect({ defaultTenant: false });
     tenants.add({ name: 'tenant1', dbName: 'tenant1', indexName: 'tenant1' });

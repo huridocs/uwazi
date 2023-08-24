@@ -2,7 +2,7 @@ import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 import thunk from 'redux-thunk';
 import { RequestParams } from 'app/utils/RequestParams';
-
+import { I18NApi } from 'app/I18N';
 import { APIURL } from 'app/config.js';
 import { mockID } from 'shared/uniqueID';
 import * as actions from 'app/Templates/actions/templateActions';
@@ -21,6 +21,7 @@ describe('templateActions', () => {
   let getState;
   let formModel;
   beforeEach(() => {
+    jest.resetAllMocks();
     mockID();
     formModel = {
       thesauris: Immutable.fromJS([{ _id: 'first_thesauri_id' }, { _id: 2 }]),
@@ -39,6 +40,7 @@ describe('templateActions', () => {
     spyOn(formActions, 'remove');
     spyOn(formActions, 'reset');
     spyOn(formActions, 'resetErrors');
+    jest.spyOn(I18NApi, 'get').mockImplementation(async () => Promise.resolve([]));
   });
 
   describe('updateValue', () => {
@@ -210,6 +212,7 @@ describe('templateActions', () => {
             type: notificationsTypes.NOTIFY,
             notification: { message: 'Saved successfully.', type: 'success', id: 'unique_id' },
           },
+          { type: 'translations/SET', value: [] },
         ];
         const store = mockStore({});
         spyOn(api, 'save').and.callFake(async () =>
@@ -236,6 +239,7 @@ describe('templateActions', () => {
           const expectedActions = [
             { type: types.SAVING_TEMPLATE },
             { type: types.TEMPLATE_SAVED, data: originalTemplateData },
+            { type: 'translations/SET', value: [] },
           ];
 
           const store = mockStore({});

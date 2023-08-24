@@ -101,23 +101,26 @@ const aggregateByTemplate = (
   relationship: { _id: string; name: string },
   inheritingProperties: { [key: string]: string[] }
 ) =>
-  relations.reduce((groupedRelations, relation) => {
-    const { template } = relation.entityData;
-    const groupName = `${relationship.name}-${template}`;
-    const relationMetadata = pick(
-      relation.entityData.metadata,
-      inheritingProperties[template as string]
-    );
-    const metadata = formatAggregationsMetadata(relationMetadata || {});
-    const relatedEntity = {
-      title: relation.entityData.title,
-      sharedId: relation.entityData.sharedId,
-      metadata,
-    };
-    return !has(groupedRelations, groupName)
-      ? { ...groupedRelations, [groupName]: [relatedEntity] }
-      : { ...groupedRelations, [groupName]: [...groupedRelations[groupName], relatedEntity] };
-  }, {} as { [key: string]: EntitySchema[] });
+  relations.reduce(
+    (groupedRelations, relation) => {
+      const { template } = relation.entityData;
+      const groupName = `${relationship.name}-${template}`;
+      const relationMetadata = pick(
+        relation.entityData.metadata,
+        inheritingProperties[template as string]
+      );
+      const metadata = formatAggregationsMetadata(relationMetadata || {});
+      const relatedEntity = {
+        title: relation.entityData.title,
+        sharedId: relation.entityData.sharedId,
+        metadata,
+      };
+      return !has(groupedRelations, groupName)
+        ? { ...groupedRelations, [groupName]: [relatedEntity] }
+        : { ...groupedRelations, [groupName]: [...groupedRelations[groupName], relatedEntity] };
+    },
+    {} as { [key: string]: EntitySchema[] }
+  );
 
 const getInheritingProperties = (templates: TemplateSchema[], entityTemplate: TemplateSchema) =>
   templates.reduce((inheriting, template) => {

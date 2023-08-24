@@ -84,7 +84,11 @@ Translate.propTypes = {
 };
 
 const mapStateToProps = (state, props) => {
-  if (!Translate.translation || Translate.translation.locale !== state.locale) {
+  if (
+    !Translate.translation ||
+    Translate.translation.locale !== state.locale ||
+    state.inlineEdit.get('inlineEdit')
+  ) {
     const translations = state.translations.toJS();
     Translate.translation = translations.find(t => t.locale === state.locale) || { contexts: [] };
   }

@@ -1354,7 +1354,7 @@ const availableLanguages: LanguageSchema[] = [
   },
 ];
 
-const language = (key: string, purpose: keyof typeof elasticLanguages[number] = 'elastic') => {
+const language = (key: string, purpose: keyof (typeof elasticLanguages)[number] = 'elastic') => {
   const defaultValue = purpose !== 'ISO639_1' ? 'other' : null;
   return elasticLanguages[key] ? elasticLanguages[key][purpose] : defaultValue;
 };

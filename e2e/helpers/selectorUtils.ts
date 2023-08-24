@@ -43,9 +43,9 @@ const getPropertiesOfSubelements = async (
 ) =>
   (
     await Promise.all(
-      (
-        await element.$$(topSelector)
-      ).map(async item => getPropertyOfSelector(item, subSelector, property))
+      (await element.$$(topSelector)).map(async item =>
+        getPropertyOfSelector(item, subSelector, property)
+      )
     )
   ).filter(s => s);
 
