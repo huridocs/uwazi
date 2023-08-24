@@ -104,42 +104,41 @@ const getMultiMemberInfo =
     selectConnection: mappedProps['selectConnection'],
     templateId: string
   ) =>
-  (member: GroupMember) =>
-    (
-      <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
-        <dt>
-          <span>
-            <Translate context={templateId}>{member.label}</Translate>
-            {templatesInfo[member.translateContext]?.name && (
-              <>
-                {' ('}
-                <Translate>linked</Translate>{' '}
-                <Translate context={templateId}>
-                  {templatesInfo[member.translateContext].name}
-                </Translate>
-                {') '}
-              </>
-            )}
-          </span>
-        </dt>
-        <dd>
-          {member.value.map(value => (
-            <div
+  (member: GroupMember) => (
+    <dl className="pills-container" key={`${member.translateContext}_${member.name}`}>
+      <dt>
+        <span>
+          <Translate context={templateId}>{member.label}</Translate>
+          {templatesInfo[member.translateContext]?.name && (
+            <>
+              {' ('}
+              <Translate>linked</Translate>{' '}
+              <Translate context={templateId}>
+                {templatesInfo[member.translateContext].name}
+              </Translate>
+              {') '}
+            </>
+          )}
+        </span>
+      </dt>
+      <dd>
+        {member.value.map(value => (
+          <div
+            key={`${value.lat}_${value.lon}`}
+            onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
+            style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
+          >
+            <Pill
               key={`${value.lat}_${value.lon}`}
-              onClick={() => value.relatedEntity && selectConnection(value.relatedEntity)}
-              style={{ cursor: value.relatedEntity ? 'pointer' : 'default' }}
+              color={pillColor(member, templatesInfo, templateId)}
             >
-              <Pill
-                key={`${value.lat}_${value.lon}`}
-                color={pillColor(member, templatesInfo, templateId)}
-              >
-                <Translate context={member.translateContext}>{value.label || ''}</Translate>
-              </Pill>
-            </div>
-          ))}
-        </dd>
-      </dl>
-    );
+              <Translate context={member.translateContext}>{value.label || ''}</Translate>
+            </Pill>
+          </div>
+        ))}
+      </dd>
+    </dl>
+  );
 
 const computeRenderMemberGroups = (
   members: GroupMember[],

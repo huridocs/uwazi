@@ -7,9 +7,8 @@ import { CreateTemplateService } from 'api/templates.v2/services/service_factori
 
 const getNewRelationshipCount = async (id: ObjectId) => {
   const transactionManager = new MongoTransactionManager(getClient());
-  const newRelationshipsAllowed = await DefaultSettingsDataSource(
-    transactionManager
-  ).readNewRelationshipsAllowed();
+  const newRelationshipsAllowed =
+    await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
   const relationshipsDataSource = DefaultRelationshipDataSource(transactionManager);
 
   return newRelationshipsAllowed ? relationshipsDataSource.countByType(id.toString()) : 0;
@@ -17,9 +16,8 @@ const getNewRelationshipCount = async (id: ObjectId) => {
 
 const relationTypeIsUsedInQueries = async (id: ObjectId): Promise<boolean> => {
   const transactionManager = new MongoTransactionManager(getClient());
-  const newRelationshipsAllowed = await DefaultSettingsDataSource(
-    transactionManager
-  ).readNewRelationshipsAllowed();
+  const newRelationshipsAllowed =
+    await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
   if (!newRelationshipsAllowed) return false;
 
   const createTemplateService = await CreateTemplateService();

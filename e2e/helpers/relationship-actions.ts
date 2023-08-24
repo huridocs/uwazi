@@ -113,19 +113,15 @@ const moveRelationship = async (
 
 const readRelations = async () => {
   const rels = await Promise.all(
-    (
-      await page.$$('div.relationshipsHub')
-    ).map(async element => [
+    (await page.$$('div.relationshipsHub')).map(async element => [
       await getPropertyOfSelector(element, '.leftRelationshipType .rw-input', 'textContent'),
       await Promise.all(
-        (
-          await element.$$('.rightRelationshipsTypeGroup')
-        ).map(async rightElement => [
+        (await element.$$('.rightRelationshipsTypeGroup')).map(async rightElement => [
           await getPropertyOfSelector(rightElement, '.rw-input', 'textContent'),
           await Promise.all(
-            (
-              await rightElement.$$('.rightRelationship')
-            ).map(async rel => getPropertyOfSelector(rel, '.item-name', 'textContent'))
+            (await rightElement.$$('.rightRelationship')).map(async rel =>
+              getPropertyOfSelector(rel, '.item-name', 'textContent')
+            )
           ),
         ])
       ),
