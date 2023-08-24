@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import loadable from '@loadable/component';
 import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -46,18 +46,11 @@ const PDF = ({
       });
   }, [fileUrl]);
 
-  useEffect(() => {
-    if (scrollToPage && pdf) {
-      const element = document.getElementById(`page-${scrollToPage}-container`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }, [pdf, scrollToPage]);
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-  return error ? (
-    <div>{error}</div>
-  ) : (
+  return (
     //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
       <div
@@ -70,17 +63,15 @@ const PDF = ({
       >
         {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const page = number.toString();
-            const pageHighlights = highlights ? highlights[page] : undefined;
+            const regionId = number.toString();
+            const pageHighlights = highlights ? highlights[regionId] : undefined;
             return (
-              <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
-                <div id={`page-${page}-container`}>
-                  {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
-                  <SelectionRegion regionId={page}>
-                    <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
-                  </SelectionRegion>
-                </div>
-              </Suspense>
+              <div key={`page-${regionId}`} className="relative" id={`page-${regionId}-container`}>
+                {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
+                <SelectionRegion regionId={regionId}>
+                  <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
+                </SelectionRegion>
+              </div>
             );
           })
         ) : (

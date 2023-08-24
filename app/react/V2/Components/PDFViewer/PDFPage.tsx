@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Highlight } from 'react-text-selection-handler';
@@ -38,12 +39,14 @@ const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
         setError(e.message);
       });
     }
-  }, [page, pdf]);
+  });
 
-  return error ? (
-    <div>{error}</div>
-  ) : (
-    <div className="relative" ref={pageContainerRef}>
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return (
+    <div ref={pageContainerRef}>
       {highlights?.map(highlight => (
         <Highlight
           key={highlight.key}

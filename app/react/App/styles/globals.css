@@ -1991,6 +1991,10 @@ input:checked + .toggle-bg {
   height: 35px;
 }
 
+.h-\[532px\] {
+  height: 532px;
+}
+
 .h-auto {
   height: auto;
 }
