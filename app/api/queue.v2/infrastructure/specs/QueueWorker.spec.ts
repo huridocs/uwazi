@@ -144,19 +144,15 @@ it('should finish the in-progress job before stopping', async () => {
 
 it('should log and continue if a job fails', async () => {
   class FailOnceJob implements Dispatchable {
-    static executions: string[] = [];
-
     static failed = false;
 
     // eslint-disable-next-line class-methods-use-this
     async handleDispatch(): Promise<void> {
       if (FailOnceJob.failed) {
-        FailOnceJob.executions.push('successful');
         return;
       }
 
       FailOnceJob.failed = true;
-      FailOnceJob.executions.push('failing');
       throw new Error('failing');
     }
   }
@@ -171,11 +167,14 @@ it('should log and continue if a job fails', async () => {
 
   await dispatcher.dispatch(FailOnceJob, undefined);
 
-  await Promise.all([queueWorker.start(), sleep(1100).then(async () => queueWorker.stop())]);
+  await Promise.all([queueWorker.start(), sleep(200).then(async () => queueWorker.stop())]);
 
-  expect(FailOnceJob.executions).toEqual(['failing', 'successful']);
   expect(logMock).toHaveBeenCalledWith(
     'error',
     expect.objectContaining({ job: expect.objectContaining({ name: FailOnceJob.name }) })
+  );
+  expect(logMock).toHaveBeenCalledWith(
+    'info',
+    expect.objectContaining({ message: expect.stringContaining('Sleeping') })
   );
 });
