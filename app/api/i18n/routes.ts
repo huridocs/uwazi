@@ -5,17 +5,23 @@ import entities from 'api/entities';
 import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
+import { sequentialPromises } from 'shared/asyncUtils';
 import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
 import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
-import { sequentialPromises } from 'shared/asyncUtils';
 
 const addLanguage = async (language: any) => {
   const newSettings = await settings.addLanguage(language);
-  const newTranslations = await translations.addLanguage(language.key);
+  const addedTranslations = await translations.addLanguage(language.key);
+  const newTranslations = addedTranslations
+    ? {
+        ...addedTranslations,
+        contexts: translations.prepareContexts(addedTranslations.contexts),
+      }
+    : addedTranslations;
   await entities.addLanguage(language.key);
   await pages.addLanguage(language.key);
   try {
