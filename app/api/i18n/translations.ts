@@ -167,7 +167,7 @@ const translationTypeToIndexedTranslation = (translations?: EnforcedWithId<Trans
           ({
             ...translation,
             contexts: prepareContexts(translation.contexts),
-          }) as IndexedTranslations
+          } as IndexedTranslations)
       )
     : [];
 

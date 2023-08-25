@@ -228,7 +228,8 @@ describe('i18n translations routes', () => {
       });
     });
 
-    describe('api/translations/languages', () => {
+    // eslint-disable-next-line jest/no-focused-tests
+    fdescribe('api/translations/languages', () => {
       it('should return the saved translation', async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 

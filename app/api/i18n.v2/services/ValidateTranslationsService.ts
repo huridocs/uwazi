@@ -79,21 +79,18 @@ export class ValidateTranslationsService {
       Promise.resolve()
     );
 
-    const translationsMissingLanguages = groupedByKeyContext.reduce(
-      (memo, t) => {
-        const set = new Set(configuredLanguageKeys);
-        t.missingLanguages.forEach(key => {
-          set.delete(key);
-        });
-        if (set.size) {
-          // eslint-disable-next-line no-param-reassign
-          t.missingLanguages = Array.from(set);
-          memo.push(t);
-        }
-        return memo;
-      },
-      [] as { key: string; contextId: string; missingLanguages: string[] }[]
-    );
+    const translationsMissingLanguages = groupedByKeyContext.reduce((memo, t) => {
+      const set = new Set(configuredLanguageKeys);
+      t.missingLanguages.forEach(key => {
+        set.delete(key);
+      });
+      if (set.size) {
+        // eslint-disable-next-line no-param-reassign
+        t.missingLanguages = Array.from(set);
+        memo.push(t);
+      }
+      return memo;
+    }, [] as { key: string; contextId: string; missingLanguages: string[] }[]);
 
     if (translationsMissingLanguages.length) {
       throw new TranslationMissingLanguages(
