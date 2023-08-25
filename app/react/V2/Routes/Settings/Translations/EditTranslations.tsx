@@ -14,6 +14,7 @@ import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
+import { advancedSort } from 'app/utils/advancedSort';
 import { ClientTranslationSchema } from 'app/istore';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -31,7 +32,23 @@ const editTranslationsLoader =
   async ({ params }: { params: Params }) => {
     const translations = await translationsAPI.get(headers, params);
     const settings = await settingsAPI.get(headers);
-    return { translations, settings };
+
+    const sortedTranslations = translations.map(language => {
+      const sortedContexts = language.contexts.map(context => {
+        const sortedContextKeys = advancedSort(Object.keys(context.values)) as string[];
+
+        const sortedContext = sortedContextKeys.reduce((results, contextKey) => {
+          const value = context.values[contextKey];
+          return { ...results, [contextKey]: value };
+        }, {});
+
+        return { ...context, values: sortedContext };
+      });
+
+      return { ...language, contexts: sortedContexts };
+    });
+
+    return { translations: sortedTranslations, settings };
   };
 
 const editTranslationsAction =
@@ -115,30 +132,28 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
   )?.contexts[0].values;
 
   return translations.map(language => {
-    const values = Object.entries(language.contexts[0].values || {})
-      .sort()
-      .reduce(
-        (result, [key, value], index) => ({
-          ...result,
-          [index]: {
-            key,
-            value,
-            translationStatus: getTraslationStatus(
-              defaultLanguageValues || {},
-              { key, value },
-              language.locale,
-              defaultLanguageKey
-            ),
-          },
-        }),
-        {}
-      );
+    const values = Object.entries(language.contexts[0].values || {}).reduce(
+      (result, [key, value], index) => ({
+        ...result,
+        [index]: {
+          key,
+          value,
+          translationStatus: getTraslationStatus(
+            defaultLanguageValues || {},
+            { key, value },
+            language.locale,
+            defaultLanguageKey
+          ),
+        },
+      }),
+      {}
+    );
     return { _id: language._id?.toString(), locale: language.locale, values };
   });
 };
 
 const getContextInfo = (translations: ClientTranslationSchema[]) => {
-  const contextTerms = Object.keys(translations[0].contexts[0].values || {}).sort();
+  const contextTerms = Object.keys(translations[0].contexts[0].values || {});
   const { label: contextLabel, id: contextId } = translations[0].contexts[0];
   return { contextTerms, contextLabel, contextId };
 };
@@ -280,7 +295,7 @@ const EditTranslations = () => {
                 />
               </form>
             ) : (
-              <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
+              <div className="flex gap-2 items-center p-4 rounded-md border border-gray-50 bg-primary-50">
                 <InformationCircleIcon className="w-10 text-primary-800" />
                 <span className="text-primary-800">
                   <Translate>There are no untranslated terms</Translate>
@@ -291,7 +306,7 @@ const EditTranslations = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex justify-end gap-2">
+          <div className="flex gap-2 justify-end">
             <div className="flex-1">
               {contextId === 'System' && (
                 <>
