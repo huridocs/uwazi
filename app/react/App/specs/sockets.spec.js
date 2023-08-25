@@ -123,6 +123,17 @@ describe('sockets', () => {
     });
   });
 
+  describe('translationsDelete', () => {
+    it('should emit a translationsDelete event', () => {
+      socket._callbacks.$translationsDelete[0]('localeString');
+      expect(store.dispatch).toHaveBeenCalledWith({
+        customIndex: 'locale',
+        type: 'translations/REMOVE',
+        value: { locale: 'localeString' },
+      });
+    });
+  });
+
   describe('documentProcessed', () => {
     it('should dispatch the documentProcessed action', () => {
       jest.spyOn(uploadActions, 'documentProcessed').mockImplementationOnce(() => {});
