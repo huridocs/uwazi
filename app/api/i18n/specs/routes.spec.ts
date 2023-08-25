@@ -52,18 +52,21 @@ describe('i18n translations routes', () => {
         label: 'User Interface',
       }),
     ];
-    await testingEnvironment.setUp({
-      settings: [
-        {
-          languages: [
-            { key: 'en', label: 'English', default: true },
-            { key: 'es', label: 'Spanish', default: false },
-          ],
-        },
-      ],
-      translationsV2,
-      translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
-    });
+    await testingEnvironment.setUp(
+      {
+        settings: [
+          {
+            languages: [
+              { key: 'en', label: 'English', default: true },
+              { key: 'es', label: 'Spanish', default: false },
+            ],
+          },
+        ],
+        translationsV2,
+        translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
+      },
+      'index'
+    );
   });
 
   afterEach(() => {
@@ -494,13 +497,7 @@ describe('i18n translations routes', () => {
               ],
             },
           ],
-          [
-            'translationsChange',
-            {
-              acknowledged: true,
-              deletedCount: 1,
-            },
-          ],
+          ['translationsDelete', 'es'],
         ]);
       });
     });
