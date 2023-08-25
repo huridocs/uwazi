@@ -32,7 +32,11 @@ const link = (limit: number, offset: number) =>
 const prevPaginationLink = (queryLimit: Page['limit'], currentOffset: number) =>
   queryLimit && currentOffset > 0 ? link(queryLimit, currentOffset - queryLimit) : undefined;
 
-const nextPaginationLink = (queryLimit: Page['limit'], currentOffset: number, lastOffset: number) =>
+const nextPaginationLink = (
+  queryLimit: Page['limit'],
+  currentOffset: number,
+  lastOffset: number
+) =>
   queryLimit && currentOffset < lastOffset
     ? link(queryLimit, currentOffset + queryLimit)
     : undefined;

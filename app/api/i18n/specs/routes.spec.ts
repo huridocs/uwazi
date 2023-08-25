@@ -185,7 +185,7 @@ describe('i18n translations routes', () => {
 
       describe('when github returns any error', () => {
         it('should return an unaltered version of the languages list', async () => {
-          jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+          jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
           DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/non_valid`;
 
           const responseLanguages = await request(app).get('/api/languages').expect(200);

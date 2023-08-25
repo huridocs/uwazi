@@ -178,7 +178,7 @@ const mapStateToProps = (state: OneUpReviewStore) =>
   ({
     entity: state.entityView.entity,
     oneUpState: state.oneUpReview.state,
-  } as OneUpReviewProps);
+  }) as OneUpReviewProps;
 
 export type { OneUpReviewProps };
 export { OneUpReviewBase };
