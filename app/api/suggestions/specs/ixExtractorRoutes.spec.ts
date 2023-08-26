@@ -93,7 +93,7 @@ describe('extractor routes', () => {
 
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
-    jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
+    jest.spyOn(errorLog, 'debug').mockImplementation(() => ({}) as Logger);
     db = testingDB.mongodb;
   });
 

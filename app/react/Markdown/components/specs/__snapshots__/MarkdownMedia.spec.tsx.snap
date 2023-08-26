@@ -363,10 +363,10 @@ exports[`MarkdownMedia render uploaded files should render the edition mode 1`] 
         >
           <input
             class="timestamp-hours"
+            min="0"
             placeholder="00"
-            required=""
-            type="text"
-            value="00"
+            type="number"
+            value=""
           />
           <span
             class="seperator"
@@ -375,10 +375,11 @@ exports[`MarkdownMedia render uploaded files should render the edition mode 1`] 
           </span>
           <input
             class="timestamp-minutes"
+            max="59"
+            min="0"
             placeholder="00"
-            required=""
-            type="text"
-            value="00"
+            type="number"
+            value=""
           />
           <span
             class="seperator"
@@ -387,10 +388,11 @@ exports[`MarkdownMedia render uploaded files should render the edition mode 1`] 
           </span>
           <input
             class="timestamp-seconds"
+            max="59"
+            min="0"
             placeholder="00"
-            required=""
-            type="text"
-            value="00"
+            type="number"
+            value=""
           />
         </div>
         <input
