@@ -146,6 +146,14 @@ export default {
       type: 'template',
     },
   ],
+  updatelogs: [
+    {
+      namespace: 'test_namespace',
+      deleted: false,
+      mongoId: db.id(),
+      timestamp: 1,
+    },
+  ],
 };
 
 export { entityTemplateId, englishTranslation, documentTemplateId, dictionaryId };

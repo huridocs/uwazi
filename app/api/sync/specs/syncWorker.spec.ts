@@ -1,7 +1,7 @@
 import authRoutes from 'api/auth/routes';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
-import { attachmentsPath, customUploadsPath, storage, files, testingUploadPaths } from 'api/files';
+import { attachmentsPath, customUploadsPath, files, storage, testingUploadPaths } from 'api/files';
 import translations from 'api/i18n';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import relationships from 'api/relationships';
@@ -20,6 +20,13 @@ import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
+import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
+import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
+import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 // eslint-disable-next-line node/no-restricted-import
 import { rm, writeFile } from 'fs/promises';
 import { Server } from 'http';
@@ -325,6 +332,119 @@ describe('syncWorker', () => {
         {
           _id: expect.anything(),
           name: 'relationtype4',
+        },
+      ]);
+    }, 'target1');
+  });
+
+  it('should syncronize translations v2 that match configured properties', async () => {
+    await tenants.run(async () => {
+      const transactionManager = new MongoTransactionManager(getClient());
+      await new CreateTranslationsService(
+        DefaultTranslationsDataSource(transactionManager),
+        new ValidateTranslationsService(
+          DefaultTranslationsDataSource(transactionManager),
+          DefaultSettingsDataSource(transactionManager)
+        ),
+        transactionManager
+      ).create([
+        {
+          language: 'en',
+          key: 'System Key',
+          value: 'System Value',
+          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+        },
+        {
+          language: 'en',
+          key: 'template1',
+          value: 'template1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Property1L',
+          value: 't1Property1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1L',
+          value: 't1Relationship1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship2L',
+          value: 't1Relationship2T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Thesauri2SelectL',
+          value: 't1Thesauri2SelectT',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Thesauri3MultiSelectL',
+          value: 't1Thesauri3MultiSelectT',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1',
+          value: 't1Relationship1',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 'Template Title',
+          value: 'Template Title translated',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+      ]);
+    }, 'host1');
+
+    await runAllTenants();
+
+    await tenants.run(async () => {
+      const transactionManager = new MongoTransactionManager(getClient());
+      const syncedTranslations = await new GetTranslationsService(
+        DefaultTranslationsDataSource(transactionManager)
+      )
+        .getAll()
+        .all();
+
+      expect(syncedTranslations).toEqual([
+        {
+          language: 'en',
+          key: 'System Key',
+          value: 'System Value',
+          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
+        },
+        {
+          language: 'en',
+          key: 'template1',
+          value: 'template1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Property1L',
+          value: 't1Property1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 't1Relationship1L',
+          value: 't1Relationship1T',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
+        },
+        {
+          language: 'en',
+          key: 'Template Title',
+          value: 'Template Title translated',
+          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
         },
       ]);
     }, 'target1');
