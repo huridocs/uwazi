@@ -47,6 +47,8 @@ export class SyncedCollection<TSchema extends Document = Document>
 
   private db: Db;
 
+  private sessionScopedCollection: SessionScopedCollection;
+
   constructor(
     collection: Collection<TSchema>,
     transactionManager: MongoTransactionManager,
@@ -55,14 +57,15 @@ export class SyncedCollection<TSchema extends Document = Document>
     super(collection);
     this.transactionManager = transactionManager;
     this.db = db;
+    this.sessionScopedCollection = new SessionScopedCollection(
+      this.db.collection('updatelogs'),
+      this.transactionManager
+    );
   }
 
   private async insertSyncLogs(mongoIds: ObjectId[]) {
     if (mongoIds.length !== 0) {
-      await new SessionScopedCollection(
-        this.db.collection('updatelogs'),
-        this.transactionManager
-      ).insertMany(
+      await this.sessionScopedCollection.insertMany(
         mongoIds.map(insertedId => ({
           timestamp: Date.now(),
           namespace: this.collection.collectionName,
@@ -80,9 +83,7 @@ export class SyncedCollection<TSchema extends Document = Document>
 
     const modifiedDocuments = this.collection.find({ $or: conditions }, { projection: { _id: 1 } });
 
-    const stream = new BulkWriteStream(
-      new SessionScopedCollection(this.db.collection('updatelogs'), this.transactionManager)
-    );
+    const stream = new BulkWriteStream(this.sessionScopedCollection);
 
     await new MongoResultSet(modifiedDocuments, d => d).forEach(async ({ _id }) => {
       await stream.updateOne(
