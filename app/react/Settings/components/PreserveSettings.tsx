@@ -67,7 +67,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
               </button>
               <div>
                 <a
-                  href="https://uwazi.readthedocs.io/en/latest/"
+                  href="https://uwazi.io/page/9852italrtk/support"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -76,7 +76,7 @@ const PreserveSettingsComp = ({ settings, user }: mappedProps) => {
               </div>
               <div>
                 <a
-                  href="https://uwazi.readthedocs.io/en/latest/"
+                  href="https://uwazi.io/page/9852italrtk/support"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
