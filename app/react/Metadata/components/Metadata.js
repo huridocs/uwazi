@@ -12,6 +12,9 @@ import ValueList from './ValueList';
 import { ImageViewer } from './ImageViewer';
 
 const renderRelationshipLinks = (linksProp, compact) => {
+  if (linksProp.type === 'newRelationship' && !linksProp.value) {
+    return [];
+  }
   const formattedLinkValues = Array.isArray(linksProp.value) ? linksProp.value : [linksProp.value];
   const hydratedValues = formattedLinkValues.map(linkValue => ({
     value: <RelationshipLink propValue={linkValue} />,
@@ -155,6 +158,9 @@ function filterProps(showSubset) {
   return p => {
     if (showSubset && !showSubset.includes(p.name)) {
       return false;
+    }
+    if (p.obsolete) {
+      return true;
     }
     if (Array.isArray(p.value)) {
       return p.value.length;

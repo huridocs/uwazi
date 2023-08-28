@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.129.0",
+  "version": "1.131.0",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -110,7 +110,7 @@
     "@sentry/tracing": "^7.54.0",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
-    "@supercharge/promise-pool": "^2.1.0",
+    "@supercharge/promise-pool": "^3.0.0",
     "@tanstack/react-table": "^8.9.3",
     "@types/franc": "^5.0.1",
     "@types/lodash": "^4.14.170",
@@ -180,7 +180,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "3.8.162",
+    "pdfjs-dist": "^3.8.162",
     "postcss-loader": "^7.3.3",
     "postcss-prefix-selector": "^1.16.0",
     "prom-client": "^14.2.0",
@@ -237,7 +237,6 @@
     "url-join": "^4.0.1",
     "winston": "3.9.0",
     "world-countries": "4.0.0",
-    "wrap-range-text": "^1.0.1",
     "xml-js": "^1.6.11",
     "yargs": "^17.7.2",
     "yauzl": "^2.10.0",
@@ -266,8 +265,6 @@
     "@babel/traverse": "^7.22.8",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
-    "@cypress/webpack-dev-server": "^3.5.0",
-    "@cypress/webpack-preprocessor": "^5.17.1",
     "@mdx-js/loader": "^2.3.0",
     "@storybook/addon-actions": "^7.0.27",
     "@storybook/addon-essentials": "^7.0.27",

@@ -142,7 +142,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
         </NeedAuthorization>
         <a
           className="list-group-item"
-          href="https://uwazi.readthedocs.io/en/latest/"
+          href="https://uwazi.io/page/9852italrtk/support"
           target="_blank"
           rel="noopener noreferrer"
         >

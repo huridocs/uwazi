@@ -23,8 +23,31 @@ describe('Translations', () => {
 
   describe('translation form', () => {
     it('should be accessible', () => {
-      cy.contains('[data-testid=content] button', 'Translate').click();
+      // cy.contains('[data-testid=content] button', 'Translate').click();
+      cy.contains('td', 'Causa').siblings().contains('Translate').click();
       cy.checkA11y();
+    });
+
+    it('should sort the tables', () => {
+      const checkOrder = (items: string[]) => {
+        items.forEach(item => {
+          cy.contains('caption', item).scrollIntoView();
+        });
+      };
+
+      checkOrder([
+        'Articulos no violados',
+        'Articulos violados',
+        'Causa',
+        'Descriptores',
+        'Envío a la corte',
+        'Estado',
+        'País',
+        'Presentación ante la comisión',
+        'Presentación ante la corte',
+        'Resumen',
+        'Title',
+      ]);
     });
 
     it('should have breadcrumb navigation', () => {
