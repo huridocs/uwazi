@@ -36,7 +36,7 @@ class MarkdownViewer extends Component {
   }
 
   inlineComponent(type, config, index) {
-    const { compact } = this.props;
+    const { compact, preload } = this.props;
     let result;
     if (type === 'list') {
       result = this.list(config, index);
@@ -53,7 +53,7 @@ class MarkdownViewer extends Component {
     if (['vimeo', 'youtube', 'media'].includes(type)) {
       result = (
         <div key={index}>
-          <MarkdownMedia key={index} config={config} compact={compact} />
+          <MarkdownMedia key={index} config={config} preload={preload} compact={compact} />
         </div>
       );
     }
@@ -125,6 +125,7 @@ MarkdownViewer.defaultProps = {
   markdown: '',
   html: false,
   compact: false,
+  preload: false,
 };
 
 MarkdownViewer.propTypes = {
@@ -132,6 +133,7 @@ MarkdownViewer.propTypes = {
   lists: PropTypes.arrayOf(PropTypes.object),
   html: PropTypes.bool,
   compact: PropTypes.bool,
+  preload: PropTypes.bool,
 };
 
 export default MarkdownViewer;

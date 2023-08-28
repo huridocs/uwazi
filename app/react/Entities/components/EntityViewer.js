@@ -177,6 +177,7 @@ class EntityViewer extends Component {
                         showTitle={false}
                         showType={false}
                         groupGeolocations
+                        preloadMedia
                       />
                       <FileList files={rawEntity.documents} entity={rawEntity} />
                       <AttachmentsList

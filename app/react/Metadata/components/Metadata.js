@@ -23,7 +23,7 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = (prop, compact, templateId) => {
+export const showByType = (prop, compact, preloadMedia, templateId) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -51,7 +51,9 @@ export const showByType = (prop, compact, templateId) => {
       );
       break;
     case 'media': {
-      result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      result = prop.value && (
+        <MarkdownViewer preload={preloadMedia} markdown={`{media}(${prop.value})`} compact />
+      );
       break;
     }
     case 'geolocation':
@@ -181,7 +183,15 @@ const flattenInherittedRelationships = metadata =>
     return property;
   });
 
-const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations, templateId }) => {
+const Metadata = ({
+  metadata,
+  compact,
+  showSubset,
+  highlight,
+  groupGeolocations,
+  templateId,
+  preloadMedia,
+}) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
   const groupedMetadata = groupGeolocations
@@ -204,7 +214,7 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, compact, templateId)}
+          {showByType(prop, compact, preloadMedia, templateId)}
         </dd>
       </dl>
     );
@@ -216,6 +226,7 @@ Metadata.defaultProps = {
   showSubset: undefined,
   highlight: [],
   groupGeolocations: false,
+  preloadMedia: false,
 };
 
 Metadata.propTypes = {
@@ -241,6 +252,7 @@ Metadata.propTypes = {
   compact: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  preloadMedia: PropTypes.bool,
 };
 
 export default Metadata;

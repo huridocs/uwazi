@@ -12,6 +12,7 @@ const BaseFormatMetadata = ({
   sortedProperty,
   entity,
   relationships,
+  preloadMedia,
   ...props
 }) => (
   <Metadata
@@ -23,6 +24,7 @@ const BaseFormatMetadata = ({
     templateId={entity.template}
     compact={!!sortedProperty}
     {...removeUneededProps(props)}
+    preloadMedia={preloadMedia}
   />
 );
 
@@ -31,6 +33,7 @@ BaseFormatMetadata.defaultProps = {
   additionalMetadata: [],
   relationships: Immutable.fromJS([]),
   excludePreview: false,
+  preloadMedia: false,
 };
 
 BaseFormatMetadata.propTypes = {
@@ -56,6 +59,7 @@ BaseFormatMetadata.propTypes = {
   ),
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
+  preloadMedia: PropTypes.bool,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {

@@ -155,6 +155,7 @@ const MediaField = (props: MediaFieldProps) => {
           return (
             <MarkdownMedia
               config={file?.fileURL}
+              preload
               editing
               onTimeLinkAdded={updateTimeLinks}
               type={file?.type}

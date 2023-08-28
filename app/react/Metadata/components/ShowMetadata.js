@@ -11,8 +11,15 @@ import { FormatMetadata } from '../containers/FormatMetadata';
 
 export class ShowMetadata extends Component {
   render() {
-    const { entity, showTitle, showType, relationships, showSubset, groupGeolocations } =
-      this.props;
+    const {
+      entity,
+      showTitle,
+      showType,
+      relationships,
+      showSubset,
+      groupGeolocations,
+      preloadMedia,
+    } = this.props;
     let header = '';
     if (showTitle || showType) {
       let title = '';
@@ -53,6 +60,7 @@ export class ShowMetadata extends Component {
           showSubset={showSubset}
           groupGeolocations={groupGeolocations}
           renderLabel={(prop, label) => !prop.noLabel && label}
+          preloadMedia={preloadMedia}
         />
       </div>
     );
@@ -61,6 +69,7 @@ export class ShowMetadata extends Component {
 ShowMetadata.defaultProps = {
   showSubset: undefined,
   groupGeolocations: false,
+  preloadMedia: false,
 };
 
 ShowMetadata.propTypes = {
@@ -71,6 +80,7 @@ ShowMetadata.propTypes = {
   showType: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  preloadMedia: PropTypes.bool,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });

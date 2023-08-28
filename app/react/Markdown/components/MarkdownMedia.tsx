@@ -9,11 +9,12 @@ import { Translate } from 'app/I18N';
 import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
+  config: string;
   compact?: boolean;
   editing?: boolean;
   onTimeLinkAdded?: Function;
-  config: string;
   type?: string;
+  preload?: boolean;
 }
 
 interface TimeLink {
@@ -150,7 +151,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         <input
           type="number"
           onChange={event => {
-            let hours = parseInt(event.target.value || '0', 10);
+            const hours = parseInt(event.target.value || '0', 10);
             setNewTimeline({ ...newTimeline, timeHours: hours <= 0 ? '00' : hours.toString() });
           }}
           className="timestamp-hours"
@@ -288,6 +289,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 
   const config = propsToConfig(props);
+
   useEffect(() => {
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
@@ -306,32 +308,25 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     } else if (config.url.match(validMediaUrlRegExp)) {
       setMediaURL(config.url);
       setErrorFlag(false);
-    } else {
-      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
-        setTemporalResource(mediaURL);
-      }
-      setMediaURL(config.url);
+    } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+      setTemporalResource(mediaURL);
     }
+    setMediaURL(config.url);
+  }, [config.url]);
 
-    return () => {
+  useEffect(
+    () => () => {
       if (config.url.startsWith('/api/files/')) {
-        console.log('running effect cleanup: ', mediaURL);
         setErrorFlag(false);
         URL.revokeObjectURL(mediaURL);
       }
-    };
-  }, [config.url]);
 
-  useEffect(() => {
-    if (
-      temporalResource !== undefined &&
-      ReactPlayer.canPlay(temporalResource) &&
-      !mediaURL.match(validMediaUrlRegExp)
-    ) {
-      setErrorFlag(false);
-      setMediaURL(temporalResource);
-    }
-  }, [temporalResource, mediaURL]);
+      if (isVideoPlaying) {
+        setVideoPlaying(false);
+      }
+    },
+    [config.url, isVideoPlaying, mediaURL]
+  );
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
@@ -351,6 +346,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     <div className={`video-container ${compact ? 'compact' : ''}`}>
       <div>
         <ReactPlayer
+          stopOnUnmount
+          light={!props.preload}
           className="react-player"
           playing={isVideoPlaying}
           ref={playerRef}

@@ -679,6 +679,7 @@ class DocumentSidePanel extends Component {
                       showTitle
                       showType
                       groupGeolocations
+                      preloadMedia
                     />
                     <FileList files={documents} storeKey={this.props.storeKey} entity={jsDoc} />
                     <AttachmentsList
