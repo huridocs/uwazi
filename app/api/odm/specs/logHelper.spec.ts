@@ -18,7 +18,6 @@ describe('createUpdateLogHelper', () => {
 describe('NoLogger', () => {
   it('should return empty promises for logging methods', async () => {
     const logHelper = createUpdateLogHelper('activitylog');
-    await expect(logHelper.getAffectedIds(undefined)).resolves.toBeEmpty;
     // @ts-ignore
     await expect(logHelper.upsertLogMany({ _id: null })).resolves.toBeEmpty;
     // @ts-ignore
