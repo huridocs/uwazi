@@ -47,8 +47,8 @@ describe('ODM Model', () => {
     const model1 = instanceTestingModel('tempSchema', testSchema);
     const model2 = instanceTestingModel('anotherSchema', new mongoose.Schema({ name: String }));
 
-    expect(models.tempSchema.db).toBe(model1.db);
-    expect(models.anotherSchema.db).toBe(model2.db);
+    expect(models.tempSchema()).toBe(model1);
+    expect(models.anotherSchema()).toBe(model2);
   });
 
   describe('Save', () => {

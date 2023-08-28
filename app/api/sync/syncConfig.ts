@@ -61,6 +61,7 @@ const getApprovedCollections = (config: SyncConfig['config']) => {
         'connections',
         'dictionaries',
         'translations',
+        'translationsV2',
         'relationtypes',
       ])
     : collections;

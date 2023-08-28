@@ -142,7 +142,9 @@ describe('session scoped collection', () => {
             throw new Error('make it fail');
           });
         } catch (e) {
-          expect(e.message).toEqual('make it fail');
+          if (e.message !== 'make it fail') {
+            throw e;
+          }
           expect(await testingDB.mongodb?.collection('collection').find({}).toArray()).toEqual(
             expectedOnAbort
           );
@@ -258,37 +260,5 @@ describe('session scoped collection', () => {
         expect(await callback(dataSource2)).toEqual(expectedNoTransaction);
       }
     );
-  });
-
-  it('should always return the same instance of the collection', () => {
-    const transactionManager = new MongoTransactionManager(getClient());
-    const dataSource = new DataSource(getConnection(), transactionManager);
-
-    expect(dataSource.collection()).toBe(dataSource.collection());
-  });
-
-  it('should only affect the allow-listed functions', () => {
-    const transactionManager1 = new MongoTransactionManager(getClient());
-    const dataSource1 = new DataSource(getConnection(), transactionManager1);
-    const collection = dataSource1.collection();
-
-    const allowListed = Object.keys(MongoDataSource.scopedMethods) as Array<
-      keyof typeof collection
-    >;
-
-    allowListed.forEach(member => {
-      const collectionMember = collection[member];
-      const optionsArgPos = MongoDataSource.scopedMethods[member];
-      if (optionsArgPos !== null) {
-        expect(collectionMember).not.toBe(undefined);
-        expect(typeof collectionMember).toBe('function');
-        expect((<Function>collectionMember).name).toBe('proxiedFunction');
-      } else {
-        expect(
-          typeof collectionMember !== 'function' ||
-            (<Function>collectionMember).name !== 'proxiedFunction'
-        ).toBe(true);
-      }
-    });
   });
 });

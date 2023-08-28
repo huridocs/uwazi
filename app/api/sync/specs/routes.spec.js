@@ -11,6 +11,8 @@ describe('sync', () => {
   let routes;
   let req;
   let dataObject;
+  let model1;
+  let model2;
 
   const setReqDefault = (property, type = 'object') => {
     req = {};
@@ -24,15 +26,13 @@ describe('sync', () => {
   beforeEach(async () => {
     jest.mock('../../auth');
     routes = instrumentRoutes(syncRoutes);
-    models.model1 = {
-      save: jest.fn(),
-      delete: jest.fn(),
-    };
 
-    models.model2 = {
-      save: jest.fn(),
-      delete: jest.fn(),
-    };
+    model1 = { save: jest.fn(), delete: jest.fn() };
+    model2 = { save: jest.fn(), delete: jest.fn() };
+
+    models.model1 = () => model1;
+    models.model2 = () => model2;
+
     jest.spyOn(search, 'delete').mockImplementation(() => {});
     jest.spyOn(search, 'indexEntities').mockImplementation(() => {});
     jest.spyOn(storage, 'removeFile').mockImplementation(() => {});
@@ -49,18 +49,18 @@ describe('sync', () => {
 
     it('should save on the namespaced model', async () => {
       const response = await routes.post('/api/sync', req);
-      expect(models.model1.save).toHaveBeenCalledWith(dataObject);
+      expect(model1.save).toHaveBeenCalledWith(dataObject);
       expect(response).toBe('ok');
 
       req.body.namespace = 'model2';
       await routes.post('/api/sync', req);
-      expect(models.model2.save).toHaveBeenCalledWith(dataObject);
+      expect(model2.save).toHaveBeenCalledWith(dataObject);
       expect(search.indexEntities).not.toHaveBeenCalled();
     });
 
     describe('on error', () => {
       it('should call next', async () => {
-        models.model1.save.mockReturnValue(Promise.reject(new Error('error')));
+        model1.save.mockReturnValue(Promise.reject(new Error('error')));
         try {
           await routes.post('/api/sync', req);
         } catch (error) {
@@ -72,9 +72,8 @@ describe('sync', () => {
     describe('when namespace is templates', () => {
       it('should update the mappings', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        models.templates = {
-          save: jest.fn(),
-        };
+        const templates = { save: jest.fn() };
+        models.templates = () => templates;
 
         req.body = {
           namespace: 'templates',
@@ -82,16 +81,14 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(models.templates.save).toHaveBeenCalledWith({ _id: 'id' });
+        expect(templates.save).toHaveBeenCalledWith({ _id: 'id' });
         expect(index.updateMapping).toHaveBeenCalledWith([req.body.data]);
       });
 
       it('should update the mappings if many templates are provided', async () => {
         jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
-        models.templates = {
-          save: jest.fn(),
-          saveMultiple: jest.fn(),
-        };
+        const templates = { save: jest.fn(), saveMultiple: jest.fn() };
+        models.templates = () => templates;
 
         req.body = {
           namespace: 'templates',
@@ -99,20 +96,15 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(models.templates.saveMultiple).toHaveBeenCalledWith([
-          { _id: 'id1' },
-          { _id: 'id2' },
-        ]);
+        expect(templates.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
         expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
       });
     });
 
     describe('when namespace is entities', () => {
       it('should index on elastic', async () => {
-        models.entities = {
-          save: jest.fn(),
-          delete: jest.fn(),
-        };
+        const entities = { save: jest.fn(), delete: jest.fn() };
+        models.entities = () => entities;
 
         req.body = {
           namespace: 'entities',
@@ -126,10 +118,8 @@ describe('sync', () => {
 
     describe('when namespace is files', () => {
       it('should index on elastic', async () => {
-        models.files = {
-          save: jest.fn(),
-          delete: jest.fn(),
-        };
+        const files = { save: jest.fn(), delete: jest.fn() };
+        models.files = () => files;
 
         req.body = {
           namespace: 'files',
@@ -143,10 +133,8 @@ describe('sync', () => {
 
     describe('when namespace is settings', () => {
       it('should replace the incomming id with the local id', async () => {
-        models.settings = {
-          save: jest.fn(),
-          get: () => Promise.resolve([{ _id: 'slaveId' }]),
-        };
+        const settings = { save: jest.fn(), get: () => Promise.resolve([{ _id: 'slaveId' }]) };
+        models.settings = () => settings;
 
         req.body = {
           namespace: 'settings',
@@ -154,7 +142,7 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(models.settings.save).toHaveBeenCalledWith({ _id: 'slaveId', languages: 'ln' });
+        expect(settings.save).toHaveBeenCalledWith({ _id: 'slaveId', languages: 'ln' });
       });
     });
 
@@ -166,7 +154,7 @@ describe('sync', () => {
 
     describe('when namespace is translations', () => {
       it('should respect menu and filters translations', async () => {
-        models.translations = {
+        const translations = {
           save: jest.fn(),
           delete: jest.fn(),
           get: jest.fn().mockReturnValue(
@@ -181,6 +169,7 @@ describe('sync', () => {
             ])
           ),
         };
+        models.translations = () => translations;
 
         req.body = {
           namespace: 'translations',
@@ -191,7 +180,7 @@ describe('sync', () => {
         };
 
         await routes.post('/api/sync', req);
-        expect(models.translations.save).toHaveBeenCalledWith({
+        expect(translations.save).toHaveBeenCalledWith({
           _id: 'id',
           contexts: [
             { id: 'System', values: [{ key: 'Search', value: 'Search' }] },
@@ -214,23 +203,24 @@ describe('sync', () => {
 
     it('should remove on the namespaced model', async () => {
       const response = await routes.delete('/api/sync', req);
-      expect(models.model1.delete).toHaveBeenCalledWith(dataObject);
+      expect(model1.delete).toHaveBeenCalledWith(dataObject);
       expect(response).toBe('ok');
 
       req.query.namespace = 'model2';
       await routes.delete('/api/sync', req);
-      expect(models.model2.delete).toHaveBeenCalledWith(dataObject);
+      expect(model2.delete).toHaveBeenCalledWith(dataObject);
       expect(search.delete).not.toHaveBeenCalled();
     });
 
     describe('when namespace is files', () => {
       beforeEach(() => {
-        models.files = {
+        const files = {
           save: jest.fn(),
           delete: jest.fn(),
           getById: () =>
             Promise.resolve({ entity: 'entityId', filename: 'filename', type: 'custom' }),
         };
+        models.files = () => files;
 
         req.query = {
           namespace: 'files',
@@ -251,10 +241,8 @@ describe('sync', () => {
 
     describe('when namespace is entities', () => {
       beforeEach(() => {
-        models.entities = {
-          save: jest.fn(),
-          delete: jest.fn(),
-        };
+        const entities = { save: jest.fn(), delete: jest.fn() };
+        models.entities = () => entities;
 
         req.query = {
           namespace: 'entities',

@@ -3,11 +3,11 @@ import multer from 'multer';
 import { models, WithId } from 'api/odm';
 import { search } from 'api/search';
 
-import { Request, Application } from 'express';
-import { FileType } from 'shared/types/fileType';
-import { uploadMiddleware, storage } from 'api/files';
-import { TranslationType } from 'shared/translationType';
+import { storage, uploadMiddleware } from 'api/files';
 import { updateMapping } from 'api/search/entitiesIndex';
+import { Application, Request } from 'express';
+import { TranslationType } from 'shared/translationType';
+import { FileType } from 'shared/types/fileType';
 
 import { needsAuthorization } from '../auth';
 
@@ -53,7 +53,7 @@ const deleteFromIndex = async (req: Request<{}, {}, {}, { data: string; namespac
 };
 
 const deleteFile = async (fileId: string) => {
-  const file: WithId<FileType> | undefined = await models.files.getById(fileId);
+  const file: WithId<FileType> | undefined = await models.files().getById(fileId);
   if (file) {
     await storage.removeFile(file.filename || '', file.type || 'document');
     await deleteFileFromIndex(file);
@@ -62,7 +62,9 @@ const deleteFile = async (fileId: string) => {
 };
 
 const preserveTranslations = async (syncData: TranslationType): Promise<TranslationType> => {
-  const [translation] = (await models.translations.get({ _id: syncData._id })) as TranslationType[];
+  const [translation] = (await models
+    .translations()
+    .get({ _id: syncData._id })) as TranslationType[];
   if (!translation) {
     return syncData;
   }
@@ -81,7 +83,7 @@ export default (app: Application) => {
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
       if (req.body.namespace === 'settings') {
-        const [settings] = await models.settings.get({});
+        const [settings] = await models.settings().get({});
         req.body.data._id = settings._id;
       }
 
@@ -90,8 +92,8 @@ export default (app: Application) => {
       }
 
       await (Array.isArray(req.body.data)
-        ? models[req.body.namespace].saveMultiple(req.body.data)
-        : models[req.body.namespace].save(req.body.data));
+        ? models[req.body.namespace]().saveMultiple(req.body.data)
+        : models[req.body.namespace]().save(req.body.data));
 
       await updateMappings(req);
       await indexEntities(req);
@@ -124,7 +126,7 @@ export default (app: Application) => {
     '/api/sync',
     needsAuthorization(['admin']),
     async (req: Request<{}, {}, {}, { data: string; namespace: string }>, res) => {
-      await models[req.query.namespace].delete(JSON.parse(req.query.data));
+      await models[req.query.namespace]().delete(JSON.parse(req.query.data));
 
       if (req.query.namespace === 'files') {
         await deleteFile(JSON.parse(req.query.data)._id);

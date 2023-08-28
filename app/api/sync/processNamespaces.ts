@@ -1,20 +1,20 @@
 /* eslint-disable max-lines */
-import sift from 'sift';
+import entitiesModel from 'api/entities/entitiesModel';
+import { filesModel } from 'api/files/filesModel';
 import { DataType, models, WithId } from 'api/odm';
-import {
-  SettingsSyncTemplateSchema,
-  SettingsSyncRelationtypesSchema,
-  Settings,
-} from 'shared/types/settingsType';
-import { ensure } from 'shared/tsUtils';
 import { settingsModel } from 'api/settings/settingsModel';
 import templatesModel from 'api/templates/templatesModel';
-import { TemplateSchema } from 'shared/types/templateType';
-import entitiesModel from 'api/entities/entitiesModel';
-import { EntitySchema } from 'shared/types/entityType';
-import { filesModel } from 'api/files/filesModel';
-import { FileType } from 'shared/types/fileType';
 import { UpdateLog } from 'api/updatelogs';
+import { ensure } from 'shared/tsUtils';
+import { EntitySchema } from 'shared/types/entityType';
+import { FileType } from 'shared/types/fileType';
+import {
+  Settings,
+  SettingsSyncRelationtypesSchema,
+  SettingsSyncTemplateSchema,
+} from 'shared/types/settingsType';
+import { TemplateSchema } from 'shared/types/templateType';
+import sift from 'sift';
 
 const noDataFound = 'NO_DATA_FOUND';
 
@@ -26,6 +26,7 @@ const namespaces = [
   'files',
   'dictionaries',
   'relationtypes',
+  'translationsV2',
   'translations',
 ];
 
@@ -37,6 +38,7 @@ type MethodNames =
   | 'files'
   | 'dictionaries'
   | 'relationtypes'
+  | 'translationsV2'
   | 'translations';
 
 interface Options {
@@ -106,7 +108,7 @@ class ProcessNamespaces {
 
   private async fetchData() {
     const { namespace, mongoId } = this.change;
-    const data = await models[namespace].getById(mongoId);
+    const data = await models[namespace]().getById(mongoId.toString());
     if (data) {
       return data;
     }
@@ -155,7 +157,7 @@ class ProcessNamespaces {
     templateData: TemplateSchema,
     templateHasValidRelationProperties: boolean
   ) {
-    const hubOtherConnections = await models.connections.get({
+    const hubOtherConnections = await models.connections().get({
       hub: data.hub,
       _id: { $ne: data._id },
     });
@@ -325,6 +327,40 @@ class ProcessNamespaces {
     }
 
     return this.default();
+  }
+
+  private async translationsV2() {
+    const data = await this.fetchData();
+    const { context } = data;
+    const templatesData = await templatesModel.get({
+      _id: { $in: this.templatesConfigKeys },
+    });
+
+    if (this.assessTranslationApproved(context)) {
+      return { data };
+    }
+
+    if (this.templatesConfigKeys.includes(context.id.toString())) {
+      const contextTemplate = ensure<WithId<TemplateSchema>>(
+        templatesData.find(t => t._id.toString() === context.id.toString())
+      );
+      const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
+      const templateTitle = contextTemplate.commonProperties?.find(p => p.name === 'title')?.label;
+
+      const approvedKeys = [contextTemplate.name, templateTitle]
+        .concat(
+          (contextTemplate.properties || [])
+            .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
+            .map(p => p.label)
+        )
+        .filter(k => Boolean(k));
+
+      if (approvedKeys.includes(data.key)) {
+        return { data };
+      }
+    }
+
+    return { skip: true };
   }
 
   private async translations() {

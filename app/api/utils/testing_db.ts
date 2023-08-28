@@ -52,6 +52,7 @@ const fixturer = {
   },
 
   async clearAllAndLoad(db: Db, fixtures: DBFixture) {
+    fixtures.updatelogs = fixtures.updatelogs || [];
     const existingCollections = new Set((await db.listCollections().toArray()).map(c => c.name));
     const expectedCollectons = Object.keys(models).concat(Object.keys(fixtures));
     const missingCollections = Array.from(
