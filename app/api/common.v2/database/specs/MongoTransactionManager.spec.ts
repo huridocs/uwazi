@@ -180,15 +180,18 @@ describe('when calling run() when a transaction is running', () => {
     },
   ];
 
-  it.each<typeof cases[number]>(cases)('should throw "transaction in progress"', async ({ cb }) => {
-    const transactionManager = new MongoTransactionManager(getClient());
+  it.each<(typeof cases)[number]>(cases)(
+    'should throw "transaction in progress"',
+    async ({ cb }) => {
+      const transactionManager = new MongoTransactionManager(getClient());
 
-    try {
-      await cb(transactionManager);
-    } catch (e) {
-      await expect(e.message).toMatch('progress');
+      try {
+        await cb(transactionManager);
+      } catch (e) {
+        await expect(e.message).toMatch('progress');
+      }
     }
-  });
+  );
 });
 
 describe('when calling run() after the transaction was commited', () => {

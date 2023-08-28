@@ -57,9 +57,9 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const playerRef: Ref<ReactPlayer> | undefined = useRef(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
-    timeHours: '00',
-    timeMinutes: '00',
-    timeSeconds: '00',
+    timeHours: '',
+    timeMinutes: '',
+    timeSeconds: '',
     label: '',
   });
   const [errorFlag, setErrorFlag] = useState(false);
@@ -146,36 +146,49 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     <div className="new-timelink">
       <div className="timestamp">
         <input
-          type="text"
+          type="number"
           onChange={event => {
-            setNewTimeline({ ...newTimeline, timeHours: event.target.value });
+            let hours = parseInt(event.target.value || '0', 10);
+            setNewTimeline({ ...newTimeline, timeHours: hours <= 0 ? '00' : hours.toString() });
           }}
           className="timestamp-hours"
           placeholder="00"
-          required
           value={newTimeline.timeHours}
+          min="0"
         />
         <span className="seperator">:</span>
         <input
-          type="text"
+          type="number"
           onChange={event => {
-            setNewTimeline({ ...newTimeline, timeMinutes: event.target.value });
+            let minutes = parseInt(event.target.value || '0', 10);
+            minutes = minutes > 59 ? 59 : minutes;
+            setNewTimeline({
+              ...newTimeline,
+              timeMinutes: minutes <= 0 ? '00' : minutes.toString(),
+            });
           }}
           className="timestamp-minutes"
           placeholder="00"
-          required
           value={newTimeline.timeMinutes}
+          min="0"
+          max="59"
         />
         <span className="seperator">:</span>
         <input
-          type="text"
+          type="number"
           onChange={event => {
-            setNewTimeline({ ...newTimeline, timeSeconds: event.target.value });
+            let seconds = parseInt(event.target.value || '0', 10);
+            seconds = seconds > 59 ? 59 : seconds;
+            setNewTimeline({
+              ...newTimeline,
+              timeSeconds: seconds <= 0 ? '00' : seconds.toString(),
+            });
           }}
           className="timestamp-seconds"
           placeholder="00"
-          required
           value={newTimeline.timeSeconds}
+          min="0"
+          max="59"
         />
       </div>
       <input
@@ -191,8 +204,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         type="button"
         className="new-timestamp-btn"
         onClick={() => {
-          appendTimelinkAndUpdateParent(newTimeline);
-          setNewTimeline({ timeHours: '00', timeMinutes: '00', timeSeconds: '00', label: '' });
+          const time = {
+            timeHours: newTimeline.timeHours || '00',
+            timeMinutes: newTimeline.timeMinutes || '00',
+            timeSeconds: newTimeline.timeSeconds || '00',
+            label: newTimeline.label,
+          };
+
+          appendTimelinkAndUpdateParent(time);
+          setNewTimeline({ timeHours: '', timeMinutes: '', timeSeconds: '', label: '' });
         }}
       >
         <Icon icon="plus" />

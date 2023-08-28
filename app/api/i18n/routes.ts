@@ -200,7 +200,7 @@ export default (app: Application) => {
       },
     }),
     async (req: DeleteTranslationRequest, res) => {
-      const [newSettings, newTranslations] = await Promise.all([
+      const [newSettings] = await Promise.all([
         settings.deleteLanguage(req.query.key),
         translations.removeLanguage(req.query.key),
         entities.removeLanguage(req.query.key),
@@ -208,7 +208,7 @@ export default (app: Application) => {
       ]);
 
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+      req.sockets.emitToCurrentTenant('translationsDelete', req.query.key);
       res.json(newSettings);
     }
   );

@@ -13,9 +13,9 @@ import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import path from 'path';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserRole } from 'shared/types/userSchema';
-import fixtures, { permissions } from './fixtures';
 import { ObjectId } from 'mongodb';
 import { Logger } from 'winston';
+import fixtures, { permissions } from './fixtures';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -218,7 +218,7 @@ describe('entities routes', () => {
       jest
         .spyOn(thesauri, 'templateToThesauri')
         .mockImplementation(async () => Promise.resolve({}));
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({}) as Logger);
 
       await request(app)
         .post('/api/entities')

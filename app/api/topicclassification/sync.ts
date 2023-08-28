@@ -155,16 +155,19 @@ async function getAvailableModels(fixedModel?: string) {
   if (models.error) {
     return { error: `Suggestion sync aborted: ${models.error}` };
   }
-  return models.models.reduce(async (res, m) => {
-    if (fixedModel && m !== fixedModel) {
+  return models.models.reduce(
+    async (res, m) => {
+      if (fixedModel && m !== fixedModel) {
+        return res;
+      }
+      const model = await getModel(m);
+      if (model && model.preferred) {
+        return { ...(await res), [m]: model.preferred };
+      }
       return res;
-    }
-    const model = await getModel(m);
-    if (model && model.preferred) {
-      return { ...(await res), [m]: model.preferred };
-    }
-    return res;
-  }, Promise.resolve({} as { [k: string]: string | undefined; error?: string }));
+    },
+    Promise.resolve({} as { [k: string]: string | undefined; error?: string })
+  );
 }
 
 class SyncTask extends Task {
