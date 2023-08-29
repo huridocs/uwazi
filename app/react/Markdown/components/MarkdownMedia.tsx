@@ -56,6 +56,8 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
+  const abortCtrl = new AbortController();
+  const fetchOptions = { signal: abortCtrl.signal };
   const playerRef: Ref<ReactPlayer> | undefined = useRef(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
@@ -271,7 +273,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   useEffect(() => {
     if (config.url.startsWith('/api/files/')) {
-      fetch(config.url)
+      fetch(config.url, fetchOptions)
         .then(async res => {
           if (validMediaFile(res)) {
             return res.blob();
@@ -285,22 +287,26 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         })
         .catch(_e => {});
     } else if (config.url.match(validMediaUrlRegExp)) {
-      setMediaURL(config.url);
       setErrorFlag(false);
     } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
       setTemporalResource(mediaURL);
     }
 
     setMediaURL(config.url);
+
+    return () => {
+      abortCtrl.abort();
+
+      if (config.url.startsWith('/api/files/') && mediaURL) {
+        setErrorFlag(false);
+        URL.revokeObjectURL(mediaURL);
+      }
+    };
   }, [config.url]);
 
   useEffect(() => () => {
     if (isVideoPlaying) {
       setVideoPlaying(false);
-    }
-    if (config.url.startsWith('/api/files/') && mediaURL) {
-      setErrorFlag(false);
-      URL.revokeObjectURL(mediaURL);
     }
   });
 
