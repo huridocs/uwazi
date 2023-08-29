@@ -15,6 +15,7 @@ const newTranslationsCollection = 'translationsV2';
 
 describe('translations v2 support', () => {
   beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     await testingDB.setupFixturesAndContext({
       ...fixtures,
       translations: [
@@ -439,7 +440,19 @@ describe('translations v2 support', () => {
 
         jest.spyOn(migration, 'up');
         await Promise.all([translations.get(), translations.get(), translations.get()]);
+        await translations.get();
         expect(migration.up).toHaveBeenCalledTimes(1);
+
+        const translationsHelperCount = await db
+          .collection('translationsV2_helper')
+          .find()
+          .toArray();
+        expect(translationsHelperCount).toMatchObject([
+          {
+            migrating: false,
+            migrated: true,
+          },
+        ]);
       });
 
       it('should return from the old collection when not migrated', async () => {
@@ -516,7 +529,7 @@ describe('translations v2 support', () => {
         const [spanish, english] = await translations.get();
 
         const englishComesFromTheOldCollection = english._id;
-        expect(englishComesFromTheOldCollection).toBeTruthy();
+        expect(englishComesFromTheOldCollection).toBeFalsy();
 
         expect(english).toMatchObject({
           locale: 'en',
@@ -531,7 +544,7 @@ describe('translations v2 support', () => {
         });
 
         const spanishComesFromTheOldCollection = spanish._id;
-        expect(spanishComesFromTheOldCollection).toBeTruthy();
+        expect(spanishComesFromTheOldCollection).toBeFalsy();
 
         expect(spanish).toMatchObject({
           locale: 'es',
