@@ -301,14 +301,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     };
   }, [config.url]);
 
-  useEffect(
-    () => () => {
-      if (isVideoPlaying) {
-        setVideoPlaying(false);
-      }
-    },
-    [isVideoPlaying, mediaURL]
-  );
+  useEffect(() => () => {
+    if (isVideoPlaying) {
+      setVideoPlaying(false);
+    }
+  });
 
   useEffect(() => {
     if (
