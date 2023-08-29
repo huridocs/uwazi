@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
@@ -266,6 +268,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 
   const config = propsToConfig(props);
+
   useEffect(() => {
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
@@ -284,13 +287,28 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     } else if (config.url.match(validMediaUrlRegExp)) {
       setMediaURL(config.url);
       setErrorFlag(false);
-    } else {
-      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
-        setTemporalResource(mediaURL);
-      }
-      setMediaURL(config.url);
+    } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+      setTemporalResource(mediaURL);
     }
+
+    setMediaURL(config.url);
+
+    return () => {
+      if (config.url.startsWith('/api/files/')) {
+        setErrorFlag(false);
+        URL.revokeObjectURL(mediaURL);
+      }
+    };
   }, [config.url]);
+
+  useEffect(
+    () => () => {
+      if (isVideoPlaying) {
+        setVideoPlaying(false);
+      }
+    },
+    [isVideoPlaying, mediaURL]
+  );
 
   useEffect(() => {
     if (
@@ -302,13 +320,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       setMediaURL(temporalResource);
     }
   }, [temporalResource, mediaURL]);
-
-  useEffect(() => () => {
-    if (config.url.startsWith('/api/files/')) {
-      setErrorFlag(false);
-      URL.revokeObjectURL(mediaURL);
-    }
-  });
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
