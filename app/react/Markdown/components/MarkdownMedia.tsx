@@ -292,18 +292,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     }
 
     setMediaURL(config.url);
-
-    return () => {
-      if (config.url.startsWith('/api/files/')) {
-        setErrorFlag(false);
-        URL.revokeObjectURL(mediaURL);
-      }
-    };
   }, [config.url]);
 
   useEffect(() => () => {
     if (isVideoPlaying) {
       setVideoPlaying(false);
+    }
+    if (config.url.startsWith('/api/files/') && mediaURL) {
+      setErrorFlag(false);
+      URL.revokeObjectURL(mediaURL);
     }
   });
 
