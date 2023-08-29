@@ -34,6 +34,17 @@ const addLanguage = async (language: any) => {
   return { newSettings, newTranslations };
 };
 
+async function addLanguages(languages: LanguageSchema[], req: Request) {
+  let newSettings;
+  let newTranslations;
+  await sequentialPromises(languages, async (language: LanguageSchema) => {
+    ({ newSettings, newTranslations } = await addLanguage(language));
+    req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+  });
+
+  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+}
+
 type TranslationsRequest = Request & { query: { context: string } };
 
 export default (app: Application) => {
@@ -182,15 +193,8 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      let newSettings;
-      let newTranslations;
-      await sequentialPromises(languages, async (language: LanguageSchema) => {
-        ({ newSettings, newTranslations } = await addLanguage(language));
-        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-      });
-
-      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      res.json(newSettings);
+      addLanguages(languages, req).catch(console.error);
+      res.status(204).json('ok');
     }
   );
 
@@ -215,7 +219,7 @@ export default (app: Application) => {
 
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
       req.sockets.emitToCurrentTenant('translationsDelete', req.query.key);
-      res.json(newSettings);
+      res.status(204).json('ok');
     }
   );
 };

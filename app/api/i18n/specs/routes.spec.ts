@@ -1,5 +1,7 @@
 import 'isomorphic-fetch';
 import request from 'supertest';
+import waitForExpect from 'wait-for-expect';
+import { Logger } from 'winston';
 
 import * as csvApi from 'api/csv/csvLoader';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
@@ -11,7 +13,6 @@ import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { availableLanguages } from 'shared/languagesList';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
-import { Logger } from 'winston';
 import { DefaultTranslations } from '../defaultTranslations';
 import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 import { sortByLocale } from './sortByLocale';
@@ -281,10 +282,13 @@ describe('i18n translations routes', () => {
             { key: 'ja', label: 'Japanese' },
           ]);
         mockCalls = iosocket.emit.mock.calls;
+        await waitForExpect(() => {
+          expect(mockCalls.length).toBe(3);
+        });
       });
 
-      it('should return the saved translation', async () => {
-        expect(response.body).toEqual(newSettings);
+      it('should return a 204', async () => {
+        expect(response.status).toBe(204);
       });
 
       it('should emit a translationsChange event for each new language', async () => {
@@ -467,27 +471,12 @@ describe('i18n translations routes', () => {
       beforeAll(async () => {
         response = await request(app).delete('/api/translations/languages?key=es').send();
         mockCalls = iosocket.emit.mock.calls;
-      });
-      it('should return the deleted translations', async () => {
-        expect(response.body).toEqual({
-          _id: expect.anything(),
-          filters: [],
-          languages: [
-            {
-              _id: expect.anything(),
-              default: true,
-              key: 'en',
-              label: 'English',
-            },
-          ],
-          links: [],
-          mapStartingPoint: [
-            {
-              lat: 46,
-              lon: 6,
-            },
-          ],
+        await waitForExpect(() => {
+          expect(mockCalls.length).toBe(2);
         });
+      });
+      it('should return a 204', async () => {
+        expect(response.status).toBe(204);
       });
 
       it('should emit an updateSettings event', async () => {

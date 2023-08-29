@@ -9,6 +9,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { validateSettings } from 'shared/types/settingsSchema';
 import { ContextType } from 'shared/translationSchema';
 import { settingsModel } from './settingsModel';
+import { tenants } from 'api/tenants';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
