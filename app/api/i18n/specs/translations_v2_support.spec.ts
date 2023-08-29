@@ -724,14 +724,14 @@ describe('translations v2 support', () => {
 
   describe('updateContext', () => {
     describe('when feature flag is on', () => {
-      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations', async () => {
+      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
         await testingDB.setupFixturesAndContext(fixtures);
         await translations.get();
 
         const values = {
-          'New Account Key': 'Account edited',
           'new key': 'new value',
+          'property should not change': 'new value',
         };
 
         await translations.updateContext(
@@ -751,7 +751,7 @@ describe('translations v2 support', () => {
           {
             language: 'en',
             key: 'New Account Key',
-            value: 'Account edited',
+            value: 'Account',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
           {
@@ -770,6 +770,12 @@ describe('translations v2 support', () => {
             language: 'en',
             key: 'new key',
             value: 'new value',
+            context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'en',
+            key: 'property should not change',
+            value: 'property',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
         ]);
@@ -797,6 +803,12 @@ describe('translations v2 support', () => {
             language: 'es',
             key: 'new key',
             value: 'new value',
+            context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
+          },
+          {
+            language: 'es',
+            key: 'property should not change',
+            value: 'property',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
         ]);
