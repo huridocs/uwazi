@@ -45,6 +45,18 @@ async function addLanguages(languages: LanguageSchema[], req: Request) {
   req.sockets.emitToCurrentTenant('updateSettings', newSettings);
 }
 
+async function deleteLanguage(key: LanguageISO6391, req: Request) {
+  const [newSettings] = await Promise.all([
+    settings.deleteLanguage(key),
+    translations.removeLanguage(key),
+    entities.removeLanguage(key),
+    pages.removeLanguage(key),
+  ]);
+
+  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+  req.sockets.emitToCurrentTenant('translationsDelete', key);
+}
+
 type TranslationsRequest = Request & { query: { context: string } };
 
 export default (app: Application) => {
@@ -193,7 +205,7 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      addLanguages(languages, req).catch(console.error);
+      addLanguages(languages, req).catch(console.error); //TODO: ask Joan about this
       res.status(204).json('ok');
     }
   );
@@ -210,15 +222,8 @@ export default (app: Application) => {
       },
     }),
     async (req: DeleteTranslationRequest, res) => {
-      const [newSettings] = await Promise.all([
-        settings.deleteLanguage(req.query.key),
-        translations.removeLanguage(req.query.key),
-        entities.removeLanguage(req.query.key),
-        pages.removeLanguage(req.query.key),
-      ]);
-
-      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      req.sockets.emitToCurrentTenant('translationsDelete', req.query.key);
+      const { key } = req.query;
+      deleteLanguage(key, req).catch(console.error); //TODO: ask Joan about this
       res.status(204).json('ok');
     }
   );
