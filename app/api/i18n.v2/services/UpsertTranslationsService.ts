@@ -67,8 +67,24 @@ export class UpsertTranslationsService {
 
       await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
+      await this.updateKeyValueOnDefaultLanguage(Object.values(keyChanges), context);
+
       await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
     });
+  }
+
+  private async updateKeyValueOnDefaultLanguage(
+    newKeys: string[],
+    context: CreateTranslationsData['context']
+  ) {
+    const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
+
+    await this.translationsDS.upsert(
+      newKeys.reduce<Translation[]>((memo, newKey) => {
+        memo.push(new Translation(newKey, newKey, defaultLanguageKey, context));
+        return memo;
+      }, [])
+    );
   }
 
   private async createNewKeys(

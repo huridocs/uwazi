@@ -724,14 +724,50 @@ describe('translations v2 support', () => {
 
   describe('updateContext', () => {
     describe('when feature flag is on', () => {
+      it('should change the value of a translation when changing the key if the locale is the default one', async () => {
+        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
+        await testingDB.setupFixturesAndContext(fixtures);
+        await translations.get();
+
+        const values = {};
+
+        await translations.updateContext(
+          { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
+          { 'property should only change value on default languge': 'new property name' },
+          [],
+          values
+        );
+
+        const [propertyES] = await db
+          .collection(newTranslationsCollection)
+          .find({ key: 'new property name', language: 'es' })
+          .toArray();
+
+        const [propertyEN] = await db
+          .collection(newTranslationsCollection)
+          .find({ key: 'new property name', language: 'en' })
+          .toArray();
+
+        const [propertyZH] = await db
+          .collection(newTranslationsCollection)
+          .find({ key: 'new property name', language: 'zh' })
+          .toArray();
+
+        expect(propertyES.value).toBe('property');
+        expect(propertyZH.value).toBe('property');
+        expect(propertyEN.value).toBe('new property name');
+      });
+
       it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
+        //changed keys should change value also when the locale is the default one
+        //! use the previous commit to remove the update and then implement the key change functionality
         testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
         await testingDB.setupFixturesAndContext(fixtures);
         await translations.get();
 
         const values = {
           'new key': 'new value',
-          'property should not change': 'new value',
+          'property should only change value on default languge': 'new value',
         };
 
         await translations.updateContext(
@@ -751,13 +787,13 @@ describe('translations v2 support', () => {
           {
             language: 'en',
             key: 'New Account Key',
-            value: 'Account',
+            value: 'New Account Key',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
           {
             language: 'en',
             key: 'New Password key',
-            value: 'Password',
+            value: 'New Password key',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
           {
@@ -774,7 +810,7 @@ describe('translations v2 support', () => {
           },
           {
             language: 'en',
-            key: 'property should not change',
+            key: 'property should only change value on default languge',
             value: 'property',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },
@@ -807,7 +843,7 @@ describe('translations v2 support', () => {
           },
           {
             language: 'es',
-            key: 'property should not change',
+            key: 'property should only change value on default languge',
             value: 'property',
             context: { type: 'Thesaurus', label: 'new context name', id: dictionaryId.toString() },
           },

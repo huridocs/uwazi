@@ -27,7 +27,7 @@ const translationsV2: DBFixture['translationsV2'] = [
     label: 'System',
     type: 'Uwazi UI',
   }),
-  createTranslationDBO('property should not change', 'property', 'zh', {
+  createTranslationDBO('property should only change value on default languge', 'property', 'zh', {
     id: dictionaryId.toString(),
     label: 'Dictionary',
     type: 'Thesaurus',
@@ -57,7 +57,7 @@ const translationsV2: DBFixture['translationsV2'] = [
     label: 'Dictionary',
     type: 'Thesaurus',
   }),
-  createTranslationDBO('property should not change', 'property', 'es', {
+  createTranslationDBO('property should only change value on default languge', 'property', 'es', {
     id: dictionaryId.toString(),
     label: 'Dictionary',
     type: 'Thesaurus',
@@ -108,7 +108,7 @@ const translationsV2: DBFixture['translationsV2'] = [
     label: 'System',
     type: 'Uwazi UI',
   }),
-  createTranslationDBO('property should not change', 'property', 'en', {
+  createTranslationDBO('property should only change value on default languge', 'property', 'en', {
     id: dictionaryId.toString(),
     label: 'Dictionary',
     type: 'Thesaurus',
