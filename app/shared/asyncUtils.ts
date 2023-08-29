@@ -8,7 +8,8 @@ const sequentialPromises = async <T>(
     index: number,
     originalArray: T[]
   ) => {
-    await previousPromise.then(async () => asyncCallback(element, index, originalArray));
+    await previousPromise;
+    await asyncCallback(element, index, originalArray);
   };
   await items.reduce(wrappedCallback, Promise.resolve());
 };
