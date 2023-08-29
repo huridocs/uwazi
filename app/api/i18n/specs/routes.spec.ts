@@ -232,53 +232,66 @@ describe('i18n translations routes', () => {
     });
 
     describe('api/translations/languages', () => {
-      it('should return the saved translation', async () => {
+      let response: request.Response;
+      let mockCalls: any[];
+
+      const newSettings = {
+        _id: expect.anything(),
+        languages: [
+          {
+            _id: expect.anything(),
+            key: 'en',
+            label: 'English',
+            default: true,
+          },
+          {
+            _id: expect.anything(),
+            key: 'es',
+            label: 'Spanish',
+            default: false,
+          },
+          {
+            _id: expect.anything(),
+            key: 'zh',
+            label: 'Chinese',
+          },
+          {
+            _id: expect.anything(),
+            key: 'ja',
+            label: 'Japanese',
+          },
+        ],
+        mapStartingPoint: [
+          {
+            lon: 6,
+            lat: 46,
+          },
+        ],
+        links: [],
+        filters: [],
+      };
+
+      beforeAll(async () => {
         DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/test_contents/3`;
 
-        const response = await request(app)
+        response = await request(app)
           .post('/api/translations/languages')
           .send([
             { key: 'zh', label: 'Chinese' },
             { key: 'ja', label: 'Japanese' },
           ]);
+        mockCalls = iosocket.emit.mock.calls;
+      });
 
-        const newSettings = {
-          _id: expect.anything(),
-          languages: [
-            {
-              _id: expect.anything(),
-              key: 'en',
-              label: 'English',
-              default: true,
-            },
-            {
-              _id: expect.anything(),
-              key: 'es',
-              label: 'Spanish',
-              default: false,
-            },
-            {
-              _id: expect.anything(),
-              key: 'zh',
-              label: 'Chinese',
-            },
-            {
-              _id: expect.anything(),
-              key: 'ja',
-              label: 'Japanese',
-            },
-          ],
-          mapStartingPoint: [
-            {
-              lon: 6,
-              lat: 46,
-            },
-          ],
-          links: [],
-          filters: [],
-        };
+      it('should return the saved translation', async () => {
         expect(response.body).toEqual(newSettings);
-        expect(iosocket.emit.mock.calls).toMatchObject([
+      });
+
+      it('should emit a translationsChange event for each new language', async () => {
+        const translationChangeEvents = mockCalls.filter(
+          ([eventName]) => eventName === 'translationsChange'
+        );
+        expect(translationChangeEvents).toMatchObject([
           [
             'translationsChange',
             {
@@ -321,8 +334,12 @@ describe('i18n translations routes', () => {
               ],
             },
           ],
-          ['updateSettings', newSettings],
         ]);
+      });
+
+      it('should emit an updateSettings event', async () => {
+        const lastEvent = mockCalls[mockCalls.length - 1];
+        expect(lastEvent).toMatchObject(['updateSettings', newSettings]);
       });
     });
 
@@ -444,9 +461,14 @@ describe('i18n translations routes', () => {
 
   describe('DELETE', () => {
     describe('api/translations/languages', () => {
-      it('should return the deleted translations', async () => {
-        const response = await request(app).delete('/api/translations/languages?key=es').send();
+      let response: request.Response;
+      let mockCalls: any[];
 
+      beforeAll(async () => {
+        response = await request(app).delete('/api/translations/languages?key=es').send();
+        mockCalls = iosocket.emit.mock.calls;
+      });
+      it('should return the deleted translations', async () => {
         expect(response.body).toEqual({
           _id: expect.anything(),
           filters: [],
@@ -466,31 +488,37 @@ describe('i18n translations routes', () => {
             },
           ],
         });
-        expect(iosocket.emit.mock.calls).toEqual([
-          [
-            'updateSettings',
-            {
-              _id: expect.anything(),
-              filters: [],
-              languages: [
-                {
-                  _id: expect.anything(),
-                  default: true,
-                  key: 'en',
-                  label: 'English',
-                },
-              ],
-              links: [],
-              mapStartingPoint: [
-                {
-                  lat: 46,
-                  lon: 6,
-                },
-              ],
-            },
-          ],
-          ['translationsDelete', 'es'],
+      });
+
+      it('should emit an updateSettings event', async () => {
+        const firstEvent = mockCalls[0];
+        expect(firstEvent).toMatchObject([
+          'updateSettings',
+          {
+            _id: expect.anything(),
+            filters: [],
+            languages: [
+              {
+                _id: expect.anything(),
+                default: true,
+                key: 'en',
+                label: 'English',
+              },
+            ],
+            links: [],
+            mapStartingPoint: [
+              {
+                lat: 46,
+                lon: 6,
+              },
+            ],
+          },
         ]);
+      });
+
+      it('should emit a translationsDelete event', async () => {
+        const lastEvent = mockCalls[mockCalls.length - 1];
+        expect(lastEvent).toMatchObject(['translationsDelete', 'es']);
       });
     });
   });
