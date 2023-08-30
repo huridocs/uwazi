@@ -322,6 +322,13 @@
   }
 }
 
+.video-container .loader {
+  display: block;
+  text-align: left;
+  color: $c-grey;
+  font-style: italic;
+}
+
 .page-viewer .markdown-viewer > *:not(.hero) {
   max-width: 1000px;
   margin-left: auto;
