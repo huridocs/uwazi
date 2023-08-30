@@ -298,7 +298,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     }
 
     return () => {
-      console.log('cleaning');
       setErrorFlag(false);
       URL.revokeObjectURL(url);
       setMediaURL('');
@@ -338,31 +337,27 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
-      {mediaURL ? (
-        <div>
-          <ReactPlayer
-            className="react-player"
-            playing={isVideoPlaying}
-            ref={playerRef}
-            url={mediaURL}
-            {...dimensions}
-            controls
-            onPause={() => {
-              setVideoPlaying(false);
-            }}
-            onPlay={() => {
-              setVideoPlaying(true);
-            }}
-            onError={e => {
-              if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-                setErrorFlag(true);
-              }
-            }}
-          />
-        </div>
-      ) : (
-        <Translate className="loader">Loading</Translate>
-      )}
+      <div>
+        <ReactPlayer
+          className="react-player"
+          playing={isVideoPlaying}
+          ref={playerRef}
+          url={mediaURL}
+          {...dimensions}
+          controls
+          onPause={() => {
+            setVideoPlaying(false);
+          }}
+          onPlay={() => {
+            setVideoPlaying(true);
+          }}
+          onError={e => {
+            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+              setErrorFlag(true);
+            }
+          }}
+        />
+      </div>
 
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && (
