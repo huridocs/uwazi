@@ -270,6 +270,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const config = propsToConfig(props);
 
   useEffect(() => {
+    let url: string;
+
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
@@ -281,14 +283,15 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         })
         .then(blob => {
           setErrorFlag(false);
-          setMediaURL(URL.createObjectURL(blob));
+          url = URL.createObjectURL(blob);
+          setMediaURL(url);
         })
         .catch(_e => {});
     } else if (config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
     } else {
-      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
         setTemporalResource(mediaURL);
       }
       setMediaURL(config.url);
@@ -296,9 +299,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
     return () => {
       setErrorFlag(false);
-      if (validMediaUrlRegExp) {
-        URL.revokeObjectURL(mediaURL);
-      }
+      URL.revokeObjectURL(url);
+      setMediaURL('');
     };
   }, [config.url]);
 
@@ -310,7 +312,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   useEffect(() => {
     if (
-      temporalResource !== undefined &&
+      temporalResource &&
       ReactPlayer.canPlay(temporalResource) &&
       !mediaURL.match(validMediaUrlRegExp)
     ) {
