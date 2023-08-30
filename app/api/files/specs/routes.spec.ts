@@ -45,7 +45,7 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);
@@ -217,7 +217,9 @@ describe('files routes', () => {
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
-      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
+      await request(app)
+        .delete('/api/files')
+        .query({ _id: file._id?.toString() });
 
       expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
     });
@@ -341,7 +343,7 @@ describe('files routes', () => {
 
   describe('POST/files/upload/document', () => {
     it('should save the attached file', async () => {
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({} as Logger));
+      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({}) as Logger);
       const response = await request(app)
         .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));

@@ -335,7 +335,7 @@ export default {
     }
     value = value.filter(v => v);
     return {
-      translateContext: property.get('content'),
+      translateContext: options.doc.template,
       ...propertyInfo.toJS(),
       name: property.get('name'),
       value,

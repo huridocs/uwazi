@@ -52,18 +52,21 @@ describe('i18n translations routes', () => {
         label: 'User Interface',
       }),
     ];
-    await testingEnvironment.setUp({
-      settings: [
-        {
-          languages: [
-            { key: 'en', label: 'English', default: true },
-            { key: 'es', label: 'Spanish', default: false },
-          ],
-        },
-      ],
-      translationsV2,
-      translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
-    });
+    await testingEnvironment.setUp(
+      {
+        settings: [
+          {
+            languages: [
+              { key: 'en', label: 'English', default: true },
+              { key: 'es', label: 'Spanish', default: false },
+            ],
+          },
+        ],
+        translationsV2,
+        translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
+      },
+      'index'
+    );
   });
 
   afterEach(() => {
@@ -182,7 +185,7 @@ describe('i18n translations routes', () => {
 
       describe('when github returns any error', () => {
         it('should return an unaltered version of the languages list', async () => {
-          jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+          jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
           DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/non_valid`;
 
           const responseLanguages = await request(app).get('/api/languages').expect(200);
@@ -285,18 +288,15 @@ describe('i18n translations routes', () => {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
+                  values: { title: 'Template 1' },
                 },
                 {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
-                  values: [
-                    {
-                      key: 'Search',
-                      value: 'Search',
-                    },
-                  ],
+                  values: {
+                    Search: 'Search',
+                  },
                 },
               ],
             },
@@ -310,18 +310,13 @@ describe('i18n translations routes', () => {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
+                  values: { title: 'Template 1' },
                 },
                 {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
-                  values: [
-                    {
-                      key: 'Search',
-                      value: 'Search',
-                    },
-                  ],
+                  values: { Search: 'Search' },
                 },
               ],
             },
@@ -494,13 +489,7 @@ describe('i18n translations routes', () => {
               ],
             },
           ],
-          [
-            'translationsChange',
-            {
-              acknowledged: true,
-              deletedCount: 1,
-            },
-          ],
+          ['translationsDelete', 'es'],
         ]);
       });
     });

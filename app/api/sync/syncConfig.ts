@@ -31,24 +31,27 @@ const getValuesFromTemplateProperties = async (
 ) => {
   const templatesConfig = config.templates || {};
 
-  return Object.keys(templatesConfig).reduce(async (prev, templateId) => {
-    const validList = await prev;
-    const template = await templatesModel.getById(templateId);
-    const templateConfigProperties = templatesConfig[templateId].properties;
-    (template?.properties || []).forEach(property => {
-      if (
-        templateConfigProperties.includes(property._id?.toString() || '') &&
-        validTypes.includes(property.type) &&
-        property[valueProperty] &&
-        property[valueProperty] !== undefined
-      ) {
-        // @ts-ignore
-        validList.push(property[valueProperty].toString());
-      }
-    });
+  return Object.keys(templatesConfig).reduce(
+    async (prev, templateId) => {
+      const validList = await prev;
+      const template = await templatesModel.getById(templateId);
+      const templateConfigProperties = templatesConfig[templateId].properties;
+      (template?.properties || []).forEach(property => {
+        if (
+          templateConfigProperties.includes(property._id?.toString() || '') &&
+          validTypes.includes(property.type) &&
+          property[valueProperty] &&
+          property[valueProperty] !== undefined
+        ) {
+          // @ts-ignore
+          validList.push(property[valueProperty].toString());
+        }
+      });
 
-    return Promise.resolve(validList);
-  }, Promise.resolve([] as Array<string>));
+      return Promise.resolve(validList);
+    },
+    Promise.resolve([] as Array<string>)
+  );
 };
 
 const getApprovedCollections = (config: SyncConfig['config']) => {
@@ -61,6 +64,7 @@ const getApprovedCollections = (config: SyncConfig['config']) => {
         'connections',
         'dictionaries',
         'translations',
+        'translationsV2',
         'relationtypes',
       ])
     : collections;

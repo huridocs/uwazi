@@ -2,6 +2,7 @@
 
 import db, { DBFixture } from 'api/utils/testing_db';
 import { UpdateLog } from 'api/updatelogs';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const oldDoc1 = db.id();
 const oldDoc2 = db.id();
@@ -84,6 +85,8 @@ const file3 = db.id();
 const file4 = db.id();
 const file5 = db.id();
 const customUpload = db.id();
+
+const createTranslationDBO = getFixturesFactory().v2.database.translationDBO;
 
 const fixtures: DBFixture = {
   updatelogs: [
@@ -566,6 +569,69 @@ const fixtures: DBFixture = {
     },
   ],
 
+  translationsV2: [
+    createTranslationDBO('Sytem Key', 'System Value', 'en', {
+      id: 'System',
+      type: 'Uwazi UI',
+      label: 'System',
+    }),
+    createTranslationDBO('template1', 'template1T', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Property1L', 't1Property1T', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Relationship1L', 't1Relationship1T', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Relationship2L', 't1Relationship2T', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Thesauri2SelectL', 't1Thesauri2SelectT', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Thesauri3MultiSelectL', 't1Thesauri3MultiSelectT', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t1Relationship1', 't1Relationship1', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('Template Title', 'Template Title translated', 'en', {
+      id: template1.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('template2', 'template2T', 'en', {
+      id: template2.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('t2Relationship2L', 't2Relationship2T', 'en', {
+      id: template2.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+    createTranslationDBO('anotherL', 'anotherT', 'en', {
+      id: template2.toString(),
+      type: 'Entity',
+      label: 'Entity',
+    }),
+  ],
+
   translations: [
     {
       _id: translation1,
@@ -641,7 +707,7 @@ const fixtures: DBFixture = {
   settings: [
     {
       _id: settingsId,
-      languages: [{ key: 'es', default: true, label: 'es' }],
+      languages: [{ key: 'en', default: true, label: 'en' }],
       sync: [
         {
           username: 'user1',
@@ -811,7 +877,7 @@ const host1Fixtures: DBFixture = {
   settings: [
     {
       _id: settingsId,
-      languages: [{ key: 'es', default: true, label: 'es' }],
+      languages: [{ key: 'en', default: true, label: 'en' }],
       sync: [
         {
           url: 'http://localhost:6667',

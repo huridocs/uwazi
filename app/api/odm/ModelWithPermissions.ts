@@ -206,6 +206,6 @@ export function instanceModelWithPermissions<T = any>(
 ) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
   const model = new ModelWithPermissions<T>(logHelper, collectionName, schema);
-  models[collectionName] = model;
+  models[collectionName] = () => model;
   return model;
 }
