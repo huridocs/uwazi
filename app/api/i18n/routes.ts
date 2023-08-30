@@ -205,7 +205,7 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      addLanguages(languages, req).catch(console.error); //TODO: ask Joan about this
+      void addLanguages(languages, req);
       res.status(204).json('ok');
     }
   );
