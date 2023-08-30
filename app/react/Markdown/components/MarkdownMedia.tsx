@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useRef, Ref, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
@@ -266,7 +268,10 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   );
 
   const config = propsToConfig(props);
+
   useEffect(() => {
+    let url: string;
+
     if (config.url.startsWith('/api/files/')) {
       fetch(config.url)
         .then(async res => {
@@ -278,23 +283,36 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         })
         .then(blob => {
           setErrorFlag(false);
-          setMediaURL(URL.createObjectURL(blob));
+          url = URL.createObjectURL(blob);
+          setMediaURL(url);
         })
         .catch(_e => {});
     } else if (config.url.match(validMediaUrlRegExp)) {
-      setMediaURL(config.url);
       setErrorFlag(false);
+      setMediaURL(config.url);
     } else {
-      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && temporalResource === undefined) {
+      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
         setTemporalResource(mediaURL);
       }
       setMediaURL(config.url);
     }
+
+    return () => {
+      setErrorFlag(false);
+      URL.revokeObjectURL(url);
+      setMediaURL('');
+    };
   }, [config.url]);
+
+  useEffect(() => () => {
+    if (isVideoPlaying) {
+      setVideoPlaying(false);
+    }
+  });
 
   useEffect(() => {
     if (
-      temporalResource !== undefined &&
+      temporalResource &&
       ReactPlayer.canPlay(temporalResource) &&
       !mediaURL.match(validMediaUrlRegExp)
     ) {
@@ -302,13 +320,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       setMediaURL(temporalResource);
     }
   }, [temporalResource, mediaURL]);
-
-  useEffect(() => () => {
-    if (config.url.startsWith('/api/files/')) {
-      setErrorFlag(false);
-      URL.revokeObjectURL(mediaURL);
-    }
-  });
 
   const { compact, editing } = props;
   const dimensions: { width: string; height?: string } = { width: '100%' };
