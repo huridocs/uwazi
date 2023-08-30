@@ -100,13 +100,6 @@ export class MongoTranslationsDataSource
     await stream.flush();
   }
 
-  async updateValue(key: string, contextId: string, language: LanguageISO6391, value: string) {
-    await this.getCollection().updateOne(
-      { key, 'context.id': contextId, language },
-      { $set: { value } }
-    );
-  }
-
   async deleteKeysByContext(contextId: string, keysToDelete: string[]) {
     return this.getCollection().deleteMany({ 'context.id': contextId, key: { $in: keysToDelete } });
   }
