@@ -6,8 +6,8 @@ import { tenants } from 'api/tenants';
 import { Dispatchable } from 'api/queue.v2/application/contracts/Dispatchable';
 import { DispatchableClass } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { DefaultQueueAdapter } from 'api/queue.v2/configuration/factories';
-import { registerJobs } from './queueRegistry';
 import { inspect } from 'util';
+import { registerJobs } from './queueRegistry';
 
 let dbAuth = {};
 

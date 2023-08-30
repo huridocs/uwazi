@@ -2,7 +2,7 @@ import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { ObjectId } from 'mongodb';
 import { Job, QueueAdapter } from './QueueAdapter';
 
-interface JobDTO {
+interface JobDBO {
   _id: ObjectId;
   queue: string;
   name: string;
@@ -15,7 +15,7 @@ interface JobDTO {
   };
 }
 
-export class MongoQueueAdapter extends MongoDataSource<JobDTO> implements QueueAdapter {
+export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueAdapter {
   protected collectionName = 'jobs';
 
   async renewJobLock(job: Job) {
