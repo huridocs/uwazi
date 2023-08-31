@@ -97,8 +97,7 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="aside"
-      className={`transition transform ease-in duration-200 fixed h-full w-full top-0 right-0
-      bg-white border-l-2 p-4 shadow-lg z-10 ${width}`}
+      className={`transition transform ease-in duration-200 fixed h-full w-full top-0 right-0 bg-white border-l-2 p-4 shadow-lg z-10 ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
