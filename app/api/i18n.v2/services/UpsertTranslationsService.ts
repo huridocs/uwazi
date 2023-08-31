@@ -61,26 +61,30 @@ export class UpsertTranslationsService {
         {}
       );
 
-      const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
-
-      await Object.entries(valueChanges).reduce(async (previous, [key, value]) => {
-        await previous;
-        await this.translationsDS.updateValue(
-          keysChangedReversed[key] || key,
-          context.id,
-          defaultLanguageKey,
-          value
-        );
-      }, Promise.resolve());
-
       await this.createNewKeys(keysChangedReversed, valueChanges, context);
 
       await this.translationsDS.updateContextLabel(context.id, context.label);
 
       await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
+      await this.updateKeyValueOnDefaultLanguage(Object.values(keyChanges), context);
+
       await this.translationsDS.deleteKeysByContext(context.id, keysToDelete);
     });
+  }
+
+  private async updateKeyValueOnDefaultLanguage(
+    newKeys: string[],
+    context: CreateTranslationsData['context']
+  ) {
+    const defaultLanguageKey = await this.settingsDS.getDefaultLanguageKey();
+
+    await this.translationsDS.upsert(
+      newKeys.reduce<Translation[]>((memo, newKey) => {
+        memo.push(new Translation(newKey, newKey, defaultLanguageKey, context));
+        return memo;
+      }, [])
+    );
   }
 
   private async createNewKeys(

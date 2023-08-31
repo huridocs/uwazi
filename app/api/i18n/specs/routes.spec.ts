@@ -288,18 +288,15 @@ describe('i18n translations routes', () => {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
+                  values: { title: 'Template 1' },
                 },
                 {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
-                  values: [
-                    {
-                      key: 'Search',
-                      value: 'Search',
-                    },
-                  ],
+                  values: {
+                    Search: 'Search',
+                  },
                 },
               ],
             },
@@ -313,18 +310,13 @@ describe('i18n translations routes', () => {
                   id: 'contextID',
                   label: 'Template',
                   type: 'Entity',
-                  values: [{ key: 'title', value: 'Template 1' }],
+                  values: { title: 'Template 1' },
                 },
                 {
                   id: 'System',
                   label: 'User Interface',
                   type: 'Uwazi UI',
-                  values: [
-                    {
-                      key: 'Search',
-                      value: 'Search',
-                    },
-                  ],
+                  values: { Search: 'Search' },
                 },
               ],
             },
