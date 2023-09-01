@@ -20,8 +20,6 @@ class EntityPermissions {
   }
 
   allowsUserTo(user: User, level: 'read' | 'write') {
-    if (user.isPrivileged()) return true;
-
     const idsForUser = new Set(user.groups.concat(user._id));
 
     if (level === 'read') {

@@ -8,9 +8,16 @@ const editor = new User('editor', 'editor', []);
 const admin = new User('admin', 'admin', []);
 
 describe('EntityPermissions', () => {
-  it.each([
+  it.each<{
+    case: string;
+    permissionEntries: Entry[];
+    published: boolean;
+    user: User;
+    level: 'read' | 'write';
+    expected: boolean;
+  }>([
     {
-      case: 'collaborator should not be able to read unpublished entities without permission',
+      case: 'collaborator should not be allowed to read unpublished entities without permission',
       permissionEntries: [],
       published: false,
       user: collaborator,
@@ -18,7 +25,7 @@ describe('EntityPermissions', () => {
       expected: false,
     },
     {
-      case: 'collaborator should be able to read unpublished entities with read permission',
+      case: 'collaborator should be allowed to read unpublished entities with read permission',
       permissionEntries: [{ refId: 'collaborator', type: 'user', level: 'read' }],
       published: false,
       user: collaborator,
@@ -26,7 +33,7 @@ describe('EntityPermissions', () => {
       expected: true,
     },
     {
-      case: 'collaborator should be able to read unpublished entities with write permission',
+      case: 'collaborator should be allowed to read unpublished entities with write permission',
       permissionEntries: [{ refId: 'collaborator', type: 'user', level: 'write' }],
       published: false,
       user: collaborator,
@@ -34,7 +41,7 @@ describe('EntityPermissions', () => {
       expected: true,
     },
     {
-      case: 'collaborator should be able to read published entities without permission',
+      case: 'collaborator should be allowed to read published entities without permission',
       permissionEntries: [],
       published: true,
       user: collaborator,
@@ -42,7 +49,7 @@ describe('EntityPermissions', () => {
       expected: true,
     },
     {
-      case: 'collaborator should not be able to write without permission',
+      case: 'collaborator should not be allowed to write without permission',
       permissionEntries: [],
       published: true,
       user: collaborator,
@@ -50,7 +57,7 @@ describe('EntityPermissions', () => {
       expected: false,
     },
     {
-      case: 'collaborator should not be able to write with only read permission',
+      case: 'collaborator should not be allowed to write with only read permission',
       permissionEntries: [{ refId: 'collaborator', type: 'user', level: 'read' }],
       published: false,
       user: collaborator,
@@ -58,7 +65,7 @@ describe('EntityPermissions', () => {
       expected: false,
     },
     {
-      case: 'collaborator should be able to write with write permission',
+      case: 'collaborator should be allowed to write with write permission',
       permissionEntries: [{ refId: 'collaborator', type: 'user', level: 'write' }],
       published: false,
       user: collaborator,
@@ -81,46 +88,40 @@ describe('EntityPermissions', () => {
       level: 'write',
       expected: true,
     },
+    // user privilages (admin, editor) are handled in the AuthorizationService
     {
-      case: 'editor should be able to read without permission',
+      case: 'editor should NOT be allowed to read without permission',
       permissionEntries: [],
       published: false,
       user: editor,
       level: 'read',
-      expected: true,
+      expected: false,
     },
     {
-      case: 'editor should be able to write without permission',
+      case: 'editor should NOT be allowed to write without permission',
       permissionEntries: [],
       published: false,
       user: editor,
       level: 'write',
-      expected: true,
+      expected: false,
     },
     {
-      case: 'admin should be able to read without permission',
+      case: 'admin should NOT be allowed to read without permission',
       permissionEntries: [],
       published: false,
       user: admin,
       level: 'read',
-      expected: true,
+      expected: false,
     },
     {
-      case: 'admin should be able to write without permission',
+      case: 'admin should NOT be allowed to write without permission',
       permissionEntries: [],
       published: false,
       user: admin,
       level: 'write',
-      expected: true,
+      expected: false,
     },
-  ] as {
-    case: string;
-    permissionEntries: Entry[];
-    published: boolean;
-    user: User;
-    level: 'read' | 'write';
-    expected: boolean;
-  }[])('$case', ({ permissionEntries, published, user, level, expected }) => {
+  ])('$case', ({ permissionEntries, published, user, level, expected }) => {
     const permissions = new EntityPermissions('entity', permissionEntries, published);
     expect(permissions.allowsUserTo(user, level)).toBe(expected);
   });

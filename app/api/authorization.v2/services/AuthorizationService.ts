@@ -1,8 +1,8 @@
+import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { User } from 'api/users.v2/model/User';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { UnauthorizedError } from '../errors/UnauthorizedError';
 import { EntityPermissions } from '../model/EntityPermissions';
-import { Relationship } from 'api/relationships.v2/model/Relationship';
 
 type AccessLevels = 'read' | 'write';
 
@@ -40,9 +40,7 @@ export class AuthorizationService {
     } else {
       filteredEntitiesPermissions =
         level === 'read'
-          ? allEntitiesPermissions.filter(entityPermissions =>
-              entityPermissions.allowsPublicReads()
-            )
+          ? allEntitiesPermissions.filter(entityPermissions => entityPermissions.published)
           : [];
     }
 
@@ -78,7 +76,7 @@ export class AuthorizationService {
 
     return (
       level === 'read' &&
-      allEntitiesPermissions.every(entityPermissions => entityPermissions.allowsPublicReads())
+      allEntitiesPermissions.every(entityPermissions => entityPermissions.published)
     );
   }
 

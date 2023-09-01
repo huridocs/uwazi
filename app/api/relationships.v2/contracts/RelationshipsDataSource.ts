@@ -8,6 +8,7 @@ export interface RelationshipsDataSource {
   delete(_ids: string[]): Promise<void>;
   deleteAll(): Promise<void>;
   exists(_ids: string[]): Promise<boolean>;
+  getAll(): ResultSet<Relationship>;
   getById(_ids: string[]): ResultSet<Relationship>;
   getByFiles(fileIds: string[]): ResultSet<Relationship>;
   getByEntities(entityIds: string[]): ResultSet<Relationship>;

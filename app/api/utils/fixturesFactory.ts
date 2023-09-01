@@ -73,6 +73,8 @@ function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
+    idString: (key: string) => idMapper(key).toString(),
+
     template: (
       name: string,
       properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
