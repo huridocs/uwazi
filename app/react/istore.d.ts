@@ -183,6 +183,9 @@ export interface IStore {
   settings: {
     collection: IImmutable<ClientSettings>;
     stats?: IImmutable<InstanceStats>;
+    navlinksData?: { links: ILink[] };
+    navlinksFormState?: { $form: { errors: { [k: string]: string } } };
+    uiState?: IImmutable<{ savingNavlinks: boolean }>;
   };
   user: IImmutable<ClientUserSchema>;
   users: IImmutable<ClientUserSchema[]>;

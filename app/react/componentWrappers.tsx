@@ -1,6 +1,6 @@
 /* eslint-disable comma-spacing */
 /* eslint-disable react/no-multi-comp */
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   useLocation,
   useMatches,
@@ -49,4 +49,25 @@ const withOutlet =
     const outlet = useOutlet(AppMainContext);
     return <Component {...props} outlet={outlet} />;
   };
-export { withRouter, withContext, withOutlet };
+
+const withLazy =
+  <T,>(Component: React.FC<T>, moduleImport: Function, extractor: (module: unknown) => {}) =>
+  (props: T & { key: string }) => {
+    const lazyModuleRef = useRef({});
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+      moduleImport().then((module: unknown) => {
+        lazyModuleRef.current = extractor(module);
+        setIsLoaded(true);
+        return module;
+      });
+    }, []);
+
+    const componentProps = { ...lazyModuleRef.current, ...props };
+
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    return isLoaded ? <Component {...componentProps} key={componentProps.key} /> : null;
+  };
+
+export { withRouter, withContext, withOutlet, withLazy };

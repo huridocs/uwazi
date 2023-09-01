@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
+// import { DropTarget } from 'react-dnd';
 import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 import ID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';
-import DragAndDropItem from './DragAndDropItem';
+import { DragAndDropItem } from './DragAndDropItem';
 
 export class DragAndDropContainer extends Component {
   constructor(props) {
@@ -106,8 +106,9 @@ export const containerTarget = {
   },
 };
 
-const dragAndDropContainer = DropTarget('DRAG_AND_DROP_ITEM', containerTarget, connect => ({
-  connectDropTarget: connect.dropTarget(),
-}))(DragAndDropContainer);
+const dragAndDropContainer = null;
+// DropTarget('DRAG_AND_DROP_ITEM', containerTarget, connect => ({
+//   connectDropTarget: connect.dropTarget(),
+// }))(DragAndDropContainer);
 
 export default DNDHTMLBackend(dragAndDropContainer);

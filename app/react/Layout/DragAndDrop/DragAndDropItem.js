@@ -1,4 +1,4 @@
-import { DragSource, DropTarget } from 'react-dnd';
+// import { DragSource, DropTarget } from 'react-dnd';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -137,14 +137,15 @@ DragAndDropItem.propTypes = {
   originalItem: PropTypes.object.isRequired,
 };
 
-let dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connector => ({
-  connectDropTarget: connector.dropTarget(),
-}))(DragAndDropItem);
+const dragAndDropItem = () => {};
+// const dragAndDropItem = DropTarget('DRAG_AND_DROP_ITEM', itemTarget, connector => ({
+//   connectDropTarget: connector.dropTarget(),
+// }))(DragAndDropItem);
 
-dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connector, monitor) => ({
-  connectDragSource: connector.dragSource(),
-  connectDragPreview: connector.dragPreview(),
-  isDragging: monitor.isDragging(),
-}))(dragAndDropItem);
+// dragAndDropItem = DragSource('DRAG_AND_DROP_ITEM', itemSource, (connector, monitor) => ({
+//   connectDragSource: connector.dragSource(),
+//   connectDragPreview: connector.dragPreview(),
+//   isDragging: monitor.isDragging(),
+// }))(dragAndDropItem);
 
 export default connect()(dragAndDropItem);
