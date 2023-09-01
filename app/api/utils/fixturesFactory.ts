@@ -21,6 +21,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
+import { PermissionSchema } from 'shared/types/permissionType';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -81,6 +82,19 @@ function getFixturesFactory() {
       properties,
       commonProperties,
     }),
+
+    entityPermission: (
+      user?: string,
+      type?: PermissionSchema['type'],
+      level?: PermissionSchema['level']
+    ) => {
+      const isPublic = !user || user === 'public';
+      return {
+        refId: isPublic ? 'public' : idMapper(user),
+        type: isPublic ? 'public' : type || 'user',
+        level: isPublic ? 'read' : level || 'read',
+      };
+    },
 
     entity: (
       id: string,
