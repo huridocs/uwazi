@@ -3,9 +3,9 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { PermissionsDataSource } from '../contracts/PermissionsDataSource';
 import { EntityPermissions } from '../model/EntityPermissions';
-import { EntityPermissionsDBOType } from './schemas/permissionTypes';
+import { EntityPermissionsDBO } from './schemas/permissionTypes';
 
-const mapPermissions = (entityPermissionInfo: EntityPermissionsDBOType) => {
+const mapPermissions = (entityPermissionInfo: EntityPermissionsDBO) => {
   const entries =
     entityPermissionInfo.permissions?.map(entry => ({
       ...entry,
@@ -18,7 +18,7 @@ const mapPermissions = (entityPermissionInfo: EntityPermissionsDBOType) => {
   );
 };
 export class MongoPermissionsDataSource
-  extends MongoDataSource<EntityPermissionsDBOType>
+  extends MongoDataSource<EntityPermissionsDBO>
   implements PermissionsDataSource
 { // eslint-disable-line
   protected collectionName = 'entities';
