@@ -1,40 +1,39 @@
 import { User } from 'api/users.v2/model/User';
 
-interface StandardEntry {
+interface Entry {
   refId: string;
   type: 'user' | 'group';
   level: 'read' | 'write';
 }
 
-interface PublicEntry {
-  refId: 'public';
-  type: 'public';
-  level: 'public';
-}
-
-type Entry = StandardEntry | PublicEntry;
-
-export class EntityPermissions {
+class EntityPermissions {
   readonly entity: string;
 
   readonly permissions: Entry[];
 
-  constructor(entity: string, permissions: Entry[]) {
+  readonly published: boolean;
+
+  constructor(entity: string, permissions: Entry[], published: boolean = false) {
     this.entity = entity;
     this.permissions = permissions;
-  }
-
-  allowsPublicReads() {
-    return this.permissions.some(permission => permission.level === 'public');
+    this.published = published;
   }
 
   allowsUserTo(user: User, level: 'read' | 'write') {
-    const idsForUser = user.groups.concat(user._id);
+    if (user.isPrivileged()) return true;
 
-    return this.permissions.some(permission =>
-      level === 'write'
-        ? permission.level === 'write' && idsForUser.includes(permission.refId)
-        : permission.level === 'public' || idsForUser.includes(permission.refId)
+    const idsForUser = new Set(user.groups.concat(user._id));
+
+    if (level === 'read') {
+      return (
+        this.published || this.permissions.some(permission => idsForUser.has(permission.refId))
+      );
+    }
+    return this.permissions.some(
+      permission => permission.level === 'write' && idsForUser.has(permission.refId)
     );
   }
 }
+
+export type { Entry };
+export { EntityPermissions };
