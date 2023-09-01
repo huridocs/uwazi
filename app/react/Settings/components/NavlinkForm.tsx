@@ -10,7 +10,7 @@ import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/
 import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { ILink, ItemTypes } from 'app/V2/shared/types';
-import { withLazy } from 'app/componentWrappers';
+import { withDnD } from 'app/componentWrappers';
 import { DragSourceMonitor } from 'react-dnd';
 
 const groupStyles = {
@@ -319,13 +319,5 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
 
 // export { NavlinkForm, mapStateToProps, LinkSource, LinkTarget };
 
-const container = connector(
-  withLazy(
-    NavlinkFormComponent,
-    async () => import('react-dnd'),
-    (module: any) => ({
-      useDrag: module.useDrag,
-    })
-  )
-);
+const container = connector(withDnD(NavlinkFormComponent));
 export { container as NavlinkForm };

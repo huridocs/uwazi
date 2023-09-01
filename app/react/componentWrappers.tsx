@@ -70,4 +70,16 @@ const withLazy =
     return isLoaded ? <Component {...componentProps} key={componentProps.key} /> : null;
   };
 
-export { withRouter, withContext, withOutlet, withLazy };
+const withDnD =
+  <T,>(Component: React.FC<T>) =>
+  (props: T & { key: string }) =>
+    withLazy(
+      Component,
+      async () => import('react-dnd'),
+      (module: any) => ({
+        useDrag: module.useDrag,
+        useDrop: module.useDrop,
+      })
+    )(props);
+
+export { withRouter, withContext, withOutlet, withLazy, withDnD };

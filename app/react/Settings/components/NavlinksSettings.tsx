@@ -9,7 +9,7 @@ import { Translate } from 'app/I18N';
 import validator from 'app/Settings/utils/ValidateNavlinks';
 import { IStore } from 'app/istore';
 import { ItemTypes } from 'app/V2/shared/types';
-import { withLazy } from 'app/componentWrappers';
+import { withDnD } from 'app/componentWrappers';
 import { SettingsHeader } from './SettingsHeader';
 import { NavlinkForm } from './NavlinkForm';
 import './styles/menu.scss';
@@ -102,7 +102,6 @@ const NavlinksSettingsComponent = ({
   return (
     <div className="settings-content">
       <div className="NavlinksSettings">
-        <span>hello</span>
         <Form
           model="settings.navlinksData"
           onSubmit={() => saveLinks(payload)}
@@ -183,13 +182,5 @@ const NavlinksSettingsComponent = ({
   );
 };
 
-const container = connector(
-  withLazy(
-    NavlinksSettingsComponent,
-    async () => import('react-dnd'),
-    (module: any) => ({
-      useDrop: module.useDrop,
-    })
-  )
-);
+const container = connector(withDnD(NavlinksSettingsComponent));
 export { container as NavlinksSettings };
