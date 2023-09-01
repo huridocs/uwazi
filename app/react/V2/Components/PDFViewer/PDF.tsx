@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
 import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -33,6 +33,7 @@ const PDF = ({
   scrollToPage,
   size,
 }: PDFProps) => {
+  const scrollToRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
 
@@ -45,6 +46,26 @@ const PDF = ({
         setError(e.message);
       });
   }, [fileUrl]);
+
+  useEffect(() => {
+    let animationFrameId = 0;
+
+    const triggerScroll = () => {
+      if (scrollToRef.current && scrollToRef.current.clientHeight > 0) {
+        scrollToRef.current.scrollIntoView({ behavior: 'instant' });
+      } else {
+        animationFrameId = requestAnimationFrame(triggerScroll);
+      }
+    };
+
+    if (pdf && scrollToPage) {
+      triggerScroll();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [scrollToPage, pdf]);
 
   if (error) {
     return <div>{error}</div>;
@@ -65,8 +86,14 @@ const PDF = ({
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
             const regionId = number.toString();
             const pageHighlights = highlights ? highlights[regionId] : undefined;
+            const shouldScrollToPage = scrollToPage === regionId;
             return (
-              <div key={`page-${regionId}`} className="relative" id={`page-${regionId}-container`}>
+              <div
+                key={`page-${regionId}`}
+                className="relative"
+                id={`page-${regionId}-container`}
+                ref={shouldScrollToPage ? scrollToRef : undefined}
+              >
                 {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
                 <SelectionRegion regionId={regionId}>
                   <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
