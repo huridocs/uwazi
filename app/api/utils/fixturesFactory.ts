@@ -86,17 +86,14 @@ function getFixturesFactory() {
     }),
 
     entityPermission: (
-      user?: string,
-      type?: PermissionSchema['type'],
-      level?: PermissionSchema['level']
-    ) => {
-      const isPublic = !user || user === 'public';
-      return {
-        refId: isPublic ? 'public' : idMapper(user),
-        type: isPublic ? 'public' : type || 'user',
-        level: isPublic ? 'read' : level || 'read',
-      };
-    },
+      user: string,
+      type: PermissionSchema['type'],
+      level: PermissionSchema['level']
+    ): PermissionSchema => ({
+      refId: idMapper(user),
+      type,
+      level,
+    }),
 
     entity: (
       id: string,
