@@ -19,6 +19,10 @@ class EntityPermissions {
     this.published = published;
   }
 
+  allowsPublicReads() {
+    return this.published;
+  }
+
   allowsUserTo(user: User, level: 'read' | 'write') {
     const idsForUser = new Set(user.groups.concat(user._id));
 

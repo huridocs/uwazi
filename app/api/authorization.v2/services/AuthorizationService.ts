@@ -40,7 +40,9 @@ export class AuthorizationService {
     } else {
       filteredEntitiesPermissions =
         level === 'read'
-          ? allEntitiesPermissions.filter(entityPermissions => entityPermissions.published)
+          ? allEntitiesPermissions.filter(entityPermissions =>
+              entityPermissions.allowsPublicReads()
+            )
           : [];
     }
 
@@ -76,7 +78,7 @@ export class AuthorizationService {
 
     return (
       level === 'read' &&
-      allEntitiesPermissions.every(entityPermissions => entityPermissions.published)
+      allEntitiesPermissions.every(entityPermissions => entityPermissions.allowsPublicReads())
     );
   }
 
