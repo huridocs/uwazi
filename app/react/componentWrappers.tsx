@@ -64,22 +64,19 @@ const withLazy =
       });
     }, []);
 
-    const componentProps = { ...lazyModuleRef.current, ...props };
+    const componentProps: T & { key: string } = { ...lazyModuleRef.current, ...props };
 
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    return isLoaded ? <Component {...componentProps} key={componentProps.key} /> : null;
+    return isLoaded ? <Component {...componentProps} /> : null;
   };
 
-const withDnD =
-  <T,>(Component: React.FC<T>) =>
-  (props: T & { key: string }) =>
-    withLazy(
-      Component,
-      async () => import('react-dnd'),
-      (module: any) => ({
-        useDrag: module.useDrag,
-        useDrop: module.useDrop,
-      })
-    )(props);
+const withDnD = <T,>(Component: React.FC<T>) =>
+  withLazy<T>(
+    Component,
+    async () => import('react-dnd'),
+    (module: any) => ({
+      useDrag: module.useDrag,
+      useDrop: module.useDrop,
+    })
+  );
 
 export { withRouter, withContext, withOutlet, withLazy, withDnD };

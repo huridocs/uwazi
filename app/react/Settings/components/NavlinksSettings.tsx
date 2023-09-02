@@ -1,35 +1,21 @@
 import React from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import { Form } from 'react-redux-form';
+import { useForm } from 'react-hook-form';
 import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import * as navlinksActions from 'app/Settings/actions/navlinksActions';
 import { Translate } from 'app/I18N';
-import validator from 'app/Settings/utils/ValidateNavlinks';
 import { IStore } from 'app/istore';
-import { ItemTypes } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
 import { SettingsHeader } from './SettingsHeader';
 import { NavlinkForm } from './NavlinkForm';
 import './styles/menu.scss';
 
-// NavlinksSettings.propTypes = {
-//   collection: PropTypes.object,
-//   links: PropTypes.array,
-//   loadLinks: PropTypes.func.isRequired,
-//   addLink: PropTypes.func.isRequired,
-//   sortLink: PropTypes.func.isRequired,
-//   saveLinks: PropTypes.func.isRequired,
-//   savingNavlinks: PropTypes.bool,
-// };
-
 interface NavlinksSettingsProps {
-  loadLinks: Function;
   addLink: Function;
   sortLink: Function;
   saveLinks: Function;
-  useDrop: Function;
 }
 
 const mapStateToProps = ({ settings }: IStore) => {
@@ -59,39 +45,12 @@ const NavlinksSettingsComponent = ({
   saveLinks,
   sortLink,
   addLink,
-  loadLinks,
   savingNavlinks,
-  useDrop,
 }: mappedProps) => {
-  // componentDidMount() {
-  //   this.props.loadLinks(this.props.collection.get('links').toJS());
-  //   this.firstLoad = true;
-  // }
-
-  // // TEST!!!
-  // componentDidUpdate(previousProps) {
-  //   if (this.firstLoad) {
-  //     this.firstLoad = false;
-  //     return;
-  //   }
-
-  //   this.focusOnNewElement(previousProps);
-  // }
-
-  // // TEST!!!
-  // focusOnNewElement(previousProps) {
-  //   const { links } = this.props;
-  //   const previousLinks = previousProps.links;
-  //   const hasNewBlock = links.length > previousLinks.length;
-  //   if (hasNewBlock) {
-  //     this.blockReferences[this.blockReferences.length - 1].focus();
-  //   }
-  // }
-
-  // const [, drop] = useDrop(() => ({
-  //   accept: ItemTypes.LINK,
-  //   drop: () => sortLink(),
-  // }));
+  const { handleSubmit } = useForm({
+    defaultValues: { links },
+    mode: 'onSubmit',
+  });
 
   const hostname = isClient ? window.location.origin : '';
 
@@ -99,15 +58,14 @@ const NavlinksSettingsComponent = ({
 
   const blockReferences: any[] = [];
 
+  const formSubmit = async data => {
+    saveLinks(payload);
+  };
+
   return (
     <div className="settings-content">
       <div className="NavlinksSettings">
-        <Form
-          model="settings.navlinksData"
-          onSubmit={() => saveLinks(payload)}
-          className="navLinks"
-          validators={validator(links)}
-        >
+        <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
           <div className="panel panel-default">
             <SettingsHeader>
               <Translate>Menu</Translate>
@@ -133,12 +91,11 @@ const NavlinksSettingsComponent = ({
               </li>
               {links.map((link, i) => (
                 <NavlinkForm
-                  linkIndex={i}
                   id={link.localID || link._id}
                   link={link}
                   sortLink={sortLink}
                   blockReferences={blockReferences}
-                  index={i.toString()}
+                  index={i}
                   key={link.localID || link._id}
                 />
               ))}
@@ -176,7 +133,7 @@ const NavlinksSettingsComponent = ({
               </div>
             </div>
           </div>
-        </Form>
+        </form>
       </div>
     </div>
   );

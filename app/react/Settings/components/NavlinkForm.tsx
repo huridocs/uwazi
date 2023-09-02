@@ -1,17 +1,17 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-
-import React from 'react';
+import React, { useRef } from 'react';
 import { Field } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
+import type { DragSourceMonitor } from 'react-dnd';
 import { Icon } from 'UI';
-import { removeLink, addGroupLink, removeGroupLink } from 'app/Settings/actions/navlinksActions';
+import * as navlinksActions from 'app/Settings/actions/navlinksActions';
 import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { ILink, ItemTypes } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
-import { DragSourceMonitor } from 'react-dnd';
+import { hoverSortable } from 'app/Layout/DragAndDrop';
 
 const groupStyles = {
   paddingRight: '0px',
@@ -21,72 +21,13 @@ const groupStyles = {
 const linkStyles = {
   display: 'flex',
 };
-
-// const LinkSource = {
-//   beginDrag(props) {
-//     return {
-//       id: props.localID,
-//       index: props.index,
-//     };
-//   },
-// };
-
-// const LinkTarget = {
-//   hover(props, monitor, component) {
-//     const dragIndex = monitor.getItem().index;
-//     const hoverIndex = props.index;
-
-//     // Don't replace items with themselves
-//     if (dragIndex === hoverIndex) {
-//       return;
-//     }
-
-//     // Determine rectangle on screen
-//     const hoverBoundingRect = findDOMNode(component).getBoundingClientRect(); // eslint-disable-line react/no-find-dom-node
-
-//     // Get vertical middle
-//     const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-//     // Determine mouse position
-//     const clientOffset = monitor.getClientOffset();
-
-//     // Get pixels to the top
-//     const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-
-//     // Only perform the move when the mouse has crossed half of the items height
-//     // When dragging downwards, only move when the cursor is below 50%
-//     // When dragging upwards, only move when the cursor is above 50%
-
-//     // Dragging downwards
-//     if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-//       return;
-//     }
-
-//     // Dragging upwards
-//     if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-//       return;
-//     }
-
-//     // Time to actually perform the action
-//     props.sortLink(dragIndex, hoverIndex);
-
-//     // Note: we're mutating the monitor item here!
-//     // Generally it's better to avoid mutations,
-//     // but it's good here for the sake of performance
-//     // to avoid expensive index searches.
-//     monitor.getItem().index = hoverIndex;
-//   },
-// };
-
 interface NavlinkFormProps {
-  className: string;
+  index: number;
   link: ILink;
   removeLink: Function;
-  defaultLibraryView: any;
-  toggleMobileMenu: (visible: boolean) => void;
-  useDrag: Function;
-  blockReferences: [];
-  index: string;
+  useDrag: any;
+  useDrop: any;
+  sortLink: Function;
 }
 
 const mapStateToProps = ({ settings }: IStore) => {
@@ -98,63 +39,50 @@ const mapStateToProps = ({ settings }: IStore) => {
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ removeLink, addGroupLink, removeGroupLink }, dispatch);
+  bindActionCreators(
+    {
+      removeLink: navlinksActions.removeLink,
+      addGroupLink: navlinksActions.addGroupLink,
+      removeGroupLink: navlinksActions.removeGroupLink,
+    },
+    dispatch
+  );
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector> & NavlinkFormProps;
 
 const NavlinkFormComponent: React.FC<mappedProps> = ({
-  className,
   links,
   link,
   useDrag,
+  useDrop,
   removeLink,
-  defaultLibraryView,
-  toggleMobileMenu,
-  // isDragging,
-  // connectDragPreview,
-  // connectDragSource,
-  // connectDropTarget,
-  blockReferences,
+  addGroupLink,
+  removeGroupLink,
   formState,
   index,
+  sortLink,
 }: mappedProps) => {
+  const ref = useRef<HTMLLIElement>(null);
+
+  const [{ handlerId }, drop] = useDrop({
+    accept: ItemTypes.LINK,
+    collect(monitor: any) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover: hoverSortable(ref, index, sortLink),
+  });
+
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.LINK,
+    item: () => ({ index }),
     collect: (monitor: DragSourceMonitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   }));
-
-  console.log(index);
-  // const focus = () => {
-  //   focusableInput.focus();
-  // };
-
-  // componentDidMount() {
-  //   this.props.blockReferences.push(this);
-  // }
-
-  // componentDidUpdate(previousProps) {
-  //   if (this.firstLoad) {
-  //     this.firstLoad = false;
-  //     return;
-  //   }
-
-  //   this.focusOnNewElement(previousProps);
-  // }
-
-  // const focusOnNewElement = previousProps => {
-  //   if (props.link.type === 'group') {
-  //     const links = props.links[props.index].sublinks;
-  //     const previousLinks = previousProps.links[props.index].sublinks;
-  //     const hasNewItem = links?.length > previousLinks?.length;
-  //     if (hasNewItem) {
-  //       items[items.length - 1].focus();
-  //     }
-  //
-  // };
 
   let itemClassName = `list-group-item${isDragging ? ' dragging' : ''}`;
   let titleClass = 'input-group';
@@ -166,8 +94,12 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
 
   const items = [];
 
+  const opacity = isDragging ? 0 : 1;
+
+  drag(drop(ref));
+
   return (
-    <li className={itemClassName} ref={drag}>
+    <li className={itemClassName} ref={ref} style={{ opacity }} data-handler-id={handlerId}>
       <div className="propery-form expand">
         <div>
           <div className="row">
@@ -293,31 +225,5 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
   );
 };
 
-// NavlinkForm.defaultProps = {
-//   blockReferences: [],
-// };
-
-// NavlinkForm.propTypes = {
-//   connectDragSource: PropTypes.func.isRequired,
-//   connectDragPreview: PropTypes.func.isRequired,
-//   connectDropTarget: PropTypes.func.isRequired,
-//   index: PropTypes.number.isRequired,
-//   isDragging: PropTypes.bool.isRequired,
-//   id: PropTypes.any.isRequired,
-//   link: PropTypes.object.isRequired,
-//   links: PropTypes.array.isRequired,
-//   sortLink: PropTypes.func.isRequired,
-//   removeLink: PropTypes.func,
-//   formState: PropTypes.object.isRequired,
-//   addGroupLink: PropTypes.func.isRequired,
-//   removeGroupLink: PropTypes.func,
-//   blockReferences: PropTypes.array,
-// };
-// function mapDispatchToProps(dispatch) {
-//   return bindActionCreators({ removeLink, addGroupLink, removeGroupLink }, dispatch);
-// }
-
-// export { NavlinkForm, mapStateToProps, LinkSource, LinkTarget };
-
-const container = connector(withDnD(NavlinkFormComponent));
+const container = connector(withDnD<mappedProps>(NavlinkFormComponent));
 export { container as NavlinkForm };

@@ -1,4 +1,4 @@
 import { DragAndDropContainer } from './DragAndDropContainer';
-import { DragAndDropItem } from './DragAndDropItem';
+import { hoverSortable } from './DragAndDropItem';
 
-export { DragAndDropContainer, DragAndDropItem };
+export { DragAndDropContainer, hoverSortable };
