@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
@@ -42,6 +42,7 @@ type mappedProps = ConnectedProps<typeof connector> & NavlinksSettingsProps;
 const NavlinksSettingsComponent = ({
   collection,
   links,
+  loadLinks,
   saveLinks,
   sortLink,
   addLink,
@@ -58,9 +59,13 @@ const NavlinksSettingsComponent = ({
 
   const blockReferences: any[] = [];
 
-  const formSubmit = async data => {
+  const formSubmit = async () => {
     saveLinks(payload);
   };
+
+  useEffect(() => {
+    loadLinks(collection.get('links')?.toJS());
+  }, [collection, loadLinks]);
 
   return (
     <div className="settings-content">

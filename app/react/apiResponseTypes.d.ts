@@ -52,6 +52,7 @@ export interface ClientSettings
   filters?: ClientSettingsFilterSchema[];
   languages?: ClientLanguageSchema[];
   links?: ClientSettingsLinkSchema[];
+  _rev?: string;
   features?: Omit<Settings['features'], 'preserve | metadataExtraction'> & {
     preserve?: ClientPreserveConfig;
     metadataExtraction?: {
