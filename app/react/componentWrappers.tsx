@@ -64,7 +64,7 @@ const withLazy =
       });
     }, []);
 
-    const componentProps: T & { key: string } = { ...lazyModuleRef.current, ...props };
+    const componentProps = { ...lazyModuleRef.current, ...props };
 
     return isLoaded ? <Component {...componentProps} /> : null;
   };

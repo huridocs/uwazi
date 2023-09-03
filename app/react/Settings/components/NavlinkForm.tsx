@@ -21,7 +21,7 @@ const groupStyles = {
 const linkStyles = {
   display: 'flex',
 };
-interface NavlinkFormProps {
+interface NavlinkFormProps extends React.ComponentProps<any> {
   index: number;
   link: ILink;
   removeLink: Function;

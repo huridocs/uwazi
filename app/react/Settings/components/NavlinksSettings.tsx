@@ -7,7 +7,6 @@ import { isClient } from 'app/utils';
 import * as navlinksActions from 'app/Settings/actions/navlinksActions';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
-import { withDnD } from 'app/componentWrappers';
 import { SettingsHeader } from './SettingsHeader';
 import { NavlinkForm } from './NavlinkForm';
 import './styles/menu.scss';
@@ -144,5 +143,5 @@ const NavlinksSettingsComponent = ({
   );
 };
 
-const container = connector(withDnD(NavlinksSettingsComponent));
+const container = connector(NavlinksSettingsComponent);
 export { container as NavlinksSettings };
