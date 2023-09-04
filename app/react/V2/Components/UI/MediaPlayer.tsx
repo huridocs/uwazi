@@ -35,7 +35,7 @@ const ThumbnailOverlay = ({ color, mediaName }: { color?: string; mediaName?: st
     <div
       className="relative w-full h-full"
       style={{
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(255,255,255,0.5) 50%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.5) 50%)',
       }}
     >
       <div
