@@ -49,13 +49,21 @@ const PDF = ({
 
   useEffect(() => {
     let animationFrameId = 0;
+    let attempts = 0;
 
     const triggerScroll = () => {
+      if (attempts > 10) {
+        return;
+      }
+
       if (scrollToRef.current && scrollToRef.current.clientHeight > 0) {
         scrollToRef.current.scrollIntoView({ behavior: 'instant' });
-      } else {
-        animationFrameId = requestAnimationFrame(triggerScroll);
+        attempts = 0;
+        return;
       }
+
+      attempts += 1;
+      animationFrameId = requestAnimationFrame(triggerScroll);
     };
 
     if (pdf && scrollToPage) {

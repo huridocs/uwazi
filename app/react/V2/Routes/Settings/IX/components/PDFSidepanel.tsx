@@ -158,6 +158,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               size={{
                 height: pdfContainerRef.current?.clientHeight,
               }}
+              scrollToPage={Object.keys(highlights || {})[0]}
             />
           )}
         </div>
