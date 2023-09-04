@@ -64,6 +64,12 @@ socket.on('translationsChange', translations => {
   Translate.resetCachedTranslation();
 });
 
+socket.on('translationsDelete', locale => {
+  store.dispatch(actions.remove('translations', { locale }, 'locale'));
+  t.resetCachedTranslation();
+  Translate.resetCachedTranslation();
+});
+
 socket.on('documentProcessed', sharedId => {
   store.dispatch(documentProcessed(sharedId, 'library'));
 });

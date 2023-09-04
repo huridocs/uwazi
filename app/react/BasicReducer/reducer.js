@@ -38,10 +38,12 @@ export default function createReducer(namespace, defaultValue) {
           collection.concat(Immutable.fromJS(action.value))
         );
 
-      case `${namespace}/${REMOVE}`:
+      case `${namespace}/${REMOVE}`: {
+        const key = action.customIndex || '_id';
         return Immutable.fromJS(currentState).filter(
-          object => object.get('_id') !== action.value._id
+          object => object.get(key) !== action.value[key]
         );
+      }
 
       case `${namespace}/${UPDATE}`:
         if (currentState instanceof Immutable.Map) {
@@ -135,10 +137,11 @@ export function concatIn(namespace, key, value) {
   };
 }
 
-export function remove(namespace, value) {
+export function remove(namespace, value, customIndex) {
   return {
     type: `${namespace}/${REMOVE}`,
     value,
+    customIndex,
   };
 }
 

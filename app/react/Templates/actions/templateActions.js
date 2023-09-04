@@ -7,7 +7,7 @@ import api from 'app/Templates/TemplatesAPI';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import entitiesApi from 'app/Entities/EntitiesAPI';
-import { t } from 'app/I18N';
+import { t, I18NApi } from 'app/I18N';
 import templateCommonProperties from '../utils/templateCommonProperties';
 
 export const prepareTemplate = template => {
@@ -122,23 +122,25 @@ export function validateMapping(template) {
 
 export function saveTemplate(data) {
   let template = sanitize(data);
-  return dispatch => {
+  return async dispatch => {
     dispatch({ type: types.SAVING_TEMPLATE });
-    return api
-      .save(new RequestParams(template))
-      .then(response => {
-        template = prepareTemplate(response);
-        dispatch({ type: types.TEMPLATE_SAVED, data: template });
-        dispatch(actions.update('templates', template));
-        dispatch(formActions.merge('template.data', template));
-        dispatch(
-          notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
-        );
-      })
-      .catch(e => {
-        dispatch({ type: types.TEMPLATE_SAVED, data });
-        throw e;
-      });
+    try {
+      const response = await api.save(new RequestParams(template));
+      template = prepareTemplate(response);
+      dispatch({ type: types.TEMPLATE_SAVED, data: template });
+      dispatch(actions.update('templates', template));
+      dispatch(formActions.merge('template.data', template));
+      dispatch(
+        notificationActions.notify(t('System', 'Saved successfully.', null, false), 'success')
+      );
+    } catch (e) {
+      dispatch({ type: types.TEMPLATE_SAVED, data });
+      throw e;
+    } finally {
+      // Re-load translations
+      const translations = await I18NApi.get();
+      dispatch(actions.set('translations', translations));
+    }
   };
 }
 

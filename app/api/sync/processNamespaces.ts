@@ -380,9 +380,8 @@ class ProcessNamespaces {
             templatesData.find(t => t._id.toString() === context.id.toString())
           );
           const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
-          const templateTitle = contextTemplate.commonProperties?.find(
-            p => p.name === 'title'
-          )?.label;
+          const templateTitle = contextTemplate.commonProperties?.find(p => p.name === 'title')
+            ?.label;
 
           const approvedKeys = [contextTemplate.name, templateTitle]
             .concat(

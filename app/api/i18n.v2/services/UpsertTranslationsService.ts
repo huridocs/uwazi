@@ -108,9 +108,7 @@ export class UpsertTranslationsService {
 
     if (missingKeysInDB.length) {
       await this.translationsDS.insert(
-        (
-          await this.settingsDS.getLanguageKeys()
-        ).reduce<Translation[]>(
+        (await this.settingsDS.getLanguageKeys()).reduce<Translation[]>(
           (memo, languageKey) =>
             memo.concat(
               missingKeysInDB.map(

@@ -183,7 +183,7 @@ const createDefaultTraversal = () =>
         templates: [],
       },
     ],
-  } as TraverseQuery);
+  }) as TraverseQuery;
 
 interface MatchNodeProps {
   value: MatchQuery;

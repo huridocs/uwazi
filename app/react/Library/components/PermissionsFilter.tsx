@@ -51,58 +51,56 @@ export const PermissionsFilterUncontrolled = connect(
   ({ user }: { user: IImmutable<ClientUserSchema> }) => ({
     user,
   })
-)(
-  ({
-    value = Immutable.fromJS([]),
-    onChange,
-    aggregations,
-    user,
-  }: PermissionsFilterProps & {
-    user: IImmutable<ClientUserSchema>;
-    value: PermissionsValue[];
-  }) => {
-    const refIds: string[] = useMemo(
-      () => [user.get('_id') as string, ...(user.toJS().groups?.map(g => g._id as string) || [])],
-      [user]
+)(({
+  value = Immutable.fromJS([]),
+  onChange,
+  aggregations,
+  user,
+}: PermissionsFilterProps & {
+  user: IImmutable<ClientUserSchema>;
+  value: PermissionsValue[];
+}) => {
+  const refIds: string[] = useMemo(
+    () => [user.get('_id') as string, ...(user.toJS().groups?.map(g => g._id as string) || [])],
+    [user]
+  );
+
+  const onChangeHandler = (newValues: FiltrableLevel[]) => {
+    onChange(
+      newValues.reduce(
+        (filters: PermissionsValue[], level: FiltrableLevel) =>
+          filters.concat(
+            refIds.map(refId => ({
+              refId,
+              level,
+            }))
+          ),
+        []
+      )
     );
+  };
 
-    const onChangeHandler = (newValues: FiltrableLevel[]) => {
-      onChange(
-        newValues.reduce(
-          (filters: PermissionsValue[], level: FiltrableLevel) =>
-            filters.concat(
-              refIds.map(refId => ({
-                refId,
-                level,
-              }))
-            ),
-          []
-        )
-      );
-    };
+  const mappedValue = useMemo(
+    () =>
+      filtrableLevels.filter(level =>
+        refIds.every(id => value.find(v => v.refId === id && v.level === level))
+      ),
+    [refIds, value]
+  );
 
-    const mappedValue = useMemo(
-      () =>
-        filtrableLevels.filter(level =>
-          refIds.every(id => value.find(v => v.refId === id && v.level === level))
-        ),
-      [refIds, value]
-    );
+  const options = generateOptions(aggregations);
 
-    const options = generateOptions(aggregations);
-
-    return (
-      <FormGroup key="permissions.level" className="admin-filter">
-        <MultiSelect
-          prefix="permissions.level"
-          onChange={onChangeHandler}
-          options={options}
-          value={mappedValue}
-        />
-      </FormGroup>
-    );
-  }
-);
+  return (
+    <FormGroup key="permissions.level" className="admin-filter">
+      <MultiSelect
+        prefix="permissions.level"
+        onChange={onChangeHandler}
+        options={options}
+        value={mappedValue}
+      />
+    </FormGroup>
+  );
+});
 
 // eslint-disable-next-line react/no-multi-comp
 const PermissionsFilterMultiselect = ({

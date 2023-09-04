@@ -5,6 +5,7 @@ import { errorLog } from 'api/log';
 import { elastic } from 'api/search';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { Logger } from 'winston';
 import { searchRoutes } from '../routes';
 
 import {
@@ -20,7 +21,6 @@ import {
   entity4es,
   entity5es,
 } from './fixturesTitleSearch';
-import { Logger } from 'winston';
 
 describe('entities get searchString', () => {
   const app: Application = setUpApp(searchRoutes);
@@ -192,7 +192,7 @@ describe('entities get searchString', () => {
         jest.spyOn(elastic, 'search').mockImplementation(() => {
           throw new Error('Error for test');
         });
-        jest.spyOn(errorLog, 'error').mockImplementation(() => ({} as Logger));
+        jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
         const { body, status } = await request(app).get('/api/v2/search');
 
         expect(status).toBe(500);

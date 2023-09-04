@@ -458,7 +458,7 @@ const expectedFormattedEntity = {
       ],
     },
     inherit: {
-      translateContext: '626c19238a46c11701b49a55',
+      translateContext: '5bfbb1a0471dd0fc16ada146',
       label: 'Inherit',
       name: 'inherit',
       type: 'inherit',
@@ -591,7 +591,7 @@ const expectedFormattedEntity = {
       name: 'emptyRelation',
       noLabel: undefined,
       onlyForCards: false,
-      translateContext: '626c19238a46c11701b49a55',
+      translateContext: '5bfbb1a0471dd0fc16ada146',
       type: 'inherit',
       value: [],
     },

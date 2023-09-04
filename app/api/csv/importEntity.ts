@@ -36,7 +36,7 @@ const toMetadata = async (
         ({
           ...(await meta),
           [ensure<string>(prop.name)]: await parse(toImportEntity, prop, dateFormat),
-        } as MetadataSchema),
+        }) as MetadataSchema,
       Promise.resolve({})
     );
 
