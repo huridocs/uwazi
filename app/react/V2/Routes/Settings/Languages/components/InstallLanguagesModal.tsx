@@ -24,7 +24,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
     await requestAction(
       I18NApi.addLanguage,
       new RequestParams(languages.filter(l => selected.includes(l.key))),
-      <Translate>Languages installed successfully</Translate>
+      <Translate>Language Install Start Message</Translate>
     );
   };
 

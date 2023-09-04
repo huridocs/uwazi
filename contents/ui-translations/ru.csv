@@ -424,9 +424,9 @@ Language,Язык
 Language Code,Language Code
 Language deleted,Язык удален
 Language reset success,Language reset success
-Language uninstalled success,Language uninstalled success
+Language Uninstall Start Message,We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.
 Languages,Языки
-Languages installed successfully,Languages installed successfully
+Language Install Start Message,We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.
 Last updated,Last updated
 Latitude,Широта
 Learn more,Узнать больше

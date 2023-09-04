@@ -110,7 +110,7 @@ const LanguagesList = () => {
       'You are about to uninstall a language.',
       'Uninstall',
       handleAction(
-        <Translate>Language uninstalled success</Translate>,
+        <Translate>Language Uninstall Start Message</Translate>,
         I18NApi.deleteLanguage,
         'key',
         row.original as LanguageSchema

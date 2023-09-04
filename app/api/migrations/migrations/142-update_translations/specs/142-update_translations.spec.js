@@ -27,12 +27,12 @@ describe('migration to update translations adding new keys and removing old ones
         { key: 'Filters', value: 'Filters' },
         { key: 'Library', value: 'Library' },
         {
-          key: 'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
+          key: 'Language Install Start Message',
           value:
             'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
         },
         {
-          key: 'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
+          key: 'Language Uninstall Start Message',
           value:
             'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
         },

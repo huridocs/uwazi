@@ -426,9 +426,9 @@ Language,لغة
 Language Code,Language Code
 Language deleted,حذفت اللغة
 Language reset success,Language reset success
-Language uninstalled success,Language uninstalled success
+Language Uninstall Start Message,We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.
 Languages,اللغات
-Languages installed successfully,Languages installed successfully
+Language Install Start Message,We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.
 Last updated,Last updated
 Latitude,خط العرض
 Learn more,اعرف المزيد

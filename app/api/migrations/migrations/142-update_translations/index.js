@@ -1,9 +1,13 @@
 const newKeys = [
   {
-    key: 'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
+    key: 'Language Install Start Message',
+    value:
+      'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
   },
   {
-    key: 'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
+    key: 'Language Uninstall Start Message',
+    value:
+      'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
   },
 ];
 
@@ -31,7 +35,7 @@ export default {
 
   name: 'update_translations',
 
-  description: 'Add and remove translation keys for new IX dashboard in settings',
+  description: 'Add and remove translation keys for new language installation flow',
 
   async up(db) {
     const keysToInsert = newKeys;
@@ -62,7 +66,7 @@ export default {
       keysToInsert
         .filter(k => !alreadyInDB.includes(k.key))
         .forEach(newEntry => {
-          contextValues.push({ key: newEntry.key, value: newEntry.key });
+          contextValues.push({ key: newEntry.key, value: newEntry.value || newEntry.key });
         });
       context.values = contextValues;
     });
