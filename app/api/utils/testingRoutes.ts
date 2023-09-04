@@ -11,6 +11,11 @@ extendSupertest();
 
 const iosocket = { emit: jest.fn() };
 
+enum TestEmitSources {
+  session = 'session',
+  currentTenant = 'currentTenant',
+}
+
 const setUpApp = (
   route: Function,
   ...customMiddleware: ((req: Request, _es: Response, next: NextFunction) => void)[]
@@ -19,9 +24,11 @@ const setUpApp = (
   routesErrorHandler(app);
   app.use(bodyParser.json() as RequestHandler);
   app.use((req: Request, _res: Response, next: NextFunction) => {
-    req.emitToSessionSocket = (event: string, ...args: any[]) => iosocket.emit(event, ...args);
+    req.emitToSessionSocket = (event: string, ...args: any[]) =>
+      iosocket.emit(event, TestEmitSources.session, ...args);
     req.sockets = {
-      emitToCurrentTenant: (event: string, ...args: any[]) => iosocket.emit(event, ...args),
+      emitToCurrentTenant: (event: string, ...args: any[]) =>
+        iosocket.emit(event, TestEmitSources.currentTenant, ...args),
     };
     next();
   });
@@ -56,4 +63,4 @@ const socketEmit = async (eventName: string, performRequest: requestCb) => {
   return res;
 };
 
-export { setUpApp, socketEmit, iosocket };
+export { setUpApp, socketEmit, iosocket, TestEmitSources };

@@ -9,7 +9,7 @@ import i18nRoutes from 'api/i18n/routes';
 import { errorLog } from 'api/log';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { iosocket, setUpApp } from 'api/utils/testingRoutes';
+import { TestEmitSources, iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { availableLanguages } from 'shared/languagesList';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
@@ -222,6 +222,7 @@ describe('i18n translations routes', () => {
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'translationsChange',
+          TestEmitSources.currentTenant,
           expect.objectContaining({
             contexts: expect.arrayContaining([
               expect.objectContaining({ values: { Search: 'Buscar' } }),
@@ -283,7 +284,7 @@ describe('i18n translations routes', () => {
           ]);
         mockCalls = iosocket.emit.mock.calls;
         await waitForExpect(() => {
-          expect(mockCalls.length).toBe(3);
+          expect(mockCalls.length).toBe(4);
         });
       });
 
@@ -298,6 +299,7 @@ describe('i18n translations routes', () => {
         expect(translationChangeEvents).toMatchObject([
           [
             'translationsChange',
+            TestEmitSources.currentTenant,
             {
               locale: 'zh',
               contexts: [
@@ -320,6 +322,7 @@ describe('i18n translations routes', () => {
           ],
           [
             'translationsChange',
+            TestEmitSources.currentTenant,
             {
               locale: 'ja',
               contexts: [
@@ -342,8 +345,17 @@ describe('i18n translations routes', () => {
       });
 
       it('should emit an updateSettings event', async () => {
-        const lastEvent = mockCalls[mockCalls.length - 1];
-        expect(lastEvent).toMatchObject(['updateSettings', newSettings]);
+        const eventCandidate = mockCalls[mockCalls.length - 2];
+        expect(eventCandidate).toMatchObject([
+          'updateSettings',
+          TestEmitSources.currentTenant,
+          newSettings,
+        ]);
+      });
+
+      it('should emit a translationsInstallDone event', async () => {
+        const eventCandidate = mockCalls[mockCalls.length - 1];
+        expect(eventCandidate).toMatchObject(['translationsInstallDone', TestEmitSources.session]);
       });
     });
 
@@ -400,6 +412,7 @@ describe('i18n translations routes', () => {
         });
         expect(iosocket.emit).toHaveBeenCalledWith(
           'updateSettings',
+          TestEmitSources.currentTenant,
           expect.objectContaining({
             languages: [
               expect.objectContaining({ default: false, key: 'en', label: 'English' }),
@@ -472,7 +485,7 @@ describe('i18n translations routes', () => {
         response = await request(app).delete('/api/translations/languages?key=es').send();
         mockCalls = iosocket.emit.mock.calls;
         await waitForExpect(() => {
-          expect(mockCalls.length).toBe(2);
+          expect(mockCalls.length).toBe(3);
         });
       });
       it('should return a 204', async () => {
@@ -483,6 +496,7 @@ describe('i18n translations routes', () => {
         const firstEvent = mockCalls[0];
         expect(firstEvent).toMatchObject([
           'updateSettings',
+          TestEmitSources.currentTenant,
           {
             _id: expect.anything(),
             filters: [],
@@ -506,8 +520,17 @@ describe('i18n translations routes', () => {
       });
 
       it('should emit a translationsDelete event', async () => {
-        const lastEvent = mockCalls[mockCalls.length - 1];
-        expect(lastEvent).toMatchObject(['translationsDelete', 'es']);
+        const eventCandidate = mockCalls[1];
+        expect(eventCandidate).toMatchObject([
+          'translationsDelete',
+          TestEmitSources.currentTenant,
+          'es',
+        ]);
+      });
+
+      it('should emit a translationsDeleteDone event', async () => {
+        const eventCandidate = mockCalls[2];
+        expect(eventCandidate).toMatchObject(['translationsDeleteDone', TestEmitSources.session]);
       });
     });
   });

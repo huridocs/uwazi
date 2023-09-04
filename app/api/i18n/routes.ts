@@ -41,8 +41,8 @@ async function addLanguages(languages: LanguageSchema[], req: Request) {
     ({ newSettings, newTranslations } = await addLanguage(language));
     req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
   });
-
   req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+  req.emitToSessionSocket('translationsInstallDone');
 }
 
 async function deleteLanguage(key: LanguageISO6391, req: Request) {
@@ -55,6 +55,7 @@ async function deleteLanguage(key: LanguageISO6391, req: Request) {
 
   req.sockets.emitToCurrentTenant('updateSettings', newSettings);
   req.sockets.emitToCurrentTenant('translationsDelete', key);
+  req.emitToSessionSocket('translationsDeleteDone');
 }
 
 type TranslationsRequest = Request & { query: { context: string } };
@@ -205,7 +206,7 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      void addLanguages(languages, req);
+      addLanguages(languages, req).catch(console.error);
       res.status(204).json('ok');
     }
   );
@@ -223,7 +224,7 @@ export default (app: Application) => {
     }),
     async (req: DeleteTranslationRequest, res) => {
       const { key } = req.query;
-      deleteLanguage(key, req).catch(console.error); //TODO: ask Joan about this
+      deleteLanguage(key, req).catch(console.error);
       res.status(204).json('ok');
     }
   );
