@@ -99,12 +99,9 @@ describe('Public Form', () => {
     it('should fill the Fotografía field', () => {
       cy.contains('.image button[type=button]', 'Add file').eq(0).click();
       cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/batman.jpg`,
-        {
-          force: true,
-        }
-      );
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('img').should('be.visible');
     });
 
@@ -112,7 +109,7 @@ describe('Public Form', () => {
       cy.get('.media button[type=button]').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/short-video.mp4`,
+        './cypress/test_files/short-video.mp4',
         {
           force: true,
         }
@@ -135,12 +132,9 @@ describe('Public Form', () => {
     it('should fill the Imagen adicional field', () => {
       cy.contains('.image button[type=button]', 'Add file').click();
       cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/batman.jpg`,
-        {
-          force: true,
-        }
-      );
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('.form-group.image', { timeout: 200 }).eq(1).scrollIntoView();
     });
 

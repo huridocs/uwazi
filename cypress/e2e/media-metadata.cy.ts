@@ -32,7 +32,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     if (local) {
       cy.get('.upload-button input[type=file]')
         .last()
-        .selectFile('./e2e/test_files/short-video.mp4', {
+        .selectFile('./cypress/test_files/short-video.mp4', {
           force: true,
         });
     } else {
@@ -50,9 +50,11 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   const addImage = () => {
     clickMediaAction('Fotografía', 'Add file');
     cy.contains('button', 'Select from computer');
-    cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/batman.jpg', {
-      force: true,
-    });
+    cy.get('.upload-button input[type=file]')
+      .first()
+      .selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
     // wait for image
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(200);
@@ -62,9 +64,11 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').scrollIntoView();
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').click();
     cy.contains('button', 'Select from computer');
-    cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/valid.pdf', {
-      force: true,
-    });
+    cy.get('.upload-button input[type=file]')
+      .first()
+      .selectFile('./cypress/test_files/sample.pdf', {
+        force: true,
+      });
     cy.contains(field)
       .parentsUntil('.form-group')
       .contains('This file type is not supported on media fields')
