@@ -64,10 +64,25 @@ socket.on('translationsChange', translations => {
   Translate.resetCachedTranslation();
 });
 
+socket.on('translationsInstallDone', () => {
+  store.dispatch(
+    notificationActions.notify(
+      t('System', 'Languages installed successfully', null, false),
+      'success'
+    )
+  );
+});
+
 socket.on('translationsDelete', locale => {
   store.dispatch(actions.remove('translations', { locale }, 'locale'));
   t.resetCachedTranslation();
   Translate.resetCachedTranslation();
+});
+
+socket.on('translationsDeleteDone', () => {
+  store.dispatch(
+    notificationActions.notify(t('System', 'Language uninstalled success', null, false), 'success')
+  );
 });
 
 socket.on('documentProcessed', sharedId => {

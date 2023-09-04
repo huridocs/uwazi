@@ -123,6 +123,20 @@ describe('sockets', () => {
     });
   });
 
+  describe('translationsInstallDone', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsInstallDone[0]();
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'Languages installed successfully',
+          type: 'success',
+        },
+      });
+    });
+  });
+
   describe('translationsDelete', () => {
     it('should emit a translationsDelete event', () => {
       socket._callbacks.$translationsDelete[0]('localeString');
@@ -130,6 +144,20 @@ describe('sockets', () => {
         customIndex: 'locale',
         type: 'translations/REMOVE',
         value: { locale: 'localeString' },
+      });
+    });
+  });
+
+  describe('translationsDeleteDone', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsDeleteDone[0]();
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'Language uninstalled success',
+          type: 'success',
+        },
       });
     });
   });
