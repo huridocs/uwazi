@@ -16,7 +16,7 @@ describe('migration to update translations adding new keys and removing old ones
     expect(migration.delta).toBe(142);
   });
 
-  it('should add the new keys and remove old ones', async () => {
+  it('should add the new keys and remove old ones, if needed', async () => {
     await migration.up(testingDB.mongodb);
     const updatedTranslations = await testingDB.mongodb.collection('translations').find().toArray();
 
@@ -26,6 +26,14 @@ describe('migration to update translations adding new keys and removing old ones
         { key: 'Menu', value: 'Menu' },
         { key: 'Filters', value: 'Filters' },
         { key: 'Library', value: 'Library' },
+        {
+          key: 'Languages installed successfully',
+          value: 'Languages installed successfully',
+        },
+        {
+          key: 'Language uninstalled success',
+          value: 'Language uninstalled success',
+        },
         {
           key: 'Language Install Start Message',
           value:

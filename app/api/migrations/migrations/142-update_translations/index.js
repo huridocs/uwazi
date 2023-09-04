@@ -1,20 +1,17 @@
 const newKeys = [
   {
     key: 'Language Install Start Message',
-    value:
+    defaultValue:
       'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
   },
   {
     key: 'Language Uninstall Start Message',
-    value:
+    defaultValue:
       'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
   },
 ];
 
-const deletedKeys = [
-  { key: 'Languages installed successfully' },
-  { key: 'Language uninstalled success' },
-];
+const deletedKeys = [];
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };
@@ -66,7 +63,7 @@ export default {
       keysToInsert
         .filter(k => !alreadyInDB.includes(k.key))
         .forEach(newEntry => {
-          contextValues.push({ key: newEntry.key, value: newEntry.value || newEntry.key });
+          contextValues.push({ key: newEntry.key, value: newEntry.defaultValue || newEntry.key });
         });
       context.values = contextValues;
     });
