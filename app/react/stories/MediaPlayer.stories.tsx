@@ -12,7 +12,14 @@ type Story = StoryObj<typeof MediaPlayer>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <MediaPlayer url={args.url} width={args.width} height={args.height} />
+      <div className="p-4 rounded border">
+        <MediaPlayer
+          url={args.url}
+          width={args.width}
+          height={args.height}
+          thumbnail={args.thumbnail}
+        />
+      </div>
     </div>
   ),
 };
@@ -24,7 +31,22 @@ const Embedded: Story = {
 
 const LocalFile: Story = {
   ...Primary,
-  args: { width: '700px', height: '350px', url: '/short-video.mp4' },
+  args: {
+    width: '700px',
+    height: '350px',
+    url: '/short-video.mp4',
+    thumbnail: { color: 'red', fileName: 'Short video' },
+  },
+};
+
+const LocalFileWithThumbnail: Story = {
+  ...Primary,
+  args: {
+    width: '700px',
+    height: '350px',
+    url: '/short-video.mp4',
+    thumbnail: { url: '/short-video-thumbnail.jpg' },
+  },
 };
 
 const InvalidMedia: Story = {
@@ -32,6 +54,6 @@ const InvalidMedia: Story = {
   args: { width: '700px', height: '350px', url: '/sample.pdf' },
 };
 
-export { Embedded, LocalFile, InvalidMedia };
+export { Embedded, LocalFile, LocalFileWithThumbnail, InvalidMedia };
 
 export default meta;
