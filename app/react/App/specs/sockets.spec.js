@@ -144,7 +144,7 @@ describe('sockets', () => {
         type: 'NOTIFY',
         notification: {
           id: expect.any(String),
-          message: 'An error happened while installing languages:\nerror message',
+          message: 'An error has occured while installing languages:\nerror message',
           type: 'danger',
         },
       });
@@ -169,7 +169,7 @@ describe('sockets', () => {
         type: 'NOTIFY',
         notification: {
           id: expect.any(String),
-          message: 'An error happened while deleting a language:\nerror message',
+          message: 'An error has occured while deleting a language:\nerror message',
           type: 'danger',
         },
       });

@@ -78,7 +78,7 @@ socket.on('translationsInstallError', errorMessage => {
     notificationActions.notify(
       `${t(
         'System',
-        'An error happened while installing languages:',
+        'An error has occured while installing languages:',
         null,
         false
       )}\n${errorMessage}`,
@@ -104,7 +104,7 @@ socket.on('translationsDeleteError', errorMessage => {
     notificationActions.notify(
       `${t(
         'System',
-        'An error happened while deleting a language:',
+        'An error has occured while deleting a language:',
         null,
         false
       )}\n${errorMessage}`,

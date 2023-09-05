@@ -63,6 +63,8 @@ All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
 Allow captcha bypass,Permitir la omisión de captcha
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
+An error has occured while deleting a language:,An error has occured while deleting a language:
+An error has occured while installing languages:,An error has occured while installing languages:
 An error occurred,Se ha producido un error
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity or document,Cualquier entidad o documento

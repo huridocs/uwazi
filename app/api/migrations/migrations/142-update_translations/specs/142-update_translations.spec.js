@@ -44,6 +44,14 @@ describe('migration to update translations adding new keys and removing old ones
           value:
             'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
         },
+        {
+          key: 'An error has occured while installing languages:',
+          value: 'An error has occured while installing languages:',
+        },
+        {
+          key: 'An error has occured while deleting a language:',
+          value: 'An error has occured while deleting a language:',
+        },
       ],
     };
 

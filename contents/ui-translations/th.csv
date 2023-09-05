@@ -63,6 +63,8 @@ All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
 Allow captcha bypass,Allow captcha bypass
 An error has occurred during data export,An error has occurred during data export
+An error has occured while deleting a language:,An error has occured while deleting a language:
+An error has occured while installing languages:,An error has occured while installing languages:
 An error occurred,An error occurred
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
