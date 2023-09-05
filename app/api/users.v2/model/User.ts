@@ -1,6 +1,6 @@
 type UserRole = 'admin' | 'editor' | 'collaborator';
 
-export class User {
+class User {
   readonly _id: string;
 
   readonly role: UserRole;
@@ -17,3 +17,6 @@ export class User {
     return ['admin', 'editor'].includes(this.role);
   }
 }
+
+export type { UserRole };
+export { User };

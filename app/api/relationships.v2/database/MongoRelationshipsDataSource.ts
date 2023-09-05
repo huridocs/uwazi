@@ -52,6 +52,11 @@ export class MongoRelationshipsDataSource
     await this.getCollection().deleteMany({});
   }
 
+  getAll() {
+    const cursor = this.getCollection().find({});
+    return new MongoResultSet(cursor, RelationshipMappers.toModel);
+  }
+
   getByFiles(fileIds: string[]) {
     const files = idsToDb(fileIds);
     const cursor = this.getCollection().find({

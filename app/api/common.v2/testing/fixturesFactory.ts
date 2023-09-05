@@ -12,6 +12,7 @@ import {
   Relationship,
 } from 'api/relationships.v2/model/Relationship';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntityPermissions, Entry } from 'api/authorization.v2/model/EntityPermissions';
 
 const entityPointer = (entity: string): EntityPointer => new EntityPointer(entity);
 
@@ -69,6 +70,15 @@ const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
         idMapper(type).toString(),
         relationshipTypeName
       ),
+
+    entityPermissions: (entity: string, published: boolean, permissions: Entry[] = []) => {
+      const entries = permissions.map(permission => ({
+        refId: idMapper(permission.refId).toString(),
+        type: permission.type,
+        level: permission.level,
+      }));
+      return new EntityPermissions(entity, entries, published);
+    },
   },
 
   database: {

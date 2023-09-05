@@ -21,6 +21,7 @@ import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
+import { PermissionSchema } from 'shared/types/permissionType';
 
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
@@ -72,6 +73,8 @@ function getFixturesFactory() {
   return Object.freeze({
     id: idMapper,
 
+    idString: (key: string) => idMapper(key).toString(),
+
     template: (
       name: string,
       properties: (Omit<PropertySchema, 'query'> & { query?: any })[] = []
@@ -80,6 +83,16 @@ function getFixturesFactory() {
       name,
       properties,
       commonProperties,
+    }),
+
+    entityPermission: (
+      user: string,
+      type: PermissionSchema['type'],
+      level: PermissionSchema['level']
+    ): PermissionSchema => ({
+      refId: idMapper(user),
+      type,
+      level,
     }),
 
     entity: (
