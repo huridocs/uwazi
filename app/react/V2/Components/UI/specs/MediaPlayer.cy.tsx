@@ -11,6 +11,28 @@ describe('Media player', () => {
     cy.injectAxe();
   });
 
+  beforeEach(() => {
+    cy.intercept('GET', '/short-video.mp4', req => {
+      req.reply({
+        statusCode: 200,
+        body: 'mock video content',
+        headers: {
+          'Content-Type': 'video/mp4',
+        },
+      });
+    }).as('getVideo');
+
+    cy.intercept('GET', '/short-video-thumbnail.jpg', req => {
+      req.reply({
+        statusCode: 200,
+        body: 'mock video thumbnail',
+        headers: {
+          'Content-Type': 'image/jpg',
+        },
+      });
+    }).as('getThumbnail');
+  });
+
   describe('Local files', () => {
     beforeEach(() => {
       mount(<LocalFile />);
@@ -25,16 +47,6 @@ describe('Media player', () => {
     });
 
     it('should request the video and render the player when clicking', () => {
-      cy.intercept('GET', '/short-video.mp4', req => {
-        req.reply({
-          statusCode: 200,
-          body: 'mock video content',
-          headers: {
-            'Content-Type': 'video/mp4',
-          },
-        });
-      }).as('getVideo');
-
       cy.get('.react-player__preview').click();
       cy.get('video').should('have.attr', 'src', '/short-video.mp4');
     });
@@ -42,16 +54,6 @@ describe('Media player', () => {
 
   describe('Local file with image thumbnail', () => {
     beforeEach(() => {
-      cy.intercept('GET', '/short-video-thumbnail.jpg', req => {
-        req.reply({
-          statusCode: 200,
-          body: 'mock video thumbnail',
-          headers: {
-            'Content-Type': 'image/jpg',
-          },
-        });
-      }).as('getThumbnail');
-
       mount(<LocalFileWithThumbnail />);
     });
 
@@ -68,16 +70,6 @@ describe('Media player', () => {
     });
 
     it('should request the video and render the player when clicking', () => {
-      cy.intercept('GET', '/short-video.mp4', req => {
-        req.reply({
-          statusCode: 200,
-          body: 'mock video content',
-          headers: {
-            'Content-Type': 'video/mp4',
-          },
-        });
-      }).as('getVideo');
-
       cy.get('.react-player__preview').click();
       cy.get('video').should('have.attr', 'src', '/short-video.mp4');
     });
@@ -93,12 +85,10 @@ describe('Media player', () => {
             'Content-Type': 'application/pdf',
           },
         });
-      }).as('getVideo');
+      }).as('getInvalidMedia');
 
       mount(<InvalidMedia />);
-
       cy.contains('This file type is not supported on media fields');
-
       cy.checkA11y();
     });
   });
