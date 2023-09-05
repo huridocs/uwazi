@@ -206,7 +206,11 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      addLanguages(languages, req).catch(console.error);
+      addLanguages(languages, req).catch((error: Error) => {
+        req.emitToSessionSocket('translationsInstallError', error.message);
+        // eslint-disable-next-line no-console
+        console.error(error.message);
+      });
       res.status(204).json('ok');
     }
   );
@@ -224,7 +228,11 @@ export default (app: Application) => {
     }),
     async (req: DeleteTranslationRequest, res) => {
       const { key } = req.query;
-      deleteLanguage(key, req).catch(console.error);
+      deleteLanguage(key, req).catch((error: Error) => {
+        req.emitToSessionSocket('translationsDeleteError', error.message);
+        // eslint-disable-next-line no-console
+        console.error(error.message);
+      });
       res.status(204).json('ok');
     }
   );
