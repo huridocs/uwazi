@@ -10,10 +10,10 @@ const newKeys = [
       'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
   },
   {
-    key: 'An error happened while installing languages:',
+    key: 'An error has occured while installing languages:',
   },
   {
-    key: 'An error happened while deleting a language:',
+    key: 'An error has occured while deleting a language:',
   },
 ];
 
