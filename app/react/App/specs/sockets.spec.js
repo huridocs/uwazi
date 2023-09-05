@@ -137,6 +137,20 @@ describe('sockets', () => {
     });
   });
 
+  describe('translationsInstallError', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsInstallError[0]('error message');
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'An error happened while installing languages:\nerror message',
+          type: 'danger',
+        },
+      });
+    });
+  });
+
   describe('translationsDelete', () => {
     it('should emit a translationsDelete event', () => {
       socket._callbacks.$translationsDelete[0]('localeString');
@@ -144,6 +158,20 @@ describe('sockets', () => {
         customIndex: 'locale',
         type: 'translations/REMOVE',
         value: { locale: 'localeString' },
+      });
+    });
+  });
+
+  describe('translationsDeleteError', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsDeleteError[0]('error message');
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'An error happened while deleting a language:\nerror message',
+          type: 'danger',
+        },
       });
     });
   });

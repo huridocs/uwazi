@@ -73,6 +73,20 @@ socket.on('translationsInstallDone', () => {
   );
 });
 
+socket.on('translationsInstallError', errorMessage => {
+  store.dispatch(
+    notificationActions.notify(
+      `${t(
+        'System',
+        'An error happened while installing languages:',
+        null,
+        false
+      )}\n${errorMessage}`,
+      'danger'
+    )
+  );
+});
+
 socket.on('translationsDelete', locale => {
   store.dispatch(actions.remove('translations', { locale }, 'locale'));
   t.resetCachedTranslation();
@@ -82,6 +96,20 @@ socket.on('translationsDelete', locale => {
 socket.on('translationsDeleteDone', () => {
   store.dispatch(
     notificationActions.notify(t('System', 'Language uninstalled success', null, false), 'success')
+  );
+});
+
+socket.on('translationsDeleteError', errorMessage => {
+  store.dispatch(
+    notificationActions.notify(
+      `${t(
+        'System',
+        'An error happened while deleting a language:',
+        null,
+        false
+      )}\n${errorMessage}`,
+      'danger'
+    )
   );
 });
 
