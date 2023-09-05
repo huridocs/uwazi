@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
+import { Translate } from 'app/I18N';
 
 const DEFAULT_THUMBNAIL_COLOR = 'rgb(129 140 248)';
 
@@ -61,23 +62,30 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
 
   return (
     <div style={{ width: width || '100%', height: height || '100%' }} className="relative">
-      <ReactPlayer
-        className="absolute top-0 left-0"
-        url={url}
-        playing={playing}
-        width="100%"
-        height="100%"
-        controls
-        light={mediaType === 'internal' ? overlay : false}
-        playIcon={
-          <PlayIcon
-            role="button"
-            style={{ color: playIconColor }}
-            className="absolute w-1/5 min-w-[20px] max-w-[120px]"
-          />
-        }
-        onClickPreview={() => setPlaying(true)}
-      />
+      {mediaType === 'invalid' ? (
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
+          <p className="text-center">
+            <Translate>This file type is not supported on media fields</Translate>
+          </p>
+        </div>
+      ) : (
+        <ReactPlayer
+          className="absolute top-0 left-0"
+          url={url}
+          playing={playing}
+          width="100%"
+          height="100%"
+          controls
+          light={mediaType === 'internal' ? overlay : false}
+          playIcon={
+            <PlayIcon
+              style={{ color: playIconColor }}
+              className="absolute w-1/5 min-w-[20px] max-w-[120px]"
+            />
+          }
+          onClickPreview={() => setPlaying(true)}
+        />
+      )}
     </div>
   );
 };
