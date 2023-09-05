@@ -73,10 +73,13 @@ describe('MarkdownMedia', () => {
         expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
       });
 
-      it('should revoke the created URL ', async () => {
+      it('should revoke the created blob', async () => {
         await act(async () => {
           await render();
         });
+
+        expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
+
         await act(() => {
           renderResult.unmount();
         });

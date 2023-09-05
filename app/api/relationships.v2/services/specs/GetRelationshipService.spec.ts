@@ -24,13 +24,7 @@ const fixtures: DBFixture = {
       {},
       { permissions: [{ refId: fixtureFactory.id('user'), level: 'read', type: 'user' }] }
     ),
-    fixtureFactory.entity(
-      'entity2',
-      'template1',
-      {},
-      // @ts-ignore
-      { permissions: [{ refId: 'public', level: 'public', type: 'public' }] }
-    ),
+    fixtureFactory.entity('entity2', 'template1', {}, { published: true }),
     fixtureFactory.entity('entity3', 'template1'),
   ],
   relationships: [
