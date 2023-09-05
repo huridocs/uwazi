@@ -2592,12 +2592,27 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.2.6.tgz#d21ace437cc919cdd8f1640302fa8851e65e75c0"
   integrity sha512-EvYTiXet5XqweYGClEmpu3BoxmsQ4hkj3QaYA6qEnigCWffTP3vNRwBReTdrwDwo7OoJ3wM8Uoe9Uk4n+d4hfg==
 
+"@floating-ui/core@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.4.1.tgz#0d633f4b76052668afb932492ac452f7ebe97f17"
+  integrity sha512-jk3WqquEJRlcyu7997NtR5PibI+y5bi+LS3hPmguVClypenMsCY3CBa3LAQnozRCtCrYWSEtAdiskpamuJRFOQ==
+  dependencies:
+    "@floating-ui/utils" "^0.1.1"
+
 "@floating-ui/dom@^1.2.7":
   version "1.2.9"
   resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.2.9.tgz#b9ed1c15d30963419a6736f1b7feb350dd49c603"
   integrity sha512-sosQxsqgxMNkV3C+3UqTS6LxP7isRLwX8WMepp843Rb3/b0Wz8+MdUkxJksByip3C2WwLugLHN1b4ibn//zKwQ==
   dependencies:
     "@floating-ui/core" "^1.2.6"
+
+"@floating-ui/dom@^1.5.1":
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.5.1.tgz#88b70defd002fe851f17b4a25efb2d3c04d7a8d7"
+  integrity sha512-KwvVcPSXg6mQygvA1TjbN/gh///36kKtllIF8SUm0qpFj8+rvYrpvlYdL1JoA71SHpDqgSSdGOSoQ0Mp3uY5aw==
+  dependencies:
+    "@floating-ui/core" "^1.4.1"
+    "@floating-ui/utils" "^0.1.1"
 
 "@floating-ui/react-dom@^2.0.0":
   version "2.0.0"
@@ -2606,14 +2621,26 @@
   dependencies:
     "@floating-ui/dom" "^1.2.7"
 
-"@floating-ui/react@^0.24.1":
-  version "0.24.2"
-  resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.24.2.tgz#1f2e596da122341a3fa65667a6f26ed126d32cc0"
-  integrity sha512-8sdLmcC85J6M2H0AL8yOQuiWD4T0gNMSLpuJjmXyEA6ndfmxXR0hwKFkczB4xRNFhKbwoQeuh8z561HE2vOdZw==
+"@floating-ui/react-dom@^2.0.1":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@floating-ui/react-dom/-/react-dom-2.0.2.tgz#fab244d64db08e6bed7be4b5fcce65315ef44d20"
+  integrity sha512-5qhlDvjaLmAst/rKb3VdlCinwTF4EYMiVxuuc/HVUjs46W0zgtbMmAZ1UTsDrRTxRmUEzl92mOtWbeeXL26lSQ==
   dependencies:
-    "@floating-ui/react-dom" "^2.0.0"
-    aria-hidden "^1.1.3"
+    "@floating-ui/dom" "^1.5.1"
+
+"@floating-ui/react@^0.24.3":
+  version "0.24.8"
+  resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.24.8.tgz#e079e2836990be3fce9665ab509360a5447251a1"
+  integrity sha512-AuYeDoaR8jtUlUXtZ1IJ/6jtBkGnSpJXbGNzokBL87VDJ8opMq1Bgrc0szhK482ReQY6KZsMoZCVSb4xwalkBA==
+  dependencies:
+    "@floating-ui/react-dom" "^2.0.1"
+    aria-hidden "^1.2.3"
     tabbable "^6.0.1"
+
+"@floating-ui/utils@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.1.1.tgz#1a5b1959a528e374e8037c4396c3e825d6cf4a83"
+  integrity sha512-m0G6wlnhm/AX0H12IOWtK8gASEMffnX08RtKkCgTdHb9JpHKGloI7icFfLg9ZmQeavcvR0PKmzxClyuFPSjKWw==
 
 "@fortawesome/fontawesome-common-types@6.4.0":
   version "6.4.0"
@@ -7080,17 +7107,10 @@ argparse@^2.0.1:
   resolved "https://registry.npmjs.org/argparse/-/argparse-2.0.1.tgz"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
-aria-hidden@^1.1.1:
+aria-hidden@^1.1.1, aria-hidden@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/aria-hidden/-/aria-hidden-1.2.3.tgz#14aeb7fb692bbb72d69bebfa47279c1fd725e954"
   integrity sha512-xcLxITLe2HYa1cnYnwCjkOO1PqUHQpozB8x9AR0OgWN2woOBi5kSDVxKfd0b7sb1hw5qFeJhXm9H1nu3xSfLeQ==
-  dependencies:
-    tslib "^2.0.0"
-
-aria-hidden@^1.1.3:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/aria-hidden/-/aria-hidden-1.2.2.tgz#8c4f7cc88d73ca42114106fdf6f47e68d31475b8"
-  integrity sha512-6y/ogyDTk/7YAe91T3E2PR1ALVKyM2QbTio5HwM+N1Q6CMlCKhvClyIjkckBswa0f2xJhjsfzIGa1yVSe1UMVA==
   dependencies:
     tslib "^2.0.0"
 
@@ -11219,16 +11239,16 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
-flowbite-react@^0.4.8:
-  version "0.4.8"
-  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.4.8.tgz#9b9e910561aac96cb40b6dbe9a6efcb21550ffb7"
-  integrity sha512-ghxzGvEON2vzqcHC6pJFVqmYakz/KOlrDYyEzLZ7t3rzkxFWqSFBDwY9H2Lh9HIiHBLIsMN3Ez8UjD3hKsc6Pw==
+flowbite-react@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.5.0.tgz#ff9f4930be93c119038a5b6331462096fe88205f"
+  integrity sha512-OoJ0Dbv0ZuunTkPwa802wL3kalUWQ7YBh1t4It5uVfAYs5KUvOqhXIygdlVMawnmq3+xkMPbUZkWh1sDxVb3nw==
   dependencies:
-    "@floating-ui/react" "^0.24.1"
-    flowbite "^1.6.5"
-    react-icons "^4.8.0"
+    "@floating-ui/react" "^0.24.3"
+    flowbite "^1.6.6"
+    react-icons "^4.10.1"
     react-indiana-drag-scroll "^2.2.0"
-    tailwind-merge "^1.13.1"
+    tailwind-merge "^1.13.2"
 
 flowbite-typography@^1.0.3:
   version "1.0.3"
@@ -11239,7 +11259,7 @@ flowbite-typography@^1.0.3:
     lodash.isplainobject "^4.0.6"
     lodash.merge "^4.6.2"
 
-flowbite@^1.6.5, flowbite@^1.6.6:
+flowbite@^1.6.6:
   version "1.6.6"
   resolved "https://registry.yarnpkg.com/flowbite/-/flowbite-1.6.6.tgz#6c7579fffb6fad270c8471c2898eb7c57fe8ce3e"
   integrity sha512-T+IaFikHELo1PBKfT/axDqhAmKQLfm/dxVch2r07TZ+IcKwkorZjzwkVuw3OslTETniRIUf2qQvEhxk3bQCaew==
@@ -17211,10 +17231,10 @@ react-hook-form@^7.45.1:
   resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.45.1.tgz#e352c7f4dbc7540f0756abbb4dcfd1122fecc9bb"
   integrity sha512-6dWoFJwycbuFfw/iKMcl+RdAOAOHDiF11KWYhNDRN/OkUt+Di5qsZHwA0OwsVnu9y135gkHpTw9DJA+WzCeR9w==
 
-react-icons@^4.8.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.9.0.tgz#ba44f436a053393adb1bdcafbc5c158b7b70d2a3"
-  integrity sha512-ijUnFr//ycebOqujtqtV9PFS7JjhWg0QU6ykURVHuL4cbofvRCf3f6GMn9+fBktEFQOIVZnuAYLZdiyadRQRFg==
+react-icons@^4.10.1:
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.10.1.tgz#3f3b5eec1f63c1796f6a26174a1091ca6437a500"
+  integrity sha512-/ngzDP/77tlCfqthiiGNZeYFACw85fUjZtLbedmJ5DTlNDIwETxhwBzdOJ21zj4iJdvc0J3y7yOsX3PpxAJzrw==
 
 react-image-gallery@^1.2.12:
   version "1.2.12"
@@ -19144,10 +19164,10 @@ tabbable@^6.0.1:
   resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-6.0.1.tgz#427a09b13c83ae41eed3e88abb76a4af28bde1a6"
   integrity sha512-SYJSIgeyXW7EuX1ytdneO5e8jip42oHWg9xl/o3oTYhmXusZVgiA+VlPvjIN+kHii9v90AmzTZEBcsEvuAY+TA==
 
-tailwind-merge@^1.13.1:
-  version "1.13.2"
-  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-1.13.2.tgz#1d06c9e95ffda2320efc50ed33c65be0cda23091"
-  integrity sha512-R2/nULkdg1VR/EL4RXg4dEohdoxNUJGLMnWIQnPKL+O9Twu7Cn3Rxi4dlXkDzZrEGtR+G+psSXFouWlpTyLhCQ==
+tailwind-merge@^1.13.2:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-1.14.0.tgz#e677f55d864edc6794562c63f5001f45093cdb8b"
+  integrity sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==
 
 tailwindcss@^3.3.3:
   version "3.3.3"
