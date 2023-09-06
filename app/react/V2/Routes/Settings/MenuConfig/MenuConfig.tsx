@@ -44,18 +44,18 @@ const MenuConfig = () => {
       header: TitleHeader,
       cell: TitleCell,
       enableSorting: false,
-      meta: { className: 'w-9/12' },
+      meta: { className: 'w-6/12' },
     }) as ColumnDef<LinkSchema, 'title'>,
     columnHelper.accessor('url', {
       header: URLHeader,
       enableSorting: false,
-      meta: { className: 'text-center w-1/12' },
+      meta: { className: 'w-6/12' },
     }) as ColumnDef<LinkSchema, 'default'>,
     columnHelper.accessor('key', {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
-      meta: { action: edit, className: 'text-center w-1/12' },
+      meta: { action: edit, className: 'w-0 text-center' },
     }) as ColumnDef<LinkSchema, 'key'>,
   ];
 
@@ -69,8 +69,9 @@ const MenuConfig = () => {
         <SettingsContent.Header title="Menu" />
         <SettingsContent.Body>
           <Table<LinkSchema>
+            enableSelection
             columns={columns}
-            data={settings.links || []}
+            data={settings?.links || []}
             title={<Translate>Menu</Translate>}
             subRowsKey="sublinks"
           />

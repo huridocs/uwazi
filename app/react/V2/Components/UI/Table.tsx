@@ -66,6 +66,7 @@ const Table = <T,>({
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
+    enableSubRowSelection: enableSelection,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -102,7 +103,7 @@ const Table = <T,>({
               {headerGroup.headers.map(header => {
                 const isSortable = header.column.getCanSort();
                 const isSelect = header.column.id === 'checkbox-select';
-                const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
+                const headerClassName = `${isSelect ? 'w-0' : ''} p-4 ${
                   header.column.columnDef.meta?.className || ''
                 }`;
 
@@ -124,14 +125,23 @@ const Table = <T,>({
 
         <tbody>
           {table.getRowModel().rows.map(row => {
-            const bg = row.getCanExpand() || row.depth > 0 ? 'bg-primary-50' : 'bg-white';
+            const isSubGroup = row.depth > 0;
+            let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : 'bg-white';
+            bg = row.getCanExpand() && row.getIsExpanded() ? 'bg-primary-100' : bg;
             return (
               <tr key={row.id} className={`${bg} border-b`}>
-                {row.getVisibleCells().map(cell => {
+                {row.getVisibleCells().map((cell, index) => {
                   const isSelect = cell.column.id === 'checkbox-select';
+                  let border = '';
+                  if (
+                    (isSubGroup && enableSelection && index === 1) ||
+                    (isSubGroup && !enableSelection && index === 0)
+                  ) {
+                    border = 'border-l-2 border-primary-300';
+                  }
 
                   return (
-                    <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
+                    <td key={cell.id} className={`${isSelect ? 'w-0' : ''} ${border} px-4 py-2`}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   );

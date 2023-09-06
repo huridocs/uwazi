@@ -77,10 +77,18 @@ const CheckBoxHeader = <T,>({ table }: { table: TableDef<T> }) => (
 const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
   <IndeterminateCheckbox
     {...{
-      checked: row.getIsSelected(),
+      checked: row.getCanExpand() ? row.getIsAllSubRowsSelected() : row.getIsSelected(),
       disabled: !row.getCanSelect(),
       indeterminate: row.getIsSomeSelected(),
-      onChange: row.getToggleSelectedHandler(),
+      onChange: e => {
+        if (row.getCanExpand()) {
+          row.getLeafRows().forEach(leafRow => {
+            leafRow.getToggleSelectedHandler()(e);
+          });
+        } else {
+          row.getToggleSelectedHandler()(e);
+        }
+      },
       id: row.id,
     }}
   />

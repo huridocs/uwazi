@@ -1,9 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { Button } from 'V2/Components/UI/Button';
 import { CellContext } from '@tanstack/react-table';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { LinkSchema } from 'shared/types/commonTypes';
+import { EmbededButton, Button } from 'app/V2/Components/UI';
 
 const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
   <Button
@@ -15,21 +16,25 @@ const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
   </Button>
 );
 
-const TitleCell = ({ cell, row, table, getValue }: CellContext<LinkSchema, string>) => {
-  console.log('cell', cell);
-  console.log('row', row, row.getCanExpand());
-  console.log('table', table, table.setExpanded);
-  return (
-    <div className="flex items-center gap-2">
-      <Translate context="Menu">{getValue()}</Translate>
-      {row.getCanExpand() && (
-        <Button onClick={() => row.toggleExpanded()} size="small">
-          Group
-        </Button>
-      )}
-    </div>
-  );
-};
+const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
+  <div className="flex items-center gap-2">
+    <Translate
+      context="Menu"
+      className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}
+    >
+      {getValue()}
+    </Translate>
+    {row.getCanExpand() && (
+      <EmbededButton
+        icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        onClick={() => row.toggleExpanded()}
+        color="indigo"
+      >
+        <Translate>Group</Translate>
+      </EmbededButton>
+    )}
+  </div>
+);
 
 const TitleHeader = () => <Translate>Label</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;

@@ -1,0 +1,46 @@
+[1mdiff --git a/app/react/App/styles/globals.css b/app/react/App/styles/globals.css[m
+[1mindex 282225d3e..8216b91f5 100644[m
+[1m--- a/app/react/App/styles/globals.css[m
+[1m+++ b/app/react/App/styles/globals.css[m
+[36m@@ -1606,6 +1606,10 @@[m [minput:checked + .toggle-bg {[m
+   width: 1.5rem;[m
+ }[m
+ [m
+[32m+[m[32m.w-6\/12 {[m
+[32m+[m[32m  width: 50%;[m
+[32m+[m[32m}[m
+[32m+[m
+ .w-64 {[m
+   width: 16rem;[m
+ }[m
+[36m@@ -2467,14 +2471,14 @@[m [minput:checked + .toggle-bg {[m
+   background-color: rgb(229 237 255 / var(--tw-bg-opacity));[m
+ }[m
+ [m
+[31m-.bg-indigo-400 {[m
+[32m+[m[32m.bg-indigo-200 {[m
+   --tw-bg-opacity: 1;[m
+[31m-  background-color: rgb(141 162 251 / var(--tw-bg-opacity));[m
+[32m+[m[32m  background-color: rgb(205 219 254 / var(--tw-bg-opacity));[m
+ }[m
+ [m
+[31m-.bg-indigo-50 {[m
+[32m+[m[32m.bg-indigo-400 {[m
+   --tw-bg-opacity: 1;[m
+[31m-  background-color: rgb(240 245 255 / var(--tw-bg-opacity));[m
+[32m+[m[32m  background-color: rgb(141 162 251 / var(--tw-bg-opacity));[m
+ }[m
+ [m
+ .bg-indigo-600 {[m
+[36m@@ -3194,11 +3198,6 @@[m [minput:checked + .toggle-bg {[m
+   color: rgb(1 71 55 / var(--tw-text-opacity));[m
+ }[m
+ [m
+[31m-.text-indigo-400 {[m
+[31m-  --tw-text-opacity: 1;[m
+[31m-  color: rgb(141 162 251 / var(--tw-text-opacity));[m
+[31m-}[m
+[31m-[m
+ .text-indigo-500 {[m
+   --tw-text-opacity: 1;[m
+   color: rgb(104 117 245 / var(--tw-text-opacity));[m
