@@ -53,7 +53,11 @@ export const showByType = (prop, compact, templateId, useV2Player) => {
       break;
     case 'media': {
       if (useV2Player && prop.value) {
-        result = <MediaPlayer url={''} thumbnail={{ title: 'video', color: 'red' }} />;
+        result = (
+          <div className="tw-content video-container compact">
+            <MediaPlayer url={''} thumbnail={{ title: 'video', color: 'red' }} />
+          </div>
+        );
       } else {
         result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
       }
