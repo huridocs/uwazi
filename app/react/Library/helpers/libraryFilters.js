@@ -39,7 +39,7 @@ function URLQueryToState(query, templates, forcedProps = []) {
     userSelectedSorting,
     includeUnpublished = true,
     unpublished = false,
-    allAggregations = true,
+    allAggregations = false,
     treatAs = 'number',
   } = query;
 
