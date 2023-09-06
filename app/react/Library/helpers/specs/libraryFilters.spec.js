@@ -69,12 +69,21 @@ describe('library helper', () => {
       const query = {
         searchTerm: 'searchTerm',
         types: [],
+        userSelectedSorting: false,
       };
 
+      const defaultSorting = prioritySortingCriteria.get();
+
       const state = libraryHelper.URLQueryToState(query, templates);
-      expect(state.search.filters).toEqual({});
-      expect(state.search.order).toEqual(prioritySortingCriteria.get().order);
-      expect(state.search.sort).toEqual(prioritySortingCriteria.get().sort);
+      expect(state.search).toMatchObject({
+        searchTerm: 'searchTerm',
+        filters: {},
+        userSelectedSorting: false,
+        allAggregations: false,
+        treatAs: 'number',
+        order: defaultSorting.order,
+        sort: defaultSorting.sort,
+      });
     });
 
     it('should return the query transformed to the application state', () => {
