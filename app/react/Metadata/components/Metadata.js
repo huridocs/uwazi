@@ -24,7 +24,13 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = (prop, templateId, templateColor, { useV2Player, compact }) => {
+export const showByType = ({
+  prop,
+  templateId = '',
+  templateColor = '',
+  useV2Player = false,
+  compact = false,
+}) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -107,7 +113,7 @@ export const showByType = (prop, templateId, templateColor, { useV2Player, compa
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
-          const value = showByType(_value, templateId, templateColor, { compact });
+          const value = showByType({ prop: _value, templateId, templateColor, compact });
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
@@ -234,7 +240,7 @@ const Metadata = ({
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, templateId, templateColor, { compact, useV2Player })}
+          {showByType({ prop, templateId, templateColor, compact, useV2Player })}
         </dd>
       </dl>
     );
