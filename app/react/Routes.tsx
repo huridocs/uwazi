@@ -45,6 +45,8 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+
+import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
@@ -84,7 +86,12 @@ const getRoutesLayout = (
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
-      <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
+      <Route path="navlinks2" element={adminsOnlyRoute(<NavlinksSettings />)} />
+      <Route
+        path="navlinks"
+        element={adminsOnlyRoute(<MenuConfig />)}
+        loader={menuConfigloader(headers)}
+      />
       <Route
         path="users"
         element={adminsOnlyRoute(<Users />)}

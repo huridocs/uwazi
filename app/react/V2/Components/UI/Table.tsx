@@ -7,6 +7,7 @@ import {
   getCoreRowModel,
   useReactTable,
   SortingState,
+  getExpandedRowModel,
 } from '@tanstack/react-table';
 import { TableProps, CheckBoxHeader, CheckBoxCell, getIcon } from './TableElements';
 
@@ -25,6 +26,7 @@ const Table = <T,>({
   initialState,
   enableSelection,
   onSelection,
+  subRowsKey,
 }: TableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
   const [rowSelection, setRowSelection] = useState({});
@@ -68,6 +70,13 @@ const Table = <T,>({
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: (row: any) => {
+      if (subRowsKey) {
+        return row[subRowsKey];
+      }
+      return [];
+    },
   });
 
   useEffect(() => {
@@ -114,19 +123,22 @@ const Table = <T,>({
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className="bg-white border-b">
-              {row.getVisibleCells().map(cell => {
-                const isSelect = cell.column.id === 'checkbox-select';
+          {table.getRowModel().rows.map(row => {
+            const bg = row.getCanExpand() || row.depth > 0 ? 'bg-primary-50' : 'bg-white';
+            return (
+              <tr key={row.id} className={`${bg} border-b`}>
+                {row.getVisibleCells().map(cell => {
+                  const isSelect = cell.column.id === 'checkbox-select';
 
-                return (
-                  <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+                  return (
+                    <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
       {footer && <div className="p-4">{footer}</div>}

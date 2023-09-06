@@ -13,6 +13,7 @@ interface TableProps<T> {
   initialState?: Partial<TableState>;
   enableSelection?: boolean;
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
+  subRowsKey?: string;
 }
 
 const IndeterminateCheckbox = ({
