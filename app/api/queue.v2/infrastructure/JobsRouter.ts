@@ -1,26 +1,29 @@
 import { config } from 'api/config';
-import { Queue } from '../application/Queue';
-import { Job } from '../contracts/Job';
-import { JobsDispatcher } from '../contracts/JobsDispatcher';
+import { DispatchableClass, JobsDispatcher } from '../application/contracts/JobsDispatcher';
+import { Dispatchable } from '../application/contracts/Dispatchable';
+import { NamespacedDispatcher } from './NamespacedDispatcher';
 
-interface QueueFactory {
-  (name: string): Queue;
+interface DispactcherFactory {
+  (name: string): NamespacedDispatcher;
 }
 
 export class JobsRouter implements JobsDispatcher {
-  private queueFactory: QueueFactory;
+  private dispactcherFactory: DispactcherFactory;
 
-  constructor(queueFactory: QueueFactory) {
-    this.queueFactory = queueFactory;
+  constructor(dispactcherFactory: DispactcherFactory) {
+    this.dispactcherFactory = dispactcherFactory;
   }
 
   private routeJob() {
     const { queueName } = config;
-    return this.queueFactory(queueName);
+    return this.dispactcherFactory(queueName);
   }
 
-  async dispatch(job: Job): Promise<void> {
-    const queue = this.routeJob();
-    return queue.dispatch(job);
+  async dispatch<T extends Dispatchable>(
+    dispatchable: DispatchableClass<T>,
+    params: Parameters<T['handleDispatch']>[1]
+  ): Promise<void> {
+    const dispactcher = this.routeJob();
+    return dispactcher.dispatch(dispatchable, params);
   }
 }
