@@ -43,7 +43,9 @@ const ThumbnailOverlay = ({ color, mediaName }: { color?: string; mediaName?: st
         className="absolute top-0 right-0 w-full h-full"
         style={{ background: thumbnailColor, opacity: '30%' }}
       />
-      <p className="p-4 font-bold text-black whitespace-nowrap opacity-1">{mediaName}</p>
+      <p className="overflow-hidden p-4 font-bold text-left text-black overflow-ellipsis whitespace-nowrap opacity-1">
+        {mediaName}
+      </p>
     </div>
   );
 };
