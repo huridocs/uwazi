@@ -54,8 +54,13 @@ export const showByType = (prop, compact, templateId, useV2Player) => {
     case 'media': {
       if (useV2Player && prop.value) {
         result = (
-          <div className="tw-content video-container compact">
-            <MediaPlayer url={''} thumbnail={{ title: 'video', color: 'red' }} />
+          <div
+            className="tw-content video-container compact"
+            onClick={e => {
+              e.stopPropagation();
+            }}
+          >
+            <MediaPlayer url={prop.value} thumbnail={{ title: 'video', color: 'red' }} />
           </div>
         );
       } else {
