@@ -14,19 +14,25 @@ const BaseFormatMetadata = ({
   relationships,
   useV2Player,
   ...props
-}) => (
-  <Metadata
-    metadata={additionalMetadata.concat(
-      metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
-        excludePreview: props.excludePreview,
-      })
-    )}
-    templateId={entity.template}
-    compact={!!sortedProperty}
-    useV2Player={useV2Player}
-    {...removeUneededProps(props)}
-  />
-);
+}) => {
+  const template = props.templates.filter(_template => _template.get('_id') === entity.template);
+  const templateColor = template.size && template.get(0).get('color');
+
+  return (
+    <Metadata
+      metadata={additionalMetadata.concat(
+        metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
+          excludePreview: props.excludePreview,
+        })
+      )}
+      templateId={entity.template}
+      templateColor={templateColor || '#c03b22'}
+      compact={!!sortedProperty}
+      useV2Player={useV2Player}
+      {...removeUneededProps(props)}
+    />
+  );
+};
 
 BaseFormatMetadata.defaultProps = {
   sortedProperty: '',
@@ -60,6 +66,8 @@ BaseFormatMetadata.propTypes = {
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
   useV2Player: PropTypes.bool,
+  // eslint-disable-next-line react/forbid-prop-types
+  templates: PropTypes.any,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {

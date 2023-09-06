@@ -24,7 +24,7 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = (prop, compact, templateId, useV2Player) => {
+export const showByType = (prop, templateId, templateColor, { useV2Player, compact }) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -60,7 +60,14 @@ export const showByType = (prop, compact, templateId, useV2Player) => {
               e.stopPropagation();
             }}
           >
-            <MediaPlayer url={prop.value} thumbnail={{ title: 'video', color: 'red' }} />
+            <MediaPlayer
+              url={prop.value}
+              thumbnail={{
+                fileName:
+                  'super duper long video name makes no sense who names files like this my god',
+                color: templateColor,
+              }}
+            />
           </div>
         );
       } else {
@@ -100,7 +107,7 @@ export const showByType = (prop, compact, templateId, useV2Player) => {
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
-          const value = showByType(_value, compact, templateId);
+          const value = showByType(_value, templateId, templateColor, { compact });
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
@@ -202,6 +209,7 @@ const Metadata = ({
   highlight,
   groupGeolocations,
   templateId,
+  templateColor,
   useV2Player,
 }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
@@ -226,7 +234,7 @@ const Metadata = ({
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, compact, templateId, useV2Player)}
+          {showByType(prop, templateId, templateColor, { compact, useV2Player })}
         </dd>
       </dl>
     );
@@ -239,6 +247,7 @@ Metadata.defaultProps = {
   highlight: [],
   groupGeolocations: false,
   useV2Player: false,
+  templateColor: 'red',
 };
 
 Metadata.propTypes = {
@@ -260,6 +269,7 @@ Metadata.propTypes = {
     })
   ).isRequired,
   templateId: PropTypes.string,
+  templateColor: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
