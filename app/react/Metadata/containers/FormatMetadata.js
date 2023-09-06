@@ -12,6 +12,7 @@ const BaseFormatMetadata = ({
   sortedProperty,
   entity,
   relationships,
+  useV2Player,
   ...props
 }) => (
   <Metadata
@@ -22,6 +23,7 @@ const BaseFormatMetadata = ({
     )}
     templateId={entity.template}
     compact={!!sortedProperty}
+    useV2Player={useV2Player}
     {...removeUneededProps(props)}
   />
 );
@@ -31,6 +33,7 @@ BaseFormatMetadata.defaultProps = {
   additionalMetadata: [],
   relationships: Immutable.fromJS([]),
   excludePreview: false,
+  useV2Player: false,
 };
 
 BaseFormatMetadata.propTypes = {
@@ -56,6 +59,7 @@ BaseFormatMetadata.propTypes = {
   ),
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
+  useV2Player: PropTypes.bool,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {

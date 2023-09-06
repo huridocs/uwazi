@@ -3,9 +3,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { flattenDeep } from 'lodash';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
-import { Icon } from 'UI';
+import { MediaPlayer } from 'V2/Components/UI';
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
@@ -23,7 +24,7 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = (prop, compact, templateId) => {
+export const showByType = (prop, compact, templateId, useV2Player) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -51,7 +52,11 @@ export const showByType = (prop, compact, templateId) => {
       );
       break;
     case 'media': {
-      result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      if (useV2Player && prop.value) {
+        result = <MediaPlayer url={''} thumbnail={{ title: 'video', color: 'red' }} />;
+      } else {
+        result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      }
       break;
     }
     case 'geolocation':
@@ -181,7 +186,15 @@ const flattenInherittedRelationships = metadata =>
     return property;
   });
 
-const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations, templateId }) => {
+const Metadata = ({
+  metadata,
+  compact,
+  showSubset,
+  highlight,
+  groupGeolocations,
+  templateId,
+  useV2Player,
+}) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
   const groupedMetadata = groupGeolocations
@@ -204,7 +217,7 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, compact, templateId)}
+          {showByType(prop, compact, templateId, useV2Player)}
         </dd>
       </dl>
     );
@@ -216,6 +229,7 @@ Metadata.defaultProps = {
   showSubset: undefined,
   highlight: [],
   groupGeolocations: false,
+  useV2Player: false,
 };
 
 Metadata.propTypes = {
@@ -241,6 +255,7 @@ Metadata.propTypes = {
   compact: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  useV2Player: PropTypes.bool,
 };
 
 export default Metadata;
