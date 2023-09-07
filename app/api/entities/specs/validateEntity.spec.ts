@@ -253,9 +253,13 @@ describe('validateEntity', () => {
           const entity = createEntity({ metadata: { numeric: [{ value: '' }] } });
           await testValid(entity);
         });
-        it('should allow numbers passed as strings', async () => {
+        it('should not allow numbers passed as strings', async () => {
           const entity = createEntity({ metadata: { numeric: [{ value: '55' }] } });
-          await testValid(entity);
+          await expectError(
+            entity,
+            customErrorMessages[propertyTypes.numeric],
+            ".metadata['numeric']"
+          );
         });
       });
 
