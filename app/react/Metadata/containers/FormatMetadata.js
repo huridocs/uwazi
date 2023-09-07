@@ -17,6 +17,7 @@ const BaseFormatMetadata = ({
 }) => {
   const template = props.templates.filter(_template => _template.get('_id') === entity.template);
   const templateColor = template.size && template.get(0).get('color');
+  const { attachments } = entity;
 
   return (
     <Metadata
@@ -25,6 +26,7 @@ const BaseFormatMetadata = ({
           excludePreview: props.excludePreview,
         })
       )}
+      attachments={attachments}
       templateId={entity.template}
       templateColor={templateColor || '#c03b22'}
       compact={!!sortedProperty}
@@ -46,6 +48,7 @@ BaseFormatMetadata.propTypes = {
   entity: PropTypes.shape({
     metadata: PropTypes.object,
     template: PropTypes.string,
+    attachments: PropTypes.array,
   }).isRequired,
   relationships: PropTypes.object,
   additionalMetadata: PropTypes.arrayOf(
@@ -66,8 +69,7 @@ BaseFormatMetadata.propTypes = {
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
   useV2Player: PropTypes.bool,
-  // eslint-disable-next-line react/forbid-prop-types
-  templates: PropTypes.any,
+  templates: PropTypes.array,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {

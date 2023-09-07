@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -69,8 +70,7 @@ export const showByType = ({
             <MediaPlayer
               url={prop.value}
               thumbnail={{
-                fileName:
-                  'super duper long video name makes no sense who names files like this my god',
+                fileName: prop.fileName || '',
                 color: templateColor,
               }}
             />
@@ -217,6 +217,7 @@ const Metadata = ({
   templateId,
   templateColor,
   useV2Player,
+  attachments,
 }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
@@ -229,6 +230,15 @@ const Metadata = ({
     type = type === 'image' || type === 'media' ? 'multimedia' : type;
     const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
     const fullWidthClass = prop.fullWidth ? 'full-width' : '';
+
+    if (type === 'multimedia' && prop.value.startsWith('/api/files') && attachments) {
+      const filename = prop.value.split('/').pop();
+      const { originalname: originalName } = attachments.find(
+        attachment => attachment.filename === filename
+      );
+      // eslint-disable-next-line no-param-reassign
+      prop.fileName = originalName;
+    }
 
     return (
       <dl
@@ -274,6 +284,7 @@ Metadata.propTypes = {
       ]),
     })
   ).isRequired,
+  attachments: PropTypes.array,
   templateId: PropTypes.string,
   templateColor: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
