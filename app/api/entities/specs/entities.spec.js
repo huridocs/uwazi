@@ -689,6 +689,28 @@ describe('entities', () => {
         { value: { from: 2, to: null } },
       ]);
     });
+
+    it('should sanitize numeric, parsing texts into numbers', async () => {
+      const doc1 = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: { numeric: [{ value: '10' }] },
+        template: templateId,
+      };
+      const doc2 = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: { numeric: [{ value: '10.5' }] },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { language: 'en' });
+      const doc = await entities.getById('shared', 'en');
+      expect(doc.metadata.numeric).toEqual([{ value: 10 }]);
+      await entities.save(doc2, { language: 'en' });
+      const doc1db = await entities.getById('shared', 'en');
+      expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
+    });
   });
 
   describe('get', () => {
