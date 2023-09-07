@@ -16,12 +16,8 @@ import { ImageViewer } from './ImageViewer';
 const getMediaUrl = fileUrl => {
   let formmatedUrl = fileUrl;
 
-  if (fileUrl.startsWith('/api/files')) {
-    return formmatedUrl;
-  }
-
   if (fileUrl.includes('timelinks')) {
-    formmatedUrl = fileUrl.substring(1, fileUrl.lastIndexOf(','));
+    formmatedUrl = fileUrl.substring(1, fileUrl.indexOf(','));
   }
 
   return formmatedUrl;
