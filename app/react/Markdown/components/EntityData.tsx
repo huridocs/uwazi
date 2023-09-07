@@ -46,7 +46,7 @@ const extractMetadataProperty = ({ formattedEntity, propertyName, newNameGenerat
   const propertyData = formattedEntity.metadata.find(
     (p: any) => p.name === safeName(propertyName, newNameGeneration)
   );
-  return showByType(propertyData, false);
+  return showByType({ prop: propertyData, compact: false });
 };
 
 const extractRootLabel = ({ propertyName, template: _template }: Options) => {

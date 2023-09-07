@@ -43,7 +43,7 @@ const ThumbnailOverlay = ({ color, mediaName }: { color?: string; mediaName?: st
         className="absolute top-0 right-0 w-full h-full"
         style={{ background: thumbnailColor, opacity: '30%' }}
       />
-      <p className="overflow-hidden p-4 font-bold text-left text-black overflow-ellipsis whitespace-nowrap opacity-1">
+      <p className="overflow-hidden p-2 font-normal text-left text-black overflow-ellipsis whitespace-nowrap opacity-1">
         {mediaName}
       </p>
     </div>
@@ -85,7 +85,8 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
               className="absolute w-1/5 min-w-[20px] max-w-[120px]"
             />
           }
-          onClickPreview={() => setPlaying(true)}
+          onClickPreview={() => !playing && setPlaying(true)}
+          stopOnUnmount
         />
       )}
     </div>
