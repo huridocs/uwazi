@@ -64,7 +64,8 @@ const validateRequiredProperty = (property, value) => {
 const isValidLinkField = value =>
   isString(value.label) && isString(value.url) && ((value.label && value.url) || !value.label);
 
-const validateNumericProperty = value => isNumber(value) || value === '';
+const validateNumericProperty = value =>
+  isNumber(value) || value === '' || (isString(value) && `${parseInt(value, 10)}` === value);
 
 const validateMultiDateProperty = value =>
   Array.isArray(value) && value.every(item => isNumber(item.value) || isNull(item.value));
