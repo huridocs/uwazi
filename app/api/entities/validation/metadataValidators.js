@@ -1,4 +1,3 @@
-import { isNumber, isUndefined, isString, isObject, isNull } from 'util';
 import { propertyTypes } from 'shared/propertyTypes';
 
 const validateSingleWrappedValue = validationFn => value => {
@@ -13,6 +12,16 @@ const validateSingleWrappedValue = validationFn => value => {
   const [{ value: pureValue }] = value;
   return validationFn(pureValue);
 };
+
+const isNumber = value => typeof value === 'number';
+
+const isUndefined = value => value === undefined;
+
+const isString = value => typeof value === 'string';
+
+const isObject = value => value !== null && typeof value === 'object';
+
+const isNull = value => value === null;
 
 const isEmpty = value =>
   isNull(value) || isUndefined(value) || !value.length || !value.some(v => v.value);
