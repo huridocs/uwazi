@@ -183,7 +183,7 @@ describe('sockets', () => {
         type: 'NOTIFY',
         notification: {
           id: expect.any(String),
-          message: 'Language uninstalled success',
+          message: 'Language uninstalled successfully',
           type: 'success',
         },
       });

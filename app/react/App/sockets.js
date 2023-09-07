@@ -95,7 +95,10 @@ socket.on('translationsDelete', locale => {
 
 socket.on('translationsDeleteDone', () => {
   store.dispatch(
-    notificationActions.notify(t('System', 'Language uninstalled success', null, false), 'success')
+    notificationActions.notify(
+      t('System', 'Language uninstalled successfully', null, false),
+      'success'
+    )
   );
 });
 
