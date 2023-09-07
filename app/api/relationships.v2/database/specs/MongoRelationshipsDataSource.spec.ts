@@ -84,8 +84,14 @@ const fixtures = {
   ],
 };
 
+let ds: MongoRelationshipsDataSource;
+
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
+  ds = new MongoRelationshipsDataSource(
+    testingDB.mongodb!,
+    new MongoTransactionManager(getClient())
+  );
 });
 
 afterAll(async () => {
@@ -94,10 +100,6 @@ afterAll(async () => {
 
 describe('When getting by query', () => {
   it('should allow traversing 1 hop', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
     ]);
@@ -110,10 +112,6 @@ describe('When getting by query', () => {
   });
 
   it('should allow traversing 2 hops', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [
         new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
@@ -130,10 +128,6 @@ describe('When getting by query', () => {
   });
 
   it('should be paginable', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [
         new MatchQueryNode({}, [new TraversalQueryNode('in', {}, [new MatchQueryNode()])]),
@@ -148,10 +142,6 @@ describe('When getting by query', () => {
   });
 
   it('should allow to add filters to the query', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [
         new MatchQueryNode({}, [
@@ -174,11 +164,6 @@ describe('When getting by query', () => {
   });
 
   it('should allow to query branches', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
-
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [
         new MatchQueryNode({}, [
@@ -203,11 +188,6 @@ describe('When getting by query', () => {
   });
 
   it('should return the same entities when querying different languages', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
-
     const query = new MatchQueryNode({ sharedId: 'entity1' }, [
       new TraversalQueryNode('out', {}, [
         new MatchQueryNode({}, [
@@ -239,11 +219,6 @@ describe('When getting by query', () => {
 
 describe('getByEntities()', () => {
   it('should return the relationships of the given entities', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
-
     const result = await ds.getByEntities(['entity1', 'entity2']).all();
     expect(result).toMatchObject([
       {
@@ -276,13 +251,15 @@ describe('getByEntities()', () => {
 
 describe('deleteAll()', () => {
   it('should delete all relationships', async () => {
-    const ds = new MongoRelationshipsDataSource(
-      testingDB.mongodb!,
-      new MongoTransactionManager(getClient())
-    );
-
     await ds.deleteAll();
     const rels = await testingDB.mongodb!.collection('relationships').find().toArray();
     expect(rels).toEqual([]);
+  });
+});
+
+describe('getAll()', () => {
+  it('should return all relationships', async () => {
+    const rels = await ds.getAll().all();
+    expect(rels).toHaveLength(9);
   });
 });
