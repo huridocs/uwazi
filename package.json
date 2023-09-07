@@ -95,7 +95,7 @@
     "@elastic/elasticsearch": "7.17",
     "@fast-csv/format": "^4.3.5",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
-    "@fortawesome/free-regular-svg-icons": "^6.4.0",
+    "@fortawesome/free-regular-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@googlemaps/js-api-loader": "^1.16.0",
