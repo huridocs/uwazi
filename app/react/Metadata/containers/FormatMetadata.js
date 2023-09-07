@@ -69,7 +69,7 @@ BaseFormatMetadata.propTypes = {
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
   useV2Player: PropTypes.bool,
-  templates: PropTypes.array,
+  templates: PropTypes.object,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {

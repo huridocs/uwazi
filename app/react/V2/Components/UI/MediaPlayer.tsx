@@ -82,7 +82,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           playIcon={
             <PlayIcon
               style={{ color: playIconColor }}
-              className="absolute w-1/5 min-w-[20px] max-w-[120px]"
+              className="absolute w-1/5 min-w-[20px] max-w-[120px] hover:brightness-50"
             />
           }
           onClickPreview={() => !playing && setPlaying(true)}
