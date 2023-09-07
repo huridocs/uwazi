@@ -13,6 +13,20 @@ import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
 import { ImageViewer } from './ImageViewer';
 
+const getMediaUrl = fileUrl => {
+  let formmatedUrl = fileUrl;
+
+  if (fileUrl.startsWith('/api/files')) {
+    return formmatedUrl;
+  }
+
+  if (fileUrl.includes('timelinks')) {
+    formmatedUrl = fileUrl.substring(1, fileUrl.lastIndexOf(','));
+  }
+
+  return formmatedUrl;
+};
+
 const renderRelationshipLinks = (linksProp, compact) => {
   if (linksProp.type === 'newRelationship' && !linksProp.value) {
     return [];
@@ -68,7 +82,7 @@ export const showByType = ({
             }}
           >
             <MediaPlayer
-              url={prop.value}
+              url={getMediaUrl(prop.value)}
               thumbnail={{
                 fileName: prop.fileName || '',
                 color: templateColor,
