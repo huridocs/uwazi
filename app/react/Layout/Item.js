@@ -65,7 +65,7 @@ export class Item extends Component {
             entity={this.props.noMetadata ? {} : doc}
             sortedProperty={this.props.search.sort}
             additionalMetadata={this.props.additionalMetadata}
-            useV2Player={true}
+            useV2Player
           />
         </div>
         <ItemFooter>
