@@ -31,18 +31,14 @@ describe('migration to update translations adding new keys and removing old ones
           value: 'Languages installed successfully',
         },
         {
-          key: 'Language uninstalled success',
-          value: 'Language uninstalled success',
-        },
-        {
           key: 'Language Install Start Message',
           value:
-            'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
+            'Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.',
         },
         {
           key: 'Language Uninstall Start Message',
           value:
-            'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
+            'Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.',
         },
         {
           key: 'An error has occured while installing languages:',
@@ -51,6 +47,10 @@ describe('migration to update translations adding new keys and removing old ones
         {
           key: 'An error has occured while deleting a language:',
           value: 'An error has occured while deleting a language:',
+        },
+        {
+          key: 'Language uninstalled successfully',
+          value: 'Language uninstalled successfully',
         },
       ],
     };

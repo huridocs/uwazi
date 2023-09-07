@@ -2,12 +2,12 @@ const newKeys = [
   {
     key: 'Language Install Start Message',
     defaultValue:
-      'We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.',
+      'Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.',
   },
   {
     key: 'Language Uninstall Start Message',
     defaultValue:
-      'We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.',
+      'Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.',
   },
   {
     key: 'An error has occured while installing languages:',
@@ -15,9 +15,16 @@ const newKeys = [
   {
     key: 'An error has occured while deleting a language:',
   },
+  {
+    key: 'Language uninstalled successfully',
+  },
 ];
 
-const deletedKeys = [];
+const deletedKeys = [
+  {
+    key: 'Language uninstalled success',
+  },
+];
 
 const updateTranslation = (currentTranslation, keysToUpdate, loc) => {
   const translation = { ...currentTranslation };

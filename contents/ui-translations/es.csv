@@ -426,10 +426,10 @@ Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nom
 Language,Idioma
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
-Language Install Start Message,We have started the language installation process, which may take time depending on the size of the collection. The languages will be available as it progresses.
+Language Install Start Message,"Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished."
 Language reset success,Idioma reseteado exitósamente
-Language Uninstall Start Message,We have started the language deletion process, which may take time depending on the size of the collection. The languages will be removed as it progresses.
-Language uninstalled success,Idioma eliminado exitósamente
+Language Uninstall Start Message,"Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished."
+Language uninstalled successfully,Idioma eliminado exitósamente
 Languages,Idiomas
 Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
