@@ -50,11 +50,15 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
 
 const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
+
   const mediaType: MediaType = verifyUrl(url);
 
   const playIconColor = thumbnail?.url
     ? 'text-gray-100 hover:text-white'
     : 'text-gray-500 hover:text-gray-700';
+
+  const renderThumbnail =
+    mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
 
   return (
     <div style={{ width: width || '100%', height: height || '100%' }} className="relative">
@@ -72,7 +76,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           width="100%"
           height="100%"
           controls
-          light={mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false}
+          light={renderThumbnail}
           playIcon={
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }
