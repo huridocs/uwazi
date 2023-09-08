@@ -12,7 +12,6 @@ exports[`FormatMetadata should render Metadata component passing the formatted m
       },
     ]
   }
-  templateColor="#c03b22"
   useV2Player={false}
 />
 `;
@@ -42,7 +41,6 @@ exports[`FormatMetadata should unshift additional metadata if passed 1`] = `
       },
     ]
   }
-  templateColor="#c03b22"
   templateId="template"
   useV2Player={false}
 />
