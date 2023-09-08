@@ -26,22 +26,18 @@ const verifyUrl = (url: string): MediaType => {
   return 'internal';
 };
 
-const ThumbnailOverlay = ({ mediaName }: { mediaName?: string }) => {
-  const bgColor = '';
-
-  return (
-    <div
-      className="relative w-full h-full"
-      style={{
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 10%, rgba(156,163,175,0.6) 50%)',
-      }}
-    >
-      <p className="overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1">
-        {mediaName}
-      </p>
-    </div>
-  );
-};
+const ThumbnailOverlay = ({ mediaName }: { mediaName?: string }) => (
+  <div
+    className="relative w-full h-full"
+    style={{
+      background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 10%, rgba(156,163,175,0.6) 50%)',
+    }}
+  >
+    <p className="overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1">
+      {mediaName}
+    </p>
+  </div>
+);
 
 const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
@@ -60,7 +56,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   return (
     <div style={{ width: width || '100%', height: height || '100%' }} className="relative">
       {mediaType === 'invalid' ? (
-        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
+        <div className="flex absolute left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border touseV2Playerp-0">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>
