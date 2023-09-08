@@ -23,7 +23,7 @@ export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
 
-export class OdmModel<T> implements SyncDBDataSource<T> {
+export class OdmModel<T> implements SyncDBDataSource<T, T> {
   db: MultiTenantMongooseModel<T>;
 
   logHelper: UpdateLogger<T>;
@@ -172,7 +172,7 @@ export class OdmModel<T> implements SyncDBDataSource<T> {
 // models are accessed in api/sync, which cannot be type-safe since the document
 // type is a request parameter. Thus, we store all OdmModels as type Document.
 // export const models: { [index: string]: OdmModel<any> } = {};
-export const models: { [index: string]: () => SyncDBDataSource<any> } = {};
+export const models: { [index: string]: () => SyncDBDataSource<any, any> } = {};
 
 export function instanceModel<T = any>(collectionName: string, schema: Schema) {
   const logHelper = createUpdateLogHelper<T>(collectionName);
