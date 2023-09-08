@@ -15,8 +15,6 @@ const BaseFormatMetadata = ({
   useV2Player,
   ...props
 }) => {
-  const template = props.templates.filter(_template => _template.get('_id') === entity.template);
-  const templateColor = template.size && template.get(0).get('color');
   const { attachments } = entity;
 
   return (
@@ -28,7 +26,6 @@ const BaseFormatMetadata = ({
       )}
       attachments={attachments}
       templateId={entity.template}
-      templateColor={templateColor || '#c03b22'}
       compact={!!sortedProperty}
       useV2Player={useV2Player}
       {...removeUneededProps(props)}

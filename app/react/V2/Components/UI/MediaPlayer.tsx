@@ -4,15 +4,12 @@ import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 
-const DEFAULT_THUMBNAIL_COLOR = 'rgb(129 140 248)';
-
 type MediaType = 'embedded' | 'internal' | 'invalid';
 
 interface MediaPlayerProps extends ReactPlayerProps {
   url: string;
   thumbnail?: {
     url?: string;
-    color?: string;
     fileName?: string;
   };
 }
@@ -29,21 +26,17 @@ const verifyUrl = (url: string): MediaType => {
   return 'internal';
 };
 
-const ThumbnailOverlay = ({ color, mediaName }: { color?: string; mediaName?: string }) => {
-  const thumbnailColor = color || DEFAULT_THUMBNAIL_COLOR;
+const ThumbnailOverlay = ({ mediaName }: { mediaName?: string }) => {
+  const bgColor = '';
 
   return (
     <div
       className="relative w-full h-full"
       style={{
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.5) 50%)',
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 10%, rgba(156,163,175,0.6) 50%)',
       }}
     >
-      <div
-        className="absolute top-0 right-0 w-full h-full"
-        style={{ background: thumbnailColor, opacity: '30%' }}
-      />
-      <p className="overflow-hidden p-2 font-normal text-left text-black overflow-ellipsis whitespace-nowrap opacity-1">
+      <p className="overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1">
         {mediaName}
       </p>
     </div>
@@ -57,10 +50,12 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const overlay = thumbnail?.url ? (
     thumbnail?.url
   ) : (
-    <ThumbnailOverlay color={thumbnail?.color} mediaName={thumbnail?.fileName} />
+    <ThumbnailOverlay mediaName={thumbnail?.fileName} />
   );
 
-  const playIconColor = thumbnail?.url ? 'white' : thumbnail?.color || DEFAULT_THUMBNAIL_COLOR;
+  const playIconColor = thumbnail?.url
+    ? 'text-gray-100 hover:text-white'
+    : 'text-gray-500 hover:text-gray-700';
 
   return (
     <div style={{ width: width || '100%', height: height || '100%' }} className="relative">
@@ -80,10 +75,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           controls
           light={mediaType === 'internal' ? overlay : false}
           playIcon={
-            <PlayIcon
-              style={{ color: playIconColor }}
-              className="absolute w-1/5 min-w-[20px] max-w-[120px] hover:brightness-50"
-            />
+            <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }
           onClickPreview={() => !playing && setPlaying(true)}
           stopOnUnmount

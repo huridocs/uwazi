@@ -13,14 +13,16 @@ import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
 import { ImageViewer } from './ImageViewer';
 
-const getMediaUrl = fileUrl => {
-  let formmatedUrl = fileUrl;
+const getMediaUrlAndName = fileUrl => {
+  let url = fileUrl;
+  let filename = url.split('/').pop();
 
   if (fileUrl.includes('timelinks')) {
-    formmatedUrl = fileUrl.substring(1, fileUrl.indexOf(','));
+    url = fileUrl.substring(1, fileUrl.indexOf(','));
+    filename = filename.substring(0, filename.indexOf(','));
   }
 
-  return formmatedUrl;
+  return { url, filename };
 };
 
 const renderRelationshipLinks = (linksProp, compact) => {
@@ -35,13 +37,7 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = ({
-  prop,
-  templateId = '',
-  templateColor = '',
-  useV2Player = false,
-  compact = false,
-}) => {
+export const showByType = ({ prop, templateId = '', useV2Player = false, compact = false }) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -78,10 +74,9 @@ export const showByType = ({
             }}
           >
             <MediaPlayer
-              url={getMediaUrl(prop.value)}
+              url={prop.value}
               thumbnail={{
                 fileName: prop.fileName || '',
-                color: templateColor,
               }}
             />
           </div>
@@ -123,7 +118,7 @@ export const showByType = ({
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
-          const value = showByType({ prop: _value, templateId, templateColor, compact });
+          const value = showByType({ prop: _value, templateId, compact });
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
@@ -225,7 +220,6 @@ const Metadata = ({
   highlight,
   groupGeolocations,
   templateId,
-  templateColor,
   useV2Player,
   attachments,
 }) => {
@@ -241,13 +235,13 @@ const Metadata = ({
     const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
     const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
-    if (type === 'multimedia' && prop.value.startsWith('/api/files') && attachments) {
-      const filename = prop.value.split('/').pop();
+    if (type === 'multimedia' && prop.value.includes('/api/files') && attachments) {
+      const { filename, url } = getMediaUrlAndName(prop.value);
       const { originalname: originalName } = attachments.find(
         attachment => attachment.filename === filename
       );
-      // eslint-disable-next-line no-param-reassign
       prop.fileName = originalName;
+      prop.value = url;
     }
 
     return (
@@ -260,7 +254,7 @@ const Metadata = ({
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType({ prop, templateId, templateColor, compact, useV2Player })}
+          {showByType({ prop, templateId, compact, useV2Player })}
         </dd>
       </dl>
     );
@@ -273,7 +267,6 @@ Metadata.defaultProps = {
   highlight: [],
   groupGeolocations: false,
   useV2Player: false,
-  templateColor: 'red',
 };
 
 Metadata.propTypes = {
@@ -296,7 +289,6 @@ Metadata.propTypes = {
   ).isRequired,
   attachments: PropTypes.array,
   templateId: PropTypes.string,
-  templateColor: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),

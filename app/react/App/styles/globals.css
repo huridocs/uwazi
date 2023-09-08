@@ -3381,6 +3381,11 @@ input:checked + .toggle-bg {
   color: rgb(99 49 18 / var(--tw-text-opacity));
 }
 
+.text-gray-50 {
+  --tw-text-opacity: 1;
+  color: rgb(249 250 251 / var(--tw-text-opacity));
+}
+
 .underline {
   text-decoration-line: underline;
 }
@@ -3852,8 +3857,13 @@ input:checked + .toggle-bg {
   text-decoration-line: underline;
 }
 
-.hover\:brightness-50:hover {
-  --tw-brightness: brightness(.5);
+.hover\:brightness-\[30\]:hover {
+  --tw-brightness: brightness(30);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.hover\:brightness-\[0\.30\]:hover {
+  --tw-brightness: brightness(0.30);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
