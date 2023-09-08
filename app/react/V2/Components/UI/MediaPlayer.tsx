@@ -26,28 +26,31 @@ const verifyUrl = (url: string): MediaType => {
   return 'internal';
 };
 
-const ThumbnailOverlay = ({ mediaName }: { mediaName?: string }) => (
-  <div
-    className="relative w-full h-full"
-    style={{
-      background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 10%, rgba(156,163,175,0.6) 50%)',
-    }}
-  >
-    <p className="overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1">
-      {mediaName}
-    </p>
-  </div>
-);
+const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
+  const overlayBacgroundStyle = thumbnail?.url
+    ? {
+        backgroundImage: `url("${thumbnail.url}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : { background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 10%, rgba(156,163,175,0.6) 50%)' };
+
+  const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';
+
+  return (
+    <div className="relative w-full h-full" style={overlayBacgroundStyle}>
+      <p
+        className={`overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
+      >
+        {thumbnail?.fileName}
+      </p>
+    </div>
+  );
+};
 
 const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
   const mediaType: MediaType = verifyUrl(url);
-
-  const overlay = thumbnail?.url ? (
-    thumbnail?.url
-  ) : (
-    <ThumbnailOverlay mediaName={thumbnail?.fileName} />
-  );
 
   const playIconColor = thumbnail?.url
     ? 'text-gray-100 hover:text-white'
@@ -69,7 +72,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           width="100%"
           height="100%"
           controls
-          light={mediaType === 'internal' ? overlay : false}
+          light={mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false}
           playIcon={
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }

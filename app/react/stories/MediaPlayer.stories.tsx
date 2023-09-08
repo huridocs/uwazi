@@ -49,7 +49,7 @@ const LocalFileWithThumbnail: Story = {
     width: '700px',
     height: '350px',
     url: '/short-video.mp4',
-    thumbnail: { url: '/short-video-thumbnail.jpg' },
+    thumbnail: { url: '/short-video-thumbnail.jpg', fileName: 'Short video with thumbnail' },
   },
 };
 
