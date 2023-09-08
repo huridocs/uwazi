@@ -19,7 +19,7 @@ const verifyUrl = (url: string): MediaType => {
     return 'invalid';
   }
 
-  if (url.startsWith('https')) {
+  if (url.startsWith('https') || url.startsWith('http')) {
     return 'embedded';
   }
 
@@ -27,7 +27,7 @@ const verifyUrl = (url: string): MediaType => {
 };
 
 const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbnail'] }) => {
-  const overlayBacgroundStyle = thumbnail?.url
+  const overlayBackgroundStyle = thumbnail?.url
     ? {
         backgroundImage: `url("${thumbnail.url}")`,
         backgroundSize: 'cover',
@@ -38,7 +38,7 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
   const mediaTitleStyle = thumbnail?.url ? 'text-gray-100' : '';
 
   return (
-    <div className="relative w-full h-full" style={overlayBacgroundStyle}>
+    <div className="relative w-full h-full" style={overlayBackgroundStyle}>
       <p
         className={`overflow-hidden p-4 font-normal text-left overflow-ellipsis whitespace-nowrap opacity-1 ${mediaTitleStyle}`}
       >
