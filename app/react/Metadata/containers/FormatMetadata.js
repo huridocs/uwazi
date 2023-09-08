@@ -12,31 +12,40 @@ const BaseFormatMetadata = ({
   sortedProperty,
   entity,
   relationships,
+  useV2Player,
   ...props
-}) => (
-  <Metadata
-    metadata={additionalMetadata.concat(
-      metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
-        excludePreview: props.excludePreview,
-      })
-    )}
-    templateId={entity.template}
-    compact={!!sortedProperty}
-    {...removeUneededProps(props)}
-  />
-);
+}) => {
+  const { attachments } = entity;
+
+  return (
+    <Metadata
+      metadata={additionalMetadata.concat(
+        metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
+          excludePreview: props.excludePreview,
+        })
+      )}
+      attachments={attachments}
+      templateId={entity.template}
+      compact={!!sortedProperty}
+      useV2Player={useV2Player}
+      {...removeUneededProps(props)}
+    />
+  );
+};
 
 BaseFormatMetadata.defaultProps = {
   sortedProperty: '',
   additionalMetadata: [],
   relationships: Immutable.fromJS([]),
   excludePreview: false,
+  useV2Player: false,
 };
 
 BaseFormatMetadata.propTypes = {
   entity: PropTypes.shape({
     metadata: PropTypes.object,
     template: PropTypes.string,
+    attachments: PropTypes.array,
   }).isRequired,
   relationships: PropTypes.object,
   additionalMetadata: PropTypes.arrayOf(
@@ -56,6 +65,7 @@ BaseFormatMetadata.propTypes = {
   ),
   sortedProperty: PropTypes.string,
   excludePreview: PropTypes.bool,
+  useV2Player: PropTypes.bool,
 };
 
 export function mapStateToProps(state, { entity, sortedProperty = '' }) {
