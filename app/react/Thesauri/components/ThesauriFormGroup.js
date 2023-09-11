@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'react-redux-form';
-import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
+// import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { Icon } from 'UI';
 import { t, Translate } from 'app/I18N';
 
@@ -60,12 +60,12 @@ export class ThesauriFormGroup extends Component {
             </button>
           </Field>
         </FormGroup>
-        <DragAndDropContainer
+        {/* <DragAndDropContainer
           items={value.values}
           iconHandle
           renderItem={this.renderItem}
           onChange={this.onChange}
-        />
+        /> */}
       </div>
     );
   }

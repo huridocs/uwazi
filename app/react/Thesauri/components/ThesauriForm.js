@@ -2,7 +2,7 @@
 import ShowIf from 'app/App/ShowIf';
 import FormGroup from 'app/DocumentForm/components/FormGroup';
 import { BackButton } from 'app/Layout';
-import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
+// import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import { notEmpty } from 'app/Metadata/helpers/validator';
 import {
   addGroup,
@@ -187,12 +187,12 @@ class ThesauriForm extends Component {
                   <Translate>Items:</Translate>
                 </b>
               </div>
-              <DragAndDropContainer
+              {/* <DragAndDropContainer
                 onChange={this.onChange}
                 renderItem={this.renderItem}
                 items={values}
                 iconHandle
-              />
+              /> */}
             </div>
             <div className="settings-footer">
               <div className="btn-cluster">

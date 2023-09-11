@@ -52,7 +52,7 @@ const withOutlet =
 
 const withLazy =
   <T,>(Component: React.FC<T>, moduleImport: Function, extractor: (module: unknown) => {}) =>
-  (props: T & { key: string }) => {
+  (props: T & { key?: string }) => {
     const lazyModuleRef = useRef({});
     const [isLoaded, setIsLoaded] = useState(false);
 

@@ -9,12 +9,13 @@ import { ItemTypes } from 'app/V2/shared/types';
 interface DroppableProps {
   type: ItemTypes;
   useDrop?: Function;
+  addCard?: Function;
 }
 
-const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type }) => {
+const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, addCard }) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
-    drop: () => ({ name: 'Dustbin' }),
+    drop: () => ({ name: 'Dustbin', addCard }),
     collect: (monitor: DropTargetMonitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
@@ -22,7 +23,6 @@ const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type }) => 
   }));
 
   const isActive = canDrop && isOver;
-  const backgroundColor = isActive ? 'darkgreen' : 'darkkhaki';
   return (
     <div
       className={`flex flex-col items-center justify-center w-full h-64 ${
@@ -31,7 +31,6 @@ const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type }) => 
           : 'empty'
       } border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 `}
       ref={drop}
-      // style={{ backgroundColor }}
       // data-testid="dustbin"
     >
       <div className="no-properties">

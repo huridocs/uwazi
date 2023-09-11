@@ -4,10 +4,11 @@ interface IXExtractorInfo {
   _id?: string;
   name: string;
   property: string;
+
   templates: string[];
 }
 
-interface IDragable {
+interface IDraggable {
   name: string;
   iconHandle: boolean;
 }
@@ -28,4 +29,4 @@ export enum ItemTypes {
   FILTER = 'filter',
 }
 
-export type { IXExtractorInfo, ISublink, ILink, IDragable };
+export type { IXExtractorInfo, ISublink, ILink, IDraggable };

@@ -11,7 +11,7 @@ import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { ILink, ItemTypes } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
-import { hoverSortable } from 'app/Layout/DragAndDrop';
+import { hoverSortable } from 'app/V2/Components/Layouts/DradAndDrop/DraggableItem';
 
 const groupStyles = {
   paddingRight: '0px',

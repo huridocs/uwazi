@@ -5,13 +5,14 @@ import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
 
 import { RequestParams } from 'app/utils/RequestParams';
-import { DragAndDropContainer } from 'app/Layout/DragAndDrop';
 import ID from 'shared/uniqueID';
 import { actions } from 'app/BasicReducer';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
+import { DropZone, DragableItem } from 'app/Layout/DragAndDrop';
+import { ItemTypes } from 'app/V2/shared/types';
 import { SettingsHeader } from './SettingsHeader';
 
 const removeItem = itemId => {
@@ -153,12 +154,6 @@ class FiltersForm extends Component {
             </button>
           </span>
         </div>
-        <DragAndDropContainer
-          id={group.id}
-          onChange={onChange.bind(this)}
-          renderItem={this.renderActiveItems}
-          items={group.items}
-        />
       </div>
     );
   }
@@ -231,12 +226,12 @@ class FiltersForm extends Component {
                         </ul>
                       </div>
                     </div>
-                    <DragAndDropContainer
-                      id="active"
-                      onChange={this.activesChange}
-                      renderItem={this.renderActiveItems}
-                      items={activeFilters}
-                    />
+                    <div style={{ overflow: 'hidden', clear: 'both' }}>
+                      {activeFilters.map(filter => (
+                        <DragableItem name={filter.name} type={ItemTypes.FILTER} />
+                      ))}
+                    </div>
+                    <DropZone type={ItemTypes.FILTER} />
                   </div>
                   <div className="col-sm-3">
                     <div className="FiltersForm-constructor">
@@ -245,12 +240,11 @@ class FiltersForm extends Component {
                           <Translate>Entity types</Translate>
                         </i>
                       </div>
-                      <DragAndDropContainer
-                        id="inactive"
-                        onChange={this.unactivesChange}
-                        renderItem={this.renderInactiveItems}
-                        items={inactiveFilters}
-                      />
+                      <div style={{ overflow: 'hidden', clear: 'both' }}>
+                        {inactiveFilters.map(filter => (
+                          <DragableItem name={filter.name} type={ItemTypes.FILTER} />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
