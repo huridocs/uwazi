@@ -13,8 +13,8 @@ import { notificationAtom } from 'app/V2/atoms';
 import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate } from 'app/I18N';
-import { Settings } from 'shared/types/settingsType';
-import { LinkSchema } from 'shared/types/commonTypes';
+import { Settings, SettingsLinkSchema } from 'shared/types/settingsType';
+import { MenuForm } from './components/MenuForm';
 
 import {
   EditButton,
@@ -35,7 +35,19 @@ const MenuConfig = () => {
   //const setNotifications = useSetRecoilState(notificationAtom);
   //const revalidator = useRevalidator();
 
-  const edit = (row: Row<LinkSchema>) => {};
+  const [linkToEdit, setLinkToEdit] = useState<SettingsLinkSchema | undefined>({});
+
+  const edit = (row: Row<SettingsLinkSchema>) => {};
+
+  const addLink = () => {
+    setLinkToEdit({ title: '', type: 'link', url: '' });
+    setIsSidepanelOpen(true);
+  };
+
+  const addGroup = () => {
+    setLinkToEdit({ title: '', type: 'group', sublinks: [] });
+    setIsSidepanelOpen(true);
+  };
 
   const columnHelper = createColumnHelper<any>();
   const columns = [
@@ -45,19 +57,24 @@ const MenuConfig = () => {
       cell: TitleCell,
       enableSorting: false,
       meta: { className: 'w-6/12' },
-    }) as ColumnDef<LinkSchema, 'title'>,
+    }) as ColumnDef<SettingsLinkSchema, 'title'>,
     columnHelper.accessor('url', {
       header: URLHeader,
       enableSorting: false,
       meta: { className: 'w-6/12' },
-    }) as ColumnDef<LinkSchema, 'default'>,
+    }) as ColumnDef<SettingsLinkSchema, 'default'>,
     columnHelper.accessor('key', {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: { action: edit, className: 'w-0 text-center' },
-    }) as ColumnDef<LinkSchema, 'key'>,
+    }) as ColumnDef<SettingsLinkSchema, 'key'>,
   ];
+
+  const sidepanelTitle = () =>
+    `${linkToEdit?.title === '' ? 'New' : 'Edit'} ${
+      linkToEdit?.type === 'group' ? 'Group' : 'Link'
+    }`;
 
   return (
     <div
@@ -68,7 +85,7 @@ const MenuConfig = () => {
       <SettingsContent>
         <SettingsContent.Header title="Menu" />
         <SettingsContent.Body>
-          <Table<LinkSchema>
+          <Table<SettingsLinkSchema>
             enableSelection
             columns={columns}
             data={settings?.links || []}
@@ -78,23 +95,27 @@ const MenuConfig = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer>
           <div className="flex gap-2">
-            <Button type="button">
+            <Button type="button" onClick={addLink}>
               <Translate>Add link</Translate>
             </Button>
-            <Button type="button">
+            <Button type="button" onClick={addGroup}>
               <Translate>Add group</Translate>
             </Button>
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
       <Sidepanel
-        title={<Translate className="uppercase">Two-Factor Authentication</Translate>}
+        title={<Translate className="uppercase">{sidepanelTitle()}</Translate>}
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
         size="large"
         withOverlay
       >
-        Sidepanel
+        <MenuForm
+          closePanel={() => setIsSidepanelOpen(false)}
+          link={linkToEdit}
+          links={settings.links}
+        />
       </Sidepanel>
     </div>
   );

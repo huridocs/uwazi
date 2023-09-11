@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 import { isString } from 'lodash';
 import { InputError } from './InputError';
+import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
@@ -63,9 +64,9 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <label htmlFor={id} className={hideLabel ? 'sr-only' : labelStyles}>
-          {renderChild(label)}
-        </label>
+        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+          {label}
+        </Label>
         <div className="relative w-full">
           <input
             type={type}

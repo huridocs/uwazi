@@ -1,4 +1,5 @@
 import React, { ChangeEventHandler, Ref } from 'react';
+import { Label } from './Label';
 
 interface SelectProps {
   id: string;
@@ -36,9 +37,9 @@ const Select = React.forwardRef(
     return (
       <div className={className}>
         <div className="relative w-full">
-          <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors)}>
             {label}
-          </label>
+          </Label>
           <select
             className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
             id={id}
