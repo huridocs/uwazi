@@ -31,11 +31,13 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
   };
+
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [entityFile, setEntityFile] = useState<FileType>();
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
   let propertyLabel = 'Title';
@@ -89,6 +91,11 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           HighlightColors.CURRENT
         )
       );
+    }
+
+    if (pdfContainerRef.current) {
+      const { height } = pdfContainerRef.current.getBoundingClientRect();
+      setPdfContainerHeight(height);
     }
 
     return () => {
@@ -156,7 +163,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
                 setSelectedText(selection);
               }}
               size={{
-                height: pdfContainerRef.current?.clientHeight,
+                height: `${pdfContainerHeight}px`,
               }}
               scrollToPage={Object.keys(highlights || {})[0]}
             />

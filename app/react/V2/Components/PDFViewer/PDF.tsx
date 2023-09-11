@@ -15,7 +15,7 @@ interface PDFProps {
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
   scrollToPage?: string;
-  size?: { height?: number | string; width?: number | string; overflow?: string };
+  size?: { height?: string; width?: string; overflow?: string };
 }
 
 const getPDFFile = async (fileUrl: string) =>
@@ -85,8 +85,8 @@ const PDF = ({
       <div
         id="pdf-container"
         style={{
-          height: `${size?.height}px` || 'auto',
-          width: `${size?.width}px` || 'auto',
+          height: size?.height || 'auto',
+          width: size?.width || 'auto',
           overflow: size?.overflow || 'auto',
         }}
       >

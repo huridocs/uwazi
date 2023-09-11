@@ -25,7 +25,7 @@ const Primary: Story = {
             onDeselect={args.onDeselect}
             highlights={args.highlights}
             scrollToPage={args.scrollToPage}
-            size={{ height: 500, width: 'auto' }}
+            size={{ height: '500px', width: 'auto' }}
           />
         </div>
         <p>End of container</p>
