@@ -5,16 +5,23 @@ import entities from 'api/entities';
 import pages from 'api/pages';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
+import { sequentialPromises } from 'shared/asyncUtils';
 import { LanguageISO6391Schema, languageSchema } from 'shared/types/commonSchemas';
+import { LanguageISO6391, LanguageSchema } from 'shared/types/commonTypes';
 import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 const addLanguage = async (language: any) => {
   const newSettings = await settings.addLanguage(language);
-  const newTranslations = await translations.addLanguage(language.key);
+  const addedTranslations = await translations.addLanguage(language.key);
+  const newTranslations = addedTranslations
+    ? {
+        ...addedTranslations,
+        contexts: translations.prepareContexts(addedTranslations.contexts),
+      }
+    : addedTranslations;
   await entities.addLanguage(language.key);
   await pages.addLanguage(language.key);
   try {
@@ -174,14 +181,13 @@ export default (app: Application) => {
     }),
 
     async (req, res) => {
-      const languages = req.body;
+      const languages = req.body as LanguageSchema[];
       let newSettings;
       let newTranslations;
-      for (let index = 0; index < languages.length; index += 1) {
-        // eslint-disable-next-line no-await-in-loop
-        ({ newSettings, newTranslations } = await addLanguage(languages[index]));
+      await sequentialPromises(languages, async (language: LanguageSchema) => {
+        ({ newSettings, newTranslations } = await addLanguage(language));
         req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
-      }
+      });
 
       req.sockets.emitToCurrentTenant('updateSettings', newSettings);
       res.json(newSettings);
