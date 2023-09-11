@@ -8,11 +8,11 @@ import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { DataType, UwaziFilterQuery, models } from './model';
 
-const getBatchSteps = async <T>(
-  model: SyncDBDataSource<T>,
-  query: UwaziFilterQuery<DataType<T>>,
+const getBatchSteps = async <T, U>(
+  model: SyncDBDataSource<T, U>,
+  query: UwaziFilterQuery<DataType<U>>,
   batchSize: number
-): Promise<T[]> => {
+): Promise<U[]> => {
   const allIds = await model.get(query, '_id', { sort: { _id: 1 } });
 
   const steps = [];
