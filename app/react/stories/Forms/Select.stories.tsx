@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Select } from 'V2/Components/Forms';
+import { Select, SelectProps } from 'V2/Components/Forms';
 
 const meta: Meta<typeof Select> = {
   title: 'Forms/Select',
@@ -9,8 +9,10 @@ const meta: Meta<typeof Select> = {
 
 type Story = StoryObj<typeof Select>;
 
-const Primary: Story = {
-  render: args => (
+const ComponentWithSelect = ({ args }: { args: SelectProps }) => {
+  const [value, setValue] = useState<string>(args.value || '');
+
+  return (
     <div className="tw-content">
       <div className="md:w-1/2">
         <Select
@@ -20,10 +22,18 @@ const Primary: Story = {
           disabled={args.disabled}
           hideLabel={args.hideLabel}
           hasErrors={args.hasErrors}
+          onChange={e => {
+            setValue(e.target.value);
+          }}
+          value={value}
         />
       </div>
     </div>
-  ),
+  );
+};
+
+const Primary: Story = {
+  render: args => <ComponentWithSelect args={args} />,
 };
 
 const Basic = {
@@ -35,12 +45,13 @@ const Basic = {
     hasErrors: false,
     options: [
       { key: '1', value: 'Algeria' },
-      { key: '2', value: 'Argentina', selected: true },
-      { key: '3', value: 'Bavaria', selected: false },
-      { key: '4', value: 'Bolivia', selected: false },
-      { key: '5', value: 'Colombia', selected: false },
-      { key: '6', value: 'Dinamarca', selected: false },
+      { key: '2', value: 'Argentina' },
+      { key: '3', value: 'Bavaria' },
+      { key: '4', value: 'Bolivia' },
+      { key: '5', value: 'Colombia' },
+      { key: '6', value: 'Dinamarca' },
     ],
+    value: 'Argentina',
   },
 };
 
