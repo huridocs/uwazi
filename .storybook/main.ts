@@ -5,7 +5,7 @@ module.exports = {
     '../app/react/stories/**/*.stories.mdx',
     '../app/react/stories/**/*.stories.@(js|jsx|ts|tsx)',
   ],
-  staticDirs: ['../app/react/stories/assets'],
+  staticDirs: ['../cypress/test_files'],
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
