@@ -3,7 +3,7 @@ import React, { MouseEventHandler } from 'react';
 interface ButtonProps {
   children: string | React.ReactNode;
   type?: 'submit' | 'button';
-  color?: 'orange' | 'green' | 'red';
+  color?: 'orange' | 'green' | 'red' | 'indigo';
   disabled?: boolean;
   form?: string;
   onClick?: MouseEventHandler;
@@ -33,6 +33,9 @@ const EmbededButton = ({
       break;
     case 'red':
       buttonColor = 'bg-gray-50';
+      break;
+    case 'indigo':
+      buttonColor = 'text-indigo-400 bg-indigo-50';
       break;
     default:
       buttonColor = '';

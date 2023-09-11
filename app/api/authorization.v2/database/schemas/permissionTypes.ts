@@ -1,22 +1,15 @@
 import { ObjectId } from 'mongodb';
 
-export interface EntityPermissionsDBOType {
+export interface EntityPermissionsDBO {
   _id?: ObjectId;
   sharedId: string;
-  permissions: PermissionType[];
+  published?: boolean;
+  permissions: Permission[];
 }
 
 export type LegacyObjectIdSchema = string | ObjectId;
 
-export type PermissionType = RestrictedPermissionType | PublicPermissionType;
-
-export interface PublicPermissionType {
-  refId: 'public';
-  type: 'public';
-  level: 'public';
-}
-
-export interface RestrictedPermissionType {
+export interface Permission {
   refId: LegacyObjectIdSchema;
   type: 'user' | 'group';
   level: 'read' | 'write';
