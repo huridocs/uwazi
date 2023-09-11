@@ -1,15 +1,29 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/exports-last */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { flattenDeep } from 'lodash';
 import { t } from 'app/I18N';
+import { Icon } from 'UI';
 import MarkdownViewer from 'app/Markdown';
 import { GroupedGeolocationViewer } from 'app/Metadata/components/GroupedGeolocationViewer';
-import { Icon } from 'UI';
+import { MediaPlayer } from 'V2/Components/UI';
 import GeolocationViewer from './GeolocationViewer';
 import { RelationshipLink } from './RelationshipLink';
 import ValueList from './ValueList';
 import { ImageViewer } from './ImageViewer';
+
+const getMediaUrlAndName = fileUrl => {
+  let url = fileUrl;
+  let filename = url.split('/').pop();
+
+  if (fileUrl.includes('timelinks')) {
+    url = fileUrl.substring(1, fileUrl.indexOf(','));
+    filename = filename.substring(0, filename.indexOf(','));
+  }
+
+  return { url, filename };
+};
 
 const renderRelationshipLinks = (linksProp, compact) => {
   if (linksProp.type === 'newRelationship' && !linksProp.value) {
@@ -23,7 +37,7 @@ const renderRelationshipLinks = (linksProp, compact) => {
   return <ValueList compact={compact} property={hydratedProp} />;
 };
 
-export const showByType = (prop, compact, templateId) => {
+export const showByType = ({ prop, templateId = '', useV2Player = false, compact = false }) => {
   let result = prop.value;
 
   switch (prop.type) {
@@ -51,7 +65,25 @@ export const showByType = (prop, compact, templateId) => {
       );
       break;
     case 'media': {
-      result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      if (useV2Player && prop.value) {
+        result = (
+          <div
+            className="tw-content video-container compact"
+            onClick={e => {
+              e.stopPropagation();
+            }}
+          >
+            <MediaPlayer
+              url={prop.value}
+              thumbnail={{
+                fileName: prop.fileName || '',
+              }}
+            />
+          </div>
+        );
+      } else {
+        result = prop.value && <MarkdownViewer markdown={`{media}(${prop.value})`} compact />;
+      }
       break;
     }
     case 'geolocation':
@@ -86,7 +118,7 @@ export const showByType = (prop, compact, templateId) => {
 
         // eslint-disable-next-line no-param-reassign
         prop.value = propValue.map(_value => {
-          const value = showByType(_value, compact, templateId);
+          const value = showByType({ prop: _value, templateId, compact });
           return value && value.value
             ? value
             : { value, ...(_value.icon !== undefined ? { icon: _value.icon } : {}) };
@@ -181,7 +213,16 @@ const flattenInherittedRelationships = metadata =>
     return property;
   });
 
-const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations, templateId }) => {
+const Metadata = ({
+  metadata,
+  compact,
+  showSubset,
+  highlight,
+  groupGeolocations,
+  templateId,
+  useV2Player,
+  attachments,
+}) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
   const flattenedMetadata = flattenInherittedRelationships(filteredMetadata);
   const groupedMetadata = groupGeolocations
@@ -194,6 +235,17 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
     const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
     const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
+    if (type === 'multimedia' && useV2Player && attachments) {
+      const { filename, url } = getMediaUrlAndName(prop.value);
+
+      if (url.startsWith('/api/files')) {
+        prop.fileName =
+          attachments.find(attachment => attachment.filename === filename).originalname || '';
+      }
+
+      prop.value = url;
+    }
+
     return (
       <dl
         className={`metadata-type-${type} metadata-name-${prop.name} ${fullWidthClass} ${highlightClass}`}
@@ -204,7 +256,7 @@ const Metadata = ({ metadata, compact, showSubset, highlight, groupGeolocations,
           {prop.obsolete ? [' ', <Icon icon="spinner" spin />] : null}
         </dt>
         <dd className={prop.sortedBy ? 'item-current-sort' : ''}>
-          {showByType(prop, compact, templateId)}
+          {showByType({ prop, templateId, compact, useV2Player })}
         </dd>
       </dl>
     );
@@ -216,6 +268,7 @@ Metadata.defaultProps = {
   showSubset: undefined,
   highlight: [],
   groupGeolocations: false,
+  useV2Player: false,
 };
 
 Metadata.propTypes = {
@@ -236,11 +289,13 @@ Metadata.propTypes = {
       ]),
     })
   ).isRequired,
+  attachments: PropTypes.array,
   templateId: PropTypes.string,
   highlight: PropTypes.arrayOf(PropTypes.string),
   compact: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  useV2Player: PropTypes.bool,
 };
 
 export default Metadata;

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
@@ -15,6 +16,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains(field).parentsUntil('.form-group').contains('button', action).scrollIntoView();
     cy.contains(field).parentsUntil('.form-group').contains('button', action).click();
   };
+
   const addEntity = (title: string) => {
     cy.contains('button', 'Create entity').click();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
@@ -32,7 +34,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     if (local) {
       cy.get('.upload-button input[type=file]')
         .last()
-        .selectFile('./e2e/test_files/short-video.mp4', {
+        .selectFile('./cypress/test_files/short-video.mp4', {
           force: true,
         });
     } else {
@@ -50,21 +52,26 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   const addImage = () => {
     clickMediaAction('Fotografía', 'Add file');
     cy.contains('button', 'Select from computer');
-    cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/batman.jpg', {
-      force: true,
-    });
+    cy.get('.upload-button input[type=file]')
+      .first()
+      .selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
     // wait for image
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(200);
     cy.get('img').should('be.visible');
   };
+
   const addInvalidFile = (field: string) => {
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').scrollIntoView();
     cy.contains(field).parentsUntil('.form-group').contains('button', 'Add file').click();
     cy.contains('button', 'Select from computer');
-    cy.get('.upload-button input[type=file]').first().selectFile('./e2e/test_files/valid.pdf', {
-      force: true,
-    });
+    cy.get('.upload-button input[type=file]')
+      .first()
+      .selectFile('./cypress/test_files/sample.pdf', {
+        force: true,
+      });
     cy.contains(field)
       .parentsUntil('.form-group')
       .contains('This file type is not supported on media fields')
@@ -173,5 +180,74 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Save').click();
     cy.wait('@saveEntity');
     cy.contains('Entity updated').should('be.visible');
+  });
+
+  describe('thumbnails', () => {
+    const checkExternalMedia = () => {
+      cy.get('video').should(
+        'have.attr',
+        'src',
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
+      );
+    };
+
+    it('should mark media fields as visible on cards', () => {
+      cy.contains('span', 'Entity updated').click();
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Templates').click();
+      cy.contains('a', 'Reporte').click();
+      cy.contains('span', 'Video').siblings().contains('button', 'Edit').click();
+      cy.contains('span', 'Show in cards').click();
+      cy.contains('button', 'Save').click();
+      cy.contains('span', 'Saved successfully.').click();
+      cy.contains('a', 'Library').click();
+    });
+
+    it('should display the external player for external media', () => {
+      cy.get('.item-group > :nth-child(2)').within(() => {
+        cy.contains('span', 'Reporte con contenido externo');
+        checkExternalMedia();
+      });
+    });
+
+    it('should show the external player on the sidepanel and entity view', () => {
+      cy.get('.item-group > :nth-child(2) > .item-info').click();
+      cy.get('.side-panel.is-active').within(() => {
+        cy.contains('h1', 'Reporte con contenido externo');
+        checkExternalMedia();
+      });
+
+      cy.get('.item-group > :nth-child(2)').within(() => {
+        cy.contains('a', 'View').click();
+      });
+
+      cy.contains('h1', 'Reporte con contenido externo');
+      checkExternalMedia();
+    });
+
+    it('should render a generic thumbnail for internal media', () => {
+      cy.contains('a', 'Library').click();
+      cy.get('.item-group > :nth-child(3)').toMatchImageSnapshot();
+    });
+
+    it('should render the player for internal media on the sidepanel and entity view', () => {
+      cy.get('.item-group > :nth-child(3) > .item-info').click();
+      cy.get('.side-panel.is-active').within(() => {
+        cy.contains('h1', 'Reporte audiovisual con lineas de tiempo');
+        cy.get('.react-player').within(() => {
+          cy.get('video', { timeout: 2000 });
+        });
+      });
+
+      cy.get('.item-group > :nth-child(3)').within(() => {
+        cy.contains('a', 'View').click();
+      });
+
+      cy.contains('h1', 'Reporte audiovisual con lineas de tiempo');
+
+      cy.get('.react-player').within(() => {
+        cy.get('video', { timeout: 2000 });
+      });
+    });
   });
 });

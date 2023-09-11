@@ -1,36 +1,26 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { HeartbeatCallback, Job } from 'api/queue.v2/contracts/Job';
-import { JobsDispatcher } from 'api/queue.v2/contracts/JobsDispatcher';
+import { JobsDispatcher } from 'api/queue.v2/application/contracts/JobsDispatcher';
 import { Template } from 'api/templates.v2/model/Template';
+import { Dispatchable, HeartbeatCallback } from 'api/queue.v2/application/contracts/Dispatchable';
 import { UpdateRelationshipPropertiesJob } from './UpdateRelationshipPropertiesJob';
 
-export class UpdateTemplateRelationshipPropertiesJob extends Job {
+export class UpdateTemplateRelationshipPropertiesJob implements Dispatchable {
   static BATCH_SIZE = 200;
 
-  private template: Template['id'];
+  private entitiesDataSource: EntitiesDataSource;
 
-  entitiesDataSource?: EntitiesDataSource;
+  private dispatcher: JobsDispatcher;
 
-  dispatcher?: JobsDispatcher;
-
-  constructor(template: Template['id']) {
-    super();
-    this.template = template;
+  constructor(entitiesDataSource: EntitiesDataSource, dispatcher: JobsDispatcher) {
+    this.entitiesDataSource = entitiesDataSource;
+    this.dispatcher = dispatcher;
   }
 
-  async handle(heartbeat: HeartbeatCallback) {
-    if (!this.entitiesDataSource) {
-      throw new Error('Missing dependency: entitiesDataSource');
-    }
-
-    if (!this.dispatcher) {
-      throw new Error('Missing dependency: dispatcher');
-    }
-
+  async handleDispatch(heartbeat: HeartbeatCallback, params: { templateId: Template['id'] }) {
     await this.entitiesDataSource
-      .getIdsByTemplate(this.template)
-      .forEachBatch(UpdateTemplateRelationshipPropertiesJob.BATCH_SIZE, async sharedIds => {
-        await this.dispatcher!.dispatch(new UpdateRelationshipPropertiesJob(sharedIds));
+      .getIdsByTemplate(params.templateId)
+      .forEachBatch(UpdateTemplateRelationshipPropertiesJob.BATCH_SIZE, async entityIds => {
+        await this.dispatcher.dispatch(UpdateRelationshipPropertiesJob, { entityIds });
         await heartbeat();
       });
   }

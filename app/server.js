@@ -17,7 +17,6 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
-import { ApplicationRedisClient } from 'api/queue.v2/infrastructure/ApplicationRedisClient';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
@@ -178,14 +177,9 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
 
       DB.disconnect().then(() => {
         process.stdout.write('Disconnected from database\r\n');
-        ApplicationRedisClient.close().then(wasOpen => {
-          if (wasOpen) {
-            process.stdout.write('Disconnected from Redis\r\n');
-          }
 
-          process.stdout.write('Server closed succesfully\r\n');
-          process.exit(0);
-        });
+        process.stdout.write('Server closed succesfully\r\n');
+        process.exit(0);
       });
     });
     closeSockets();
