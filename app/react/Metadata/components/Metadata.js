@@ -235,12 +235,12 @@ const Metadata = ({
     const highlightClass = highlight.includes(prop.name) ? 'highlight' : '';
     const fullWidthClass = prop.fullWidth ? 'full-width' : '';
 
-    if (type === 'multimedia' && useV2Player && attachments) {
+    if (prop.type === 'media' && useV2Player && attachments) {
       const { filename, url } = getMediaUrlAndName(prop.value);
 
       if (url.startsWith('/api/files')) {
         prop.fileName =
-          attachments.find(attachment => attachment.filename === filename).originalname || '';
+          attachments.find(attachment => attachment.filename === filename)?.originalname || '';
       }
 
       prop.value = url;
