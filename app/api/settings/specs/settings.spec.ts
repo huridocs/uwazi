@@ -3,7 +3,7 @@ import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
 import settings from '../settings';
-import fixtures, { linkFixtures } from './fixtures';
+import fixtures, { linkFixtures, newLinks } from './fixtures';
 
 describe('settings', () => {
   beforeEach(async () => {
@@ -278,6 +278,15 @@ describe('settings', () => {
       await db.setupFixturesAndContext(linkFixtures);
       const result = await settings.getLinks();
       expect(result).toEqual(linkFixtures.settings?.[0].links);
+    });
+  });
+
+  describe('saveLinks', () => {
+    it('should save the links', async () => {
+      await db.setupFixturesAndContext(linkFixtures);
+      await settings.saveLinks(newLinks);
+      const result = await settings.getLinks();
+      expect(result).toEqual(newLinks);
     });
   });
 });

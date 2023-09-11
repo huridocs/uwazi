@@ -80,12 +80,20 @@ const fixtures: DBFixture = {
 
 const factory = getFixturesFactory();
 
-const linkFixtures: DBFixture = {
+const baseSettingsFixture: DBFixture = {
   settings: [
     {
       _id: db.id(),
       site_name: 'Uwazi',
       languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
+};
+
+const linkFixtures: DBFixture = {
+  settings: [
+    {
+      ...baseSettingsFixture.settings?.[0],
       links: [
         {
           _id: factory.id('link'),
@@ -97,6 +105,7 @@ const linkFixtures: DBFixture = {
         {
           _id: factory.id('group'),
           title: 'Group',
+          type: 'group',
           sublinks: [
             {
               title: 'Sublink1',
@@ -126,6 +135,7 @@ const expectedLinks = [
   {
     _id: factory.idString('group'),
     title: 'Group',
+    type: 'group',
     sublinks: [
       {
         title: 'Sublink1',
@@ -141,5 +151,32 @@ const expectedLinks = [
   },
 ];
 
+const newLinks = [
+  {
+    _id: factory.id('newLink'),
+    title: 'newLink',
+    type: 'link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+  },
+  {
+    _id: factory.id('newGroup'),
+    title: 'newGroup',
+    type: 'group',
+    sublinks: [
+      {
+        title: 'newSubLink1',
+        url: 'page/pageid/newSubLink1',
+        localId: 'newSubLink1Id',
+      },
+      {
+        title: 'newSubLink2',
+        url: 'page/pageid2/newSubLink2',
+        localId: 'newSubLink2Id',
+      },
+    ],
+  },
+];
+
 export default fixtures;
-export { expectedLinks, factory, linkFixtures };
+export { baseSettingsFixture, expectedLinks, factory, linkFixtures, newLinks };

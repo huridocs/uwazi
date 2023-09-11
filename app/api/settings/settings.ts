@@ -231,4 +231,10 @@ export default {
     const settings = await this.get();
     return settings.links || [];
   },
+
+  async saveLinks(links: Settings['links']) {
+    const currentSettings = await this.get();
+    const newSettings = { ...currentSettings, links };
+    return this.save(newSettings);
+  },
 };

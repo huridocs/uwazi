@@ -24,4 +24,11 @@ export default (app: Application) => {
       .then(response => res.json(response.links))
       .catch(next);
   });
+
+  app.post('/api/settings/links', needsAuthorization(), (req, res, next) => {
+    settings
+      .save({ links: req.body })
+      .then(response => res.json(response))
+      .catch(next);
+  });
 };
