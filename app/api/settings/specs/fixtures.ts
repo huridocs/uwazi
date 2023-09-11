@@ -1,6 +1,7 @@
+import { templateUtils } from 'api/templates';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { templateUtils } from 'api/templates';
 
 const template1 = db.id();
 const template2 = db.id();
@@ -77,4 +78,68 @@ const fixtures: DBFixture = {
   ],
 };
 
+const factory = getFixturesFactory();
+
+const linkFixtures: DBFixture = {
+  settings: [
+    {
+      _id: db.id(),
+      site_name: 'Uwazi',
+      languages: [{ key: 'en', label: 'English', default: true }],
+      links: [
+        {
+          _id: factory.id('link'),
+          title: 'Link',
+          url: 'http://uwazi.io',
+          sublinks: [],
+          type: 'link',
+        },
+        {
+          _id: factory.id('group'),
+          title: 'Group',
+          sublinks: [
+            {
+              title: 'Sublink1',
+              url: 'page/pageid/sublink1',
+              localId: 'sublink1',
+            },
+            {
+              title: 'Sublink2',
+              url: 'page/pageid2/sublink2',
+              localId: 'sublink2',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const expectedLinks = [
+  {
+    _id: factory.idString('link'),
+    title: 'Link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+    type: 'link',
+  },
+  {
+    _id: factory.idString('group'),
+    title: 'Group',
+    sublinks: [
+      {
+        title: 'Sublink1',
+        url: 'page/pageid/sublink1',
+        localId: 'sublink1',
+      },
+      {
+        title: 'Sublink2',
+        url: 'page/pageid2/sublink2',
+        localId: 'sublink2',
+      },
+    ],
+  },
+];
+
 export default fixtures;
+export { expectedLinks, factory, linkFixtures };

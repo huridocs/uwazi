@@ -310,7 +310,10 @@ const settingsSchema = {
 
 const validateSettings = wrapValidator(ajv.compile(settingsSchema));
 
+const validateLinks = wrapValidator(ajv.compile({ type: 'array', items: settingsLinkSchema }));
+
 export {
+  validateLinks,
   validateSettings,
   emitSchemaTypes,
   itemSchema,

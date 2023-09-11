@@ -226,4 +226,9 @@ export default {
 
     return this.save(settings);
   },
+
+  async getLinks() {
+    const settings = await this.get();
+    return settings.links || [];
+  },
 };
