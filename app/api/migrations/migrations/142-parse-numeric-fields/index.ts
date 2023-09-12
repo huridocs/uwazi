@@ -12,6 +12,8 @@ export default {
 
   reindex: true,
 
+  batchSize: 1000,
+
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
 
@@ -28,6 +30,7 @@ export default {
       })
     );
 
+    let operations = [];
     const cursor = db.collection<EntitySchema>('entities').find({}, { sort: { _id: 1 } });
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
@@ -44,10 +47,19 @@ export default {
       });
 
       if (Object.keys(updates).length > 0) {
-        await db
-          .collection<EntitySchema>('entities')
-          .updateOne({ _id: new ObjectId(entity!._id) }, { $set: updates });
+        operations.push({
+          updateOne: { filter: { _id: new ObjectId(entity!._id) }, update: { $set: updates } },
+        });
+
+        if (operations.length > this.batchSize) {
+          await db.collection<EntitySchema>('entities').bulkWrite(operations);
+          operations = [];
+        }
       }
+    }
+
+    if (operations.length) {
+      await db.collection<EntitySchema>('entities').bulkWrite(operations);
     }
   },
 };
