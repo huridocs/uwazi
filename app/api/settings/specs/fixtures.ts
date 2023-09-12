@@ -1,6 +1,7 @@
+import { templateUtils } from 'api/templates';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
-import { templateUtils } from 'api/templates';
 
 const template1 = db.id();
 const template2 = db.id();
@@ -77,4 +78,105 @@ const fixtures: DBFixture = {
   ],
 };
 
+const factory = getFixturesFactory();
+
+const baseSettingsFixture: DBFixture = {
+  settings: [
+    {
+      _id: db.id(),
+      site_name: 'Uwazi',
+      languages: [{ key: 'en', label: 'English', default: true }],
+    },
+  ],
+};
+
+const linkFixtures: DBFixture = {
+  settings: [
+    {
+      ...baseSettingsFixture.settings?.[0],
+      links: [
+        {
+          _id: factory.id('link'),
+          title: 'Link',
+          url: 'http://uwazi.io',
+          sublinks: [],
+          type: 'link',
+        },
+        {
+          _id: factory.id('group'),
+          title: 'Group',
+          type: 'group',
+          sublinks: [
+            {
+              title: 'Sublink1',
+              url: 'page/pageid/sublink1',
+              localId: 'sublink1',
+            },
+            {
+              title: 'Sublink2',
+              url: 'page/pageid2/sublink2',
+              localId: 'sublink2',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const expectedLinks = [
+  {
+    _id: factory.idString('link'),
+    title: 'Link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+    type: 'link',
+  },
+  {
+    _id: factory.idString('group'),
+    title: 'Group',
+    type: 'group',
+    sublinks: [
+      {
+        title: 'Sublink1',
+        url: 'page/pageid/sublink1',
+        localId: 'sublink1',
+      },
+      {
+        title: 'Sublink2',
+        url: 'page/pageid2/sublink2',
+        localId: 'sublink2',
+      },
+    ],
+  },
+];
+
+const newLinks = [
+  {
+    _id: factory.id('newLink'),
+    title: 'newLink',
+    type: 'link' as 'link',
+    url: 'http://uwazi.io',
+    sublinks: [],
+  },
+  {
+    _id: factory.id('newGroup'),
+    title: 'newGroup',
+    type: 'group' as 'group',
+    sublinks: [
+      {
+        title: 'newSubLink1',
+        url: 'page/pageid/newSubLink1',
+        localId: 'newSubLink1Id',
+      },
+      {
+        title: 'newSubLink2',
+        url: 'page/pageid2/newSubLink2',
+        localId: 'newSubLink2Id',
+      },
+    ],
+  },
+];
+
 export default fixtures;
+export { baseSettingsFixture, expectedLinks, factory, linkFixtures, newLinks };

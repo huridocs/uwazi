@@ -4,7 +4,7 @@ import { Label } from './Label';
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
-  options: { key: string; value: string; label?: string; selected?: boolean }[];
+  options: { key: string; value: string; label?: string }[];
   value?: string;
   disabled?: boolean;
   hideLabel?: boolean;
@@ -21,6 +21,7 @@ const Select = React.forwardRef(
       id,
       label,
       options,
+      value,
       disabled,
       hideLabel,
       hasErrors,
@@ -28,7 +29,6 @@ const Select = React.forwardRef(
       name = '',
       onChange = () => {},
       onBlur = () => {},
-      value,
     }: SelectProps,
     ref: Ref<any>
   ) => {
@@ -52,8 +52,8 @@ const Select = React.forwardRef(
             onChange={onChange}
             value={value}
           >
-            {options.map(({ key, value: optionValue, label: optionLabel, selected }) => (
-              <option key={key} value={optionValue} selected={selected}>
+            {options.map(({ key, value: optionValue, label: optionLabel }) => (
+              <option key={key} value={optionValue}>
                 {optionLabel || optionValue}
               </option>
             ))}
@@ -64,4 +64,5 @@ const Select = React.forwardRef(
   }
 );
 
+export type { SelectProps };
 export { Select };

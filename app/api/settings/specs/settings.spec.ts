@@ -3,7 +3,7 @@ import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
 import { Settings } from 'shared/types/settingsType';
 import settings from '../settings';
-import fixtures from './fixtures';
+import fixtures, { linkFixtures, newLinks } from './fixtures';
 
 describe('settings', () => {
   beforeEach(async () => {
@@ -36,14 +36,14 @@ describe('settings', () => {
     });
 
     describe('when there are Links', () => {
-      let config: Settings;
-
-      beforeEach(() => {
-        config = { site_name: 'My collection', links: [{ title: 'Page one' }] };
-      });
+      const baseLink = { title: 'Page one', type: 'link' as 'link', url: 'url' };
+      const baseConfig = {
+        site_name: 'My collection',
+        links: [{ ...baseLink }],
+      };
 
       it('should create a translation context for the passed links', async () => {
-        await settings.save(config);
+        await settings.save(baseConfig);
         expect(translations.updateContext).toHaveBeenCalledWith(
           { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
           {},
@@ -53,9 +53,16 @@ describe('settings', () => {
       });
 
       it('should create a translation context for passed links with sublinks', async () => {
-        config.links = config.links || [];
-        config.links[0].type = 'group';
-        config.links[0].sublinks = [{ title: 'Page two' }];
+        const config = {
+          ...baseConfig,
+          links: [
+            {
+              title: 'Page one',
+              type: 'group' as 'group',
+              sublinks: [{ title: 'Page two', url: 'url2' }],
+            },
+          ],
+        };
         await settings.save(config);
         expect(translations.updateContext).toHaveBeenCalledWith(
           { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
@@ -67,14 +74,27 @@ describe('settings', () => {
 
       describe('updating the links', () => {
         it('should update the translation context for the links', async () => {
-          config.links = config.links || [];
-          config.links.push({ title: 'Page two' });
-          const savedConfig = await settings.save(config);
-          config = {
-            site_name: 'My collection',
-            links: [{ title: 'Page 1', _id: savedConfig.links?.[0]._id }, { title: 'Page three' }],
+          const config1 = {
+            ...baseConfig,
+            links: [
+              ...baseConfig.links,
+              { title: 'Page two', type: 'link' as 'link', url: 'url2' },
+            ],
           };
-          await settings.save(config);
+          const savedConfig = await settings.save(config1);
+          const config2 = {
+            ...baseConfig,
+            links: [
+              {
+                title: 'Page 1',
+                _id: savedConfig.links?.[0]._id,
+                type: 'link' as 'link',
+                url: 'url',
+              },
+              { title: 'Page three', type: 'link' as 'link', url: 'url3' },
+            ],
+          };
+          await settings.save(config2);
           expect(translations.updateContext).toHaveBeenCalledWith(
             { id: 'Menu', label: 'Menu', type: 'Uwazi UI' },
             { 'Page one': 'Page 1' },
@@ -84,16 +104,29 @@ describe('settings', () => {
         });
 
         it('should update the translation context for the links with sublinks', async () => {
-          config.links = config.links || [];
-          config.links.push({
-            title: 'Page two',
-            type: 'group',
-            sublinks: [{ title: 'Subpage two' }],
-          });
+          const config = {
+            ...baseConfig,
+            links: [
+              ...baseConfig.links,
+              {
+                title: 'Page two',
+                type: 'group' as 'group',
+                sublinks: [{ title: 'Subpage two', url: 'urlsub2' }],
+              },
+            ],
+          };
           const savedConfig = await settings.save(config);
           const finalConfig = {
-            site_name: 'My collection',
-            links: [{ title: 'Page 1', _id: savedConfig.links?.[0]._id }, { title: 'Page three' }],
+            ...baseConfig,
+            links: [
+              {
+                title: 'Page 1',
+                _id: savedConfig.links?.[0]._id,
+                type: 'link' as 'link',
+                url: 'url',
+              },
+              { title: 'Page three', type: 'link' as 'link', url: 'url3' },
+            ],
           };
           await settings.save(finalConfig);
 
@@ -270,6 +303,23 @@ describe('settings', () => {
 
       expect(settings.save).not.toHaveBeenCalled();
       expect(updatedFilter).toBeUndefined();
+    });
+  });
+
+  describe('getLinks', () => {
+    it('should return the links', async () => {
+      await db.setupFixturesAndContext(linkFixtures);
+      const result = await settings.getLinks();
+      expect(result).toEqual(linkFixtures.settings?.[0].links);
+    });
+  });
+
+  describe('saveLinks', () => {
+    it('should save the links', async () => {
+      await db.setupFixturesAndContext(linkFixtures);
+      await settings.saveLinks(newLinks);
+      const result = await settings.getLinks();
+      expect(result).toEqual(newLinks);
     });
   });
 });
