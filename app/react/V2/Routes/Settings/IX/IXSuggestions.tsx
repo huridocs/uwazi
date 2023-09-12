@@ -185,7 +185,8 @@ const IXSuggestions = () => {
             )}
             title={
               <SuggestionsTitle
-                propertyName={extractor.property}
+                title={extractor.name}
+                property={extractor.property}
                 templates={filteredTemplates()}
                 onFiltersButtonClicked={() => {
                   setSidepanel('filters');

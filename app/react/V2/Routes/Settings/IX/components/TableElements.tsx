@@ -2,8 +2,9 @@
 import React from 'react';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
-import { Button, Pill } from 'app/V2/Components/UI';
+import { Button, Pill } from 'V2/Components/UI';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import {
@@ -11,12 +12,11 @@ import {
   MarkdownPropertyIcon,
   NumericPropertyIcon,
   TextPropertyIcon,
-} from 'app/V2/Components/CustomIcons';
+} from 'V2/Components/CustomIcons';
+import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { Extractor } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-import { EmbededButton } from 'app/V2/Components/UI/EmbededButton';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 const propertyIcons = {
   text: <TextPropertyIcon className="w-4" />,
@@ -88,7 +88,7 @@ const AcceptButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
   const color = statusColor(cell.row.original);
   const action = cell.column.columnDef.meta?.action;
   return (
-    <div className="flex items-center justify-center gap-1">
+    <div className="flex gap-1 justify-center items-center">
       <EmbededButton
         icon={getIcon(color)}
         color={color}

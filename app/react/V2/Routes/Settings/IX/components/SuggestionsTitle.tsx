@@ -11,21 +11,22 @@ import {
 } from 'app/V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
-  propertyName,
+  title,
+  property,
   templates,
   onFiltersButtonClicked,
 }: {
-  propertyName: string;
+  title: string;
+  property: string;
   templates: ClientTemplateSchema[];
   onFiltersButtonClicked: () => void;
 }) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
-  const template = allProperties.find(prop => prop.name === propertyName);
+  const template = allProperties.find(prop => prop.name === property);
+
   let propGraphics: string | React.ReactNode = '_';
+
   switch (template?.type) {
-    case 'text':
-      propGraphics = <TextPropertyIcon className="w-3" />;
-      break;
     case 'date':
       propGraphics = <DatePropertyIcon className="w-3" />;
       break;
@@ -36,16 +37,17 @@ const SuggestionsTitle = ({
       propGraphics = <MarkdownPropertyIcon className="w-3" />;
       break;
     default:
-      propGraphics = '_';
+      propGraphics = <TextPropertyIcon className="w-3" />;
   }
+
   return (
     <div className="flex">
       <div className="flex-1">
         <div className="flex space-x-2">
-          <span className="flex items-center justify-center font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full w-7 h-7">
+          <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
             {propGraphics}
           </span>
-          <span>{template?.label}</span>
+          <span>{title}</span>
           <span className="italic font-normal">
             <Translate>for</Translate>
           </span>
@@ -62,7 +64,7 @@ const SuggestionsTitle = ({
       </div>
       <div className="flex-none">
         <Button size="small" styling="light" onClick={onFiltersButtonClicked}>
-          <FunnelIcon className="inline w-5 px-1 text-gray-800" />
+          <FunnelIcon className="inline px-1 w-5 text-gray-800" />
           <Translate>Stats & Filters</Translate>
         </Button>
       </div>

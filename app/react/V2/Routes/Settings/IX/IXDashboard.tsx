@@ -20,27 +20,32 @@ const formatExtractors = (
   templates: ClientTemplateSchema[]
 ): Extractor[] =>
   extractors.map(extractor => {
-    let propertyType: Extractor['propertyType'] = 'text';
-    let propertyLabel = t('System', 'Title', null, false);
+    let type = '';
 
     const namedTemplates = extractor.templates.map(extractorTemplate => {
-      const templateName =
-        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate;
-      return templateName;
-    });
+      const template = templates.find(_template => _template._id === extractorTemplate);
+      const templateName = template?.name || extractorTemplate;
 
-    templates.forEach(template => {
-      const property = template.properties.find(
-        templateProperty => templateProperty.name === extractor.property
-      );
-
-      if (property) {
-        propertyType = property.type as Extractor['propertyType'];
-        propertyLabel = t(template._id, property.label, null, false);
+      if (!type) {
+        if (extractor.property === 'title') {
+          type = 'text';
+        } else {
+          const extractorProperty = template?.properties.find(
+            property => property.name === extractor.property
+          );
+          type = extractorProperty?.type || 'text';
+        }
       }
+
+      return t(extractorTemplate, templateName, null, false);
     });
 
-    return { ...extractor, namedTemplates, propertyType, propertyLabel };
+    return {
+      ...extractor,
+      namedTemplates,
+      propertyType: type as Extractor['propertyType'],
+      propertyLabel: t('System', `property ${type}`, null, false),
+    };
   });
 
 const IXDashboard = () => {
