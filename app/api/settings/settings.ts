@@ -1,6 +1,11 @@
 import translations from 'api/i18n/translations';
 
-import { Settings, SettingsLinkSchema, SettingsFilterSchema } from 'shared/types/settingsType';
+import {
+  Settings,
+  SettingsLinkSchema,
+  SettingsFilterSchema,
+  SettingsSublinkSchema,
+} from 'shared/types/settingsType';
 import { ensure } from 'shared/tsUtils';
 import templates from 'api/templates';
 import { LanguageSchema, LatLonSchema, ObjectIdSchema } from 'shared/types/commonTypes';
@@ -12,22 +17,33 @@ import { settingsModel } from './settingsModel';
 
 const DEFAULT_MAP_STARTING_POINT: LatLonSchema[] = [{ lon: 6, lat: 46 }];
 
-const getUpdatesAndDeletes = (
-  matchProperty: keyof (SettingsLinkSchema & SettingsFilterSchema),
-  propertyName: keyof (SettingsLinkSchema & SettingsFilterSchema),
-  newValues: (SettingsLinkSchema & SettingsFilterSchema)[] = [],
-  currentValues: (SettingsLinkSchema & SettingsFilterSchema)[] = []
+type FilterOrLink = SettingsFilterSchema | SettingsLinkSchema;
+
+const isLink = (item: any): item is SettingsLinkSchema => item.type && item.title;
+
+type SubLinkKeyType = keyof SettingsSublinkSchema;
+
+const subLinkProperties: SubLinkKeyType[] = ['title' as 'title', 'url' as 'url'];
+
+const isSubLinkKey = (key: string | number | symbol): key is SubLinkKeyType =>
+  subLinkProperties.includes(key as any);
+
+const getUpdatesAndDeletes = <T extends FilterOrLink>(
+  matchProperty: keyof T,
+  propertyName: keyof T,
+  newValues: T[] = [],
+  currentValues: T[] = []
 ) => {
   const updatedValues: { [k: string]: any } = {};
   const deletedValues: string[] = [];
 
-  currentValues.forEach((value: SettingsFilterSchema & SettingsLinkSchema) => {
+  currentValues.forEach(value => {
     const matchValue = newValues.find(
       v => v[matchProperty] && v[matchProperty]?.toString() === value[matchProperty]?.toString()
     );
 
     if (value[propertyName] && matchValue && matchValue[propertyName] !== value[propertyName]) {
-      if (value.sublinks) {
+      if (isLink(value) && value.sublinks && isSubLinkKey(propertyName)) {
         value.sublinks.forEach(sublink => {
           updatedValues[ensure<string>(sublink[propertyName])] = sublink[propertyName];
         });
@@ -35,7 +51,7 @@ const getUpdatesAndDeletes = (
       updatedValues[ensure<string>(value[propertyName])] = matchValue[propertyName];
     }
     if (!matchValue) {
-      if (value.sublinks) {
+      if (isLink(value) && value.sublinks && isSubLinkKey(propertyName)) {
         value.sublinks.forEach(sublink => {
           if (sublink[propertyName]) {
             deletedValues.push(ensure<string>(sublink[propertyName] as string));
@@ -48,9 +64,11 @@ const getUpdatesAndDeletes = (
 
   const values = newValues.reduce<{ [k: string]: string }>((result, value) => {
     const sublinkResults: { [key: string]: string | unknown } = {};
-    value.sublinks?.map(sublink => {
-      sublinkResults[ensure<string>(sublink[propertyName])] = sublink[propertyName];
-    });
+    if (isLink(value) && value.sublinks && isSubLinkKey(propertyName)) {
+      value.sublinks.forEach(sublink => {
+        sublinkResults[ensure<string>(sublink[propertyName])] = sublink[propertyName];
+      });
+    }
     return {
       ...result,
       [ensure<string>(value[propertyName])]: value[propertyName],
