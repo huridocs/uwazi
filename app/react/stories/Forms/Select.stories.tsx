@@ -33,6 +33,7 @@ const Basic = {
     disabled: false,
     hideLabel: false,
     hasErrors: false,
+    value: 'Argentina',
     options: [
       { key: '1', value: 'Algeria' },
       { key: '2', value: 'Argentina', selected: true },
