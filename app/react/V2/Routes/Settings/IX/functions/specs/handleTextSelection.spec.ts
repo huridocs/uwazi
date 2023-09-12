@@ -1,5 +1,9 @@
-import { getHighlightsFromFile, getHighlightsFromSelection } from '../handleTextSelection';
-import { selectionsFromFile, selections } from './fixtures';
+import {
+  getHighlightsFromFile,
+  getHighlightsFromSelection,
+  updateFileSelection,
+} from '../handleTextSelection';
+import { selectionsFromFile, selections, property1Selection, property2Selection } from './fixtures';
 
 describe('PDF selections handlers', () => {
   describe('highlights from text selection', () => {
@@ -205,6 +209,52 @@ describe('PDF selections handlers', () => {
     it('should return an empty object if there are no selections for the property', () => {
       const results = getHighlightsFromFile(selectionsFromFile, 'propertyWithNoSelections');
       expect(results).toEqual({});
+    });
+  });
+
+  describe('update file selections', () => {
+    const newSelection = {
+      text: 'new text',
+      selectionRectangles: [
+        {
+          left: 1,
+          top: 1,
+          width: 1,
+          height: 1,
+          regionId: '1',
+        },
+      ],
+    };
+
+    it('should return the same selections if there are no changes', () => {
+      expect(updateFileSelection('title', selectionsFromFile)).toEqual(selectionsFromFile);
+
+      expect(updateFileSelection('irrelevantProperty', selectionsFromFile, newSelection)).toEqual(
+        selectionsFromFile
+      );
+    });
+
+    it('should update with the new selections and set the current timestamp', () => {
+      expect(updateFileSelection('title', selectionsFromFile, newSelection)).toEqual([
+        property1Selection,
+        property2Selection,
+        {
+          name: 'title',
+          timestamp: new Date().toString(),
+          selection: {
+            text: 'new text',
+            selectionRectangles: [
+              {
+                top: 1,
+                left: 1,
+                width: 1,
+                height: 1,
+                page: '1',
+              },
+            ],
+          },
+        },
+      ]);
     });
   });
 });

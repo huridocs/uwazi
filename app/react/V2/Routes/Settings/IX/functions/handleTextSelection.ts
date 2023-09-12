@@ -96,4 +96,39 @@ const getHighlightsFromSelection = (
   return highlights;
 };
 
-export { getHighlightsFromFile, getHighlightsFromSelection };
+const updateFileSelection = (
+  property: string,
+  currentSelections: ExtractedMetadataSchema[],
+  newSelection?: TextSelection
+): ExtractedMetadataSchema[] => {
+  if (!newSelection) {
+    return currentSelections;
+  }
+
+  const updatedSelections = currentSelections.map(selection => {
+    if (selection.propertyID === property || selection.name === property) {
+      return {
+        ...selection,
+        timestamp: new Date().toString(),
+        selection: {
+          text: newSelection.text,
+          selectionRectangles: newSelection.selectionRectangles.map(rectangle => {
+            const formattedRectangle = {
+              ...rectangle,
+              page: rectangle.regionId,
+            };
+            delete formattedRectangle.regionId;
+
+            return formattedRectangle;
+          }),
+        },
+      };
+    }
+
+    return selection;
+  });
+
+  return updatedSelections;
+};
+
+export { getHighlightsFromFile, getHighlightsFromSelection, updateFileSelection };
