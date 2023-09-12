@@ -155,14 +155,14 @@ const newLinks = [
   {
     _id: factory.id('newLink'),
     title: 'newLink',
-    type: 'link',
+    type: 'link' as 'link',
     url: 'http://uwazi.io',
     sublinks: [],
   },
   {
     _id: factory.id('newGroup'),
     title: 'newGroup',
-    type: 'group',
+    type: 'group' as 'group',
     sublinks: [
       {
         title: 'newSubLink1',
