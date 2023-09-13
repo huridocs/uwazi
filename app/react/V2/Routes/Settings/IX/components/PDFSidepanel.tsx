@@ -1,18 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useRevalidator } from 'react-router-dom';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
+import * as entitiesAPI from 'V2/api/entities';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
 import { Highlights } from '../types';
 import {
+  deleteFileSelection,
   getHighlightsFromFile,
   getHighlightsFromSelection,
+  updateFileSelection,
 } from '../functions/handleTextSelection';
 import { EmptySelectionError } from './EmptySelectionError';
 
@@ -27,66 +31,81 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
+const getPropertyParams = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
+  let propertyLabel = 'Title';
+  let propertyType: 'text' | 'number' | 'date' = 'text';
+
+  if (suggestion && suggestion?.propertyName !== 'title') {
+    const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
+
+    propertyLabel = t(template?._id, property?.label, null, false);
+
+    if (property?.type === 'numeric') {
+      propertyType = 'number';
+    }
+
+    if (property?.type === 'date') {
+      propertyType = 'date';
+    }
+  }
+
+  return { propertyLabel, propertyType };
+};
+
+// eslint-disable-next-line max-statements
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
   };
 
+  const revalidator = useRevalidator();
+
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
-  const [entityFile, setEntityFile] = useState<FileType>();
+  const [pdf, setPdf] = useState<FileType>();
+  const [updatedFileSelections, setUpdatedFileSelections] = useState<ExtractedMetadataSchema[]>();
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  let propertyLabel = 'Title';
-  let propertyType: 'text' | 'number' | 'date' = 'text';
-
-  if (suggestion && suggestion?.propertyName !== 'title') {
-    const property = entityTemplate?.properties.find(
-      propery => propery.name === suggestion?.propertyName
-    );
-
-    if (!property) {
-      throw new Error('Property not found');
-    }
-
-    propertyLabel = t(entityTemplate?._id, property.label, null, false);
-
-    if (property.type === 'numeric') {
-      propertyType = 'number';
-    }
-
-    if (property.type === 'date') {
-      propertyType = 'date';
-    }
-  }
+  const { propertyLabel, propertyType } = getPropertyParams(suggestion, entityTemplate);
 
   useEffect(() => {
     if (suggestion) {
       filesAPI
-        .getById(suggestion?.fileId)
+        .getById(suggestion.fileId)
         .then(response => {
           const [file] = response;
-          setEntityFile(file);
+          setPdf(file);
         })
         .catch(e => {
           throw e;
         });
+
+      // entitiesAPI
+      //   .getById(suggestion.entityId)
+      //   .then(response => {
+      //     const [suggestionEntity] = response;
+      //     setEntity(suggestionEntity);
+      //   })
+      //   .catch(e => {
+      //     throw e;
+      //   });
     }
 
     return () => {
-      setEntityFile(undefined);
+      setPdf(undefined);
+      setEntity(undefined);
     };
   }, [suggestion]);
 
   useEffect(() => {
-    if (entityFile?.extractedMetadata && suggestion && showSidepanel) {
+    if (pdf?.extractedMetadata && suggestion && showSidepanel) {
       setSelectedText(undefined);
       setHighlights(
         getHighlightsFromFile(
-          entityFile.extractedMetadata,
+          pdf.extractedMetadata,
           suggestion.propertyName,
           HighlightColors.CURRENT
         )
@@ -102,14 +121,14 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       setSelectedText(undefined);
       setHighlights(undefined);
     };
-  }, [entityFile, showSidepanel, suggestion]);
+  }, [pdf, showSidepanel, suggestion]);
 
   return (
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
       size="large"
-      title={entityFile?.originalname}
+      title={pdf?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
       <form className="flex flex-col gap-4 h-full">
@@ -124,6 +143,13 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               onClick={() => {
                 if (selectedText) {
                   setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
+                  setUpdatedFileSelections(
+                    updateFileSelection(
+                      suggestion?.propertyName,
+                      pdf?.extractedMetadata,
+                      selectedText
+                    )
+                  );
                 }
               }}
               disabled={!selectedText?.selectionRectangles.length}
@@ -146,6 +172,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
             onClick={() => {
               setHighlights(undefined);
+              setUpdatedFileSelections(
+                deleteFileSelection(suggestion?.propertyName, pdf?.extractedMetadata)
+              );
             }}
           >
             <Translate>Clear Selection</Translate>
@@ -155,9 +184,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         {selectedText && !selectedText.selectionRectangles.length && <EmptySelectionError />}
 
         <div ref={pdfContainerRef} className="grow">
-          {entityFile && (
+          {pdf && (
             <PDF
-              fileUrl={`/api/files/${entityFile.filename}`}
+              fileUrl={`/api/files/${pdf.filename}`}
               highlights={highlights}
               onSelect={selection => {
                 setSelectedText(selection);
