@@ -2,8 +2,15 @@ import {
   getHighlightsFromFile,
   getHighlightsFromSelection,
   updateFileSelection,
+  deleteFileSelection,
 } from '../handleTextSelection';
-import { selectionsFromFile, selections, property1Selection, property2Selection } from './fixtures';
+import {
+  selectionsFromFile,
+  selections,
+  property1Selection,
+  property2Selection,
+  titleSelection,
+} from './fixtures';
 
 describe('PDF selections handlers', () => {
   describe('highlights from text selection', () => {
@@ -254,6 +261,24 @@ describe('PDF selections handlers', () => {
             ],
           },
         },
+      ]);
+    });
+  });
+
+  describe('delete file selection', () => {
+    it('should not do anything if the deleted property does not exist', () => {
+      expect(deleteFileSelection('wrongProperty', selectionsFromFile)).toEqual(selectionsFromFile);
+    });
+
+    it('should delete the selections for the property', () => {
+      expect(deleteFileSelection('title', selectionsFromFile)).toEqual([
+        property1Selection,
+        property2Selection,
+      ]);
+
+      expect(deleteFileSelection('1', selectionsFromFile)).toEqual([
+        property2Selection,
+        titleSelection,
       ]);
     });
   });

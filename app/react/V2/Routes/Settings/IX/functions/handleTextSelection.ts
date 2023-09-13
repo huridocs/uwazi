@@ -97,15 +97,15 @@ const getHighlightsFromSelection = (
 };
 
 const updateFileSelection = (
-  property: string,
-  currentSelections: ExtractedMetadataSchema[],
+  property?: string,
+  currentSelections?: ExtractedMetadataSchema[],
   newSelection?: TextSelection
 ): ExtractedMetadataSchema[] => {
   if (!newSelection) {
-    return currentSelections;
+    return currentSelections || [];
   }
 
-  const updatedSelections = currentSelections.map(selection => {
+  const updatedSelections = currentSelections?.map(selection => {
     if (selection.propertyID === property || selection.name === property) {
       return {
         ...selection,
@@ -128,7 +128,28 @@ const updateFileSelection = (
     return selection;
   });
 
+  return updatedSelections || [];
+};
+
+const deleteFileSelection = (property?: string, currentSelections?: ExtractedMetadataSchema[]) => {
+  if (!currentSelections) {
+    return [];
+  }
+
+  if (!property) {
+    return currentSelections;
+  }
+
+  const updatedSelections = currentSelections.filter(
+    selection => selection.name !== property && selection.propertyID !== property
+  );
+
   return updatedSelections;
 };
 
-export { getHighlightsFromFile, getHighlightsFromSelection, updateFileSelection };
+export {
+  getHighlightsFromFile,
+  getHighlightsFromSelection,
+  updateFileSelection,
+  deleteFileSelection,
+};
