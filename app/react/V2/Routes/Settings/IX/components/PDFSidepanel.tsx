@@ -32,13 +32,13 @@ enum HighlightColors {
 }
 
 const getPropertyParams = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
-  let propertyLabel = 'Title';
+  let propertyLabel = template?._id ? t(template._id, 'Title', 'Title', false) : 'Title';
   let propertyType: 'text' | 'number' | 'date' = 'text';
 
   if (suggestion && suggestion?.propertyName !== 'title') {
     const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
 
-    propertyLabel = t(template?._id, property?.label, null, false);
+    propertyLabel = t(template?._id, property?.label, property?.label, false);
 
     if (property?.type === 'numeric') {
       propertyType = 'number';
@@ -50,6 +50,15 @@ const getPropertyParams = (suggestion?: EntitySuggestionType, template?: ClientT
   }
 
   return { propertyLabel, propertyType };
+};
+
+const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
+  const [file, entity] = await Promise.all([
+    filesAPI.getById(fileId),
+    entitiesAPI.getById({ _id: entityId, language }),
+  ]);
+
+  return { file: file[0], entity: entity[0] };
 };
 
 // eslint-disable-next-line max-statements
@@ -73,25 +82,14 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
   useEffect(() => {
     if (suggestion) {
-      filesAPI
-        .getById(suggestion.fileId)
-        .then(response => {
-          const [file] = response;
+      loadSidepanelData(suggestion)
+        .then(({ file, entity: suggestionEntity }) => {
           setPdf(file);
+          setEntity(suggestionEntity);
         })
         .catch(e => {
           throw e;
         });
-
-      // entitiesAPI
-      //   .getById(suggestion.entityId)
-      //   .then(response => {
-      //     const [suggestionEntity] = response;
-      //     setEntity(suggestionEntity);
-      //   })
-      //   .catch(e => {
-      //     throw e;
-      //   });
     }
 
     return () => {
@@ -132,7 +130,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
       <form className="flex flex-col gap-4 h-full">
-        <p className="mb-1 font-bold">{t(entityTemplate?._id, propertyLabel, null, false)}</p>
+        <p className="mb-1 font-bold">{propertyLabel}</p>
         <div className="sm:text-right">
           <div className="flex flex-wrap gap-1">
             <Button
