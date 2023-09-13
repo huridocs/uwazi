@@ -178,15 +178,21 @@ const newLinks = [
         title: 'newSubLink2',
         url: 'page/pageid2/newSubLink2',
         type: 'link' as 'link',
-        localId: 'newSubLink2Id',
       },
     ],
   },
   {
-    _id: factory.id('newGroup'),
+    _id: factory.id('newGroup2'),
     title: 'newGroup with empty sublinks',
     type: 'group' as 'group',
     sublinks: [],
+  },
+  {
+    _id: factory.id('newLink2'),
+    title: 'newLink with optional localId',
+    type: 'link' as 'link',
+    url: 'http://uwazi.io',
+    localId: 'newLink2LocalId',
   },
 ];
 

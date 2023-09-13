@@ -261,6 +261,7 @@ const settingsLinkSchema = {
     _id: objectIdSchema,
     title: { type: 'string' },
     url: { type: 'string' },
+    localId: { type: 'string' },
     sublinks: {
       type: 'array',
       items: settingsSublinkSchema,

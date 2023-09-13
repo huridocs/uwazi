@@ -146,7 +146,7 @@ describe('api/settings/links', () => {
         case: 'missing sublink title',
         getInput: () => {
           const { sublinks, ...rest } = newLinks[1];
-          const { title, ...sublink } = sublinks[0];
+          const { title, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
         expectedFirstMessage: "must have required property 'title'",
@@ -156,7 +156,7 @@ describe('api/settings/links', () => {
         case: 'missing sublink url',
         getInput: () => {
           const { sublinks, ...rest } = newLinks[1];
-          const { url, ...sublink } = sublinks[0];
+          const { url, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
         expectedFirstMessage: "must have required property 'url'",
@@ -166,7 +166,7 @@ describe('api/settings/links', () => {
         case: 'missing sublink type',
         getInput: () => {
           const { sublinks, ...rest } = newLinks[1];
-          const { type, ...sublink } = sublinks[0];
+          const { type, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink }] }];
         },
         expectedFirstMessage: "must have required property 'type'",
@@ -176,7 +176,7 @@ describe('api/settings/links', () => {
         case: 'unexpected sublink type',
         getInput: () => {
           const { sublinks, ...rest } = newLinks[1];
-          const { type, ...sublink } = sublinks[0];
+          const { type, ...sublink } = sublinks![0];
           return [{ ...rest, sublinks: [{ ...sublink, type: 'unexpected' }] }];
         },
         expectedFirstMessage: 'must be equal to one of the allowed values',

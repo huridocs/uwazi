@@ -22,6 +22,7 @@ export interface SettingsLinkSchema {
   _id?: ObjectIdSchema;
   title: string;
   url?: string;
+  localId?: string;
   sublinks?: SettingsSublinkSchema[];
   type: 'link' | 'group';
 }
