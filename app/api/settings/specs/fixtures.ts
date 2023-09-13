@@ -110,11 +110,13 @@ const linkFixtures: DBFixture = {
             {
               title: 'Sublink1',
               url: 'page/pageid/sublink1',
+              type: 'link',
               localId: 'sublink1',
             },
             {
               title: 'Sublink2',
               url: 'page/pageid2/sublink2',
+              type: 'link',
               localId: 'sublink2',
             },
           ],
@@ -140,11 +142,13 @@ const expectedLinks = [
       {
         title: 'Sublink1',
         url: 'page/pageid/sublink1',
+        type: 'link',
         localId: 'sublink1',
       },
       {
         title: 'Sublink2',
         url: 'page/pageid2/sublink2',
+        type: 'link',
         localId: 'sublink2',
       },
     ],
@@ -167,11 +171,13 @@ const newLinks = [
       {
         title: 'newSubLink1',
         url: 'page/pageid/newSubLink1',
+        type: 'link' as 'link',
         localId: 'newSubLink1Id',
       },
       {
         title: 'newSubLink2',
         url: 'page/pageid2/newSubLink2',
+        type: 'link' as 'link',
         localId: 'newSubLink2Id',
       },
     ],

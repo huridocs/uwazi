@@ -59,7 +59,7 @@ describe('settings', () => {
             {
               title: 'Page one',
               type: 'group' as 'group',
-              sublinks: [{ title: 'Page two', url: 'url2' }],
+              sublinks: [{ title: 'Page two', url: 'url2', type: 'link' as 'link' }],
             },
           ],
         };
@@ -111,7 +111,7 @@ describe('settings', () => {
               {
                 title: 'Page two',
                 type: 'group' as 'group',
-                sublinks: [{ title: 'Subpage two', url: 'urlsub2' }],
+                sublinks: [{ title: 'Subpage two', url: 'urlsub2', type: 'link' as 'link' }],
               },
             ],
           };

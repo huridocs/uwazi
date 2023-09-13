@@ -246,10 +246,11 @@ const settingsSublinkSchema = {
   additionalProperties: false,
   properties: {
     title: { type: 'string' },
+    type: { type: 'string', enum: ['link'] },
     url: { type: 'string' },
     localId: { type: 'string' },
   },
-  required: ['title', 'url'],
+  required: ['title', 'url', 'type'],
 };
 
 const settingsLinkSchema = {

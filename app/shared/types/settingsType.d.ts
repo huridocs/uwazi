@@ -119,6 +119,7 @@ export interface Settings {
 
 export interface SettingsSublinkSchema {
   title: string;
+  type: 'link';
   url: string;
   localId?: string;
 }

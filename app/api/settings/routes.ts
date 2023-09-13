@@ -18,6 +18,7 @@ export default (app: Application) => {
       .catch(next);
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   app.get('/api/settings/links', (req, res, next) => {
     settings
       .get()

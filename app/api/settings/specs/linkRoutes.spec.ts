@@ -162,6 +162,26 @@ describe('api/settings/links', () => {
         expectedFirstMessage: "must have required property 'url'",
         expectedPath: '/links/0/sublinks/0',
       },
+      {
+        case: 'missing sublink type',
+        getInput: () => {
+          const { sublinks, ...rest } = newLinks[1];
+          const { type, ...sublink } = sublinks[0];
+          return [{ ...rest, sublinks: [{ ...sublink }] }];
+        },
+        expectedFirstMessage: "must have required property 'type'",
+        expectedPath: '/links/0/sublinks/0',
+      },
+      {
+        case: 'unexpected sublink type',
+        getInput: () => {
+          const { sublinks, ...rest } = newLinks[1];
+          const { type, ...sublink } = sublinks[0];
+          return [{ ...rest, sublinks: [{ ...sublink, type: 'unexpected' }] }];
+        },
+        expectedFirstMessage: 'must be equal to one of the allowed values',
+        expectedPath: '/links/0/sublinks/0/type',
+      },
     ])('should validate $case', async ({ getInput, expectedFirstMessage, expectedPath }) => {
       currentUser = adminUser;
       const input = getInput();
