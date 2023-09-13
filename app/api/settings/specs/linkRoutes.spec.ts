@@ -112,30 +112,24 @@ describe('api/settings/links', () => {
       },
       {
         case: "that groups don't have url",
-        getInput: () => {
-          const { url, ...rest } = newLinks[1];
-          return [{ ...rest, url: 'unexpected' }];
-        },
+        getInput: () => [{ ...newLinks[1], url: 'unexpected' }],
         expectedFirstMessage: 'Links of type group should not have url',
         expectedPath: '/links/0',
       },
       {
         case: "that links don't have sublinks",
-        getInput: () => {
-          const { sublinks, ...rest } = newLinks[0];
-          return [
-            {
-              ...rest,
-              sublinks: [
-                {
-                  title: 'unexpected',
-                  url: 'page/unexpectedid/unexpected',
-                  localId: 'unexpectedLocalId1Id',
-                },
-              ],
-            },
-          ];
-        },
+        getInput: () => [
+          {
+            ...newLinks[0],
+            sublinks: [
+              {
+                title: 'unexpected',
+                url: 'page/unexpectedid/unexpected',
+                localId: 'unexpectedLocalId1Id',
+              },
+            ],
+          },
+        ],
         expectedFirstMessage: 'Links of type link should not have sublinks',
         expectedPath: '/links/0',
       },

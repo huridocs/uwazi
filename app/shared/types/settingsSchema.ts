@@ -140,7 +140,7 @@ ajv.addKeyword({
     const { links = [] } = settings;
 
     links.forEach((link, index) => {
-      if (link.type === 'group' && !link.sublinks?.length) {
+      if (link.type === 'group' && !link.sublinks) {
         errors.push({
           keyword: 'groupTypeLinksShouldHaveSublinks',
           schemaPath: '',

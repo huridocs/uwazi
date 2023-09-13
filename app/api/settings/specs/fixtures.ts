@@ -176,6 +176,12 @@ const newLinks = [
       },
     ],
   },
+  {
+    _id: factory.id('newGroup'),
+    title: 'newGroup with empty sublinks',
+    type: 'group' as 'group',
+    sublinks: [],
+  },
 ];
 
 export default fixtures;
