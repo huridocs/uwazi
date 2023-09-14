@@ -83,5 +83,24 @@ export const fixtures = {
         numeric_3: [{ value: '5' }],
       },
     },
+    {
+      _id: new ObjectId(),
+      sharedId: 'entity5',
+      language: 'en',
+      template: template2,
+      metadata: {
+        numeric_3: [{ value: '' }],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: 'entity6',
+      language: 'en',
+      template: template1,
+      metadata: {
+        numeric_1: [{ value: '6.5' }],
+        numeric_2: [{ value: '' }],
+      },
+    },
   ],
 };

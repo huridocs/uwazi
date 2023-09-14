@@ -1,6 +1,8 @@
 import testingDB from 'api/utils/testing_db';
+import { WithId } from 'mongodb';
 import migration from '../index';
 import { fixtures } from './fixtures';
+import { EntitySchema } from '../types';
 
 describe('migration parse-numeric-fields', () => {
   beforeEach(async () => {
@@ -20,43 +22,64 @@ describe('migration parse-numeric-fields', () => {
     expect(migration.reindex).toBe(true);
   });
 
-  it('should parse all the numbers stored as strings', async () => {
-    await migration.up(testingDB.mongodb!);
+  describe('when migrating', () => {
+    let results: WithId<EntitySchema>[];
 
-    expect(
-      await testingDB.mongodb
-        ?.collection('entities')
+    beforeEach(async () => {
+      await migration.up(testingDB.mongodb!);
+
+      results = await testingDB.mongodb
+        ?.collection<EntitySchema>('entities')
         .find({}, { sort: { _id: 1 } })
-        .toArray()
-    ).toMatchObject([
-      {
-        sharedId: 'entity1',
-        metadata: {
-          numeric_1: [{ value: 0.5 }],
-          numeric_2: [{ value: 1.5 }],
-          text: [{ value: 'some text' }],
+        .toArray()!;
+    });
+
+    it('should parse all the numbers stored as strings', async () => {
+      expect(results).toMatchObject([
+        {
+          sharedId: 'entity1',
+          metadata: {
+            numeric_1: [{ value: 0.5 }],
+            numeric_2: [{ value: 1.5 }],
+            text: [{ value: 'some text' }],
+          },
         },
-      },
-      {
-        sharedId: 'entity2',
-        metadata: {
-          numeric_1: [{ value: 2.5 }],
-          numeric_2: [{ value: 3.5 }],
-          text: [{ value: 'some text' }],
+        {
+          sharedId: 'entity2',
+          metadata: {
+            numeric_1: [{ value: 2.5 }],
+            numeric_2: [{ value: 3.5 }],
+            text: [{ value: 'some text' }],
+          },
         },
-      },
-      {
-        sharedId: 'entity3',
-        metadata: {
-          numeric_3: [{ value: 4.5 }],
+        {
+          sharedId: 'entity3',
+          metadata: {
+            numeric_3: [{ value: 4.5 }],
+          },
         },
-      },
-      {
-        sharedId: 'entity4',
-        metadata: {
-          numeric_3: [{ value: 5 }],
+        {
+          sharedId: 'entity4',
+          metadata: {
+            numeric_3: [{ value: 5 }],
+          },
         },
-      },
-    ]);
+        {
+          sharedId: 'entity5',
+          metadata: {},
+        },
+        {
+          sharedId: 'entity6',
+          metadata: {
+            numeric_1: [{ value: 6.5 }],
+          },
+        },
+      ]);
+    });
+
+    it('should remove empty strings', async () => {
+      expect(results[4].metadata!.numeric_3).toBe(undefined);
+      expect(results[5].metadata!.numeric_2).toBe(undefined);
+    });
   });
 });

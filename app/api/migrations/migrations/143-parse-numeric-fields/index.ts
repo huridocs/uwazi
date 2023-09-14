@@ -35,26 +35,37 @@ export default {
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
       const template = templates[entity!.template!.toString()];
-      const updates: Record<string, [{ value: number }]> = {};
+      const set: Record<string, [{ value: number }]> = {};
+      const unset: Record<string, ''> = {};
 
       Object.keys(entity!.metadata || {}).forEach(propertyName => {
         if (template.properties[propertyName].type === 'numeric') {
           const candidateValue = entity!.metadata?.[propertyName]?.[0].value;
           if (typeof candidateValue === 'string') {
-            updates[`metadata.${propertyName}`] = [{ value: parseFloat(candidateValue) }];
+            if (candidateValue === '') {
+              unset[`metadata.${propertyName}`] = '';
+            } else {
+              set[`metadata.${propertyName}`] = [{ value: parseFloat(candidateValue) }];
+            }
           }
         }
       });
 
-      if (Object.keys(updates).length > 0) {
+      if (Object.keys(set).length > 0) {
         operations.push({
-          updateOne: { filter: { _id: new ObjectId(entity!._id) }, update: { $set: updates } },
+          updateOne: { filter: { _id: new ObjectId(entity!._id) }, update: { $set: set } },
         });
+      }
 
-        if (operations.length > this.batchSize) {
-          await db.collection<EntitySchema>('entities').bulkWrite(operations);
-          operations = [];
-        }
+      if (Object.keys(unset).length > 0) {
+        operations.push({
+          updateOne: { filter: { _id: new ObjectId(entity!._id) }, update: { $unset: unset } },
+        });
+      }
+
+      if (operations.length > this.batchSize) {
+        await db.collection<EntitySchema>('entities').bulkWrite(operations);
+        operations = [];
       }
     }
 
