@@ -711,6 +711,19 @@ describe('entities', () => {
       const doc1db = await entities.getById('shared', 'en');
       expect(doc1db.metadata.numeric).toEqual([{ value: 10.5 }]);
     });
+
+    it('should sanitize numeric, parsing empty strings into no value', async () => {
+      const doc1 = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: { numeric: [{ value: '' }] },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { language: 'en' });
+      const doc = await entities.getById('shared', 'en');
+      expect(doc.metadata.numeric).toEqual(undefined);
+    });
   });
 
   describe('get', () => {
