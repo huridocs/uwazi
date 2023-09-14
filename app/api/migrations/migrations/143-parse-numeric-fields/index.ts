@@ -4,7 +4,7 @@ import { objectIndex } from 'shared/data_utils/objectIndex';
 import { EntitySchema, TemplateSchema } from './types';
 
 export default {
-  delta: 142,
+  delta: 143,
 
   name: 'parse-numeric-fields',
 
