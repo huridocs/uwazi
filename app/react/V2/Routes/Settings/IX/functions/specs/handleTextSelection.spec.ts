@@ -235,10 +235,6 @@ describe('PDF selections handlers', () => {
 
     it('should return the same selections if there are no changes', () => {
       expect(updateFileSelection('title', selectionsFromFile)).toEqual(selectionsFromFile);
-
-      expect(updateFileSelection('irrelevantProperty', selectionsFromFile, newSelection)).toEqual(
-        selectionsFromFile
-      );
     });
 
     it('should update with the new selections and set the current timestamp', () => {
@@ -247,6 +243,28 @@ describe('PDF selections handlers', () => {
         property2Selection,
         {
           name: 'title',
+          timestamp: new Date().toString(),
+          selection: {
+            text: 'new text',
+            selectionRectangles: [
+              {
+                top: 1,
+                left: 1,
+                width: 1,
+                height: 1,
+                page: '1',
+              },
+            ],
+          },
+        },
+      ]);
+    });
+
+    it('should create new selections', () => {
+      expect(updateFileSelection('newProperty', selectionsFromFile, newSelection)).toEqual([
+        ...selectionsFromFile,
+        {
+          name: 'newProperty',
           timestamp: new Date().toString(),
           selection: {
             text: 'new text',

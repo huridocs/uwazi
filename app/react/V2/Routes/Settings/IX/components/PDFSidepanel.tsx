@@ -87,14 +87,10 @@ const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestio
 };
 
 const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
-  if (file) {
+  if (file && newSelections) {
     const fileToSave = { ...file };
-
-    if (newSelections) {
-      fileToSave.extractedMetadata = newSelections;
-    }
-
-    await filesAPI.update(fileToSave);
+    fileToSave.extractedMetadata = newSelections;
+    return filesAPI.update(fileToSave);
   }
 };
 
@@ -120,7 +116,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
-  const [selections, setSelections] = useState<ExtractedMetadataSchema[]>();
+  const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [entity, setEntity] = useState<ClientEntitySchema>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
@@ -164,6 +160,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     return () => {
       setSelectedText(undefined);
       setHighlights(undefined);
+      setSelections(undefined);
     };
   }, [pdf, showSidepanel, suggestion]);
 
@@ -188,6 +185,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     console.log(response);
 
     revalidator.revalidate();
+    setShowSidepanel(false);
   };
 
   return (

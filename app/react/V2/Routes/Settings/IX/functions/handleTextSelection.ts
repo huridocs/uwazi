@@ -101,11 +101,39 @@ const updateFileSelection = (
   currentSelections?: ExtractedMetadataSchema[],
   newSelection?: TextSelection
 ): ExtractedMetadataSchema[] => {
+  const result = currentSelections || [];
+
   if (!newSelection) {
-    return currentSelections || [];
+    return result;
   }
 
-  const updatedSelections = currentSelections?.map(selection => {
+  const isNewSelection = !currentSelections?.find(
+    selection => selection.propertyID === property || selection.name === property
+  );
+
+  if (isNewSelection && property) {
+    return [
+      ...result,
+      {
+        name: property,
+        timestamp: new Date().toString(),
+        selection: {
+          text: newSelection.text,
+          selectionRectangles: newSelection.selectionRectangles.map(rectangle => {
+            const formattedRectangle = {
+              ...rectangle,
+              page: rectangle.regionId,
+            };
+            delete formattedRectangle.regionId;
+
+            return formattedRectangle;
+          }),
+        },
+      },
+    ];
+  }
+
+  const updatedSelections = result.map(selection => {
     if (selection.propertyID === property || selection.name === property) {
       return {
         ...selection,
@@ -128,7 +156,7 @@ const updateFileSelection = (
     return selection;
   });
 
-  return updatedSelections || [];
+  return updatedSelections;
 };
 
 const deleteFileSelection = (property?: string, currentSelections?: ExtractedMetadataSchema[]) => {
