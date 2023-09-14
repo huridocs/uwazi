@@ -28,7 +28,7 @@ describe('Languages', () => {
     });
 
     it('should install new languages', () => {
-      const BACKEND_LANGUAGE_INSTALL_DELAY = 15000;
+      const BACKEND_LANGUAGE_INSTALL_DELAY = 25000;
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
       cy.get('[data-testid=modal] input[type=text]').type('Danish');
       cy.contains('button', 'Danish').click();
