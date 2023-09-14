@@ -123,6 +123,34 @@ describe('sockets', () => {
     });
   });
 
+  describe('translationsInstallDone', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsInstallDone[0]();
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'Languages installed successfully',
+          type: 'success',
+        },
+      });
+    });
+  });
+
+  describe('translationsInstallError', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsInstallError[0]('error message');
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'An error has occured while installing languages:\nerror message',
+          type: 'danger',
+        },
+      });
+    });
+  });
+
   describe('translationsDelete', () => {
     it('should emit a translationsDelete event', () => {
       socket._callbacks.$translationsDelete[0]('localeString');
@@ -130,6 +158,34 @@ describe('sockets', () => {
         customIndex: 'locale',
         type: 'translations/REMOVE',
         value: { locale: 'localeString' },
+      });
+    });
+  });
+
+  describe('translationsDeleteError', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsDeleteError[0]('error message');
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'An error has occured while deleting a language:\nerror message',
+          type: 'danger',
+        },
+      });
+    });
+  });
+
+  describe('translationsDeleteDone', () => {
+    it('should dispatch a notification', () => {
+      socket._callbacks.$translationsDeleteDone[0]();
+      expect(store.dispatch.calls.allArgs()[1][0]).toEqual({
+        type: 'NOTIFY',
+        notification: {
+          id: expect.any(String),
+          message: 'Language uninstalled successfully',
+          type: 'success',
+        },
       });
     });
   });
