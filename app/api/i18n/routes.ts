@@ -34,6 +34,30 @@ const addLanguage = async (language: any) => {
   return { newSettings, newTranslations };
 };
 
+async function addLanguages(languages: LanguageSchema[], req: Request) {
+  let newSettings;
+  let newTranslations;
+  await sequentialPromises(languages, async (language: LanguageSchema) => {
+    ({ newSettings, newTranslations } = await addLanguage(language));
+    req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+  });
+  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+  req.emitToSessionSocket('translationsInstallDone');
+}
+
+async function deleteLanguage(key: LanguageISO6391, req: Request) {
+  const [newSettings] = await Promise.all([
+    settings.deleteLanguage(key),
+    translations.removeLanguage(key),
+    entities.removeLanguage(key),
+    pages.removeLanguage(key),
+  ]);
+
+  req.sockets.emitToCurrentTenant('updateSettings', newSettings);
+  req.sockets.emitToCurrentTenant('translationsDelete', key);
+  req.emitToSessionSocket('translationsDeleteDone');
+}
+
 type TranslationsRequest = Request & { query: { context: string } };
 
 export default (app: Application) => {
@@ -182,15 +206,12 @@ export default (app: Application) => {
 
     async (req, res) => {
       const languages = req.body as LanguageSchema[];
-      let newSettings;
-      let newTranslations;
-      await sequentialPromises(languages, async (language: LanguageSchema) => {
-        ({ newSettings, newTranslations } = await addLanguage(language));
-        req.sockets.emitToCurrentTenant('translationsChange', newTranslations);
+      addLanguages(languages, req).catch((error: Error) => {
+        req.emitToSessionSocket('translationsInstallError', error.message);
+        // eslint-disable-next-line no-console
+        console.error(error.message);
       });
-
-      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      res.json(newSettings);
+      res.status(204).json('ok');
     }
   );
 
@@ -206,16 +227,13 @@ export default (app: Application) => {
       },
     }),
     async (req: DeleteTranslationRequest, res) => {
-      const [newSettings] = await Promise.all([
-        settings.deleteLanguage(req.query.key),
-        translations.removeLanguage(req.query.key),
-        entities.removeLanguage(req.query.key),
-        pages.removeLanguage(req.query.key),
-      ]);
-
-      req.sockets.emitToCurrentTenant('updateSettings', newSettings);
-      req.sockets.emitToCurrentTenant('translationsDelete', req.query.key);
-      res.json(newSettings);
+      const { key } = req.query;
+      deleteLanguage(key, req).catch((error: Error) => {
+        req.emitToSessionSocket('translationsDeleteError', error.message);
+        // eslint-disable-next-line no-console
+        console.error(error.message);
+      });
+      res.status(204).json('ok');
     }
   );
 };
