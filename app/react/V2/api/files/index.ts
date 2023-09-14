@@ -12,4 +12,14 @@ const getById = async (_id: string): Promise<FileType[]> => {
   }
 };
 
-export { getById };
+const update = async (file: FileType) => {
+  try {
+    const requestParams = new RequestParams(file);
+    const response = await api.post('files', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { getById, update };

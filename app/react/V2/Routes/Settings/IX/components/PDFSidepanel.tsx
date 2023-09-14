@@ -86,6 +86,28 @@ const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestio
   return { file: file[0], entity: entity[0] };
 };
 
+const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadataSchema[]) => {
+  if (file) {
+    const fileToSave = { ...file };
+
+    if (newSelections) {
+      fileToSave.extractedMetadata = newSelections;
+    }
+
+    await filesAPI.update(fileToSave);
+  }
+};
+
+const handleEntitySave = async (
+  entity?: ClientEntitySchema,
+  fieldValue?: PropertyValueSchema,
+  fieldHasChanged?: boolean
+) => {
+  if (fieldHasChanged && entity) {
+    console.log('saving!!');
+  }
+};
+
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
@@ -150,15 +172,22 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm({
     values: {
       field: getFormValue(suggestion, entity),
     },
   });
 
-  const onSubmit = (values: { field: PropertyValueSchema | undefined }) => {
-    console.log(values);
+  const onSubmit = async (values: { field: PropertyValueSchema | undefined }) => {
+    const response = await Promise.all([
+      handleFileSave(pdf, selections),
+      handleEntitySave(entity, values.field, isDirty),
+    ]);
+
+    console.log(response);
+
+    revalidator.revalidate();
   };
 
   return (
