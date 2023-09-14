@@ -1,10 +1,14 @@
+/* eslint-disable max-lines */
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { ExtractedMetadataSchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
@@ -31,14 +35,35 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
-const getPropertyParams = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
+const getFormValue = (suggestion?: EntitySuggestionType, entity?: ClientEntitySchema) => {
+  let value;
+
+  if (!suggestion || !entity) {
+    return value;
+  }
+
+  if (suggestion.propertyName === 'title' && entity.title) {
+    value = entity.title;
+  }
+
+  if (suggestion.propertyName !== 'title' && entity.metadata) {
+    const entityMetadata = entity.metadata[suggestion.propertyName];
+    value = entityMetadata ? entityMetadata[0].value : '';
+  }
+
+  return value;
+};
+
+const getProperty = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
   let propertyLabel = template?._id ? t(template._id, 'Title', 'Title', false) : 'Title';
   let propertyType: 'text' | 'number' | 'date' = 'text';
+  let isRequired = true;
 
   if (suggestion && suggestion?.propertyName !== 'title') {
     const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
 
     propertyLabel = t(template?._id, property?.label, property?.label, false);
+    isRequired = property?.required || false;
 
     if (property?.type === 'numeric') {
       propertyType = 'number';
@@ -49,7 +74,7 @@ const getPropertyParams = (suggestion?: EntitySuggestionType, template?: ClientT
     }
   }
 
-  return { propertyLabel, propertyType };
+  return { propertyLabel, propertyType, isRequired };
 };
 
 const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
@@ -61,7 +86,6 @@ const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestio
   return { file: file[0], entity: entity[0] };
 };
 
-// eslint-disable-next-line max-statements
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
@@ -70,15 +94,15 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const revalidator = useRevalidator();
 
   const pdfContainerRef = useRef<HTMLDivElement>(null);
-  const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [pdf, setPdf] = useState<FileType>();
-  const [updatedFileSelections, setUpdatedFileSelections] = useState<ExtractedMetadataSchema[]>();
-  const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [highlights, setHighlights] = useState<Highlights>();
+  const [selections, setSelections] = useState<ExtractedMetadataSchema[]>();
+  const [entity, setEntity] = useState<ClientEntitySchema>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  const { propertyLabel, propertyType } = getPropertyParams(suggestion, entityTemplate);
+  const { propertyLabel, propertyType, isRequired } = getProperty(suggestion, entityTemplate);
 
   useEffect(() => {
     if (suggestion) {
@@ -121,6 +145,22 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     };
   }, [pdf, showSidepanel, suggestion]);
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    values: {
+      field: getFormValue(suggestion, entity),
+    },
+  });
+
+  const onSubmit = (values: { field: PropertyValueSchema | undefined }) => {
+    console.log(values);
+  };
+
   return (
     <Sidepanel
       isOpen={showSidepanel}
@@ -129,7 +169,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       title={pdf?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
-      <form className="flex flex-col gap-4 h-full">
+      <form className="flex flex-col gap-4 h-full" onSubmit={handleSubmit(onSubmit)}>
         <p className="mb-1 font-bold">{propertyLabel}</p>
         <div className="sm:text-right">
           <div className="flex flex-wrap gap-1">
@@ -141,13 +181,14 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               onClick={() => {
                 if (selectedText) {
                   setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
-                  setUpdatedFileSelections(
+                  setSelections(
                     updateFileSelection(
                       suggestion?.propertyName,
                       pdf?.extractedMetadata,
                       selectedText
                     )
                   );
+                  setValue('field', selectedText.text);
                 }
               }}
               disabled={!selectedText?.selectionRectangles.length}
@@ -161,6 +202,15 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               label={propertyLabel}
               hideLabel
               type={propertyType}
+              hasErrors={errors.field?.type === 'required'}
+              errorMessage={
+                errors.field?.type === 'required' ? (
+                  <Translate>This field is required</Translate>
+                ) : (
+                  ''
+                )
+              }
+              {...register('field', { required: isRequired })}
             />
           </div>
 
@@ -170,9 +220,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
             onClick={() => {
               setHighlights(undefined);
-              setUpdatedFileSelections(
-                deleteFileSelection(suggestion?.propertyName, pdf?.extractedMetadata)
-              );
+              setSelections(deleteFileSelection(suggestion?.propertyName, pdf?.extractedMetadata));
             }}
           >
             <Translate>Clear Selection</Translate>
@@ -202,7 +250,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             className="flex-grow"
             type="button"
             styling="outline"
-            onClick={() => setShowSidepanel(false)}
+            onClick={() => {
+              setShowSidepanel(false);
+              reset();
+            }}
           >
             <Translate>Cancel</Translate>
           </Button>
