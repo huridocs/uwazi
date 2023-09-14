@@ -97,7 +97,7 @@ const getHighlightsFromSelection = (
 };
 
 const updateFileSelection = (
-  property?: string,
+  property: { name: string; id?: string },
   currentSelections?: ExtractedMetadataSchema[],
   newSelection?: TextSelection
 ): ExtractedMetadataSchema[] => {
@@ -108,14 +108,15 @@ const updateFileSelection = (
   }
 
   const isNewSelection = !currentSelections?.find(
-    selection => selection.propertyID === property || selection.name === property
+    selection => selection.propertyID === property.id || selection.name === property.name
   );
 
   if (isNewSelection && property) {
     return [
       ...result,
       {
-        name: property,
+        name: property.name,
+        ...(property.id && { propertyID: property.id }),
         timestamp: new Date().toString(),
         selection: {
           text: newSelection.text,
@@ -134,7 +135,7 @@ const updateFileSelection = (
   }
 
   const updatedSelections = result.map(selection => {
-    if (selection.propertyID === property || selection.name === property) {
+    if (selection.propertyID === property.id || selection.name === property.name) {
       return {
         ...selection,
         timestamp: new Date().toString(),
@@ -159,18 +160,24 @@ const updateFileSelection = (
   return updatedSelections;
 };
 
-const deleteFileSelection = (property?: string, currentSelections?: ExtractedMetadataSchema[]) => {
+const deleteFileSelection = (
+  property: { name: string; id?: string },
+  currentSelections?: ExtractedMetadataSchema[]
+) => {
   if (!currentSelections) {
     return [];
   }
 
-  if (!property) {
+  if (!property.name) {
     return currentSelections;
   }
 
-  const updatedSelections = currentSelections.filter(
-    selection => selection.name !== property && selection.propertyID !== property
-  );
+  const updatedSelections = currentSelections.filter(selection => {
+    if (property.id) {
+      return property.id !== selection.propertyID;
+    }
+    return property.name !== selection.name;
+  });
 
   return updatedSelections;
 };

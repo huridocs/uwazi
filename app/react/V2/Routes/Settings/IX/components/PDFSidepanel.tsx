@@ -54,15 +54,17 @@ const getFormValue = (suggestion?: EntitySuggestionType, entity?: ClientEntitySc
   return value;
 };
 
-const getProperty = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
+const getPropertyData = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
   let propertyLabel = template?._id ? t(template._id, 'Title', 'Title', false) : 'Title';
   let propertyType: 'text' | 'number' | 'date' = 'text';
+  let propertyId;
   let isRequired = true;
 
   if (suggestion && suggestion?.propertyName !== 'title') {
     const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
 
     propertyLabel = t(template?._id, property?.label, property?.label, false);
+    propertyId = property?._id?.toString();
     isRequired = property?.required || false;
 
     if (property?.type === 'numeric') {
@@ -74,7 +76,7 @@ const getProperty = (suggestion?: EntitySuggestionType, template?: ClientTemplat
     }
   }
 
-  return { propertyLabel, propertyType, isRequired };
+  return { propertyLabel, propertyType, isRequired, propertyId };
 };
 
 const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
@@ -120,7 +122,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [entity, setEntity] = useState<ClientEntitySchema>();
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  const { propertyLabel, propertyType, isRequired } = getProperty(suggestion, entityTemplate);
+  const { propertyLabel, propertyType, isRequired, propertyId } = getPropertyData(
+    suggestion,
+    entityTemplate
+  );
 
   useEffect(() => {
     if (suggestion) {
@@ -210,7 +215,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
                   setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
                   setSelections(
                     updateFileSelection(
-                      suggestion?.propertyName,
+                      { name: suggestion?.propertyName || '', id: propertyId },
                       pdf?.extractedMetadata,
                       selectedText
                     )
@@ -247,7 +252,12 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
             onClick={() => {
               setHighlights(undefined);
-              setSelections(deleteFileSelection(suggestion?.propertyName, pdf?.extractedMetadata));
+              setSelections(
+                deleteFileSelection(
+                  { name: suggestion?.propertyName || '' },
+                  pdf?.extractedMetadata
+                )
+              );
             }}
           >
             <Translate>Clear Selection</Translate>
