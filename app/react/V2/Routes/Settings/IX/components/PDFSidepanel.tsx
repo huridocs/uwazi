@@ -3,6 +3,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
+import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
@@ -35,7 +36,11 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
-const getFormValue = (suggestion?: EntitySuggestionType, entity?: ClientEntitySchema) => {
+const getFormValue = (
+  suggestion?: EntitySuggestionType,
+  entity?: ClientEntitySchema,
+  type?: 'text' | 'number' | 'date'
+) => {
   let value;
 
   if (!suggestion || !entity) {
@@ -49,6 +54,11 @@ const getFormValue = (suggestion?: EntitySuggestionType, entity?: ClientEntitySc
   if (suggestion.propertyName !== 'title' && entity.metadata) {
     const entityMetadata = entity.metadata[suggestion.propertyName];
     value = entityMetadata ? entityMetadata[0].value : '';
+
+    if (type === 'date' && value) {
+      const dateString = moment.utc(value as number, 'X').format('YYYY-MM-DD');
+      value = dateString;
+    }
   }
 
   return value;
@@ -98,7 +108,7 @@ const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadata
 
 const handleEntitySave = async (
   entity?: ClientEntitySchema,
-  fieldValue?: PropertyValueSchema,
+  metadata?: PropertyValueSchema,
   fieldHasChanged?: boolean
 ) => {
   if (fieldHasChanged && entity) {
@@ -177,17 +187,21 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     formState: { errors, isDirty },
   } = useForm({
     values: {
-      field: getFormValue(suggestion, entity),
+      field: getFormValue(suggestion, entity, propertyType),
     },
   });
 
-  const onSubmit = async (values: { field: PropertyValueSchema | undefined }) => {
+  const onSubmit = async (value: { field: PropertyValueSchema | undefined }) => {
+    let metadata = value.field;
+
+    if (propertyType === 'date' && isDirty && metadata) {
+      metadata = Date.parse(metadata as string) / 1000;
+    }
+
     const response = await Promise.all([
       handleFileSave(pdf, selections),
-      handleEntitySave(entity, values.field, isDirty),
+      handleEntitySave(entity, metadata, isDirty),
     ]);
-
-    console.log(response);
 
     revalidator.revalidate();
     setShowSidepanel(false);
@@ -235,14 +249,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               hideLabel
               type={propertyType}
               hasErrors={errors.field?.type === 'required'}
-              errorMessage={
-                errors.field?.type === 'required' ? (
-                  <Translate>This field is required</Translate>
-                ) : (
-                  ''
-                )
-              }
-              {...register('field', { required: isRequired })}
+              {...register('field', {
+                required: isRequired,
+                valueAsDate: propertyType === 'date' || undefined,
+              })}
             />
           </div>
 
