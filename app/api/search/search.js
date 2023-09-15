@@ -9,6 +9,7 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { sequentialPromises } from 'shared/asyncUtils';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
@@ -310,14 +311,16 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allProperties(templates);
   const newRelationshipsEnabled = v2.checkFeatureEnabled();
-  return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
-    const denormaLizedAgregations = await denormaLizedAgregationsPromise;
+  const denormalizedAggregations = {};
+  // eslint-disable-next-line max-statements
+  await sequentialPromises(Object.keys(aggregations), async key => {
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
       ['_types', 'generatedToc', '_permissions.self', '_published'].includes(key)
     ) {
-      return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
+      denormalizedAggregations[key] = aggregations[key];
+      return;
     }
 
     if (['_permissions.read', '_permissions.write'].includes(key)) {
@@ -346,7 +349,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
         })
         .filter(b => b);
 
-      return Object.assign(denormaLizedAgregations, { [key]: { ...aggregations[key], buckets } });
+      denormalizedAggregations[key] = { ...aggregations[key], buckets };
+      return;
     }
 
     let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
@@ -385,8 +389,9 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
         dictionary
       );
     }
-    return Object.assign(denormaLizedAgregations, { [key]: denormalizedAggregation });
-  }, {});
+    denormalizedAggregations[key] = denormalizedAggregation;
+  });
+  return denormalizedAggregations;
 };
 
 const _sanitizeAggregationsStructure = (aggregations, limit) => {
