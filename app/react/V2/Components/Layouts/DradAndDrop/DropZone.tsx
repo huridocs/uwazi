@@ -9,13 +9,13 @@ import { ItemTypes } from 'app/V2/shared/types';
 interface DroppableProps {
   type: ItemTypes;
   useDrop?: Function;
-  addCard?: Function;
+  onDrop?: Function;
 }
 
-const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, addCard }) => {
+const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, onDrop }) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
-    drop: () => ({ name: 'Dustbin', addCard }),
+    drop: () => ({ name: 'Dustbin', onDrop }),
     collect: (monitor: DropTargetMonitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
@@ -25,19 +25,15 @@ const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, addCa
   const isActive = canDrop && isOver;
   return (
     <div
-      className={`flex flex-col items-center justify-center w-full h-64 ${
+      className={`flex flex-col items-center justify-center  text-gray-400 uppercase p-15 h-14 text-base m-5 ${
         isActive
           ? ' bg-bray-800 dark:bg-gray-700 bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
           : 'empty'
-      } border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 `}
+      } border border-gray-500 border-dashed rounded-sm cursor-pointer bg-gray-50 `}
       ref={drop}
-      // data-testid="dustbin"
+      data-testid="dustbin"
     >
-      <div className="no-properties">
-        <div className="no-properties-wrap">
-          <Translate>Drag items here</Translate>
-        </div>
-      </div>
+      <Translate>Drag items here</Translate>
     </div>
   );
 };

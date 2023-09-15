@@ -222,6 +222,7 @@
     "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
     "rtlcss": "^4.1.0",
+    "rxjs": "^7.8.1",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^6.0.1",
     "sift": "^17.0.1",

@@ -1,25 +1,23 @@
 import React, { useRef } from 'react';
 import type { FC, RefObject } from 'react';
 import { type DragSourceMonitor, type XYCoord } from 'react-dnd';
-import { withDnD } from 'app/componentWrappers';
-import { ItemTypes } from 'app/V2/shared/types';
-import type { IDraggable } from 'app/V2/shared/types';
-
 import { Icon } from 'app/UI';
+import type { ItemTypes, IDraggable } from 'app/V2/shared/types';
+import { withDnD } from 'app/componentWrappers';
 
-interface DraggableItemProps {
-  name: string;
+interface DraggableItemProps extends React.PropsWithChildren {
+  item: IDraggable;
   useDrag?: Function;
   useDrop?: Function;
-  iconHandle: boolean;
+  iconHandle?: boolean;
   type: ItemTypes;
   index: number;
-  sortLink: Function;
-  addCard: Function;
+  sortLink?: Function;
 }
 
 interface DropResult {
-  name: string;
+  item: string;
+  onDrop: Function;
 }
 
 interface DragItem {
@@ -29,12 +27,13 @@ interface DragItem {
 }
 
 const hoverSortable =
-  (ref: RefObject<HTMLElement>, index: number, sortFunction: Function) =>
-  (item: DragItem, monitor: any) => {
-    if (!ref.current) {
+  (ref: RefObject<HTMLElement>, index: number, sortFunction?: Function) =>
+  // eslint-disable-next-line max-statements
+  (currentItem: DragItem, monitor: any) => {
+    if (!ref.current || !sortFunction) {
       return;
     }
-    const dragIndex = item.index;
+    const dragIndex = currentItem.index;
     const hoverIndex = index;
 
     // Don't replace items with themselves
@@ -75,41 +74,38 @@ const hoverSortable =
     // Generally it's better to avoid mutations,
     // but it's good here for the sake of performance
     // to avoid expensive index searches.
-    item.index = hoverIndex;
+    // eslint-disable-next-line no-param-reassign
+    currentItem.index = hoverIndex;
   };
 
 const DragableItemComponent: FC<DraggableItemProps> = ({
-  name,
+  item,
   useDrag = () => {},
   useDrop = () => {},
-  iconHandle,
+  iconHandle = false,
   index,
   sortLink,
   type,
-  addCard,
+  children,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const [{ handlerId: handlerId1 }, drop] = useDrop({
+  const [, drop] = useDrop({
     accept: type,
     collect(monitor: any) {
       return {
         handlerId: monitor.getHandlerId(),
       };
     },
-    end: () => {
-      console.log('ended');
-    },
     hover: hoverSortable(ref, index, sortLink),
   });
 
   const [{ isDragging, handlerId }, drag] = useDrag(() => ({
     type,
-    item: { name, index, sortLink },
-    end: (item: IDraggable, monitor: DragSourceMonitor) => {
+    item: { item, index, sortLink },
+    end: (draggedItem: IDraggable, monitor: DragSourceMonitor) => {
       const dropResult = monitor.getDropResult<DropResult>();
-      if (item && dropResult && dropResult.addCard && !item.sortLink) {
-        console.log(item);
-        dropResult.addCard(item);
+      if (draggedItem && dropResult && dropResult.onDrop && !draggedItem.sortLink) {
+        dropResult.onDrop(item);
       }
     },
     collect: (monitor: any) => ({
@@ -120,35 +116,26 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
 
   const opacity = isDragging ? 0.4 : 1;
 
-  let propertyClass = 'list-group-item';
-  if (isDragging) {
-    propertyClass += ' dragging';
-  }
-
-  if (!iconHandle) {
-    propertyClass += ' draggable';
-  }
   drag(drop(ref));
-
   return (
     <div
-      className={propertyClass}
+      className="flex flex-row gap-4 p-3 m-5 border border-gray-200 border-solid cursor-move"
       ref={ref}
       data-testid="dragable-item"
       style={{ opacity }}
       data-handler-id={handlerId}
     >
       {iconHandle && (
-        <span className="draggable" ref={null}>
-          <Icon icon="bars" />
+        <span ref={null}>
+          <Icon icon="bars" className="text-gray-400 " />
         </span>
       )}
-      {!iconHandle && <Icon icon="bars" />}
-      {name}
+      {!iconHandle && <Icon icon="bars" className="text-gray-400 " />}
+      {children}
     </div>
   );
 };
 
 const DraggableItem = withDnD(DragableItemComponent);
-export { DraggableItem };
-export { hoverSortable };
+
+export { DraggableItem, hoverSortable };
