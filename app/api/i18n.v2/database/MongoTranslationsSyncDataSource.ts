@@ -1,15 +1,19 @@
+import { DeleteResult, ObjectId, OptionalId } from 'mongodb';
+
 import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { DeleteResult, ObjectId, OptionalId } from 'mongodb';
+import { TranslationMappers } from './TranslationMappers';
 import { TranslationDBO } from '../schemas/TranslationDBO';
+import { TranslationSyO } from '../schemas/TranslationSyO';
 
 export class MongoTranslationsSyncDataSource
   extends MongoDataSource<OptionalId<TranslationDBO>>
-  implements SyncDBDataSource<TranslationDBO>
+  implements SyncDBDataSource<TranslationSyO, TranslationDBO>
 {
   protected collectionName = 'translationsV2';
 
-  async save(translation: TranslationDBO): Promise<TranslationDBO> {
+  async save(_translation: TranslationSyO): Promise<TranslationDBO> {
+    const translation = TranslationMappers.fromSyncToDBO(_translation);
     await this.getCollection().updateOne(
       { _id: translation._id },
       { $set: translation },
@@ -18,8 +22,9 @@ export class MongoTranslationsSyncDataSource
     return translation;
   }
 
-  async saveMultiple(translations: TranslationDBO[]): Promise<TranslationDBO[]> {
+  async saveMultiple(_translations: TranslationSyO[]): Promise<TranslationDBO[]> {
     const stream = this.createBulkStream();
+    const translations = _translations.map(TranslationMappers.fromSyncToDBO);
     await translations.reduce(async (previous, translation) => {
       await previous;
       await stream.updateOne({ _id: translation._id }, { $set: translation }, true);

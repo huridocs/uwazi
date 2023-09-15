@@ -5,7 +5,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 import { search } from 'api/search';
 import { errorLog } from 'api/log';
 import { uploadsPath, customUploadsPath, storage } from 'api/files';
-import { setUpApp, socketEmit, iosocket } from 'api/utils/testingRoutes';
+import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
 import entities from 'api/entities';
 
@@ -64,8 +64,16 @@ describe('upload routes', () => {
         })
       );
 
-      expect(iosocket.emit).toHaveBeenCalledWith('conversionStart', 'sharedId1');
-      expect(iosocket.emit).toHaveBeenCalledWith('documentProcessed', 'sharedId1');
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'conversionStart',
+        TestEmitSources.session,
+        'sharedId1'
+      );
+      expect(iosocket.emit).toHaveBeenCalledWith(
+        'documentProcessed',
+        TestEmitSources.session,
+        'sharedId1'
+      );
 
       const [upload] = await files.get(
         { originalname: 'f2082bf51b6ef839690485d7153e847a.pdf' },
@@ -179,9 +187,9 @@ describe('upload routes', () => {
           .attach('file', `${__dirname}/uploads/importcsv.csv`)
       );
 
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START');
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 1);
-      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', 2);
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_START', TestEmitSources.session);
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 1);
+      expect(iosocket.emit).toHaveBeenCalledWith('IMPORT_CSV_PROGRESS', TestEmitSources.session, 2);
 
       const imported = await entities.get({ template: importTemplate });
       expect(imported).toEqual([
@@ -201,6 +209,7 @@ describe('upload routes', () => {
 
         expect(iosocket.emit).toHaveBeenCalledWith(
           'IMPORT_CSV_ERROR',
+          TestEmitSources.session,
           expect.objectContaining({ code: 500 })
         );
       });

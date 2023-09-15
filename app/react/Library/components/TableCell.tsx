@@ -31,7 +31,7 @@ const formatProperty = (prop: FormattedMetadataValue | undefined) => {
   if (inheritedMedia || typeMedia) {
     return undefined;
   }
-  return showByType(prop, true);
+  return showByType({ prop, compact: true });
 };
 
 export const TableCellComponent = (props: TableCellProps) => {
