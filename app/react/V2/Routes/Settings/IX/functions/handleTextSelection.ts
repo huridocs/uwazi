@@ -111,13 +111,15 @@ const updateFileSelection = (
     selection => selection.propertyID === property.id || selection.name === property.name
   );
 
+  const timestamp = new Date().toUTCString();
+
   if (isNewSelection && property) {
     return [
       ...result,
       {
         name: property.name,
         ...(property.id && { propertyID: property.id }),
-        timestamp: new Date().toString(),
+        timestamp,
         selection: {
           text: newSelection.text,
           selectionRectangles: newSelection.selectionRectangles.map(rectangle => {
@@ -138,7 +140,7 @@ const updateFileSelection = (
     if (selection.propertyID === property.id || selection.name === property.name) {
       return {
         ...selection,
-        timestamp: new Date().toString(),
+        timestamp,
         selection: {
           text: newSelection.text,
           selectionRectangles: newSelection.selectionRectangles.map(rectangle => {
