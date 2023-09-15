@@ -10,6 +10,7 @@ import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { sequentialPromises } from 'shared/asyncUtils';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
@@ -265,7 +266,13 @@ const indexedDictionaryValues = dictionary =>
       return v;
     }, {});
 
-const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
+const _getAggregationDictionary = async (
+  aggregation,
+  language,
+  property,
+  dictionariesById,
+  dictionaryCache
+) => {
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
@@ -285,8 +292,13 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
     return [dictionary, indexedDictionaryValues(dictionary)];
   }
 
-  const dictionary = dictionaries.find(d => d._id.toString() === property.content.toString());
-  return [dictionary, indexedDictionaryValues(dictionary)];
+  const propContent = property.content.toString();
+  if (!dictionaryCache[propContent]) {
+    const dictionary = dictionariesById[propContent];
+    const dictionaryValues = indexedDictionaryValues(dictionary);
+    dictionaryCache[propContent] = [dictionary, dictionaryValues];
+  }
+  return dictionaryCache[propContent];
 };
 
 const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
@@ -308,36 +320,61 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
   return Object.assign(aggregation, { buckets });
 };
 
+const PASS_THROUGH_KEYS = new Set(['_types', 'generatedToc', '_permissions.self', '_published']);
+const PERMISSION_KEYS = new Set(['_permissions.read', '_permissions.write']);
 const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
   const properties = propertiesHelper.allProperties(templates);
+  const propertiesByName = objectIndex(
+    properties,
+    p => p.name,
+    p => p
+  );
+  const propertiesById = objectIndex(
+    properties,
+    p => p._id.toString(),
+    p => p
+  );
   const newRelationshipsEnabled = v2.checkFeatureEnabled();
+  const dictionariesById = objectIndex(
+    dictionaries,
+    d => d._id.toString(),
+    d => d
+  );
+  const dictionaryCache = {};
   const denormalizedAggregations = {};
   // eslint-disable-next-line max-statements
   await sequentialPromises(Object.keys(aggregations), async key => {
     if (
       !aggregations[key].buckets ||
       aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', '_permissions.self', '_published'].includes(key)
+      PASS_THROUGH_KEYS.has(key)
     ) {
       denormalizedAggregations[key] = aggregations[key];
       return;
     }
 
-    if (['_permissions.read', '_permissions.write'].includes(key)) {
+    if (PERMISSION_KEYS.has(key)) {
       const [users, groups] = await Promise.all([usersModel.get(), userGroups.get()]);
 
       const info = [
         ...users.map(u => ({ type: 'user', refId: u._id, label: u.username })),
         ...groups.map(g => ({ type: 'group', refId: g._id, label: g.name })),
       ];
+      const infoByRefId = objectIndex(
+        info,
+        i => i.refId.toString(),
+        i => i
+      );
 
       const role = permissionsContext.getUserInContext()?.role;
       const refIds = permissionsContext.permissionsRefIds();
 
-      const buckets = aggregations[key].buckets
-        .filter(bucket => role === UserRole.ADMIN || refIds.includes(bucket.key))
+      let { buckets } = aggregations[key];
+      buckets =
+        role === UserRole.ADMIN ? buckets : buckets.filter(bucket => refIds.includes(bucket.key));
+      buckets = buckets
         .map(bucket => {
-          const itemInfo = info.find(i => i.refId.toString() === bucket.key);
+          const itemInfo = bucket.key in infoByRefId ? infoByRefId[bucket.key] : null;
 
           if (!itemInfo) return null;
 
@@ -353,10 +390,14 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       return;
     }
 
-    let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+    let property = key in propertiesByName ? propertiesByName[key] : null;
+    if (!property && key.startsWith('__')) {
+      const _key = key.substring(2);
+      property = _key in propertiesByName ? propertiesByName[_key] : null;
+    }
 
     if (property.inherit) {
-      property = propertiesHelper.getInheritedProperty(property, properties);
+      property = propertiesHelper.getInheritedProperty(property, properties, propertiesById);
     }
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
@@ -365,7 +406,8 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       aggregations[key],
       language,
       property,
-      dictionaries
+      dictionariesById,
+      dictionaryCache
     );
 
     const buckets = aggregations[key].buckets
