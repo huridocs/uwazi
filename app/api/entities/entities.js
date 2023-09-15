@@ -238,6 +238,17 @@ function sanitize(doc, template) {
       return Object.assign(sanitizedMetadata, { [name]: [] });
     }
 
+    if (type === propertyTypes.numeric && typeof sanitizedMetadata[name]?.[0]?.value === 'string') {
+      if (sanitizedMetadata[name][0].value === '') {
+        delete sanitizedMetadata[name];
+        return sanitizedMetadata;
+      }
+
+      return Object.assign(sanitizedMetadata, {
+        [name]: [{ value: parseFloat(sanitizedMetadata[name][0].value) }],
+      });
+    }
+
     return sanitizedMetadata;
   }, doc.metadata);
 
