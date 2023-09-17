@@ -11,24 +11,10 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
-import { DropZone, DragableItem } from 'app/Layout/DragAndDrop';
+import { DragSource, Container, subject } from 'app/V2/Components/Layouts/DradAndDrop/';
+
 import { ItemTypes } from 'app/V2/shared/types';
 import { SettingsHeader } from './SettingsHeader';
-
-const removeItem = itemId => {
-  const removeItemIterator = items =>
-    items
-      .filter(item => item.id !== itemId)
-      .map(_item => {
-        const item = { ..._item };
-        if (item.items) {
-          item.items = removeItemIterator(item.items);
-        }
-        return item;
-      });
-
-  return removeItemIterator;
-};
 
 class FiltersForm extends Component {
   constructor(props) {
@@ -108,6 +94,7 @@ class FiltersForm extends Component {
     const { activeFilters } = this.state;
     const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     this.setState({ activeFilters: activeFilters.concat([newGroup]) });
+    subject.next(newGroup);
   }
 
   removeGroup(group) {
@@ -116,17 +103,17 @@ class FiltersForm extends Component {
     this.setState({ activeFilters });
   }
 
-  removeItem(item) {
-    const { activeFilters: activeFiltersState, inactiveFilters } = this.state;
-    const activeFilters = removeItem(item.id)(activeFiltersState);
-    this.setState({ activeFilters, inactiveFilters: inactiveFilters.concat([item]) });
-  }
+  // removeItem(item) {
+  //   const { activeFilters: activeFiltersState, inactiveFilters } = this.state;
+  //   const activeFilters = removeItem(item.id)(activeFiltersState);
+  //   this.setState({ activeFilters, inactiveFilters: inactiveFilters.concat([item]) });
+  // }
 
   renderGroup(group) {
-    const onChange = items => {
-      group.items = items;
-      this.setState(this.state);
-    };
+    // const onChange = items => {
+    //   group.items = items;
+    //   this.setState(this.state);
+    // };
 
     const nameChange = e => {
       const name = e.target.value;
@@ -154,6 +141,11 @@ class FiltersForm extends Component {
             </button>
           </span>
         </div>
+        <Container
+          type={ItemTypes.FILTER}
+          items={group.items}
+          itemComponent={this.renderActiveItems}
+        />
       </div>
     );
   }
@@ -168,7 +160,9 @@ class FiltersForm extends Component {
         <button
           type="button"
           className="btn btn-xs btn-danger"
-          onClick={this.removeItem.bind(this, item)}
+          onClick={() => {
+            subject.next(item);
+          }}
         >
           <Icon icon="trash-alt" />
         </button>
@@ -226,12 +220,11 @@ class FiltersForm extends Component {
                         </ul>
                       </div>
                     </div>
-                    <div style={{ overflow: 'hidden', clear: 'both' }}>
-                      {activeFilters.map(filter => (
-                        <DragableItem name={filter.name} type={ItemTypes.FILTER} />
-                      ))}
-                    </div>
-                    <DropZone type={ItemTypes.FILTER} />
+                    <Container
+                      type={ItemTypes.FILTER}
+                      items={activeFilters}
+                      itemComponent={this.renderActiveItems}
+                    />
                   </div>
                   <div className="col-sm-3">
                     <div className="FiltersForm-constructor">
@@ -240,11 +233,7 @@ class FiltersForm extends Component {
                           <Translate>Entity types</Translate>
                         </i>
                       </div>
-                      <div style={{ overflow: 'hidden', clear: 'both' }}>
-                        {inactiveFilters.map(filter => (
-                          <DragableItem name={filter.name} type={ItemTypes.FILTER} />
-                        ))}
-                      </div>
+                      <DragSource items={inactiveFilters} type={ItemTypes.FILTER} />
                     </div>
                   </div>
                 </div>
