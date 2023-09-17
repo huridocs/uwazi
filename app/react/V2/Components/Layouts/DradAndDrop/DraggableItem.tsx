@@ -13,23 +13,24 @@ interface DraggableItemProps extends React.PropsWithChildren {
   type: ItemTypes;
   index: number;
   sortLink?: Function;
+  className: string;
 }
 
 interface DropResult {
   item: string;
   onDrop: Function;
 }
-
-interface DragItem {
-  index: number;
-  id: string;
-  type: string;
-}
-
 const hoverSortable =
   (ref: RefObject<HTMLElement>, index: number, sortFunction?: Function) =>
   // eslint-disable-next-line max-statements
-  (currentItem: DragItem, monitor: any) => {
+  (
+    currentItem: {
+      index: number;
+      id: string;
+      type: string;
+    },
+    monitor: any
+  ) => {
     if (!ref.current || !sortFunction) {
       return;
     }
@@ -87,6 +88,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   sortLink,
   type,
   children,
+  className,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [, drop] = useDrop({
@@ -119,18 +121,15 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   drag(drop(ref));
   return (
     <div
-      className="flex flex-row gap-4 p-3 m-5 border border-gray-200 border-solid cursor-move"
+      className={`${className} flex flex-row p-3 m-5 border border-gray-200 border-solid ${
+        iconHandle ? 'cursor-move' : ''
+      }`}
       ref={ref}
       data-testid="dragable-item"
       style={{ opacity }}
       data-handler-id={handlerId}
     >
-      {iconHandle && (
-        <span ref={null}>
-          <Icon icon="bars" className="text-gray-400 " />
-        </span>
-      )}
-      {!iconHandle && <Icon icon="bars" className="text-gray-400 " />}
+      <Icon icon="bars" className={`text-gray-400 ${!iconHandle ? 'cursor-move' : ''}`} />
       {children}
     </div>
   );

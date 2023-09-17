@@ -76,6 +76,7 @@ const withDnD = <T,>(Component: React.FC<T>) =>
     (module: any) => ({
       useDrag: module.useDrag,
       useDrop: module.useDrop,
+      useDragDropManager: module.useDragDropManager,
     })
   );
 

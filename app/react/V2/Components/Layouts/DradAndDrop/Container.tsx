@@ -15,11 +15,11 @@ interface ContainerProps {
 
 const subject = new Subject();
 const getRemovedItem = () => subject.asObservable();
+const addItem = () => subject.asObservable();
 
 const Container: FC<ContainerProps> = memo(
   ({ items, type, iconHandle = false, itemComponent }: ContainerProps) => {
     const [activeItems, setActiveItems] = useState(items);
-
     const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
@@ -37,6 +37,10 @@ const Container: FC<ContainerProps> = memo(
       );
     }, []);
 
+    addItem().subscribe(newItem => {
+      onDropHandler(newItem as IDraggable);
+    });
+
     getRemovedItem().subscribe(removedItem => {
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
@@ -47,7 +51,7 @@ const Container: FC<ContainerProps> = memo(
     });
 
     return (
-      <div>
+      <div className="tw-content">
         <div style={{ overflow: 'hidden', clear: 'both' }}>
           <ul>
             {activeItems.map((item: IDraggable, index: number) => (
@@ -58,6 +62,7 @@ const Container: FC<ContainerProps> = memo(
                 type={type}
                 index={index}
                 sortLink={moveItem}
+                className="flex flex-row gap-3 align-middle "
               >
                 <>
                   {itemComponent && itemComponent(item)}
@@ -78,4 +83,4 @@ Container.defaultProps = {
   itemComponent: undefined,
 };
 
-export { Container, getRemovedItem, subject };
+export { Container, getRemovedItem, subject, addItem };
