@@ -11,7 +11,12 @@ import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { t, Translate } from 'app/I18N';
 import { Icon } from 'UI';
-import { DragSource, Container, subject } from 'app/V2/Components/Layouts/DradAndDrop/';
+import {
+  DragSource,
+  Container,
+  addSubject$,
+  removeSubject$,
+} from 'app/V2/Components/Layouts/DradAndDrop/';
 
 import { ItemTypes } from 'app/V2/shared/types';
 import { SettingsHeader } from './SettingsHeader';
@@ -94,7 +99,7 @@ class FiltersForm extends Component {
     const { activeFilters } = this.state;
     const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     this.setState({ activeFilters: activeFilters.concat([newGroup]) });
-    subject.next(newGroup);
+    addSubject$.next(newGroup);
   }
 
   removeGroup(group) {
@@ -161,7 +166,7 @@ class FiltersForm extends Component {
           type="button"
           className="btn btn-xs btn-danger"
           onClick={() => {
-            subject.next(item);
+            removeSubject$.next(item);
           }}
         >
           <Icon icon="trash-alt" />

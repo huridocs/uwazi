@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
 import { DraggableItem } from './DraggableItem';
-import { getRemovedItem } from './Container';
+import { removeItem$ } from './Container';
 
 interface DragSourceProps {
   items: IDraggable[];
@@ -12,6 +12,7 @@ interface DragSourceProps {
 const DragSourceComponent = ({ items, type, useDragDropManager = () => {} }: DragSourceProps) => {
   const [availableItems, setAvailableItems] = useState(items);
   const dragDropManager = useDragDropManager();
+
   const handleMonitorChange = () => {
     const dropResult = dragDropManager.getMonitor().getDropResult();
     const { item } = dragDropManager.getMonitor().getItem() || {};
@@ -21,14 +22,18 @@ const DragSourceComponent = ({ items, type, useDragDropManager = () => {} }: Dra
     }
   };
   useEffect(() => {
-    const listener = getRemovedItem().subscribe((removedItem: any) => {
+    const suscription = removeItem$().subscribe((removedItem: any) => {
       setAvailableItems(availableItems.concat(removedItem));
     });
 
-    return () => listener.unsubscribe();
+    return () => suscription.unsubscribe();
   }, [availableItems]);
 
-  dragDropManager.getMonitor().subscribeToStateChange(handleMonitorChange);
+  useEffect(() => {
+    const unsubscribe = dragDropManager.getMonitor().subscribeToStateChange(handleMonitorChange);
+    return () => unsubscribe();
+  });
+
   return (
     <div className="tw-content">
       <ul>

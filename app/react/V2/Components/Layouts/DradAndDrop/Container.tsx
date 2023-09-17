@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Subject } from 'rxjs';
 import update from 'immutability-helper';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
@@ -13,13 +13,15 @@ interface ContainerProps {
   iconHandle?: boolean;
 }
 
-const subject = new Subject();
-const getRemovedItem = () => subject.asObservable();
-const addItem = () => subject.asObservable();
+const removeSubject$ = new Subject();
+const addSubject$ = new Subject();
+const removeItem$ = () => removeSubject$.asObservable();
+const addItem$ = () => addSubject$.asObservable();
 
 const Container: FC<ContainerProps> = memo(
   ({ items, type, iconHandle = false, itemComponent }: ContainerProps) => {
     const [activeItems, setActiveItems] = useState(items);
+
     const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
@@ -37,17 +39,23 @@ const Container: FC<ContainerProps> = memo(
       );
     }, []);
 
-    addItem().subscribe(newItem => {
-      onDropHandler(newItem as IDraggable);
-    });
+    useEffect(() => {
+      const addSuscription = addItem$().subscribe(newItem => {
+        onDropHandler(newItem as IDraggable);
+      });
+      const removeSuscription = removeItem$().subscribe(removedItem => {
+        setActiveItems((prevActiveItems: IDraggable[]) =>
+          update(prevActiveItems, {
+            $apply: (values: IDraggable[]) =>
+              values.filter((item: IDraggable) => item.name !== (removedItem as IDraggable).name),
+          })
+        );
+      });
 
-    getRemovedItem().subscribe(removedItem => {
-      setActiveItems((prevActiveItems: IDraggable[]) =>
-        update(prevActiveItems, {
-          $apply: (values: IDraggable[]) =>
-            values.filter((item: IDraggable) => item.name !== (removedItem as IDraggable).name),
-        })
-      );
+      return () => {
+        addSuscription.unsubscribe();
+        removeSuscription.unsubscribe();
+      };
     });
 
     return (
@@ -83,4 +91,4 @@ Container.defaultProps = {
   itemComponent: undefined,
 };
 
-export { Container, getRemovedItem, subject, addItem };
+export { Container, removeSubject$, addSubject$, removeItem$, addItem$ };

@@ -5,8 +5,8 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import { Meta, StoryObj } from '@storybook/react';
 import { Button } from 'app/V2/Components/UI';
+import { removeSubject$ } from 'app/V2/Components/Layouts/DradAndDrop/Container';
 import { Container, DragSource } from 'app/V2/Components/Layouts/DradAndDrop';
-import { subject } from 'app/V2/Components/Layouts/DradAndDrop/Container';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 
@@ -28,7 +28,7 @@ const CardWithRemove = (item: IDraggable) => (
       size="small"
       className="p-1 ml-auto"
       onClick={() => {
-        subject.next(item);
+        removeSubject$.next(item);
       }}
     >
       <TrashIcon className="w-4" />
