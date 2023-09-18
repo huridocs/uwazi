@@ -102,5 +102,14 @@ export const fixtures = {
         numeric_2: [{ value: '' }],
       },
     },
+    {
+      _id: new ObjectId(),
+      sharedId: 'entity7',
+      language: 'en',
+      template: template1,
+      metadata: {
+        numeric_1: [],
+      },
+    },
   ],
 };

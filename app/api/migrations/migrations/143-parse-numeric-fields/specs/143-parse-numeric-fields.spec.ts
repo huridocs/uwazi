@@ -74,6 +74,12 @@ describe('migration parse-numeric-fields', () => {
             numeric_1: [{ value: 6.5 }],
           },
         },
+        {
+          sharedId: 'entity7',
+          metadata: {
+            numeric_1: [],
+          },
+        },
       ]);
     });
 
