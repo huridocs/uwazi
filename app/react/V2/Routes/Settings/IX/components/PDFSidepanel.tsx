@@ -16,6 +16,7 @@ import * as entitiesAPI from 'V2/api/entities';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
+import { SelectionError } from './SelectionError';
 import { Highlights } from '../types';
 import {
   deleteFileSelection,
@@ -23,7 +24,6 @@ import {
   getHighlightsFromSelection,
   updateFileSelection,
 } from '../functions/handleTextSelection';
-import { EmptySelectionError } from './EmptySelectionError';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -35,6 +35,8 @@ enum HighlightColors {
   CURRENT = '#B1F7A3',
   NEW = '#F27DA5',
 }
+
+const formatDate = (value: number) => moment.utc(value as number, 'X').format('YYYY-MM-DD');
 
 const getFormValue = (
   suggestion?: EntitySuggestionType,
@@ -56,7 +58,7 @@ const getFormValue = (
     value = entityMetadata ? entityMetadata[0].value : '';
 
     if (type === 'date' && value) {
-      const dateString = moment.utc(value as number, 'X').format('YYYY-MM-DD');
+      const dateString = formatDate(value as number);
       value = dateString;
     }
   }
@@ -112,7 +114,7 @@ const handleEntitySave = async (
   fieldHasChanged?: boolean
 ) => {
   if (fieldHasChanged && entity) {
-    console.log('saving!!');
+    console.log('saving!!', metadata);
   }
 };
 
@@ -127,6 +129,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [pdf, setPdf] = useState<FileType>();
   const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [selectedText, setSelectedText] = useState<TextSelection>();
+  const [selectionError, setSelectionError] = useState<string>();
   const [highlights, setHighlights] = useState<Highlights>();
   const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [entity, setEntity] = useState<ClientEntitySchema>();
@@ -174,6 +177,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
     return () => {
       setSelectedText(undefined);
+      setSelectionError(undefined);
       setHighlights(undefined);
       setSelections(undefined);
     };
@@ -195,7 +199,8 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     let metadata = value.field;
 
     if (propertyType === 'date' && isDirty && metadata) {
-      metadata = Date.parse(metadata as string) / 1000;
+      metadata = (await entitiesAPI.coerceValue(metadata as string, 'date', pdf?.language || 'en'))
+        .value;
     }
 
     const response = await Promise.all([
@@ -205,6 +210,38 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
     revalidator.revalidate();
     setShowSidepanel(false);
+  };
+
+  const handleClickToFill = async () => {
+    if (selectedText) {
+      let value = selectedText.text;
+
+      setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
+      setSelections(
+        updateFileSelection(
+          { name: suggestion?.propertyName || '', id: propertyId },
+          pdf?.extractedMetadata,
+          selectedText
+        )
+      );
+
+      if (propertyType === 'date' && selectedText.text) {
+        const response = await entitiesAPI.coerceValue(
+          selectedText.text,
+          'date',
+          pdf?.language || 'en'
+        );
+
+        if (!response.success) {
+          setSelectionError('Value cannot be transformed to the correct type');
+        } else {
+          setSelectionError(undefined);
+          value = formatDate(response.value);
+        }
+      }
+
+      setValue('field', value, { shouldDirty: true });
+    }
   };
 
   return (
@@ -224,19 +261,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               styling="light"
               size="small"
               color="primary"
-              onClick={() => {
-                if (selectedText) {
-                  setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
-                  setSelections(
-                    updateFileSelection(
-                      { name: suggestion?.propertyName || '', id: propertyId },
-                      pdf?.extractedMetadata,
-                      selectedText
-                    )
-                  );
-                  setValue('field', selectedText.text);
-                }
-              }}
+              onClick={async () => handleClickToFill()}
               disabled={!selectedText?.selectionRectangles.length}
             >
               <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
@@ -270,11 +295,11 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               );
             }}
           >
-            <Translate>Clear Selection</Translate>
+            <Translate>Clear PDF selection</Translate>
           </button>
         </div>
 
-        {selectedText && !selectedText.selectionRectangles.length && <EmptySelectionError />}
+        {selectionError && <SelectionError error={selectionError} />}
 
         <div ref={pdfContainerRef} className="grow">
           {pdf && (
@@ -282,7 +307,13 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               fileUrl={`/api/files/${pdf.filename}`}
               highlights={highlights}
               onSelect={selection => {
-                setSelectedText(selection);
+                if (!selection.selectionRectangles.length) {
+                  setSelectionError('Could not detect the area for the selected text');
+                  setSelectedText(undefined);
+                } else {
+                  setSelectionError(undefined);
+                  setSelectedText(selection);
+                }
               }}
               size={{
                 height: `${pdfContainerHeight}px`,
