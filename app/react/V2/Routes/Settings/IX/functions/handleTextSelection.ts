@@ -111,7 +111,7 @@ const updateFileSelection = (
     selection => selection.propertyID === property.id || selection.name === property.name
   );
 
-  const timestamp = new Date().toUTCString();
+  const timestamp = new Date().toString();
 
   if (isNewSelection && property) {
     return [

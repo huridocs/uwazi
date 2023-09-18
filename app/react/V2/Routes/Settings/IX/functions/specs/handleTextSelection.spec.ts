@@ -245,7 +245,7 @@ describe('PDF selections handlers', () => {
         property2Selection,
         {
           name: 'title',
-          timestamp: new Date().toUTCString(),
+          timestamp: new Date().toString(),
           selection: {
             text: 'new text',
             selectionRectangles: [
@@ -270,7 +270,7 @@ describe('PDF selections handlers', () => {
         {
           name: 'newProperty',
           propertyID: '6',
-          timestamp: new Date().toUTCString(),
+          timestamp: new Date().toString(),
           selection: {
             text: 'new text',
             selectionRectangles: [
