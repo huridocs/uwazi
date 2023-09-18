@@ -64,10 +64,56 @@ socket.on('translationsChange', translations => {
   Translate.resetCachedTranslation();
 });
 
+socket.on('translationsInstallDone', () => {
+  store.dispatch(
+    notificationActions.notify(
+      t('System', 'Languages installed successfully', null, false),
+      'success'
+    )
+  );
+});
+
+socket.on('translationsInstallError', errorMessage => {
+  store.dispatch(
+    notificationActions.notify(
+      `${t(
+        'System',
+        'An error has occured while installing languages:',
+        null,
+        false
+      )}\n${errorMessage}`,
+      'danger'
+    )
+  );
+});
+
 socket.on('translationsDelete', locale => {
   store.dispatch(actions.remove('translations', { locale }, 'locale'));
   t.resetCachedTranslation();
   Translate.resetCachedTranslation();
+});
+
+socket.on('translationsDeleteDone', () => {
+  store.dispatch(
+    notificationActions.notify(
+      t('System', 'Language uninstalled successfully', null, false),
+      'success'
+    )
+  );
+});
+
+socket.on('translationsDeleteError', errorMessage => {
+  store.dispatch(
+    notificationActions.notify(
+      `${t(
+        'System',
+        'An error has occured while deleting a language:',
+        null,
+        false
+      )}\n${errorMessage}`,
+      'danger'
+    )
+  );
 });
 
 socket.on('documentProcessed', sharedId => {
