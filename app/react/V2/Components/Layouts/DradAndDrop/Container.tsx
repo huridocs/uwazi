@@ -34,7 +34,7 @@ const Container: FC<ContainerProps> = memo(
     }, []);
 
     const onDropHandler = useCallback((newItem: IDraggable) => {
-      if (newItem.container !== name) {
+      if (newItem.container !== name && (!newItem.target || newItem.target === name)) {
         if (newItem.container !== undefined) {
           removeSubject$.next({ ...newItem, moved: true });
         }

@@ -3,14 +3,16 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { List } from 'immutable';
+import { TrashIcon } from '@heroicons/react/20/solid';
 
-import { RequestParams } from 'app/utils/RequestParams';
-import ID from 'shared/uniqueID';
+import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
+import { t, Translate } from 'app/I18N';
+import { RequestParams } from 'app/utils/RequestParams';
+import { Button } from 'app/V2/Components/UI';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
-import { t, Translate } from 'app/I18N';
-import { Icon } from 'UI';
+import ID from 'shared/uniqueID';
 import {
   DragSource,
   Container,
@@ -99,27 +101,10 @@ class FiltersForm extends Component {
     const { activeFilters } = this.state;
     const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     this.setState({ activeFilters: activeFilters.concat([newGroup]) });
-    addSubject$.next(newGroup);
+    addSubject$.next({ ...newGroup, target: 'root' });
   }
-
-  removeGroup(group) {
-    const { activeFilters: activeFiltersState } = this.state;
-    const activeFilters = activeFiltersState.filter(item => item.id !== group.id);
-    this.setState({ activeFilters });
-  }
-
-  // removeItem(item) {
-  //   const { activeFilters: activeFiltersState, inactiveFilters } = this.state;
-  //   const activeFilters = removeItem(item.id)(activeFiltersState);
-  //   this.setState({ activeFilters, inactiveFilters: inactiveFilters.concat([item]) });
-  // }
 
   renderGroup(group) {
-    // const onChange = items => {
-    //   group.items = items;
-    //   this.setState(this.state);
-    // };
-
     const nameChange = e => {
       const name = e.target.value;
       group.name = name;
@@ -127,30 +112,32 @@ class FiltersForm extends Component {
     };
 
     return (
-      <div>
-        <div className="input-group">
+      <div className="w-full ">
+        <div className="flex flex-row">
           <input
             type="text"
-            className="form-control"
+            className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
             value={group.name}
             onChange={nameChange.bind(this)}
           />
-          <span className="input-group-btn">
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={this.removeGroup.bind(this, group)}
-              disabled={group.items.length}
-            >
-              <Icon icon="trash-alt" />
-            </button>
-          </span>
+          <Button
+            type="button"
+            color="error"
+            size="small"
+            className="p-1 ml-auto rounded-l-none"
+            onClick={() => {
+              removeSubject$.next(group);
+            }}
+          >
+            <TrashIcon className="w-4" />
+          </Button>
         </div>
         <Container
           type={ItemTypes.FILTER}
           items={group.items}
           itemComponent={this.renderActiveItems}
           name={`group_${group.name}`}
+          className="w-full text-xs"
         />
       </div>
     );
@@ -161,17 +148,19 @@ class FiltersForm extends Component {
       return this.renderGroup(item);
     }
     return (
-      <div>
+      <div className="flex flex-row w-full">
         <span>{item.name}</span>
-        <button
+        <Button
           type="button"
-          className="btn btn-xs btn-danger"
+          color="error"
+          size="small"
+          className="p-1 ml-auto "
           onClick={() => {
             removeSubject$.next(item);
           }}
         >
-          <Icon icon="trash-alt" />
-        </button>
+          <TrashIcon className="w-4" />
+        </Button>
       </div>
     );
   }

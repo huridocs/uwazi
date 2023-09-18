@@ -122,7 +122,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   drag(drop(ref));
   return (
     <div
-      className={`${className} flex flex-row p-3 m-5 border border-gray-200 border-solid ${
+      className={`${className} flex flex-row p-3 mt-5 mb-5 border border-gray-200 border-solid min-w-full ${
         iconHandle ? 'cursor-move' : ''
       }`}
       ref={ref}

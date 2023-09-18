@@ -37,7 +37,7 @@ const CardWithRemove = (item: IDraggable) => (
   </div>
 );
 
-const CardWithDnD = args => (item: IDraggable) => (
+const CardWithDnD = (args: { type: ItemTypes }) => (item: IDraggable) => (
   <div className="flex flex-col w-full">
     <CardWithRemove name={item.name} />
     <Container
