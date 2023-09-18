@@ -130,6 +130,29 @@ const handleEntitySave = async (
     return entitiesAPI.save(entityToSave);
   }
 
+  if (entity.metadata && !entity.metadata[propertyName]) {
+    const entityToSave = { ...entity };
+    entityToSave.metadata![propertyName] = [];
+    entityToSave.metadata![propertyName]?.push({ value: metadata || '' });
+    return entitiesAPI.save(entityToSave);
+  }
+
+  return undefined;
+};
+
+const coerceValue = async (
+  propertyType: 'date' | 'number',
+  text?: string,
+  documentLanguage: string = 'en'
+) => {
+  if (propertyType === 'date' && text) {
+    return entitiesAPI.coerceValue(text, 'date', documentLanguage);
+  }
+
+  if (propertyType === 'number' && text) {
+    return entitiesAPI.coerceValue(text.trim(), 'numeric', documentLanguage);
+  }
+
   return undefined;
 };
 
@@ -230,8 +253,6 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
   const handleClickToFill = async () => {
     if (selectedText) {
-      let value = selectedText.text;
-
       setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
       setSelections(
         updateFileSelection(
@@ -241,22 +262,20 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         )
       );
 
-      if (propertyType === 'date' && selectedText.text) {
-        const response = await entitiesAPI.coerceValue(
-          selectedText.text,
-          'date',
-          pdf?.language || 'en'
-        );
+      if (propertyType === 'date' || propertyType === 'number') {
+        const coercedValue = await coerceValue(propertyType, selectedText.text, pdf?.language);
 
-        if (!response.success) {
+        if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
-        } else {
-          setSelectionError(undefined);
-          value = formatDate(response.value);
         }
-      }
 
-      setValue('field', value, { shouldDirty: true });
+        if (coercedValue?.success) {
+          setSelectionError(undefined);
+          setValue('field', coercedValue.value, { shouldDirty: true });
+        }
+      } else {
+        setValue('field', selectedText.text, { shouldDirty: true });
+      }
     }
   };
 
