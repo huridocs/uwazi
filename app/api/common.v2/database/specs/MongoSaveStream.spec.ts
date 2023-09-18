@@ -3,10 +3,7 @@ import { Db, ObjectId } from 'mongodb';
 import testingDB from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { getClient } from '../getConnectionForCurrentTenant';
-import { MongoDataSource } from '../MongoDataSource';
 import { MongoSaveStream } from '../MongoSaveStream';
-import { MongoTransactionManager } from '../MongoTransactionManager';
 
 const factory = getFixturesFactory();
 
