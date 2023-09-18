@@ -5,10 +5,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
 import moment from 'moment';
 import { useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
@@ -16,6 +18,7 @@ import * as entitiesAPI from 'V2/api/entities';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF } from 'V2/Components/PDFViewer';
+import { notificationAtom } from 'V2/atoms';
 import { SelectionError } from './SelectionError';
 import { Highlights } from '../types';
 import {
@@ -171,6 +174,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
   const [highlights, setHighlights] = useState<Highlights>();
   const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [entity, setEntity] = useState<ClientEntitySchema>();
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
   const { propertyLabel, propertyType, isRequired, propertyId } = getPropertyData(
@@ -246,7 +250,15 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       handleEntitySave(entity, suggestion?.propertyName, metadata, isDirty),
     ]);
 
-    if (savedFile || savedEntity) {
+    if (savedFile instanceof FetchResponseError || savedEntity instanceof FetchResponseError) {
+      const details =
+        (savedFile as FetchResponseError)?.json.prettyMessage ||
+        (savedEntity as FetchResponseError)?.json.prettyMessage;
+
+      setNotifications({ type: 'error', text: 'An error occurred', details });
+      revalidator.revalidate();
+    } else if (savedFile || savedEntity) {
+      setNotifications({ type: 'success', text: 'Saved successfully.' });
       revalidator.revalidate();
     }
 

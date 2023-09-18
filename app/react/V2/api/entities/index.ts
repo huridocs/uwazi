@@ -1,5 +1,6 @@
 import api from 'app/utils/api';
 import { EntitySchema } from 'shared/types/entityType';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
 
 type EntityApiParams = {
@@ -31,7 +32,7 @@ const getById = async ({
   }
 };
 
-const save = async (entity: EntitySchema) => {
+const save = async (entity: EntitySchema): Promise<EntitySchema | FetchResponseError> => {
   try {
     const requestParams = new RequestParams(entity);
     const { json: response } = await api.post('entities', requestParams);

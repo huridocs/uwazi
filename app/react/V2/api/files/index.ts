@@ -1,5 +1,6 @@
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 
 const getById = async (_id: string): Promise<FileType[]> => {
@@ -12,7 +13,7 @@ const getById = async (_id: string): Promise<FileType[]> => {
   }
 };
 
-const update = async (file: FileType): Promise<FileType> => {
+const update = async (file: FileType): Promise<FileType | FetchResponseError> => {
   try {
     const requestParams = new RequestParams(file);
     const { json: response } = await api.post('files', requestParams);
