@@ -126,7 +126,7 @@
     "bcryptjs": "^2.4.3",
     "big.js": "^6.2.1",
     "body-parser": "^1.20.2",
-    "bootstrap": "3.4.1",
+    "bootstrap": "5.3.2",
     "child-process-promise": "^2.2.1",
     "compression": "^1.7.4",
     "connect-mongo": "5.0.0",
