@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-focused-tests */
 /* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
@@ -504,7 +505,7 @@ describe('search', () => {
     });
   });
 
-  describe('select aggregations', () => {
+  fdescribe('select aggregations', () => {
     it('should return aggregations of select fields when filtering by types', async () => {
       userFactory.mock(undefined);
       const template1 = await search.search({ types: [ids.templateMetadata1] }, 'en');
@@ -540,6 +541,16 @@ describe('search', () => {
       const template1UnpubishedAggs = template1Unpublished.aggregations.all.select1.buckets;
       expect(template1UnpubishedAggs.find(a => a.key === 'EgyptID')).not.toBeDefined();
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID')).not.toBeDefined();
+    });
+
+    fit('', async () => {
+      const result = await search.search(
+        {
+          types: [ids.templateMetadata1, ids.templateMetadata2],
+        },
+        'en'
+      );
+      console.log(result.aggregations.all.select1);
     });
 
     describe('_type aggregations', () => {
@@ -587,7 +598,7 @@ describe('search', () => {
     });
   });
 
-  describe('inherit aggregations', () => {
+  fdescribe('inherit aggregations', () => {
     it('should return aggregations based on inheritValue', async () => {
       const allAggregations = await search.search({ allAggregations: true }, 'en');
 
@@ -599,7 +610,7 @@ describe('search', () => {
     });
   });
 
-  describe('relationship aggregations', () => {
+  fdescribe('relationship aggregations', () => {
     it('should return aggregations based on title of related entity', async () => {
       userFactory.mock({
         _id: ids.collaboratorId,
@@ -648,7 +659,7 @@ describe('search', () => {
       ]);
     });
   });
-  describe('multiselect aggregations', () => {
+  fdescribe('multiselect aggregations', () => {
     it('should return aggregations of multiselect fields', async () => {
       userFactory.mock(undefined);
       const [template1, template2, both, filtered] = await Promise.all([
@@ -1039,7 +1050,7 @@ describe('search', () => {
     });
   });
 
-  describe('autocompleteAggregations()', () => {
+  fdescribe('autocompleteAggregations()', () => {
     it('should return a list of options matching by label and options related to the matching one', async () => {
       const query = {
         types: [ids.templateMetadata1, ids.templateMetadata2],

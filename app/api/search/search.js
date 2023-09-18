@@ -544,7 +544,7 @@ const _sanitizeAggregations = async (
   templates,
   dictionaries,
   language,
-  limit = preloadOptionsLimit
+  limit = preloadOptionsLimit()
 ) => {
   const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
@@ -866,7 +866,7 @@ const search = {
       templates,
       dictionaries,
       language,
-      preloadOptionsSearch
+      preloadOptionsSearch()
     );
 
     const options = sanitizedAggregations[propertyName].buckets
@@ -881,7 +881,7 @@ const search = {
     const filteredOptions = filterOptions(searchTerm, options);
 
     return {
-      options: filteredOptions.slice(0, preloadOptionsLimit),
+      options: filteredOptions.slice(0, preloadOptionsLimit()),
       count: filteredOptions.length,
     };
   },
@@ -890,7 +890,7 @@ const search = {
     const queryBuilder = documentQueryBuilder()
       .include(['title', 'template', 'sharedId', 'icon'])
       .language(language)
-      .limit(preloadOptionsSearch)
+      .limit(preloadOptionsSearch())
       .filterByPermissions()
       .includeUnpublished();
 
@@ -914,7 +914,7 @@ const search = {
 
     const response = await elastic.search({ body });
 
-    const options = response.body.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
+    const options = response.body.hits.hits.slice(0, preloadOptionsLimit()).map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,
       template: hit._source.template,
