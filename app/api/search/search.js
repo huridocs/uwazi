@@ -302,12 +302,17 @@ const _getAggregationDictionary = async (
 };
 
 const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
+  const aggregationBucketsByKey = objectIndex(
+    aggregation.buckets,
+    b => b.key,
+    b => b
+  );
   const buckets = dictionary.values
     .map(dictionaryValue => {
-      const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
+      const bucket = aggregationBucketsByKey[dictionaryValue.id];
       if (bucket && dictionaryValue.values) {
         bucket.values = dictionaryValue.values
-          .map(v => aggregation.buckets.find(b => b.key === v.id))
+          .map(v => aggregationBucketsByKey[v.id])
           .filter(b => b);
       }
       return bucket;
