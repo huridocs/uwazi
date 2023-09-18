@@ -106,16 +106,31 @@ const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadata
     fileToSave.extractedMetadata = newSelections;
     return filesAPI.update(fileToSave);
   }
+
+  return undefined;
 };
 
 const handleEntitySave = async (
   entity?: ClientEntitySchema,
+  propertyName?: string,
   metadata?: PropertyValueSchema,
   fieldHasChanged?: boolean
 ) => {
-  if (fieldHasChanged && entity) {
-    console.log('saving!!', metadata);
+  if (!fieldHasChanged || !entity || !propertyName) {
+    return undefined;
   }
+
+  if (propertyName === 'title' && typeof metadata === 'string') {
+    return entitiesAPI.save({ ...entity, title: metadata });
+  }
+
+  if (entity.metadata && entity.metadata[propertyName] && entity.metadata[propertyName]?.length) {
+    const entityToSave = { ...entity };
+    entityToSave.metadata![propertyName]![0].value = metadata || '';
+    return entitiesAPI.save(entityToSave);
+  }
+
+  return undefined;
 };
 
 const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
@@ -139,6 +154,18 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     suggestion,
     entityTemplate
   );
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm({
+    values: {
+      field: getFormValue(suggestion, entity, propertyType),
+    },
+  });
 
   useEffect(() => {
     if (suggestion) {
@@ -180,20 +207,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       setSelectionError(undefined);
       setHighlights(undefined);
       setSelections(undefined);
+      setValue('field', undefined, { shouldDirty: false });
     };
-  }, [pdf, showSidepanel, suggestion]);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm({
-    values: {
-      field: getFormValue(suggestion, entity, propertyType),
-    },
-  });
+  }, [pdf, setValue, showSidepanel, suggestion]);
 
   const onSubmit = async (value: { field: PropertyValueSchema | undefined }) => {
     let metadata = value.field;
@@ -203,9 +219,9 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         .value;
     }
 
-    const response = await Promise.all([
+    const [savedFile, savedEntity] = await Promise.all([
       handleFileSave(pdf, selections),
-      handleEntitySave(entity, metadata, isDirty),
+      handleEntitySave(entity, suggestion?.propertyName, metadata, isDirty),
     ]);
 
     revalidator.revalidate();

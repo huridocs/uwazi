@@ -12,10 +12,10 @@ const getById = async (_id: string): Promise<FileType[]> => {
   }
 };
 
-const update = async (file: FileType) => {
+const update = async (file: FileType): Promise<FileType> => {
   try {
     const requestParams = new RequestParams(file);
-    const response = await api.post('files', requestParams);
+    const { json: response } = await api.post('files', requestParams);
     return response;
   } catch (e) {
     return e;

@@ -32,8 +32,12 @@ const getById = async ({
 };
 
 const save = async (entity: EntitySchema) => {
-  if (entity._id) {
-  } else {
+  try {
+    const requestParams = new RequestParams(entity);
+    const { json: response } = await api.post('entities', requestParams);
+    return response;
+  } catch (e) {
+    return e;
   }
 };
 
