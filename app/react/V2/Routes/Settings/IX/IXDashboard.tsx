@@ -20,32 +20,34 @@ const formatExtractors = (
   templates: ClientTemplateSchema[]
 ): Extractor[] =>
   extractors.map(extractor => {
-    let type = '';
+    let propertyType: Extractor['propertyType'] = 'text';
+    let propertyLabel = '';
 
     const namedTemplates = extractor.templates.map(extractorTemplate => {
-      const template = templates.find(_template => _template._id === extractorTemplate);
-      const templateName = template?.name || extractorTemplate;
-
-      if (!type) {
-        if (extractor.property === 'title') {
-          type = 'text';
-        } else {
-          const extractorProperty = template?.properties.find(
-            property => property.name === extractor.property
-          );
-          type = extractorProperty?.type || 'text';
-        }
-      }
-
-      return t(extractorTemplate, templateName, null, false);
+      const templateName =
+        templates.find(template => template._id === extractorTemplate)?.name || extractorTemplate;
+      return templateName;
     });
 
-    return {
-      ...extractor,
-      namedTemplates,
-      propertyType: type as Extractor['propertyType'],
-      propertyLabel: t('System', `property ${type}`, null, false),
-    };
+    templates.forEach(template => {
+      const property = template.properties.find(
+        templateProperty => templateProperty.name === extractor.property
+      );
+
+      if (!property && !propertyLabel) {
+        propertyLabel = t(template._id, 'Title', null, false);
+      }
+
+      if (property) {
+        propertyType = property.type as Extractor['propertyType'];
+
+        if (!propertyLabel) {
+          propertyLabel = t(template._id, property.label, null, false);
+        }
+      }
+    });
+
+    return { ...extractor, namedTemplates, propertyType, propertyLabel };
   });
 
 const IXDashboard = () => {

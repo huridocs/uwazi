@@ -185,7 +185,6 @@ const IXSuggestions = () => {
             )}
             title={
               <SuggestionsTitle
-                title={extractor.name}
                 property={extractor.property}
                 templates={filteredTemplates()}
                 onFiltersButtonClicked={() => {

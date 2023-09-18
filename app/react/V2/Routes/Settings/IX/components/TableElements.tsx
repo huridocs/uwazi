@@ -65,7 +65,7 @@ const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']
   return (
     <div className="flex gap-2">
       {propertyIcons[property]}
-      <p className="text-gray-500">{cell.row.original.propertyLabel}</p>
+      <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
   );
 };

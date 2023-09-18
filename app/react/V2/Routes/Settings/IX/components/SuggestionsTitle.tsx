@@ -1,6 +1,6 @@
 import React from 'react';
 import { FunnelIcon } from '@heroicons/react/24/solid';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { Pill, Button } from 'app/V2/Components/UI';
 import { ClientTemplateSchema } from 'app/istore';
 import {
@@ -11,12 +11,10 @@ import {
 } from 'app/V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
-  title,
   property,
   templates,
   onFiltersButtonClicked,
 }: {
-  title: string;
   property: string;
   templates: ClientTemplateSchema[];
   onFiltersButtonClicked: () => void;
@@ -47,7 +45,7 @@ const SuggestionsTitle = ({
           <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
             {propGraphics}
           </span>
-          <span>{title}</span>
+          <span>{t(templates[0]?._id, template?.label, null, false)}</span>
           <span className="italic font-normal">
             <Translate>for</Translate>
           </span>
