@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { Provider } from 'react-redux';
@@ -36,6 +37,18 @@ const CardWithRemove = (item: IDraggable) => (
   </div>
 );
 
+const CardWithDnD = args => (item: IDraggable) => (
+  <div className="flex flex-col w-full">
+    <CardWithRemove name={item.name} />
+    <Container
+      type={args.type}
+      items={item.items || []}
+      itemComponent={CardWithRemove}
+      name={`group_${item.name}`}
+    />
+  </div>
+);
+
 const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
@@ -45,6 +58,7 @@ const Primary: Story = {
           items={args.items}
           itemComponent={args.itemComponent}
           iconHandle={args.iconHandle}
+          name="basic"
         />
         <DragSource items={availableItems} type={args.type} />
       </DndProvider>
@@ -57,7 +71,6 @@ const Basic = {
   args: {
     type: ItemTypes.BOX,
     items: [{ name: 'Item 1' }, { name: 'Item 2' }, { name: 'Item 3' }],
-
     iconHandle: true,
   },
 };
@@ -70,6 +83,20 @@ const WithItemComponent = {
   },
 };
 
-export { Basic, WithItemComponent };
+const Nested = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    iconHandle: false,
+    items: [
+      { name: 'Item 1', items: [{ name: 'Subitem 1' }] },
+      { name: 'Item 2', items: [] },
+      { name: 'Item 3', items: [] },
+    ],
+    itemComponent: CardWithDnD(Basic.args),
+  },
+};
+
+export { Basic, WithItemComponent, Nested };
 
 export default meta;

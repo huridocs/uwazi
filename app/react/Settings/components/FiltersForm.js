@@ -150,6 +150,7 @@ class FiltersForm extends Component {
           type={ItemTypes.FILTER}
           items={group.items}
           itemComponent={this.renderActiveItems}
+          name={`group_${group.name}`}
         />
       </div>
     );
@@ -229,6 +230,7 @@ class FiltersForm extends Component {
                       type={ItemTypes.FILTER}
                       items={activeFilters}
                       itemComponent={this.renderActiveItems}
+                      name="root"
                     />
                   </div>
                   <div className="col-sm-3">

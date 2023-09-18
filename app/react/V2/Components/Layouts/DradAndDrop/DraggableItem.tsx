@@ -31,9 +31,10 @@ const hoverSortable =
     },
     monitor: any
   ) => {
-    if (!ref.current || !sortFunction) {
+    if (!ref.current || !sortFunction || !monitor.isOver({ shallow: true })) {
       return;
     }
+
     const dragIndex = currentItem.index;
     const hoverIndex = index;
 
@@ -106,7 +107,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
     item: { item, index, sortLink },
     end: (draggedItem: IDraggable, monitor: DragSourceMonitor) => {
       const dropResult = monitor.getDropResult<DropResult>();
-      if (draggedItem && dropResult && dropResult.onDrop && !draggedItem.sortLink) {
+      if (draggedItem && dropResult && dropResult.onDrop) {
         dropResult.onDrop(item);
       }
     },

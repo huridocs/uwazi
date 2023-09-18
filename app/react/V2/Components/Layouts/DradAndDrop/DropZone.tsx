@@ -7,15 +7,16 @@ import { withDnD } from 'app/componentWrappers';
 import { ItemTypes } from 'app/V2/shared/types';
 
 interface DroppableProps {
+  name: string;
   type: ItemTypes;
   useDrop?: Function;
   onDrop?: Function;
 }
 
-const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, onDrop }) => {
+const DropZoneComponent: FC<DroppableProps> = ({ name, useDrop = () => {}, type, onDrop }) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
-    drop: () => ({ name: 'Dustbin', onDrop }),
+    drop: () => ({ name, onDrop }),
     collect: (monitor: DropTargetMonitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
@@ -31,7 +32,7 @@ const DropZoneComponent: FC<DroppableProps> = ({ useDrop = () => {}, type, onDro
           : 'empty'
       } border border-gray-500 border-dashed rounded-sm cursor-pointer bg-gray-50 `}
       ref={drop}
-      data-testid="dustbin"
+      data-testid={name}
     >
       <Translate>Drag items here</Translate>
     </div>

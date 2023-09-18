@@ -23,7 +23,10 @@ const DragSourceComponent = ({ items, type, useDragDropManager = () => {} }: Dra
   };
   useEffect(() => {
     const suscription = removeItem$().subscribe((removedItem: any) => {
-      setAvailableItems(availableItems.concat(removedItem));
+      const { container, moved, ...availableItem } = removedItem;
+      if (!moved) {
+        setAvailableItems(availableItems.concat(availableItem));
+      }
     });
 
     return () => suscription.unsubscribe();

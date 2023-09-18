@@ -12,6 +12,8 @@ interface IDraggable {
   name: string;
   iconHandle?: boolean;
   sortLink?: Function;
+  items?: IDraggable[];
+  container?: string;
 }
 
 type ISublink = {

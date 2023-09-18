@@ -11,6 +11,7 @@ interface ContainerProps {
   type: ItemTypes;
   itemComponent?: FC<IDraggable>;
   iconHandle?: boolean;
+  name: string;
 }
 
 const removeSubject$ = new Subject();
@@ -19,9 +20,8 @@ const removeItem$ = () => removeSubject$.asObservable();
 const addItem$ = () => addSubject$.asObservable();
 
 const Container: FC<ContainerProps> = memo(
-  ({ items, type, iconHandle = false, itemComponent }: ContainerProps) => {
+  ({ name = 'container', items, type, iconHandle = false, itemComponent }: ContainerProps) => {
     const [activeItems, setActiveItems] = useState(items);
-
     const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
@@ -34,22 +34,32 @@ const Container: FC<ContainerProps> = memo(
     }, []);
 
     const onDropHandler = useCallback((newItem: IDraggable) => {
-      setActiveItems((prevActiveItems: IDraggable[]) =>
-        update(prevActiveItems, { $push: [newItem] })
-      );
+      if (newItem.container !== name) {
+        if (newItem.container !== undefined) {
+          removeSubject$.next({ ...newItem, moved: true });
+        }
+        setActiveItems((prevActiveItems: IDraggable[]) =>
+          update(prevActiveItems, { $push: [{ ...newItem, container: name }] })
+        );
+      }
     }, []);
 
     useEffect(() => {
       const addSuscription = addItem$().subscribe(newItem => {
         onDropHandler(newItem as IDraggable);
       });
-      const removeSuscription = removeItem$().subscribe(removedItem => {
-        setActiveItems((prevActiveItems: IDraggable[]) =>
-          update(prevActiveItems, {
-            $apply: (values: IDraggable[]) =>
-              values.filter((item: IDraggable) => item.name !== (removedItem as IDraggable).name),
-          })
-        );
+      const removeSuscription = removeItem$().subscribe(currentItem => {
+        const removedItem = currentItem as IDraggable;
+        if (removedItem.container === name || removedItem.container === undefined) {
+          setActiveItems((prevActiveItems: IDraggable[]) =>
+            update(prevActiveItems, {
+              $apply: (values: IDraggable[]) =>
+                values.filter(
+                  (item: IDraggable) => item !== undefined && item.name !== removedItem.name
+                ),
+            })
+          );
+        }
       });
 
       return () => {
@@ -57,28 +67,30 @@ const Container: FC<ContainerProps> = memo(
         removeSuscription.unsubscribe();
       };
     });
-
     return (
       <div className="tw-content">
         <div style={{ overflow: 'hidden', clear: 'both' }}>
           <ul>
-            {activeItems.map((item: IDraggable, index: number) => (
-              <DraggableItem
-                item={item}
-                key={item.name}
-                iconHandle={iconHandle}
-                type={type}
-                index={index}
-                sortLink={moveItem}
-                className="flex flex-row gap-3 align-middle "
-              >
-                <>
-                  {itemComponent && itemComponent(item)}
-                  {!itemComponent && item.name}
-                </>
-              </DraggableItem>
-            ))}
-            <DropZone type={type} onDrop={onDropHandler} />
+            {activeItems
+              .filter(item => item)
+              .map(item => ({ ...item, container: name }))
+              .map((item: IDraggable, index: number) => (
+                <DraggableItem
+                  item={item}
+                  key={item.name}
+                  iconHandle={iconHandle}
+                  type={type}
+                  index={index}
+                  sortLink={moveItem}
+                  className="flex flex-row gap-3 align-middle "
+                >
+                  <>
+                    {itemComponent && itemComponent(item)}
+                    {!itemComponent && item.name}
+                  </>
+                </DraggableItem>
+              ))}
+            <DropZone type={type} onDrop={onDropHandler} name={name} />
           </ul>
         </div>
       </div>
