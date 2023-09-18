@@ -183,7 +183,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     handleSubmit,
     setValue,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting },
   } = useForm({
     values: {
       field: getFormValue(suggestion, entity, propertyType),
@@ -247,7 +247,10 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
       handleEntitySave(entity, suggestion?.propertyName, metadata, isDirty),
     ]);
 
-    revalidator.revalidate();
+    if (savedFile || savedEntity) {
+      revalidator.revalidate();
+    }
+
     setShowSidepanel(false);
   };
 
@@ -297,7 +300,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               size="small"
               color="primary"
               onClick={async () => handleClickToFill()}
-              disabled={!selectedText?.selectionRectangles.length}
+              disabled={!selectedText?.selectionRectangles.length || isSubmitting}
             >
               <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
             </Button>
@@ -318,7 +321,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
           <button
             type="button"
-            disabled={Boolean(!highlights)}
+            disabled={Boolean(!highlights) || isSubmitting}
             className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
             onClick={() => {
               setHighlights(undefined);
@@ -363,6 +366,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             className="flex-grow"
             type="button"
             styling="outline"
+            disabled={isSubmitting}
             onClick={() => {
               setShowSidepanel(false);
               reset();
@@ -370,7 +374,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           >
             <Translate>Cancel</Translate>
           </Button>
-          <Button className="flex-grow" type="submit">
+          <Button className="flex-grow" type="submit" disabled={isSubmitting}>
             <Translate>Accept</Translate>
           </Button>
         </div>
