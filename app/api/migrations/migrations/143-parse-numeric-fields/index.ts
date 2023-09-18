@@ -40,7 +40,7 @@ export default {
 
       Object.keys(entity!.metadata || {}).forEach(propertyName => {
         if (template.properties[propertyName].type === 'numeric') {
-          const candidateValue = entity!.metadata?.[propertyName]?.[0].value;
+          const candidateValue = entity!.metadata?.[propertyName]?.[0]?.value;
           if (typeof candidateValue === 'string') {
             if (candidateValue === '') {
               unset[`metadata.${propertyName}`] = '';
