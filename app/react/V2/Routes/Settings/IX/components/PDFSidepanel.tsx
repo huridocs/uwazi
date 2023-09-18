@@ -335,9 +335,8 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           >
             <Translate>Clear PDF selection</Translate>
           </button>
+          <SelectionError error={selectionError} />
         </div>
-
-        {selectionError && <SelectionError error={selectionError} />}
 
         <div ref={pdfContainerRef} className="grow">
           {pdf && (
