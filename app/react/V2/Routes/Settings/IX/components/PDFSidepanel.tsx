@@ -36,7 +36,7 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
-const formatDate = (value: number) => moment.utc(value as number, 'X').format('YYYY-MM-DD');
+const formatDate = (value: number) => moment.utc(value, 'X').format('YYYY-MM-DD');
 
 const getFormValue = (
   suggestion?: EntitySuggestionType,
@@ -238,8 +238,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     let metadata = value.field;
 
     if (propertyType === 'date' && isDirty && metadata) {
-      metadata = (await entitiesAPI.coerceValue(metadata as string, 'date', pdf?.language || 'en'))
-        .value;
+      metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
     }
 
     const [savedFile, savedEntity] = await Promise.all([
@@ -273,8 +272,8 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         }
 
         if (coercedValue?.success) {
+          setValue('field', formatDate(coercedValue.value), { shouldDirty: true });
           setSelectionError(undefined);
-          setValue('field', coercedValue.value, { shouldDirty: true });
         }
       } else {
         setValue('field', selectedText.text, { shouldDirty: true });
@@ -355,7 +354,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
               size={{
                 height: `${pdfContainerHeight}px`,
               }}
-              scrollToPage={Object.keys(highlights || {})[0]}
+              scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
             />
           )}
         </div>
