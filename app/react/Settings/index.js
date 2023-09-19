@@ -2,7 +2,7 @@
 import { CollectionSettings } from './components/CollectionSettings';
 import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
-import FiltersForm from './components/FiltersForm';
+import { FiltersForm } from './components/FiltersForm';
 import { NavlinksSettings } from './components/NavlinksSettings';
 import { RelationTypesList } from './components/RelationTypesList';
 import ThesauriList from './components/ThesauriList';

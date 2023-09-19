@@ -13,6 +13,7 @@ interface ContainerProps {
   iconHandle?: boolean;
   name: string;
   onChange?: Function;
+  className?: string;
 }
 
 const removeSubject$ = new Subject();
@@ -28,6 +29,7 @@ const Container: FC<ContainerProps> = memo(
     iconHandle = false,
     itemComponent,
     onChange = () => {},
+    className,
   }: ContainerProps) => {
     const [activeItems, setActiveItems] = useState(items);
     const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
@@ -80,8 +82,8 @@ const Container: FC<ContainerProps> = memo(
       };
     });
     return (
-      <div className="tw-content">
-        <div style={{ overflow: 'hidden', clear: 'both' }}>
+      <div className="tw-content ">
+        <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
           <ul>
             {activeItems
               .filter(item => item)
