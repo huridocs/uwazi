@@ -1,6 +1,10 @@
 import { ObjectId } from 'mongodb';
 import { MongoIdHandler } from '../MongoIdGenerator';
 
+const testIdString = '65098dea0bbc8851518bd53c';
+
+const testId = new ObjectId(testIdString);
+
 describe('MongoIdGenerator', () => {
   describe('generate', () => {
     it('should generate a string id', () => {
@@ -10,15 +14,13 @@ describe('MongoIdGenerator', () => {
 
   describe('mapToDb', () => {
     it('should map a string id to a Mongo ObjectId', () => {
-      const id = MongoIdHandler.generate();
-      expect(MongoIdHandler.mapToDb(id)).toEqual(expect.any(ObjectId));
+      expect(MongoIdHandler.mapToDb(testIdString)).toEqual(testId);
     });
   });
 
   describe('mapToApp', () => {
     it('should map a Mongo ObjectId to a string', () => {
-      const id = MongoIdHandler.generate();
-      expect(MongoIdHandler.mapToApp(MongoIdHandler.mapToDb(id))).toEqual(id);
+      expect(MongoIdHandler.mapToApp(testId)).toEqual(testIdString);
     });
   });
 });
