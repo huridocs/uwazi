@@ -23,56 +23,14 @@ import {
 import { ItemTypes } from 'app/V2/shared/types';
 import { SettingsHeader } from './SettingsHeader';
 
-class FiltersForm extends Component {
-  constructor(props) {
-    super(props);
-    const activeFilters = props.settings.collection.toJS().filters || [];
-    const inactiveFilters = props.templates
-      .toJS()
-      .filter(
-        tpl =>
-          !activeFilters.find(filt => {
-            const matchId = filt.id === tpl._id;
-            let insideGroup = false;
-            if (filt.items) {
-              insideGroup = filt.items.find(_filt => _filt.id === tpl._id);
-            }
+const FiltersForm = (props)=>{
+   
+ 
+      const [activeFilters, setActiveFilters] = useState(props.settings.collection.toJS().filters || []);
+      const usedFilters = _.flatMapDeep(activeFilters, filter=>{filter.id});
+      const availableFilters = _.filter(props.templates,template=>!usedFilters.includes(template.id));
 
-            return matchId || insideGroup;
-          })
-      )
-      .map(tpl => ({ id: tpl._id, name: tpl.name }));
-
-    this.state = { activeFilters, inactiveFilters };
-    this.activesChange = this.activesChange.bind(this);
-    this.unactivesChange = this.unactivesChange.bind(this);
-    this.renderActiveItems = this.renderActiveItems.bind(this);
-    this.renderInactiveItems = this.renderInactiveItems.bind(this);
-    this.setActiveFilters = this.setActiveFilters.bind(this);
-  }
-
-  activesChange(items) {
-    items.forEach(item => {
-      if (!item.items) {
-        return;
-      }
-      // eslint-disable-next-line
-      item.items = item.items.filter(subitem => {
-        if (subitem.items) {
-          items.push(subitem);
-          return false;
-        }
-        return true;
-      });
-    });
-    this.setState({ activeFilters: items });
-  }
-
-  unactivesChange(items) {
-    this.setState({ inactiveFilters: items });
-  }
-
-  sanitizeFilterForSave(_filter) {
+      const sanitizeFilterForSave = (_filter)=> {
     const filter = { ..._filter };
     delete filter.container;
     delete filter.index;
@@ -85,7 +43,7 @@ class FiltersForm extends Component {
     return filter;
   }
 
-  save() {
+  const save =()=> {
     const { activeFilters } = this.state;
     const { settings: propSettings, notify, setSettings } = this.props;
 
@@ -98,25 +56,12 @@ class FiltersForm extends Component {
     });
   }
 
-  addGroup() {
-    const { activeFilters } = this.state;
+  const addGroup = () => {
     const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
-    this.setState({ activeFilters: activeFilters.concat([newGroup]) });
     addSubject$.next({ ...newGroup, target: 'root' });
   }
 
-  setActiveFilters(items) {
-    this.setState({ activeFilters: items });
-  }
-
-  renderGroup(group) {
-    const nameChange = e => {
-      const name = e.target.value;
-      group.name = name;
-      this.setState(this.state);
-    };
-
-    return (
+  const renderGroup =(group)=> (
       <div className="w-full ">
         <div className="flex flex-row items-center w-full">
           <input
@@ -148,9 +93,8 @@ class FiltersForm extends Component {
         />
       </div>
     );
-  }
 
-  renderActiveItems(item) {
+  const renderFilter = (item)=> {
     if (item.items) {
       return this.renderGroup(item);
     }
@@ -172,19 +116,6 @@ class FiltersForm extends Component {
     );
   }
 
-  renderInactiveItems(item) {
-    if (item.items) {
-      return this.renderGroup(item);
-    }
-    return (
-      <div>
-        <span>{item.name}</span>
-      </div>
-    );
-  }
-
-  render() {
-    const { activeFilters, inactiveFilters } = this.state;
     return (
       <div className="settings-content">
         <div className="FiltersForm">
