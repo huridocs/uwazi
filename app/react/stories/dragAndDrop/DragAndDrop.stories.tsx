@@ -21,7 +21,7 @@ type Story = StoryObj<typeof Container>;
 const availableItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];
 
 const CardWithRemove = (item: IDraggable) => (
-  <div className="flex flex-row w-full">
+  <div className="flex flex-row items-center justify-center w-full">
     <div>{item.name}</div>
     <Button
       type="button"

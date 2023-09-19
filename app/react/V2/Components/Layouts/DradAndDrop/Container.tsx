@@ -12,6 +12,7 @@ interface ContainerProps {
   itemComponent?: FC<IDraggable>;
   iconHandle?: boolean;
   name: string;
+  onChange?: Function;
 }
 
 const removeSubject$ = new Subject();
@@ -20,7 +21,14 @@ const removeItem$ = () => removeSubject$.asObservable();
 const addItem$ = () => addSubject$.asObservable();
 
 const Container: FC<ContainerProps> = memo(
-  ({ name = 'container', items, type, iconHandle = false, itemComponent }: ContainerProps) => {
+  ({
+    name = 'container',
+    items,
+    type,
+    iconHandle = false,
+    itemComponent,
+    onChange = () => {},
+  }: ContainerProps) => {
     const [activeItems, setActiveItems] = useState(items);
     const moveItem = useCallback((dragIndex: number, hoverIndex: number) => {
       setActiveItems((prevActiveItems: IDraggable[]) =>
@@ -43,6 +51,10 @@ const Container: FC<ContainerProps> = memo(
         );
       }
     }, []);
+
+    useEffect(() => {
+      onChange(activeItems);
+    }, [activeItems, onChange]);
 
     useEffect(() => {
       const addSuscription = addItem$().subscribe(newItem => {
@@ -101,6 +113,7 @@ const Container: FC<ContainerProps> = memo(
 Container.defaultProps = {
   iconHandle: false,
   itemComponent: undefined,
+  onChange: () => {},
 };
 
 export { Container, removeSubject$, addSubject$, removeItem$, addItem$ };

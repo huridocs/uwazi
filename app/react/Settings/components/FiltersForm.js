@@ -48,6 +48,7 @@ class FiltersForm extends Component {
     this.unactivesChange = this.unactivesChange.bind(this);
     this.renderActiveItems = this.renderActiveItems.bind(this);
     this.renderInactiveItems = this.renderInactiveItems.bind(this);
+    this.setActiveFilters = this.setActiveFilters.bind(this);
   }
 
   activesChange(items) {
@@ -104,6 +105,10 @@ class FiltersForm extends Component {
     addSubject$.next({ ...newGroup, target: 'root' });
   }
 
+  setActiveFilters(items) {
+    this.setState({ activeFilters: items });
+  }
+
   renderGroup(group) {
     const nameChange = e => {
       const name = e.target.value;
@@ -113,7 +118,7 @@ class FiltersForm extends Component {
 
     return (
       <div className="w-full ">
-        <div className="flex flex-row">
+        <div className="flex flex-row items-center w-full">
           <input
             type="text"
             className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
@@ -125,6 +130,7 @@ class FiltersForm extends Component {
             color="error"
             size="small"
             className="p-1 ml-auto rounded-l-none"
+            disabled={group.items && group.items.size > 0}
             onClick={() => {
               removeSubject$.next(group);
             }}
@@ -138,6 +144,7 @@ class FiltersForm extends Component {
           itemComponent={this.renderActiveItems}
           name={`group_${group.name}`}
           className="w-full text-xs"
+          onChange={this.setActiveFilters}
         />
       </div>
     );
@@ -148,7 +155,7 @@ class FiltersForm extends Component {
       return this.renderGroup(item);
     }
     return (
-      <div className="flex flex-row w-full">
+      <div className="flex flex-row items-center w-full">
         <span>{item.name}</span>
         <Button
           type="button"
@@ -220,6 +227,7 @@ class FiltersForm extends Component {
                       items={activeFilters}
                       itemComponent={this.renderActiveItems}
                       name="root"
+                      onChange={this.setActiveFilters}
                     />
                   </div>
                   <div className="col-sm-3">
