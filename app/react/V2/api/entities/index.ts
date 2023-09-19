@@ -44,7 +44,7 @@ const save = async (entity: EntitySchema): Promise<EntitySchema | FetchResponseE
 };
 
 const coerceValue = async (
-  value: string,
+  value: string | Date,
   type: string,
   locale: string
 ): Promise<{ success: string; value: number }> => {

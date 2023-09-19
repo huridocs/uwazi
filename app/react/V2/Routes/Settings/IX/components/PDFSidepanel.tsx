@@ -132,14 +132,14 @@ const handleEntitySave = async (
 
 const coerceValue = async (
   propertyType: 'date' | 'number',
-  text?: string,
+  text: string | Date | undefined,
   documentLanguage: string = 'en'
 ) => {
-  if (propertyType === 'date' && text) {
-    return entitiesAPI.coerceValue(text, 'date', documentLanguage);
+  if (propertyType === 'date' && !Number.isNaN(text?.valueOf())) {
+    return entitiesAPI.coerceValue(text!, 'date', documentLanguage);
   }
 
-  if (propertyType === 'number' && text) {
+  if (propertyType === 'number' && typeof text === 'string') {
     return entitiesAPI.coerceValue(text.trim(), 'numeric', documentLanguage);
   }
 
