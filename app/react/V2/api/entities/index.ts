@@ -2,6 +2,7 @@ import api from 'app/utils/api';
 import { EntitySchema } from 'shared/types/entityType';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { RequestParams } from 'app/utils/RequestParams';
+import * as formatter from './formatter';
 
 type EntityApiParams = {
   omitRelationships?: boolean;
@@ -60,4 +61,4 @@ const coerceValue = async (
   }
 };
 
-export { getById, save, coerceValue };
+export { getById, save, coerceValue, formatter };

@@ -52,7 +52,7 @@ const getFormValue = (
 
   if (suggestion.propertyName !== 'title' && entity.metadata) {
     const entityMetadata = entity.metadata[suggestion.propertyName];
-    value = entityMetadata ? entityMetadata[0].value : '';
+    value = entityMetadata?.length ? entityMetadata[0].value : '';
 
     if (type === 'date' && value) {
       const dateString = formatDate(value as number);
@@ -117,24 +117,17 @@ const handleEntitySave = async (
     return undefined;
   }
 
+  let data;
+
   if (propertyName === 'title' && typeof metadata === 'string') {
-    return entitiesAPI.save({ ...entity, title: metadata });
+    data = { title: metadata };
+  } else {
+    data = { properties: [{ [propertyName]: metadata }] };
   }
 
-  if (entity.metadata && entity.metadata[propertyName] && entity.metadata[propertyName]?.length) {
-    const entityToSave = { ...entity };
-    entityToSave.metadata![propertyName]![0].value = metadata || '';
-    return entitiesAPI.save(entityToSave);
-  }
+  const entityToSave = entitiesAPI.formatter.update(entity, data);
 
-  if (entity.metadata && !entity.metadata[propertyName]) {
-    const entityToSave = { ...entity };
-    entityToSave.metadata![propertyName] = [];
-    entityToSave.metadata![propertyName]?.push({ value: metadata || '' });
-    return entitiesAPI.save(entityToSave);
-  }
-
-  return undefined;
+  return entitiesAPI.save(entityToSave);
 };
 
 const coerceValue = async (
