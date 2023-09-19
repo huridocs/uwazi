@@ -22,18 +22,23 @@ const update = (
     properties.forEach(property => {
       const [propertyName] = Object.keys(property);
 
-      const hasMetadata = Boolean(updatedEntity.metadata);
       const hasProperty = updatedEntity.metadata
         ? updatedEntity.metadata[propertyName]?.length
         : false;
 
-      if (hasMetadata && hasProperty) {
-        updatedEntity.metadata![propertyName]![0].value = property[propertyName] || '';
+      if (hasProperty) {
+        if (property[propertyName]) {
+          updatedEntity.metadata![propertyName]![0].value = property[propertyName]!;
+        }
+
+        if (!property[propertyName]) {
+          delete updatedEntity.metadata![propertyName];
+        }
       }
 
-      if (hasMetadata && !hasProperty) {
+      if (!hasProperty && property[propertyName]) {
         updatedEntity.metadata![propertyName] = [];
-        updatedEntity.metadata![propertyName]?.push({ value: property[propertyName] || '' });
+        updatedEntity.metadata![propertyName]?.push({ value: property[propertyName]! });
       }
     });
   }
