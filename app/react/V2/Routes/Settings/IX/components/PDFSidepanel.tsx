@@ -17,16 +17,10 @@ import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
-import { PDF } from 'V2/Components/PDFViewer';
+import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom } from 'V2/atoms';
 import { SelectionError } from './SelectionError';
 import { Highlights } from '../types';
-import {
-  deleteFileSelection,
-  getHighlightsFromFile,
-  getHighlightsFromSelection,
-  updateFileSelection,
-} from '../functions/handleTextSelection';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -216,7 +210,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     if (pdf?.extractedMetadata && suggestion && showSidepanel) {
       setSelectedText(undefined);
       setHighlights(
-        getHighlightsFromFile(
+        selectionHandlers.getHighlightsFromFile(
           pdf.extractedMetadata,
           suggestion.propertyName,
           HighlightColors.CURRENT
@@ -267,9 +261,11 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
   const handleClickToFill = async () => {
     if (selectedText) {
-      setHighlights(getHighlightsFromSelection(selectedText, HighlightColors.NEW));
+      setHighlights(
+        selectionHandlers.getHighlightsFromSelection(selectedText, HighlightColors.NEW)
+      );
       setSelections(
-        updateFileSelection(
+        selectionHandlers.updateFileSelection(
           { name: suggestion?.propertyName || '', id: propertyId },
           pdf?.extractedMetadata,
           selectedText
@@ -337,7 +333,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
             onClick={() => {
               setHighlights(undefined);
               setSelections(
-                deleteFileSelection(
+                selectionHandlers.deleteFileSelection(
                   { name: suggestion?.propertyName || '' },
                   pdf?.extractedMetadata
                 )
