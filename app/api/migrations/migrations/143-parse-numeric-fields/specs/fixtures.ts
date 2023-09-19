@@ -45,6 +45,14 @@ export const fixtures = {
   entities: [
     {
       _id: new ObjectId(),
+      sharedId: 'entityNoTemplate',
+      language: 'en',
+      metadata: {
+        numeric_1: [{ value: '4' }],
+      },
+    },
+    {
+      _id: new ObjectId(),
       sharedId: 'entity1',
       language: 'en',
       template: template1,

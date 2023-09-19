@@ -37,6 +37,9 @@ describe('migration parse-numeric-fields', () => {
     it('should parse all the numbers stored as strings', async () => {
       expect(results).toMatchObject([
         {
+          sharedId: 'entityNoTemplate',
+        },
+        {
           sharedId: 'entity1',
           metadata: {
             numeric_1: [{ value: 0.5 }],
@@ -84,8 +87,12 @@ describe('migration parse-numeric-fields', () => {
     });
 
     it('should remove empty strings', async () => {
-      expect(results[4].metadata!.numeric_3).toBe(undefined);
-      expect(results[5].metadata!.numeric_2).toBe(undefined);
+      expect(results[5].metadata!.numeric_3).toBe(undefined);
+      expect(results[6].metadata!.numeric_2).toBe(undefined);
+    });
+
+    it('should skip entities without template', async () => {
+      expect(results[0].metadata).toEqual({ numeric_1: [{ value: '4' }] });
     });
   });
 });
