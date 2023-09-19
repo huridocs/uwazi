@@ -148,9 +148,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
 
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
-  const newRelationshipPropertyNames =
-    docTemplate.properties.filter(p => p.type === propertyTypes.newRelationship).map(p => p.name) ||
-    [];
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
   const result = await Promise.all(
     languages.map(async lang => {
@@ -174,8 +171,6 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
         langDoc.template.toString(),
         thesauriByKey
       );
-
-      langDoc.obsoleteMetadata = newRelationshipPropertyNames;
 
       return model.save(langDoc);
     })
@@ -236,6 +231,17 @@ function sanitize(doc, template) {
       (!sanitizedMetadata[name] || !sanitizedMetadata[name][0] || !sanitizedMetadata[name][0].value)
     ) {
       return Object.assign(sanitizedMetadata, { [name]: [] });
+    }
+
+    if (type === propertyTypes.numeric && typeof sanitizedMetadata[name]?.[0]?.value === 'string') {
+      if (sanitizedMetadata[name][0].value === '') {
+        delete sanitizedMetadata[name];
+        return sanitizedMetadata;
+      }
+
+      return Object.assign(sanitizedMetadata, {
+        [name]: [{ value: parseFloat(sanitizedMetadata[name][0].value) }],
+      });
     }
 
     return sanitizedMetadata;

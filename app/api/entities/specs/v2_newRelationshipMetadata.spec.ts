@@ -181,7 +181,7 @@ describe('entities.get()', () => {
 
 describe('entities.save()', () => {
   describe('when creating an entity', () => {
-    it('should mark newRelationship metadata as obsolete on the created entity', async () => {
+    it('should have no obsolete metadata', async () => {
       const markSpy = jest
         .spyOn(v2Support, 'denormalizeAfterEntityCreation')
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -189,7 +189,7 @@ describe('entities.save()', () => {
 
       const expected = {
         title: 'new_entity',
-        obsoleteMetadata: ['relProp'],
+        obsoleteMetadata: [],
       };
       const saved = await entities.save(
         {
