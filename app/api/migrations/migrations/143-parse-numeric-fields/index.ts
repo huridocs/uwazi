@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-await-in-loop */
 import { Db, ObjectId } from 'mongodb';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -34,7 +35,10 @@ export default {
     const cursor = db.collection<EntitySchema>('entities').find({}, { sort: { _id: 1 } });
     while (await cursor.hasNext()) {
       const entity = await cursor.next();
-      const template = templates[entity!.template!.toString()];
+      const templateId = entity!.template?.toString();
+      if (!templateId) continue;
+      const template = templates[templateId];
+      if (!template) continue;
       const set: Record<string, [{ value: number }]> = {};
       const unset: Record<string, ''> = {};
 
