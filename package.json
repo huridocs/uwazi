@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.135.0-rc1",
+  "version": "1.135.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -246,11 +246,11 @@
   "devDependencies": {
     "@babel/cli": "7.22.6",
     "@babel/core": "7.22.11",
-    "@babel/eslint-parser": "7.22.11",
+    "@babel/eslint-parser": "7.22.15",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-get-function-arity": "^7.16.7",
     "@babel/helper-string-parser": "^7.22.5",
-    "@babel/parser": "^7.22.7",
+    "@babel/parser": "^7.22.16",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
@@ -259,11 +259,11 @@
     "@babel/plugin-transform-modules-commonjs": "^7.22.5",
     "@babel/plugin-transform-react-constant-elements": "^7.22.5",
     "@babel/plugin-transform-react-inline-elements": "^7.22.5",
-    "@babel/preset-env": "^7.22.7",
-    "@babel/preset-react": "^7.22.5",
-    "@babel/preset-typescript": "^7.22.5",
-    "@babel/register": "^7.22.5",
-    "@babel/traverse": "^7.22.8",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "@babel/preset-typescript": "^7.22.15",
+    "@babel/register": "^7.22.15",
+    "@babel/traverse": "^7.22.20",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
     "@mdx-js/loader": "^2.3.0",
