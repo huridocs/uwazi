@@ -30,7 +30,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const addVideo = (local: boolean = true) => {
     clickMediaAction('Video', 'Add file');
-
     if (local) {
       cy.get('.upload-button input[type=file]')
         .last()
@@ -88,7 +87,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait('@saveEntity');
 
     // waiting for video
-    cy.get('video', { timeout: 2000 })
+    cy.get('aside video', { timeout: 5000 })
       .then(
         async $video =>
           new Promise(resolve => {
