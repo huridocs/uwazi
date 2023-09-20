@@ -52,7 +52,6 @@ const Basic = {
       { key: '5', value: 'Colombia' },
       { key: '6', value: 'Dinamarca' },
     ],
-    value: 'Argentina',
   },
 };
 

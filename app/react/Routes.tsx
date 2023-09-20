@@ -35,7 +35,7 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
-import { Settings as settingsType } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import {
   TranslationsList,
   translationsListLoader,
@@ -61,7 +61,7 @@ import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
 const getRoutesLayout = (
-  settings: settingsType | undefined,
+  settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
   headers?: IncomingHttpHeaders
 ) => (
@@ -163,7 +163,7 @@ const getRoutesLayout = (
 );
 
 const getRoutes = (
-  settings: settingsType | undefined,
+  settings: ClientSettings | undefined,
   userId: string | undefined,
   headers?: IncomingHttpHeaders
 ) => {

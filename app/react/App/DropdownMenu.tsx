@@ -3,14 +3,14 @@ import { Icon } from 'UI';
 import React, { useRef, useState, useCallback } from 'react';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
 import { IImmutable } from 'shared/types/Immutable';
-import { SettingsLinkSchema } from 'shared/types/settingsType';
+import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 
 export type ISublink = {
   title: string;
   url: string;
 };
 
-export type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
+export type ILink = Omit<ClientSettingsLinkSchema, 'sublinks'> & {
   title: string;
   sublinks: [ISublink];
 };

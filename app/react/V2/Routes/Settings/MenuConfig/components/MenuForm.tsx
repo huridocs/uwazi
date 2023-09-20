@@ -1,78 +1,48 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { useRevalidator } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-
-import { notificationAtom } from 'app/V2/atoms';
 
 import { Translate } from 'app/I18N';
-import { InputField, Select } from 'app/V2/Components/Forms';
+import { InputField, Select, OptionSchema } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
-import { SettingsLinkSchema } from 'shared/types/settingsType';
+import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { Button, Card } from 'app/V2/Components/UI';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
+type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string };
+
 interface MenuFormProps {
   closePanel: () => void;
-  link?: SettingsLinkSchema;
-  links?: SettingsLinkSchema[];
+  link?: ClientSettingsLinkSchema;
+  links?: ClientSettingsLinkSchema[];
+  submit: (formValues: SettingsLinkForm) => void;
 }
 
-const MenuForm = ({ closePanel, link, links }: MenuFormProps) => {
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const revalidator = useRevalidator();
-
-  const [groups, setGroups] = useState<LinkGroupOption[]>([]);
-
-  type LinkGroupOption = {
-    title: string;
-    _id: string;
-  };
+const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
+  const [groups, setGroups] = useState<OptionSchema[]>([]);
 
   useEffect(() => {
     if (links) {
       const _groups = links
         .filter(_link => _link.type === 'group' && _link.title && _link._id)
-        .map(_link => ({ title: _link.title, _id: _link._id?.toString() })) as LinkGroupOption[];
+        .map(_link => ({
+          label: <Translate context="Menu">{_link.title}</Translate>,
+          value: _link._id?.toString(),
+          key: _link._id?.toString(),
+        })) as OptionSchema[];
 
-      setGroups(_groups);
+      const emptyGroup = { label: <Translate>No group</Translate>, value: '', key: '-' };
+      setGroups([emptyGroup, ..._groups]);
     }
   }, [links]);
-
-  type SettingsLinkForm = {
-    _id?: string;
-    groupId?: string;
-    url?: string;
-    title?: string;
-    type?: string;
-  };
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors },
   } = useForm<SettingsLinkForm>({
     defaultValues: { ...link, _id: link?._id?.toString() },
     mode: 'onSubmit',
   });
-
-  const submit = async (formValues: SettingsLinkForm) => {
-    const { groupId, ...linkData } = formValues;
-    if (linkData.type === 'group') {
-      links?.push(linkData);
-    } else {
-      const group = links?.find(_link => _link._id === groupId);
-      if (group) {
-        group.sublinks?.push(linkData);
-      }
-    }
-    revalidator.revalidate();
-    closePanel();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Updated</Translate>,
-    });
-  };
 
   return (
     <div className="relative h-full">
@@ -114,13 +84,8 @@ const MenuForm = ({ closePanel, link, links }: MenuFormProps) => {
                 <Select
                   id="link-group"
                   label={<Translate>Group</Translate>}
-                  {...register('groupId', { required: true })}
-                  options={groups.map(g => ({
-                    key: g.title,
-                    value: g._id,
-                    label: g.title,
-                    selected: false,
-                  }))}
+                  {...register('groupId')}
+                  options={groups}
                 />
               </>
             )}
@@ -131,8 +96,8 @@ const MenuForm = ({ closePanel, link, links }: MenuFormProps) => {
         <Button styling="light" onClick={closePanel} className="grow">
           <Translate>Cancel</Translate>
         </Button>
-        <Button className="grow" type="submit" form="menu-form" disabled={isSubmitted}>
-          <Translate>Save</Translate>
+        <Button className="grow" type="submit" form="menu-form">
+          <Translate>Add</Translate>
         </Button>
       </div>
     </div>

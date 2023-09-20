@@ -66,7 +66,7 @@ const Table = <T,>({
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
-    enableSubRowSelection: enableSelection,
+    enableSubRowSelection: false,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -82,7 +82,7 @@ const Table = <T,>({
 
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
-
+    console.log(table.getSelectedRowModel());
     if (onSelection) {
       onSelection(selectedRows);
     }

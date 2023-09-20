@@ -1,10 +1,11 @@
 import React, { ChangeEventHandler, Ref } from 'react';
 import { Label } from './Label';
 
+type OptionSchema = { key: string; value: string; label?: string | React.ReactNode };
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
-  options: { key: string; value: string; label?: string }[];
+  options: OptionSchema[];
   value?: string;
   disabled?: boolean;
   hideLabel?: boolean;
@@ -64,5 +65,5 @@ const Select = React.forwardRef(
   }
 );
 
-export type { SelectProps };
+export type { SelectProps, OptionSchema };
 export { Select };

@@ -4,9 +4,14 @@ import React, { PropsWithChildren } from 'react';
 import { Breadcrumb } from 'flowbite-react';
 import { ChevronLeftIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
+import { S } from '@storybook/react/dist/types-0a347bb9';
 
 interface SettingsContentProps extends PropsWithChildren {
   className?: string;
+}
+
+interface SettingsContentFooterProps extends SettingsContentProps {
+  highlighted?: boolean;
 }
 
 interface SettingsHeaderProps extends PropsWithChildren {
@@ -58,11 +63,15 @@ SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
   </div>
 );
 
-SettingsContent.Footer = ({ children, className }: SettingsContentProps) => (
+SettingsContent.Footer = ({
+  children,
+  className = '',
+  highlighted = false,
+}: SettingsContentFooterProps) => (
   <div
-    className={`fixed bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 lg:sticky z-1 ${
-      className || ''
-    }`}
+    className={`fixed bottom-0 left-0 w-full px-4 py-3 border-t border-gray-200 lg:sticky z-1 ${
+      highlighted ? 'bg-primary-50' : 'bg-white'
+    } ${className}`}
     data-testid="settings-content-footer"
   >
     {children}

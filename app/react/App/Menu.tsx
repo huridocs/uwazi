@@ -14,7 +14,7 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { IStore } from 'app/istore';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { DropdownMenu, ILink } from './DropdownMenu';
+import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {
   className: string;
@@ -134,7 +134,7 @@ const MenuComponent = ({
 
       return (
         <DropdownMenu
-          link={fromJS(link.toJS() as ILink)}
+          link={fromJS(link.toJS())}
           position={index!}
           key={index}
           hideMobileMenu={hideMobileMenu}

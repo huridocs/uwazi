@@ -1,43 +1,41 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { RequestParams } from 'app/utils/RequestParams';
-import * as SettingsAPI from 'app/V2/api/settings';
-import { UserSchema } from 'shared/types/userType';
-
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
-import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
+
+import { Translate } from 'app/I18N';
+import * as SettingsAPI from 'app/V2/api/settings';
+
+import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
 
 import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Translate } from 'app/I18N';
-import { Settings, SettingsLinkSchema } from 'shared/types/settingsType';
+
 import { MenuForm } from './components/MenuForm';
 
-import {
-  EditButton,
-  TitleHeader,
-  URLHeader,
-  ActionHeader,
-  TitleCell,
-} from './components/TableComponents';
+import { columns } from './components/TableComponents';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    SettingsAPI.get(headers);
+    SettingsAPI.getLinks(headers);
 
 const MenuConfig = () => {
-  const settings = useLoaderData() as Settings;
+  const links = useLoaderData() as ClientSettingsLinkSchema[];
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  //const setNotifications = useSetRecoilState(notificationAtom);
-  //const revalidator = useRevalidator();
+  const setNotifications = useSetRecoilState(notificationAtom);
+  const revalidator = useRevalidator();
+  const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
+  const [linkToEdit, setLinkToEdit] = useState<ClientSettingsLinkSchema | undefined>();
 
-  const [linkToEdit, setLinkToEdit] = useState<SettingsLinkSchema | undefined>({});
-
-  const edit = (row: Row<SettingsLinkSchema>) => {};
+  const edit = (row: Row<ClientSettingsLinkSchema>) => {
+    setLinkToEdit(row.original);
+    setIsSidepanelOpen(true);
+  };
 
   const addLink = () => {
     setLinkToEdit({ title: '', type: 'link', url: '' });
@@ -49,32 +47,42 @@ const MenuConfig = () => {
     setIsSidepanelOpen(true);
   };
 
-  const columnHelper = createColumnHelper<any>();
-  const columns = [
-    columnHelper.accessor('title', {
-      id: 'title',
-      header: TitleHeader,
-      cell: TitleCell,
-      enableSorting: false,
-      meta: { className: 'w-6/12' },
-    }) as ColumnDef<SettingsLinkSchema, 'title'>,
-    columnHelper.accessor('url', {
-      header: URLHeader,
-      enableSorting: false,
-      meta: { className: 'w-6/12' },
-    }) as ColumnDef<SettingsLinkSchema, 'default'>,
-    columnHelper.accessor('key', {
-      header: ActionHeader,
-      cell: EditButton,
-      enableSorting: false,
-      meta: { action: edit, className: 'w-0 text-center' },
-    }) as ColumnDef<SettingsLinkSchema, 'key'>,
-  ];
+  const deleteSelected = async () => {
+    const newLinks = links?.filter(
+      link => !selectedLinks.map(selected => selected.original).includes(link)
+    );
 
-  const sidepanelTitle = () =>
-    `${linkToEdit?.title === '' ? 'New' : 'Edit'} ${
-      linkToEdit?.type === 'group' ? 'Group' : 'Link'
-    }`;
+    await SettingsAPI.saveLinks(newLinks);
+    revalidator.revalidate();
+    setNotifications({
+      type: 'success',
+      text: <Translate>Updated</Translate>,
+    });
+  };
+
+  const formSubmit = async (formValues: ClientSettingsLinkSchema & { groupId?: string }) => {
+    const { groupId, ...linkData } = formValues;
+
+    if (linkData.type === 'group') {
+      linkData.sublinks = [];
+      links?.push(linkData);
+    } else {
+      const group = links?.find(_link => _link._id === groupId);
+      if (group) {
+        group.sublinks?.push(linkData);
+      } else {
+        links.push(linkData);
+      }
+    }
+
+    await SettingsAPI.saveLinks(links);
+    revalidator.revalidate();
+    setIsSidepanelOpen(false);
+    setNotifications({
+      type: 'success',
+      text: <Translate>Updated</Translate>,
+    });
+  };
 
   return (
     <div
@@ -85,36 +93,58 @@ const MenuConfig = () => {
       <SettingsContent>
         <SettingsContent.Header title="Menu" />
         <SettingsContent.Body>
-          <Table<SettingsLinkSchema>
+          <Table<ClientSettingsLinkSchema>
             enableSelection
-            columns={columns}
-            data={settings?.links || []}
+            columns={columns({ edit })}
+            data={links || []}
             title={<Translate>Menu</Translate>}
             subRowsKey="sublinks"
+            onSelection={setSelectedLinks}
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer>
-          <div className="flex gap-2">
-            <Button type="button" onClick={addLink}>
-              <Translate>Add link</Translate>
-            </Button>
-            <Button type="button" onClick={addGroup}>
-              <Translate>Add group</Translate>
-            </Button>
-          </div>
+        <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
+          {selectedLinks.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Button type="button" onClick={deleteSelected} color="error">
+                <Translate>Delete</Translate>
+              </Button>
+              <Translate>Selected</Translate> {selectedLinks.length} <Translate>of</Translate>{' '}
+              {links?.reduce(
+                (acc, link) => acc + (link.type === 'group' ? (link.sublinks?.length || 1) + 1 : 1),
+                0
+              )}
+            </div>
+          )}
+          {selectedLinks.length === 0 && (
+            <div className="flex gap-2">
+              <Button type="button" onClick={addLink}>
+                <Translate>Add link</Translate>
+              </Button>
+              <Button type="button" onClick={addGroup}>
+                <Translate>Add group</Translate>
+              </Button>
+            </div>
+          )}
         </SettingsContent.Footer>
       </SettingsContent>
       <Sidepanel
-        title={<Translate className="uppercase">{sidepanelTitle()}</Translate>}
+        title={
+          <Translate className="uppercase">
+            {`${linkToEdit?.title === '' ? 'New' : 'Edit'} ${
+              linkToEdit?.type === 'group' ? 'Group' : 'Link'
+            }`}
+          </Translate>
+        }
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
         size="large"
         withOverlay
       >
         <MenuForm
+          submit={formSubmit}
           closePanel={() => setIsSidepanelOpen(false)}
           link={linkToEdit}
-          links={settings.links}
+          links={links}
         />
       </Sidepanel>
     </div>

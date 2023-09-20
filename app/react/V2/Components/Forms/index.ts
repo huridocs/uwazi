@@ -5,4 +5,4 @@ export { RadioSelect } from './RadioSelect';
 export { ConfirmNavigationModal } from './ConfirmNavigationModal';
 
 export type { MultiSelectProps } from './MultiSelect';
-export type { SelectProps } from './Select';
+export type { SelectProps, OptionSchema } from './Select';

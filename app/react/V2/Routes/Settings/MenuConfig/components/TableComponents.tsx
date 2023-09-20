@@ -5,6 +5,8 @@ import { CellContext } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { LinkSchema } from 'shared/types/commonTypes';
 import { EmbededButton, Button } from 'app/V2/Components/UI';
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 
 const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
   <Button
@@ -39,4 +41,26 @@ const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
 const TitleHeader = () => <Translate>Label</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
-export { EditButton, TitleHeader, URLHeader, ActionHeader, TitleCell };
+
+const columnHelper = createColumnHelper<any>();
+const columns = (actions: { edit: Function }) => [
+  columnHelper.accessor('title', {
+    id: 'title',
+    header: TitleHeader,
+    cell: TitleCell,
+    enableSorting: false,
+    meta: { className: 'w-6/12' },
+  }) as ColumnDef<ClientSettingsLinkSchema, 'title'>,
+  columnHelper.accessor('url', {
+    header: URLHeader,
+    enableSorting: false,
+    meta: { className: 'w-6/12' },
+  }) as ColumnDef<ClientSettingsLinkSchema, 'default'>,
+  columnHelper.accessor('key', {
+    header: ActionHeader,
+    cell: EditButton,
+    enableSorting: false,
+    meta: { action: actions.edit, className: 'w-0 text-center' },
+  }) as ColumnDef<ClientSettingsLinkSchema, 'key'>,
+];
+export { EditButton, TitleHeader, URLHeader, ActionHeader, TitleCell, columns };
