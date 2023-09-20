@@ -301,13 +301,13 @@ const _getAggregationDictionary = async (
   return dictionaryCache[propContent];
 };
 
-const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
+const groupBuckets = (buckets, dictionary, limit) => {
   const aggregationBucketsByKey = objectIndex(
-    aggregation.buckets,
+    buckets,
     b => b.key,
     b => b
   );
-  const buckets = dictionary.values
+  const newBuckets = dictionary.values
     .map(dictionaryValue => {
       const bucket = aggregationBucketsByKey[dictionaryValue.id];
       if (bucket && dictionaryValue.values) {
@@ -318,16 +318,61 @@ const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
       return bucket;
     })
     .filter(b => b);
-  const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+  const bucketsIncludeMissing = buckets.find(b => b.key === 'missing');
   if (bucketsIncludeMissing) {
-    buckets.push(bucketsIncludeMissing);
+    newBuckets.push(bucketsIncludeMissing);
   }
-  return Object.assign(aggregation, { buckets });
+  return newBuckets;
 };
 
-const PASS_THROUGH_KEYS = new Set(['_types', 'generatedToc', '_permissions.self', '_published']);
+const limitBuckets = (buckets, _limit) => {
+  if (buckets.length <= _limit) {
+    return buckets;
+  }
+
+  const missingBucket = buckets.find(b => b.key === 'missing');
+  const limit = missingBucket ? _limit - 1 : _limit;
+  const limitedBuckets = buckets.slice(0, limit);
+  if (missingBucket) limitedBuckets.push(missingBucket);
+
+  return limitedBuckets;
+};
+
+function assignLabels(buckets, dictionaryValues) {
+  const labeledBuckets = [];
+
+  buckets.forEach(bucket => {
+    const newBucket = {
+      ...bucket,
+    };
+
+    const labelItem =
+      bucket.key === 'missing' ? { label: 'No label' } : dictionaryValues[bucket.key];
+
+    if (bucket.values) {
+      newBucket.values = assignLabels(bucket.values, dictionaryValues);
+    }
+
+    if (labelItem) {
+      const { label, icon } = labelItem;
+      newBucket.label = label;
+      newBucket.icon = icon;
+      labeledBuckets.push(newBucket);
+    }
+  });
+
+  return labeledBuckets;
+}
+
+const SIMPLE_LIMIT_KEYS = new Set(['_types', 'generatedToc', '_permissions.self', '_published']);
 const PERMISSION_KEYS = new Set(['_permissions.read', '_permissions.write']);
-const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
+const _denormalizeAndLimitAggregations = async (
+  aggregations,
+  templates,
+  dictionaries,
+  language,
+  limit
+) => {
   const properties = propertiesHelper.allProperties(templates);
   const propertiesByName = objectIndex(
     properties,
@@ -349,12 +394,16 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
   const denormalizedAggregations = {};
   // eslint-disable-next-line max-statements
   await sequentialPromises(Object.keys(aggregations), async key => {
-    if (
-      !aggregations[key].buckets ||
-      aggregations[key].type === 'nested' ||
-      PASS_THROUGH_KEYS.has(key)
-    ) {
+    if (!aggregations[key].buckets || aggregations[key].type === 'nested') {
       denormalizedAggregations[key] = aggregations[key];
+      return;
+    }
+
+    if (SIMPLE_LIMIT_KEYS.has(key)) {
+      denormalizedAggregations[key] = {
+        ...aggregations[key],
+        buckets: limitBuckets(aggregations[key].buckets, limit),
+      };
       return;
     }
 
@@ -374,7 +423,7 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       const role = permissionsContext.getUserInContext()?.role;
       const refIds = permissionsContext.permissionsRefIds();
 
-      let { buckets } = aggregations[key];
+      let buckets = limitBuckets(aggregations[key].buckets, limit);
       buckets =
         role === UserRole.ADMIN ? buckets : buckets.filter(bucket => refIds.includes(bucket.key));
       buckets = buckets
@@ -415,33 +464,24 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       dictionaryCache
     );
 
-    const buckets = aggregations[key].buckets
-      .map(bucket => {
-        const labelItem =
-          bucket.key === 'missing' ? { label: 'No label' } : dictionaryValues[bucket.key];
-
-        if (labelItem) {
-          const { label, icon } = labelItem;
-          return Object.assign(bucket, { label, icon });
-        }
-        return null;
-      })
-      .filter(item => item);
-
-    let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
-
+    let groupedBuckets = aggregations[key].buckets;
     if (dictionary && dictionary.values.find(v => v.values)) {
-      denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
-        denormalizedAggregation,
-        dictionary
-      );
+      groupedBuckets = groupBuckets(groupedBuckets, dictionary, limit);
+    } else {
+      groupedBuckets = limitBuckets(groupedBuckets, limit);
     }
+
+    const denormalizedBuckets = assignLabels(groupedBuckets, dictionaryValues);
+
+    const denormalizedAggregation = Object.assign(aggregations[key], {
+      buckets: denormalizedBuckets,
+    });
     denormalizedAggregations[key] = denormalizedAggregation;
   });
   return denormalizedAggregations;
 };
 
-const _sanitizeAggregationsStructure = (aggregations, limit) => {
+const _sanitizeAggregationsStructure = aggregations => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
     const aggregation = aggregations[aggregationKey];
@@ -489,16 +529,16 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     if (aggregation.buckets) {
       aggregation.buckets = aggregation.buckets.filter(b => b.filtered.doc_count);
-      const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
+      // const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
 
       aggregation.count = aggregation.buckets.length;
-      aggregation.buckets = aggregation.buckets.slice(0, limit);
+      // aggregation.buckets = aggregation.buckets.slice(0, limit);
 
-      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
-      if (!bucketsIncludeMissing && missingBucket) {
-        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
-        aggregation.buckets.push(missingBucket);
-      }
+      // const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
+      // if (!bucketsIncludeMissing && missingBucket) {
+      //   aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
+      //   aggregation.buckets.push(missingBucket);
+      // }
     }
 
     result[aggregationKey] = aggregation;
@@ -546,9 +586,15 @@ const _sanitizeAggregations = async (
   language,
   limit = preloadOptionsLimit()
 ) => {
-  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
+  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-  return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
+  return _denormalizeAndLimitAggregations(
+    sanitizedAggregationNames,
+    templates,
+    dictionaries,
+    language,
+    limit
+  );
 };
 
 const permissionsInformation = (hit, user) => {

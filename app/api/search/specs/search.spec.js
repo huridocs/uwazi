@@ -289,6 +289,12 @@ describe('search', () => {
       'No label',
       'Any',
     ]);
+    expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
+      ['Germany', 'Italy']
+    );
+    expect(response.aggregations.all.groupedDictionary.buckets[1].values.map(b => b.label)).toEqual(
+      ['China', 'Japan']
+    );
   });
 
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', async () => {
