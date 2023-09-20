@@ -1,6 +1,3 @@
-/* eslint-disable max-statements */
-/* eslint-disable jest/no-focused-tests */
-/* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';

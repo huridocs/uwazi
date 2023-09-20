@@ -541,16 +541,7 @@ const _sanitizeAggregationsStructure = aggregations => {
 
     if (aggregation.buckets) {
       aggregation.buckets = aggregation.buckets.filter(b => b.filtered.doc_count);
-      // const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
-
       aggregation.count = aggregation.buckets.length;
-      // aggregation.buckets = aggregation.buckets.slice(0, limit);
-
-      // const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
-      // if (!bucketsIncludeMissing && missingBucket) {
-      //   aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
-      //   aggregation.buckets.push(missingBucket);
-      // }
     }
 
     result[aggregationKey] = aggregation;
