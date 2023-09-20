@@ -46,6 +46,25 @@ describe('when built from a $type cursor', () => {
     });
   });
 
+  describe('nextBatch()', () => {
+    it('should provide the next batch', async () => {
+      const cursor = buildCursor();
+      const resultSet = new MongoResultSet(cursor!, MongoResultSet.NoOpMapper);
+      const visited: (typeof testDocuments)[] = [];
+      // eslint-disable-next-line no-await-in-loop
+      while (await resultSet.hasNext()) {
+        // eslint-disable-next-line no-await-in-loop
+        const batch = await resultSet.nextBatch(4);
+        visited.push(batch);
+      }
+      expect(visited).toEqual([
+        [testDocuments[0], testDocuments[1], testDocuments[2], testDocuments[3]],
+        [testDocuments[4], testDocuments[5]],
+      ]);
+      expect(cursor?.closed).toBe(true);
+    });
+  });
+
   describe('all()', () => {
     it('should return all the results and close the cursor', async () => {
       const cursor = buildCursor();
@@ -118,10 +137,10 @@ describe('when built from a $type cursor', () => {
       expect(cursor?.closed).toBe(true);
     });
 
-    it('should return false if there are no items', async () => {
+    it('should return true if there are no items', async () => {
       const cursor = buildCursor({ name: 'non-existing' });
       const resultSet = new MongoResultSet(cursor!, elem => elem.name);
-      expect(await resultSet.every(item => item.startsWith('doc'))).toBe(false);
+      expect(await resultSet.every(item => item.startsWith('doc'))).toBe(true);
       expect(cursor?.closed).toBe(true);
     });
   });
