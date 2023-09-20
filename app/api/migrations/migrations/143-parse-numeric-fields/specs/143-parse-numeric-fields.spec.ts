@@ -83,6 +83,12 @@ describe('migration parse-numeric-fields', () => {
             numeric_1: [],
           },
         },
+        {
+          sharedId: 'entityWithFaultyTemplate',
+        },
+        {
+          sharedId: 'entityWithExtraMetadata',
+        },
       ]);
     });
 
@@ -93,6 +99,14 @@ describe('migration parse-numeric-fields', () => {
 
     it('should skip entities without template', async () => {
       expect(results[0].metadata).toEqual({ numeric_1: [{ value: '4' }] });
+    });
+
+    it('should skip entities with a template without properties', async () => {
+      expect(results[8].metadata).toEqual({ prop: [{ value: '1' }] });
+    });
+
+    it('should skip entities that have extra metadata not found on the template', async () => {
+      expect(results[9].metadata).toEqual({ extra: [{ value: '1' }] });
     });
   });
 });
