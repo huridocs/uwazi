@@ -600,7 +600,7 @@ describe('search', () => {
         'en'
       );
       expect(limitedResponse.aggregations.all.groupedDictionary.buckets).toMatchObject([
-        { key: 'AsiaID', values: [{ key: 'ChinaID' }, { key: 'JapanID' }] },
+        { key: 'EuropeID', values: [{ key: 'GermanyID' }, { key: 'ItalyID' }] },
         { key: 'missing' },
         { key: 'any' },
       ]);
@@ -742,8 +742,8 @@ describe('search', () => {
         'en'
       );
       expect(limitedResult.aggregations.all.relationship.buckets.map(b => b.key)).toEqual([
-        'missing',
         'shared2',
+        'missing',
         'any',
       ]);
     });

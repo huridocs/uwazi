@@ -1,4 +1,5 @@
-/* eslint-disable max-lines */
+import _ from 'lodash';
+
 import date from 'api/utils/date';
 import propertiesHelper from 'shared/comonProperties';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -301,27 +302,38 @@ const _getAggregationDictionary = async (
   return dictionaryCache[propContent];
 };
 
-const groupBuckets = (buckets, dictionary, limit) => {
+const extractMissingBucket = buckets => {
+  const [missingBuckets, remainingBuckets] = _.partition(buckets, b => b.key === 'missing');
+  const missingBucket = missingBuckets && missingBuckets.length ? missingBuckets[0] : null;
+  return { missingBucket, remainingBuckets };
+};
+
+const groupAndLimitBuckets = (buckets, dictionary, _limit) => {
   const aggregationBucketsByKey = objectIndex(
     buckets,
     b => b.key,
     b => b
   );
-  const newBuckets = dictionary.values
-    .map(dictionaryValue => {
-      const bucket = aggregationBucketsByKey[dictionaryValue.id];
-      if (bucket && dictionaryValue.values) {
+  const missingBucket = aggregationBucketsByKey.missing;
+  const limit = missingBucket ? _limit - 1 : _limit;
+  const newBuckets = [];
+
+  let dictIndex = 0;
+  while (newBuckets.length < limit && dictIndex < dictionary.values.length) {
+    const dictionaryValue = dictionary.values[dictIndex];
+    const bucket = aggregationBucketsByKey[dictionaryValue.id];
+    if (bucket) {
+      if (dictionaryValue.values) {
         bucket.values = dictionaryValue.values
           .map(v => aggregationBucketsByKey[v.id])
           .filter(b => b);
       }
-      return bucket;
-    })
-    .filter(b => b);
-  const bucketsIncludeMissing = buckets.find(b => b.key === 'missing');
-  if (bucketsIncludeMissing) {
-    newBuckets.push(bucketsIncludeMissing);
+      newBuckets.push(bucket);
+    }
+    dictIndex += 1;
   }
+
+  if (missingBucket) newBuckets.push(missingBucket);
   return newBuckets;
 };
 
@@ -330,9 +342,9 @@ const limitBuckets = (buckets, _limit) => {
     return buckets;
   }
 
-  const missingBucket = buckets.find(b => b.key === 'missing');
+  const { missingBucket, remainingBuckets } = extractMissingBucket(buckets);
   const limit = missingBucket ? _limit - 1 : _limit;
-  const limitedBuckets = buckets.slice(0, limit);
+  const limitedBuckets = remainingBuckets.slice(0, limit);
   if (missingBucket) limitedBuckets.push(missingBucket);
 
   return limitedBuckets;
@@ -466,7 +478,7 @@ const _denormalizeAndLimitAggregations = async (
 
     let groupedBuckets = aggregations[key].buckets;
     if (dictionary && dictionary.values.find(v => v.values)) {
-      groupedBuckets = groupBuckets(groupedBuckets, dictionary, limit);
+      groupedBuckets = groupAndLimitBuckets(groupedBuckets, dictionary, limit);
     } else {
       groupedBuckets = limitBuckets(groupedBuckets, limit);
     }
