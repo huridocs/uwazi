@@ -2,6 +2,7 @@ import { ObjectId } from 'mongodb';
 
 const template1 = new ObjectId();
 const template2 = new ObjectId();
+const templateWithoutPropertiesId = new ObjectId();
 
 export const fixtures = {
   templates: [
@@ -40,6 +41,10 @@ export const fixtures = {
           name: 'numeric_3',
         },
       ],
+    },
+    {
+      _id: templateWithoutPropertiesId,
+      name: 'templateWithoutProperties',
     },
   ],
   entities: [
@@ -117,6 +122,24 @@ export const fixtures = {
       template: template1,
       metadata: {
         numeric_1: [],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: 'entityWithFaultyTemplate',
+      language: 'en',
+      template: templateWithoutPropertiesId,
+      metadata: {
+        prop: [{ value: '1' }],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      sharedId: 'entityWithExtraMetadata',
+      language: 'en',
+      template: template1,
+      metadata: {
+        extra: [{ value: '1' }],
       },
     },
   ],

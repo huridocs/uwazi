@@ -43,7 +43,7 @@ export default {
       const unset: Record<string, ''> = {};
 
       Object.keys(entity!.metadata || {}).forEach(propertyName => {
-        if (template.properties[propertyName].type === 'numeric') {
+        if (template.properties?.[propertyName]?.type === 'numeric') {
           const candidateValue = entity!.metadata?.[propertyName]?.[0]?.value;
           if (typeof candidateValue === 'string') {
             if (candidateValue === '') {
