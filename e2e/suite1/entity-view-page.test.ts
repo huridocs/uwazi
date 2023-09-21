@@ -44,22 +44,26 @@ describe('Entity Page view', () => {
     beforeAll(async () => {
       await page.goto(`${host}`);
       await disableTransitions();
+      await expect(page).toClick('.multiselectItem-name > span', {
+        text: 'Medida Provisional',
+      });
       await expect(page).toClick(
-        'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
+        'div.item-document:nth-child(2) > div:nth-child(3) > div:nth-child(2)'
       );
     });
+
     it('should display raw values', async () => {
       await expect(page).toMatchElement('h1', {
         text: 'My entity view',
       });
       await expect(page).toMatchElement('.custom-title', {
-        text: 'Artavia Murillo y otros',
+        text: 'Acevedo Jaramillo',
       });
       await expect(page).toMatchElement('.custom-list', {
-        text: 'Costa Rica',
+        text: 'Peru',
       });
       await expect(page).toMatchElement('.raw-creation-date', {
-        text: '1479116602198',
+        text: '1479116482780',
       });
     });
 
@@ -77,22 +81,19 @@ describe('Entity Page view', () => {
         text: 'Descriptores',
       });
       await expect(page).toMatchElement('.envio-content', {
-        text: 'Dec 19, 2011',
+        text: 'Jan 15, 2004',
       });
       await expect(page).toMatchElement('.descripcion-content', {
         text: /(Los hechos del caso).*/g,
       });
-      await expect(page).toMatchElement('.descriptores-content', {
-        text: 'Derechos reproductivos',
+      await expect(page).toMatchElement('.dynamic-values', {
+        text: 'Entidad: Acevedo Jaramillo con template: Medida Provisional tiene estado Activo',
       });
       await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Entidad: Artavia Murillo y otros con template: Medida Provisional tiene estado Activo',
+        text: 'Código de estado: 35ae6c24-9f4c-4017-9f01-2bc42ff7ad83, índices: 1074124800',
       });
       await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Código de estado: 35ae6c24-9f4c-4017-9f01-2bc42ff7ad83, índices: 1324252800',
-      });
-      await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Fecha de envío: Dec 19, 2011',
+        text: 'Fecha de envío: Jan 15, 2004',
       });
     });
 
@@ -101,13 +102,13 @@ describe('Entity Page view', () => {
         text: 'Title',
       });
       await expect(page).toMatchElement('.EntityData-title', {
-        text: 'Artavia Murillo y otros',
+        text: 'Acevedo Jaramillo',
       });
     });
 
     it('should get the page datasets from the redux store directly', async () => {
       await expect(page).toMatchElement('#entity-sharedId', {
-        text: 'mh5hwf3nzhq6w29',
+        text: 'yn70ln6v2ccba9k9',
       });
     });
 
