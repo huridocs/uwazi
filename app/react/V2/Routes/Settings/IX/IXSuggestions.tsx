@@ -28,7 +28,7 @@ import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 
-const SUGGESTIONS_PER_PAGE = 10;
+const SUGGESTIONS_PER_PAGE = 100;
 
 type ixStatus =
   | 'ready'
