@@ -74,9 +74,9 @@ const allUniqueProperties = templates =>
 
 const allProperties = templates => templates.map(template => template.properties || []).flat();
 
-const getInheritedProperty = (property, properties, propertiesById) => {
-  if (propertiesById) {
-    return propertiesById[property.inherit.property.toString()];
+const getInheritedProperty = (property, properties) => {
+  if (!Array.isArray(properties)) {
+    return properties[property.inherit.property.toString()];
   }
   return properties.find(p => property.inherit.property.toString() === p._id.toString());
 };

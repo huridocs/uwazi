@@ -287,7 +287,7 @@ describe('search', () => {
       'Any',
     ]);
     expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
-      ['Germany', 'Italy']
+      ['Germany', 'Italy', 'Portugal']
     );
     expect(response.aggregations.all.groupedDictionary.buckets[1].values.map(b => b.label)).toEqual(
       ['China', 'Japan']
@@ -586,7 +586,10 @@ describe('search', () => {
         'en'
       );
       expect(defaultResponse.aggregations.all.groupedDictionary.buckets).toMatchObject([
-        { key: 'EuropeID', values: [{ key: 'GermanyID' }, { key: 'ItalyID' }] },
+        {
+          key: 'EuropeID',
+          values: [{ key: 'GermanyID' }, { key: 'ItalyID' }, { key: 'PortugalID' }],
+        },
         { key: 'AsiaID', values: [{ key: 'ChinaID' }, { key: 'JapanID' }] },
         { key: 'missing' },
         { key: 'any' },
@@ -597,7 +600,10 @@ describe('search', () => {
         'en'
       );
       expect(limitedResponse.aggregations.all.groupedDictionary.buckets).toMatchObject([
-        { key: 'EuropeID', values: [{ key: 'GermanyID' }, { key: 'ItalyID' }] },
+        {
+          key: 'EuropeID',
+          values: [{ key: 'GermanyID' }, { key: 'ItalyID' }, { key: 'PortugalID' }],
+        },
         { key: 'missing' },
         { key: 'any' },
       ]);

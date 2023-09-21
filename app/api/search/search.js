@@ -440,7 +440,7 @@ const _denormalizeAndLimitAggregations = async (
         role === UserRole.ADMIN ? buckets : buckets.filter(bucket => refIds.includes(bucket.key));
       buckets = buckets
         .map(bucket => {
-          const itemInfo = bucket.key in infoByRefId ? infoByRefId[bucket.key] : null;
+          const itemInfo = infoByRefId[bucket.key];
 
           if (!itemInfo) return null;
 
@@ -456,7 +456,7 @@ const _denormalizeAndLimitAggregations = async (
       return;
     }
 
-    let property = key in propertiesByName ? propertiesByName[key] : null;
+    let property = propertiesByName[key];
     if (!property && key.startsWith('__')) {
       const _key = key.substring(2);
       property = _key in propertiesByName ? propertiesByName[_key] : null;

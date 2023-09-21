@@ -294,7 +294,7 @@ export const fixtures = {
           { value: 'SpainID', label: 'Spain' },
           { label: 'Germany', id: 'GermanyID' },
         ],
-        groupedDictionary: [{ value: 'GermanyID' }, { value: 'ItalyID' }],
+        groupedDictionary: [{ value: 'GermanyID' }, { value: 'ItalyID' }, { value: 'PortugalID' }],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
@@ -625,6 +625,7 @@ export const fixtures = {
           values: [
             { label: 'Germany', id: 'GermanyID' },
             { label: 'Italy', id: 'ItalyID' },
+            { label: 'Portugal', id: 'PortugalID' },
             { label: 'France', id: 'franceID' },
           ],
         },
