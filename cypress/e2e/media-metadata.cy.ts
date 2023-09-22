@@ -93,7 +93,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
           new Promise(resolve => {
             $video[0].removeAttribute('controls');
             const interval = setInterval(() => {
-              if ($video[0].readyState >= 3) {
+              const videoElement = $video[0] as HTMLVideoElement;
+              if (videoElement.readyState >= 3) {
                 clearInterval(interval);
                 resolve($video);
               }
