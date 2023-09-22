@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   e2e-cypress:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
@@ -33,7 +33,7 @@ jobs:
           mongodb-version: 4.2.6
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - name: Setup Nodejs
