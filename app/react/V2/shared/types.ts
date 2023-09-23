@@ -9,12 +9,12 @@ interface IXExtractorInfo {
 }
 
 interface IDraggable {
+  id?: string;
   name: string;
-  iconHandle?: boolean;
-  sortLink?: Function;
   items?: IDraggable[];
+  iconHandle?: boolean;
+  parent?: IDraggable;
   container?: string;
-  target?: string;
 }
 
 type ISublink = {

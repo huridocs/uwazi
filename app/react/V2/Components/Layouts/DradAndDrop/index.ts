@@ -1,4 +1,5 @@
 export { DropZone } from './DropZone';
-export { Container, removeSubject$, addSubject$ } from './Container';
+export type { IItemComponentProps } from './Container';
+export { Container } from './Container';
 export { DraggableItem } from './DraggableItem';
 export { DragSource } from './DragSource';

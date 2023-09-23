@@ -4,19 +4,26 @@ import type { FC } from 'react';
 import type { DropTargetMonitor } from 'react-dnd';
 import { Translate } from 'app/I18N';
 import { withDnD } from 'app/componentWrappers';
-import { ItemTypes } from 'app/V2/shared/types';
+import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 
 interface DroppableProps {
   name: string;
   type: ItemTypes;
+  context: any;
   useDrop?: Function;
-  onDrop?: Function;
+  parent?: IDraggable;
 }
 
-const DropZoneComponent: FC<DroppableProps> = ({ name, useDrop = () => {}, type, onDrop }) => {
+const DropZoneComponent: FC<DroppableProps> = ({
+  name,
+  useDrop = () => {},
+  type,
+  context,
+  parent,
+}) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
-    drop: () => ({ name, onDrop }),
+    drop: () => ({ name, context, parent }),
     collect: (monitor: DropTargetMonitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),

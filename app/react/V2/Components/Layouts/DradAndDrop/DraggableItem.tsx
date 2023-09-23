@@ -1,84 +1,26 @@
 import React, { useRef } from 'react';
-import type { FC, RefObject } from 'react';
-import { type DragSourceMonitor, type XYCoord } from 'react-dnd';
+import type { FC } from 'react';
+import { type DragSourceMonitor } from 'react-dnd';
 import { Icon } from 'app/UI';
-import type { ItemTypes, IDraggable } from 'app/V2/shared/types';
+import type { IDraggable } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
+import { hoverSortable } from './SortFunction';
+import { IItemComponentProps } from './Container';
 
 interface DraggableItemProps extends React.PropsWithChildren {
   item: IDraggable;
   useDrag?: Function;
   useDrop?: Function;
   iconHandle?: boolean;
-  type: ItemTypes;
   index: number;
-  sortLink?: Function;
-  className: string;
+  context: any;
+  className?: string;
 }
 
-interface DropResult {
-  item: string;
-  onDrop: Function;
-}
-const hoverSortable =
-  (ref: RefObject<HTMLElement>, index: number, sortFunction?: Function) =>
-  // eslint-disable-next-line max-statements
-  (
-    currentItem: {
-      index: number;
-      id: string;
-      type: string;
-    },
-    monitor: any
-  ) => {
-    if (!ref.current || !sortFunction || !monitor.isOver({ shallow: true })) {
-      return;
-    }
-
-    const dragIndex = currentItem.index;
-    const hoverIndex = index;
-
-    // Don't replace items with themselves
-    if (dragIndex === hoverIndex) {
-      return;
-    }
-
-    // Determine rectangle on screen
-    const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-    // Get vertical middle
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-
-    // Determine mouse position
-    const clientOffset = monitor.getClientOffset();
-
-    // Get pixels to the top
-    const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-
-    // Only perform the move when the mouse has crossed half of the items height
-    // When dragging downwards, only move when the cursor is below 50%
-    // When dragging upwards, only move when the cursor is above 50%
-
-    // Dragging downwards
-    if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-      return;
-    }
-
-    // Dragging upwards
-    if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-      return;
-    }
-
-    // Time to actually perform the action
-    sortFunction(dragIndex, hoverIndex);
-
-    // Note: we're mutating the monitor item here!
-    // Generally it's better to avoid mutations,
-    // but it's good here for the sake of performance
-    // to avoid expensive index searches.
-    // eslint-disable-next-line no-param-reassign
-    currentItem.index = hoverIndex;
-  };
+type DraggedResult = {
+  item: IDraggable;
+  index: number;
+};
 
 const DragableItemComponent: FC<DraggableItemProps> = ({
   item,
@@ -86,42 +28,49 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   useDrop = () => {},
   iconHandle = false,
   index,
-  sortLink,
-  type,
   children,
+  context,
   className,
 }) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLLIElement>(null);
   const [, drop] = useDrop({
-    accept: type,
+    accept: context.type,
+    item: { item, index },
     collect(monitor: any) {
       return {
         handlerId: monitor.getHandlerId(),
+        isOver: monitor.isOver(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
       };
     },
-    hover: hoverSortable(ref, index, sortLink),
+    hover: hoverSortable(ref, index, context.sort),
   });
 
-  const [{ isDragging, handlerId }, drag] = useDrag(() => ({
-    type,
-    item: { item, index, sortLink },
-    end: (draggedItem: IDraggable, monitor: DragSourceMonitor) => {
-      const dropResult = monitor.getDropResult<DropResult>();
-      if (draggedItem && dropResult && dropResult.onDrop) {
-        dropResult.onDrop(item);
+  const [{ isDragging, handlerId }, drag] = useDrag({
+    type: context.type,
+    item: { item, index },
+    end: (draggedResult: DraggedResult, monitor: DragSourceMonitor) => {
+      const { context: dropContext, parent: dropParent } =
+        monitor.getDropResult<IItemComponentProps & { parent: IDraggable }>() || {};
+      if (
+        dropContext !== undefined &&
+        (draggedResult.item.container !== item.container ||
+          draggedResult.item.container === undefined)
+      ) {
+        context.addItem(draggedResult.item, dropParent);
       }
     },
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
       handlerId: monitor.getHandlerId(),
     }),
-  }));
+  });
 
   const opacity = isDragging ? 0.4 : 1;
 
   drag(drop(ref));
   return (
-    <div
+    <li
       className={`${className} flex flex-row p-3 mt-5 mb-5 border border-gray-200 border-solid min-w-full items-center ${
         iconHandle ? 'cursor-move' : ''
       }`}
@@ -132,7 +81,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
     >
       <Icon icon="bars" className={`text-gray-400 ${!iconHandle ? 'cursor-move' : ''}`} />
       {children}
-    </div>
+    </li>
   );
 };
 
