@@ -1,26 +1,18 @@
 /* eslint-disable react/no-multi-comp */
-import React from 'react';
+import React, { FC } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import { Meta, StoryObj } from '@storybook/react';
 import { Button } from 'app/V2/Components/UI';
-import { removeSubject$ } from 'app/V2/Components/Layouts/DradAndDrop/Container';
-import { Container, DragSource } from 'app/V2/Components/Layouts/DradAndDrop';
+import { Container, DragSource, IItemComponentProps } from 'app/V2/Components/Layouts/DradAndDrop';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
+import { useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
 
-const meta: Meta<typeof Container> = {
-  title: 'Components/DragAndDrop',
-  component: Container,
-};
-
-type Story = StoryObj<typeof Container>;
-
-const availableItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];
-
-const CardWithRemove = (item: IDraggable) => (
+const sourceItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];
+const CardWithRemove: FC<IItemComponentProps> = ({ item, context }) => (
   <div className="flex flex-row items-center justify-center w-full">
     <div>{item.name}</div>
     <Button
@@ -29,7 +21,7 @@ const CardWithRemove = (item: IDraggable) => (
       size="small"
       className="p-1 ml-auto"
       onClick={() => {
-        removeSubject$.next(item);
+        context.removeItem(item);
       }}
     >
       <TrashIcon className="w-4" />
@@ -37,14 +29,41 @@ const CardWithRemove = (item: IDraggable) => (
   </div>
 );
 
-const CardWithDnD = (args: { type: ItemTypes }) => (item: IDraggable) => (
+const DnDClient = ({ items, type, itemComponent }: any) => {
+  const dndContext = useDnDContext(type, items, sourceItems);
+  return (
+    <div className="tw-content">
+      <div className="gap-8 lg:grid lg:grid-cols-3 ">
+        <div data-test-id="active-bin" className="col-span-2 ">
+          <h1 className="mb-4 text-xl font-bold">Active Items</h1>
+          <Container className="mb-4 text-sm" context={dndContext} itemComponent={itemComponent} />
+        </div>
+        <div className="flex items-center ">
+          <div data-test-id="available-bin">
+            <h2 className="mb-4 text-xl font-bold ">Available Items</h2>
+            <DragSource className="mb-4 text-sm" context={dndContext} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const meta: Meta<typeof DnDClient> = {
+  title: 'Components/DragAndDrop',
+  component: DnDClient,
+};
+
+type Story = StoryObj<typeof DnDClient>;
+
+const CardWithDnD: FC<IItemComponentProps> = ({ item, context }) => (
   <div className="flex flex-col w-full">
-    <CardWithRemove name={item.name} />
+    <CardWithRemove item={item} context={context} />
     <Container
-      type={args.type}
-      items={item.items || []}
+      context={context}
       itemComponent={CardWithRemove}
       name={`group_${item.name}`}
+      parent={item}
     />
   </div>
 );
@@ -53,14 +72,7 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <DndProvider backend={HTML5Backend}>
-        <Container
-          type={args.type}
-          items={args.items}
-          itemComponent={args.itemComponent}
-          iconHandle={args.iconHandle}
-          name="basic"
-        />
-        <DragSource items={availableItems} type={args.type} />
+        <DnDClient items={args.items} type={args.type} itemComponent={args.itemComponent} />
       </DndProvider>
     </Provider>
   ),
@@ -93,7 +105,7 @@ const Nested = {
       { name: 'Item 2', items: [] },
       { name: 'Item 3', items: [] },
     ],
-    itemComponent: CardWithDnD(Basic.args),
+    itemComponent: CardWithDnD,
   },
 };
 
