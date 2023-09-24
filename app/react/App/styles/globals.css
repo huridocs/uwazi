@@ -6036,6 +6036,10 @@ input:checked + .toggle-bg {
     inset: 0px;
   }
 
+  .md\:m-auto {
+    margin: auto;
+  }
+
   .md\:mx-2 {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
@@ -6095,6 +6099,10 @@ input:checked + .toggle-bg {
 
   .md\:w-\[768px\] {
     width: 768px;
+  }
+
+  .md\:w-\[95\%\] {
+    width: 95%;
   }
 
   .md\:w-auto {

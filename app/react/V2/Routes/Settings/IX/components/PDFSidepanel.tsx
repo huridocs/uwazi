@@ -338,7 +338,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
           <SelectionError error={selectionError} />
         </div>
 
-        <div ref={pdfContainerRef} className="grow">
+        <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
           {pdf && (
             <PDF
               fileUrl={`/api/files/${pdf.filename}`}
