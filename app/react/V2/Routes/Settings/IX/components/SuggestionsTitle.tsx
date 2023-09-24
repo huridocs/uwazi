@@ -39,27 +39,26 @@ const SuggestionsTitle = ({
   }
 
   return (
-    <div className="flex">
-      <div className="flex-1">
-        <div className="flex space-x-2">
-          <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
-            {propGraphics}
-          </span>
-          <span>{t(templates[0]?._id, template?.label, null, false)}</span>
-          <span className="italic font-normal">
-            <Translate>for</Translate>
-          </span>
-          {templates.map(templateToDisplay => (
-            <Pill
-              color="gray"
-              className="inline-flex items-center text-xs font-medium"
-              key={templateToDisplay._id}
-            >
-              {templateToDisplay.name}
-            </Pill>
-          ))}
-        </div>
+    <div className="flex gap-4">
+      <div className="flex flex-wrap gap-2 content-center grow">
+        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
+          {propGraphics}
+        </span>
+        <span>{t(templates[0]?._id, template?.label, null, false)}</span>
+        <span className="italic font-normal">
+          <Translate>for</Translate>
+        </span>
+        {templates.map(templateToDisplay => (
+          <Pill
+            color="gray"
+            className="inline-flex items-center text-xs font-medium whitespace-nowrap"
+            key={templateToDisplay._id}
+          >
+            {templateToDisplay.name}
+          </Pill>
+        ))}
       </div>
+
       <div className="flex-none">
         <Button size="small" styling="light" onClick={onFiltersButtonClicked}>
           <FunnelIcon className="inline px-1 w-5 text-gray-800" />

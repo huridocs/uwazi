@@ -1,3 +1,5 @@
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Translate, t } from 'app/I18N';
@@ -13,13 +15,23 @@ interface FiltersSidepanelProps {
   aggregation: any;
 }
 
-const header = (label: string, total: number) => (
+const Header = ({ label, total }: { label: string; total: number }) => (
   <div className="flex items-center space-x-2 text-indigo-700">
     <div className="flex-none">{label}</div>
     <div className="flex-1 border-t border-dashed border-t-gray-200" />
     <div className="flex-none">{total}</div>
   </div>
 );
+
+const getPercentage = (match: number, total: number): string => {
+  const percentage = (match / total) * 100;
+
+  if (Number.isNaN(percentage)) {
+    return '-';
+  }
+
+  return `${Math.round(percentage)}%`;
+};
 
 const FiltersSidepanel = ({
   showSidepanel,
@@ -64,7 +76,7 @@ const FiltersSidepanel = ({
   };
 
   const checkOption = (e: any, optionName: any) => {
-    const checked = e.target.checked;
+    const { checked } = e.target;
     setValue(optionName, checked);
   };
 
@@ -90,18 +102,20 @@ const FiltersSidepanel = ({
     >
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
         <div className="flex flex-col flex-grow gap-4">
-          <Card title={header(t('System', 'Labeled'), aggregation.labeled._count)}>
-            <div className="mx-4 mb-3 space-y-1">
-              <div className="flex items-center space-x-1 bg-green-300">
+          <Card
+            title={<Header label={t('System', 'Labeled')} total={aggregation.labeled._count} />}
+          >
+            <div className="mx-4 mb-3 space-y-1 text-black">
+              <div className="flex items-center space-x-1 bg-green-200">
                 <div className="flex-none">
                   <Translate>Accuracy</Translate>
                 </div>
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">
-                  {((aggregation.labeled.match / aggregation.labeled._count) * 100).toFixed(1)}%
+                <div className="flex-none font-mono">
+                  {getPercentage(aggregation.labeled.match, aggregation.labeled._count)}
                 </div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="Match"
                   {...register('labeled.match')}
@@ -112,7 +126,7 @@ const FiltersSidepanel = ({
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
                 <div className="flex-none">{aggregation.labeled.match}</div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="Mismatch"
                   {...register('labeled.mismatch')}
@@ -125,18 +139,22 @@ const FiltersSidepanel = ({
               </div>
             </div>
           </Card>
-          <Card title={header(t('System', 'Non-labeled'), aggregation.nonLabeled._count)}>
+          <Card
+            title={
+              <Header label={t('System', 'Non-labeled')} total={aggregation.nonLabeled._count} />
+            }
+          >
             <div className="mx-4 mb-3 space-y-1">
-              <div className="flex items-center space-x-1 bg-yellow-200">
+              <div className="flex items-center space-x-1 bg-yellow-100">
                 <div className="flex-none">
                   <Translate>Pending</Translate>
                 </div>
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">
-                  {((aggregation.nonLabeled._count / aggregation.total) * 100).toFixed(1)}%
+                <div className="flex-none font-mono">
+                  {getPercentage(aggregation.nonLabeled._count, aggregation.total)}
                 </div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="No suggestion"
                   {...register('nonLabeled.noSuggestion')}
@@ -147,7 +165,7 @@ const FiltersSidepanel = ({
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
                 <div className="flex-none">{aggregation.nonLabeled.noSuggestion}</div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="No context"
                   {...register('nonLabeled.noContext')}
@@ -158,7 +176,7 @@ const FiltersSidepanel = ({
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
                 <div className="flex-none">{aggregation.nonLabeled.noContext}</div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="Obsolete"
                   {...register('nonLabeled.obsolete')}
@@ -169,7 +187,7 @@ const FiltersSidepanel = ({
                 <div className="flex-1 border-t border-dashed border-t-gray-200" />
                 <div className="flex-none">{aggregation.nonLabeled.obsolete}</div>
               </div>
-              <div className="flex items-center space-x-1 text-indigo-700">
+              <div className="flex items-center space-x-1">
                 <Checkbox
                   label="Others"
                   {...register('nonLabeled.others')}
