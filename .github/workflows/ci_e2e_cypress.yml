@@ -100,7 +100,11 @@ jobs:
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
       - name: Cypress run
-        run: xvfb-run -a yarn cy-e2e
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          component: false
+          config-file: cypress.config.ts
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
