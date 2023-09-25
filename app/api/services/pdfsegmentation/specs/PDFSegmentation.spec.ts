@@ -72,7 +72,7 @@ describe('PDFSegmentation', () => {
   });
 
   beforeAll(async () => {
-    const uri = 'mongodb://localhost/';
+    const uri = 'mongodb://127.0.0.1/';
     await DB.connect(`${uri}PDFSegmentation_spec`);
   });
 

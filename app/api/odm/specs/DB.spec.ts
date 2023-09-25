@@ -24,7 +24,7 @@ describe('DB', () => {
   let db2: Db;
 
   beforeEach(async () => {
-    const uri = 'mongodb://localhost/';
+    const uri = 'mongodb://127.0.0.1/';
     await DB.connect(`${uri}_DB_spec_ts`);
     db1 = DB.getConnection().useDb('db1').db;
     db2 = DB.getConnection().useDb('db2').db;

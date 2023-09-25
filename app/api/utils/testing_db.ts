@@ -73,7 +73,7 @@ const fixturer = {
 let mongooseConnection: Connection;
 
 const initMongoServer = async (dbName: string) => {
-  const uri = 'mongodb://localhost/';
+  const uri = 'mongodb://127.0.0.1/';
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
