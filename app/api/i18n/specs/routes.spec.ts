@@ -67,7 +67,7 @@ describe('i18n translations routes', () => {
         translationsV2,
         translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
       },
-      'index'
+      'index_i18n_routes'
     );
   });
 
@@ -366,6 +366,7 @@ describe('i18n translations routes', () => {
 
       describe('when encountering an error', () => {
         let mockCalls: any[];
+        jest.spyOn(console, 'error').mockImplementation(() => true);
         let response: request.Response;
         let settingsAddLanguageMock: jest.SpyInstance;
 
