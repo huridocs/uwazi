@@ -63,7 +63,7 @@ const IXSuggestions = () => {
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<EntitySuggestionType>();
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
-  const revalidator = useRevalidator();
+  const { revalidate } = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
   const [status, setStatus] = useState<{
     status: ixStatus;
@@ -79,7 +79,7 @@ const IXSuggestions = () => {
           setStatus({ status: modelStatus as ixStatus, data });
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus({ status: 'ready' });
-            revalidator.revalidate();
+            revalidate();
           }
         }
       }
@@ -88,7 +88,7 @@ const IXSuggestions = () => {
     return () => {
       socket.off('ix_model_status');
     };
-  }, []);
+  }, [extractor._id, revalidate]);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
@@ -102,7 +102,7 @@ const IXSuggestions = () => {
           entityId: acceptedSuggestion.entityId,
         }))
       );
-      revalidator.revalidate();
+      revalidate();
       setNotifications({
         type: 'success',
         text: <Translate>Suggestion accepted.</Translate>,
@@ -129,7 +129,7 @@ const IXSuggestions = () => {
         } else {
           setStatus({ status: 'cancel' });
         }
-        revalidator.revalidate();
+        revalidate();
       }
     } catch (error) {}
   };
