@@ -204,28 +204,17 @@ export default {
   prepareContexts,
 
   async get(query: { locale?: LanguageISO6391; context?: string } = {}) {
-    const alreadyMigrated = await migrateTranslationsToV2();
-    if (alreadyMigrated) {
-      const language = query.locale;
+    const language = query.locale;
 
-      if (query.context) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
-      }
-
-      if (language) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
-      }
-
-      return translationTypeToIndexedTranslation(await getTranslationsV2());
+    if (query.context) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
     }
 
-    const { context, ...actualQuery } = query;
-    const translations = await model.get(actualQuery, {
-      ...(context ? { locale: 1 } : {}),
-      ...(context ? { contexts: { $elemMatch: { id: context } } } : {}),
-    });
+    if (language) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
+    }
 
-    return translationTypeToIndexedTranslation(translations);
+    return translationTypeToIndexedTranslation(await getTranslationsV2());
   },
 
   async oldSave(translation: TranslationType | IndexedTranslations) {

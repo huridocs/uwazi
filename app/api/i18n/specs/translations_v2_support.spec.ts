@@ -5,7 +5,6 @@ import { Db, ObjectId } from 'mongodb';
 import { TranslationValue } from 'shared/translationType';
 import { ContextType } from 'shared/translationSchema';
 
-import migration from '../../i18n.v2/migrations';
 import translations from '../translations';
 import { migrateTranslationsToV2 } from '../v2_support';
 import fixtures, { dictionaryId } from './fixtures';
@@ -115,30 +114,11 @@ describe('translations v2 support', () => {
     });
 
   describe('save', () => {
-    it('should do nothing when the feature flag is off (Temporary test)', async () => {
-      await deactivateFeature();
-
-      await createTranslation();
-
-      const createdTranslations = await db.collection(newTranslationsCollection).find().toArray();
-      expect(createdTranslations).toEqual([]);
-    });
-
-    it('should use locale to update the old translations collection (Temporary test)', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
-      await createTranslation();
-      await createTranslation();
-      const oldTranslations = await db.collection('translations').find().toArray();
-      expect(oldTranslations.map(t => t.locale)).toEqual(['es', 'zh', 'en']);
-    });
-
-    it('should save the translations to the new translations collection', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
+    fit('should save the translations to the new translations collection', async () => {
       await testingDB.setupFixturesAndContext({
         settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-        translations: [],
       });
-      await migrateTranslationsToV2();
+
       await createTranslation();
 
       const createdTranslations = await db
@@ -163,39 +143,12 @@ describe('translations v2 support', () => {
     });
 
     describe('when updating (the translation already exists on db)', () => {
-      it('should not save anything on the new collection', async () => {
-        await deactivateFeature();
-
-        const savedTranslations = await createTranslation();
-        await updateTranslation(savedTranslations._id, [{ key: 'Key', value: 'updatedValue' }]);
-
-        const createdTranslations = await db.collection(newTranslationsCollection).find().toArray();
-        expect(createdTranslations).toEqual([]);
-      });
-
-      it('should update already existing translations and create new ones', async () => {
+      fit('should update already existing translations and create new ones', async () => {
         const enTranslationId = testingDB.id();
         await testingDB.setupFixturesAndContext({
           settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
-          translations: [
-            {
-              _id: enTranslationId,
-              locale: 'en',
-              contexts: [
-                {
-                  id: 'contextId',
-                  label: 'contextLabel',
-                  type: 'Entity',
-                  values: [
-                    { key: 'Key', value: 'Value' },
-                    { key: 'Key2', value: 'Value2' },
-                  ],
-                },
-              ],
-            },
-          ],
         });
-        await migrateTranslationsToV2();
+
         await updateTranslation(enTranslationId, [
           { key: 'Key', value: 'updatedValue' },
           { key: 'Key2', value: 'updatedValue2' },
@@ -232,20 +185,7 @@ describe('translations v2 support', () => {
   });
 
   describe('addLanguage', () => {
-    it('should not create new ones on the new collection', async () => {
-      testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
-      await createTranslation();
-      await translations.addLanguage('ca');
-
-      const createdTranslations = await db
-        .collection(newTranslationsCollection)
-        .find({ language: 'ca' })
-        .toArray();
-
-      expect(createdTranslations).toEqual([]);
-    });
-
-    it('should duplicate translations from the default language to the new one', async () => {
+    fit('should duplicate translations from the default language to the new one', async () => {
       await testingDB.setupFixturesAndContext({
         settings: [{ languages: [{ key: 'en', label: 'English', default: true }] }],
         translations: [
@@ -293,7 +233,7 @@ describe('translations v2 support', () => {
   });
 
   describe('deleteContext', () => {
-    it('should delete all translations belonging to a context', async () => {
+    fit('should delete all translations belonging to a context', async () => {
       await translations.save({
         locale: 'en',
         contexts: [
@@ -341,7 +281,7 @@ describe('translations v2 support', () => {
   });
 
   describe('removeLanguage', () => {
-    it('should delete all translations belonging to a language', async () => {
+    fit('should delete all translations belonging to a language', async () => {
       await createTranslation();
 
       await translations.removeLanguage('en');
@@ -359,140 +299,8 @@ describe('translations v2 support', () => {
   });
 
   describe('get', () => {
-    describe('when feature flag is off', () => {
-      it('should not migrate translations to new collection', async () => {
-        await testingDB.setupFixturesAndContext(fixtures);
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
-
-        await migrateTranslationsToV2();
-
-        const translationsMigrated = await db
-          .collection(newTranslationsCollection)
-          .find()
-          .toArray();
-
-        expect(translationsMigrated).toMatchObject([]);
-      });
-      it('should empty the new translations collection', async () => {
-        await testingDB.setupFixturesAndContext(fixtures);
-
-        await migrateTranslationsToV2();
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: false } });
-        await migrateTranslationsToV2();
-
-        const translationsMigrated = await db
-          .collection(newTranslationsCollection)
-          .find()
-          .toArray();
-
-        expect(translationsMigrated).toMatchObject([]);
-      });
-    });
     describe('when feature flag is on', () => {
-      it('should migrate current translations to the new collection', async () => {
-        await testingDB.setupFixturesAndContext(fixtures);
-        await migrateTranslationsToV2();
-
-        const translationsMigrated = await db
-          .collection(newTranslationsCollection)
-          .find({ 'context.id': 'System', language: 'en' })
-          .sort({ key: 1 })
-          .toArray();
-
-        expect(translationsMigrated).toMatchObject([
-          {
-            language: 'en',
-            key: 'Account',
-            value: 'Account',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'Age',
-            value: 'Age',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'Email',
-            value: 'E-Mail',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'Library',
-            value: 'Library',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-          {
-            language: 'en',
-            key: 'Password',
-            value: 'Password',
-            context: { type: 'Uwazi UI', label: 'System', id: 'System' },
-          },
-        ]);
-      });
-
-      it('should only migrate once (on concurrent calls also)', async () => {
-        await deactivateFeature();
-        await testingDB.setupFixturesAndContext(fixtures);
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
-
-        jest.spyOn(migration, 'up');
-        await Promise.all([translations.get(), translations.get(), translations.get()]);
-        await translations.get();
-        expect(migration.up).toHaveBeenCalledTimes(1);
-
-        const translationsHelperCount = await db
-          .collection('translationsV2_helper')
-          .find()
-          .toArray();
-        expect(translationsHelperCount).toMatchObject([
-          {
-            migrating: false,
-            migrated: true,
-          },
-        ]);
-      });
-
-      it('should return from the old collection when not migrated', async () => {
-        await testingDB.setupFixturesAndContext({
-          ...fixtures,
-          translations: [
-            {
-              locale: 'en',
-              contexts: [
-                {
-                  id: 'System',
-                  label: 'System',
-                  type: 'Uwazi UI',
-                  values: [
-                    { key: 'Password', value: 'Password' },
-                    { key: 'Account', value: 'Account' },
-                  ],
-                },
-              ],
-            },
-          ],
-        });
-        const [english] = await translations.get({ locale: 'en' });
-        expect(english).toMatchObject({
-          locale: 'en',
-          contexts: [
-            {
-              id: 'System',
-              label: 'System',
-              type: 'Uwazi UI',
-              values: {
-                Account: 'Account',
-                Password: 'Password',
-              },
-            },
-          ],
-        });
-      });
-
-      it('should return from the new collection when migrated', async () => {
+      fit('should return from the new collection when migrated', async () => {
         await testingDB.setupFixturesAndContext({
           ...fixtures,
           translations: [
@@ -526,6 +334,7 @@ describe('translations v2 support', () => {
             },
           ],
         });
+        await migrateTranslationsToV2();
         const [spanish, english] = await translations.get();
 
         const englishComesFromTheOldCollection = english._id;
@@ -559,7 +368,7 @@ describe('translations v2 support', () => {
         });
       });
 
-      it('should return only the language requested', async () => {
+      fit('should return only the language requested', async () => {
         await testingDB.setupFixturesAndContext({
           ...fixtures,
           translations: [
@@ -593,7 +402,7 @@ describe('translations v2 support', () => {
             },
           ],
         });
-        await translations.get();
+        await migrateTranslationsToV2();
         const [spanish, english] = await translations.get({ locale: 'es' });
         expect(english).toBeUndefined();
         expect(spanish).toMatchObject({
@@ -609,7 +418,7 @@ describe('translations v2 support', () => {
         });
       });
 
-      it('should return only the language and context requested', async () => {
+      fit('should return only the language and context requested', async () => {
         await testingDB.setupFixturesAndContext({
           ...fixtures,
           translations: [
@@ -665,69 +474,13 @@ describe('translations v2 support', () => {
           ],
         });
       });
-
-      describe('when requesting a locale (old collection)', () => {
-        it('should return the new collection values', async () => {
-          const spanishId = new ObjectId();
-          await testingDB.setupFixturesAndContext({
-            ...fixtures,
-            translations: [
-              {
-                _id: spanishId,
-                locale: 'es',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'System',
-                    type: 'Uwazi UI',
-                    values: [
-                      { key: 'Password', value: 'Contraseña' },
-                      { key: 'Account', value: 'Cuenta' },
-                    ],
-                  },
-                ],
-              },
-              {
-                locale: 'en',
-                contexts: [
-                  {
-                    id: 'System',
-                    label: 'System',
-                    type: 'Uwazi UI',
-                    values: [
-                      { key: 'Password', value: 'Password' },
-                      { key: 'Account', value: 'Account' },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
-          await translations.get();
-          const [spanish, rest] = await translations.get({ locale: 'es' });
-          expect(rest).toBeUndefined();
-          expect(spanish).toMatchObject({
-            locale: 'es',
-            contexts: [
-              {
-                id: 'System',
-                label: 'System',
-                type: 'Uwazi UI',
-                values: { Password: 'Contraseña', Account: 'Cuenta' },
-              },
-            ],
-          });
-        });
-      });
     });
   });
 
   describe('updateContext', () => {
     describe('when feature flag is on', () => {
-      it('should change the value of a translation when changing the key if the locale is the default one', async () => {
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
+      fit('should change the value of a translation when changing the key if the locale is the default one', async () => {
         await testingDB.setupFixturesAndContext(fixtures);
-        await translations.get();
 
         const values = {};
 
@@ -758,12 +511,10 @@ describe('translations v2 support', () => {
         expect(propertyEN.value).toBe('new property name');
       });
 
-      it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
+      fit('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
         //changed keys should change value also when the locale is the default one
         //! use the previous commit to remove the update and then implement the key change functionality
-        testingTenants.changeCurrentTenant({ featureFlags: { translationsV2: true } });
         await testingDB.setupFixturesAndContext(fixtures);
-        await translations.get();
 
         const values = {
           'new key': 'new value',
@@ -853,9 +604,8 @@ describe('translations v2 support', () => {
   });
 
   describe('addContext()', () => {
-    it('should add a context with its values', async () => {
+    fit('should add a context with its values', async () => {
       await testingDB.setupFixturesAndContext(fixtures);
-      await migrateTranslationsToV2();
 
       const values = { Name: 'Name', Surname: 'Surname' };
       const result = await translations.addContext('context', 'Judge', values, ContextType.entity);

@@ -7,14 +7,12 @@ import { ContextType } from 'shared/translationSchema';
 import * as fs from 'fs';
 import { UITranslationNotAvailable } from '../defaultTranslations';
 import translations from '../translations';
-import { migrateTranslationsToV2 } from '../v2_support';
 import fixtures, { dictionaryId } from './fixtures';
 import { sortByLocale } from './sortByLocale';
 
 describe('translations', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
-    await migrateTranslationsToV2();
   });
 
   afterAll(async () => {
