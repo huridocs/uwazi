@@ -100,6 +100,15 @@ describe("When there's no authenticated user", () => {
       expect(await auth.isAuthorized('write', ['entity3', 'entity1'])).toBe(false);
     });
   });
+
+  it('should allow empty read', async () => {
+    const auth = new AuthorizationService(
+      new MongoPermissionsDataSource(getConnection(), new MongoTransactionManager(getClient())),
+      undefined
+    );
+    expect(await auth.isAuthorized('read', [])).toBe(true);
+    expect(await auth.isAuthorized('write', [])).toBe(false);
+  });
 });
 
 describe("When there's an authenticated user", () => {
@@ -111,7 +120,9 @@ describe("When there's an authenticated user", () => {
         adminUser
       );
       expect(await auth.isAuthorized('read', ['entity1'])).toBe(true);
+      expect(await auth.isAuthorized('read', [])).toBe(true);
       expect(await auth.isAuthorized('write', ['entity1'])).toBe(true);
+      expect(await auth.isAuthorized('write', [])).toBe(true);
     });
 
     it('should not throw an error', async () => {
@@ -144,6 +155,8 @@ describe("When there's an authenticated user", () => {
       { user: 'user1', entities: ['entity1', 'entity3'], level: 'write', result: false },
       { user: 'user1', entities: ['entity2', 'entity3'], level: 'read', result: false },
       { user: 'user1', entities: ['entity2', 'entity3'], level: 'write', result: false },
+      { user: 'user1', entities: [], level: 'read', result: true },
+      { user: 'user1', entities: [], level: 'write', result: true },
     ])(
       'should return [$result] if [$user] wants to [$level] from/to $entities',
       async ({ user, entities, level, result }) => {

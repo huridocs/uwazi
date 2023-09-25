@@ -28,6 +28,7 @@ describe('Languages', () => {
     });
 
     it('should install new languages', () => {
+      const BACKEND_LANGUAGE_INSTALL_DELAY = 25000;
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
       cy.get('[data-testid=modal] input[type=text]').type('Danish');
       cy.contains('button', 'Danish').click();
@@ -38,8 +39,10 @@ describe('Languages', () => {
       cy.contains('[data-testid=modal] button', 'Install').click();
 
       cy.wait('@addLanguage');
-      cy.contains('Danish');
-      cy.contains('Basque');
+      cy.contains('Dismiss').click();
+      cy.contains('Danish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
+      cy.contains('Basque', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
+      cy.contains('Languages installed successfully').click();
     });
   });
 
@@ -61,6 +64,8 @@ describe('Languages', () => {
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
+      cy.contains('Dismiss').click();
+      cy.contains('Language uninstalled successfully').click();
       cy.contains('Basque').should('not.exist');
     });
   });

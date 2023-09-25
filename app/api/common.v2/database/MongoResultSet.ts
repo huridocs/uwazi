@@ -99,7 +99,7 @@ export class MongoResultSet<T, U = T> implements ResultSet<U> {
       return predicate(item!) === false;
     });
 
-    return hasItems && result === null;
+    return hasItems ? result === null : true;
   }
 
   async some(predicate: (item: U) => boolean): Promise<boolean> {
