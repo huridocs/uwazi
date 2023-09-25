@@ -203,7 +203,7 @@ const update = async (translation: TranslationType | IndexedTranslations) => {
 export default {
   prepareContexts,
 
-  async get(query: { locale?: LanguageISO6391; context?: string } = {}, selector = {}) {
+  async get(query: { locale?: LanguageISO6391; context?: string } = {}) {
     const alreadyMigrated = await migrateTranslationsToV2();
     if (alreadyMigrated) {
       const language = query.locale;
@@ -221,7 +221,6 @@ export default {
 
     const { context, ...actualQuery } = query;
     const translations = await model.get(actualQuery, {
-      ...selector,
       ...(context ? { locale: 1 } : {}),
       ...(context ? { contexts: { $elemMatch: { id: context } } } : {}),
     });
