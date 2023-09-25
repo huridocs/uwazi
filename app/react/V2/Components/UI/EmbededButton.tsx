@@ -24,6 +24,8 @@ const EmbededButton = ({
   className = '',
 }: ButtonProps) => {
   let buttonColor = 'green';
+  let childrenBaseStyle = 'text-sm font-medium';
+
   switch (color) {
     case 'orange':
       buttonColor = 'text-orange-400 bg-orange-50';
@@ -33,12 +35,17 @@ const EmbededButton = ({
       break;
     case 'red':
       buttonColor = 'bg-gray-50';
+      childrenBaseStyle = 'text-gray-300';
       break;
     case 'indigo':
       buttonColor = 'text-indigo-400 bg-indigo-50';
       break;
     default:
       buttonColor = '';
+  }
+
+  if (collapsed) {
+    childrenBaseStyle = 'sr-only';
   }
 
   return (
@@ -52,11 +59,7 @@ const EmbededButton = ({
     >
       <div className="flex flex-row gap-1 justify-center items-center">
         <div className="w-3 h-3 text-sm">{icon}</div>
-        {!collapsed ? (
-          <div className={`text-sm font-medium ${color === 'red' ? 'text-gray-300' : ''}`}>
-            {children}
-          </div>
-        ) : undefined}
+        <div className={childrenBaseStyle}>{children}</div>
       </div>
     </button>
   );

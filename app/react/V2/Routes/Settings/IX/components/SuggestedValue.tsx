@@ -27,12 +27,12 @@ const SuggestedValue = ({
 
   let colorClass = '';
   if (!suggestion || suggestion.suggestedValue === '') {
-    colorClass = 'text-orange-500';
+    colorClass = 'text-orange-600';
   }
   if (value === suggestion.suggestedValue) {
-    colorClass = 'text-green-400';
+    colorClass = 'text-green-600';
   } else {
-    colorClass = 'text-orange-300';
+    colorClass = 'text-orange-600';
   }
 
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);
@@ -94,7 +94,7 @@ const SuggestedValue = ({
             style={{
               position: styles.arrow.position,
               left: styles.arrow.left,
-              transform: styles.arrow.transform + ' rotate(45deg)',
+              transform: `${styles.arrow.transform} rotate(45deg)`,
               boxShadow: '2px 2px 3px rgba(40, 40, 40, 0.1)',
             }}
           />
