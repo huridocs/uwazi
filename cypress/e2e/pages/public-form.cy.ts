@@ -123,6 +123,8 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(1000);
       cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
       cy.get('.form-group.media')
         .eq(0)
