@@ -28,7 +28,7 @@ const EmbededButton = ({
 
   switch (color) {
     case 'orange':
-      buttonColor = 'text-orange-400 bg-orange-50';
+      buttonColor = 'text-orange-600 bg-orange-50';
       break;
     case 'green':
       buttonColor = 'text-green-400 bg-green-100';
