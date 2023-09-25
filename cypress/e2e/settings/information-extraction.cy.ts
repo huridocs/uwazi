@@ -42,6 +42,7 @@ describe('Information Extraction', () => {
   });
 
   describe('labeling entities', () => {
+    // eslint-disable-next-line max-statements
     it('should label the title property for the first six entities', () => {
       labelEntityTitle(0, 'Lorem Ipsum');
       cy.get('a[aria-label="Library"]').click();
@@ -177,9 +178,18 @@ describe('Information Extraction', () => {
     });
   });
 
-  describe('Review', () => {
+  describe('Suggestions review', () => {
+    before(() => {
+      cy.injectAxe();
+    });
+
     it('should navigate to the first extractor', () => {
       cy.contains('button', 'Review').eq(0).click();
+    });
+
+    it('should display suggestions and be accessible', () => {
+      cy.getByTestId('settings-content').toMatchImageSnapshot();
+      cy.checkA11y();
     });
 
     it('should show title initial suggestion should be default', () => {
@@ -188,11 +198,11 @@ describe('Information Extraction', () => {
       cy.get('tbody tr').eq(5).should('be.visible');
     });
 
-    it('should find suggestions successfully', { defaultCommandTimeout: 6000 }, () => {
-      cy.intercept('GET', 'api/suggestions*').as('getSuggestions');
+    it('should find suggestions successfully', () => {
+      cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
       cy.get('table tr').should('have.length.above', 1);
       cy.contains('button', 'Find suggestions').click();
-      cy.wait('@getSuggestions');
+      cy.wait('@trainSuggestions');
       cy.get('tbody tr').eq(5).should('be.visible');
     });
 

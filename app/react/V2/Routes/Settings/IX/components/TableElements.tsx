@@ -144,7 +144,7 @@ const SegmentCell = ({
   const segment = cell.getValue();
   if (segment === '') {
     return (
-      <span className="text-xs font-normal text-orange-500">
+      <span className="text-xs font-normal text-orange-600">
         <Translate>No context</Translate>
       </span>
     );

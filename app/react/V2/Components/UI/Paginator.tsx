@@ -43,6 +43,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
               className="block px-3 py-1.5 ml-0 leading-snug text-gray-500 bg-white border border-gray-300 rounded-l-[4px]"
             >
               <ChevronLeftIcon className="w-[17px]" />
+              <Translate className="sr-only">Previous</Translate>
             </button>
           ) : (
             <Link
@@ -152,6 +153,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
               className="block px-3 py-1.5 leading-snug text-gray-500 bg-white border border-gray-300 rounded-r-[4px]"
             >
               <ChevronRightIcon className="w-[17px]" />
+              <Translate className="sr-only">Next</Translate>
             </button>
           ) : (
             <Link
