@@ -6,6 +6,8 @@ const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 export default defineConfig({
   viewportWidth: 1280,
   viewportHeight: 768,
+  defaultCommandTimeout: 10000,
+  requestTimeout: 12000,
   e2e: {
     baseUrl: 'http://localhost:3000',
     video: true,

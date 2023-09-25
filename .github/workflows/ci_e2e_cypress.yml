@@ -104,7 +104,7 @@ jobs:
         with:
           browser: chrome
           component: false
-          config: defaultCommandTimeout=8000,requestTimeout=12000
+          config-file: cypress.config.ts
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
