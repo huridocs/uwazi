@@ -100,7 +100,7 @@ jobs:
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
       - name: Cypress run
-      - run: xvfb-run -a yarn cy-e2e
+        run: xvfb-run -a yarn cy-e2e
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
