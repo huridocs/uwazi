@@ -39,6 +39,8 @@ const ExtractorModal = ({
       setValues(initialValues);
     } else {
       setEditing(false);
+      setName('');
+      setValues([]);
     }
   }, [extractor]);
 
