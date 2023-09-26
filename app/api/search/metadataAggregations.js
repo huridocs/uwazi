@@ -5,7 +5,7 @@ const aggregation = (key, should, filters) => ({
   terms: {
     field: key,
     missing: 'missing',
-    size: preloadOptionsSearch,
+    size: preloadOptionsSearch(),
   },
   aggregations: {
     filtered: {
@@ -99,7 +99,7 @@ const nestedAggregation = (property, should, readOnlyFilters, path, missing = fa
       terms: {
         field: nestedPropPath,
         missing: missing ? 'missing' : undefined,
-        size: preloadOptionsSearch,
+        size: preloadOptionsSearch(),
       },
       aggregations: {
         filtered: {
@@ -203,7 +203,7 @@ const permissionsAggregations = (baseQuery, path, terms) => {
           filtered: {
             terms: {
               field: path,
-              size: preloadOptionsSearch,
+              size: preloadOptionsSearch(),
             },
             aggregations: {
               filteredByUser: {
@@ -304,7 +304,7 @@ export const publishingStatusAgreggations = baseQuery => {
         terms: {
           field: path,
           missing: 'false',
-          size: preloadOptionsSearch,
+          size: preloadOptionsSearch(),
         },
       },
     },

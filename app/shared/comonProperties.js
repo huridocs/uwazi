@@ -72,11 +72,14 @@ const allUniqueProperties = templates =>
     return filters;
   }, []);
 
-const allProperties = templates =>
-  templates.reduce((properties, template) => properties.concat(template.properties), []);
+const allProperties = templates => templates.map(template => template.properties || []).flat();
 
-const getInheritedProperty = (property, properties) =>
-  properties.find(p => property.inherit.property.toString() === p._id.toString());
+const getInheritedProperty = (property, properties) => {
+  if (!Array.isArray(properties)) {
+    return properties[property.inherit.property.toString()];
+  }
+  return properties.find(p => property.inherit.property.toString() === p._id.toString());
+};
 
 const textFields = templates =>
   allUniqueProperties(templates).filter(
