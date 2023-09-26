@@ -246,6 +246,8 @@ describe('translations', () => {
       const translated = await translations.get();
 
       expect(translated[0].contexts?.length).toBe(1);
+      expect(translated[0].contexts?.[0].type).toBe('Thesaurus');
+      expect(translated[1].contexts?.[0].type).toBe('Thesaurus');
       expect(translated[1].contexts?.length).toBe(1);
     });
   });

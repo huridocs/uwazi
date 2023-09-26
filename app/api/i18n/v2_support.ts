@@ -151,7 +151,7 @@ export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
   ).deleteByContextId(contextId);
 };
 
-export const deleteTranslationsByLanguageV2 = async (language: string) => {
+export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) => {
   const transactionManager = new MongoTransactionManager(getClient());
   return new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
