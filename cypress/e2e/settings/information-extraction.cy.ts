@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
 
@@ -187,46 +188,105 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Review').eq(0).click();
     });
 
+    it('should show title initial suggestion should be default', () => {
+      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.contains('thead tr th:nth-child(2) div span', 'Document').click();
+      cy.get('tbody tr').eq(5).should('be.visible');
+    });
+
     it('should display suggestions and be accessible', () => {
       cy.getByTestId('settings-content').toMatchImageSnapshot();
       cy.checkA11y();
     });
 
-    it('should show title initial suggestion should be default', () => {
-      cy.get('tbody tr').eq(5).should('be.visible');
-      cy.contains('thead tr th:nth-child(2) div span', 'Document').click(); // Sort the results
-      cy.get('tbody tr').eq(5).should('be.visible');
-    });
-
     it('should find suggestions successfully', () => {
       cy.intercept('POST', 'api/suggestions/train').as('trainSuggestions');
       cy.get('table tr').should('have.length.above', 1);
+      cy.checkA11y();
       cy.contains('button', 'Find suggestions').click();
       cy.wait('@trainSuggestions');
-      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.contains('Training model...');
+      cy.contains('Finding suggestions...');
     });
 
     it('should accept a single suggestion', () => {
       cy.intercept('POST', 'api/suggestions/accept').as('accept');
-      cy.contains('button', 'Accept').eq(0).click();
+      cy.contains('button', 'Accept', { timeout: 10000 }).eq(0).click();
       cy.wait('@accept');
+      cy.checkA11y();
+      cy.contains('button', 'Dismiss').click();
     });
 
-    it('should show filters sidepanel', () => {
+    it('should use filters', () => {
       cy.intercept('GET', 'api/suggestions*').as('getSuggestions');
       cy.contains('button', 'Stats & Filters').click();
+      cy.checkA11y();
       cy.contains('span', 'Match').click();
       cy.contains('button', 'Apply').click();
       cy.wait('@getSuggestions');
       cy.get('tbody tr').should('have.length', 1);
     });
+  });
 
-    it('should label one more entity', () => {
-      cy.get('a[aria-label="Library"]').click();
-      labelEntityTitle(7, 'Spider-Man: Into the');
-      cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('a', 'Metadata Extraction').click();
-      cy.contains('button', 'Review').eq(0).click();
+  describe('PDF sidepanel', () => {
+    it('should display the PDF sidepanel with the pdf and selection rectangle', () => {
+      cy.contains('button', 'Open PDF').click();
+      cy.contains('h1', 'Spider-Man__Into_the_Spider-Verse.pdf');
+      cy.get('aside').within(() => {
+        cy.get('input').should('have.value', '2023');
+      });
+      cy.get('div.highlight-rectangle').should('be.visible');
+      cy.contains('span', 'Spider-Man: Into the Spider-Verse');
+      cy.get('aside').toMatchImageSnapshot();
+    });
+
+    it('should not render pdf pages that are not visible', () => {
+      cy.get('[data-region-selector-id="3"]').within(() => {
+        cy.get('div').should('be.empty');
+      });
+    });
+
+    it('should clear the existing selection', () => {
+      cy.contains('button', 'Clear PDF selection').click();
+      cy.get('div.highlight-rectangle').should('have.length', 0);
+    });
+
+    it('should click to fill with a new text', () => {
+      //@ts-ignore
+      cy.contains('span[role="presentation"]', 'Spider-Man: Into the Spider-Verse').setSelection(
+        'Spider-Man: Into the Spider-Verse'
+      );
+      cy.contains('button', 'Click to fill').click();
+      cy.get('div.highlight-rectangle').should('be.visible');
+      cy.get('aside').within(() => {
+        cy.get('input').should('have.value', 'Spider-Man: Into the Spider-Verse');
+      });
+    });
+
+    it('should manually edit the field and save', () => {
+      cy.get('aside').within(() => {
+        cy.get('input').type(' edited');
+        cy.contains('button', 'Accept').click();
+      });
+      cy.contains('Saved successfully');
+      cy.contains('button', 'Dismiss').click();
+      cy.contains('button', 'Stats & Filters').click();
+      cy.contains('button', 'Clear all').click();
+      cy.get('tbody').within(() => {
+        cy.get('tr:nth-child(3)').within(() => {
+          cy.get('td:nth-child(2)').should('contain', 'Spider-Man: Into the Spider-Verse edited');
+        });
+      });
+    });
+
+    it('should open the pdf on the page of the selection', () => {
+      cy.contains('a', 'Metadata Extraction').eq(0).click();
+      cy.contains('Fechas from relevant templates').siblings().last().click();
+      cy.contains('Spider-Man: Into the Spider-Verse edited').parent().siblings().last().click();
+      cy.get('aside').within(() => {
+        cy.get('input').should('have.value', '2018-12-01');
+        cy.contains('New York City teenager Miles Morales');
+      });
     });
   });
 });
