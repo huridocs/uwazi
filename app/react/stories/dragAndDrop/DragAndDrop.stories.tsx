@@ -1,15 +1,22 @@
 /* eslint-disable react/no-multi-comp */
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TrashIcon } from '@heroicons/react/20/solid';
 import { Meta, StoryObj } from '@storybook/react';
 import { Button } from 'app/V2/Components/UI';
-import { Container, DragSource, IItemComponentProps } from 'app/V2/Components/Layouts/DradAndDrop';
+import {
+  Container,
+  DragSource,
+  DraggableItem,
+  DropZone,
+  IItemComponentProps,
+} from 'app/V2/Components/Layouts/DradAndDrop';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
+import { IDnDContext, useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
+import debounce from 'app/utils/debounce';
 
 const sourceItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];
 const CardWithRemove: FC<IItemComponentProps> = ({ item, context }) => (
@@ -29,23 +36,119 @@ const CardWithRemove: FC<IItemComponentProps> = ({ item, context }) => (
   </div>
 );
 
+const DndContextState = ({
+  activeItems,
+  child = false,
+}: {
+  activeItems: IDraggable[];
+  child?: boolean;
+}) => (
+  <div className=" tw-content">
+    <div
+      className={`pl-5 mt-20 border-2 border-gray-200 ${!child ? 'w-80' : 'w-60 border-dashed'}`}
+      data-test-id="state-bin"
+    >
+      <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
+      <ul className="mb-8 list-disc ">
+        {activeItems.map((item: IDraggable) => (
+          <li className="flex items-center gap-10 space-x-3">
+            <span>{item.name}</span>
+            {item.items && <DndContextState activeItems={item.items} child />}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+);
+
 const DnDClient = ({ items, type, itemComponent }: any) => {
   const dndContext = useDnDContext(type, items, sourceItems);
   return (
     <div className="tw-content">
-      <div className="gap-8 lg:grid lg:grid-cols-3 ">
+      <div className="gap-8 pl-4 lg:grid lg:grid-cols-3 ">
         <div data-test-id="active-bin" className="col-span-2 ">
           <h1 className="mb-4 text-xl font-bold">Active Items</h1>
-          <Container className="mb-4 text-sm" context={dndContext} itemComponent={itemComponent} />
+          <Container className="mb-2 text-sm" context={dndContext} itemComponent={itemComponent} />
         </div>
         <div className="flex items-center ">
           <div data-test-id="available-bin">
-            <h2 className="mb-4 text-xl font-bold ">Available Items</h2>
-            <DragSource className="mb-4 text-sm" context={dndContext} />
+            <h2 className="mb-2 text-xl font-bold ">Available Items</h2>
+            <DragSource className="mb-2 text-sm" context={dndContext} />
           </div>
         </div>
       </div>
+      <DndContextState activeItems={dndContext.activeItems} />
     </div>
+  );
+};
+
+const EditableItem = ({
+  dndContext,
+  item,
+  index,
+}: {
+  dndContext: IDnDContext;
+  item: IDraggable;
+  index: number;
+}) => {
+  const debouncedChangeHandler = useMemo(() => {
+    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+      dndContext.update(index, {
+        name: e.target.value,
+      });
+    };
+
+    return debounce(changeHandler, 500);
+  }, [dndContext, index]);
+
+  return (
+    <input
+      id={`name.${index}`}
+      defaultValue={item.name}
+      onInput={debouncedChangeHandler}
+      aria-label={item.name}
+    />
+  );
+};
+const DnDClientWithForm = ({ items, type }: any) => {
+  const dndContext = useDnDContext(type, items, sourceItems);
+
+  return (
+    <>
+      <div className="tw-content">
+        <div className="gap-8 lg:grid lg:grid-cols-3 ">
+          <div data-test-id="active-bin" className="col-span-2 ">
+            <h1 className="mb-4 text-xl font-bold">Active Items</h1>
+            <ul>
+              {dndContext.activeItems.map((item: IDraggable, index: number) => (
+                <DraggableItem
+                  item={{ ...item, container: 'root' }}
+                  key={item.id}
+                  index={index}
+                  className="flex flex-row gap-3 align-middle "
+                  context={dndContext}
+                >
+                  <EditableItem
+                    key={`input_${item.id}`}
+                    dndContext={dndContext}
+                    item={item}
+                    index={index}
+                  />
+                </DraggableItem>
+              ))}
+            </ul>
+            <DropZone type={dndContext.type} name="root" context={dndContext} />
+          </div>
+          <div className="flex items-center ">
+            <div data-test-id="available-bin">
+              <h2 className="mb-4 text-xl font-bold ">Available Items</h2>
+              <DragSource className="mb-4 text-sm" context={dndContext} />
+            </div>
+          </div>
+        </div>
+      </div>
+      <DndContextState activeItems={dndContext.activeItems} />
+    </>
   );
 };
 
@@ -73,6 +176,16 @@ const Primary: Story = {
     <Provider store={createStore()}>
       <DndProvider backend={HTML5Backend}>
         <DnDClient items={args.items} type={args.type} itemComponent={args.itemComponent} />
+      </DndProvider>
+    </Provider>
+  ),
+};
+
+const WithForm: Story = {
+  render: args => (
+    <Provider store={createStore()}>
+      <DndProvider backend={HTML5Backend}>
+        <DnDClientWithForm items={args.items} type={args.type} itemComponent={args.itemComponent} />
       </DndProvider>
     </Provider>
   ),
@@ -109,6 +222,15 @@ const Nested = {
   },
 };
 
-export { Basic, WithItemComponent, Nested };
+const Form = {
+  ...WithForm,
+  args: {
+    type: ItemTypes.BOX,
+    items: [{ name: 'Item 1' }, { name: 'Item 2' }, { name: 'Item 3' }],
+    iconHandle: true,
+  },
+};
+
+export { Basic, WithItemComponent, Nested, Form };
 
 export default meta;

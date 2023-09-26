@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import update from 'immutability-helper';
-import ID from 'shared/uniqueID';
 import _ from 'lodash';
+import ID from 'shared/uniqueID';
 import { IDraggable, ItemTypes } from '../shared/types';
 
 interface IDnDContext {
   type: ItemTypes;
   addItem: (item: IDraggable) => void;
   removeItem: (item: IDraggable) => void;
+  update: (index: number, values: IDraggable) => void;
   sort: Function;
   activeItems: IDraggable[];
   availableItems: IDraggable[];
@@ -32,8 +33,7 @@ const useDnDContext = (
 
   const [activeItems, setActiveItems] = useState<IDraggable[]>(setParent(initialItems));
   const [availableItems, setAvailableItems] = useState<IDraggable[]>(setID(sourceItems || []));
-
-  const dndContext = {
+  const dndContext: IDnDContext = {
     type,
     addItem: useCallback(
       (newItem: IDraggable, parent?: IDraggable) => {
@@ -134,21 +134,19 @@ const useDnDContext = (
       },
       [activeItems]
     ),
-
+    update: (index: number, values: IDraggable) => {
+      setActiveItems((prevActiveItems: IDraggable[]) =>
+        update(prevActiveItems, {
+          [index]: {
+            $set: { ...prevActiveItems[index], name: values.name },
+          },
+        })
+      );
+    },
     activeItems,
     availableItems,
   };
-
-  useEffect(() => {
-    console.log('activeItems', activeItems);
-  }, [activeItems]);
-
-  const get = (item: IDraggable) => ({
-    ...dndContext,
-    activeItems: (item.items || []) as IDraggable[],
-  });
-
-  return { ...dndContext, get };
+  return dndContext;
 };
 export type { IDnDContext };
 export { useDnDContext };
