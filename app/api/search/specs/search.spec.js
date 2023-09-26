@@ -1,14 +1,16 @@
-/* eslint-disable max-nested-callbacks, max-lines */
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
+import * as searchLimitsConfig from 'shared/config';
 import { UserRole } from 'shared/types/userSchema';
 import elasticResult from './elasticResult';
 import { fixtures as elasticFixtures, ids, fixturesTimeOut } from './fixtures_elastic';
 
 const editorUser = { _id: 'userId', role: 'editor' };
+
+const mocks = {};
 
 describe('search', () => {
   let result;
@@ -26,6 +28,10 @@ describe('search', () => {
 
   afterEach(() => {
     userFactory.restore();
+    Object.keys(mocks).forEach(key => {
+      mocks[key].mockRestore();
+      delete mocks[key];
+    });
   });
 
   afterAll(async () => {
@@ -274,9 +280,18 @@ describe('search', () => {
       'en'
     );
 
-    expect(response.aggregations.all.groupedDictionary.buckets[0].label).toBe('Europe');
-    expect(response.aggregations.all.groupedDictionary.buckets[1].label).toBe('No label');
-    expect(response.aggregations.all.groupedDictionary.buckets[2].label).toBe('Any');
+    expect(response.aggregations.all.groupedDictionary.buckets.map(b => b.label)).toEqual([
+      'Europe',
+      'Asia',
+      'No label',
+      'Any',
+    ]);
+    expect(response.aggregations.all.groupedDictionary.buckets[0].values.map(b => b.label)).toEqual(
+      ['Germany', 'Italy', 'Portugal']
+    );
+    expect(response.aggregations.all.groupedDictionary.buckets[1].values.map(b => b.label)).toEqual(
+      ['China', 'Japan']
+    );
   });
 
   it('should filter by metadata, and return template aggregations based on the filter the language and the published status', async () => {
@@ -542,6 +557,58 @@ describe('search', () => {
       expect(template1UnpubishedAggs.find(a => a.key === 'SpainID')).not.toBeDefined();
     });
 
+    it('should limit the number of buckets', async () => {
+      const defaultResult = await search.search(
+        {
+          types: [ids.templateMetadata1, ids.templateMetadata2],
+        },
+        'en'
+      );
+      expect(defaultResult.aggregations.all.select1.buckets.length).toBe(4);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(2);
+      const limitedResult = await search.search(
+        {
+          types: [ids.templateMetadata1, ids.templateMetadata2],
+        },
+        'en'
+      );
+      expect(limitedResult.aggregations.all.select1.buckets.map(b => b.key)).toEqual([
+        'EgyptID',
+        'missing',
+        'any',
+      ]);
+    });
+
+    it('should limit the number of root buckets only', async () => {
+      userFactory.mock(undefined);
+      const defaultResponse = await search.search(
+        { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+        'en'
+      );
+      expect(defaultResponse.aggregations.all.groupedDictionary.buckets).toMatchObject([
+        {
+          key: 'EuropeID',
+          values: [{ key: 'GermanyID' }, { key: 'ItalyID' }, { key: 'PortugalID' }],
+        },
+        { key: 'AsiaID', values: [{ key: 'ChinaID' }, { key: 'JapanID' }] },
+        { key: 'missing' },
+        { key: 'any' },
+      ]);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(2);
+      const limitedResponse = await search.search(
+        { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
+        'en'
+      );
+      expect(limitedResponse.aggregations.all.groupedDictionary.buckets).toMatchObject([
+        {
+          key: 'EuropeID',
+          values: [{ key: 'GermanyID' }, { key: 'ItalyID' }, { key: 'PortugalID' }],
+        },
+        { key: 'missing' },
+        { key: 'any' },
+      ]);
+    });
+
     describe('_type aggregations', () => {
       const expectBucket = (buckets, id, count) => {
         expect(buckets.find(bucket => bucket.key === id).filtered.doc_count).toBe(count);
@@ -597,6 +664,18 @@ describe('search', () => {
       const europeBucket = template1Aggs.find(a => a.key === 'EuropeID');
       expect(europeBucket.values.find(a => a.key === 'GermanyID').filtered.doc_count).toBe(1);
     });
+
+    it('should limit the number of buckets', async () => {
+      const defaultResult = await search.search({ allAggregations: true }, 'en');
+      expect(defaultResult.aggregations.all.relationshipcountry.buckets.length).toBe(5);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(2);
+      const limitedResult = await search.search({ allAggregations: true }, 'en');
+      expect(limitedResult.aggregations.all.select1.buckets.map(b => b.key)).toEqual([
+        'EgyptID',
+        'missing',
+        'any',
+      ]);
+    });
   });
 
   describe('relationship aggregations', () => {
@@ -647,6 +726,30 @@ describe('search', () => {
         },
       ]);
     });
+
+    it('should limit the number of buckets', async () => {
+      userFactory.mock({
+        _id: ids.collaboratorId,
+        role: UserRole.COLLABORATOR,
+        username: 'collaboratorUser',
+        email: 'collaborator@test.com',
+      });
+      const defaultResult = await search.search(
+        { allAggregations: false, types: [ids.template1] },
+        'en'
+      );
+      expect(defaultResult.aggregations.all.relationship.buckets.length).toBe(4);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(2);
+      const limitedResult = await search.search(
+        { allAggregations: false, types: [ids.template1] },
+        'en'
+      );
+      expect(limitedResult.aggregations.all.relationship.buckets.map(b => b.key)).toEqual([
+        'shared2',
+        'missing',
+        'any',
+      ]);
+    });
   });
   describe('multiselect aggregations', () => {
     it('should return aggregations of multiselect fields', async () => {
@@ -688,6 +791,18 @@ describe('search', () => {
       expect(filteredAggs.find(a => a.key === 'any').filtered.doc_count).toBe(3);
       expect(templateAggs.find(a => a.key === ids.template1)).not.toBeDefined();
       expect(templateAggs.find(a => a.key === ids.template2)).not.toBeDefined();
+    });
+
+    it('should limit the number of buckets', async () => {
+      userFactory.mock(undefined);
+      const defaultResult = await search.search({ types: [ids.templateMetadata1] }, 'en');
+      expect(defaultResult.aggregations.all.multiselect1.buckets.length).toBe(3);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(1);
+      const limitedResult = await search.search({ types: [ids.templateMetadata1] }, 'en');
+      expect(limitedResult.aggregations.all.multiselect1.buckets.map(b => b.key)).toEqual([
+        'EgyptID',
+        'any',
+      ]);
     });
 
     describe('allAggregations', () => {
@@ -782,6 +897,18 @@ describe('search', () => {
         expect(bothTemplatesAggs.find(a => a.key === '5').filtered.total.filtered.doc_count).toBe(
           2
         );
+      });
+
+      it('should not be affected by the bucket limitation', async () => {
+        userFactory.mock(undefined);
+        const defaultResponse = await search.search({ types: [ids.templateMetadata2] }, 'en');
+        const defaultNestedAggregation = defaultResponse.aggregations.all.nestedField_nested;
+
+        mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(0);
+        const limitedResponse = await search.search({ types: [ids.templateMetadata2] }, 'en');
+        const limitedNestedAggregation = limitedResponse.aggregations.all.nestedField_nested;
+
+        expect(limitedNestedAggregation).toEqual(defaultNestedAggregation);
       });
 
       it('should search second level of nested field', async () => {
@@ -1059,6 +1186,30 @@ describe('search', () => {
       expect(options[0].label).toBeDefined();
       expect(options[0].results).toBeDefined();
       expect(count).toBe(1);
+    });
+
+    it('should limit the options', async () => {
+      const query = {
+        types: [ids.templateMetadata1, ids.templateMetadata2],
+        filters: {},
+      };
+      const defaultResponse = await search.autocompleteAggregations(
+        query,
+        'en',
+        'multiselect1',
+        'p',
+        editorUser
+      );
+      expect(defaultResponse.options.map(o => o.label)).toEqual(['Egypt', 'Spain']);
+      mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(1);
+      const limitedResponse = await search.autocompleteAggregations(
+        query,
+        'en',
+        'multiselect1',
+        'p',
+        editorUser
+      );
+      expect(limitedResponse.options.map(o => o.label)).toEqual(['Egypt']);
     });
   });
 
