@@ -45,6 +45,7 @@ describe('Users', () => {
         cy.get('#username').type('User_1');
         cy.get('#email').type('user@mailer.com');
         cy.get('#password').type('secret');
+        cy.getByTestId('multiselect').scrollIntoView();
         cy.getByTestId('multiselect').within(() => {
           cy.get('button').click();
           cy.contains('Activistas').click();

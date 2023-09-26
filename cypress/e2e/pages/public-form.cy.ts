@@ -124,7 +124,6 @@ describe('Public Form', () => {
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
       cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
-      cy.viewport(1280, 720);
       cy.get('.form-group.media')
         .eq(0)
         .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });

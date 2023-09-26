@@ -5,7 +5,7 @@ const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
 export default defineConfig({
   viewportWidth: 1280,
-  viewportHeight: 720,
+  viewportHeight: 600,
   defaultCommandTimeout: 10000,
   requestTimeout: 12000,
   e2e: {

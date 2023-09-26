@@ -8,7 +8,7 @@ describe('Settings mobile menu', () => {
   });
 
   beforeEach(() => {
-    cy.viewport(384, 720);
+    cy.viewport(384, 600);
   });
 
   it('should login', () => {
