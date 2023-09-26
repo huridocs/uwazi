@@ -85,7 +85,7 @@ export default function () {
             terms: {
               field: 'template.raw',
               missing: 'missing',
-              size: preloadOptionsSearch,
+              size: preloadOptionsSearch(),
             },
             aggregations: {
               filtered: {
