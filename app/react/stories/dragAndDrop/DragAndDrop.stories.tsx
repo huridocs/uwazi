@@ -68,12 +68,16 @@ const DnDClient = ({ items, type, itemComponent }: any) => {
       <div className="gap-8 pl-4 lg:grid lg:grid-cols-3 ">
         <div data-test-id="active-bin" className="col-span-2 ">
           <h1 className="mb-4 text-xl font-bold">Active Items</h1>
-          <Container className="mb-2 text-sm" context={dndContext} itemComponent={itemComponent} />
+          <Container
+            className="p-3 mb-2 text-sm"
+            context={dndContext}
+            itemComponent={itemComponent}
+          />
         </div>
         <div className="flex items-center ">
           <div data-test-id="available-bin">
             <h2 className="mb-2 text-xl font-bold ">Available Items</h2>
-            <DragSource className="mb-2 text-sm" context={dndContext} />
+            <DragSource className="p-3 mb-2 text-sm" context={dndContext} />
           </div>
         </div>
       </div>
@@ -125,7 +129,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
                   item={{ ...item, container: 'root' }}
                   key={item.id}
                   index={index}
-                  className="flex flex-row gap-3 align-middle "
+                  className="flex flex-row gap-3 p-3 align-middle "
                   context={dndContext}
                 >
                   <EditableItem

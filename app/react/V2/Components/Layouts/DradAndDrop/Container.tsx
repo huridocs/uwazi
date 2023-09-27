@@ -40,7 +40,7 @@ const Container: FC<ContainerProps> = memo(
               .map((item: IDraggable, index: number) => (
                 <DraggableItem
                   item={item}
-                  key={item.name}
+                  key={item.id}
                   iconHandle={iconHandle}
                   index={index}
                   className="flex flex-row gap-3 align-middle "

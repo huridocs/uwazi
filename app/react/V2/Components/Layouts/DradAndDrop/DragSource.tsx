@@ -15,7 +15,7 @@ const DragSourceComponent = ({
     <ul className={className}>
       {context.availableItems.map((item: IDraggable, index: number) => (
         <li key={item.name}>
-          <DraggableItem item={item} index={index} className="gap-5" context={context}>
+          <DraggableItem item={item} index={index} className="gap-5 p-3" context={context}>
             {item.name}
           </DraggableItem>
         </li>

@@ -4,10 +4,13 @@ import _ from 'lodash';
 import ID from 'shared/uniqueID';
 import { IDraggable, ItemTypes } from '../shared/types';
 
+interface RemoveOptions {
+  omitSource: boolean;
+}
 interface IDnDContext {
   type: ItemTypes;
   addItem: (item: IDraggable) => void;
-  removeItem: (item: IDraggable) => void;
+  removeItem: (item: IDraggable, options?: RemoveOptions) => void;
   update: (index: number, values: IDraggable) => void;
   updateActiveItems: (items: IDraggable[]) => void;
   sort: Function;
@@ -31,7 +34,7 @@ const useDnDContext = (
       return itemWithId;
     });
 
-  const setID = (items: IDraggable[]) => items.map(item => ({ ...item, id: ID() }));
+  const setID = (items: IDraggable[]) => items.map(item => ({ ...item, id: item.id || ID() }));
 
   const [activeItems, setActiveItems] = useState<IDraggable[]>(setParent(initialItems));
   const [availableItems, setAvailableItems] = useState<IDraggable[]>(setID(sourceItems || []));
@@ -68,14 +71,16 @@ const useDnDContext = (
         }
         const indexOfSource = availableItems.findIndex(ai => ai.id === newItem.id);
 
-        setAvailableItems(prevAvailableItems =>
-          update(prevAvailableItems, { $splice: [[indexOfSource, 1]] })
-        );
+        if (indexOfSource > -1) {
+          setAvailableItems(prevAvailableItems =>
+            update(prevAvailableItems, { $splice: [[indexOfSource, 1]] })
+          );
+        }
       },
       [activeItems, availableItems]
     ),
     removeItem: useCallback(
-      (item: IDraggable) => {
+      (item: IDraggable, options: RemoveOptions = { omitSource: false }) => {
         if (item.parent !== undefined) {
           const indexOfParent = activeItems.findIndex(ai => ai.id === item.parent!.id);
           setActiveItems((prevActiveItems: IDraggable[]) => {
@@ -95,13 +100,17 @@ const useDnDContext = (
           );
         }
 
-        const availableSubItems = (item.items || []).map(ai => _.omit(ai, ['parent', 'container']));
+        if (!options.omitSource) {
+          const availableSubItems = (item.items || []).map(ai =>
+            _.omit(ai, ['parent', 'container'])
+          );
 
-        setAvailableItems(prevAvailableItems =>
-          update(prevAvailableItems, {
-            $push: [_.omit(item, ['parent', 'container', 'items']), ...availableSubItems],
-          })
-        );
+          setAvailableItems(prevAvailableItems =>
+            update(prevAvailableItems, {
+              $push: [_.omit(item, ['parent', 'container', 'items']), ...availableSubItems],
+            })
+          );
+        }
       },
       [activeItems]
     ),
@@ -140,7 +149,7 @@ const useDnDContext = (
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
           [index]: {
-            $set: { ...prevActiveItems[index], name: values.name },
+            name: { $set: values.name },
           },
         })
       );

@@ -2,8 +2,8 @@
 import React, { useMemo } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
-import { TrashIcon } from '@heroicons/react/20/solid';
 import { map, omit } from 'lodash';
+import { TrashIcon } from '@heroicons/react/20/solid';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
@@ -36,18 +36,18 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const Filter = ({ item, context }: { item: ClientSettingsFilterSchema; context: IDnDContext }) => (
-  <div className="flex flex-row items-center w-full">
+  <div className="flex flex-row items-center w-full h-10 mr-2">
     <span>{item.name}</span>
     <Button
       type="button"
       color="error"
       size="small"
-      className="p-1 ml-auto "
+      className="w-6 pl-1 ml-auto h-7 "
       onClick={() => {
         context.removeItem(item as IDraggable);
       }}
     >
-      <TrashIcon className="w-4" />
+      <TrashIcon className="w-3.5 pt-1" />
     </Button>
   </div>
 );
@@ -72,13 +72,13 @@ const Group = ({
   }, [context, index]);
 
   return (
-    <div className="w-full ">
+    <div className="w-full mt-2">
       <div className="flex flex-row items-center w-full">
         <input
           type="text"
           className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
           defaultValue={item.name}
-          onInput={debouncedChangeHandler}
+          onChange={debouncedChangeHandler}
         />
         <Button
           type="button"
@@ -87,7 +87,7 @@ const Group = ({
           className="p-1 ml-auto rounded-l-none"
           disabled={item.items && item.items.length > 0}
           onClick={() => {
-            context.removeItem(item as IDraggable);
+            context.removeItem(item as IDraggable, { omitSource: true });
           }}
         >
           <TrashIcon className="w-4" />
@@ -97,7 +97,7 @@ const Group = ({
         context={context}
         itemComponent={Filter}
         name={`group_${item.name}`}
-        className="w-full text-xs"
+        className="w-full text-md"
         parent={item as IDraggable}
       />
     </div>
@@ -124,6 +124,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
   const collectionSettings = settings.collection.toJS();
   const { filters } = collectionSettings;
   const usedFilters = (filters || []).map(filter => {
+    // @ts-ignore: required by store structure
     const items = filter.items?.map(si => ({ ...si, id: si.id || si._id }));
     return { ...filter, id: filter._id, items };
   });
@@ -134,6 +135,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
     .filter(template => template !== undefined && !usedFiltersIds.includes(template.get('_id')))
     .map(template => ({
       _id: template?.get('_id'),
+      id: template?.get('_id'),
       name: template?.get('name'),
     }))
     .toJS();
@@ -141,7 +143,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
   const dndContext = useDnDContext(ItemTypes.FILTER, usedFilters as IDraggable[], availableFilters);
 
   const sanitizeFilterForSave = (filter: ClientSettingsFilterSchema) => {
-    const items = filter.items?.map(sf => omit(sf, ['parent', 'container', 'index']));
+    const items = filter.items?.map(sf => omit(sf, ['parent', 'container', 'index', '_id']));
     return { ...omit(filter, ['container', 'index']), items };
   };
 
