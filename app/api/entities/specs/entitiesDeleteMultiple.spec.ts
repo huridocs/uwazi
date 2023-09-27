@@ -24,10 +24,6 @@ const loadFixtures = async () =>
           ],
         },
       ],
-      translations: [
-        { locale: 'en', contexts: [] },
-        { locale: 'es', contexts: [] },
-      ],
     },
     'entities.delete.multiple.spec2'
   );
