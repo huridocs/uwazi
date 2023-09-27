@@ -222,6 +222,10 @@ export default {
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
 
+    if (!translation.locale) {
+      throw new Error('translation to save should have a locale');
+    }
+
     const [currentTranslationData] = await getTranslationsV2ByLanguage(translation.locale);
 
     const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {

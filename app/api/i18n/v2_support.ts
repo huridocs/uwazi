@@ -15,26 +15,12 @@ import { UpsertTranslationsService } from 'api/i18n.v2/services/UpsertTranslatio
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { EnforcedWithId, models } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { tenants } from 'api/tenants';
-import { Db } from 'mongodb';
 import { TranslationContext, TranslationType, TranslationValue } from 'shared/translationType';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import migration from '../i18n.v2/migrations';
 import { IndexedContextValues } from './translations';
 
 models.translationsV2 = () =>
   new MongoTranslationsSyncDataSource(getConnection(), DefaultTransactionManager());
-
-const cleanUpV2Collections = async (db: Db) => {
-  try {
-    await db.collection('translationsV2').drop({});
-    await db.collection('translationsV2_helper').drop();
-  } catch (e) {
-    if (e.message !== 'ns not found') {
-      throw e;
-    }
-  }
-};
 
 const flattenTranslations = (translation: TranslationType): CreateTranslationsData[] => {
   if (translation.contexts?.length) {
