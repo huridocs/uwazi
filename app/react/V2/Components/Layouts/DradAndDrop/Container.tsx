@@ -8,6 +8,7 @@ import { DropZone } from './DropZone';
 interface IItemComponentProps {
   item: IDraggable;
   context: IDnDContext;
+  index: number;
 }
 
 interface ContainerProps {
@@ -46,7 +47,7 @@ const Container: FC<ContainerProps> = memo(
                   context={context}
                 >
                   <>
-                    {itemComponent && itemComponent({ item, context })}
+                    {itemComponent && itemComponent({ item, context, index })}
                     {!itemComponent && item.name}
                   </>
                 </DraggableItem>

@@ -159,9 +159,9 @@ const meta: Meta<typeof DnDClient> = {
 
 type Story = StoryObj<typeof DnDClient>;
 
-const CardWithDnD: FC<IItemComponentProps> = ({ item, context }) => (
+const CardWithDnD: FC<IItemComponentProps> = ({ item, context, index }) => (
   <div className="flex flex-col w-full">
-    <CardWithRemove item={item} context={context} />
+    <CardWithRemove item={item} context={context} index={index} />
     <Container
       context={context}
       itemComponent={CardWithRemove}

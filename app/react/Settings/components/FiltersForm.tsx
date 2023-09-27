@@ -1,5 +1,5 @@
-/* eslint-disable max-statements */
-import React, { useState } from 'react';
+/* eslint-disable react/no-multi-comp */
+import React, { useMemo } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { TrashIcon } from '@heroicons/react/20/solid';
@@ -11,17 +11,14 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { Button } from 'app/V2/Components/UI';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
-import {
-  DragSource,
-  Container,
-  addSubject$,
-  removeSubject$,
-} from 'app/V2/Components/Layouts/DradAndDrop/';
+import { DragSource, Container } from 'app/V2/Components/Layouts/DradAndDrop/';
 
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { IStore } from 'app/istore';
 import ID from 'shared/uniqueID';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { IDnDContext, useDnDContext } from 'app/V2/CustomHooks';
+import debounce from 'app/utils/debounce';
 import { SettingsHeader } from './SettingsHeader';
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
@@ -38,10 +35,96 @@ const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
+
+const Filter = ({ item, context }: { item: ClientSettingsFilterSchema; context: IDnDContext }) => (
+  <div className="flex flex-row items-center w-full">
+    <span>{item.name}</span>
+    <Button
+      type="button"
+      color="error"
+      size="small"
+      className="p-1 ml-auto "
+      onClick={() => {
+        context.removeItem(item as IDraggable);
+      }}
+    >
+      <TrashIcon className="w-4" />
+    </Button>
+  </div>
+);
+
+const Group = ({
+  item,
+  context,
+  index,
+}: {
+  item: ClientSettingsFilterSchema;
+  context: IDnDContext;
+  index: number;
+}) => {
+  const debouncedChangeHandler = useMemo(() => {
+    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+      context.update(index, {
+        name: e.target.value,
+      });
+    };
+
+    return debounce(changeHandler, 500);
+  }, [context, index]);
+
+  return (
+    <div className="w-full ">
+      <div className="flex flex-row items-center w-full">
+        <input
+          type="text"
+          className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
+          defaultValue={item.name}
+          onInput={debouncedChangeHandler}
+        />
+        <Button
+          type="button"
+          color="error"
+          size="small"
+          className="p-1 ml-auto rounded-l-none"
+          disabled={item.items && item.items.length > 0}
+          onClick={() => {
+            context.removeItem(item as IDraggable);
+          }}
+        >
+          <TrashIcon className="w-4" />
+        </Button>
+      </div>
+      <Container
+        context={context}
+        itemComponent={Filter}
+        name={`group_${item.name}`}
+        className="w-full text-xs"
+      />
+    </div>
+  );
+};
+
+const FilterComponent = ({
+  item,
+  context,
+  index,
+}: {
+  item: ClientSettingsFilterSchema;
+  context: IDnDContext;
+  index: number;
+}) =>
+  item.items ? (
+    <Group item={item} context={context} index={index} />
+  ) : (
+    <Filter item={item} context={context} />
+  );
+
+// eslint-disable-next-line max-statements
 const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mappedProps) => {
   const collectionSettings = settings.collection.toJS();
-  const [activeFilters, setActiveFilters] = useState(collectionSettings.filters || []);
-  const usedFiltersIds = flatMapDeep(activeFilters, item => item.id);
+  const { filters } = collectionSettings;
+  const usedFiltersIds = flatMapDeep(filters, item => item.id);
+
   const availableFilters = templates
     .filter(template => template !== undefined && !usedFiltersIds.includes(template.get('_id')))
     .map(template => ({
@@ -50,12 +133,14 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
     }))
     .toJS();
 
+  const dndContext = useDnDContext(ItemTypes.FILTER, filters as IDraggable[], availableFilters);
+
   const sanitizeFilterForSave = (filter: ClientSettingsFilterSchema) =>
     omit(filter, ['container', 'index', 'items.container', 'items.index', 'items.index._id']);
 
   const save = async () => {
-    const filters = activeFilters.map(filter => sanitizeFilterForSave(filter));
-    const newSettings = { ...collectionSettings, filters };
+    const currentFilters = dndContext.activeItems.map(filter => sanitizeFilterForSave(filter));
+    const newSettings = { ...collectionSettings, filters: currentFilters };
     const result = await SettingsAPI.save(new RequestParams(newSettings));
     notify(t('System', 'Settings updated', null, false), 'success');
     setSettings(Object.assign(settings, result));
@@ -63,63 +148,8 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
 
   const addGroup = () => {
     const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
-    addSubject$.next({ ...newGroup, target: 'root' });
+    dndContext.addItem(newGroup);
   };
-  const renderFilter = (item: ClientSettingsFilterSchema) => (
-    <div className="flex flex-row items-center w-full">
-      <span>{item.name}</span>
-      <Button
-        type="button"
-        color="error"
-        size="small"
-        className="p-1 ml-auto "
-        onClick={() => {
-          removeSubject$.next(item);
-        }}
-      >
-        <TrashIcon className="w-4" />
-      </Button>
-    </div>
-  );
-
-  const handleNameChange = (group: any) => async (event: React.ChangeEvent<HTMLInputElement>) => {
-    setActiveFilters([activeFilters, { ...group, name: event.currentTarget.value }]);
-  };
-
-  const renderGroup = (group: ClientSettingsFilterSchema) => (
-    <div className="w-full ">
-      <div className="flex flex-row items-center w-full">
-        <input
-          type="text"
-          className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
-          value={group.name}
-          onChange={handleNameChange}
-        />
-        <Button
-          type="button"
-          color="error"
-          size="small"
-          className="p-1 ml-auto rounded-l-none"
-          disabled={group.items && group.items.length > 0}
-          onClick={() => {
-            removeSubject$.next(group);
-          }}
-        >
-          <TrashIcon className="w-4" />
-        </Button>
-      </div>
-      <Container
-        type={ItemTypes.FILTER}
-        items={group.items as IDraggable[]}
-        itemComponent={renderFilter}
-        name={`group_${group.name}`}
-        className="w-full text-xs"
-      />
-    </div>
-  );
-
-  const returnRenderItem = (item: ClientSettingsFilterSchema) =>
-    item.items ? renderGroup(item) : renderFilter(item);
 
   return (
     <div className="settings-content">
@@ -158,13 +188,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
                       </ul>
                     </div>
                   </div>
-                  <Container
-                    type={ItemTypes.FILTER}
-                    items={activeFilters as IDraggable[]}
-                    itemComponent={returnRenderItem}
-                    name="root"
-                    onChange={setActiveFilters}
-                  />
+                  <Container context={dndContext} itemComponent={FilterComponent} name="root" />
                 </div>
                 <div className="col-sm-3">
                   <div className="FiltersForm-constructor">
@@ -173,7 +197,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
                         <Translate>Entity types</Translate>
                       </i>
                     </div>
-                    <DragSource items={availableFilters as IDraggable[]} type={ItemTypes.FILTER} />
+                    <DragSource context={dndContext} />
                   </div>
                 </div>
               </div>

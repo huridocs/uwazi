@@ -6,10 +6,10 @@ import { DraggableItem } from './DraggableItem';
 
 const DragSourceComponent = ({
   context,
-  className,
+  className = '',
 }: {
   context: IDnDContext;
-  className: string;
+  className?: string;
 }) => (
   <div className="tw-content">
     <ul className={className}>
