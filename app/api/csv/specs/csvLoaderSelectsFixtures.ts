@@ -76,7 +76,7 @@ const fixtures = {
       ],
     },
   ],
-  translations: fixturesTranslationsV2ToTranslationsLegacy([
+  translationsV2: [
     createTranslationDBO('B', 'Bes', 'es', {
       id: fixtureFactory.id('multiselect_thesaurus').toString(),
       type: 'Thesaurus',
@@ -197,7 +197,7 @@ const fixtures = {
       type: 'Uwazi UI',
       label: 'System',
     }),
-  ]),
+  ],
 };
 
 export { fixtures, fixtureFactory };

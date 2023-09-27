@@ -661,7 +661,7 @@ export default {
       ],
     },
   ],
-  translations: fixturesTranslationsV2ToTranslationsLegacy([
+  translationsV2: [
     {
       language: 'pt',
       key: 'town2',
@@ -752,7 +752,7 @@ export default {
       value: 'Country1',
       context: { id: dictionary.toString(), type: 'Thesauri', label: 'dictionary' },
     },
-  ]),
+  ],
 
   ixsuggestions: [
     {
