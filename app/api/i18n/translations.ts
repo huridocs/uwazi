@@ -17,7 +17,6 @@ import { availableLanguages } from 'shared/languagesList';
 import { ContextType } from 'shared/translationSchema';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { pipeline } from 'stream/promises';
-import model from './translationsModel';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -225,8 +224,7 @@ export default {
 
     const translationsToUpdate = await Promise.all(
       languagesToUpdate.map(async language => {
-        const [translation] =
-          (await getTranslationsV2ByLanguage(language)) || (await model.get({ locale: language }));
+        const [translation] = await getTranslationsV2ByLanguage(language);
         return translation;
       })
     );

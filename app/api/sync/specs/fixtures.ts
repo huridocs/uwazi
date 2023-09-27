@@ -319,12 +319,6 @@ const fixtures: DBFixture = {
       deleted: false,
     },
     {
-      timestamp: 11500,
-      namespace: 'translations',
-      mongoId: translation1,
-      deleted: false,
-    },
-    {
       timestamp: 9000,
       namespace: 'files',
       mongoId: db.id(),
