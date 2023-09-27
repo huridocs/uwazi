@@ -74,8 +74,6 @@ const hub1 = db.id();
 const hub2 = db.id();
 const hub3 = db.id();
 
-const translation1 = db.id();
-
 const settingsId = db.id();
 const sessionsId = db.id();
 
