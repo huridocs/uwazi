@@ -27,7 +27,6 @@ const namespaces = [
   'dictionaries',
   'relationtypes',
   'translationsV2',
-  'translations',
 ];
 
 type MethodNames =
@@ -38,8 +37,7 @@ type MethodNames =
   | 'files'
   | 'dictionaries'
   | 'relationtypes'
-  | 'translationsV2'
-  | 'translations';
+  | 'translationsV2';
 
 interface Options {
   change: DataType<UpdateLog>;
@@ -361,45 +359,6 @@ class ProcessNamespaces {
     }
 
     return { skip: true };
-  }
-
-  private async translations() {
-    const data = await this.fetchData();
-    const templatesData = await templatesModel.get({
-      _id: { $in: this.templatesConfigKeys },
-    });
-
-    data.contexts = data.contexts
-      .map((context: any) => {
-        if (this.assessTranslationApproved(context)) {
-          return context;
-        }
-
-        if (this.templatesConfigKeys.includes(context.id.toString())) {
-          const contextTemplate = ensure<WithId<TemplateSchema>>(
-            templatesData.find(t => t._id.toString() === context.id.toString())
-          );
-          const templateConfigProperties = this.templatesConfig[context.id.toString()].properties;
-          const templateTitle = contextTemplate.commonProperties?.find(p => p.name === 'title')
-            ?.label;
-
-          const approvedKeys = [contextTemplate.name, templateTitle]
-            .concat(
-              (contextTemplate.properties || [])
-                .filter(p => templateConfigProperties.includes(p._id?.toString() || ''))
-                .map(p => p.label)
-            )
-            .filter(k => Boolean(k));
-
-          context.values = (context.values || []).filter((v: any) => approvedKeys.includes(v.key));
-          return context;
-        }
-
-        return null;
-      })
-      .filter((c: any) => Boolean(c));
-
-    return { data };
   }
 
   public async process() {
