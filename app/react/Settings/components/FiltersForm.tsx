@@ -123,10 +123,12 @@ const FilterComponent = ({
 const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mappedProps) => {
   const collectionSettings = settings.collection.toJS();
   const { filters } = collectionSettings;
-  const usedFiltersIds = (filters || [])
-    .filter(filter => filter && filter.id)
-    .map(filter => [filter._id, ...map(filter.items, '_id')])
-    .flat();
+  const usedFilters = (filters || []).map(filter => {
+    const items = filter.items?.map(si => ({ ...si, id: si.id || si._id }));
+    return { ...filter, id: filter._id, items };
+  });
+
+  const usedFiltersIds = usedFilters.map(filter => [filter._id, ...map(filter.items, 'id')]).flat();
 
   const availableFilters = templates
     .filter(template => template !== undefined && !usedFiltersIds.includes(template.get('_id')))
@@ -136,7 +138,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
     }))
     .toJS();
 
-  const dndContext = useDnDContext(ItemTypes.FILTER, filters as IDraggable[], availableFilters);
+  const dndContext = useDnDContext(ItemTypes.FILTER, usedFilters as IDraggable[], availableFilters);
 
   const sanitizeFilterForSave = (filter: ClientSettingsFilterSchema) => {
     const items = filter.items?.map(sf => omit(sf, ['parent', 'container', 'index']));
@@ -148,7 +150,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
     const newSettings = { ...collectionSettings, filters: currentFilters };
     const result = await SettingsAPI.save(new RequestParams(newSettings));
     notify(t('System', 'Settings updated', null, false), 'success');
-    setSettings(Object.assign(settings, result));
+    setSettings(Object.assign(newSettings, result));
   };
 
   const addGroup = () => {
