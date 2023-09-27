@@ -87,12 +87,14 @@ const CurrentValueCell = ({
 const AcceptButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
   const color = statusColor(cell.row.original);
   const action = cell.column.columnDef.meta?.action;
+  const suggestionHasEntity = Boolean(cell.row.original.entityId);
+
   return (
     <div className="flex gap-1 justify-center items-center">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
-        disabled={color === 'green' || color === 'red'}
+        disabled={color === 'green' || color === 'red' || !suggestionHasEntity}
         collapsed={color === 'green'}
         onClick={() => action && action([cell.row.original])}
       >
@@ -122,11 +124,13 @@ const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
 
 const OpenPDFButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
   const action = cell.column.columnDef.meta?.action;
+  const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   return (
     <Button
       className="leading-4"
       styling="outline"
+      disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
       <Translate>Open PDF</Translate>
