@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { TrashIcon } from '@heroicons/react/20/solid';
-import { flatMapDeep, omit } from 'lodash';
+import { map, omit } from 'lodash';
 import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { t, Translate } from 'app/I18N';
@@ -15,7 +15,6 @@ import { DragSource, Container } from 'app/V2/Components/Layouts/DradAndDrop/';
 
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { IStore } from 'app/istore';
-import ID from 'shared/uniqueID';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { IDnDContext, useDnDContext } from 'app/V2/CustomHooks';
 import debounce from 'app/utils/debounce';
@@ -99,6 +98,7 @@ const Group = ({
         itemComponent={Filter}
         name={`group_${item.name}`}
         className="w-full text-xs"
+        parent={item as IDraggable}
       />
     </div>
   );
@@ -123,7 +123,10 @@ const FilterComponent = ({
 const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mappedProps) => {
   const collectionSettings = settings.collection.toJS();
   const { filters } = collectionSettings;
-  const usedFiltersIds = flatMapDeep(filters, item => item.id);
+  const usedFiltersIds = (filters || [])
+    .filter(filter => filter && filter.id)
+    .map(filter => [filter._id, ...map(filter.items, '_id')])
+    .flat();
 
   const availableFilters = templates
     .filter(template => template !== undefined && !usedFiltersIds.includes(template.get('_id')))
@@ -135,8 +138,10 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
 
   const dndContext = useDnDContext(ItemTypes.FILTER, filters as IDraggable[], availableFilters);
 
-  const sanitizeFilterForSave = (filter: ClientSettingsFilterSchema) =>
-    omit(filter, ['container', 'index', 'items.container', 'items.index', 'items.index._id']);
+  const sanitizeFilterForSave = (filter: ClientSettingsFilterSchema) => {
+    const items = filter.items?.map(sf => omit(sf, ['parent', 'container', 'index']));
+    return { ...omit(filter, ['container', 'index']), items };
+  };
 
   const save = async () => {
     const currentFilters = dndContext.activeItems.map(filter => sanitizeFilterForSave(filter));
@@ -147,7 +152,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
   };
 
   const addGroup = () => {
-    const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
+    const newGroup = { name: t('System', 'New group', null, false), items: [] };
     dndContext.addItem(newGroup);
   };
 

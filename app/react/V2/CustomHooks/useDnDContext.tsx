@@ -23,7 +23,8 @@ const useDnDContext = (
 ) => {
   const setParent: (items: IDraggable[], parent?: IDraggable) => IDraggable[] = (items, parent) =>
     items.map(item => {
-      const itemWithId = { ...item, id: ID(), ...(parent ? { parent } : {}) };
+      const id = item.id || ID();
+      const itemWithId = { ...item, id, ...(parent ? { parent } : {}) };
       if (item.items && item.items.length > 0) {
         return { ...itemWithId, items: setParent(item.items, itemWithId) };
       }
