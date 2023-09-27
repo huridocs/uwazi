@@ -253,25 +253,63 @@ describe('translations', () => {
   });
 
   describe('updateContext()', () => {
-    it('should add values if the context values are undefined', async () => {
-      const keyNameChanges = { Password: 'Pass', Account: 'Acc', System: 'Interface' };
-      const deletedProperties = ['Age'];
-      const context = {
-        Pass: 'Pass',
-        Acc: 'Acc',
-        Email: 'Email',
-        Name: 'Name',
-        Interface: 'Interface',
-      };
-
-      const result = await translations.updateContext(
-        { id: 'System', label: 'Menu', type: 'Uwazi UI' },
-        keyNameChanges,
-        deletedProperties,
-        context
+    it('should change the value of a translation when changing the key if the locale is the default one', async () => {
+      await translations.updateContext(
+        { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
+        { 'property should only change value on default languge': 'new property name' },
+        [],
+        {}
       );
 
-      expect(result).toBe('ok');
+      const [esTranslations] = await translations.get({ locale: 'es' });
+      const esThesauriContext = (esTranslations.contexts || []).find(c => c.type === 'Thesaurus');
+      expect(esThesauriContext?.values).toMatchObject({
+        'new property name': 'property',
+      });
+
+      const [zhTranslations] = await translations.get({ locale: 'zh' });
+      const zhThesauriContext = (zhTranslations.contexts || []).find(c => c.type === 'Thesaurus');
+      expect(zhThesauriContext?.values).toMatchObject({
+        'new property name': 'property',
+      });
+
+      const [enTranslations] = await translations.get({ locale: 'en' });
+      const enThesauriContext = (enTranslations.contexts || []).find(c => c.type === 'Thesaurus');
+      expect(enThesauriContext?.values).toMatchObject({
+        'new property name': 'new property name',
+      });
+    });
+    it('should properly change context name, key names, values for the keys changed and deleteProperties, and create new values as new translations if key does not exists', async () => {
+      await translations.updateContext(
+        { id: dictionaryId.toString(), label: 'new context name', type: 'Thesaurus' },
+        { Account: 'New Account Key', Password: 'New Password key' },
+        ['Age', 'Email'],
+        { 'new key': 'new value' }
+      );
+
+      const [enTranslations] = await translations.get({ locale: 'en' });
+      const enThesauriContext = (enTranslations.contexts || []).find(c => c.type === 'Thesaurus');
+
+      expect(enThesauriContext?.label).toBe('new context name');
+      expect(enThesauriContext?.values).toEqual({
+        'property should only change value on default languge': 'property',
+        'New Account Key': 'New Account Key',
+        'New Password key': 'New Password key',
+        'new key': 'new value',
+        'dictionary 2': 'dictionary 2',
+      });
+
+      const [esTranslations] = await translations.get({ locale: 'es' });
+      const esThesauriContext = (esTranslations.contexts || []).find(c => c.type === 'Thesaurus');
+
+      expect(esThesauriContext?.label).toBe('new context name');
+      expect(esThesauriContext?.values).toEqual({
+        'property should only change value on default languge': 'property',
+        'New Account Key': 'Cuenta',
+        'New Password key': 'Contraseña',
+        'new key': 'new value',
+        'dictionary 2': 'dictionary 2',
+      });
     });
 
     it('should update a context with its values', async () => {
