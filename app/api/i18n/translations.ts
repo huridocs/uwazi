@@ -295,8 +295,8 @@ export default {
   },
 
   async addLanguage(newLanguage: LanguageISO6391) {
-    const [languageTranslationAlreadyExists] = await model.get({ locale: newLanguage });
-    if (languageTranslationAlreadyExists) {
+    const [translations] = await getTranslationsV2ByLanguage(newLanguage);
+    if (translations.contexts?.length) {
       return Promise.resolve();
     }
 

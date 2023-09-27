@@ -89,6 +89,7 @@ const testingDB: {
    * @deprecated
    */
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
+  createIndices: () => Promise<void>;
   setupFixturesAndContext: (
     fixtures: DBFixture,
     elasticIndex?: string,
@@ -149,12 +150,24 @@ const testingDB: {
       optionalMongo = DB.connectionForDB(dbName).db;
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
+    await this.createIndices();
+
     this.UserInContextMockFactory.mockEditorUser();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
     }
+  },
+
+  async createIndices() {
+    const newTranslationsCollection = 'translationsV2';
+
+    await mongodb
+      .collection(newTranslationsCollection)
+      .createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
+
+    await mongodb.collection(newTranslationsCollection).createIndex({ 'context.id': 1, key: 1 });
   },
 
   /**
