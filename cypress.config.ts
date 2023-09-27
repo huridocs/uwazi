@@ -5,7 +5,7 @@ const { initPlugin } = require('cypress-plugin-snapshots/plugin');
 
 export default defineConfig({
   viewportWidth: 1280,
-  viewportHeight: 600,
+  viewportHeight: 768,
   defaultCommandTimeout: 10000,
   requestTimeout: 12000,
   e2e: {
@@ -28,6 +28,24 @@ export default defineConfig({
             fs.unlinkSync(results.video);
           }
         }
+      });
+      on('before:browser:launch', (browser, launchOptions) => {
+        if (browser.name === 'chrome' && browser.isHeadless) {
+          launchOptions.args.push('--window-size=1280,768');
+          launchOptions.args.push('--force-device-scale-factor=1');
+        }
+
+        if (browser.name === 'electron' && browser.isHeadless) {
+          launchOptions.preferences.width = 1280;
+          launchOptions.preferences.height = 768;
+        }
+
+        if (browser.name === 'firefox' && browser.isHeadless) {
+          launchOptions.args.push('--width=1280');
+          launchOptions.args.push('--height=768');
+        }
+
+        return launchOptions;
       });
     },
   },
