@@ -170,35 +170,6 @@ const translationTypeToIndexedTranslation = (translations?: EnforcedWithId<Trans
       )
     : [];
 
-const update = async (translation: TranslationType | IndexedTranslations) => {
-  const currentTranslationData = await model.getById(translation._id);
-  if (!currentTranslationData) {
-    throw new Error('currentTranslationData does not exist');
-  }
-
-  const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {
-    ...translation,
-    contexts: (translation.contexts || []).map(processContextValues),
-  };
-
-  await propagateTranslation(processedTranslation, currentTranslationData);
-
-  (currentTranslationData?.contexts || []).forEach(context => {
-    const isPresentInTheComingData = processedTranslation.contexts.find(
-      _context => _context.id?.toString() === context.id?.toString()
-    );
-
-    if (!isPresentInTheComingData) {
-      processedTranslation.contexts.push(context);
-    }
-  });
-
-  return model.save({
-    ...processedTranslation,
-    contexts: processedTranslation.contexts.map(processContextValues),
-  });
-};
-
 export default {
   prepareContexts,
 

@@ -105,7 +105,7 @@ const fixtures: DBFixture = {
       site_name: 'Uwazi',
       languages: [{ key: 'en', label: 'English', default: true }],
     },
-  ]
+  ],
 };
 
 export default fixtures;
