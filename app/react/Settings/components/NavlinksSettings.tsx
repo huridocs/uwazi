@@ -14,7 +14,6 @@ import { useDnDContext } from 'app/V2/CustomHooks';
 import { SettingsHeader } from './SettingsHeader';
 import { NavlinkForm } from './NavlinkForm';
 import './styles/menu.scss';
-import { error } from 'console';
 
 interface NavlinksSettingsProps {
   addLink: Function;
@@ -70,9 +69,6 @@ const NavlinksSettingsComponent = ({
     _rev: collection.get('_rev'),
     links: links.map(li => omit(li, 'id')),
   };
-
-  const blockReferences: any[] = [];
-
   const formSubmit = async () => {
     saveLinks(payload);
   };
@@ -85,11 +81,6 @@ const NavlinksSettingsComponent = ({
     dndContext.updateActiveItems(links);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [links]);
-
-  useEffect(() => {
-    console.log(dndContext.activeItems);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dndContext.activeItems]);
 
   return (
     <div className="settings-content">
@@ -131,10 +122,10 @@ const NavlinksSettingsComponent = ({
                   <NavlinkForm
                     id={link.id}
                     link={link}
-                    blockReferences={blockReferences}
                     index={i}
                     key={link.id}
                     register={register}
+                    // @ts-ignore
                     hasError={errors?.settings?.navlinksData?.links?.[i] !== undefined}
                   />
                 </DraggableItem>
