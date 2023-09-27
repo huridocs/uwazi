@@ -15,6 +15,7 @@ interface DraggableItemProps extends React.PropsWithChildren {
   index: number;
   context: any;
   className?: string;
+  omitIcon?: boolean;
 }
 
 type DraggedResult = {
@@ -31,6 +32,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   children,
   context,
   className,
+  omitIcon = false,
 }) => {
   const ref = useRef<HTMLLIElement>(null);
   const [, drop] = useDrop({
@@ -79,7 +81,9 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
       style={{ opacity }}
       data-handler-id={handlerId}
     >
-      <Icon icon="bars" className={`text-gray-400 ${!iconHandle ? 'cursor-move' : ''}`} />
+      {!omitIcon && (
+        <Icon icon="bars" className={`text-gray-400 ${!iconHandle ? 'cursor-move' : ''}`} />
+      )}
       {children}
     </li>
   );

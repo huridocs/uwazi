@@ -1,17 +1,13 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-import React, { useRef } from 'react';
+import React from 'react';
 import { Field } from 'react-redux-form';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
-import type { DragSourceMonitor } from 'react-dnd';
 import { Icon } from 'UI';
 import * as navlinksActions from 'app/Settings/actions/navlinksActions';
 import { IStore } from 'app/istore';
 import { Translate } from 'app/I18N';
-import { ILink, ItemTypes } from 'app/V2/shared/types';
+import { ILink } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
-import { hoverSortable } from 'app/V2/Components/Layouts/DradAndDrop/DraggableItem';
 
 const groupStyles = {
   paddingRight: '0px',
@@ -25,9 +21,8 @@ interface NavlinkFormProps extends React.ComponentProps<any> {
   index: number;
   link: ILink;
   removeLink: Function;
-  useDrag: any;
-  useDrop: any;
-  sortLink: Function;
+  register: any;
+  hasError: boolean;
 }
 
 const mapStateToProps = ({ settings }: IStore) => {
@@ -55,51 +50,25 @@ type mappedProps = ConnectedProps<typeof connector> & NavlinkFormProps;
 const NavlinkFormComponent: React.FC<mappedProps> = ({
   links,
   link,
-  useDrag,
-  useDrop,
   removeLink,
   addGroupLink,
   removeGroupLink,
-  formState,
   index,
-  sortLink,
+  register,
+  hasError,
 }: mappedProps) => {
-  const ref = useRef<HTMLLIElement>(null);
-
-  const [{ handlerId }, drop] = useDrop({
-    accept: ItemTypes.LINK,
-    collect(monitor: any) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    hover: hoverSortable(ref, index, sortLink),
-  });
-
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: ItemTypes.LINK,
-    item: () => ({ index }),
-    collect: (monitor: DragSourceMonitor) => ({
-      isDragging: !!monitor.isDragging(),
-    }),
-  }));
-
-  let itemClassName = `list-group-item${isDragging ? ' dragging' : ''}`;
+  let itemClassName = 'list-group-item';
   let titleClass = 'input-group';
 
-  if (formState?.$form.errors[`links.${index}.title.required`]) {
+  if (hasError) {
     itemClassName += ' error';
     titleClass += ' has-error';
   }
 
   const items = [];
 
-  const opacity = isDragging ? 0 : 1;
-
-  drag(drop(ref));
-
   return (
-    <li className={itemClassName} ref={ref} style={{ opacity }} data-handler-id={handlerId}>
+    <div className={itemClassName}>
       <div className="propery-form expand">
         <div>
           <div className="row">
@@ -119,7 +88,14 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
                       <Translate>Title</Translate>
                     </span>
                     <Field model={`settings.navlinksData.links[${index}].title`}>
-                      <input className="form-control" style={{ width: 'calc(100% + 5px)' }} />
+                      <input
+                        className="form-control"
+                        style={{ width: 'calc(100% + 5px)' }}
+                        // eslint-disable-next-line react/jsx-props-no-spreading
+                        {...register(`settings.navlinksData.links[${index}].title`, {
+                          required: true,
+                        })}
+                      />
                     </Field>
                   </div>
                 </div>
@@ -221,7 +197,7 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
           </div>
         </div>
       </div>
-    </li>
+    </div>
   );
 };
 

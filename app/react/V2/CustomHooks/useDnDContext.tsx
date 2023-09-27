@@ -9,6 +9,7 @@ interface IDnDContext {
   addItem: (item: IDraggable) => void;
   removeItem: (item: IDraggable) => void;
   update: (index: number, values: IDraggable) => void;
+  updateActiveItems: (items: IDraggable[]) => void;
   sort: Function;
   activeItems: IDraggable[];
   availableItems: IDraggable[];
@@ -142,6 +143,9 @@ const useDnDContext = (
           },
         })
       );
+    },
+    updateActiveItems: (items: IDraggable[]) => {
+      setActiveItems(items);
     },
     activeItems,
     availableItems,

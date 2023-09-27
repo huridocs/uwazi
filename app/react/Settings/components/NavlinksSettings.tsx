@@ -2,14 +2,19 @@ import React, { useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { useForm } from 'react-hook-form';
+import { omit } from 'lodash';
 import { Icon } from 'UI';
 import { isClient } from 'app/utils';
 import * as navlinksActions from 'app/Settings/actions/navlinksActions';
 import { Translate } from 'app/I18N';
 import { IStore } from 'app/istore';
+import { DraggableItem } from 'app/V2/Components/Layouts/DradAndDrop';
+import { ItemTypes } from 'app/V2/shared/types';
+import { useDnDContext } from 'app/V2/CustomHooks';
 import { SettingsHeader } from './SettingsHeader';
 import { NavlinkForm } from './NavlinkForm';
 import './styles/menu.scss';
+import { error } from 'console';
 
 interface NavlinksSettingsProps {
   addLink: Function;
@@ -47,14 +52,24 @@ const NavlinksSettingsComponent = ({
   addLink,
   savingNavlinks,
 }: mappedProps) => {
-  const { handleSubmit } = useForm({
+  const dndContext = useDnDContext(ItemTypes.LINK, links);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: { links },
     mode: 'onSubmit',
   });
 
   const hostname = isClient ? window.location.origin : '';
 
-  const payload = { _id: collection.get('_id'), _rev: collection.get('_rev'), links };
+  const payload = {
+    _id: collection.get('_id'),
+    _rev: collection.get('_rev'),
+    links: links.map(li => omit(li, 'id')),
+  };
 
   const blockReferences: any[] = [];
 
@@ -65,6 +80,16 @@ const NavlinksSettingsComponent = ({
   useEffect(() => {
     loadLinks(collection.get('links')?.toJS());
   }, [collection, loadLinks]);
+
+  useEffect(() => {
+    dndContext.updateActiveItems(links);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [links]);
+
+  useEffect(() => {
+    console.log(dndContext.activeItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dndContext.activeItems]);
 
   return (
     <div className="settings-content">
@@ -93,15 +118,26 @@ const NavlinksSettingsComponent = ({
                   </div>
                 </div>
               </li>
-              {links.map((link, i) => (
-                <NavlinkForm
-                  id={link.localID || link._id}
-                  link={link}
-                  sortLink={sortLink}
-                  blockReferences={blockReferences}
+              {dndContext.activeItems.map((link, i) => (
+                <DraggableItem
+                  item={{ ...link, container: 'root' }}
                   index={i}
-                  key={link.localID || link._id}
-                />
+                  context={{
+                    ...dndContext,
+                    sort: sortLink,
+                  }}
+                  omitIcon
+                >
+                  <NavlinkForm
+                    id={link.id}
+                    link={link}
+                    blockReferences={blockReferences}
+                    index={i}
+                    key={link.id}
+                    register={register}
+                    hasError={errors?.settings?.navlinksData?.links?.[i] !== undefined}
+                  />
+                </DraggableItem>
               ))}
             </ul>
             <div className="settings-footer">
