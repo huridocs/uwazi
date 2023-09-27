@@ -83,7 +83,7 @@ const NavlinkFormComponent: React.FC<mappedProps> = ({
                     &nbsp;
                     <Icon icon={link.type === 'group' ? 'caret-square-down' : 'link'} />
                   </span>
-                  <div className={`${titleClass} input-Ngroup-width`}>
+                  <div className={`${titleClass} input-group-width`}>
                     <span className="input-group-addon">
                       <Translate>Title</Translate>
                     </span>
