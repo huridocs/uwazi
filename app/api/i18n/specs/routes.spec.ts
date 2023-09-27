@@ -15,7 +15,6 @@ import { availableLanguages } from 'shared/languagesList';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { DefaultTranslations } from '../defaultTranslations';
-import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 import { sortByLocale } from './sortByLocale';
 
 describe('i18n translations routes', () => {
@@ -65,7 +64,6 @@ describe('i18n translations routes', () => {
           },
         ],
         translationsV2,
-        translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
       },
       'index_i18n_routes'
     );
