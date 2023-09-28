@@ -145,6 +145,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.get('.timelinks-form').scrollIntoView();
     cy.get('.delete-timestamp-btn').eq(1).click();
     saveEntity();
+    cy.contains('Video').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
