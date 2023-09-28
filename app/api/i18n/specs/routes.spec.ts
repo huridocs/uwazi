@@ -15,7 +15,6 @@ import { availableLanguages } from 'shared/languagesList';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
 import { DefaultTranslations } from '../defaultTranslations';
-import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 import { sortByLocale } from './sortByLocale';
 
 describe('i18n translations routes', () => {
@@ -65,9 +64,8 @@ describe('i18n translations routes', () => {
           },
         ],
         translationsV2,
-        translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
       },
-      'index'
+      'index_i18n_routes'
     );
   });
 
@@ -306,18 +304,18 @@ describe('i18n translations routes', () => {
                 locale: 'zh',
                 contexts: [
                   {
-                    id: 'contextID',
-                    label: 'Template',
-                    type: 'Entity',
-                    values: { title: 'Template 1' },
-                  },
-                  {
                     id: 'System',
                     label: 'User Interface',
                     type: 'Uwazi UI',
                     values: {
                       Search: 'Search',
                     },
+                  },
+                  {
+                    id: 'contextID',
+                    label: 'Template',
+                    type: 'Entity',
+                    values: { title: 'Template 1' },
                   },
                 ],
               },
@@ -329,16 +327,16 @@ describe('i18n translations routes', () => {
                 locale: 'ja',
                 contexts: [
                   {
-                    id: 'contextID',
-                    label: 'Template',
-                    type: 'Entity',
-                    values: { title: 'Template 1' },
-                  },
-                  {
                     id: 'System',
                     label: 'User Interface',
                     type: 'Uwazi UI',
                     values: { Search: 'Search' },
+                  },
+                  {
+                    id: 'contextID',
+                    label: 'Template',
+                    type: 'Entity',
+                    values: { title: 'Template 1' },
                   },
                 ],
               },
@@ -366,6 +364,7 @@ describe('i18n translations routes', () => {
 
       describe('when encountering an error', () => {
         let mockCalls: any[];
+        jest.spyOn(console, 'error').mockImplementation(() => true);
         let response: request.Response;
         let settingsAddLanguageMock: jest.SpyInstance;
 
@@ -418,18 +417,18 @@ describe('i18n translations routes', () => {
           {
             contexts: [
               {
-                id: 'contextID',
-                label: 'Template',
-                type: 'Entity',
-                values: { title: 'Plantilla 1' },
-              },
-              {
                 id: 'System',
                 label: 'User Interface',
                 type: 'Uwazi UI',
                 values: {
                   Search: 'Buscar traducida',
                 },
+              },
+              {
+                id: 'contextID',
+                label: 'Template',
+                type: 'Entity',
+                values: { title: 'Plantilla 1' },
               },
             ],
             locale: 'es',

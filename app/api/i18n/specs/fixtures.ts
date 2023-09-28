@@ -1,6 +1,5 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
-import { fixturesTranslationsV2ToTranslationsLegacy } from './fixturesTranslationsV2ToTranslationsLegacy';
 
 const entityTemplateId = db.id();
 const documentTemplateId = db.id();
@@ -164,7 +163,6 @@ const translationsV2: DBFixture['translationsV2'] = [
 const fixtures: DBFixture = {
   // eslint-disable-next-line camelcase
   translationsV2,
-  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
   settings: [
     {
       _id: db.id(),
