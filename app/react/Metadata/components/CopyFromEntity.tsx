@@ -99,7 +99,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
             excludePreview
           />
         </div>
-        <div className="copy-from-buttons">
+        <div className="copy-from-buttons btn-cluster">
           <button
             className="back-copy-from btn btn-light"
             type="button"
@@ -131,7 +131,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
           onFinishSearch={this.onFinishedSearch}
           initialSearchTerm={this.state.lastSearch}
         />
-        <div className="copy-from-buttons">
+        <div className="copy-from-buttons btn-cluster">
           <button className="cancel-copy-from btn btn-primary" type="button" onClick={this.cancel}>
             <Icon icon="times" />
             <span className="btn-label">

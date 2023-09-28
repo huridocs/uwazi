@@ -328,33 +328,17 @@ mark.searchTerm {
   .copy-from-buttons {
     position: fixed;
     bottom: 0;
-    padding: 0 0 20px;
+    right: 0;
+    padding: 12px;
     text-align: center;
     white-space: nowrap;
 
-    .btn {
-      position: relative;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      line-height: 50px;
-      font-size: 1.1em;
-      padding: 0;
-      margin: 0 12px;
+    button {
+      margin-left: 10px;
     }
 
-    .btn-label {
-      color: #6c6c7b;
-      position: absolute;
-      top: 100%;
-      font-size: 0.8em;
-      line-height: 1.5em;
-      left: 50%;
-      transform: translateX(-50%) translateY(2px);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 0 5px;
-      width: 6em;
-      white-space: pre-line;
+    svg {
+      margin-right: 5px;
     }
   }
 
