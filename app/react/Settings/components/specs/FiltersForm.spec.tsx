@@ -1,13 +1,15 @@
 /**
  * @jest-environment jsdom
  */
-import React, { Suspense } from 'react';
+import React from 'react';
 import { fromJS } from 'immutable';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
 import ID from 'shared/uniqueID';
+import SettingsAPI from 'app/Settings/SettingsAPI';
+import { RequestParams } from 'app/utils/RequestParams';
 import { FiltersForm } from '../FiltersForm';
 
 jest.mock('react-router-dom', () => ({
@@ -35,6 +37,8 @@ jest.mock('app/componentWrappers', () => {
 });
 
 beforeEach(async () => {
+  spyOn(SettingsAPI, 'save').and.callFake(async () => Promise.resolve());
+
   const reduxStore = {
     ...defaultState,
     settings: {
@@ -61,9 +65,7 @@ beforeEach(async () => {
   };
   renderConnectedContainer(
     <DndProvider backend={HTML5Backend}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <FiltersForm />
-      </Suspense>
+      <FiltersForm />
     </DndProvider>,
     () => ({
       ...reduxStore,
@@ -88,91 +90,78 @@ describe('FiltersForm', () => {
 
     expect(groupName).toEqual('Institutions');
   });
-  // it('should set the state with the inactiveFilters', () => {
-  //   render();
-  //   expect(component.state().inactiveFilters).toEqual([{ id: 3, name: 'Judge' }]);
-  // });
 
-  // it('should render a DragAndDropContainer with the active filters', () => {
-  //   render();
-  //   const container = component.find(DragAndDropContainer).first();
-  //   expect(container.props().items).toEqual(component.state().activeFilters);
-  // });
+  it('should list inactive Filters', () => {
+    const inActiveFiltersContainer = screen.getByTestId('inactive_filters_root');
+    const availableFilters = within(inActiveFiltersContainer)
+      .getAllByRole('listitem')
+      .map(i => i.textContent);
 
-  // it('should not allow nesting a group inside a group', () => {
-  //   render();
-  //   component.instance().activesChange([
-  //     { id: 2, name: 'single', container: '', index: 1 },
-  //     {
-  //       id: 1,
-  //       name: 'group',
-  //       container: '',
-  //       index: 2,
-  //       items: [
-  //         { id: 1, name: 'filter1', container: '', index: 0 },
-  //         { id: 1, name: 'filter2', container: '', index: 1 },
-  //         { id: 1, name: 'group2', container: '', index: 1, items: [] },
-  //       ],
-  //     },
-  //   ]);
+    expect(availableFilters).toEqual(['Judge', 'Lawer']);
+  });
 
-  //   expect(component.state().activeFilters).toEqual([
-  //     { id: 2, name: 'single', container: '', index: 1 },
-  //     {
-  //       id: 1,
-  //       name: 'group',
-  //       container: '',
-  //       index: 2,
-  //       items: [
-  //         { id: 1, name: 'filter1', container: '', index: 0 },
-  //         { id: 1, name: 'filter2', container: '', index: 1 },
-  //       ],
-  //     },
-  //     { id: 1, name: 'group2', container: '', index: 1, items: [] },
-  //   ]);
-  // });
+  describe('Filters edition', () => {
+    it('should add a group', async () => {
+      await act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Create group' }));
+      });
+      const activeFiltersContainer = screen.getByTestId('active_filters_root');
+      const groups = within(activeFiltersContainer).getAllByRole('textbox');
+      expect(groups.length).toEqual(2);
+      expect(groups.at(1)?.getAttribute('value')).toEqual('New group');
+    });
 
-  // it('should render a DragAndDropContainer with the unactive filters', () => {
-  //   render();
-  //   const container = component.find(DragAndDropContainer).last();
-  //   expect(container.props().items).toEqual(component.state().inactiveFilters);
-  // });
+    // eslint-disable-next-line max-statements
+    it('should add a filter to the group', async () => {
+      // eslint-disable-next-line max-statements
+      await act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Create group' }));
+      });
+      const judgeFilter = screen.getByText('Judge');
+      const container = screen.getByTestId('group_New group');
+      fireEvent.dragStart(judgeFilter);
+      fireEvent.dragEnter(container);
+      fireEvent.drop(container);
 
-  // describe('save', () => {
-  //   it('should sanitize and call the api', () => {
-  //     render();
-  //     instance.activesChange([
-  //       { id: 1, name: 'Country', container: '', index: 0 },
-  //       {
-  //         id: 'asd',
-  //         name: 'Institutions',
-  //         container: '',
-  //         index: 2,
-  //         items: [
-  //           { id: 4, name: 'Court' },
-  //           { id: 2, _id: 'someDbId', name: 'Case', container: '', index: 1 },
-  //         ],
-  //       },
-  //     ]);
-  //     spyOn(SettingsAPI, 'save').and.callFake(async () => Promise.resolve());
-  //     instance.save();
-  //     const expectedFilters = {
-  //       data: {
-  //         filters: [
-  //           { id: 1, name: 'Country' },
-  //           {
-  //             id: 'asd',
-  //             items: [
-  //               { id: 4, name: 'Court' },
-  //               { id: 2, name: 'Case' },
-  //             ],
-  //             name: 'Institutions',
-  //           },
-  //         ],
-  //       },
-  //       headers: {},
-  //     };
-  //     expect(SettingsAPI.save).toHaveBeenCalledWith(expectedFilters);
-  //   });
-  // });
+      const updatedFiltersContainer = screen.getByTestId('active_filters_root');
+      const results = within(updatedFiltersContainer)
+        .getAllByTestId('filter_link')
+        .map(i => i.textContent);
+      expect(results).toEqual(['Country', 'Case', 'Court', 'Judge']);
+
+      const inActiveFiltersContainer = screen.getByTestId('inactive_filters_root');
+      const availableFilters = within(inActiveFiltersContainer)
+        .getAllByRole('listitem')
+        .map(i => i.textContent);
+
+      expect(availableFilters).toEqual(['Lawer']);
+    });
+
+    it('should sanitize and call the api', async () => {
+      await act(() => {
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+      });
+
+      expect(SettingsAPI.save).toHaveBeenCalledWith(
+        new RequestParams({
+          filters: [
+            {
+              _id: 'template2',
+              id: 'template2',
+              name: 'Country',
+              items: undefined,
+              type: 'link',
+            },
+            { _id: 'template3', id: 'template3', name: 'Case', items: undefined, type: 'link' },
+            {
+              id: expect.any(String),
+              items: [{ id: 'template1', name: 'Court', type: 'link' }],
+              name: 'Institutions',
+              type: 'group',
+            },
+          ],
+        })
+      );
+    });
+  });
 });

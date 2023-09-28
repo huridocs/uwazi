@@ -12,12 +12,12 @@ import { Button } from 'app/V2/Components/UI';
 import SettingsAPI from 'app/Settings/SettingsAPI';
 import { notify as notifyAction } from 'app/Notifications/actions/notificationsActions';
 import { DragSource, Container } from 'app/V2/Components/Layouts/DradAndDrop/';
-
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import { IStore } from 'app/istore';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { IDnDContext, useDnDContext } from 'app/V2/CustomHooks';
 import debounce from 'app/utils/debounce';
+import ID from 'shared/uniqueID';
 import { SettingsHeader } from './SettingsHeader';
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
@@ -159,7 +159,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
   };
 
   const addGroup = () => {
-    const newGroup = { name: t('System', 'New group', null, false), items: [] };
+    const newGroup = { id: ID(), name: t('System', 'New group', null, false), items: [] };
     dndContext.addItem(newGroup);
   };
 
@@ -202,7 +202,7 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
                   </div>
                   <Container context={dndContext} itemComponent={FilterComponent} name="root" />
                 </div>
-                <div className="col-sm-3">
+                <div className="col-sm-3" data-testid="inactive_filters_root">
                   <div className="FiltersForm-constructor">
                     <div>
                       <i>
