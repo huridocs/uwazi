@@ -128,6 +128,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
+    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -136,6 +137,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Edit').should('be.visible').click();
     cy.addTimeLink(4000, 'Second three', 1);
     saveEntity();
+    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -145,7 +147,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.get('.timelinks-form').scrollIntoView();
     cy.get('.delete-timestamp-btn').eq(1).click();
     saveEntity();
-    cy.contains('Video').scrollIntoView();
+    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -158,6 +160,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.timeSeconds"]', '57');
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
+    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
