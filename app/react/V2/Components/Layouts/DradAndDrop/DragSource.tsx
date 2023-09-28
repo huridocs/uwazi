@@ -14,11 +14,15 @@ const DragSourceComponent = ({
   <div className="tw-content">
     <ul className={className}>
       {context.availableItems.map((item: IDraggable, index: number) => (
-        <li key={item.name}>
-          <DraggableItem item={item} index={index} className="gap-5 p-3" context={context}>
-            {item.name}
-          </DraggableItem>
-        </li>
+        <DraggableItem
+          key={item.id}
+          item={item}
+          index={index}
+          className="gap-5 p-3"
+          context={context}
+        >
+          {item.name}
+        </DraggableItem>
       ))}
     </ul>
   </div>

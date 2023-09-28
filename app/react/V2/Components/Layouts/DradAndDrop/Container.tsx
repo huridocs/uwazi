@@ -31,7 +31,7 @@ const Container: FC<ContainerProps> = memo(
   }: ContainerProps) => {
     const currentItems = parent ? parent.items || [] : context.activeItems;
     return (
-      <div className="tw-content ">
+      <div className="tw-content " data-testid={`active_filters_${name}`}>
         <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
           <ul>
             {currentItems

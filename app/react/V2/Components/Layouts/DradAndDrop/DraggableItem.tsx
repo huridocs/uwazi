@@ -77,7 +77,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
         iconHandle ? 'cursor-move' : ''
       }`}
       ref={ref}
-      data-testid="dragable-item"
+      data-testid="draggable-item"
       style={{ opacity }}
       data-handler-id={handlerId}
     >
