@@ -106,7 +106,6 @@ const fixtures: DBFixture = {
       languages: [{ key: 'en', label: 'English', default: true }],
     },
   ],
-  translations: [{ locale: 'en', contexts: [] }],
 };
 
 export default fixtures;
