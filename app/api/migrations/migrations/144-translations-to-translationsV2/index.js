@@ -48,7 +48,7 @@ const flattenTranslations = (translation, languagesByKeyContext) => {
 const newTranslationsCollection = 'translationsV2';
 
 export default {
-  delta: 137,
+  delta: 144,
 
   name: 'translations to translations v2',
 

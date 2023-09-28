@@ -2,7 +2,6 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const template1Id = db.id();
@@ -125,7 +124,7 @@ const fixtures: DBFixture = {
     },
   ],
 
-  translations: fixturesTranslationsV2ToTranslationsLegacy(translationsV2),
+  translationsV2,
 };
 
 export { fixtures, template1Id, thesauri1Id, templateToRelateId };
