@@ -1,6 +1,7 @@
 .document-viewer {
   width: 100%;
   height: 100%;
+
   &.with-header {
     height: calc(100% - 50px);
   }
@@ -18,6 +19,7 @@
   overflow-y: auto;
 
   @media (min-width: 1024px) {
+
     &.with-panel:not(.unpinned-mode),
     &.is-active:not(.unpinned-mode) {
       width: calc(100% - 400px);
@@ -32,7 +34,8 @@
   div.c {
     pointer-events: none;
   }
-  div.c > * {
+
+  div.c>* {
     pointer-events: auto;
     padding-right: 100px;
   }
@@ -122,6 +125,7 @@ mark,
   color: transparent !important;
   background-color: transparentize($c-primary, 0.8) !important;
   padding: 0 !important;
+
   mark,
   .mark {
     background-color: transparent !important;
@@ -162,6 +166,7 @@ mark.searchTerm {
     max-width: 900px;
     left: 0;
     padding: 15px;
+
     @media (min-width: 1024px) {
       left: auto;
       padding: 15px 0;
@@ -173,12 +178,14 @@ mark.searchTerm {
     margin: 12px 10px 12px 0;
     font-size: $f-size-sm;
   }
+
   h2 {
     font-size: $f-size-sm;
     padding-left: 20px;
     position: relative;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+
     small {
       position: absolute;
       top: -2px;
@@ -193,6 +200,7 @@ mark.searchTerm {
       padding-left: 2px;
     }
   }
+
   button i {
     padding-right: 4px;
   }
@@ -233,6 +241,7 @@ mark.searchTerm {
   .form-group {
     position: relative;
     margin: 0 -15px;
+
     svg {
       position: absolute;
       top: 50%;
@@ -242,6 +251,7 @@ mark.searchTerm {
       cursor: pointer;
     }
   }
+
   .form-control {
     padding-left: 40px;
     height: $header-height;
@@ -296,19 +306,23 @@ mark.searchTerm {
       margin: 0 -15px;
     }
   }
+
   .item-info {
     padding: 0;
   }
+
   .item-actions {
     position: relative;
     height: auto;
     padding: 0;
     margin-left: 15px;
   }
+
   .btn-color {
     width: auto;
     max-width: 75px;
   }
+
   .cs-loader-container {
     position: absolute;
     width: 100%;
@@ -329,12 +343,23 @@ mark.searchTerm {
     position: fixed;
     bottom: 0;
     right: 0;
-    padding: 12px;
+    padding: 0 5px 11px 0;
     text-align: center;
     white-space: nowrap;
 
     button {
       margin-left: 10px;
+
+
+      @media (max-width: 1024px) {
+        .btn-label {
+          display: none;
+        }
+
+        svg {
+          margin: 0 5px;
+        }
+      }
     }
 
     svg {

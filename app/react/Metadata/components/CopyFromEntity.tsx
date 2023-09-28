@@ -11,7 +11,8 @@ import { store } from 'app/store';
 
 import { SearchEntities } from './SearchEntities';
 
-export type CopyFromEntityProps = {
+type CopyFromEntityProps = {
+  isVisible: boolean;
   onSelect: Function;
   onCancel: Function;
   templates: IImmutable<Array<TemplateSchema>>;
@@ -19,13 +20,13 @@ export type CopyFromEntityProps = {
   formModel: string;
 };
 
-export type CopyFromEntityState = {
+type CopyFromEntityState = {
   selectedEntity: EntitySchema;
   propsToCopy: Array<string>;
   lastSearch?: string;
 };
 
-export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
+class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
   constructor(props: CopyFromEntityProps) {
     super(props);
 
@@ -144,6 +145,9 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
   }
 
   render() {
-    return <div className="copy-from">{this.renderPanel()}</div>;
+    return <div className="copy-from">{this.props.isVisible && this.renderPanel()}</div>;
   }
 }
+
+export type { CopyFromEntityProps, CopyFromEntityState };
+export { CopyFromEntity };
