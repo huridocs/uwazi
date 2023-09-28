@@ -326,10 +326,8 @@ mark.searchTerm {
   min-width: 50%;
 
   .copy-from-buttons {
-    position: absolute;
-    bottom: 2em;
-    left: 50%;
-    transform: translateX(-50%);
+    position: fixed;
+    bottom: 0;
     padding: 0 0 20px;
     text-align: center;
     white-space: nowrap;
