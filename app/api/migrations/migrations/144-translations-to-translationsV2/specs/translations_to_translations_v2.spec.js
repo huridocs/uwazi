@@ -18,7 +18,7 @@ describe('migration set_up_new_relationship_collection', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(137);
+    expect(migration.delta).toBe(144);
   });
 
   it('should set up the relationships collection', async () => {

@@ -1,6 +1,5 @@
 import db from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 
 const fixtureFactory = getFixturesFactory();
 const createTranslationDBO = fixtureFactory.v2.database.translationDBO;
@@ -76,7 +75,7 @@ const fixtures = {
       ],
     },
   ],
-  translations: fixturesTranslationsV2ToTranslationsLegacy([
+  translationsV2: [
     createTranslationDBO('B', 'Bes', 'es', {
       id: fixtureFactory.id('multiselect_thesaurus').toString(),
       type: 'Thesaurus',
@@ -197,7 +196,7 @@ const fixtures = {
       type: 'Uwazi UI',
       label: 'System',
     }),
-  ]),
+  ],
 };
 
 export { fixtures, fixtureFactory };
