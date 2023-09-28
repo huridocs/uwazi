@@ -36,7 +36,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const Filter = ({ item, context }: { item: ClientSettingsFilterSchema; context: IDnDContext }) => (
-  <div className="flex flex-row items-center w-full h-10 mr-2">
+  <div className="flex flex-row items-center w-full h-10 mr-2" data-testid="filter_link">
     <span>{item.name}</span>
     <Button
       type="button"
@@ -72,7 +72,7 @@ const Group = ({
   }, [context, index]);
 
   return (
-    <div className="w-full mt-2">
+    <div className="w-full mt-2" data-testid="filter_group">
       <div className="flex flex-row items-center w-full">
         <input
           type="text"
@@ -129,7 +129,10 @@ const FiltersFormComponent = ({ templates, settings, notify, setSettings }: mapp
     return { ...filter, id: filter._id, items };
   });
 
-  const usedFiltersIds = usedFilters.map(filter => [filter._id, ...map(filter.items, 'id')]).flat();
+  const usedFiltersIds = usedFilters
+    .map(filter => [filter._id, ...map(filter.items, 'id')])
+    .flat()
+    .filter(id => id);
 
   const availableFilters = templates
     .filter(template => template !== undefined && !usedFiltersIds.includes(template.get('_id')))
