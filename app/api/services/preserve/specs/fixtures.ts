@@ -83,36 +83,4 @@ export const fixtures: DBFixture = {
     },
   ],
   dictionaries: [{ _id: thesauri1Id, name: 'thesauri1', values: [] }],
-  translations: [
-    {
-      _id: db.id(),
-      locale: 'en',
-      contexts: [
-        {
-          id: 'contextId',
-          label: 'contextLabel',
-          type: 'Entity',
-          values: [
-            { key: 'Key', value: 'Value' },
-            { key: 'Key2', value: 'Value2' },
-          ],
-        },
-      ],
-    },
-    {
-      _id: db.id(),
-      locale: 'es',
-      contexts: [
-        {
-          id: 'contextId',
-          label: 'contextLabel',
-          type: 'Entity',
-          values: [
-            { key: 'Key', value: 'Valor' },
-            { key: 'Key2', value: 'Valor2' },
-          ],
-        },
-      ],
-    },
-  ],
 };

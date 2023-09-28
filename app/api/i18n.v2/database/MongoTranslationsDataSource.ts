@@ -118,6 +118,6 @@ export class MongoTranslationsDataSource
       ])
       .toArray();
 
-    return result?.notFoundKeys || [];
+    return result?.notFoundKeys || keys;
   }
 }
