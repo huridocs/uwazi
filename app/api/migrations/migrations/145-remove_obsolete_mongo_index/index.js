@@ -11,7 +11,7 @@ const handleCollection = async (collection, indexNames) => {
 };
 
 export default {
-  delta: 144,
+  delta: 145,
 
   name: 'remove_obsolete_mongo_index',
 
