@@ -88,6 +88,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
   cancel() {
     this.props.onSelect([]);
     this.props.onCancel();
+    this.setState({ propsToCopy: [], selectedEntity: {} });
   }
 
   renderPanel() {
