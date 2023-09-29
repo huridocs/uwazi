@@ -97,7 +97,7 @@ const EditableItem = ({
 }) => {
   const debouncedChangeHandler = useMemo(() => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      dndContext.update(index, {
+      dndContext.updateItems(index, {
         name: e.target.value,
       });
     };
@@ -236,5 +236,4 @@ const Form = {
 };
 
 export { Basic, WithItemComponent, Nested, Form };
-
 export default meta;

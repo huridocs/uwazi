@@ -63,7 +63,7 @@ const Group = ({
 }) => {
   const debouncedChangeHandler = useMemo(() => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      context.update(index, {
+      context.updateItems(index, {
         name: e.target.value,
       });
     };
