@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-// import { DragSource } from 'react-dnd';
+import { DragSource } from 'react-dnd-old';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Icon } from 'UI';
@@ -66,14 +66,14 @@ const optionSource = {
   },
 };
 
-// const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
-//   connectDragSource: connector.dragSource(),
-// }))(PropertyOption);
+const dragSource = DragSource('METADATA_OPTION', optionSource, connector => ({
+  connectDragSource: connector.dragSource(),
+}))(PropertyOption);
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ removeProperty, addProperty }, dispatch);
 }
 
-// export { dragSource };
+export { dragSource };
 export { PropertyOption };
-export default connect(null, mapDispatchToProps, null, { withRef: true })(PropertyOption);
+export default connect(null, mapDispatchToProps, null, { withRef: true })(dragSource);

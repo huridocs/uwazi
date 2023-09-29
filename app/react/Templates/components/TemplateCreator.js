@@ -9,6 +9,7 @@ import { saveRelationType } from 'app/RelationTypes/actions/relationTypeActions'
 import MetadataTemplate from 'app/Templates/components/MetadataTemplate';
 import PropertyOption from 'app/Templates/components/PropertyOption';
 import { Translate } from 'app/I18N';
+import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 
 class TemplateCreator extends Component {
   componentWillUnmount() {
@@ -136,4 +137,4 @@ const mapStateToProps = ({ settings, relationTypes, thesauris, template }, props
 });
 
 export { TemplateCreator };
-export default connect(mapStateToProps, mapDispatchToProps)(TemplateCreator);
+export default DNDHTMLBackend(connect(mapStateToProps, mapDispatchToProps)(TemplateCreator));

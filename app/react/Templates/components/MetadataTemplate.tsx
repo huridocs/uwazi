@@ -1,11 +1,10 @@
 /* eslint-disable max-lines */
 import React, { Component } from 'react';
-// import { DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd-old';
 import { List } from 'immutable';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { actions as formActions, Control, Field } from 'react-redux-form';
 import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
@@ -29,7 +28,6 @@ import { ClientPropertySchema } from 'app/istore';
 import { TemplateSchema } from 'shared/types/templateType';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { Form } from 'app/Forms/Form';
-import { ItemTypes } from 'app/V2/shared/types';
 import { TemplateAsPageControl } from './TemplateAsPageControl';
 import { validate } from './ValidateTemplate';
 
@@ -295,8 +293,8 @@ MetadataTemplate.propTypes = {
   entityViewPage: PropTypes.string,
   environment: PropTypes.string.isRequired,
 };
-
 /* eslint-enable react/forbid-prop-types, react/require-default-props */
+
 const target = {
   canDrop() {
     return true;
@@ -317,9 +315,9 @@ const target = {
   },
 };
 
-// const dropTarget = DropTarget('METADATA_OPTION', target, (connector: any) => ({
-//   connectDropTarget: connector.dropTarget(),
-// }))(MetadataTemplate);
+const dropTarget = DropTarget('METADATA_OPTION', target, (connector: any) => ({
+  connectDropTarget: connector.dropTarget(),
+}))(MetadataTemplate);
 
 const mapStateToProps = (
   {
@@ -365,8 +363,8 @@ function mapDispatchToProps(dispatch: any) {
   );
 }
 
-export { MetadataTemplate, mapStateToProps };
+export { dropTarget, MetadataTemplate, mapStateToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(
-  MetadataTemplate
+  withContext(dropTarget)
 );

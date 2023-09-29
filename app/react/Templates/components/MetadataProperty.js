@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-// import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd-old';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { editProperty } from 'app/Templates/actions/uiActions';
@@ -274,9 +274,9 @@ const target = {
   },
 };
 
-// const dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, connector => ({
-//   connectDropTarget: connector.dropTarget(),
-// }))(MetadataProperty);
+const dropTarget = DropTarget(['METADATA_PROPERTY', 'METADATA_OPTION'], target, connector => ({
+  connectDropTarget: connector.dropTarget(),
+}))(MetadataProperty);
 
 const source = {
   beginDrag(props) {
@@ -293,10 +293,10 @@ const source = {
   },
 };
 
-// const dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) => ({
-//   connectDragSource: connector.dragSource(),
-//   isDragging: monitor.isDragging(),
-// }))(dropTarget);
+const dragSource = DragSource('METADATA_PROPERTY', source, (connector, monitor) => ({
+  connectDragSource: connector.dragSource(),
+  isDragging: monitor.isDragging(),
+}))(dropTarget);
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators(
@@ -321,6 +321,6 @@ const mapStateToProps = ({ template }, ownProps) => ({
   submitFailed: template.formState.$form.submitFailed,
 });
 
-export { MetadataProperty };
+export { dragSource, dropTarget, MetadataProperty };
 
-export default connect(mapStateToProps, mapDispatchToProps)(MetadataProperty);
+export default connect(mapStateToProps, mapDispatchToProps)(dragSource);
