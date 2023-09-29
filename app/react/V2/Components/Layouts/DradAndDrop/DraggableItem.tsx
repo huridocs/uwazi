@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import type { FC } from 'react';
-import { type DragSourceMonitor } from 'react-dnd';
+import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
 import { Icon } from 'app/UI';
 import type { IDraggable } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';

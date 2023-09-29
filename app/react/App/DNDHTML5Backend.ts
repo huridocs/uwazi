@@ -1,3 +1,4 @@
+//@ts-ignore
 import { DragDropContext } from 'react-dnd-old';
 import { HTML5Backend } from 'react-dnd-html5-backend-old';
 

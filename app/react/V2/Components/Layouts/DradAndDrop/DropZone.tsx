@@ -1,7 +1,7 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
 import type { FC } from 'react';
-import type { DropTargetMonitor } from 'react-dnd';
+import type { DropTargetMonitor } from 'react-dnd/dist/types/monitors';
 import { Translate } from 'app/I18N';
 import { withDnD } from 'app/componentWrappers';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';

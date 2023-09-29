@@ -1,6 +1,6 @@
-import { IDraggable } from 'app/V2/shared/types';
 import { RefObject } from 'react';
-import { XYCoord } from 'react-dnd';
+import type { XYCoord } from 'react-dnd/dist/types/monitors';
+import { IDraggable } from 'app/V2/shared/types';
 
 const hoverSortable =
   (ref: RefObject<HTMLElement>, index: number, sortFunction?: Function) =>
