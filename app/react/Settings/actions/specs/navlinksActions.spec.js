@@ -36,7 +36,7 @@ describe('Settings/Navlinks actions', () => {
 
   describe('addLink', () => {
     it('should push a new item with default naming', () => {
-      const expected = { title: 'Item 2', localID: 'unique_id', type: 'link', sublinks: [] };
+      const expected = { title: 'Item 2', id: 'unique_id', type: 'link', sublinks: [] };
       actions.addLink([{ _id: 'existing link' }])(dispatch);
       expect(formActions.push).toHaveBeenCalledWith('settings.navlinksData.links', expected);
       expect(uiActions.editLink).toHaveBeenCalledWith('unique_id');
@@ -45,7 +45,7 @@ describe('Settings/Navlinks actions', () => {
 
   describe('sortLink', () => {
     it('should reorder links', () => {
-      expect(actions.sortLink(3, 2)).toBe('ITEMS REORDERED');
+      expect(actions.sortLink({}, 3, 2)).toBe('ITEMS REORDERED');
       expect(formActions.move).toHaveBeenCalledWith('settings.navlinksData.links', 3, 2);
     });
   });

@@ -5,7 +5,7 @@ import React from 'react';
 import TestUtils from 'react-dom/test-utils';
 import { createStore } from 'redux';
 import { TestBackend } from 'react-dnd-test-backend';
-import { DragDropContext } from 'react-dnd';
+import { DragDropContext } from 'react-dnd-old';
 import { Provider } from 'react-redux';
 import Immutable from 'immutable';
 import PropertyOption, {
