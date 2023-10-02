@@ -68,19 +68,21 @@ const Group = ({
       });
     };
 
-    return debounce(changeHandler, 500);
+    return debounce(changeHandler, 200);
   }, [context, index]);
 
   return (
     <div className="w-full mt-2" data-testid="filter_group">
       <div className="flex flex-row items-center w-full">
         <input
+          data-testid={`filter_group_${index}`}
           type="text"
           className="w-full text-sm border-r-0 border-gray-300 rounded-md rounded-r-none "
           defaultValue={item.name}
           onChange={debouncedChangeHandler}
         />
         <Button
+          data-testid={`delete_filter_group_${index}`}
           type="button"
           color="error"
           size="small"
