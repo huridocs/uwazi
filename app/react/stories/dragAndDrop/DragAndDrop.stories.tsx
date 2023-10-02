@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { FC, useMemo } from 'react';
+import React, { FC, PropsWithChildren, useMemo } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -175,23 +175,25 @@ const CardWithDnD: FC<IItemComponentProps> = ({ item, context, index }) => (
   </div>
 );
 
+const RenderWithProvider = ({ children }: PropsWithChildren) => (
+  <Provider store={createStore()}>
+    <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+  </Provider>
+);
+
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <DndProvider backend={HTML5Backend}>
-        <DnDClient items={args.items} type={args.type} itemComponent={args.itemComponent} />
-      </DndProvider>
-    </Provider>
+    <RenderWithProvider>
+      <DnDClient items={args.items} type={args.type} itemComponent={args.itemComponent} />
+    </RenderWithProvider>
   ),
 };
 
 const WithForm: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <DndProvider backend={HTML5Backend}>
-        <DnDClientWithForm items={args.items} type={args.type} itemComponent={args.itemComponent} />
-      </DndProvider>
-    </Provider>
+    <RenderWithProvider>
+      <DnDClientWithForm items={args.items} type={args.type} itemComponent={args.itemComponent} />
+    </RenderWithProvider>
   ),
 };
 

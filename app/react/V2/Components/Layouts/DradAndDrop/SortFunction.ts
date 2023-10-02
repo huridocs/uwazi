@@ -50,21 +50,18 @@ const hoverSortable =
     },
     monitor: any
   ) => {
+    const dragIndex = currentItem.index;
+    const hoverIndex = index;
+
     if (
       !ref.current ||
       !sortFunction ||
       !monitor.isOver({ shallow: true }) ||
-      currentItem.item.container === undefined
+      currentItem.item.container === undefined ||
+      exitSorting(ref, monitor, dragIndex, hoverIndex)
     ) {
       return;
     }
-
-    const dragIndex = currentItem.index;
-    const hoverIndex = index;
-    if (exitSorting(ref, monitor, dragIndex, hoverIndex)) {
-      return;
-    }
-
     // Time to actually perform the action
     sortFunction(currentItem.item, dragIndex, hoverIndex);
 

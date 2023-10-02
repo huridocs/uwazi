@@ -1,4 +1,4 @@
-//@ts-ignore
+//@ts-ignore: Temporary while rewrite of components with dnd
 import { DragDropContext } from 'react-dnd-old';
 import { HTML5Backend } from 'react-dnd-html5-backend-old';
 
