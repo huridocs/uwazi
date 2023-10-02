@@ -1,14 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
 import React, { HTMLProps, useEffect, useRef, Dispatch, SetStateAction } from 'react';
-import {
-  ColumnDef,
-  TableState,
-  Row,
-  Table as TableDef,
-  SortingState,
-  OnChangeFn,
-} from '@tanstack/react-table';
+import { ColumnDef, TableState, Row, Table as TableDef, SortingState } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t } from 'app/I18N';
 
@@ -20,7 +13,7 @@ interface TableProps<T> {
   initialState?: Partial<TableState>;
   enableSelection?: boolean;
   sorting?: SortingState;
-  setSorting?: OnChangeFn<SortingState>;
+  setSorting?: Dispatch<SetStateAction<SortingState>>;
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
 }
 
