@@ -108,11 +108,11 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
             onClick={this.backToSearch}
           >
             <Icon icon="arrow-left" />
-            <span className="btn-label">
+            <span className="hidden btn-label">
               <Translate>Back to search</Translate>
             </span>
           </button>
-          <button className="cancel-copy-from btn btn-primary" type="button" onClick={this.cancel}>
+          <button className="cancel-copy-from btn btn-light" type="button" onClick={this.cancel}>
             <Icon icon="times" />
             <span className="btn-label">
               <Translate>Cancel</Translate>
@@ -134,7 +134,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
           initialSearchTerm={this.state.lastSearch}
         />
         <div className="copy-from-buttons btn-cluster">
-          <button className="cancel-copy-from btn btn-primary" type="button" onClick={this.cancel}>
+          <button className="cancel-copy-from btn btn-light" type="button" onClick={this.cancel}>
             <Icon icon="times" />
             <span className="btn-label">
               <Translate>Cancel</Translate>

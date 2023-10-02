@@ -344,31 +344,26 @@ mark.searchTerm {
     display: flex;
     flex-wrap: wrap;
     justify-content: end;
-    gap: 5px;
+    gap: 12px;
     bottom: 0;
     right: 0;
     padding-bottom: 11px;
     padding-right: 12px;
     text-align: center;
 
-
     button {
       display: flex;
       align-items: center;
-
-      @media (max-width: 699px) {
-        .btn-label {
-          display: none;
-        }
-
-        svg {
-          margin: 0 5px;
-        }
-      }
     }
 
     svg {
       margin-right: 5px;
+    }
+
+    .back-copy-from {
+      svg {
+        margin: 0;
+      }
     }
   }
 
