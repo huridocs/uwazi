@@ -165,6 +165,15 @@ export const IXSuggestionsQuerySchema = {
       },
       required: ['number', 'size'],
     },
+    sort: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        property: { type: 'string' },
+        order: { type: 'string', enum: ['asc', 'desc'] },
+      },
+      required: ['property'],
+    },
   },
   required: ['filter'],
 };

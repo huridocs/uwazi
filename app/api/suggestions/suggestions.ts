@@ -1,5 +1,4 @@
 import { ObjectId } from 'mongodb';
-
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
 import { EnforcedWithId } from 'api/odm';
@@ -17,6 +16,7 @@ import { FileType } from 'shared/types/fileType';
 import {
   IXSuggestionAggregation,
   IXSuggestionsFilter,
+  IXSuggestionsQuery,
   IXSuggestionType,
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
@@ -133,11 +133,14 @@ const buildListQuery = (
   customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
   offset: number,
-  limit: number
+  limit: number,
+  sort?: IXSuggestionsQuery['sort']
 ) => {
+  const sortOrder = sort?.order === 'asc' ? 1 : -1;
+  const sorting = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
+
   const pipeline = [
     ...getMatchStage(extractorId, customFilter),
-    { $sort: { date: 1, state: -1 } },
     { $skip: offset },
     { $limit: limit },
     ...getEntityStage(setLanguages!),
@@ -165,6 +168,7 @@ const buildListQuery = (
         selectionRectangles: 1,
       },
     },
+    { $sort: sorting },
   ];
   return pipeline;
 };
@@ -228,7 +232,10 @@ const Suggestions = {
 
   get: async (
     filter: IXSuggestionsFilter,
-    options: { page?: { size: number; number: number } }
+    options: {
+      page?: IXSuggestionsQuery['page'];
+      sort?: IXSuggestionsQuery['sort'];
+    }
   ) => {
     const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
     const DEFAULT_LIMIT = 30;
@@ -241,7 +248,7 @@ const Suggestions = {
       .then(result => (result?.length ? result[0].count : 0));
 
     const suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(extractorId, customFilter, setLanguages, offset, limit)
+      buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
     );
 
     return {

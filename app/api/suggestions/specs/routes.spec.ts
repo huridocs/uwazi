@@ -241,6 +241,85 @@ describe('suggestions routes', () => {
       });
     });
 
+    describe('sorting', () => {
+      it('should allow sorting', async () => {
+        const response = await request(app)
+          .get('/api/suggestions')
+          .query({
+            filter: {
+              extractorId: factory.id('super_powers_extractor').toString(),
+            },
+            sort: { property: 'entityTitle', order: 'asc' },
+          })
+          .expect(200);
+
+        expect(response.body.suggestions[0]).toMatchObject({
+          entityId: factory.id('Alfred-english-entity').toString(),
+          sharedId: 'shared3',
+          entityTitle: 'Alfred',
+          propertyName: 'super_powers',
+          suggestedValue: 'puts up with Bruce Wayne',
+          segment: 'he puts up with Bruce Wayne',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'en',
+          page: 3,
+        });
+
+        expect(response.body.suggestions[1]).toMatchObject({
+          entityId: shared2enId.toString(),
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+          propertyName: 'super_powers',
+          suggestedValue: 'scientific knowledge',
+          segment: 'he relies on his own scientific knowledge',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'en',
+          page: 5,
+        });
+
+        expect(response.body.suggestions[2]).toMatchObject({
+          entityId: shared2esId.toString(),
+          sharedId: 'shared2',
+          entityTitle: 'Batman es',
+          propertyName: 'super_powers',
+          suggestedValue: 'scientific knowledge es',
+          segment: 'el confía en su propio conocimiento científico',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'es',
+          page: 5,
+        });
+
+        expect(response.body.totalPages).toBe(1);
+      });
+    });
+
     describe('validation', () => {
       it('should return a validation error if params are not valid', async () => {
         const invalidQuery = { additionParam: true };

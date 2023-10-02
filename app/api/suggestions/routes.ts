@@ -66,6 +66,13 @@ export const suggestionsRoutes = (app: Application) => {
           required: ['filter'],
           properties: {
             filter: SuggestionsQueryFilterSchema,
+            sort: {
+              type: 'object',
+              properties: {
+                property: { type: 'string' },
+                order: { type: 'string' },
+              },
+            },
             page: {
               type: 'object',
               properties: {
@@ -83,7 +90,10 @@ export const suggestionsRoutes = (app: Application) => {
       },
       res: Response
     ) => {
-      const suggestionsList = await Suggestions.get(req.query.filter, { page: req.query.page });
+      const suggestionsList = await Suggestions.get(req.query.filter, {
+        page: req.query.page,
+        sort: req.query.sort,
+      });
       res.json(suggestionsList);
     }
   );

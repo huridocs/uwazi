@@ -96,6 +96,10 @@ export interface IXSuggestionsQuery {
     number: number;
     size: number;
   };
+  sort?: {
+    property: string;
+    order?: 'asc' | 'desc';
+  };
   [k: string]: unknown | undefined;
 }
 
