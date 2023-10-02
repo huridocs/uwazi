@@ -70,7 +70,7 @@ jobs:
       - name: Run tests
         env:
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage --changedSince=development
+        run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
@@ -99,7 +99,7 @@ jobs:
       - run: chmod +x ./cc-test-reporter
       - run: ./cc-test-reporter before-build
       - name: Run tests
-        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2 --changedSince=development
+        run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
