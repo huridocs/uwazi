@@ -66,18 +66,18 @@ export const suggestionsRoutes = (app: Application) => {
           required: ['filter'],
           properties: {
             filter: SuggestionsQueryFilterSchema,
-            sort: {
-              type: 'object',
-              properties: {
-                property: { type: 'string' },
-                order: { type: 'string' },
-              },
-            },
             page: {
               type: 'object',
               properties: {
                 number: { type: 'number', minimum: 1 },
                 size: { type: 'number', minimum: 1, maximum: 500 },
+              },
+            },
+            sort: {
+              type: 'object',
+              properties: {
+                property: { type: 'string' },
+                order: { type: 'string' },
               },
             },
           },

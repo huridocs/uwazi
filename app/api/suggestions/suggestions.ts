@@ -136,14 +136,20 @@ const buildListQuery = (
   limit: number,
   sort?: IXSuggestionsQuery['sort']
 ) => {
-  const sortOrder = sort?.order === 'asc' ? 1 : -1;
+  const sortOrder = sort?.order === 'desc' ? -1 : 1;
   const sorting = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
 
   const pipeline = [
     ...getMatchStage(extractorId, customFilter),
+    ...getEntityStage(setLanguages!),
+    {
+      $addFields: {
+        entityTitle: '$entity.title',
+      },
+    },
+    { $sort: sorting },
     { $skip: offset },
     { $limit: limit },
-    ...getEntityStage(setLanguages!),
     ...getCurrentValueStage(),
     ...getFileStage(),
     ...getLabeledValueStage(),
@@ -152,7 +158,7 @@ const buildListQuery = (
         entityId: '$entity._id',
         entityTemplateId: '$entity.template',
         sharedId: '$entity.sharedId',
-        entityTitle: '$entity.title',
+        entityTitle: 1,
         fileId: 1,
         language: 1,
         propertyName: 1,
@@ -168,7 +174,6 @@ const buildListQuery = (
         selectionRectangles: 1,
       },
     },
-    { $sort: sorting },
   ];
   return pipeline;
 };
