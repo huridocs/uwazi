@@ -63,7 +63,7 @@ const addActiveItem =
     }
   };
 
-const removeItemActiveItem =
+const removeActiveItem =
   (
     activeItems: IDraggable[],
     setActiveItems: React.Dispatch<React.SetStateAction<IDraggable[]>>,
@@ -164,7 +164,7 @@ const useDnDContext = (
   const dndContext: IDnDContext = {
     type,
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
-    removeItem: removeItemActiveItem(activeItems, setActiveItems, setAvailableItems),
+    removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
     sort: sortActiveitems(availableItems, setActiveItems),
     updateItems,
     updateActiveItems: (items: IDraggable[]) => {

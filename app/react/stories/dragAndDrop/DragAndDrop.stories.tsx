@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { FC, PropsWithChildren, useMemo } from 'react';
+import React, { FC, PropsWithChildren, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Provider } from 'react-redux';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -95,7 +95,7 @@ const EditableItem = ({
   item: IDraggable;
   index: number;
 }) => {
-  const debouncedChangeHandler = useMemo(() => {
+  const debouncedChangeHandler = useCallback(() => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
       dndContext.updateItems(index, {
         name: e.target.value,

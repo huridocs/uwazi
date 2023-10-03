@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { map, omit } from 'lodash';
@@ -61,7 +61,7 @@ const Group = ({
   context: IDnDContext;
   index: number;
 }) => {
-  const debouncedChangeHandler = useMemo(() => {
+  const debouncedChangeHandler = useCallback(() => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
       context.updateItems(index, {
         name: e.target.value,
