@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { IXSuggestionsQuery } from 'shared/types/suggestionType';
 
 const get = async (
   parameters: {
@@ -12,6 +13,7 @@ const get = async (
       entityTemplates?: string[];
       customFilter?: any;
     };
+    sort?: IXSuggestionsQuery['sort'];
   },
   headers?: IncomingHttpHeaders
 ) => {

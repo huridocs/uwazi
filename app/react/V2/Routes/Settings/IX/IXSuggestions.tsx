@@ -6,10 +6,11 @@ import {
   LoaderFunction,
   useLoaderData,
   useLocation,
+  useNavigate,
   useRevalidator,
   useSearchParams,
 } from 'react-router-dom';
-import { Row } from '@tanstack/react-table';
+import { Row, SortingState } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
@@ -29,6 +30,7 @@ import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 
 const SUGGESTIONS_PER_PAGE = 100;
+const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
 
 type ixStatus =
   | 'ready'
@@ -59,10 +61,12 @@ const IXSuggestions = () => {
     };
 
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<EntitySuggestionType>();
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
   const setNotifications = useSetRecoilState(notificationAtom);
   const [status, setStatus] = useState<{
@@ -89,6 +93,24 @@ const IXSuggestions = () => {
       socket.off('ix_model_status');
     };
   }, [extractor._id, revalidate]);
+
+  useEffect(() => {
+    if (searchParams.has('sort') && !sorting.length) {
+      navigate(location.pathname);
+    }
+
+    if (sorting.length && sorting[0].id) {
+      const property = sorting[0].id;
+
+      if (!SORTABLE_PROPERTIES.includes(property)) {
+        return;
+      }
+
+      const order = sorting[0].desc ? 'desc' : 'asc';
+
+      navigate(`${location.pathname}?sort={"property":"${property}","order":"${order}"}`);
+    }
+  }, [sorting]);
 
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
@@ -193,6 +215,8 @@ const IXSuggestions = () => {
               />
             }
             enableSelection
+            sorting={sorting}
+            setSorting={setSorting}
             onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
@@ -298,6 +322,9 @@ const IXSuggestionsLoader =
     if (searchParams.has('filter')) {
       filter.customFilter = JSON.parse(searchParams.get('filter')!);
     }
+
+    const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
+
     const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
       await suggestionsAPI.get(
         {
@@ -306,6 +333,7 @@ const IXSuggestionsLoader =
             number: searchParams.has('page') ? Number(searchParams.get('page')) : 1,
             size: SUGGESTIONS_PER_PAGE,
           },
+          ...(sortingOption && { sort: JSON.parse(sortingOption) }),
         },
         headers
       );
