@@ -244,39 +244,7 @@ describe('suggestions routes', () => {
     });
 
     describe('sorting', () => {
-      it('should allow sorting', async () => {
-        const response = await request(app)
-          .get('/api/suggestions')
-          .query({
-            filter: {
-              extractorId: factory.id('super_powers_extractor').toString(),
-            },
-            sort: { property: 'entityTitle' },
-          })
-          .expect(200);
-
-        expect(response.body.suggestions[0]).toMatchObject({
-          sharedId: 'shared3',
-          entityTitle: 'Alfred',
-          language: 'en',
-        });
-
-        expect(response.body.suggestions[1]).toMatchObject({
-          sharedId: 'shared2',
-          entityTitle: 'Batman en',
-          language: 'en',
-        });
-
-        expect(response.body.suggestions[2]).toMatchObject({
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-          language: 'es',
-        });
-
-        expect(response.body.totalPages).toBe(1);
-      });
-
-      it('should sort descending', async () => {
+      it('should sort by entity title', async () => {
         const response = await request(app)
           .get('/api/suggestions')
           .query({
@@ -303,6 +271,38 @@ describe('suggestions routes', () => {
           sharedId: 'shared3',
           entityTitle: 'Alfred',
           language: 'en',
+        });
+
+        expect(response.body.totalPages).toBe(1);
+      });
+
+      it('should sort by current value', async () => {
+        const response = await request(app)
+          .get('/api/suggestions')
+          .query({
+            filter: {
+              extractorId: factory.id('super_powers_extractor').toString(),
+            },
+            sort: { property: 'currentValue' },
+          })
+          .expect(200);
+
+        expect(response.body.suggestions[0]).toMatchObject({
+          currentValue: 'conocimiento científico',
+          entityTitle: 'Batman es',
+          sharedId: 'shared2',
+        });
+
+        expect(response.body.suggestions[1]).toMatchObject({
+          currentValue: 'no super powers',
+          entityTitle: 'Alfred',
+          sharedId: 'shared3',
+        });
+
+        expect(response.body.suggestions[2]).toMatchObject({
+          currentValue: 'scientific knowledge',
+          entityTitle: 'Batman en',
+          sharedId: 'shared2',
         });
 
         expect(response.body.totalPages).toBe(1);

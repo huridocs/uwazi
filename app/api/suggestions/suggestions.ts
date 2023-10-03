@@ -142,6 +142,7 @@ const buildListQuery = (
   const pipeline = [
     ...getMatchStage(extractorId, customFilter),
     ...getEntityStage(setLanguages!),
+    ...getCurrentValueStage(),
     {
       $addFields: {
         entityTitle: '$entity.title',
@@ -150,7 +151,6 @@ const buildListQuery = (
     { $sort: sorting },
     { $skip: offset },
     { $limit: limit },
-    ...getCurrentValueStage(),
     ...getFileStage(),
     ...getLabeledValueStage(),
     {
