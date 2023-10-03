@@ -96,7 +96,7 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     if (searchParams.has('sort') && !sorting.length) {
-      navigate(location.pathname);
+      navigate(location.pathname, { replace: true });
     }
 
     if (sorting.length && sorting[0].id) {
@@ -108,7 +108,9 @@ const IXSuggestions = () => {
 
       const order = sorting[0].desc ? 'desc' : 'asc';
 
-      navigate(`${location.pathname}?sort={"property":"${property}","order":"${order}"}`);
+      navigate(`${location.pathname}?sort={"property":"${property}","order":"${order}"}`, {
+        replace: true,
+      });
     }
   }, [sorting]);
 
