@@ -79,5 +79,4 @@ const withDnD = <T,>(Component: React.FC<T>) =>
       useDragDropManager: module.useDragDropManager,
     })
   );
-
-export { withRouter, withContext, withOutlet, withLazy, withDnD };
+export { withRouter, withContext, withOutlet, withDnD };
