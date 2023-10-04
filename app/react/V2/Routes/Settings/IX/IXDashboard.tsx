@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
@@ -55,6 +56,7 @@ const IXDashboard = () => {
     extractors: IXExtractorInfo[];
     templates: ClientTemplateSchema[];
   };
+  const [isSaving, setIsSaving] = useState(false);
   const revalidator = useRevalidator();
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -67,6 +69,7 @@ const IXDashboard = () => {
   );
 
   const deleteExtractors = async () => {
+    setIsSaving(true);
     const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
@@ -82,10 +85,14 @@ const IXDashboard = () => {
         text: <Translate>An error occurred</Translate>,
         details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleSave = async (extractor: IXExtractorInfo) => {
+    setIsSaving(true);
+
     try {
       await extractorsAPI.save(extractor);
       revalidator.revalidate();
@@ -99,6 +106,8 @@ const IXDashboard = () => {
         text: <Translate>An error occurred</Translate>,
         details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
       });
+    } finally {
+      setIsSaving(false);
     }
 
     setExtractorModal(false);
@@ -126,17 +135,22 @@ const IXDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected.length === 1 ? (
-            <Button type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
 
           {selected.length ? (
-            <Button type="button" color="error" onClick={() => setConfirmModal(true)}>
+            <Button
+              type="button"
+              color="error"
+              onClick={() => setConfirmModal(true)}
+              disabled={isSaving}
+            >
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}

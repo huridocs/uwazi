@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import { clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
@@ -162,6 +163,7 @@ describe('Information Extraction', () => {
         .within(() => {
           cy.get('td').eq(0).get('input').click();
         });
+
       cy.contains('button', 'Delete').click();
 
       cy.getByTestId('modal').within(() => {
@@ -176,6 +178,19 @@ describe('Information Extraction', () => {
     it('should check table display and accessibility', () => {
       cy.getByTestId('settings-ix').toMatchImageSnapshot();
       cy.checkA11y();
+    });
+
+    it('should disable buttons while saving', () => {
+      cy.intercept('POST', '/api/ixextractors', { delay: 100 });
+
+      cy.contains('button', 'Create Extractor').click();
+      cy.getByTestId('modal').within(() => {
+        cy.get('input').type('Extractor 1');
+      });
+      editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
+      cy.contains('button', 'Add').click();
+      cy.contains('button', 'Create Extractor').should('have.attr', 'disabled');
+      cy.contains('button', 'Dismiss').click();
     });
   });
 
