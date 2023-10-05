@@ -1,5 +1,4 @@
 import { adminLogin, logout } from '../helpers/login';
-import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
@@ -24,32 +23,36 @@ describe('Entity Page view', () => {
       script
     );
     await expect(page).toClick('.slider');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
-  }, 60000);
+  }, 50000);
 
   it('should set the template as entity view', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');
     await expect(page).toSelect('select.form-control', 'My entity view page');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
   });
 
   describe('display the entity in custom page', () => {
-    beforeAll(async () => {
-      await page.goto(`${host}`);
-      await disableTransitions();
+    it('should navigate to the library', async () => {
+      await expect(page).toClick('a', { text: 'Library' });
+    });
+
+    it('should select the second entity for Medida Provisional', async () => {
       await expect(page).toClick('.multiselectItem-name > span', {
         text: 'Medida Provisional',
       });
-      await expect(page).toClick(
-        'div.item-document:nth-child(2) > div:nth-child(3) > div:nth-child(2)'
-      );
+
+      await expect(page).toMatchElement('span', { text: 'Acevedo Jaramillo' });
+
+      await expect(page).toClick('.item-document:nth-child(2) > .item-info');
+
+      await expect(page).toClick('.side-panel.is-active > .sidepanel-footer > div > a', {
+        text: 'View',
+      });
     });
 
     it('should display raw values', async () => {
