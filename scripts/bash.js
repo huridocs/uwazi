@@ -16,7 +16,7 @@ if (file) {
   const bashProcess = spawn(file, [], {
     env: {
       ...process.env,
-      DBHOST: mongoUri.hostname,
+      DBHOST: process.env.DBHOST || mongoUri.hostname,
     },
   });
 
