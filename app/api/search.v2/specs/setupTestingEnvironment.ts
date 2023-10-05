@@ -14,10 +14,6 @@ const setupTestingEnviroment = async (data: DBFixture, index?: string) =>
           ],
         },
       ],
-      translations: [
-        { locale: 'en', contexts: [] },
-        { locale: 'es', contexts: [] },
-      ],
     },
     index
   );

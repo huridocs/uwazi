@@ -193,7 +193,7 @@ const thesauri = {
     const _entities = await entities.getByTemplate(
       template._id,
       language,
-      preloadOptionsLimit,
+      preloadOptionsLimit(),
       onlyPublished
     );
     const values = this.entitiesToThesauri(_entities);

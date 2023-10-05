@@ -17,7 +17,6 @@ import { availableLanguages } from 'shared/languagesList';
 import { ContextType } from 'shared/translationSchema';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { pipeline } from 'stream/promises';
-import model from './translationsModel';
 import {
   addLanguageV2,
   deleteTranslationsByContextIdV2,
@@ -25,7 +24,6 @@ import {
   getTranslationsV2,
   getTranslationsV2ByContext,
   getTranslationsV2ByLanguage,
-  migrateTranslationsToV2,
   updateContextV2,
   upsertTranslationsV2,
 } from './v2_support';
@@ -171,82 +169,44 @@ const translationTypeToIndexedTranslation = (translations?: EnforcedWithId<Trans
       )
     : [];
 
-const update = async (translation: TranslationType | IndexedTranslations) => {
-  const currentTranslationData = await model.getById(translation._id);
-  if (!currentTranslationData) {
-    throw new Error('currentTranslationData does not exist');
-  }
-
-  const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {
-    ...translation,
-    contexts: (translation.contexts || []).map(processContextValues),
-  };
-
-  await propagateTranslation(processedTranslation, currentTranslationData);
-
-  (currentTranslationData?.contexts || []).forEach(context => {
-    const isPresentInTheComingData = processedTranslation.contexts.find(
-      _context => _context.id?.toString() === context.id?.toString()
-    );
-
-    if (!isPresentInTheComingData) {
-      processedTranslation.contexts.push(context);
-    }
-  });
-
-  return model.save({
-    ...processedTranslation,
-    contexts: processedTranslation.contexts.map(processContextValues),
-  });
-};
-
 export default {
   prepareContexts,
 
-  async get(query: { locale?: LanguageISO6391; context?: string } = {}, selector = {}) {
-    const alreadyMigrated = await migrateTranslationsToV2();
-    if (alreadyMigrated) {
-      const language = query.locale;
+  async get(query: { locale?: LanguageISO6391; context?: string } = {}) {
+    const language = query.locale;
 
-      if (query.context) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
-      }
-
-      if (language) {
-        return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
-      }
-
-      return translationTypeToIndexedTranslation(await getTranslationsV2());
+    if (query.context) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByContext(query.context));
     }
 
-    const { context, ...actualQuery } = query;
-    const translations = await model.get(actualQuery, {
-      ...selector,
-      ...(context ? { locale: 1 } : {}),
-      ...(context ? { contexts: { $elemMatch: { id: context } } } : {}),
-    });
+    if (language) {
+      return translationTypeToIndexedTranslation(await getTranslationsV2ByLanguage(language));
+    }
 
-    return translationTypeToIndexedTranslation(translations);
+    return translationTypeToIndexedTranslation(await getTranslationsV2());
   },
 
-  async oldSave(translation: TranslationType | IndexedTranslations) {
+  async save(translation: TranslationType | IndexedTranslations) {
     const translationToSave = {
       ...translation,
       contexts: translation.contexts && translation.contexts.map(processContextValues),
     } as TranslationType;
 
-    const [oldTranslationExists] = await model.get({ locale: translation.locale });
-    if (oldTranslationExists) {
-      return update({ _id: oldTranslationExists._id, ...translation });
+    if (!translation.locale) {
+      throw new Error('translation to save should have a locale');
     }
 
-    return model.save(translationToSave);
-  },
+    const [currentTranslationData] = await getTranslationsV2ByLanguage(translation.locale);
 
-  async save(translation: TranslationType | IndexedTranslations) {
-    const result = await this.oldSave(translation);
-    await upsertTranslationsV2([result]);
-    return result;
+    const processedTranslation: TranslationType & { contexts: TranslationContext[] } = {
+      ...translation,
+      contexts: (translation.contexts || []).map(processContextValues),
+    };
+
+    await propagateTranslation(processedTranslation, currentTranslationData);
+
+    await upsertTranslationsV2([translationToSave]);
+    return translationToSave;
   },
 
   async updateEntries(
@@ -264,8 +224,7 @@ export default {
 
     const translationsToUpdate = await Promise.all(
       languagesToUpdate.map(async language => {
-        const [translation] =
-          (await getTranslationsV2ByLanguage(language)) || (await model.get({ locale: language }));
+        const [translation] = await getTranslationsV2ByLanguage(language);
         return translation;
       })
     );
@@ -302,22 +261,6 @@ export default {
       translatedValues.push({ key, value: values[key] });
     });
 
-    const legacyTranslations = await model.get();
-
-    await Promise.all(
-      legacyTranslations.map(async translation => {
-        // eslint-disable-next-line no-param-reassign
-        translation.contexts = translation.contexts || [];
-        translation.contexts.push({
-          id: id.toString(),
-          label: contextName,
-          values: translatedValues,
-          type,
-        });
-        return this.oldSave(translation);
-      })
-    );
-
     const result = await getTranslationsV2();
     await upsertTranslationsV2(
       result.map(translation => {
@@ -337,15 +280,6 @@ export default {
   },
 
   async deleteContext(contextId: string) {
-    const results = await model.get();
-    await Promise.all(
-      results.map(async translation =>
-        model.save({
-          ...translation,
-          contexts: (translation.contexts || []).filter(tr => tr.id !== contextId),
-        })
-      )
-    );
     await deleteTranslationsByContextIdV2(contextId);
     return 'ok';
   },
@@ -356,93 +290,23 @@ export default {
     deletedProperties: string[],
     values: IndexedContextValues
   ) {
-    const translatedValues: TranslationValue[] = [];
-    Object.keys(values).forEach(key => {
-      translatedValues.push({ key, value: values[key] });
-    });
-
-    const [translations, defaultLanguage] = await Promise.all([
-      model.get(),
-      settings.getDefaultLanguage(),
-    ]);
-
-    await Promise.all(
-      translations.map(async translation => {
-        translation.contexts = translation.contexts || [];
-        const contextData = translation.contexts.find(c => c.id?.toString() === context.id);
-        if (!contextData) {
-          translation.contexts.push({
-            id: context.id,
-            label: context.label,
-            values: translatedValues,
-            type: context.type,
-          });
-
-          return this.oldSave(translation);
-        }
-
-        contextData.values = contextData.values || [];
-        contextData.values = contextData.values.filter(
-          v => !deletedProperties.includes(v.key || '')
-        );
-        contextData.type = context.type;
-
-        Object.keys(keyNamesChanges).forEach(originalKey => {
-          const newKey = keyNamesChanges[originalKey];
-          contextData.values = contextData.values || [];
-          const value = contextData.values.find(v => v.key === originalKey);
-          if (value) {
-            value.key = newKey;
-
-            if (translation.locale === defaultLanguage.key) {
-              value.value = newKey;
-            }
-          }
-          if (!value) {
-            contextData.values.push({ key: newKey, value: values[newKey] });
-          }
-        });
-
-        Object.keys(values).forEach(key => {
-          contextData.values = contextData.values || [];
-          if (!contextData.values.find(v => v.key === key)) {
-            contextData.values.push({ key, value: values[key] });
-          }
-        });
-
-        contextData.label = context.label;
-
-        return this.oldSave(translation);
-      })
-    );
     await updateContextV2(context, keyNamesChanges, deletedProperties, values);
     return 'ok';
   },
 
   async addLanguage(newLanguage: LanguageISO6391) {
-    const [languageTranslationAlreadyExists] = await model.get({ locale: newLanguage });
-    if (languageTranslationAlreadyExists) {
+    const [translations] = await getTranslationsV2ByLanguage(newLanguage);
+    if (translations.contexts?.length) {
       return Promise.resolve();
     }
 
     const defaultLanguage = await settings.getDefaultLanguage();
-    const [defaultTranslation] = await model.get({ locale: defaultLanguage.key });
 
-    const newLanguageTranslations = {
-      ...defaultTranslation,
-      _id: undefined,
-      locale: newLanguage,
-      contexts: (defaultTranslation.contexts || []).map(({ _id, ...context }) => context),
-    };
-
-    await addLanguageV2(newLanguage, defaultLanguage.key);
-    return model.save(newLanguageTranslations);
+    return addLanguageV2(newLanguage, defaultLanguage.key);
   },
 
   async removeLanguage(locale: LanguageISO6391) {
-    const result = await model.delete({ locale });
-    await deleteTranslationsByLanguageV2(locale);
-    return result;
+    return deleteTranslationsByLanguageV2(locale);
   },
 
   async importPredefined(locale: string) {

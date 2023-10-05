@@ -24,7 +24,6 @@ import { MongoTransactionManager } from 'api/common.v2/database/MongoTransaction
 import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
-import { GetTranslationsService } from 'api/i18n.v2/services/GetTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 // eslint-disable-next-line node/no-restricted-import
@@ -41,10 +40,8 @@ import {
   newDoc1,
   newDoc3,
   relationship9,
-  relationtype4,
   template1,
   template2,
-  thesauri1,
   thesauri1Value2,
 } from './fixtures';
 
@@ -408,87 +405,28 @@ describe('syncWorker', () => {
     await runAllTenants();
 
     await tenants.run(async () => {
-      const transactionManager = new MongoTransactionManager(getClient());
-      const syncedTranslations = await new GetTranslationsService(
-        DefaultTranslationsDataSource(transactionManager)
-      )
-        .getAll()
-        .all();
-
-      expect(syncedTranslations).toEqual([
-        {
-          language: 'en',
-          key: 'System Key',
-          value: 'System Value',
-          context: { id: 'System', type: 'Uwazi UI', label: 'System' },
-        },
-        {
-          language: 'en',
-          key: 'template1',
-          value: 'template1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Property1L',
-          value: 't1Property1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 't1Relationship1L',
-          value: 't1Relationship1T',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-        {
-          language: 'en',
-          key: 'Template Title',
-          value: 'Template Title translated',
-          context: { id: template1.toString(), type: 'Entity', label: 'Entity' },
-        },
-      ]);
-    }, 'target1');
-  });
-
-  it('should syncronize translations that match configured properties', async () => {
-    await runAllTenants();
-    await tenants.run(async () => {
       const syncedTranslations = await translations.get({});
       expect(syncedTranslations).toEqual([
         {
-          __v: 0,
-          _id: expect.anything(),
           contexts: [
             {
-              _id: expect.anything(),
               id: 'System',
+              label: 'System',
               type: 'Uwazi UI',
               values: {
-                'Sytem Key': 'System Value',
+                'System Key': 'System Value',
               },
             },
             {
-              _id: expect.anything(),
               id: template1.toString(),
               type: 'Entity',
+              label: 'Entity',
               values: {
                 'Template Title': 'Template Title translated',
                 t1Property1L: 't1Property1T',
                 t1Relationship1L: 't1Relationship1T',
                 template1: 'template1T',
               },
-            },
-            {
-              _id: expect.anything(),
-              id: thesauri1.toString(),
-              type: 'Dictionary',
-              values: {},
-            },
-            {
-              _id: expect.anything(),
-              id: relationtype4.toString(),
-              type: 'Connection',
-              values: {},
             },
           ],
           locale: 'en',
