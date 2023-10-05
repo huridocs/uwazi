@@ -1,5 +1,4 @@
 import { adminLogin, logout } from '../helpers/login';
-import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
@@ -27,7 +26,7 @@ describe('Entity Page view', () => {
     await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
-  }, 60000);
+  });
 
   it('should set the template as entity view', async () => {
     await expect(page).toClick('a', { text: 'Settings' });
@@ -41,13 +40,13 @@ describe('Entity Page view', () => {
   });
 
   describe('display the entity in custom page', () => {
-    beforeAll(async () => {
-      await page.goto(`${host}`);
-      await disableTransitions();
+    it('should bavigate to the library', async () => {
+      await expect(page).toClick('a', { text: 'Library' });
       await expect(page).toClick(
         'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
       );
     });
+
     it('should display raw values', async () => {
       await expect(page).toMatchElement('h1', {
         text: 'My entity view',
