@@ -42,6 +42,7 @@ export const createEntity = async (templateName: string, files: FilesOptions) =>
       await expect(page).toClick('button', { text: 'Add file' });
       await uploadSupportingFileToEntity(files.supportingFile);
     }
+    await expect(page).toClick('.attachments-modal__close');
     await expect(page).toClick('span', { text: 'Attachment uploaded' });
   }
 };
