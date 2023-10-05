@@ -1,6 +1,7 @@
 .document-viewer {
   width: 100%;
   height: 100%;
+
   &.with-header {
     height: calc(100% - 50px);
   }
@@ -18,6 +19,7 @@
   overflow-y: auto;
 
   @media (min-width: 1024px) {
+
     &.with-panel:not(.unpinned-mode),
     &.is-active:not(.unpinned-mode) {
       width: calc(100% - 400px);
@@ -32,7 +34,8 @@
   div.c {
     pointer-events: none;
   }
-  div.c > * {
+
+  div.c>* {
     pointer-events: auto;
     padding-right: 100px;
   }
@@ -122,6 +125,7 @@ mark,
   color: transparent !important;
   background-color: transparentize($c-primary, 0.8) !important;
   padding: 0 !important;
+
   mark,
   .mark {
     background-color: transparent !important;
@@ -162,6 +166,7 @@ mark.searchTerm {
     max-width: 900px;
     left: 0;
     padding: 15px;
+
     @media (min-width: 1024px) {
       left: auto;
       padding: 15px 0;
@@ -173,12 +178,14 @@ mark.searchTerm {
     margin: 12px 10px 12px 0;
     font-size: $f-size-sm;
   }
+
   h2 {
     font-size: $f-size-sm;
     padding-left: 20px;
     position: relative;
     text-transform: uppercase;
     letter-spacing: 0.1em;
+
     small {
       position: absolute;
       top: -2px;
@@ -193,6 +200,7 @@ mark.searchTerm {
       padding-left: 2px;
     }
   }
+
   button i {
     padding-right: 4px;
   }
@@ -233,6 +241,7 @@ mark.searchTerm {
   .form-group {
     position: relative;
     margin: 0 -15px;
+
     svg {
       position: absolute;
       top: 50%;
@@ -242,6 +251,7 @@ mark.searchTerm {
       cursor: pointer;
     }
   }
+
   .form-control {
     padding-left: 40px;
     height: $header-height;
@@ -296,19 +306,23 @@ mark.searchTerm {
       margin: 0 -15px;
     }
   }
+
   .item-info {
     padding: 0;
   }
+
   .item-actions {
     position: relative;
     height: auto;
     padding: 0;
     margin-left: 15px;
   }
+
   .btn-color {
     width: auto;
     max-width: 75px;
   }
+
   .cs-loader-container {
     position: absolute;
     width: 100%;
@@ -326,37 +340,30 @@ mark.searchTerm {
   min-width: 50%;
 
   .copy-from-buttons {
-    position: absolute;
-    bottom: 2em;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0 0 20px;
+    position: fixed;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: 12px;
+    bottom: 0;
+    right: 0;
+    padding-bottom: 11px;
+    padding-right: 12px;
     text-align: center;
-    white-space: nowrap;
 
-    .btn {
-      position: relative;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      line-height: 50px;
-      font-size: 1.1em;
-      padding: 0;
-      margin: 0 12px;
+    button {
+      display: flex;
+      align-items: center;
     }
 
-    .btn-label {
-      color: #6c6c7b;
-      position: absolute;
-      top: 100%;
-      font-size: 0.8em;
-      line-height: 1.5em;
-      left: 50%;
-      transform: translateX(-50%) translateY(2px);
-      background: rgba(255, 255, 255, 0.8);
-      padding: 0 5px;
-      width: 6em;
-      white-space: pre-line;
+    svg {
+      margin-right: 5px;
+    }
+
+    .back-copy-from {
+      svg {
+        margin: 0;
+      }
     }
   }
 
