@@ -20,6 +20,7 @@ import uniqueID from 'shared/uniqueID';
 import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
+import { config } from 'api/config';
 
 mongoose.Promise = Promise;
 let connected = false;
@@ -73,7 +74,7 @@ const fixturer = {
 let mongooseConnection: Connection;
 
 const initMongoServer = async (dbName: string) => {
-  const uri = 'mongodb://127.0.0.1/';
+  const uri = config.DBHOST;
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };

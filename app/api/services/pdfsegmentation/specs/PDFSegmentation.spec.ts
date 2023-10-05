@@ -25,6 +25,7 @@ import { SegmentationModel } from '../segmentationModel';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
+import { config } from 'api/config';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -72,7 +73,7 @@ describe('PDFSegmentation', () => {
   });
 
   beforeAll(async () => {
-    const uri = 'mongodb://127.0.0.1/';
+    const uri = config.DBHOST;
     await DB.connect(`${uri}PDFSegmentation_spec`);
   });
 
