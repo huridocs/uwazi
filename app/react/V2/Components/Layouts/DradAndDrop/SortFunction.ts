@@ -40,7 +40,7 @@ const exitSorting = (
 };
 
 const hoverSortable =
-  (ref: RefObject<HTMLElement>, index: number, sortFunction?: Function) =>
+  (ref: RefObject<HTMLElement>, target: IDraggable, index: number, sortFunction?: Function) =>
   (
     currentItem: {
       index: number;
@@ -50,9 +50,12 @@ const hoverSortable =
     },
     monitor: any
   ) => {
+    if ((currentItem.item.parent && !target.parent) || currentItem.id === target.id) {
+      return;
+    }
+
     const dragIndex = currentItem.index;
     const hoverIndex = index;
-
     if (
       !ref.current ||
       !sortFunction ||
@@ -63,7 +66,7 @@ const hoverSortable =
       return;
     }
     // Time to actually perform the action
-    sortFunction(currentItem.item, dragIndex, hoverIndex);
+    sortFunction(currentItem.item, target, dragIndex, hoverIndex);
 
     // Note: we're mutating the monitor item here!
     // Generally it's better to avoid mutations,

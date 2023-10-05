@@ -51,9 +51,9 @@ const DndContextState = ({
       <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
       <ul className="mb-8 list-disc ">
         {activeItems.map((item: IDraggable) => (
-          <li className="flex items-center gap-10 space-x-3">
+          <li className="flex items-center gap-10 space-x-3" key={item.id}>
             <span>{item.name}</span>
-            {item.items && <DndContextState activeItems={item.items} child />}
+            {item.items && <DndContextState activeItems={item.items.filter(v => v)} child />}
           </li>
         ))}
       </ul>
@@ -63,6 +63,7 @@ const DndContextState = ({
 
 const DnDClient = ({ items, type, itemComponent }: any) => {
   const dndContext = useDnDContext(type, items, sourceItems);
+
   return (
     <div className="tw-content">
       <div className="gap-8 pl-4 lg:grid lg:grid-cols-3 ">

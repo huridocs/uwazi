@@ -28,6 +28,21 @@ const addActiveItem =
   ) =>
   (newItem: IDraggable, parent?: IDraggable) => {
     if (parent) {
+      if (newItem.parent) {
+        const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
+
+        setActiveItems((prevActiveItems: IDraggable[]) => {
+          const index = prevActiveItems[indexOfCurrentParent].items!.findIndex(
+            ai => ai.id === newItem.id
+          );
+          return update(prevActiveItems, {
+            [indexOfCurrentParent]: {
+              items: { $splice: [[index, 1]] },
+            },
+          });
+        });
+      }
+
       const indexOfParent = activeItems.findIndex(ai => ai.id === parent.id);
 
       setActiveItems((prevActiveItems: IDraggable[]) =>
@@ -102,8 +117,9 @@ const removeActiveItem =
 
 const sortActiveitems =
   (activeItems: IDraggable[], setActiveItems: React.Dispatch<React.SetStateAction<IDraggable[]>>) =>
-  (currentItem: IDraggable, dragIndex: number, hoverIndex: number) => {
+  (currentItem: IDraggable, target: IDraggable, dragIndex: number, hoverIndex: number) => {
     const { parent } = currentItem;
+
     if (parent !== undefined) {
       const indexOfParent = activeItems.findIndex(item => item.id === parent.id);
 
@@ -165,7 +181,7 @@ const useDnDContext = (
     type,
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
-    sort: sortActiveitems(availableItems, setActiveItems),
+    sort: sortActiveitems(activeItems, setActiveItems),
     updateItems,
     updateActiveItems: (items: IDraggable[]) => {
       setActiveItems(items);

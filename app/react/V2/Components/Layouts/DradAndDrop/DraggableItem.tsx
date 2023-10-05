@@ -45,7 +45,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
         isOverCurrent: monitor.isOver({ shallow: true }),
       };
     },
-    hover: hoverSortable(ref, index, context.sort),
+    hover: hoverSortable(ref, item, index, context.sort),
   });
 
   const [{ isDragging, handlerId }, drag] = useDrag({
@@ -57,6 +57,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
       if (
         dropContext !== undefined &&
         (draggedResult.item.container !== item.container ||
+          dropParent?.id !== draggedResult.item.parent?.id ||
           draggedResult.item.container === undefined)
       ) {
         context.addItem(draggedResult.item, dropParent);
