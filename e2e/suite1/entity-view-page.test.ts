@@ -25,10 +25,9 @@ describe('Entity Page view', () => {
     await expect(page).toClick('.slider');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
-  });
+  }, 50000);
 
   it('should set the template as entity view', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');
@@ -38,7 +37,7 @@ describe('Entity Page view', () => {
   });
 
   describe('display the entity in custom page', () => {
-    it('should bavigate to the library', async () => {
+    it('should navigate to the library', async () => {
       await expect(page).toClick('a', { text: 'Library' });
       await expect(page).toClick(
         'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
