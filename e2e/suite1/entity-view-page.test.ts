@@ -23,7 +23,6 @@ describe('Entity Page view', () => {
       script
     );
     await expect(page).toClick('.slider');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
   });
@@ -34,7 +33,6 @@ describe('Entity Page view', () => {
     await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');
     await expect(page).toSelect('select.form-control', 'My entity view page');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
   });
