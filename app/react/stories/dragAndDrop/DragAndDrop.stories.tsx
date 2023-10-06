@@ -46,7 +46,7 @@ const DndContextState = ({
   <div className=" tw-content">
     <div
       className={`pl-5 mt-20 border-2 border-gray-200 ${!child ? 'w-80' : 'w-60 border-dashed'}`}
-      data-test-id="state-bin"
+      data-testid="state-bin"
     >
       <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
       <ul className="mb-8 list-disc ">
@@ -67,7 +67,7 @@ const DnDClient = ({ items, type, itemComponent }: any) => {
   return (
     <div className="tw-content">
       <div className="gap-8 pl-4 lg:grid lg:grid-cols-3 ">
-        <div data-test-id="active-bin" className="col-span-2 ">
+        <div data-testid="active-bin" className="col-span-2 ">
           <h1 className="mb-4 text-xl font-bold">Active Items</h1>
           <Container
             className="p-3 mb-2 text-sm"
@@ -76,7 +76,7 @@ const DnDClient = ({ items, type, itemComponent }: any) => {
           />
         </div>
         <div className="flex items-center ">
-          <div data-test-id="available-bin">
+          <div data-testid="available-bin">
             <h2 className="mb-2 text-xl font-bold ">Available Items</h2>
             <DragSource className="p-3 mb-2 text-sm" context={dndContext} />
           </div>
@@ -122,7 +122,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
     <>
       <div className="tw-content">
         <div className="gap-8 lg:grid lg:grid-cols-3 ">
-          <div data-test-id="active-bin" className="col-span-2 ">
+          <div data-testid="active-bin" className="col-span-2 ">
             <h1 className="mb-4 text-xl font-bold">Active Items</h1>
             <ul>
               {dndContext.activeItems.map((item: IDraggable, index: number) => (
@@ -145,7 +145,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
             <DropZone type={dndContext.type} name="root" context={dndContext} />
           </div>
           <div className="flex items-center ">
-            <div data-test-id="available-bin">
+            <div data-testid="available-bin">
               <h2 className="mb-4 text-xl font-bold ">Available Items</h2>
               <DragSource className="mb-4 text-sm" context={dndContext} />
             </div>

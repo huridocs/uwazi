@@ -41,30 +41,48 @@ describe('DragAndDrop', () => {
     });
 
     it('should list the active items', () => {
-      shouldContainListItems('[data-test-id="active-bin"]', ['Item 1', 'Item 2', 'Item 3']);
-      shouldContainListItems('[data-test-id="available-bin"]', ['Item 4', 'Item 5']);
+      shouldContainListItems('div[data-testid="active-bin"]', ['Item 1', 'Item 2', 'Item 3']);
+      shouldContainListItems('div[data-testid="available-bin"]', ['Item 4', 'Item 5']);
+      shouldContainListItems('div[data-testid="state-bin"]', ['Item 1', 'Item 2', 'Item 3']);
     });
 
     it('should drag and drop a new item', () => {
       dragItem('Item 4');
-      shouldContainListItems('[data-test-id="active-bin"]', [
+      shouldContainListItems('div[data-testid="active-bin"]', [
         'Item 1',
         'Item 2',
         'Item 3',
         'Item 4',
       ]);
-      shouldContainListItems('[data-test-id="available-bin"]', ['Item 5']);
+      shouldContainListItems('div[data-testid="available-bin"]', ['Item 5']);
+      shouldContainListItems('div[data-testid="state-bin"]', [
+        'Item 1',
+        'Item 2',
+        'Item 3',
+        'Item 4',
+      ]);
+    });
+    const swapItems = (source: string, target: string, position: string = 'bottom') => {
+      cy.get('div[data-testid="active_filters_root"]').within(() => {
+        //@ts-ignore
+        cy.get(source).drag(target, {
+          waitForAnimations: true,
+          target: { position },
+          force: true,
+        });
+      });
+    };
+    it('should sort the active items from top to down', () => {
+      swapItems('[data-testid="draggable-item-0"]', '[data-testid="draggable-item-2"]');
+      shouldContainListItems('[data-testid="active-bin"]', ['Item 2', 'Item 3', 'Item 1']);
+      shouldContainListItems('[data-testid="available-bin"]', ['Item 4', 'Item 5']);
+      shouldContainListItems('div[data-testid="state-bin"]', ['Item 2', 'Item 3', 'Item 1']);
     });
 
-    it('should sort the active items', () => {
-      cy.contains('Item 2').trigger('dragstart');
-      cy.contains('Item 1').trigger('dragover');
-      cy.contains('Item 1').trigger('drop');
-      cy.contains('Item 1').trigger('dragleave');
-      cy.contains('Item 2').trigger('dragend');
-
-      shouldContainListItems('[data-test-id="active-bin"]', ['Item 2', 'Item 1', 'Item 3']);
-      shouldContainListItems('[data-test-id="available-bin"]', ['Item 4', 'Item 5']);
+    it('should sort the active items from down to top', () => {
+      swapItems('[data-testid="draggable-item-1"]', '[data-testid="draggable-item-0"]', 'top');
+      shouldContainListItems('[data-testid="active-bin"]', ['Item 2', 'Item 1', 'Item 3']);
+      shouldContainListItems('div[data-testid="state-bin"]', ['Item 2', 'Item 1', 'Item 3']);
     });
   });
 
@@ -80,8 +98,9 @@ describe('DragAndDrop', () => {
           cy.get('button').click();
         });
       dragItem('Item 5');
-      shouldContainListItems('[data-test-id="active-bin"]', ['Item 1', 'Item 3', 'Item 5']);
-      shouldContainListItems('[data-test-id="available-bin"]', ['Item 4', 'Item 2']);
+      shouldContainListItems('div[data-testid="active-bin"]', ['Item 1', 'Item 3', 'Item 5']);
+      shouldContainListItems('div[data-testid="available-bin"]', ['Item 4', 'Item 2']);
+      shouldContainListItems('div[data-testid="state-bin"]', ['Item 1', 'Item 3', 'Item 5']);
     });
   });
 });
