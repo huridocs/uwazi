@@ -3,7 +3,6 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData, useRevalidator } from 'react-router-dom';
-import moment from 'moment';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -15,6 +14,7 @@ import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commo
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
+import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
@@ -32,8 +32,6 @@ enum HighlightColors {
   CURRENT = '#B1F7A3',
   NEW = '#F27DA5',
 }
-
-const formatDate = (value: number) => moment.utc(value, 'X').format('YYYY-MM-DD');
 
 const getFormValue = (
   suggestion?: EntitySuggestionType,
@@ -55,7 +53,7 @@ const getFormValue = (
     value = entityMetadata?.length ? entityMetadata[0].value : '';
 
     if (type === 'date' && value) {
-      const dateString = formatDate(value as number);
+      const dateString = secondsToISODate(value as number);
       value = dateString;
     }
   }
@@ -273,7 +271,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         }
 
         if (coercedValue?.success) {
-          setValue('field', formatDate(coercedValue.value), { shouldDirty: true });
+          setValue('field', secondsToISODate(coercedValue.value), { shouldDirty: true });
           setSelectionError(undefined);
         }
       } else {
