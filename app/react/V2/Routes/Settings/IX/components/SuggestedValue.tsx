@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
-import { propertyValueFormatter } from 'app/V2/shared/helpers';
+import { secondsToDate } from 'app/V2/shared/dateHelpers';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
@@ -15,6 +16,7 @@ const SuggestedValue = ({
   suggestion: EntitySuggestionType;
   templateProperties: ClientTemplateSchema['properties'];
 }) => {
+  const locale = useParams().lang;
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const [arrowElement, setArrowElement] = useState(null);
@@ -39,14 +41,14 @@ const SuggestedValue = ({
 
   const getCurrentValue = () => {
     if (value === '') return '-';
-    if (property?.type === 'date') return propertyValueFormatter.date(value);
+    if (property?.type === 'date') return secondsToDate(value, locale);
     return value;
   };
 
   const getSuggestedValue = () => {
     if (suggestion.suggestedValue === '') return '-';
     if (property?.type === 'date') {
-      return propertyValueFormatter.date(suggestion.suggestedValue!.toString());
+      return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
     }
     return suggestion.suggestedValue!.toString();
   };
