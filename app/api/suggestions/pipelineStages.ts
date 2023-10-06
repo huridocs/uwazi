@@ -1,16 +1,79 @@
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
 
-export const getMatchStage = (filters: FilterQuery<IXSuggestionType>) => [
-  {
-    $match: {
-      ...filters,
-      status: { $ne: 'processing' },
-    },
+export const baseQueryFragment = (extractorId: ObjectId, ignoreProcessing = true) => {
+  const query: FilterQuery<IXSuggestionType> = {
+    extractorId,
+  };
+  if (ignoreProcessing) {
+    query.status = { $ne: 'processing' };
+  }
+  return query;
+};
+
+export const filterFragments = {
+  labeled: {
+    _fragment: { 'state.labeled': true },
+    match: { 'state.labeled': true, 'state.match': true },
+    mismatch: { 'state.labeled': true, 'state.match': false },
   },
-];
+  nonLabeled: {
+    _fragment: { 'state.labeled': false },
+    noSuggestion: { 'state.labeled': false, 'state.withSuggestion': false },
+    noContext: { 'state.labeled': false, 'state.hasContext': false },
+    obsolete: { 'state.labeled': false, 'state.obsolete': true },
+    others: { 'state.labeled': false, 'state.error': true },
+  },
+};
+
+export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
+  const orFilters = [];
+  if (customFilter.labeled.match) {
+    orFilters.push(filterFragments.labeled.match);
+  }
+  if (customFilter.labeled.mismatch) {
+    orFilters.push(filterFragments.labeled.mismatch);
+  }
+
+  if (customFilter.nonLabeled.noSuggestion) {
+    orFilters.push(filterFragments.nonLabeled.noSuggestion);
+  }
+  if (customFilter.nonLabeled.noContext) {
+    orFilters.push(filterFragments.nonLabeled.noContext);
+  }
+  if (customFilter.nonLabeled.obsolete) {
+    orFilters.push(filterFragments.nonLabeled.obsolete);
+  }
+  if (customFilter.nonLabeled.others) {
+    orFilters.push(filterFragments.nonLabeled.others);
+  }
+  return orFilters;
+};
+
+export const getMatchStage = (
+  extractorId: ObjectId,
+  customFilter: SuggestionCustomFilter | undefined,
+  countOnly = false
+) => {
+  const matchQuery: FilterQuery<IXSuggestionType> = baseQueryFragment(extractorId);
+  if (customFilter) {
+    const orFilters = translateCustomFilter(customFilter);
+    if (orFilters.length > 0) matchQuery.$or = orFilters;
+  }
+
+  const countExpression = countOnly ? [{ $count: 'count' }] : [];
+
+  const matchStage = [
+    {
+      $match: matchQuery,
+    },
+    ...countExpression,
+  ];
+
+  return matchStage;
+};
 
 export const getEntityStage = (languages: LanguagesListSchema) => {
   const defaultLanguage = languages.find(l => l.default)?.key;
@@ -152,12 +215,11 @@ export const getEntityTemplateFilterStage = (entityTemplates: string[] | undefin
       ]
     : [];
 
-export const groupByAndSort = (field: string) => [
+export const groupByAndCount = (field: string) => [
   {
     $group: {
       _id: field,
       count: { $sum: 1 },
     },
   },
-  { $sort: { _id: 1 } },
 ];

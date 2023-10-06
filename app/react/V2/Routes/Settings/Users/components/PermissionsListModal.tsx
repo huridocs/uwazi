@@ -155,25 +155,25 @@ const tableColumns = [
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: { className: 'w-2/5' },
+    meta: { headerClassName: 'w-2/5' },
   }),
   columnHelper.accessor('collaborator', {
     header: CollaboratorHeader,
     cell: LevelCell,
     enableSorting: false,
-    meta: { className: 'w-1/5' },
+    meta: { headerClassName: 'w-1/5' },
   }),
   columnHelper.accessor('editor', {
     header: EditorHeader,
     cell: LevelCell,
     enableSorting: false,
-    meta: { className: 'w-1/5' },
+    meta: { headerClassName: 'w-1/5' },
   }),
   columnHelper.accessor('admin', {
     header: AdminHeader,
     cell: LevelCell,
     enableSorting: false,
-    meta: { className: 'w-1/5' },
+    meta: { headerClassName: 'w-1/5' },
   }),
 ];
 

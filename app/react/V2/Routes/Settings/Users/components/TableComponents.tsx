@@ -105,28 +105,28 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
     columnHelper.accessor('username', {
       header: UsernameHeader,
       cell: UsernameCell,
-      meta: { className: 'w-1/3' },
+      meta: { headerClassName: 'w-1/3' },
     }),
     columnHelper.accessor('using2fa', {
       header: ProtectionHeader,
       cell: ProtectionPill,
-      meta: { className: 'w-0' },
+      meta: { headerClassName: 'w-0' },
     }),
     columnHelper.accessor('role', {
       header: RoleHeader,
       cell: RolePill,
-      meta: { className: 'w-0' },
+      meta: { headerClassName: 'w-0' },
     }),
     columnHelper.accessor('groups', {
       header: GroupsHeader,
       cell: GroupsPill,
-      meta: { className: 'w-2/3' },
+      meta: { headerClassName: 'w-2/3' },
     }),
     columnHelper.display({
       id: '1',
       header: ActionHeader,
       cell: EditUserButton,
-      meta: { action: editButtonAction, className: 'w-0 text-center' },
+      meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
       enableSorting: false,
     }),
   ];
@@ -137,19 +137,19 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
   return [
     columnHelper.accessor('name', {
       header: GroupNameHeader,
-      meta: { className: 'w-1/4' },
+      meta: { headerClassName: 'w-1/4' },
     }),
     columnHelper.accessor('members', {
       header: MembersHeader,
       cell: MembersPill,
       enableSorting: false,
-      meta: { className: 'w-3/4' },
+      meta: { headerClassName: 'w-3/4' },
     }),
     columnHelper.display({
       id: '1',
       header: ActionHeader,
       cell: EditUserGroupButton,
-      meta: { action: editButtonAction, className: 'w-0 text-center' },
+      meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
       enableSorting: false,
     }),
   ];

@@ -58,6 +58,7 @@ module.exports = {
       primary: colors.indigo,
       success: colors.green,
       error: colors.red,
+      warning: colors.yellow,
       blue: colors.blue,
     },
     extend: {

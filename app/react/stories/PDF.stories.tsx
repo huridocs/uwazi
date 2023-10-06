@@ -17,12 +17,18 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <PDF
-          fileUrl="/sample.pdf"
-          onSelect={args.onSelect}
-          onDeselect={args.onDeselect}
-          highlights={args.highlights}
-        />
+        <p>PDF Container:</p>
+        <div className="p-4 h-[532px] rounded-md border">
+          <PDF
+            fileUrl="/sample.pdf"
+            onSelect={args.onSelect}
+            onDeselect={args.onDeselect}
+            highlights={args.highlights}
+            scrollToPage={args.scrollToPage}
+            size={{ height: '500px', width: 'auto' }}
+          />
+        </div>
+        <p>End of container</p>
       </div>
     </Provider>
   ),
@@ -39,6 +45,13 @@ const WithSelections: Story = {
   },
 };
 
-export { Basic, WithSelections };
+const WithScroll: Story = {
+  ...Primary,
+  args: {
+    scrollToPage: '3',
+  },
+};
+
+export { Basic, WithSelections, WithScroll };
 
 export default meta;

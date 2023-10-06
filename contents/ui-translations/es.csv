@@ -1,15 +1,16 @@
 Key,Spanish
+% of sentences above threshold,% of sentences above threshold
 (view page),(ver página)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
-% of sentences above threshold,% de frases por encima del límite
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
+// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
 2FA,2FA
 2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
 2FA Enabled,2FA Enabled
 2fa QA scan tip,"Escanea el siguiente código QR seleccionando la opción ""escanear código de barras"":"
 A generated ID will be the default title.,El ID autogenerado será el título por defecto
 Accept,Aceptar
+Accept suggestion,Accept suggestion
 Accepted suggestion on entity,Sugerencia aceptada en la entidad
 Account,Cuenta
 Account locked,Account locked
@@ -37,7 +38,6 @@ Add link,Añadir enlace
 Add page,Añadir página
 Add PDF,Añadir PDF
 Add people or groups,Añadir personas o grupos
-Add properties,Añadir propiedades
 Add relationship,Añadir relación
 Add relationship type,Añadir tipo de relación
 Add template,Añadir plantilla
@@ -68,7 +68,7 @@ An error has occured while installing languages:,An error has occured while inst
 An error occurred,Se ha producido un error
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity or document,Cualquier entidad o documento
-Apply to all languages,Aplicar a todos los idiomas
+Apply,Apply
 Are you sure you want to continue?,Estás seguro que quieres continuar?
 Are you sure you want to delete this attachment?,Estás seguro que quieres eliminar este archivo adjunto?
 Are you sure you want to delete this connection?,Estás seguro que quieres eliminar esta relación?
@@ -90,7 +90,6 @@ Automatically generated,Se genera automáticamente
 Available default translation,Traducción predeterminada disponible
 Back,Volver
 Back to,Volver a
-Back to dashboard,Regresar al panel
 Back to search,Volver a la búsqueda
 Back to thesauri,Volver al Thesauri
 Back to thesaurus,Volver al Tesauro
@@ -122,6 +121,7 @@ Character support revert warning,"Después de seleccionar esta opción, no podr�
 Check to make this instance private (only logged-in users can access the data),Selecciona para que la instancia sea privada (sólo usuarios conectados pueden acceder a la información)
 Chrome extension store link,Enlace de la tienda de extensiones de Chrome
 Clear,Limpiar
+Clear all,Clear all
 Clear coordinates,Limpiar coordenadas
 Clear Filters,Limpiar filtros
 Clear PDF selection,Limpiar la selección PDF
@@ -157,7 +157,6 @@ Confirm edit suggestion-enabled Thesaurus,Confirmar editar Tesauro sugerencia-ha
 Confirm New Passowrd,Confirm New Passowrd
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Confirm suggestion acceptance,Aceptar las sugerencias
 Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
 Connected to server,Conectado al servidor
@@ -200,6 +199,8 @@ Created template,Plantilla creada
 Created thesaurus,Tesauro creado
 Created user group,Grupo de usuarios creado
 Current value,Valor actual
+Current Value/Suggestion,Current Value/Suggestion
+Current value:,Current value:
 Currently connections only need a title.,Actualmente las conexiones sólo necesitan un título.
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
@@ -285,13 +286,7 @@ Email address,Dirección de correo electrónico
 Email is required,La dirección de correo electrónico es obligatorio
 Email updated,Correo electrónico actualizado
 Empty,Vacío
-Empty / Empty,Vacío / Vacío
-Empty / Label,Vacío / Etiqueta
-Empty / Obsolete,Vacío / Obsoleto
-Empty / Value,Vacío / Valor
 empty property tip,No podrás guardar una entidad si esta propiedad está vacía.
-emptyDesc,"El valor actual y la sugerencia están vacíos. Puedes dar click para llenar los valores y la selección de texto y así se convertirá en un ""vacío / etiqueta"" que será usado como ejemplo de entrenamiento."
-emptyMismatchDesc,"No hay un valor actual y el modelo está sugiriendo un valor. Aceptar la sugerencia reemplazará el valor (vacío) actual y la selección de texto con los sugeridos, convirtiéndose en un ""coincidencia / etiqueta"" que será usada como un ejemplo para el entrenamiento. Alternativamente puedes ignorar la sugerencia y dar click para ingresar la selección de texto convirtiéndose en un ""discordancia / etiqueta"" que será usada como un ejemplo para el entrenamiento."
 Enable,Enable
 Enable this page to be used as an entity view page:,Habilitar a esta página para que se use como página de vista de entidad:
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
@@ -411,9 +406,7 @@ Label,Etiqueta
 "Label date ""to""",A:
 Label more documents,Etiquetar más documentos
 Label your collection note,"Nota: Haz el conjunto de muestra de documentos para cada tema diverso y representativo. Por ejemplo, usa varios métodos para buscar documentos de muestra y no busques sólo el término “educación” para encontrar documentos para el tema “Educación”"
-labelEmptyDesc,"La aceptación no está disponible porque no hay ninguna sugerencia. Si el valor es correcto y la sugerencia es incorrecta, no es necesario realizar ninguna acción. Se utilizará como muestra de entrenamiento."
-labelMatchDesc,Tiene un valor actual y una selección de texto que coincide con el valor y la selección sugeridos por el modelo. Se utilizará como muestra de entrenamiento.
-labelMismatchDesc,"Tiene un valor actual y una selección de texto, pero no coinciden con la predicción del modelo. Al aceptar la sugerencia, se reemplazará el valor actual y la selección de texto con los sugeridos convirtiéndose en una ""coincidencia/etiquetado"". Si los datos etiquetados son correctos y la sugerencia es incorrecta, no es necesario realizar ninguna acción. Se utilizará como muestra de entrenamiento."
+Labeled,Labeled
 Landing page,Página de inicio
 Landing page description,"La página de inicio es la primera página que los visitantes ven cuando entran a tu colección. La página de inicio predeterminada es la librería de tu colección. Puedes configurar una página de inicio diferente añadiendo su URL relativa aquí. Por ejemplo:
       
@@ -468,8 +461,6 @@ Mapping conflict error,"Es necesaria una reindexación de su colección. El moti
 Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
-Match / Label,Coincidencia / Etiqueta
-Match / Value,Coincidencia / Valor
 Matching,Coincidencia
 Matomo Analytics,Analíticas de Matomo
 Members,Miembros
@@ -482,9 +473,6 @@ Metadata Extraction,Extracción de metadatos
 Metadata extraction dashboard,Tablero de extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
-Mismatch / Empty,Mismatch / Empty
-Mismatch / Label,Mismatch / Label
-Mismatch / Value,Mismatch / Value
 mismatched passwords,Las contraseñas no coinciden
 Mixed access,Acceso mixto
 ML TOC,ML TdC
@@ -520,6 +508,7 @@ No attachments,Sin adjuntos
 No common filters,No existen filtros comunes
 No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
+No context,No context
 No Documents found,No se encontraron documentos
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No icon / flag,Sin icono / bandera
@@ -539,14 +528,13 @@ No text match description,Puedes escribir algo diferente en la barra de búsqued
 No type,Sin tipo
 No value,Sin valor
 No Value,Sin valor
-Non-matching,no coincidente
+Non-labeled,Non-labeled
 Normal view,Vista normal
 Not Found,No encontrado
 Nothing selected,Nothing selected
 Nothing to see here! The selected documents are not using the selected thesaurus,Sin visualizaciones. Los documentos seleccionados no están utilizando el tesauro indicado.
 Number of sentences above threshold,El número de frases supera el límite
 Obsolete,Obsoleto
-obsoleteDesc,"Un nuevo modelo está entrenando procesando sugerencias. Esta sugerencia fue creada por un modelo anterior, por lo que no es posible realizar ninguna acción hasta que se reciba la nueva sugerencia."
 OCR,ROC
 OCR button tip,Esto procesará el documento para reconocer su texto. El archivo original se agregará como un archivo de soporte.
 OCR completed,ROC completado
@@ -583,6 +571,7 @@ Password updated,Contraseña actualizada
 Passwords do not match,Passwords do not match
 Paste URL here,Pega el URL aquí
 PDF,PDF
+Pending,Pending
 per page,por página
 Permission,Permiso
 Permission on entities explicitly shared with the user,Permiso sobre las entidades compartidas explícitamente con el usuario
@@ -643,7 +632,7 @@ RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
-Reference,Referencia
+Reference,Reference
 References,Referencias
 Reject,Rechazar
 Relationship,Relación
@@ -674,7 +663,6 @@ Return to the thesaurus page when you finished labeling to start learning.,Regre
 Review,Revisar
 Review unpublished document,Revisar el documento no publicado
 Reviewed,Revisados
-Reviewing,Revisando
 Role,Rol
 Route,Ruta
 Sample,Ejemplo
@@ -742,11 +730,11 @@ Shared as viewer,Compartido como observador
 Show actions,Mostrar acciones
 Show cookie policy,Mostrar política de cookies
 Show filters,Mostrar filtros
-Show Filters,Show Filters
 Show in cards,Mostrar en tarjetas
 Show more,Mostrar más
 Show Suggestions,Mostrar sugerencias
 Show toolbar,Mostrar la barra de herramientas
+Showing,Showing
 shown of,listados de
 Sign in,Registrarse
 Single date,Fecha única
@@ -761,7 +749,7 @@ Sort by,Ordenar por
 Sort descending,Orden descendiente
 sorted by,ordenado por
 State,Estado
-State Legend,Leyenda de Estado
+Stats & Filters,Stats & Filters
 Status,Status
 Storage,Almacenamiento
 Streets,Calles
@@ -774,6 +762,8 @@ Success,Exito
 "Success, Upload another?","Exito, cargar otro?"
 Suggested labels description,"Uwazi tiene etiquetas sugeridas para tu colección. Revísalas usando el botón ""Ver sugerencias"" junto a cada tema. Deshabilita las sugerencias desactivando  ""Mostrar sugerencias""."
 Suggestion,Sugerencia
+Suggestion accepted.,Suggestion accepted.
+Suggestion:,Suggestion:
 Suggestions,Sugerencias
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
@@ -827,9 +817,7 @@ this template,esta plantilla
 This template has associated entities,Esta plantilla tiene entidades asociadas
 This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
 This thesaurus is being used in document types and cannot be deleted.,Este tesauro está siendo utilizado en plantillas y no puede ser eliminado.
-This will cancel the finding suggestion process,Esto cancelará el proceso de búsqueda de sugerencias
 This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
-This will update the entity across all languages,Esto actualizará la entidad en todos los idiomas
 Threshold,Límite
 Time,Tiempo
 Timelinks,Líneas de tiempo
@@ -916,9 +904,6 @@ Uwazi is developed by,Uwazi es desarrollado por
 Uwazi UI,Uwazi UI
 Value,valor
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
-valueEmptyDesc,"Aceptar no está disponible porque no hay ninguna sugerencia. Si el valor es correcto, aún puedes hacer click para completar la selección de texto, para que se convierta en una ""etiqueta/discordancia"" que se usará como muestra de entrenamiento."
-valueMatchDesc,"Tiene un valor actual que coincide con la sugerencia, pero no tiene una selección de texto. Aceptar mantendrá el valor como está y lo enriquecerá con la selección de texto sugerido convirtiéndose en una ""coincidencia/etiqueta"" que se puede usar como muestra de entrenamiento."
-valueMismatchDesc,"Al aceptar la sugerencia, reemplazará el valor actual y la selección de texto con las sugerencias, convirtiéndose en una ""coincidencia/etiqueta"" que se usará como muestra de entrenamiento. Si el valor actual es correcto, aún puedes hacer click para completar la selección de texto, para que se convierta en una ""etiqueta/discordancia"" que se usará como muestra de entrenamiento."
 Verify,Verificar
 Verifying...,Verificando
 View,Ver
