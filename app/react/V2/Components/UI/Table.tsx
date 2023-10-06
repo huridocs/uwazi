@@ -24,11 +24,15 @@ const Table = <T,>({
   footer,
   initialState,
   enableSelection,
+  sorting,
+  setSorting,
   onSelection,
 }: TableProps<T>) => {
-  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || []);
+  const manualSorting = Boolean(setSorting);
+  const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
+    initialState?.sorting || []
+  );
   const [rowSelection, setRowSelection] = useState({});
-
   const memoizedColumns = useMemo(
     () => [
       ...applyForSelection(
@@ -50,6 +54,9 @@ const Table = <T,>({
     [columns, enableSelection]
   );
 
+  const sortingState = manualSorting ? sorting : internalSorting;
+  const sortingFunction = manualSorting ? setSorting : setInternalSortingSorting;
+
   const preparedData = useMemo<T[]>(() => {
     setRowSelection({});
     return data;
@@ -57,15 +64,16 @@ const Table = <T,>({
 
   const table = useReactTable({
     columns: memoizedColumns,
+    manualSorting,
     data: preparedData,
     initialState,
     state: {
-      sorting,
+      sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
-    onSortingChange: setSorting,
+    onSortingChange: sortingFunction,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
@@ -79,8 +87,8 @@ const Table = <T,>({
   }, [onSelection, rowSelection, table]);
 
   return (
-    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
-      <table className="w-full text-sm text-left">
+    <div className="overflow-x-auto relative rounded-md border border-gray-50 shadow-sm">
+      <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
             {title}
@@ -94,7 +102,7 @@ const Table = <T,>({
                 const isSortable = header.column.getCanSort();
                 const isSelect = header.column.id === 'checkbox-select';
                 const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
-                  header.column.columnDef.meta?.className || ''
+                  header.column.columnDef.meta?.headerClassName || ''
                 }`;
 
                 return (
@@ -120,7 +128,12 @@ const Table = <T,>({
                 const isSelect = cell.column.id === 'checkbox-select';
 
                 return (
-                  <td key={cell.id} className={`${isSelect ? 'px-2' : 'px-6'} py-3`}>
+                  <td
+                    key={cell.id}
+                    className={`${isSelect ? 'px-2' : 'px-6'} py-3 ${
+                      cell.column.columnDef.meta?.contentClassName || ''
+                    }`}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 );

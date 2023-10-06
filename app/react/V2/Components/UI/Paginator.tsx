@@ -4,8 +4,8 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 
 interface PaginatorProps {
-  currentPage: string;
-  totalPages: string;
+  currentPage: number;
+  totalPages: number;
   buildUrl: (page: string) => string;
   preventScrollReset?: boolean;
 }
@@ -27,12 +27,10 @@ const calculateMorePages = (currentPage: number, totalPages: number) => {
 };
 
 const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: PaginatorProps) => {
-  const page = Number(currentPage);
-  const lastPage = Number(totalPages);
-  const isFirstPage = page === 1;
-  const isLastPage = currentPage === totalPages;
-  const shouldDisplayShowMore = page + 1 !== lastPage && !isLastPage;
-  const [showMore, setShowMore] = useState<Boolean>(lastPage - page < 6);
+  const isFirstPage = currentPage === 1;
+  const isLastPage = totalPages < 1 || currentPage === totalPages;
+  const shouldDisplayShowMore = currentPage + 1 !== totalPages && !isLastPage;
+  const [showMore, setShowMore] = useState<Boolean>(totalPages - currentPage < 6);
 
   return (
     <nav aria-label="Pagination">
@@ -42,15 +40,16 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             <button
               type="button"
               disabled
-              className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300"
+              className="block px-3 py-1.5 ml-0 leading-snug text-gray-500 bg-white border border-gray-300 rounded-l-[4px]"
             >
               <ChevronLeftIcon className="w-[17px]" />
+              <Translate className="sr-only">Previous</Translate>
             </button>
           ) : (
             <Link
-              to={buildUrl((page - 1).toString())}
+              to={buildUrl((currentPage - 1).toString())}
               preventScrollReset={preventScrollReset}
-              className="block px-3 py-2 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="block px-3 py-1.5 ml-0 leading-snug text-gray-500 bg-white border border-gray-300 rounded-l-[4px] hover:bg-gray-100 hover:text-gray-700"
             >
               <Translate className="sr-only">Previous</Translate>
               <ChevronLeftIcon className="w-[17px]" />
@@ -64,58 +63,58 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
               to={buildUrl('1')}
               preventScrollReset={preventScrollReset}
               aria-current="page"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="px-3 py-1.5 leading-snug text-gray-500 bg-white border-r border-gray-300 border-y hover:bg-gray-100 hover:text-gray-700"
             >
               1
             </Link>
           </li>
         )}
 
-        {!isFirstPage && page - 1 !== 1 && (
-          <li key={page - 1}>
+        {!isFirstPage && currentPage - 1 !== 1 && (
+          <li key={currentPage - 1}>
             <Link
-              to={buildUrl((page - 1).toString())}
+              to={buildUrl((currentPage - 1).toString())}
               preventScrollReset={preventScrollReset}
               aria-current="page"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="px-3 py-1.5 leading-snug text-gray-500 bg-white border-r border-gray-300 border-y hover:bg-gray-100 hover:text-gray-700"
             >
-              {page - 1}
+              {currentPage - 1}
             </Link>
           </li>
         )}
 
         <li key="current">
           <Link
-            to={buildUrl(currentPage)}
+            to={buildUrl(currentPage.toString())}
             preventScrollReset={preventScrollReset}
             aria-current="page"
-            className="px-3 py-2 leading-tight text-blue-600 bg-blue-50 border border-blue-300"
+            className="px-3 py-1.5 leading-snug text-blue-600 border-r border-blue-300 border-y bg-blue-50"
           >
             {currentPage}
           </Link>
         </li>
 
-        {!isLastPage && page + 1 !== lastPage && (
-          <li key={page + 1}>
+        {!isLastPage && currentPage + 1 !== totalPages && (
+          <li key={currentPage + 1}>
             <Link
-              to={buildUrl((page + 1).toString())}
+              to={buildUrl((currentPage + 1).toString())}
               preventScrollReset={preventScrollReset}
               aria-current="page"
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="px-3 py-1.5 leading-snug text-gray-500 bg-white border-r border-gray-300 border-y hover:bg-gray-100 hover:text-gray-700"
             >
-              {page + 1}
+              {currentPage + 1}
             </Link>
           </li>
         )}
 
         {shouldDisplayShowMore &&
           (showMore ? (
-            calculateMorePages(page, lastPage).map(pageNumber => (
+            calculateMorePages(currentPage, totalPages).map(pageNumber => (
               <li key={`more-${pageNumber}`}>
                 <Link
                   to={buildUrl(pageNumber)}
                   preventScrollReset={preventScrollReset}
-                  className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                  className="px-3 py-1.5 leading-snug text-gray-500 bg-white border-r border-gray-300 border-y hover:bg-gray-100 hover:text-gray-700"
                 >
                   {pageNumber}
                 </Link>
@@ -126,7 +125,7 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
               <button
                 onClick={() => setShowMore(true)}
                 type="button"
-                className="h-[35px] px-3 py-2 m-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                className="h-[35px] px-3 py-1.5 m-0 leading-snug text-gray-500 bg-white border-y border-r border-gray-300 hover:bg-gray-100 hover:text-gray-700"
               >
                 <Translate className="sr-only">Show more</Translate>
                 ...
@@ -137,9 +136,9 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
         {!isLastPage && (
           <li key="last">
             <Link
-              to={buildUrl(totalPages)}
+              to={buildUrl(totalPages.toString())}
               preventScrollReset={preventScrollReset}
-              className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="px-3 py-1.5 leading-snug text-gray-500 bg-white border-gray-300 border-y hover:bg-gray-100 hover:text-gray-700"
             >
               {totalPages}
             </Link>
@@ -151,15 +150,16 @@ const Paginator = ({ currentPage, totalPages, buildUrl, preventScrollReset }: Pa
             <button
               type="button"
               disabled
-              className="block px-3 py-2 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300"
+              className="block px-3 py-1.5 leading-snug text-gray-500 bg-white border border-gray-300 rounded-r-[4px]"
             >
               <ChevronRightIcon className="w-[17px]" />
+              <Translate className="sr-only">Next</Translate>
             </button>
           ) : (
             <Link
-              to={buildUrl((page + 1).toString())}
+              to={buildUrl((currentPage + 1).toString())}
               preventScrollReset={preventScrollReset}
-              className="block px-3 py-2 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+              className="block px-3 py-1.5 leading-snug text-gray-500 bg-white border border-gray-300 rounded-r-[4px] hover:bg-gray-100 hover:text-gray-700"
             >
               <Translate className="sr-only">Next</Translate>
               <ChevronRightIcon className="w-[17px]" />
