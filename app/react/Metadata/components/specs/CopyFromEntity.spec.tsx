@@ -14,6 +14,7 @@ describe('CopyFromEntity', () => {
       spyOn(store, 'dispatch');
     }
     props = {
+      isVisible: true,
       onSelect: jasmine.createSpy('onSelect'),
       onCancel: jasmine.createSpy('onCancel'),
       formModel: 'myForm',
