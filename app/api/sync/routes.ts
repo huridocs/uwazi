@@ -9,6 +9,7 @@ import { Application, Request } from 'express';
 import { TranslationType } from 'shared/translationType';
 import { FileType } from 'shared/types/fileType';
 
+import { TemplateSchema } from 'shared/types/templateType';
 import { needsAuthorization } from '../auth';
 
 const diskStorage = multer.diskStorage({
@@ -79,6 +80,29 @@ const preserveTranslations = async (syncData: TranslationType): Promise<Translat
   return syncData;
 };
 
+const keepOnlyOneDefaultTemplate = async (
+  syncData: TemplateSchema | TemplateSchema[]
+): Promise<TemplateSchema | TemplateSchema[]> => {
+  const syncDataArray = Array.isArray(syncData) ? syncData : [syncData];
+  const syncedDefault = syncDataArray.find(template => template.default);
+  if (syncedDefault) {
+    const [otherDefault] = (await models
+      .templates()
+      .get({ _id: { $ne: syncedDefault._id }, default: true })) as TemplateSchema[];
+    if (otherDefault) {
+      return [
+        {
+          ...otherDefault,
+          default: false,
+        },
+        ...syncDataArray,
+      ];
+    }
+  }
+
+  return syncData;
+};
+
 export default (app: Application) => {
   app.post('/api/sync', needsAuthorization(['admin']), async (req, res, next) => {
     try {
@@ -89,6 +113,10 @@ export default (app: Application) => {
 
       if (req.body.namespace === 'translations') {
         req.body.data = await preserveTranslations(req.body.data);
+      }
+
+      if (req.body.namespace === 'templates') {
+        req.body.data = await keepOnlyOneDefaultTemplate(req.body.data);
       }
 
       await (Array.isArray(req.body.data)
