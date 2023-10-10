@@ -6,7 +6,7 @@ const geolocation = async (
   entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
-  const [lat, lon] = entityToImport[ensure<string>(property.name)].split('|');
+  const [lat, lon] = entityToImport.propertiesFromColumns[ensure<string>(property.name)].split('|');
   if (lat && lon) {
     return [{ value: { lat: Number(lat), lon: Number(lon), label: '' } }];
   }

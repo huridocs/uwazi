@@ -5,7 +5,8 @@ type Languages = string[];
 
 export type RawEntity = {
   language: string;
-  [k: string]: string;
+  sharedId?: string;
+  propertiesFromColumns: CSVRow;
 };
 
 const toSafeName = (row: CSVRow, newNameGeneration: boolean = false): CSVRow =>
@@ -57,16 +58,16 @@ const extractEntity = (
             const propName = key.split(`__${languageCode}`)[0];
             const selectedKey =
               propName in propNameToThesauriId ? `${propName}__${defaultLanguage}` : key;
-            entity[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
+            entity.propertiesFromColumns[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
             return entity;
           },
-          { ...baseEntity, language: languageCode }
+          { propertiesFromColumns: baseEntity, language: languageCode }
         )
   );
 
   return {
-    rawEntity: rawEntities.find((e: CSVRow) => e.language === currentLanguage),
-    rawTranslations: rawEntities.filter((e: CSVRow) => e.language !== currentLanguage),
+    rawEntity: rawEntities.find((e: RawEntity) => e.language === currentLanguage),
+    rawTranslations: rawEntities.filter((e: RawEntity) => e.language !== currentLanguage),
   };
 };
 

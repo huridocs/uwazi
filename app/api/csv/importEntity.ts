@@ -22,7 +22,9 @@ const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat
     : typeParsers.text(toImportEntity, prop);
 
 const hasValidValue = (prop: PropertySchema, toImportEntity: RawEntity) =>
-  prop.name ? toImportEntity[prop.name] || prop.type === propertyTypes.generatedid : false;
+  prop.name
+    ? toImportEntity.propertiesFromColumns[prop.name] || prop.type === propertyTypes.generatedid
+    : false;
 
 const toMetadata = async (
   template: TemplateSchema,
@@ -40,17 +42,18 @@ const toMetadata = async (
       Promise.resolve({})
     );
 
-const currentEntityIdentifiers = async (sharedId: string, language: string) =>
+const currentEntityIdentifiers = async (sharedId: string | undefined, language: string) =>
   sharedId ? entities.get({ sharedId, language }, '_id sharedId').then(([e]) => e) : {};
 
 const titleByTemplate = (template: TemplateSchema, entity: RawEntity) => {
+  const { propertiesFromColumns: data } = entity;
   const generatedTitle =
-    !entity.title &&
+    !data.title &&
     template.commonProperties?.find(property => property.name === 'title' && property.generatedId);
   if (generatedTitle) {
     return generateID(3, 4, 4);
   }
-  return entity.title;
+  return data.title;
 };
 
 const entityObject = async (
@@ -61,7 +64,7 @@ const entityObject = async (
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
   metadata: await toMetadata(template, toImportEntity, dateFormat),
-  ...(await currentEntityIdentifiers(toImportEntity.id, language)),
+  ...(await currentEntityIdentifiers(toImportEntity.sharedId, language)),
 });
 
 type Options = {
@@ -70,14 +73,16 @@ type Options = {
   dateFormat?: string;
 };
 
+// eslint-disable-next-line max-statements
 const importEntity = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
   importFile: ImportFile,
   { user = {}, language, dateFormat }: Options
 ) => {
-  const { attachments } = toImportEntity;
-  delete toImportEntity.attachments;
+  const { propertiesFromColumns } = toImportEntity;
+  const { attachments } = propertiesFromColumns;
+  delete propertiesFromColumns.attachments;
   const eo = await entityObject(toImportEntity, template, { language, dateFormat });
   const entity = await entities.save(
     eo,
@@ -85,8 +90,8 @@ const importEntity = async (
     { updateRelationships: true, index: false }
   );
 
-  if (toImportEntity.file && entity.sharedId) {
-    const file = await importFile.extractFile(toImportEntity.file);
+  if (propertiesFromColumns.file && entity.sharedId) {
+    const file = await importFile.extractFile(propertiesFromColumns.file);
     await processDocument(entity.sharedId, file);
     await storage.storeFile(file.filename, createReadStream(file.path), 'document');
   }
@@ -148,7 +153,7 @@ const translateEntity = async (
     await Promise.all(
       translations.map(async translatedEntity => {
         const translatedEntityObject = await entityObject(
-          { ...translatedEntity, id: ensure(entity.sharedId) },
+          { ...translatedEntity, sharedId: ensure(entity.sharedId) },
           template,
           {
             language: translatedEntity.language,
@@ -167,8 +172,8 @@ const translateEntity = async (
 
   await Promise.all(
     translations.map(async translatedEntity => {
-      if (translatedEntity.file) {
-        const file = await importFile.extractFile(translatedEntity.file);
+      if (translatedEntity.propertiesFromColumns.file) {
+        const file = await importFile.extractFile(translatedEntity.propertiesFromColumns.file);
         await processDocument(ensure(entity.sharedId), file);
       }
     })
