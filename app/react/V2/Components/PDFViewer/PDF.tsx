@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
 import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -14,6 +14,8 @@ interface PDFProps {
   highlights?: { [page: string]: TextHighlight[] };
   onSelect?: (selection: TextSelection) => any;
   onDeselect?: () => any;
+  scrollToPage?: string;
+  size?: { height?: string; width?: string; overflow?: string };
 }
 
 const getPDFFile = async (fileUrl: string) =>
@@ -23,7 +25,15 @@ const getPDFFile = async (fileUrl: string) =>
     cMapPacked: true,
   }).promise;
 
-const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps) => {
+const PDF = ({
+  fileUrl,
+  highlights,
+  onSelect = () => {},
+  onDeselect,
+  scrollToPage,
+  size,
+}: PDFProps) => {
+  const scrollToRef = useRef<HTMLDivElement>(null);
   const [pdf, setPDF] = useState<PDFDocumentProxy>();
   const [error, setError] = useState<string>();
 
@@ -37,25 +47,71 @@ const PDF = ({ fileUrl, highlights, onSelect = () => {}, onDeselect }: PDFProps)
       });
   }, [fileUrl]);
 
-  return error ? (
-    <div>{error}</div>
-  ) : (
+  useEffect(() => {
+    let animationFrameId = 0;
+    let attempts = 0;
+
+    const triggerScroll = () => {
+      if (attempts > 10) {
+        return;
+      }
+
+      if (scrollToRef.current && scrollToRef.current.clientHeight > 0) {
+        scrollToRef.current.scrollIntoView({ behavior: 'instant' });
+        attempts = 0;
+        return;
+      }
+
+      attempts += 1;
+      animationFrameId = requestAnimationFrame(triggerScroll);
+    };
+
+    if (pdf && scrollToPage) {
+      triggerScroll();
+    }
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [scrollToPage, pdf]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  return (
     //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
-      <div id="pdf-container">
-        {pdf &&
+      <div
+        id="pdf-container"
+        style={{
+          height: size?.height || 'auto',
+          width: size?.width || 'auto',
+          overflow: size?.overflow || 'auto',
+        }}
+      >
+        {pdf ? (
           Array.from({ length: pdf.numPages }, (_, index) => index + 1).map(number => {
-            const page = number.toString();
-            const pageHighlights = highlights ? highlights[page] : undefined;
+            const regionId = number.toString();
+            const pageHighlights = highlights ? highlights[regionId] : undefined;
+            const shouldScrollToPage = scrollToPage === regionId;
             return (
-              <Suspense key={`page-${page}`} fallback={<Translate>Loading</Translate>}>
+              <div
+                key={`page-${regionId}`}
+                className="relative"
+                id={`page-${regionId}-container`}
+                ref={shouldScrollToPage ? scrollToRef : undefined}
+              >
                 {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
-                <SelectionRegion regionId={page}>
+                <SelectionRegion regionId={regionId}>
                   <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
                 </SelectionRegion>
-              </Suspense>
+              </div>
             );
-          })}
+          })
+        ) : (
+          <Translate>Loading</Translate>
+        )}
       </div>
     </HandleTextSelection>
   );

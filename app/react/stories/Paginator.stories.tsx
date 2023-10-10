@@ -35,8 +35,8 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    currentPage: '8',
-    totalPages: '576',
+    currentPage: 8,
+    totalPages: 576,
     buildUrl: (page: string) => `library/?q=(filters=('somefilters'),p=${page})`,
     preventScrollReset: true,
   },

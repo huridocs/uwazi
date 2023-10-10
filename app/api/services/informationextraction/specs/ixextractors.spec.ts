@@ -4,7 +4,7 @@ import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db, { DBFixture, testingDB } from 'api/utils/testing_db';
-import { SuggestionState } from 'shared/types/suggestionSchema';
+import { IXSuggestionStateType } from 'shared/types/suggestionType';
 import { Extractors } from '../ixextractors';
 
 const fixtureFactory = getFixturesFactory();
@@ -125,6 +125,28 @@ const fixtures: DBFixture = {
   ],
 };
 
+const emptyState: IXSuggestionStateType = {
+  labeled: false,
+  withValue: false,
+  withSuggestion: false,
+  match: false,
+  hasContext: false,
+  obsolete: false,
+  processing: false,
+  error: false,
+};
+
+const expectedStates: Record<string, IXSuggestionStateType> = {
+  onlyLabeled: {
+    ...emptyState,
+    labeled: true,
+  },
+  onlyValue: {
+    ...emptyState,
+    withValue: true,
+  },
+};
+
 describe('ixextractors', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -161,7 +183,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.labelEmpty,
+            state: expectedStates.onlyLabeled,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -173,7 +195,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.labelEmpty,
+            state: expectedStates.onlyLabeled,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
@@ -196,7 +218,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.valueEmpty,
+            state: expectedStates.onlyValue,
             entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
@@ -208,7 +230,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.valueEmpty,
+            state: expectedStates.onlyValue,
             entityTemplate: fixtureFactory.id('animalTemplate').toString(),
           },
           {
@@ -220,7 +242,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.valueEmpty,
+            state: expectedStates.onlyValue,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -232,7 +254,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: '',
-            state: SuggestionState.valueEmpty,
+            state: expectedStates.onlyValue,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],

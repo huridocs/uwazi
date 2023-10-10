@@ -64,7 +64,7 @@ describe('Permisions system', () => {
       cy.get('aside button[aria-label="Close side panel"]').eq(1).click();
     });
 
-    it('should create an entity', () => {
+    it('should create an entity and check it is saved', () => {
       cy.contains('button', 'Create entity').click();
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
@@ -89,7 +89,7 @@ describe('Permisions system', () => {
       clearCookiesAndLogin('admin', 'admin');
       cy.get('input[name="library.search.searchTerm"]').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
-      cy.get('.item-document').should('have.length', 3);
+      cy.get('.item-document').should('have.length', 9);
     });
 
     it('should show mixed access', () => {
@@ -100,14 +100,14 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal]').should('not.exist');
     });
 
-    it('should keep publishing status if mixed access selected', () => {
+    it('should keep publishing status with mixed access', () => {
       cy.contains('button', 'Select all').click();
       cy.get('aside').should('be.visible');
       cy.get('aside button.share-btn').eq(1).click();
       cy.get('[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
       cy.get('[data-testid=modal]').should('not.exist');
-      cy.get('.item-document').should('have.length', 3);
+      cy.get('.item-document').should('have.length', 9);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });
   });
