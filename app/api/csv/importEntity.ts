@@ -73,7 +73,6 @@ type Options = {
   dateFormat?: string;
 };
 
-// eslint-disable-next-line max-statements
 const importEntity = async (
   toImportEntity: RawEntity,
   template: TemplateSchema,
