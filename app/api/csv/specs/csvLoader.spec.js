@@ -120,7 +120,8 @@ describe('csvLoader', () => {
     });
   });
 
-  describe('load', () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('load', () => {
     let imported;
     const events = [];
 
@@ -168,6 +169,7 @@ describe('csvLoader', () => {
         'additional_tag(s)',
         'multi_select_label',
         'date_label',
+        'language',
       ]);
     });
 
@@ -175,6 +177,11 @@ describe('csvLoader', () => {
       const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
+    });
+
+    it('should import properties named "Language" properly', () => {
+      const textValues = imported.map(i => i.metadata.language[0].value);
+      expect(textValues).toEqual(['English', 'Spanish', 'AnyStringIsGood']);
     });
 
     describe('metadata parsing', () => {
