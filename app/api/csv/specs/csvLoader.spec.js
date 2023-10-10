@@ -120,8 +120,7 @@ describe('csvLoader', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('load', () => {
+  describe('load', () => {
     let imported;
     const events = [];
 
@@ -294,8 +293,8 @@ describe('csvLoader', () => {
     it('should fail when parsing throws an error', async () => {
       jest.spyOn(entities, 'save').mockImplementation(() => Promise.resolve({}));
       jest.spyOn(typeParsers, 'text').mockImplementation(entity => {
-        if (entity.title === 'title2') {
-          throw new Error(`error-${entity.title}`);
+        if (entity.propertiesFromColumns.title === 'title2') {
+          throw new Error(`error-${entity.propertiesFromColumns.title}`);
         }
       });
 

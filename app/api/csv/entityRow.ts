@@ -5,7 +5,6 @@ type Languages = string[];
 
 export type RawEntity = {
   language: string;
-  sharedId?: string;
   propertiesFromColumns: CSVRow;
 };
 

@@ -64,7 +64,7 @@ const entityObject = async (
   title: titleByTemplate(template, toImportEntity),
   template: template._id,
   metadata: await toMetadata(template, toImportEntity, dateFormat),
-  ...(await currentEntityIdentifiers(toImportEntity.sharedId, language)),
+  ...(await currentEntityIdentifiers(toImportEntity.propertiesFromColumns.id, language)),
 });
 
 type Options = {
@@ -153,7 +153,13 @@ const translateEntity = async (
     await Promise.all(
       translations.map(async translatedEntity => {
         const translatedEntityObject = await entityObject(
-          { ...translatedEntity, sharedId: ensure(entity.sharedId) },
+          {
+            ...translatedEntity,
+            propertiesFromColumns: {
+              ...translatedEntity.propertiesFromColumns,
+              id: ensure(entity.sharedId),
+            },
+          },
           template,
           {
             language: translatedEntity.language,
