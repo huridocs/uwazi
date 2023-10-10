@@ -60,7 +60,7 @@ const extractEntity = (
             entity.propertiesFromColumns[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
             return entity;
           },
-          { propertiesFromColumns: baseEntity, language: languageCode }
+          { propertiesFromColumns: { ...baseEntity }, language: languageCode }
         )
   );
 

@@ -19,8 +19,10 @@ describe('entityRow', () => {
     );
 
     expect(rawEntity).toEqual({
-      title: 'test_en',
-      not_portuguese_ptescaped_property: 'not portuguese',
+      propertiesFromColumns: {
+        title: 'test_en',
+        not_portuguese_ptescaped_property: 'not portuguese',
+      },
       language: 'en',
     });
   });
@@ -37,7 +39,9 @@ describe('entityRow', () => {
       {}
     );
 
-    expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
+    expect(rawTranslations).toEqual([
+      { propertiesFromColumns: { title: 'test_es' }, language: 'es' },
+    ]);
   });
 
   it('should return translations for languages that have values not blank', () => {
@@ -53,7 +57,9 @@ describe('entityRow', () => {
       {}
     );
 
-    expect(rawTranslations).toEqual([{ title: 'test_es', language: 'es' }]);
+    expect(rawTranslations).toEqual([
+      { propertiesFromColumns: { title: 'test_es' }, language: 'es' },
+    ]);
   });
 
   it('should return all translations when everything is translated', () => {
@@ -70,8 +76,8 @@ describe('entityRow', () => {
     );
 
     expect(rawTranslations).toEqual([
-      { title: 'test_es', language: 'es' },
-      { text: 'text_pt', language: 'pt' },
+      { propertiesFromColumns: { title: 'test_es' }, language: 'es' },
+      { propertiesFromColumns: { text: 'text_pt' }, language: 'pt' },
     ]);
   });
 
@@ -90,17 +96,21 @@ describe('entityRow', () => {
     );
 
     expect(rawEntity).toEqual({
-      title: 'test_es',
-      some__entirely_new_property: 'has __en in name, but is not english',
-      a__pt_property: 'not portugese',
+      propertiesFromColumns: {
+        title: 'test_es',
+        some__entirely_new_property: 'has __en in name, but is not english',
+        a__pt_property: 'not portugese',
+      },
       language: 'es',
     });
 
     expect(rawTranslations).toEqual([
       {
-        title: 'test_en',
-        some__entirely_new_property: 'has __en in name, but is not english',
-        a__pt_property: 'not portugese',
+        propertiesFromColumns: {
+          title: 'test_en',
+          some__entirely_new_property: 'has __en in name, but is not english',
+          a__pt_property: 'not portugese',
+        },
         language: 'en',
       },
     ]);

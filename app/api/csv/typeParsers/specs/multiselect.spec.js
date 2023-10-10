@@ -6,6 +6,12 @@ import db from 'api/utils/testing_db';
 import { fixtures, thesauri1Id } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
 
+const rawEntityWithMultiselectValue = val => ({
+  propertiesFromColumns: {
+    multiselect_prop: val,
+  },
+});
+
 describe('multiselect', () => {
   let value1;
   let value2;
@@ -18,26 +24,26 @@ describe('multiselect', () => {
   afterAll(async () => db.disconnect());
   beforeAll(async () => {
     await db.clearAllAndLoad(fixtures);
-    value1 = await typeParsers.multiselect({ multiselect_prop: 'value4' }, templateProp);
+    value1 = await typeParsers.multiselect(rawEntityWithMultiselectValue('value4'), templateProp);
 
     value2 = await typeParsers.multiselect(
-      { multiselect_prop: 'Value1|value3| value3' },
+      rawEntityWithMultiselectValue('Value1|value3| value3'),
       templateProp
     );
 
     value3 = await typeParsers.multiselect(
-      { multiselect_prop: 'value1| value2 | Value3' },
+      rawEntityWithMultiselectValue('value1| value2 | Value3'),
       templateProp
     );
 
     value4 = await typeParsers.multiselect(
-      { multiselect_prop: 'value1|value2|VALUE4' },
+      rawEntityWithMultiselectValue('value1|value2|VALUE4'),
       templateProp
     );
 
-    await typeParsers.multiselect({ multiselect_prop: '' }, templateProp);
+    await typeParsers.multiselect(rawEntityWithMultiselectValue(''), templateProp);
 
-    await typeParsers.multiselect({ multiselect_prop: '|' }, templateProp);
+    await typeParsers.multiselect(rawEntityWithMultiselectValue('|'), templateProp);
 
     thesauri1 = await thesauri.getById(thesauri1Id);
   });
