@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -12,7 +12,6 @@ import {
 } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
-import { differenceWith, isEqual } from 'lodash';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
@@ -61,8 +60,6 @@ const IXSuggestions = () => {
       currentStatus: ixStatus;
     };
 
-  const [suggestionsState, setSuggestionsState] = useState(suggestions);
-
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -77,24 +74,6 @@ const IXSuggestions = () => {
     message?: string;
     data?: { processed: number; total: number };
   }>({ status: currentStatus });
-
-  useMemo(() => {
-    const memo = [...suggestionsState];
-    const updatedSuggestions = differenceWith(suggestions, suggestionsState, isEqual);
-
-    if (updatedSuggestions.length) {
-      updatedSuggestions.forEach(updated => {
-        const matchingIndex = memo.findIndex(m => m._id === updated._id);
-        if (matchingIndex !== undefined) {
-          memo[matchingIndex] = { ...updated };
-        }
-      });
-
-      setSuggestionsState(memo);
-    } else {
-      setSuggestionsState(suggestions);
-    }
-  }, [suggestions]);
 
   useEffect(() => {
     socket.on(
@@ -188,7 +167,7 @@ const IXSuggestions = () => {
           <Translate>Showing</Translate>
         </span>
         &nbsp;
-        {from}-{from + suggestionsState.length - 1}
+        {from}-{from + suggestions.length - 1}
         &nbsp;
         <span className="font-light text-gray-500">
           <Translate>of</Translate>
@@ -222,7 +201,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
-            data={suggestionsState}
+            data={suggestions}
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
