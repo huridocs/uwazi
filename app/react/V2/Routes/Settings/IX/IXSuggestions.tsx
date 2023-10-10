@@ -310,6 +310,7 @@ const IXSuggestions = () => {
         showSidepanel={sidepanel === 'pdf'}
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
+        onEntitySave={updatedEntity => console.log(updatedEntity)}
       />
     </div>
   );

@@ -26,6 +26,7 @@ interface PDFSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion: EntitySuggestionType | undefined;
+  onEntitySave: (entity: ClientEntitySchema) => any;
 }
 
 enum HighlightColors {
@@ -144,7 +145,12 @@ const coerceValue = async (
   return undefined;
 };
 
-const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
+const PDFSidepanel = ({
+  showSidepanel,
+  setShowSidepanel,
+  suggestion,
+  onEntitySave,
+}: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
   };
@@ -246,6 +252,7 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
 
       if (savedEntity) {
         setEntity(savedEntity);
+        onEntitySave(savedEntity);
       }
 
       setNotifications({ type: 'success', text: 'Saved successfully.' });
