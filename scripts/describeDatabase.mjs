@@ -3,7 +3,7 @@ import process from 'process';
 import mongodb from 'mongodb';
 
 const getClient = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
+  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
   const client = new mongodb.MongoClient(url, { useUnifiedTopology: true });
   await client.connect();
 
