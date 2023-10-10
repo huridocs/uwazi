@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -149,8 +149,6 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
     templates: ClientTemplateSchema[];
   };
 
-  const revalidator = useRevalidator();
-
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<FileType>();
   const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
@@ -241,10 +239,16 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         (savedEntity as FetchResponseError)?.json.prettyMessage;
 
       setNotifications({ type: 'error', text: 'An error occurred', details });
-      revalidator.revalidate();
     } else if (savedFile || savedEntity) {
+      if (savedFile) {
+        setPdf(savedFile);
+      }
+
+      if (savedEntity) {
+        setEntity(savedEntity);
+      }
+
       setNotifications({ type: 'success', text: 'Saved successfully.' });
-      revalidator.revalidate();
     }
 
     setShowSidepanel(false);
