@@ -7,7 +7,8 @@ const generatedid = async (
   entityToImport: RawEntity,
   property: PropertySchema
 ): Promise<MetadataObjectSchema[]> => {
-  const value = entityToImport[ensure<string>(property.name)] || generateID(3, 4, 4);
+  const value =
+    entityToImport.propertiesFromColumns[ensure<string>(property.name)] || generateID(3, 4, 4);
   return [{ value }];
 };
 
