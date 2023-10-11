@@ -99,6 +99,37 @@ describe('sync', () => {
         expect(templates.saveMultiple).toHaveBeenCalledWith([{ _id: 'id1' }, { _id: 'id2' }]);
         expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
       });
+
+      it('should set the rest of the templates as non-default if the provided is default', async () => {
+        jest.spyOn(index, 'updateMapping').mockImplementation(() => {});
+        const templates = {
+          saveMultiple: jest.fn(),
+          get: jest.fn().mockResolvedValue([
+            {
+              _id: 'prevDefault',
+              name: 'Previous default',
+              default: true,
+            },
+          ]),
+        };
+        models.templates = () => templates;
+
+        req.body = {
+          namespace: 'templates',
+          data: { _id: 'id', default: true },
+        };
+
+        await routes.post('/api/sync', req);
+        expect(templates.saveMultiple).toHaveBeenCalledWith([
+          {
+            _id: 'prevDefault',
+            name: 'Previous default',
+            default: false,
+          },
+          { _id: 'id', default: true },
+        ]);
+        expect(index.updateMapping).toHaveBeenCalledWith(req.body.data);
+      });
     });
 
     describe('when namespace is entities', () => {
