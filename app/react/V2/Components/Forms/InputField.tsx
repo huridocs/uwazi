@@ -14,7 +14,7 @@ interface InputFieldProps {
   errorMessage?: string | React.ReactNode;
   value?: string;
   className?: string;
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search';
   autoComplete?: 'on' | 'off';
   name?: string;
   clearFieldAction?: () => any;

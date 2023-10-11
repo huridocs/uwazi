@@ -14,7 +14,9 @@ import relationship from './typeParsers/relationship';
 const defaultParser = async (
   entityToImport: RawEntity,
   property: PropertySchema
-): Promise<MetadataObjectSchema[]> => [{ value: entityToImport[ensure<string>(property.name)] }];
+): Promise<MetadataObjectSchema[]> => [
+  { value: entityToImport.propertiesFromColumns[ensure<string>(property.name)] },
+];
 
 const parseDateValue = (dateValue: string, dateFormat: string) => {
   const allowedFormats = [
@@ -64,7 +66,7 @@ export default {
     entityToImport: RawEntity,
     property: PropertySchema
   ): Promise<MetadataObjectSchema[]> {
-    const value = entityToImport[ensure<string>(property.name)];
+    const value = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
     return Number.isNaN(Number(value)) ? [{ value }] : [{ value: Number(value) }];
   },
 
@@ -73,7 +75,7 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const date = entityToImport[ensure<string>(property.name)];
+    const date = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
     return [parseDate(date, dateFormat)];
   },
 
@@ -82,7 +84,9 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const dates = parseMultiValue(entityToImport[ensure<string>(property.name)]);
+    const dates = parseMultiValue(
+      entityToImport.propertiesFromColumns[ensure<string>(property.name)]
+    );
     return dates.map(date => parseDate(date, dateFormat));
   },
 
@@ -91,7 +95,7 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const range = entityToImport[ensure<string>(property.name)];
+    const range = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
     return [parseDateRange(range, dateFormat)];
   },
 
@@ -100,7 +104,9 @@ export default {
     property: PropertySchema,
     dateFormat: string
   ): Promise<MetadataObjectSchema[]> {
-    const ranges = parseMultiValue(entityToImport[ensure<string>(property.name)]);
+    const ranges = parseMultiValue(
+      entityToImport.propertiesFromColumns[ensure<string>(property.name)]
+    );
     return ranges.map(range => parseDateRange(range, dateFormat));
   },
 
@@ -108,10 +114,11 @@ export default {
     entityToImport: RawEntity,
     property: PropertySchema
   ): Promise<MetadataObjectSchema[] | null> {
-    let [label, linkUrl] = entityToImport[ensure<string>(property.name)].split('|');
+    let [label, linkUrl] =
+      entityToImport.propertiesFromColumns[ensure<string>(property.name)].split('|');
 
     if (!linkUrl) {
-      linkUrl = entityToImport[ensure<string>(property.name)];
+      linkUrl = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
       label = linkUrl;
     }
 

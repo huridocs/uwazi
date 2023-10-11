@@ -1,6 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
 import documents from 'api/documents/documents.js';
@@ -587,7 +584,7 @@ describe('templates', () => {
   describe('getPropertyByName()', () => {
     it('should get properties with the name provided', async () => {
       const newTemplate = {
-        name: 'created  template 2',
+        name: 'created template 2',
         commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
         properties: [
           { label: 'label', type: 'text' },
@@ -600,11 +597,46 @@ describe('templates', () => {
       expect(property.type).toEqual('date');
     });
 
-    it('should throw an error when no template is found', async () => {
+    it('should throw an error when the property is not found', async () => {
       try {
         await templates.getPropertyByName('nonexistent property name');
       } catch (e) {
-        expect(e.message).toEqual('No template with the given property name');
+        expect(e.message).toEqual('Properties not found: nonexistent property name');
+      }
+    });
+  });
+
+  describe('getPropertiesByName()', () => {
+    it('should get properties with the name provided', async () => {
+      const newTemplate = {
+        name: 'created template 3',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [
+          { label: 'label', type: 'text' },
+          { label: 'Date', type: 'date' },
+        ],
+      };
+      const newTemplate2 = {
+        name: 'created template 4',
+        commonProperties: [{ name: 'title', label: 'Title', type: 'text' }],
+        properties: [{ label: 'number', type: 'numeric' }],
+      };
+      await templates.save(newTemplate);
+      await templates.save(newTemplate2);
+      const properties = await templates.getPropertiesByName(['date', 'label', 'number', 'title']);
+      expect(properties).toMatchObject([
+        { name: 'title', type: 'text' },
+        { name: 'label', type: 'text' },
+        { name: 'date', type: 'date' },
+        { name: 'number', type: 'numeric' },
+      ]);
+    });
+
+    it('should throw an error when a property is not found', async () => {
+      try {
+        await templates.getPropertiesByName(['nonexistent property name']);
+      } catch (e) {
+        expect(e.message).toEqual('Properties not found: nonexistent property name');
       }
     });
   });

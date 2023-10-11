@@ -1,7 +1,7 @@
 import { SettingsLinkSchema } from 'shared/types/settingsType';
 
 interface IXExtractorInfo {
-  _id?: string;
+  _id: string;
   name: string;
   property: string;
 

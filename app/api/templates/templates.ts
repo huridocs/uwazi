@@ -1,3 +1,5 @@
+import { ObjectId } from 'mongodb';
+
 import entities from 'api/entities';
 import { populateGeneratedIdByTemplate } from 'api/entities/generatedIdPropertyAutoFiller';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -7,7 +9,7 @@ import { updateMapping } from 'api/search/entitiesIndex';
 import settings from 'api/settings/settings';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import createError from 'api/utils/Error';
-import { ObjectId } from 'mongodb';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ContextType } from 'shared/translationSchema';
 import { ensure } from 'shared/tsUtils';
@@ -247,14 +249,34 @@ export default {
     return model.get(query);
   },
 
-  async getPropertyByName(propertyName: string): Promise<PropertySchema | undefined> {
+  async getPropertyByName(propertyName: string): Promise<PropertySchema> {
+    const [property] = await this.getPropertiesByName([propertyName]);
+    return property;
+  },
+
+  async getPropertiesByName(propertyNames: string[]): Promise<PropertySchema[]> {
+    const nameSet = new Set(propertyNames);
     const templates = await this.get({
-      $or: [{ 'properties.name': propertyName }, { 'commonProperties.name': propertyName }],
+      $or: [
+        { 'properties.name': { $in: propertyNames } },
+        { 'commonProperties.name': { $in: propertyNames } },
+      ],
     });
-    if (!templates.length) {
-      throw createError('No template with the given property name');
+    const allProperties = templates
+      .map(template => [template.properties || [], template.commonProperties || []])
+      .flat()
+      .flat()
+      .filter(t => nameSet.has(t.name));
+    const propertiesByName = objectIndex(
+      allProperties,
+      p => p.name,
+      p => p
+    );
+    const missingProperties = propertyNames.filter(name => !propertiesByName[name]);
+    if (missingProperties.length > 0) {
+      throw createError(`Properties not found: ${missingProperties.join(', ')}`);
     }
-    return templates[0].properties?.find(property => property.name === propertyName);
+    return Array.from(Object.values(propertiesByName));
   },
 
   async setAsDefault(_id: string) {

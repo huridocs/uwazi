@@ -7,25 +7,37 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
-export enum SuggestionState {
-  labelMatch = 'Match / Label',
-  labelMismatch = 'Mismatch / Label',
-  valueMatch = 'Match / Value',
-  valueMismatch = 'Mismatch / Value',
-  empty = 'Empty / Empty',
-  obsolete = 'Obsolete',
-  labelEmpty = 'Empty / Label',
-  valueEmpty = 'Empty / Value',
-  error = 'Error',
-  processing = 'Processing',
-  emptyMismatch = 'Mismatch / Empty',
-}
+export const IXSuggestionStateSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'IXSuggestionStateType',
+  properties: {
+    labeled: { type: 'boolean' },
+    withValue: { type: 'boolean' },
+    withSuggestion: { type: 'boolean' },
+    match: { type: 'boolean' },
+    hasContext: { type: 'boolean' },
+    obsolete: { type: 'boolean' },
+    processing: { type: 'boolean' },
+    error: { type: 'boolean' },
+  },
+  required: [
+    'labeled',
+    'withValue',
+    'withSuggestion',
+    'match',
+    'hasContext',
+    'obsolete',
+    'processing',
+    'error',
+  ],
+};
 
 export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -39,7 +51,7 @@ export const IXSuggestionSchema = {
     language: { type: 'string', minLength: 1 },
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
-    state: { type: 'string', enum: Object.values(SuggestionState) },
+    state: IXSuggestionStateSchema,
     date: { type: 'number' },
     error: { type: 'string' },
     selectionRectangles: selectionRectanglesSchema,
@@ -59,11 +71,12 @@ export const EntitySuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'EntitySuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema },
+  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
     extractorId: { type: 'string', minLength: 1 },
+    entityTemplateId: { type: 'string', minLength: 1 },
     sharedId: { type: 'string', minLength: 1 },
     fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
@@ -74,7 +87,7 @@ export const EntitySuggestionSchema = {
     selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
-    state: { type: 'string', enum: Object.values(SuggestionState) },
+    state: IXSuggestionStateSchema,
     page: { type: 'number', minimum: 1 },
     status: { type: 'string', enum: ['processing', 'failed', 'ready'] },
     date: { type: 'number' },
@@ -84,6 +97,7 @@ export const EntitySuggestionSchema = {
     'entityTitle',
     'entityId',
     'extractorId',
+    'entityTemplateId',
     'sharedId',
     'fileId',
     'suggestedValue',
@@ -94,16 +108,44 @@ export const EntitySuggestionSchema = {
   ],
 };
 
+export const SuggestionCustomFilterSchema = {
+  type: 'object',
+  title: 'SuggestionCustomFilter',
+  additionalProperties: false,
+  properties: {
+    labeled: {
+      type: 'object',
+      properties: {
+        match: { type: 'boolean' },
+        mismatch: { type: 'boolean' },
+      },
+      additionalProperties: false,
+      required: ['match', 'mismatch'],
+    },
+    nonLabeled: {
+      type: 'object',
+      properties: {
+        noSuggestion: { type: 'boolean' },
+        noContext: { type: 'boolean' },
+        obsolete: { type: 'boolean' },
+        others: { type: 'boolean' },
+      },
+      additionalProperties: false,
+      required: ['noSuggestion', 'noContext', 'obsolete', 'others'],
+    },
+  },
+  required: ['labeled', 'nonLabeled'],
+};
+
 export const SuggestionsQueryFilterSchema = {
   type: 'object',
   title: 'IXSuggestionsFilter',
   additionalProperties: false,
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, SuggestionCustomFilterSchema },
   properties: {
     language: { type: 'string' },
     extractorId: objectIdSchema,
-    states: { type: 'array', items: { type: 'string', enum: Object.values(SuggestionState) } },
-    entityTemplates: { type: 'array', items: { type: 'string' } },
+    customFilter: SuggestionCustomFilterSchema,
   },
   required: ['extractorId'],
 };
@@ -111,7 +153,6 @@ export const SuggestionsQueryFilterSchema = {
 export const IXSuggestionsQuerySchema = {
   type: 'object',
   title: 'IXSuggestionsQuery',
-  additionalProperties: false,
   definitions: { SuggestionsQueryFilterSchema },
   properties: {
     filter: SuggestionsQueryFilterSchema,
@@ -122,16 +163,60 @@ export const IXSuggestionsQuerySchema = {
         number: { type: 'number', minimum: 1 },
         size: { type: 'number', minimum: 1, maximum: 500 },
       },
+      required: ['number', 'size'],
+    },
+    sort: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        property: { type: 'string' },
+        order: { type: 'string', enum: ['asc', 'desc'] },
+      },
+      required: ['property'],
     },
   },
+  required: ['filter'],
 };
 
-export const IXSuggestionsStatsQuerySchema = {
-  title: 'IXSuggestionsStatsQuery',
+export const IXAggregationQuerySchema = {
+  type: 'object',
+  title: 'IXAggregationQuery',
   additionalProperties: false,
-  definitions: { SuggestionsQueryFilterSchema },
+  definitions: { objectIdSchema },
   properties: {
-    extractorId: { type: 'string' },
+    extractorId: objectIdSchema,
   },
   required: ['extractorId'],
+};
+
+export const IXSuggestionAggregationSchema = {
+  type: 'object',
+  title: 'IXSuggestionAggregation',
+  additionalProperties: false,
+  required: ['labeled', 'nonLabeled', 'total'],
+  properties: {
+    total: { type: 'number' },
+    labeled: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_count', 'match', 'mismatch'],
+      properties: {
+        _count: { type: 'number' },
+        match: { type: 'number' },
+        mismatch: { type: 'number' },
+      },
+    },
+    nonLabeled: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
+      properties: {
+        _count: { type: 'number' },
+        noSuggestion: { type: 'number' },
+        noContext: { type: 'number' },
+        obsolete: { type: 'number' },
+        others: { type: 'number' },
+      },
+    },
+  },
 };

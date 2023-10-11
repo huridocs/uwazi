@@ -41,7 +41,7 @@ const multiselect = async (
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
 
   const values = splitMultiselectLabels(
-    entityToImport[ensure<string>(property.name)]
+    entityToImport.propertiesFromColumns[ensure<string>(property.name)]
   ).normalizedLabelToLabel;
   const thesaurusValues = flatThesaurusValues(currentThesauri);
 
