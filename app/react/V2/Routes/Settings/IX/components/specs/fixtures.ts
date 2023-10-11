@@ -105,6 +105,41 @@ const suggestion3 = {
   date: 1,
 };
 
+const suggestion4 = {
+  _id: '4',
+  language: 'es',
+  propertyName: 'document_date',
+  segment: 'Some value that contains a date',
+  suggestedValue: 500,
+  state: {
+    match: false,
+    labeled: true,
+    withValue: true,
+    withSuggestion: true,
+    hasContext: true,
+    obsolete: false,
+    processing: false,
+    error: false,
+  },
+  selectionRectangles: [
+    {
+      left: 0,
+      top: 0,
+      width: 250,
+      height: 250,
+      page: '1',
+    },
+  ],
+  currentValue: 100,
+  entityTitle: 'Entity 5',
+  entityId: 'entity5',
+  extractorId: '2',
+  entityTemplateId: '2',
+  sharedId: '5',
+  fileId: '5',
+  date: 1,
+};
+
 const entity1 = {
   _id: 'entity1',
   language: 'es',
@@ -126,4 +161,4 @@ const entity2 = {
   },
 };
 
-export { suggestion1, suggestion2, suggestion3, entity1, entity2 };
+export { suggestion1, suggestion2, suggestion3, suggestion4, entity1, entity2 };

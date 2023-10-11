@@ -1,7 +1,7 @@
-/* eslint-disable max-statements */
 import { ClientEntitySchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 
+// eslint-disable-next-line max-statements
 const updateSuggestionsByEntity = (
   currentSuggestions: EntitySuggestionType[],
   updatedEntity?: ClientEntitySchema
@@ -25,10 +25,24 @@ const updateSuggestionsByEntity = (
     suggestionToUpdate.currentValue = newTitle;
     suggestionToUpdate.entityTitle = newTitle;
     suggestionToUpdate.state.match = suggestionToUpdate.suggestedValue === newTitle;
-  } else if (updatedEntity.metadata && updatedEntity.metadata[propertyToUpdate]?.length) {
+  }
+
+  if (
+    propertyToUpdate !== 'title' &&
+    updatedEntity.metadata &&
+    updatedEntity.metadata[propertyToUpdate]?.length
+  ) {
     const newValue = updatedEntity.metadata[propertyToUpdate]![0].value;
     suggestionToUpdate.currentValue = newValue;
     suggestionToUpdate.state.match = suggestionToUpdate.suggestedValue === newValue;
+  }
+
+  if (
+    propertyToUpdate !== 'title' &&
+    (!updatedEntity.metadata || !updatedEntity.metadata[propertyToUpdate]?.length)
+  ) {
+    suggestionToUpdate.currentValue = '';
+    suggestionToUpdate.state.match = suggestionToUpdate.suggestedValue === '';
   }
 
   const suggestions = currentSuggestions.map(currentSuggestion => {
@@ -43,13 +57,39 @@ const updateSuggestionsByEntity = (
 
 const updateSuggestions = (
   currentSuggestions: EntitySuggestionType[],
-  updatedSuggestions: EntitySuggestionType[] | []
+  suggestionsToAccept: EntitySuggestionType[] | []
 ): EntitySuggestionType[] => {
-  if (!updatedSuggestions.length) {
+  if (!suggestionsToAccept.length) {
     return currentSuggestions;
   }
 
-  return currentSuggestions;
+  const acceptedSuggestions = suggestionsToAccept.map(suggestionToAccept => {
+    const updated = { ...suggestionToAccept };
+    updated.state.match = true;
+    updated.currentValue = suggestionToAccept.suggestedValue;
+
+    if (
+      suggestionToAccept.propertyName === 'title' &&
+      typeof suggestionToAccept.suggestedValue === 'string'
+    ) {
+      updated.entityTitle = suggestionToAccept.suggestedValue;
+    }
+
+    return updated;
+  });
+
+  const merged = [
+    ...currentSuggestions
+      .concat(acceptedSuggestions)
+      .reduce(
+        (map, suggestion) =>
+          map.set(suggestion._id, Object.assign(map.get(suggestion._id) || {}, suggestion)),
+        new Map()
+      )
+      .values(),
+  ];
+
+  return merged;
 };
 
 export { updateSuggestions, updateSuggestionsByEntity };
