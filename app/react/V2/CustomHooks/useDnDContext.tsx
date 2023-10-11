@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { useState } from 'react';
 import update from 'immutability-helper';
 import _ from 'lodash';
@@ -27,45 +28,56 @@ const addActiveItem =
     setAvailableItems: React.Dispatch<React.SetStateAction<IDraggable[]>>
   ) =>
   (newItem: IDraggable, parent?: IDraggable) => {
-    if (parent) {
-      if (newItem.parent) {
-        const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
+    if (newItem.parent) {
+      const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
 
-        setActiveItems((prevActiveItems: IDraggable[]) => {
-          const index = prevActiveItems[indexOfCurrentParent].items!.findIndex(
-            ai => ai.id === newItem.id
-          );
-          return update(prevActiveItems, {
-            [indexOfCurrentParent]: {
-              items: { $splice: [[index, 1]] },
-            },
-          });
+      setActiveItems((prevActiveItems: IDraggable[]) => {
+        const index = prevActiveItems[indexOfCurrentParent].items!.findIndex(
+          ai => ai.id === newItem.id
+        );
+        return update(prevActiveItems, {
+          [indexOfCurrentParent]: {
+            items: { $splice: [[index, 1]] },
+          },
         });
+      });
+    }
+    const indexOfNewItem = activeItems.findIndex(ai => ai.id === newItem.id);
+
+    if (parent) {
+      if (indexOfNewItem > -1) {
+        setActiveItems((prevActiveItems: IDraggable[]) =>
+          update(prevActiveItems, {
+            $splice: [[indexOfNewItem, 1]],
+          })
+        );
       }
 
-      const indexOfParent = activeItems.findIndex(ai => ai.id === parent.id);
-
-      setActiveItems((prevActiveItems: IDraggable[]) =>
-        prevActiveItems[indexOfParent].items
-          ? update(prevActiveItems, {
-              [indexOfParent]: {
-                items: {
-                  $push: [{ ...newItem, parent }],
+      setActiveItems((prevActiveItems: IDraggable[]) => {
+        const indexOfParent = prevActiveItems.findIndex(ai => ai.id === parent.id);
+        if (indexOfParent > -1) {
+          return prevActiveItems[indexOfParent].items
+            ? update(prevActiveItems, {
+                [indexOfParent]: {
+                  items: {
+                    $push: [{ ..._.omit(newItem, ['parent', 'container', 'items']), parent }],
+                  },
                 },
-              },
-            })
-          : update(prevActiveItems, {
-              [indexOfParent]: {
-                items: {
-                  $set: [{ ...newItem, parent }],
+              })
+            : update(prevActiveItems, {
+                [indexOfParent]: {
+                  items: {
+                    $set: [{ ...newItem, parent }],
+                  },
                 },
-              },
-            })
-      );
-    } else {
+              });
+        }
+        return prevActiveItems;
+      });
+    } else if (indexOfNewItem === -1) {
       setActiveItems((prevActiveItems: IDraggable[]) =>
         update(prevActiveItems, {
-          $push: [newItem],
+          $push: [_.omit(newItem, ['parent', 'container', 'items'])],
         })
       );
     }
@@ -106,7 +118,6 @@ const removeActiveItem =
 
     if (!options.omitSource) {
       const availableSubItems = (item.items || []).map(ai => _.omit(ai, ['parent', 'container']));
-
       setAvailableItems(prevAvailableItems =>
         update(prevAvailableItems, {
           $push: [_.omit(item, ['parent', 'container', 'items']), ...availableSubItems],

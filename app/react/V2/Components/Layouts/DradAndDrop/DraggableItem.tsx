@@ -57,8 +57,11 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
       if (
         dropContext !== undefined &&
         (draggedResult.item.container !== item.container ||
+          dropParent === undefined ||
           dropParent?.id !== draggedResult.item.parent?.id ||
-          draggedResult.item.container === undefined)
+          draggedResult.item.container === undefined) &&
+        (item.items === undefined || item.items.length === 0) &&
+        (dropParent === undefined || draggedResult.item.id !== dropParent.id)
       ) {
         context.addItem(draggedResult.item, dropParent);
       }
@@ -78,7 +81,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
         iconHandle ? 'cursor-move' : ''
       }`}
       ref={ref}
-      data-testid={`draggable-item-${index}`}
+      data-testid={`${item.container || item.parent?.name || 'available'}-draggable-item-${index}`}
       style={{ opacity }}
       data-handler-id={handlerId}
     >

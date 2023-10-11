@@ -14,6 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
+import { drag } from '@4tw/cypress-drag-drop';
 import './commands';
 import '../../app/react/App/styles/globals.css';
 
