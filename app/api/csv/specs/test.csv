@@ -1,5 +1,5 @@
-Title , text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), Multi Select Label, Date label
+Title , text label  , numeric label, non configured, select_label, not defined type, geolocation_geolocation,auto id, additional tag(s), Multi Select Label, Date label, Language
 
-title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1, multivalue1,03/01/2022
-title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2, multivalue2,01/03/2022
-title3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,tag3, multivalue1|multivalue3,01/01/2022
+title1, text value 1, 1977, ______________, thesauri1   , notType1                 , 1|1,,tag1, multivalue1,03/01/2022,English
+title2, text value 2, 2019, ______________, thesauri2   , notType2                 ,    ,,tag2, multivalue2,01/03/2022,Spanish
+title3, text value 3, 2020, ______________, thesauri2   , notType3                 , 0|0,,tag3, multivalue1|multivalue3,01/01/2022,AnyStringIsGood
