@@ -98,7 +98,7 @@ const Account = () => {
                   <InputField
                     id="new-password"
                     hasErrors={!!errors.passwordConfirm}
-                    label={<Translate>New Password</Translate>}
+                    label={<Translate>New password</Translate>}
                     {...register('password')}
                     type="password"
                   />
