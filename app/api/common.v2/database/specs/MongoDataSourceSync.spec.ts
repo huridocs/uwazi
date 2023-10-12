@@ -3,9 +3,9 @@ import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
-import { getClient, getConnection } from '../getConnectionForCurrentTenant';
+import { getConnection } from '../getConnectionForCurrentTenant';
 import { MongoDataSource } from '../MongoDataSource';
-import { MongoTransactionManager } from '../MongoTransactionManager';
+import { DefaultTransactionManager } from '../data_source_defaults';
 
 const id = getIdMapper();
 
@@ -642,7 +642,7 @@ describe('collection with automatic log to updatelogs', () => {
         expectedResult,
         expectedDBStateOnTransactionError = updateLogsBlankState,
       }) => {
-        const transactionManager1 = new MongoTransactionManager(getClient());
+        const transactionManager1 = DefaultTransactionManager();
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
         try {
@@ -659,7 +659,7 @@ describe('collection with automatic log to updatelogs', () => {
           );
         }
 
-        const transactionManager2 = new MongoTransactionManager(getClient());
+        const transactionManager2 = DefaultTransactionManager();
         const dataSource2 = new DataSource(getConnection(), transactionManager2);
 
         const result = await transactionManager2.run(async () => callback(dataSource2));

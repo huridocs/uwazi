@@ -1,7 +1,6 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTranslationsSyncDataSource } from 'api/i18n.v2/database/MongoTranslationsSyncDataSource';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { Translation } from 'api/i18n.v2/model/Translation';
@@ -45,7 +44,7 @@ export const resultsToV1TranslationType = async (
   tranlationsResult: ResultSet<Translation>,
   onlyLanguage?: LanguageISO6391
 ) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const settings = DefaultSettingsDataSource(transactionManager);
   let languageKeys = await settings.getLanguageKeys();
   if (onlyLanguage) {
@@ -100,7 +99,7 @@ export const resultsToV1TranslationType = async (
 };
 
 export const createTranslationsV2 = async (translation: TranslationType) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   await new CreateTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(
@@ -112,7 +111,7 @@ export const createTranslationsV2 = async (translation: TranslationType) => {
 };
 
 export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     DefaultSettingsDataSource(transactionManager),
@@ -130,7 +129,7 @@ export const upsertTranslationsV2 = async (translations: TranslationType[]) => {
 };
 
 export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   await new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     transactionManager
@@ -138,7 +137,7 @@ export const deleteTranslationsByContextIdV2 = async (contextId: string) => {
 };
 
 export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   return new DeleteTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     transactionManager
@@ -148,23 +147,21 @@ export const deleteTranslationsByLanguageV2 = async (language: LanguageISO6391) 
 export const getTranslationsV2ByContext = async (context: string) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
+      DefaultTranslationsDataSource(DefaultTransactionManager())
     ).getByContext(context)
   );
 
 export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
   resultsToV1TranslationType(
     new GetTranslationsService(
-      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
+      DefaultTranslationsDataSource(DefaultTransactionManager())
     ).getByLanguage(language),
     language
   );
 
 export const getTranslationsV2 = async () =>
   resultsToV1TranslationType(
-    new GetTranslationsService(
-      DefaultTranslationsDataSource(new MongoTransactionManager(getClient()))
-    ).getAll()
+    new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll()
   );
 
 export const updateContextV2 = async (
@@ -173,7 +170,7 @@ export const updateContextV2 = async (
   keysToDelete: string[],
   valueChanges: IndexedContextValues
 ) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   await new UpsertTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     DefaultSettingsDataSource(transactionManager),
