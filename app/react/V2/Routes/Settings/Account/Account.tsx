@@ -112,7 +112,7 @@ const Account = () => {
                   <InputField
                     id="confirm-new-password"
                     hasErrors={!!errors.passwordConfirm}
-                    label={<Translate>Confirm New Password</Translate>}
+                    label={<Translate>Confirm new password</Translate>}
                     {...register('passwordConfirm', { validate: val => val === watch('password') })}
                     type="password"
                   />
