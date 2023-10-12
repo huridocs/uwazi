@@ -1,8 +1,11 @@
 import { MongoClient, ClientSession } from 'mongodb';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { TransactionManager } from '../contracts/TransactionManager';
 
 export class MongoTransactionManager implements TransactionManager {
   private mongoClient: MongoClient;
+
+  private logger: Logger;
 
   private session?: ClientSession;
 
@@ -10,9 +13,10 @@ export class MongoTransactionManager implements TransactionManager {
 
   private finished = false;
 
-  constructor(mongoClient: MongoClient) {
+  constructor(mongoClient: MongoClient, logger: Logger) {
     this.onCommitHandlers = [];
     this.mongoClient = mongoClient;
+    this.logger = logger;
   }
 
   async executeOnCommitHandlers(returnValue: unknown) {
@@ -35,6 +39,7 @@ export class MongoTransactionManager implements TransactionManager {
       this.finished = true;
     } catch (error) {
       if (error.hasErrorLabel && error.hasErrorLabel('UnknownTransactionCommitResult')) {
+        this.logger.debug(error);
         await this.commitWithRetry();
       } else {
         throw error;
@@ -70,6 +75,7 @@ export class MongoTransactionManager implements TransactionManager {
       return await this.runInTransaction(callback);
     } catch (error) {
       if (retries > 0 && error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
+        this.logger.debug(error);
         return this.runWithRetry(callback, retries - 1);
       }
 
