@@ -57,7 +57,7 @@ export class MongoTransactionManager implements TransactionManager {
       await this.commitWithRetry();
       return returnValue;
     } catch (error) {
-      if (error.code !== 251) {
+      if (this.session?.inTransaction()) {
         await this.abortTransaction();
       }
 
