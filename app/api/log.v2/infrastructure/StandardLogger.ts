@@ -1,60 +1,8 @@
-/* eslint-disable max-classes-per-file */
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { Tenant } from 'api/tenants/tenantContext';
 import { Logger } from '../contracts/Logger';
-
-class LogLevel {
-  name: string;
-
-  severity: number;
-
-  constructor(name: string, severity: number) {
-    this.name = name;
-    this.severity = severity;
-  }
-}
-
-const LogLevels: Record<string, LogLevel> = {
-  DEBUG: new LogLevel('DEBUG', 10),
-  INFO: new LogLevel('INFO', 20),
-  WARNING: new LogLevel('WARNING', 30),
-  ERROR: new LogLevel('ERROR', 40),
-  CRITICAL: new LogLevel('CRITICAL', 50),
-};
-
-class LogEntry {
-  message: string;
-
-  timestamp: number;
-
-  level: LogLevel;
-
-  tenant: Tenant;
-
-  constructor(message: string, timestamp: number, level: LogLevel, tenant: Tenant) {
-    this.message = message;
-    this.timestamp = timestamp;
-    this.level = level;
-    this.tenant = tenant;
-  }
-
-  private timeToString(): string {
-    return new Date(this.timestamp).toISOString();
-  }
-
-  toString(): string {
-    return `${this.timeToString()} - [${this.level.name}] - [${this.tenant.name}]:${this.message}`;
-  }
-
-  toJSONString(): string {
-    return JSON.stringify({
-      time: this.timeToString(),
-      level: this.level.name,
-      tenant: this.tenant.name,
-      message: this.message,
-    });
-  }
-}
+import { LogLevel, LogLevels } from './LogLevels';
+import { LogEntry } from './LogEntry';
 
 class StandardLogger implements Logger {
   private tenant: Tenant;
