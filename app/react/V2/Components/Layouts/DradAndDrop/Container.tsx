@@ -35,8 +35,8 @@ const Container: FC<ContainerProps> = memo(
         <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
           <ul>
             {currentItems
-              .filter(item => item)
-              .map(item => ({ ...item, container: name }))
+              .filter((item: IDraggable) => item)
+              .map((item: IDraggable) => ({ ...item, container: name }))
               .map((item: IDraggable, index: number) => (
                 <DraggableItem
                   item={item}

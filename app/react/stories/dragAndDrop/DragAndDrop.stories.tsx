@@ -13,9 +13,11 @@ import {
   DropZone,
   IItemComponentProps,
 } from 'app/V2/Components/Layouts/DradAndDrop';
-import { IDraggable, ItemTypes } from 'app/V2/shared/types';
+import { useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
+import type { IDnDContext } from 'app/V2/CustomHooks';
+import type { IDraggable } from 'app/V2/shared/types';
+import { ItemTypes } from 'app/V2/shared/types';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { IDnDContext, useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
 import debounce from 'app/utils/debounce';
 
 const sourceItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];

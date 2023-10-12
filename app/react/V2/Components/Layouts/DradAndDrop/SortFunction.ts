@@ -2,20 +2,12 @@ import { RefObject } from 'react';
 import type { XYCoord } from 'react-dnd/dist/types/monitors';
 import { IDraggable } from 'app/V2/shared/types';
 
-const exitSorting = (
-  ref: RefObject<HTMLElement>,
+const isOutOfSortArea = (
   monitor: any,
+  hoverBoundingRect: DOMRect,
   dragIndex: number,
   hoverIndex: number
 ) => {
-  // Determine rectangle on screen
-  const hoverBoundingRect = ref.current?.getBoundingClientRect();
-
-  // No hoverBoundingRect AND Don't replace items with themselves
-  if (hoverBoundingRect === undefined || dragIndex === hoverIndex) {
-    return true;
-  }
-
   // Get vertical middle
   const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
@@ -38,6 +30,18 @@ const exitSorting = (
   }
   return false;
 };
+const shouldExitSortFunction = (
+  ref: RefObject<HTMLElement>,
+  monitor: any,
+  dragIndex: number,
+  hoverIndex: number
+) =>
+  // Determine rectangle on screen
+  // No hoverBoundingRect AND Don't replace items with themselves
+  !ref.current ||
+  !ref.current.getBoundingClientRect() ||
+  dragIndex === hoverIndex ||
+  isOutOfSortArea(monitor, ref.current.getBoundingClientRect(), dragIndex, hoverIndex);
 
 const hoverSortable =
   (ref: RefObject<HTMLElement>, target: IDraggable, index: number, sortFunction?: Function) =>
@@ -61,7 +65,7 @@ const hoverSortable =
       !sortFunction ||
       !monitor.isOver({ shallow: true }) ||
       currentItem.item.container === undefined ||
-      exitSorting(ref, monitor, dragIndex, hoverIndex)
+      shouldExitSortFunction(ref, monitor, dragIndex, hoverIndex)
     ) {
       return;
     }

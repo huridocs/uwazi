@@ -81,7 +81,7 @@ const addItemToParent = (
         ? update(prevActiveItems, {
             [indexOfParent]: {
               items: {
-                $push: [{ ..._.omit(newItem, ['parent', 'container', 'items']), parent }],
+                $push: [{ ...omit(newItem, ['parent', 'container', 'items']), parent }],
               },
             },
           })
