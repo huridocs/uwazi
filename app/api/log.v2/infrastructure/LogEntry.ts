@@ -1,3 +1,6 @@
+import { Tenant } from 'api/tenants/tenantContext';
+import { LogLevel } from './LogLevels';
+
 export class LogEntry {
   message: string;
 
@@ -14,20 +17,7 @@ export class LogEntry {
     this.tenant = tenant;
   }
 
-  private timeToString(): string {
+  timeToString(): string {
     return new Date(this.timestamp).toISOString();
-  }
-
-  toString(): string {
-    return `${this.timeToString()} - [${this.level.name}] - [${this.tenant.name}]:${this.message}`;
-  }
-
-  toJSONString(): string {
-    return JSON.stringify({
-      time: this.timeToString(),
-      level: this.level.name,
-      tenant: this.tenant.name,
-      message: this.message,
-    });
   }
 }
