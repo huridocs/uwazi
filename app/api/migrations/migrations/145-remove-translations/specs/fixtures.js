@@ -8,7 +8,7 @@ const system = {
     { key: 'Menu', value: 'Menu' },
     { key: 'Filters', value: 'Filters' },
     { key: 'Library', value: 'Library' },
-    { key: 'Confirm new Passowrd', value: 'Confirm new Passowrd' },
+    { key: 'Confirm New Passowrd', value: 'Confirm New Passowrd' },
   ],
 };
 

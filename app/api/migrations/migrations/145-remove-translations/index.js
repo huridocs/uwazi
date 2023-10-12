@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-const obsoleteTranslationKeys = ['Confirm new Passowrd'];
+const obsoleteTranslationKeys = ['Confirm New Passowrd'];
 
 export default {
   delta: 145,
