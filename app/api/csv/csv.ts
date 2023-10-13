@@ -20,6 +20,19 @@ const peekHeaders = async (readStream: Readable): Promise<string[]> => {
   return headers;
 };
 
+class ValidateFormatError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidateColumnsError';
+  }
+}
+
+type ValidateFormatOptions = {
+  column_number?: number;
+  required_headers?: string[];
+  no_empty_values?: boolean;
+};
+
 const csv = (readStream: Readable, stopOnError = false) => ({
   reading: false,
   onRowCallback: async (_row: CSVRow, _index: number) => {},
@@ -57,6 +70,58 @@ const csv = (readStream: Readable, stopOnError = false) => ({
   },
 });
 
+// eslint-disable-next-line max-statements
+const validateFormat = async (readStream: Readable, options: ValidateFormatOptions) => {
+  const anyOption = Object.keys(options).length > 0;
+  const headerOptions = options.required_headers || options.column_number;
+
+  if (!anyOption) {
+    return;
+  }
+
+  const csvObj = csv(readStream, true);
+
+  // eslint-disable-next-line max-statements
+  csvObj.onRow(async (row: CSVRow, index: number) => {
+    if (headerOptions && index === 0) {
+      const headers = Object.keys(row);
+      if (options.column_number) {
+        if (headers.length !== options.column_number) {
+          throw new ValidateFormatError(
+            `Expected ${options.column_number} columns, but found ${headers.length}.`
+          );
+        }
+      }
+
+      if (options.required_headers) {
+        const headerSet = new Set(headers);
+        const missingHeaders = options.required_headers.filter(header => !headerSet.has(header));
+        if (missingHeaders.length) {
+          throw new ValidateFormatError(`Missing required headers: ${missingHeaders.join(', ')}.`);
+        }
+      }
+
+      if (!options.no_empty_values) {
+        csvObj.reading = false;
+      }
+    }
+
+    if (options.no_empty_values) {
+      Object.entries(row).forEach(([header, value]) => {
+        if (!value) {
+          throw new ValidateFormatError(`Empty value at row ${index + 1}, column "${header}".`);
+        }
+      });
+    }
+  });
+
+  csvObj.onError(async (e: Error) => {
+    throw e;
+  });
+
+  await csvObj.read();
+};
+
 export default csv;
-export type { CSVRow };
-export { peekHeaders };
+export type { CSVRow, ValidateFormatOptions };
+export { peekHeaders, validateFormat, ValidateFormatError };
