@@ -15,7 +15,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import { arrangeThesauri } from './arrangeThesauri';
-import csv, { CSVRow } from './csv';
+import csv, { CSVRow, validateFormat, ValidateFormatOptions } from './csv';
 import { extractEntity, toSafeName } from './entityRow';
 import { FullyIndexedTranslations, importEntity, translateEntity } from './importEntity';
 import importFile from './importFile';
@@ -217,5 +217,12 @@ export class CSVLoader extends EventEmitter {
     );
 
     return translations.get();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async validateFormat(csvPath: string, options: ValidateFormatOptions) {
+    const file = importFile(csvPath);
+    const fileStream = await file.readStream();
+    return validateFormat(fileStream, options);
   }
 }
