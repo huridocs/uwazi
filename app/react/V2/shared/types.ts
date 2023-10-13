@@ -27,10 +27,7 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   sublinks: [ISublink];
 };
 export enum ItemTypes {
-  METADATA_TEMPLATE = 'metadatatemplate',
-  LINK = 'link',
   BOX = 'box',
-  FILTER = 'filter',
 }
 
 export type { IXExtractorInfo, ISublink, ILink, IDraggable };

@@ -47,7 +47,7 @@ const DndContextState = ({
 }) => (
   <div className=" tw-content">
     <div
-      className={`pl-5 mt-20 border-2 border-gray-200 ${!child ? 'w-80' : 'w-60 border-dashed'}`}
+      className={`pl-5 mt-20 border-2 border-gray-200 ${!child ? 'w-100' : 'w-60 border-dashed'}`}
       data-testid="state-bin"
     >
       <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
