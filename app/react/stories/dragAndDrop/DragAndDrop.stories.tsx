@@ -12,7 +12,7 @@ import {
   DraggableItem,
   DropZone,
   IItemComponentProps,
-} from 'app/V2/Components/Layouts/DradAndDrop';
+} from 'app/V2/Components/Layouts/DragAndDrop';
 import { useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
 import type { IDnDContext } from 'app/V2/CustomHooks';
 import type { IDraggable } from 'app/V2/shared/types';
