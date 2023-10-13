@@ -2,7 +2,7 @@ import { RefObject } from 'react';
 import type { XYCoord } from 'react-dnd/dist/types/monitors';
 import { IDraggable } from 'app/V2/shared/types';
 
-const isOutOfSortArea = (
+const checkSortArea = (
   monitor: any,
   hoverBoundingRect: DOMRect,
   dragIndex: number,
@@ -30,7 +30,7 @@ const isOutOfSortArea = (
   }
   return false;
 };
-const shouldExitSortFunction = (
+const isOutOfSortArea = (
   ref: RefObject<HTMLElement>,
   monitor: any,
   dragIndex: number,
@@ -41,7 +41,15 @@ const shouldExitSortFunction = (
   !ref.current ||
   !ref.current.getBoundingClientRect() ||
   dragIndex === hoverIndex ||
-  isOutOfSortArea(monitor, ref.current.getBoundingClientRect(), dragIndex, hoverIndex);
+  checkSortArea(monitor, ref.current.getBoundingClientRect(), dragIndex, hoverIndex);
+
+const isNotSortableItem = (
+  currentItem: { id: string; item: IDraggable },
+  target: IDraggable & { ID?: string }
+) =>
+  (currentItem.item.parent && !target.parent) ||
+  currentItem.id === target.id ||
+  currentItem.item.container === undefined;
 
 const hoverSortable =
   (ref: RefObject<HTMLElement>, target: IDraggable, index: number, sortFunction?: Function) =>
@@ -54,18 +62,14 @@ const hoverSortable =
     },
     monitor: any
   ) => {
-    if ((currentItem.item.parent && !target.parent) || currentItem.id === target.id) {
-      return;
-    }
-
     const dragIndex = currentItem.index;
     const hoverIndex = index;
     if (
       !ref.current ||
+      isNotSortableItem(currentItem, target) ||
       !sortFunction ||
       !monitor.isOver({ shallow: true }) ||
-      currentItem.item.container === undefined ||
-      shouldExitSortFunction(ref, monitor, dragIndex, hoverIndex)
+      isOutOfSortArea(ref, monitor, dragIndex, hoverIndex)
     ) {
       return;
     }
