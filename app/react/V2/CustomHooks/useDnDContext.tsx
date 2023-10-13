@@ -8,7 +8,7 @@ import {
   removeActiveItem,
   mapWithID,
   mapWithParent,
-  sortActiveitems,
+  sortActiveItems,
 } from './dragAndDrop/definitions';
 
 const useDnDContext = (
@@ -33,7 +33,7 @@ const useDnDContext = (
     type,
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
-    sort: sortActiveitems(activeItems, setActiveItems),
+    sort: sortActiveItems(activeItems, setActiveItems),
     updateItems,
     updateActiveItems: (items: IDraggable[]) => {
       setActiveItems(items);

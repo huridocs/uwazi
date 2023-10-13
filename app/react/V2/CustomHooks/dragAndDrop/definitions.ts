@@ -194,7 +194,7 @@ const sortParents = (
     );
   }
 };
-const sortActiveitems =
+const sortActiveItems =
   (activeItems: IDraggable[], setActiveItems: React.Dispatch<React.SetStateAction<IDraggable[]>>) =>
   (currentItem: IDraggable, target: IDraggable, dragIndex: number, hoverIndex: number) => {
     if (currentItem.parent !== undefined) {
@@ -205,4 +205,4 @@ const sortActiveitems =
   };
 
 export type { IDnDContext };
-export { addActiveItem, removeActiveItem, sortActiveitems, mapWithParent, mapWithID };
+export { addActiveItem, removeActiveItem, sortActiveItems, mapWithParent, mapWithID };
