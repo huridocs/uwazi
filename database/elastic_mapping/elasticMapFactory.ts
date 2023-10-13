@@ -1,15 +1,14 @@
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { RelationshipPropertyMappingFactory } from 'api/templates.v2/database/mappings/RelationshipPropertyMappingFactory';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { TemplateSchema } from 'shared/types/templateType';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { propertyMappings } from './mappings';
 
 const createNewRelationshipMappingFactory = async () => {
   const db = getConnection();
-  const client = getClient();
-  const transactionManager = new MongoTransactionManager(client);
+  const transactionManager = DefaultTransactionManager();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   if (!(await settingsDataSource.readNewRelationshipsAllowed())) {

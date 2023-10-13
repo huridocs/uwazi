@@ -3,8 +3,8 @@ import testingDB from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
-import { MongoTransactionManager } from '../MongoTransactionManager';
-import { getClient, getConnection } from '../getConnectionForCurrentTenant';
+import { getConnection } from '../getConnectionForCurrentTenant';
+import { DefaultTransactionManager } from '../data_source_defaults';
 
 const blankState = [
   {
@@ -133,7 +133,7 @@ describe('session scoped collection', () => {
     it.each(casesForUpdates)(
       '$method should write changes transactionally',
       async ({ callback, expectedOnAbort, expectedOnSuccess }) => {
-        const transactionManager1 = new MongoTransactionManager(getClient());
+        const transactionManager1 = DefaultTransactionManager();
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
         try {
@@ -150,7 +150,7 @@ describe('session scoped collection', () => {
           );
         }
 
-        const transactionManager2 = new MongoTransactionManager(getClient());
+        const transactionManager2 = DefaultTransactionManager();
         const dataSource2 = new DataSource(getConnection(), transactionManager2);
 
         await transactionManager2.run(async () => {
@@ -203,7 +203,7 @@ describe('session scoped collection', () => {
     it.each(casesForReads)(
       '$method should read data from the transaction',
       async ({ callback, expectedInTransaction }) => {
-        const transactionManager1 = new MongoTransactionManager(getClient());
+        const transactionManager1 = DefaultTransactionManager();
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
         let result;
@@ -238,7 +238,7 @@ describe('session scoped collection', () => {
     it.each(otherCases)(
       '$method should return the information according to the transaction state',
       async ({ callback, expectedInTransaction, expectedNoTransaction }) => {
-        const transactionManager1 = new MongoTransactionManager(getClient());
+        const transactionManager1 = DefaultTransactionManager();
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
         let result;
@@ -254,7 +254,7 @@ describe('session scoped collection', () => {
           expect(result).toEqual(expectedInTransaction);
         }
 
-        const transactionManager2 = new MongoTransactionManager(getClient());
+        const transactionManager2 = DefaultTransactionManager();
         const dataSource2 = new DataSource(getConnection(), transactionManager2);
 
         expect(await callback(dataSource2)).toEqual(expectedNoTransaction);
