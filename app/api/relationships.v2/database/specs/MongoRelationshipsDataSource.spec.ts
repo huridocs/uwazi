@@ -1,10 +1,9 @@
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
@@ -88,10 +87,7 @@ let ds: MongoRelationshipsDataSource;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
-  ds = new MongoRelationshipsDataSource(
-    testingDB.mongodb!,
-    new MongoTransactionManager(getClient())
-  );
+  ds = new MongoRelationshipsDataSource(testingDB.mongodb!, DefaultTransactionManager());
 });
 
 afterAll(async () => {

@@ -2,8 +2,9 @@
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { MongoError } from 'mongodb';
-import { getClient } from '../getConnectionForCurrentTenant';
+import { MongoClient, MongoError } from 'mongodb';
+import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger';
+import { getClient, getTenant } from '../getConnectionForCurrentTenant';
 import { MongoTransactionManager } from '../MongoTransactionManager';
 
 const ids = getIdMapper();
@@ -61,9 +62,12 @@ class Transactional3 extends TestBase {
   }
 }
 
+const createTransactionManager = (client?: MongoClient) =>
+  new MongoTransactionManager(client ?? getClient(), new StandardLogger(() => {}, getTenant()));
+
 describe('When every operation goes well', () => {
   it('should be reflected in all of the collections affected', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
     const source1 = new Transactional1(transactionManager);
     const source2 = new Transactional2(transactionManager);
     const source3 = new Transactional3(transactionManager);
@@ -88,7 +92,7 @@ describe('When every operation goes well', () => {
 describe('When one operation fails', () => {
   // eslint-disable-next-line max-statements
   it('should not write any changes to the database and re-throw the error', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
     const error = new Error('Simulated error');
     const source1 = new Transactional1(transactionManager);
     const source2 = new Transactional2(transactionManager);
@@ -133,7 +137,7 @@ describe('When one operation fails', () => {
 
     await testingDB.mongodb?.collection('collection1').createIndex({ name: 1 }, { unique: true });
 
-    const tm = new MongoTransactionManager(getClient());
+    const tm = createTransactionManager();
     const transactional = new Transactional4(tm);
 
     try {
@@ -183,7 +187,7 @@ describe('when calling run() when a transaction is running', () => {
   it.each<(typeof cases)[number]>(cases)(
     'should throw "transaction in progress"',
     async ({ cb }) => {
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = createTransactionManager();
 
       try {
         await cb(transactionManager);
@@ -196,7 +200,7 @@ describe('when calling run() when a transaction is running', () => {
 
 describe('when calling run() after the transaction was commited', () => {
   it('should throw "transaction finished"', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     try {
       await transactionManager.run(async () => Promise.resolve());
@@ -209,7 +213,7 @@ describe('when calling run() after the transaction was commited', () => {
 
 describe('when registering onCommitted event handlers within the run() callback', () => {
   it('should trigger the handlers after committing', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     const checkpoints = [1];
 
@@ -235,7 +239,7 @@ describe('when registering onCommitted event handlers within the run() callback'
   });
 
   it('should not trigger the handlers if aborted', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     const checkpoints = [1];
 
@@ -265,7 +269,7 @@ describe('when registering onCommitted event handlers within the run() callback'
   });
 
   it('should manually trigger the onCommit handlers', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     const checkpoints = [1];
 
@@ -285,7 +289,7 @@ describe('when registering onCommitted event handlers within the run() callback'
 
 describe('when registering onCommitted event handlers with the runHandlingOnCommited() call', () => {
   it('should trigger the handlers with the result after committing', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     const checkpoints = [1];
     let transactionResult: string = '';
@@ -312,7 +316,7 @@ describe('when registering onCommitted event handlers with the runHandlingOnComm
 // https://www.mongodb.com/docs/manual/core/transactions-in-applications/#std-label-transient-transaction-error
 describe('when the some operation throws a TransientTransactionError', () => {
   it('should retry the whole transaction', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
 
     let throwed = false;
     const checkpoints: number[] = [];
@@ -334,7 +338,7 @@ describe('when the some operation throws a TransientTransactionError', () => {
   });
 
   it('should retry the transaction a finite amount of times', async () => {
-    const transactionManager = new MongoTransactionManager(getClient());
+    const transactionManager = createTransactionManager();
     const errors: Error[] = [];
     try {
       await transactionManager.run(async () => {
@@ -370,7 +374,7 @@ describe('when the commit operation throws a UnknownTransactionCommitResult', ()
         endSession: () => {},
       }),
     };
-    const transactionManager = new MongoTransactionManager(clientMock as any);
+    const transactionManager = createTransactionManager(clientMock as any);
 
     const checkpoints: number[] = [];
     await transactionManager

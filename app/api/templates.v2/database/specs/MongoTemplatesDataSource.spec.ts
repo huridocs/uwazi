@@ -1,10 +1,10 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { TraversalQueryNode } from 'api/relationships.v2/model/TraversalQueryNode';
 import { Property } from 'api/templates.v2/model/Property';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoTemplatesDataSource } from '../MongoTemplatesDataSource';
 import { mapPropertyQuery } from '../QueryMapper';
 
@@ -71,10 +71,7 @@ afterAll(async () => {
 
 describe('getAllProperties()', () => {
   it('should return all the properties properly typed', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      new MongoTransactionManager(getClient())
-    );
+    const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     const result = await dataSource.getAllProperties().all();
     expect(result.length).toBe(4);
     expect(result[0]).toBeInstanceOf(RelationshipProperty);
@@ -104,10 +101,7 @@ describe('getAllProperties()', () => {
 
 describe('when requesting the relationship properties configured in the system', () => {
   it('should return all the relationship properties', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      new MongoTransactionManager(getClient())
-    );
+    const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     const result = await dataSource.getAllRelationshipProperties().all();
     expect(result.length).toBe(3);
     result.forEach(property => {
@@ -139,7 +133,7 @@ describe('when requesting a property by name', () => {
   const props: { [name: string]: Property } = {};
 
   beforeAll(async () => {
-    tds = new MongoTemplatesDataSource(getConnection(), new MongoTransactionManager(getClient()));
+    tds = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     props.newRelationship = await tds.getPropertyByName('relationshipProp2');
     props.text = await tds.getPropertyByName('textprop');
   });
@@ -173,10 +167,7 @@ describe('when requesting a property by name', () => {
 
 describe('getByIds()', () => {
   it('should return the templates', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      new MongoTransactionManager(getClient())
-    );
+    const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     const result = await dataSource
       .getByIds([factory.id('template1').toString(), factory.id('template2').toString()])
       .all();
@@ -195,10 +186,7 @@ describe('getByIds()', () => {
 
 describe('getById()', () => {
   it('should return the template', async () => {
-    const dataSource = new MongoTemplatesDataSource(
-      getConnection(),
-      new MongoTransactionManager(getClient())
-    );
+    const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
     const result = await dataSource.getById(factory.id('template1').toString());
     expect(result).toMatchObject({
       id: factory.id('template1').toString(),
