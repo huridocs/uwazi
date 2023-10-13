@@ -4,6 +4,7 @@ import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
 import { Icon } from 'app/UI';
 import type { IDraggable } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
+import { IDnDContext } from 'app/V2/CustomHooks';
 import { hoverSortable } from './SortFunction';
 import { IItemComponentProps } from './Container';
 
@@ -22,6 +23,26 @@ type DraggedResult = {
   item: IDraggable;
   index: number;
 };
+
+const hasValidContext = (dropContext?: IDnDContext) => dropContext !== undefined;
+
+const isNotAutoContained = (
+  currentItem: IDraggable,
+  draggedResult: DraggedResult,
+  dropParent?: { id?: string; item?: IDraggable }
+) =>
+  (draggedResult.item.container !== currentItem.container ||
+    dropParent === undefined ||
+    dropParent?.id !== draggedResult.item.parent?.id ||
+    draggedResult.item.container === undefined) &&
+  (dropParent === undefined || draggedResult.item.id !== dropParent.id);
+
+const hasNoItems = (currentItem: IDraggable) =>
+  currentItem.items === undefined || currentItem.items.length === 0;
+
+const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
+
+const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
 const DragableItemComponent: FC<DraggableItemProps> = ({
   item,
@@ -55,13 +76,9 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps & { parent: IDraggable }>() || {};
       if (
-        dropContext !== undefined &&
-        (draggedResult.item.container !== item.container ||
-          dropParent === undefined ||
-          dropParent?.id !== draggedResult.item.parent?.id ||
-          draggedResult.item.container === undefined) &&
-        (item.items === undefined || item.items.length === 0) &&
-        (dropParent === undefined || draggedResult.item.id !== dropParent.id)
+        hasValidContext(dropContext) &&
+        isNotAutoContained(item, draggedResult, dropParent) &&
+        hasNoItems(item)
       ) {
         context.addItem(draggedResult.item, dropParent);
       }
@@ -72,21 +89,21 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
     }),
   });
 
-  const opacity = isDragging ? 0.4 : 1;
+  const opacity = getOpacityLevel(isDragging);
 
   drag(drop(ref));
   return (
     <li
-      className={`${className} flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center ${
-        iconHandle ? 'cursor-move' : ''
-      }`}
+      className={`${className} flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center ${getIconHandleClass(
+        iconHandle
+      )}`}
       ref={ref}
       data-testid={`${item.container || item.parent?.name || 'available'}-draggable-item-${index}`}
       style={{ opacity }}
       data-handler-id={handlerId}
     >
       {!omitIcon && (
-        <Icon icon="bars" className={`text-gray-400 ${!iconHandle ? 'cursor-move' : ''}`} />
+        <Icon icon="bars" className={`text-gray-400 ${getIconHandleClass(!iconHandle)}`} />
       )}
       {children}
     </li>

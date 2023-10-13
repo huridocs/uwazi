@@ -1,3 +1,4 @@
+import React from 'react';
 import { mount } from 'cypress/react';
 
 // Augment the Cypress namespace to include type definitions for
@@ -22,6 +23,7 @@ declare global {
           position?: Cypress.PositionType;
         }
       ): Chainable<Element>;
+      checkAccesibility(components: React.ReactNode[]);
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

@@ -30,3 +30,15 @@ import { mount } from 'cypress/react18';
 // with a <reference path="./component" /> at the top of your spec.
 
 Cypress.Commands.add('mount', mount);
+
+//@ts-ignore
+const check = components => {
+  cy.injectAxe();
+  //@ts-ignore
+  components.forEach(component => {
+    mount(component);
+    cy.checkA11y();
+  });
+};
+
+Cypress.Commands.add('checkAccesibility', check);

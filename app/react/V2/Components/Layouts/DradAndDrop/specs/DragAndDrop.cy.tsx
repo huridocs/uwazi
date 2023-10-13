@@ -9,16 +9,7 @@ const { Basic, WithItemComponent, Nested } = composeStories(stories);
 
 describe('DragAndDrop', () => {
   it('should be accessible', () => {
-    cy.injectAxe();
-
-    mount(<Basic />);
-    cy.checkA11y();
-
-    mount(<WithItemComponent />);
-    cy.checkA11y();
-
-    mount(<Nested />);
-    cy.checkA11y();
+    cy.checkAccesibility([<Basic />, <WithItemComponent />, <Nested />]);
   });
 
   const shouldContainListItems = (selector: string, items: string[]) => {
