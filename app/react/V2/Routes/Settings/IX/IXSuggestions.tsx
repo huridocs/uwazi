@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import {
   LoaderFunction,
@@ -28,6 +28,7 @@ import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
+import { updateSuggestions, updateSuggestionsByEntity } from './components/helpers';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -59,6 +60,9 @@ const IXSuggestions = () => {
       aggregation: any;
       currentStatus: ixStatus;
     };
+
+  const [currentSuggestions, setCurrentSuggestions] = useState(suggestions);
+  useMemo(() => setCurrentSuggestions(suggestions), [suggestions]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -126,7 +130,7 @@ const IXSuggestions = () => {
           entityId: acceptedSuggestion.entityId,
         }))
       );
-      revalidate();
+      setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
       setNotifications({
         type: 'success',
         text: <Translate>Suggestion accepted.</Translate>,
@@ -167,7 +171,7 @@ const IXSuggestions = () => {
           <Translate>Showing</Translate>
         </span>
         &nbsp;
-        {from}-{from + suggestions.length - 1}
+        {from}-{from + currentSuggestions.length - 1}
         &nbsp;
         <span className="font-light text-gray-500">
           <Translate>of</Translate>
@@ -201,7 +205,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
-            data={suggestions}
+            data={currentSuggestions}
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
@@ -310,6 +314,9 @@ const IXSuggestions = () => {
         showSidepanel={sidepanel === 'pdf'}
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
+        onEntitySave={updatedEntity =>
+          setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity))
+        }
       />
     </div>
   );

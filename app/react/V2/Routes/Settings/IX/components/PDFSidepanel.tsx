@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
-import { useLoaderData, useRevalidator } from 'react-router-dom';
+import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
@@ -26,6 +26,7 @@ interface PDFSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion: EntitySuggestionType | undefined;
+  onEntitySave: (entity: ClientEntitySchema) => any;
 }
 
 enum HighlightColors {
@@ -144,12 +145,15 @@ const coerceValue = async (
   return undefined;
 };
 
-const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepanelProps) => {
+const PDFSidepanel = ({
+  showSidepanel,
+  setShowSidepanel,
+  suggestion,
+  onEntitySave,
+}: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
   };
-
-  const revalidator = useRevalidator();
 
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<FileType>();
@@ -241,10 +245,17 @@ const PDFSidepanel = ({ showSidepanel, setShowSidepanel, suggestion }: PDFSidepa
         (savedEntity as FetchResponseError)?.json.prettyMessage;
 
       setNotifications({ type: 'error', text: 'An error occurred', details });
-      revalidator.revalidate();
     } else if (savedFile || savedEntity) {
+      if (savedFile) {
+        setPdf(savedFile);
+      }
+
+      if (savedEntity) {
+        setEntity(savedEntity);
+        onEntitySave(savedEntity);
+      }
+
       setNotifications({ type: 'success', text: 'Saved successfully.' });
-      revalidator.revalidate();
     }
 
     setShowSidepanel(false);
