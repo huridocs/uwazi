@@ -1,7 +1,6 @@
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
@@ -11,6 +10,7 @@ import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DBFixture } from 'api/utils/testing_db';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { GetRelationshipService } from '../GetRelationshipService';
 
 const fixtureFactory = getFixturesFactory();
@@ -49,7 +49,7 @@ const fixtures: DBFixture = {
 const createService = (_user?: User) => {
   const user = _user || new User(fixtureFactory.id('user').toString(), 'admin', []);
   const connection = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const relationshipsDS = new MongoRelationshipsDataSource(connection, transactionManager);
   const relationshipTypesDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);

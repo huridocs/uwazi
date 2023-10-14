@@ -1,5 +1,4 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
@@ -8,6 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { MetadataSchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoEntitiesDataSource } from '../MongoEntitiesDataSource';
 
 const factory = getFixturesFactory();
@@ -154,7 +154,7 @@ describe('Relationship fields caching strategy', () => {
     it('should invalidate the cache for the provided entity-property pairs in all languages', async () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
@@ -197,7 +197,7 @@ describe('Relationship fields caching strategy', () => {
     it('should invalidate the cache for the provided properties in the provided template, in all languages', async () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
@@ -269,7 +269,7 @@ describe('Relationship fields caching strategy', () => {
     beforeEach(async () => {
       const settingsDsMock = partialImplementation<MongoSettingsDataSource>({});
       const db = getConnection();
-      const tm = new MongoTransactionManager(getClient());
+      const tm = DefaultTransactionManager();
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, tm),
@@ -377,7 +377,7 @@ describe('When checking for the existence of entities', () => {
     'should return $expected checking for sharedIds in $ids',
     async ({ ids, expected }) => {
       const db = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const ds = new MongoEntitiesDataSource(
         db,
         new MongoTemplatesDataSource(db, transactionManager),
@@ -396,7 +396,7 @@ describe('When checking for the existence of entities', () => {
 
 it('should return the sharedIds of the entities that have a particular id within their denormalized values in a metatata prop', async () => {
   const db = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const ds = new MongoEntitiesDataSource(
     db,
     new MongoTemplatesDataSource(db, transactionManager),
@@ -417,7 +417,7 @@ it('should return the sharedIds of the entities that have a particular id within
 
 it('should update the denormalizations value in all related entities', async () => {
   const db = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const ds = new MongoEntitiesDataSource(
     db,
     new MongoTemplatesDataSource(db, transactionManager),
@@ -495,7 +495,7 @@ it('should update the denormalizations value in all related entities', async () 
 
 it('should return records containing the obsoleteMetadata', async () => {
   const db = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const ds = new MongoEntitiesDataSource(
     db,
     new MongoTemplatesDataSource(db, transactionManager),

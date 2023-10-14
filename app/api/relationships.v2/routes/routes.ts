@@ -4,14 +4,13 @@ import { Application, NextFunction, Request, Response } from 'express';
 
 import { needsAuthorization } from 'api/auth';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { parseQuery } from 'api/utils';
 import { GetMigrationHubRecordsResponse } from 'shared/types/api.v2/migrationHubRecords.get';
 import { MigrationResponse } from 'shared/types/api.v2/relationships.migrate';
 import { TestOneHubResponse } from 'shared/types/api.v2/relationships.testOneHub';
 import { CreateRelationshipMigRationFieldResponse } from 'shared/types/api.v2/relationshipMigrationField.create';
 import { GetRelationshipMigrationFieldsResponse } from 'shared/types/api.v2/relationshipMigrationField.get';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -34,9 +33,7 @@ import { validateGetMigrationHubRecordsRequest } from './validators/getMigration
 
 const featureRequired = async (_req: Request, res: Response, next: NextFunction) => {
   if (
-    !(await DefaultSettingsDataSource(
-      new MongoTransactionManager(getClient())
-    ).readNewRelationshipsAllowed())
+    !(await DefaultSettingsDataSource(DefaultTransactionManager()).readNewRelationshipsAllowed())
   ) {
     return res.sendStatus(404);
   }
