@@ -20,10 +20,19 @@ import { ItemTypes } from 'app/V2/shared/types';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import debounce from 'app/utils/debounce';
 
-const sourceItems: IDraggable[] = [{ name: 'Item 4' }, { name: 'Item 5' }];
-const CardWithRemove: FC<IItemComponentProps> = ({ item, context }) => (
+interface DnDValueExample {
+  name: string;
+}
+
+const sampleDefaultName = (item: IDraggable<DnDValueExample>) => item.value.name;
+
+const sourceItems: IDraggable<DnDValueExample>[] = [
+  { value: { name: 'Item 4' } },
+  { value: { name: 'Item 5' } },
+];
+const CardWithRemove: FC<IItemComponentProps<DnDValueExample>> = ({ item, context }) => (
   <div className="flex flex-row items-center justify-center w-full">
-    <div>{item.name}</div>
+    <div>{item.value.name}</div>
     <Button
       type="button"
       color="error"
@@ -42,7 +51,7 @@ const DndContextState = ({
   activeItems,
   child = false,
 }: {
-  activeItems: IDraggable[];
+  activeItems: IDraggable<DnDValueExample>[];
   child?: boolean;
 }) => (
   <div className=" tw-content">
@@ -52,9 +61,9 @@ const DndContextState = ({
     >
       <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
       <ul className="mb-8 list-disc ">
-        {activeItems.map((item: IDraggable) => (
+        {activeItems.map((item: IDraggable<DnDValueExample>) => (
           <li className="flex items-center gap-10 space-x-3" key={item.id}>
-            <span>{item.name}</span>
+            <span>{item.value.name}</span>
             {item.items && <DndContextState activeItems={item.items.filter(v => v)} child />}
           </li>
         ))}
@@ -62,9 +71,8 @@ const DndContextState = ({
     </div>
   </div>
 );
-
 const DnDClient = ({ items, type, itemComponent }: any) => {
-  const dndContext = useDnDContext(type, items, sourceItems);
+  const dndContext = useDnDContext(type, sampleDefaultName, items, sourceItems);
 
   return (
     <div className="tw-content">
@@ -80,7 +88,7 @@ const DnDClient = ({ items, type, itemComponent }: any) => {
         <div className="flex items-center ">
           <div data-testid="available-bin">
             <h2 className="mb-2 text-xl font-bold ">Available Items</h2>
-            <DragSource className="p-3 mb-2 text-sm" context={dndContext} />
+            <DragSource<DnDValueExample> className="p-3 mb-2 text-sm" context={dndContext} />
           </div>
         </div>
       </div>
@@ -94,31 +102,31 @@ const EditableItem = ({
   item,
   index,
 }: {
-  dndContext: IDnDContext;
-  item: IDraggable;
+  dndContext: IDnDContext<DnDValueExample>;
+  item: IDraggable<DnDValueExample>;
   index: number;
 }) => {
   const debouncedChangeHandler = useCallback(() => {
     const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      dndContext.updateItems(index, {
-        name: e.target.value,
+      dndContext.updateItems({
+        value: { ...item, name: e.target.value },
       });
     };
 
     return debounce(changeHandler, 500);
-  }, [dndContext, index]);
+  }, [dndContext, index, item]);
 
   return (
     <input
       id={`name.${index}`}
-      defaultValue={item.name}
+      defaultValue={item.value.name}
       onInput={debouncedChangeHandler}
-      aria-label={item.name}
+      aria-label={item.value.name}
     />
   );
 };
 const DnDClientWithForm = ({ items, type }: any) => {
-  const dndContext = useDnDContext(type, items, sourceItems);
+  const dndContext = useDnDContext(type, sampleDefaultName, items, sourceItems);
 
   return (
     <>
@@ -127,7 +135,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
           <div data-testid="active-bin" className="col-span-2 ">
             <h1 className="mb-4 text-xl font-bold">Active Items</h1>
             <ul>
-              {dndContext.activeItems.map((item: IDraggable, index: number) => (
+              {dndContext.activeItems.map((item: IDraggable<DnDValueExample>, index: number) => (
                 <DraggableItem
                   item={{ ...item, container: 'root' }}
                   key={item.id}
@@ -166,13 +174,13 @@ const meta: Meta<typeof DnDClient> = {
 
 type Story = StoryObj<typeof DnDClient>;
 
-const CardWithDnD: FC<IItemComponentProps> = ({ item, context, index }) => (
+const CardWithDnD: FC<IItemComponentProps<DnDValueExample>> = ({ item, context, index }) => (
   <div className="flex flex-col w-full">
     <CardWithRemove item={item} context={context} index={index} />
     <Container
       context={context}
       itemComponent={CardWithRemove}
-      name={`group_${item.name}`}
+      name={`group_${item.value.name}`}
       parent={item}
     />
   </div>

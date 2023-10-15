@@ -11,35 +11,41 @@ import {
   sortActiveItems,
 } from './dragAndDrop/definitions';
 
-const useDnDContext = (
+// eslint-disable-next-line prettier/prettier
+const useDnDContext = <T, >(
   type: ItemTypes,
-  initialItems: IDraggable[] = [],
-  sourceItems: IDraggable[] = []
+  getDisplayName: (item: IDraggable<T>) => string,
+  initialItems: IDraggable<T>[] = [],
+  sourceItems: IDraggable<T>[] = []
 ) => {
-  const [activeItems, setActiveItems] = useState<IDraggable[]>(mapWithParent(initialItems));
-  const [availableItems, setAvailableItems] = useState<IDraggable[]>(mapWithID(sourceItems || []));
+  const [activeItems, setActiveItems] = useState<IDraggable<T>[]>(mapWithParent(initialItems));
+  const [availableItems, setAvailableItems] = useState<IDraggable<T>[]>(
+    mapWithID(sourceItems || [])
+  );
 
-  const updateItems = (index: number, values: IDraggable) => {
-    setActiveItems((prevActiveItems: IDraggable[]) =>
-      update(prevActiveItems, {
+  const updateItems = (item: IDraggable<T>) => {
+    setActiveItems((prevActiveItems: IDraggable<T>[]) => {
+      const index = prevActiveItems.findIndex(x => x.id === item.id);
+      return update(prevActiveItems, {
         [index]: {
-          name: { $set: values.name },
+          $set: { value: item.value },
         },
-      })
-    );
+      });
+    });
   };
 
-  const dndContext: IDnDContext = {
+  const dndContext: IDnDContext<T> = {
     type,
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
     sort: sortActiveItems(activeItems, setActiveItems),
     updateItems,
-    updateActiveItems: (items: IDraggable[]) => {
+    updateActiveItems: (items: IDraggable<T>[]) => {
       setActiveItems(items);
     },
     activeItems,
     availableItems,
+    getDisplayName,
   };
   return dndContext;
 };

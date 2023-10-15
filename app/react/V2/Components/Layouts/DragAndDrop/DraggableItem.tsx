@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import type { FC } from 'react';
 import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
 import { Icon } from 'app/UI';
 import type { IDraggable } from 'app/V2/shared/types';
@@ -8,8 +7,8 @@ import { IDnDContext } from 'app/V2/CustomHooks';
 import { hoverSortable } from './SortFunction';
 import { IItemComponentProps } from './Container';
 
-interface DraggableItemProps extends React.PropsWithChildren {
-  item: IDraggable;
+interface DraggableItemProps<T> extends React.PropsWithChildren {
+  item: IDraggable<T>;
   useDrag?: Function;
   useDrop?: Function;
   iconHandle?: boolean;
@@ -19,32 +18,39 @@ interface DraggableItemProps extends React.PropsWithChildren {
   omitIcon?: boolean;
 }
 
-type DraggedResult = {
-  item: IDraggable;
+type DraggedResult<T> = {
+  item: IDraggable<T>;
   index: number;
 };
 
-const hasValidContext = (dropContext?: IDnDContext) => dropContext !== undefined;
+function hasValidContext<T>(dropContext?: IDnDContext<T>) {
+  return dropContext !== undefined;
+}
 
-const isNotAutoContained = (
-  currentItem: IDraggable,
-  draggedResult: DraggedResult,
-  dropParent?: { id?: string; item?: IDraggable }
-) =>
-  (draggedResult.item.container !== currentItem.container ||
-    dropParent === undefined ||
-    dropParent?.id !== draggedResult.item.parent?.id ||
-    draggedResult.item.container === undefined) &&
-  (dropParent === undefined || draggedResult.item.id !== dropParent.id);
+function isNotAutoContained<T>(
+  currentItem: IDraggable<T>,
+  draggedResult: DraggedResult<T>,
+  dropParent?: { id?: string; item?: IDraggable<T> }
+) {
+  return (
+    (draggedResult.item.container !== currentItem.container ||
+      dropParent === undefined ||
+      dropParent?.id !== draggedResult.item.parent?.id ||
+      draggedResult.item.container === undefined) &&
+    (dropParent === undefined || draggedResult.item.id !== dropParent.id)
+  );
+}
 
-const hasNoItems = (currentItem: IDraggable) =>
-  currentItem.items === undefined || currentItem.items.length === 0;
+function hasNoItems<T>(currentItem: IDraggable<T>) {
+  return currentItem.items === undefined || currentItem.items.length === 0;
+}
 
 const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
 
 const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
-const DragableItemComponent: FC<DraggableItemProps> = ({
+// eslint-disable-next-line react/function-component-definition
+function DraggableItemComponent<T>({
   item,
   useDrag = () => {},
   useDrop = () => {},
@@ -54,7 +60,7 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   context,
   className,
   omitIcon = false,
-}) => {
+}: DraggableItemProps<T>) {
   const ref = useRef<HTMLLIElement>(null);
   const [, drop] = useDrop({
     accept: context.type,
@@ -72,9 +78,9 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
   const [{ isDragging, handlerId }, drag] = useDrag({
     type: context.type,
     item: { item, index },
-    end: (draggedResult: DraggedResult, monitor: DragSourceMonitor) => {
+    end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
       const { context: dropContext, parent: dropParent } =
-        monitor.getDropResult<IItemComponentProps & { parent: IDraggable }>() || {};
+        monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
       if (
         hasValidContext(dropContext) &&
         isNotAutoContained(item, draggedResult, dropParent) &&
@@ -98,7 +104,9 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
         iconHandle
       )}`}
       ref={ref}
-      data-testid={`${item.container || item.parent?.name || 'available'}-draggable-item-${index}`}
+      data-testid={`${
+        item.container || context.getDisplayName(item.parent) || 'available'
+      }-draggable-item-${index}`}
       style={{ opacity }}
       data-handler-id={handlerId}
     >
@@ -108,8 +116,8 @@ const DragableItemComponent: FC<DraggableItemProps> = ({
       {children}
     </li>
   );
-};
+}
 
-const DraggableItem = withDnD(DragableItemComponent);
+const DraggableItem = withDnD(DraggableItemComponent);
 
 export { DraggableItem, hoverSortable };

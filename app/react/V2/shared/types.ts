@@ -4,16 +4,15 @@ interface IXExtractorInfo {
   _id: string;
   name: string;
   property: string;
-
   templates: string[];
 }
 
-interface IDraggable {
+interface IDraggable<T> {
   id?: string;
-  name: string;
-  items?: IDraggable[];
+  value: T;
+  items?: IDraggable<T>[];
   iconHandle?: boolean;
-  parent?: IDraggable;
+  parent?: IDraggable<T>;
   container?: string;
 }
 
