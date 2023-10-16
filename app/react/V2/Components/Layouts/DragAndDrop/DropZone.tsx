@@ -1,26 +1,26 @@
 /* eslint-disable import/exports-last */
 import React from 'react';
-import type { FC } from 'react';
 import type { DropTargetMonitor } from 'react-dnd/dist/types/monitors';
 import { Translate } from 'app/I18N';
 import { withDnD } from 'app/componentWrappers';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 
-interface DroppableProps {
+interface DroppableProps<T> {
   name: string;
   type: ItemTypes;
   context: any;
   useDrop?: Function;
-  parent?: IDraggable;
+  parent?: IDraggable<T>;
 }
 
-const DropZoneComponent: FC<DroppableProps> = ({
+// eslint-disable-next-line react/function-component-definition
+function DropZoneComponent<T>({
   name,
   useDrop = () => {},
   type,
   context,
   parent,
-}) => {
+}: DroppableProps<T>) {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
     drop: () => ({ name, context, parent }),
@@ -44,7 +44,7 @@ const DropZoneComponent: FC<DroppableProps> = ({
       <Translate>Drag items here</Translate>
     </div>
   );
-};
+}
 
 const DropZone = withDnD(DropZoneComponent);
 export { DropZone };

@@ -29,7 +29,7 @@ function Container<T>({
   className,
   parent,
 }: ContainerProps<T>) {
-  const currentItems = parent ? parent.items || [] : context.activeItems;
+  const currentItems = parent ? parent.value.items || [] : context.activeItems;
   return (
     <div className="tw-content " data-testid={`active_filters_${name}`}>
       <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
@@ -48,7 +48,7 @@ function Container<T>({
               >
                 <>
                   {itemComponent && itemComponent({ item, context, index })}
-                  {!itemComponent && item.value}
+                  {!itemComponent && context.getDisplayName(item)}
                 </>
               </DraggableItem>
             ))}

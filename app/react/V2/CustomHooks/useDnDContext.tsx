@@ -15,7 +15,7 @@ import {
 const useDnDContext = <T, >(
   type: ItemTypes,
   getDisplayName: (item: IDraggable<T>) => string,
-  initialItems: IDraggable<T>[] = [],
+  initialItems: T[] = [],
   sourceItems: IDraggable<T>[] = []
 ) => {
   const [activeItems, setActiveItems] = useState<IDraggable<T>[]>(mapWithParent(initialItems));
@@ -23,12 +23,12 @@ const useDnDContext = <T, >(
     mapWithID(sourceItems || [])
   );
 
-  const updateItems = (item: IDraggable<T>) => {
+  const updateItem = (item: IDraggable<T>) => {
     setActiveItems((prevActiveItems: IDraggable<T>[]) => {
       const index = prevActiveItems.findIndex(x => x.id === item.id);
       return update(prevActiveItems, {
         [index]: {
-          $set: { value: item.value },
+          $set: item,
         },
       });
     });
@@ -39,7 +39,7 @@ const useDnDContext = <T, >(
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
     sort: sortActiveItems(activeItems, setActiveItems),
-    updateItems,
+    updateItem,
     updateActiveItems: (items: IDraggable<T>[]) => {
       setActiveItems(items);
     },

@@ -6,11 +6,13 @@ interface IXExtractorInfo {
   property: string;
   templates: string[];
 }
+type DraggableValue<T> = T & {
+  items?: IDraggable<T>[];
+};
 
 interface IDraggable<T> {
   id?: string;
-  value: T;
-  items?: IDraggable<T>[];
+  value: DraggableValue<T>;
   iconHandle?: boolean;
   parent?: IDraggable<T>;
   container?: string;
@@ -29,4 +31,4 @@ export enum ItemTypes {
   BOX = 'box',
 }
 
-export type { IXExtractorInfo, ISublink, ILink, IDraggable };
+export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue };

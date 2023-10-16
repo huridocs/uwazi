@@ -22,6 +22,7 @@ import debounce from 'app/utils/debounce';
 
 interface DnDValueExample {
   name: string;
+  items?: DnDValueExample[];
 }
 
 const sampleDefaultName = (item: IDraggable<DnDValueExample>) => item.value.name;
@@ -32,7 +33,7 @@ const sourceItems: IDraggable<DnDValueExample>[] = [
 ];
 const CardWithRemove: FC<IItemComponentProps<DnDValueExample>> = ({ item, context }) => (
   <div className="flex flex-row items-center justify-center w-full">
-    <div>{item.value.name}</div>
+    <div>{context.getDisplayName(item)}</div>
     <Button
       type="button"
       color="error"
@@ -49,9 +50,11 @@ const CardWithRemove: FC<IItemComponentProps<DnDValueExample>> = ({ item, contex
 
 const DndContextState = ({
   activeItems,
+  context,
   child = false,
 }: {
   activeItems: IDraggable<DnDValueExample>[];
+  context: IDnDContext<DnDValueExample>;
   child?: boolean;
 }) => (
   <div className=" tw-content">
@@ -63,8 +66,14 @@ const DndContextState = ({
       <ul className="mb-8 list-disc ">
         {activeItems.map((item: IDraggable<DnDValueExample>) => (
           <li className="flex items-center gap-10 space-x-3" key={item.id}>
-            <span>{item.value.name}</span>
-            {item.items && <DndContextState activeItems={item.items.filter(v => v)} child />}
+            <span>{context.getDisplayName(item)}</span>
+            {item.value.items && (
+              <DndContextState
+                context={context}
+                activeItems={item.value.items.filter(v => v)}
+                child
+              />
+            )}
           </li>
         ))}
       </ul>
@@ -92,7 +101,7 @@ const DnDClient = ({ items, type, itemComponent }: any) => {
           </div>
         </div>
       </div>
-      <DndContextState activeItems={dndContext.activeItems} />
+      <DndContextState context={dndContext} activeItems={dndContext.activeItems} />
     </div>
   );
 };
@@ -106,22 +115,15 @@ const EditableItem = ({
   item: IDraggable<DnDValueExample>;
   index: number;
 }) => {
-  const debouncedChangeHandler = useCallback(() => {
-    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      dndContext.updateItems({
-        value: { ...item, name: e.target.value },
-      });
-    };
-
-    return debounce(changeHandler, 500);
-  }, [dndContext, index, item]);
+  const debouncedChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
+    dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
 
   return (
     <input
       id={`name.${index}`}
-      defaultValue={item.value.name}
+      defaultValue={dndContext.getDisplayName(item)}
       onInput={debouncedChangeHandler}
-      aria-label={item.value.name}
+      aria-label={dndContext.getDisplayName(item)}
     />
   );
 };
@@ -162,7 +164,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
           </div>
         </div>
       </div>
-      <DndContextState activeItems={dndContext.activeItems} />
+      <DndContextState context={dndContext} activeItems={dndContext.activeItems} />
     </>
   );
 };
@@ -180,7 +182,7 @@ const CardWithDnD: FC<IItemComponentProps<DnDValueExample>> = ({ item, context, 
     <Container
       context={context}
       itemComponent={CardWithRemove}
-      name={`group_${item.value.name}`}
+      name={`group_${context.getDisplayName(item)}`}
       parent={item}
     />
   </div>

@@ -8,28 +8,35 @@ interface IDnDContext<T> {
   type: ItemTypes;
   addItem: (item: IDraggable<T>) => void;
   removeItem: (item: IDraggable<T>) => void;
-  updateItems: (values: IDraggable<T>) => void;
+  updateItem: (values: IDraggable<T>) => void;
   updateActiveItems: (items: IDraggable<T>[]) => void;
   sort: Function;
   activeItems: IDraggable<T>[];
   availableItems: IDraggable<T>[];
   getDisplayName: (item: IDraggable<T>) => string;
 }
+
 const setIdAndParent = <T>(item: IDraggable<T>, parent?: IDraggable<T>) => {
   const id = item.id || ID();
   return { ...item, id, ...(parent ? { parent } : {}) };
 };
-const mapWithParent: <T>(items: IDraggable<T>[], parent?: IDraggable<T>) => IDraggable<T>[] = (
-  items,
-  parent
-) =>
-  items.map(item => {
-    const itemWithId = setIdAndParent(item, parent);
-    if (item.items && item.items.length > 0) {
-      return { ...itemWithId, items: mapWithParent(item.items, itemWithId) };
+
+function mapWithParent<T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] {
+  return items.map(item => {
+    const draggableItem = { value: item } as IDraggable<T>;
+    const itemWithId: IDraggable<T> = setIdAndParent(draggableItem, parent);
+    if (draggableItem.value.items && draggableItem.value.items.length > 0) {
+      return {
+        ...itemWithId,
+        value: {
+          ...itemWithId.value,
+          items: mapWithParent<T>(draggableItem.value.items as T[], itemWithId),
+        },
+      };
     }
     return itemWithId;
-  });
+  }) as IDraggable<T>[];
+}
 
 const mapWithID = <T>(items: IDraggable<T>[]) => items.map(item => setIdAndParent(item));
 
@@ -42,13 +49,11 @@ const removeChildFromParent = <T>(
     const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
 
     setActiveItems((prevActiveItems: IDraggable<T>[]) => {
-      const index = prevActiveItems[indexOfCurrentParent].items!.findIndex(
+      const index = prevActiveItems[indexOfCurrentParent].value.items!.findIndex(
         ai => ai.id === newItem.id
       );
       return update(prevActiveItems, {
-        [indexOfCurrentParent]: {
-          items: { $splice: [[index, 1]] },
-        },
+        [indexOfCurrentParent]: { value: { items: { $splice: [[index, 1]] } } },
       });
     });
   }
@@ -81,18 +86,22 @@ const addItemToParent = <T>(
   setActiveItems((prevActiveItems: IDraggable<T>[]) => {
     const indexOfParent = findItemIndex(prevActiveItems, parent);
     if (indexOfParent > -1) {
-      return prevActiveItems[indexOfParent].items
+      return prevActiveItems[indexOfParent].value.items
         ? update(prevActiveItems, {
             [indexOfParent]: {
-              items: {
-                $push: [{ ...omit(newItem, ['parent', 'container', 'items']), parent }],
+              value: {
+                items: {
+                  $push: [{ ...omit(newItem, ['parent', 'container', 'items']), parent }],
+                },
               },
             },
           })
         : update(prevActiveItems, {
             [indexOfParent]: {
-              items: {
-                $set: [{ ...newItem, parent }],
+              value: {
+                items: {
+                  $set: [{ ...newItem, parent }],
+                },
               },
             },
           });
@@ -159,17 +168,19 @@ const sortChildren = <T>(
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
 ) => {
   const indexOfParent = findItemIndex(activeItems, currentItem.parent!);
-  const targetIndex = findItemIndex(activeItems[indexOfParent].items || [], target);
+  const targetIndex = findItemIndex(activeItems[indexOfParent].valueitems || [], target);
 
   if (targetIndex === hoverIndex) {
     setActiveItems((prevActiveItems: IDraggable<T>[]) =>
       update(prevActiveItems, {
         [indexOfParent]: {
-          items: {
-            $splice: [
-              [dragIndex, 1],
-              [hoverIndex, 0, prevActiveItems[indexOfParent].items![dragIndex]],
-            ],
+          value: {
+            items: {
+              $splice: [
+                [dragIndex, 1],
+                [hoverIndex, 0, prevActiveItems[indexOfParent].items![dragIndex]],
+              ],
+            },
           },
         },
       })

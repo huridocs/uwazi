@@ -42,7 +42,7 @@ function isNotAutoContained<T>(
 }
 
 function hasNoItems<T>(currentItem: IDraggable<T>) {
-  return currentItem.items === undefined || currentItem.items.length === 0;
+  return currentItem.value.items === undefined || currentItem.value.items.length === 0;
 }
 
 const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
@@ -105,7 +105,7 @@ function DraggableItemComponent<T>({
       )}`}
       ref={ref}
       data-testid={`${
-        item.container || context.getDisplayName(item.parent) || 'available'
+        item.container || (item.parent && context.getDisplayName(item.parent)) || 'available'
       }-draggable-item-${index}`}
       style={{ opacity }}
       data-handler-id={handlerId}
