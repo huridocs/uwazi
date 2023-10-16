@@ -1,5 +1,3 @@
-import db from 'api/utils/testing_db';
-
 export const fixtures = {
   translations: [{}],
   updatelogs: [
