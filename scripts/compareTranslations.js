@@ -19,28 +19,24 @@ const getClient = async () => {
 const getTranslationsFromDB = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
-  const translations = await db.collection('translations').find().toArray();
+  const translations = await db.collection('translationsV2').find().toArray();
   client.close();
-  const locToSystemContext = {};
-  translations.forEach(tr => {
-    const context = tr.contexts.find(c => c.id === 'System');
-    const [keys, values, keyValues] = context.values.reduce(
-      (newValues, currentTranslation) => {
-        newValues[0].push(currentTranslation.key);
-        newValues[1].push(currentTranslation.value);
-        // eslint-disable-next-line no-param-reassign
-        newValues[2] = { ...newValues[2], [currentTranslation.key]: currentTranslation.value };
-        return newValues;
-      },
-      [[], [], {}]
-    );
-    locToSystemContext[tr.locale] = { keys, values, keyValues };
-  });
 
+  const locToSystemContext = _.mapValues(
+    _.groupBy(
+      translations.filter(tr => tr.context.id === 'System'),
+      'language'
+    ),
+    values => ({
+      keys: values.map(tr => tr.key),
+      values: values.map(tr => tr.value),
+      keyValues: _.reduce(values, (keyValues, tr) => ({ ...keyValues, [tr.key]: tr.value }), {}),
+    })
+  );
   return locToSystemContext;
 };
 
-const getAvaiableLanguages = async () =>
+const getAvailableLanguages = async () =>
   new Promise((resolve, reject) => {
     fs.readdir(TRANSLATIONS_DIR, (err, files) => {
       if (err) reject(err);
@@ -153,11 +149,13 @@ const reportByLanguage = language => {
 async function compareTranslations(locale, update, outdir) {
   try {
     const dbTranslations = await getTranslationsFromDB();
-    const keysFromDB = dbTranslations.en.keys;
-    const valuesFromDB = dbTranslations.en.values;
-    const dbKeyValues = dbTranslations.en.keyValues;
+    const {
+      keys: keysFromDB,
+      values: valuesFromDB,
+      keyValues: dbKeyValues,
+    } = dbTranslations.en.keys;
 
-    const languages = locale ? [locale] : await getAvaiableLanguages();
+    const languages = locale ? [locale] : await getAvailableLanguages();
     const result = await Promise.all(
       languages.map(language => processLanguage(keysFromDB, valuesFromDB, language))
     );
@@ -194,6 +192,7 @@ async function compareTranslations(locale, update, outdir) {
     }
   } catch (e) {
     process.stdout.write(` === An error occurred === \n ${e}\n`);
+    process.exit(1);
   }
 }
 
