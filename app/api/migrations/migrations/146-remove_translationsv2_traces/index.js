@@ -9,7 +9,12 @@ export default {
 
   async up(db) {
     process.stdout.write(`${this.name}...\r\n`);
-    await db.collection('translations').drop();
+
+    const translationsCollection = 'translations';
+    if ((await db.listCollections().toArray()).map(c => c.name).includes(translationsCollection)) {
+      await db.collection(translationsCollection).drop();
+    }
+
     await db.collection('updatelogs').deleteMany({ namespace: 'translations' });
   },
 };
