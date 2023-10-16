@@ -6,7 +6,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 
 const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
-  const values = entityToImport[ensure<string>(property.name)]
+  const values = entityToImport.propertiesFromColumns[ensure<string>(property.name)]
     .split('|')
     .filter(emptyString)
     .filter(unique);

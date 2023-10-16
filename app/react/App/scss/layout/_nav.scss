@@ -1,4 +1,4 @@
-nav {
+.library-nav {
   display: block;
   position: fixed !important;
   top: 0;
@@ -11,7 +11,7 @@ nav {
   padding: 15px;
 }
 
-nav h1 {
+.library-nav h1 {
   font-weight: bold;
   font-size: $f-size-lg;
   text-transform: uppercase;
@@ -19,7 +19,7 @@ nav h1 {
   margin: 5px 0 30px;
 }
 
-nav ul {
+.library-nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;

@@ -15,6 +15,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import uniqueID from 'shared/uniqueID';
+import { config } from 'api/config';
 import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
@@ -71,7 +72,7 @@ const fixturer = {
 let mongooseConnection: Connection;
 
 const initMongoServer = async (dbName: string) => {
-  const uri = 'mongodb://localhost/';
+  const uri = config.DBHOST;
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };

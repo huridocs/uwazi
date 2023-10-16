@@ -39,6 +39,8 @@ const ExtractorModal = ({
       setValues(initialValues);
     } else {
       setEditing(false);
+      setName('');
+      setValues([]);
     }
   }, [extractor]);
 
@@ -88,12 +90,11 @@ const ExtractorModal = ({
     setEditing(false);
     setIsDisabled(true);
     const result: null | IXExtractorInfo = submitedValues.length
-      ? {
-          _id: undefined,
+      ? ({
           name: submittedName,
           property: submitedValues[0].split('-', 2)[1],
           templates: submitedValues.map(value => value.split('-', 2)[0]),
-        }
+        } as IXExtractorInfo)
       : null;
 
     if (isEditing && result && extractor) {

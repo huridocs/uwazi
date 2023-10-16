@@ -1,4 +1,6 @@
 /* eslint-disable max-lines */
+import _ from 'lodash';
+
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingDB, DBFixture } from 'api/utils/testing_db';
 
@@ -22,27 +24,29 @@ const shared2AgeSuggestionId = testingDB.id();
 const file2Id = factory.id('F2');
 const file3Id = factory.id('F3');
 
-const fixtures: DBFixture = {
-  settings: [
-    {
-      languages: [
-        {
-          default: true,
-          key: 'en',
-          label: 'English',
-        },
-        {
-          key: 'es',
-          label: 'Spanish',
-        },
-      ],
-      features: {
-        metadataExtraction: {
-          url: 'https://metadataextraction.com',
-        },
+const ixSettings = [
+  {
+    languages: [
+      {
+        default: true,
+        key: 'en' as 'en',
+        label: 'English',
+      },
+      {
+        key: 'es' as 'es',
+        label: 'Spanish',
+      },
+    ],
+    features: {
+      metadataExtraction: {
+        url: 'https://metadataextraction.com',
       },
     },
-  ],
+  },
+];
+
+const fixtures: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
   ixextractors: [
     factory.ixExtractor('age_extractor', 'age', ['personTemplate', 'heroTemplate', 'template1']),
     factory.ixExtractor('title_extractor', 'title', ['heroTemplate']),
@@ -117,6 +121,20 @@ const fixtures: DBFixture = {
       suggestedValue: 'HCT-04-CR-SC-0074',
       segment: 'Robin Rojo, una variante del Robin tradicional',
       language: 'es',
+      date: 5,
+      page: 2,
+      status: 'ready',
+      error: '',
+    },
+    {
+      entityId: 'shared1',
+      fileId: factory.id('F1'),
+      entityTemplate: personTemplateId.toString(),
+      propertyName: 'age',
+      extractorId: factory.id('age_extractor'),
+      suggestedValue: '17',
+      segment: 'Robin is 17.',
+      language: 'en',
       date: 5,
       page: 2,
       status: 'ready',
@@ -199,6 +217,20 @@ const fixtures: DBFixture = {
       extractorId: factory.id('age_extractor'),
       suggestedValue: '',
       segment: 'Alfred 67 years old',
+      language: 'en',
+      date: 4000,
+      page: 3,
+      status: 'ready',
+      error: '',
+    },
+    {
+      entityId: 'shared3',
+      fileId: factory.id('F7'),
+      entityTemplate: personTemplateId.toString(),
+      propertyName: 'super_powers',
+      extractorId: factory.id('super_powers_extractor'),
+      suggestedValue: 'puts up with Bruce Wayne',
+      segment: 'he puts up with Bruce Wayne',
       language: 'en',
       date: 4000,
       page: 3,
@@ -427,7 +459,7 @@ const fixtures: DBFixture = {
       sharedId: 'shared1',
       title: 'Robin',
       language: 'en',
-      metadata: { enemy: [{ value: 'Red Robin' }] },
+      metadata: { enemy: [{ value: 'Red Robin' }], age: [{ value: 99 }] },
       template: personTemplateId,
     },
     {
@@ -436,6 +468,7 @@ const fixtures: DBFixture = {
       title: 'Robin es',
       language: 'es',
       template: personTemplateId,
+      metadata: { age: [{ value: 99 }] },
     },
     {
       _id: testingDB.id(),
@@ -462,11 +495,11 @@ const fixtures: DBFixture = {
       template: personTemplateId,
     },
     {
-      _id: testingDB.id(),
+      _id: factory.id('Alfred-english-entity'),
       sharedId: 'shared3',
       title: 'Alfred',
       language: 'en',
-      metadata: { age: [{ value: 23 }] },
+      metadata: { age: [{ value: 23 }], super_powers: [{ value: 'no super powers' }] },
       template: personTemplateId,
     },
     {
@@ -513,7 +546,9 @@ const fixtures: DBFixture = {
       sharedId: 'shared7',
       title: 'The Riddler',
       language: 'en',
-      metadata: { first_encountered: [{ value: 1654732800 }] },
+      metadata: {
+        first_encountered: [{ value: 1654732800 }],
+      },
       template: heroTemplateId,
     },
     {
@@ -550,6 +585,15 @@ const fixtures: DBFixture = {
     },
   ],
   files: [
+    factory.file('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
+      {
+        name: 'age',
+        selection: {
+          text: '99',
+          selectionRectangles: [{ top: 0, left: 0, width: 1, height: 2, page: '2' }],
+        },
+      },
+    ]),
     factory.file('F2', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
       {
         name: 'super_powers',
@@ -611,6 +655,23 @@ const fixtures: DBFixture = {
       },
     ]),
     factory.file('F6', 'shared8', 'document', 'documentRiddler.pdf', 'eng', '', []),
+    factory.file('F7', 'shared3', 'document', 'documentAlfred.pdf', 'eng', '', [
+      {
+        name: 'super_powers',
+        selection: {
+          text: 'no super powers',
+          selectionRectangles: [
+            {
+              top: 0,
+              left: 0,
+              width: 0,
+              height: 0,
+              page: '1',
+            },
+          ],
+        },
+      },
+    ]),
   ],
   templates: [
     {
@@ -686,11 +747,392 @@ const fixtures: DBFixture = {
   ],
 };
 
+const stateFilterFixtures: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
+  templates: [
+    factory.template('template1', [
+      factory.property('testprop', 'text'),
+      factory.property('unusedprop', 'text'),
+    ]),
+  ],
+  entities: [
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-match', 'template1', {
+      testprop: [{ value: 'test-labeled-match' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'labeled-mismatch', 'template1', {
+      testprop: [{ value: 'test-labeled-mismatch' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-no-suggestion', 'template1', {
+      testprop: [{ value: 'test-unlabeled-no-suggestion' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-no-context', 'template1', {
+      testprop: [{ value: 'test-unlabeled-no-context' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-obsolete', 'template1', {
+      testprop: [{ value: 'test-unlabeled-obsolete' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-processing', 'template1', {
+      testprop: [{ value: 'test-unlabeled-processing' }],
+    }),
+    ...factory.entityInMultipleLanguages(['es', 'en'], 'unlabeled-error', 'template1', {
+      testprop: [{ value: 'test-unlabeled-error' }],
+    }),
+  ],
+  files: [
+    factory.file('label-match-file-en', 'labeled-match', 'document', 'lmfen.pdf', 'en', undefined, [
+      factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
+    ]),
+    factory.file('label-match-file-es', 'labeled-match', 'document', 'lmfes.pdf', 'es', undefined, [
+      factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
+    ]),
+    factory.file(
+      'label-mismatch-file-en',
+      'labeled-mismatch',
+      'document',
+      'lmismfen.pdf',
+      'en',
+      undefined,
+      [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
+    ),
+    factory.file(
+      'label-mismatch-file-es',
+      'labeled-mismatch',
+      'document',
+      'lmismfes.pdf',
+      'es',
+      undefined,
+      [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
+    ),
+    factory.file(
+      'unlabeled-no-suggestion-file-en',
+      'unlabeled-no-suggestion',
+      'document',
+      'unslfen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-no-suggestion-file-es',
+      'unlabeled-no-suggestion',
+      'document',
+      'unslfes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-no-context-file-en',
+      'unlabeled-no-context',
+      'document',
+      'unlcen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-no-context-file-es',
+      'unlabeled-no-context',
+      'document',
+      'unlces.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-obsolete-file-en',
+      'unlabeled-obsolete',
+      'document',
+      'unloen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-obsolete-file-es',
+      'unlabeled-obsolete',
+      'document',
+      'unloes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-others-file-en',
+      'unlabeled-others',
+      'document',
+      'unlothen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-others-file-es',
+      'unlabeled-others',
+      'document',
+      'unlotes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-en',
+      'unlabeled-processing',
+      'document',
+      'unlpen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-processing-file-es',
+      'unlabeled-processing',
+      'document',
+      'unlpes.pdf',
+      'es',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-en',
+      'unlabeled-error',
+      'document',
+      'unleen.pdf',
+      'en',
+      undefined
+    ),
+    factory.file(
+      'unlabeled-error-file-es',
+      'unlabeled-error',
+      'document',
+      'unlees.pdf',
+      'es',
+      undefined
+    ),
+  ],
+  ixmodels: [factory.ixModel('test_model', 'test_extractor', 1000)],
+  ixextractors: [
+    factory.ixExtractor('test_extractor', 'testprop', ['template1']),
+    factory.ixExtractor('unused_extractor', 'unused_prop', ['template1']),
+  ],
+  ixsuggestions: [
+    factory.ixSuggestion(
+      'label-match-suggestion-en',
+      'test_extractor',
+      'labeled-match',
+      'template1',
+      'label-match-file-en',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-labeled-match',
+      }
+    ),
+    factory.ixSuggestion(
+      'label-match-suggestion-es',
+      'test_extractor',
+      'labeled-match',
+      'template1',
+      'label-match-file-es',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-labeled-match',
+      }
+    ),
+    factory.ixSuggestion(
+      'label-mismatch-suggestion-en',
+      'test_extractor',
+      'labeled-mismatch',
+      'template1',
+      'label-mismatch-file-en',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-labeled-mismatch-mismatch',
+      }
+    ),
+    factory.ixSuggestion(
+      'label-mismatch-suggestion-es',
+      'test_extractor',
+      'labeled-mismatch',
+      'template1',
+      'label-mismatch-file-es',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-labeled-mismatch-mismatch',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-no-suggestion-suggestion-en',
+      'test_extractor',
+      'unlabeled-no-suggestion',
+      'template1',
+      'unlabeled-no-suggestion-file-en',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: '',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-no-suggestion-suggestion-es',
+      'test_extractor',
+      'unlabeled-no-suggestion',
+      'template1',
+      'unlabeled-no-suggestion-file-es',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'es',
+        suggestedValue: '',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-no-context-suggestion-en',
+      'test_extractor',
+      'unlabeled-no-context',
+      'template1',
+      'unlabeled-no-context-file-en',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-no-context',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-no-context-suggestion-es',
+      'test_extractor',
+      'unlabeled-no-context',
+      'template1',
+      'unlabeled-no-context-file-es',
+      'testprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-no-context',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-obsolete-suggestion-en',
+      'test_extractor',
+      'unlabeled-obsolete',
+      'template1',
+      'unlabeled-obsolete-file-en',
+      'testprop',
+      {
+        status: 'ready',
+        date: 999,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-obsolete',
+        segment: 'test-unlabeled-obsolete',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-obsolete-suggestion-es',
+      'test_extractor',
+      'unlabeled-obsolete',
+      'template1',
+      'unlabeled-obsolete-file-es',
+      'testprop',
+      {
+        status: 'ready',
+        date: 999,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-obsolete',
+        segment: 'test-unlabeled-obsolete',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-processing-suggestion-en',
+      'test_extractor',
+      'unlabeled-processing',
+      'template1',
+      'unlabeled-processing-file-en',
+      'testprop',
+      {
+        status: 'processing',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-processing-suggestion-es',
+      'test_extractor',
+      'unlabeled-processing',
+      'template1',
+      'unlabeled-processing-file-es',
+      'testprop',
+      {
+        status: 'processing',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-processing',
+        segment: 'test-unlabeled-processing',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-en',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-en',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
+      }
+    ),
+    factory.ixSuggestion(
+      'unlabeled-error-suggestion-es',
+      'test_extractor',
+      'unlabeled-error',
+      'template1',
+      'unlabeled-error-file-es',
+      'testprop',
+      {
+        status: 'failed',
+        date: 1001,
+        language: 'es',
+        suggestedValue: 'test-unlabeled-error',
+        segment: 'test-unlabeled-error',
+        error: 'some error happened',
+      }
+    ),
+    factory.ixSuggestion(
+      'unusedsuggestion',
+      'unused_extractor',
+      'unused',
+      'template1',
+      'unused-file',
+      'unusedprop',
+      {
+        status: 'ready',
+        date: 1001,
+        language: 'en',
+        suggestedValue: 'test-unused',
+      }
+    ),
+  ],
+};
+
 export {
   factory,
   file2Id,
   file3Id,
   fixtures,
+  stateFilterFixtures,
   shared2esId,
   shared2enId,
   shared6enId,

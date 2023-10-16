@@ -47,18 +47,18 @@ const TranslationsList = () => {
   const columns = [
     columnHelper.accessor('label', {
       header: LabelHeader,
-      meta: { className: 'w-1/3' },
+      meta: { headerClassName: 'w-1/3' },
     }) as ColumnDef<ClientTranslationContextSchema, 'label'>,
     columnHelper.accessor('type', {
       header: TypeHeader,
       cell: ContextPill,
-      meta: { className: 'w-2/3' },
+      meta: { headerClassName: 'w-2/3' },
     }) as ColumnDef<ClientTranslationContextSchema, 'type'>,
     columnHelper.accessor('id', {
       header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
-      meta: { className: 'text-center w-0' },
+      meta: { headerClassName: 'text-center w-0' },
     }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
   ];
 

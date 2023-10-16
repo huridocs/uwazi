@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Application, NextFunction, Request, Response } from 'express';
+import { Application, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -7,14 +7,15 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { needsAuthorization } from 'api/auth';
 import { parseQuery } from 'api/utils/parseQueryMiddleware';
-import {
-  IXSuggestionsStatsQuerySchema,
-  SuggestionsQueryFilterSchema,
-} from 'shared/types/suggestionSchema';
-import { objectIdSchema } from 'shared/types/commonSchemas';
-import { IXSuggestionsFilter, IXSuggestionsStatsQuery } from 'shared/types/suggestionType';
-import { serviceMiddleware } from './serviceMiddleware';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { SuggestionsQueryFilterSchema } from 'shared/types/suggestionSchema';
+import { objectIdSchema } from 'shared/types/commonSchemas';
+import {
+  IXAggregationQuery,
+  IXSuggestionAggregation,
+  IXSuggestionsQuery,
+} from 'shared/types/suggestionType';
+import { serviceMiddleware } from './serviceMiddleware';
 
 const IX = new InformationExtraction();
 
@@ -72,42 +73,59 @@ export const suggestionsRoutes = (app: Application) => {
                 size: { type: 'number', minimum: 1, maximum: 500 },
               },
             },
+            sort: {
+              type: 'object',
+              properties: {
+                property: { type: 'string' },
+                order: { type: 'string' },
+              },
+            },
           },
         },
       },
     }),
     async (
       req: Request & {
-        query: { filter: IXSuggestionsFilter; page: { number: number; size: number } };
+        query: IXSuggestionsQuery;
       },
-      res: Response,
-      _next: NextFunction
+      res: Response
     ) => {
-      const suggestionsList = await Suggestions.get(
-        { language: req.language, ...req.query.filter },
-        { page: req.query.page }
-      );
+      const suggestionsList = await Suggestions.get(req.query.filter, {
+        page: req.query.page,
+        sort: req.query.sort,
+      });
       res.json(suggestionsList);
     }
   );
 
   app.get(
-    '/api/suggestions/stats',
+    '/api/suggestions/aggregation',
     serviceMiddleware,
     needsAuthorization(['admin']),
     parseQuery,
     validateAndCoerceRequest({
+      type: 'object',
+      definitions: { objectIdSchema },
       properties: {
-        query: IXSuggestionsStatsQuerySchema,
+        query: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['extractorId'],
+          properties: {
+            extractorId: objectIdSchema,
+          },
+        },
       },
     }),
     async (
-      req: Request & { query: IXSuggestionsStatsQuery },
-      res: Response,
-      _next: NextFunction
+      req: Request & {
+        query: IXAggregationQuery;
+      },
+      res: Response<IXSuggestionAggregation>
     ) => {
-      const stats = await Suggestions.getStats(req.query.extractorId);
-      res.json(stats);
+      const { extractorId } = req.query;
+      const aggregation = await Suggestions.aggregate(extractorId);
+      res.json(aggregation);
     }
   );
 
@@ -151,26 +169,28 @@ export const suggestionsRoutes = (app: Application) => {
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['suggestion', 'allLanguages'],
+          required: ['suggestions'],
           properties: {
-            suggestion: {
-              type: 'object',
-              additionalProperties: false,
-              required: ['_id', 'sharedId', 'entityId'],
-              properties: {
-                _id: objectIdSchema,
-                sharedId: { type: 'string' },
-                entityId: { type: 'string' },
+            suggestions: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['_id', 'sharedId', 'entityId'],
+                properties: {
+                  _id: objectIdSchema,
+                  sharedId: { type: 'string' },
+                  entityId: { type: 'string' },
+                },
               },
             },
-            allLanguages: { type: 'boolean' },
           },
         },
       },
     }),
     async (req, res, _next) => {
-      const { suggestion, allLanguages } = req.body;
-      await Suggestions.accept(suggestion, allLanguages);
+      const { suggestions } = req.body;
+      await Suggestions.accept(suggestions);
       res.json({ success: true });
     }
   );

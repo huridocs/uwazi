@@ -5,6 +5,13 @@ import db from 'api/utils/testing_db';
 import { fixtures, templateToRelateId } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
 
+const rawEntityWithRelationshipValue = (val, language, propname = 'relationship_prop') => ({
+  propertiesFromColumns: {
+    [propname]: val,
+  },
+  language,
+});
+
 describe('relationship', () => {
   let value1;
   let value2;
@@ -43,22 +50,25 @@ describe('relationship', () => {
 
   const runScenarios = async () => {
     value1 = await typeParsers.relationship(
-      { relationship_prop: 'value1|value3|value3', language: 'en' },
+      rawEntityWithRelationshipValue('value1|value3|value3', 'en'),
       templateProp
     );
 
     value2 = await typeParsers.relationship(
-      { relationship_prop: 'value1|value2', language: 'en' },
+      rawEntityWithRelationshipValue('value1|value2', 'en'),
       templateProp
     );
     value3 = await typeParsers.relationship(
-      { relationship_prop: 'value1|value2', language: 'en' },
+      rawEntityWithRelationshipValue('value1|value2', 'en'),
       templateProp
     );
 
-    await typeParsers.relationship({ relationship_prop: '' }, templateProp);
-    await typeParsers.relationship({ relationship_prop: '|' }, templateProp);
-    await typeParsers.relationship({ relationship_no_content: 'newValue' }, noContentTemplateProp);
+    await typeParsers.relationship(rawEntityWithRelationshipValue(''), templateProp);
+    await typeParsers.relationship(rawEntityWithRelationshipValue('|'), templateProp);
+    await typeParsers.relationship(
+      rawEntityWithRelationshipValue('newValue', undefined, 'relationship_no_content'),
+      noContentTemplateProp
+    );
   };
 
   beforeAll(async () => {

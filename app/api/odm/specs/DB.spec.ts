@@ -4,6 +4,7 @@ import waitForExpect from 'wait-for-expect';
 import { tenants } from 'api/tenants/tenantContext';
 import { testingTenants } from 'api/utils/testingTenants';
 
+import { config } from 'api/config';
 import { DB } from '../DB';
 import { instanceModel } from '../model';
 
@@ -24,7 +25,7 @@ describe('DB', () => {
   let db2: Db;
 
   beforeEach(async () => {
-    const uri = 'mongodb://localhost/';
+    const uri = config.DBHOST;
     await DB.connect(`${uri}_DB_spec_ts`);
     db1 = DB.getConnection().useDb('db1').db;
     db2 = DB.getConnection().useDb('db2').db;
