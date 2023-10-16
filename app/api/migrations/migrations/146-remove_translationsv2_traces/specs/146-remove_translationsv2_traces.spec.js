@@ -31,4 +31,11 @@ describe('migration remove_translationsv2_traces', () => {
     const updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
     expect(updatelogs).toMatchObject([{ namespace: 'migrations' }, { namespace: 'entities' }]);
   });
+
+  it('should not fail if translations collection did not exist', async () => {
+    await migration.up(testingDB.mongodb);
+    await migration.up(testingDB.mongodb);
+    const updatelogs = await testingDB.mongodb.collection('updatelogs').find().toArray();
+    expect(updatelogs).toMatchObject([{ namespace: 'migrations' }, { namespace: 'entities' }]);
+  });
 });
