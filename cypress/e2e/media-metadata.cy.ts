@@ -79,7 +79,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const checkMediaSnapshots = (selector: string) => {
     cy.get(selector).scrollIntoView();
-    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
+    cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: false, threshold: 0.08 });
   };
 
   const saveEntity = () => {
@@ -100,8 +100,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
           }, 10);
         })
     );
-    cy.get('aside video').scrollIntoView();
-    cy.get('aside video').should('be.visible');
   };
 
   it('should allow media selection on entity creation', () => {
@@ -128,7 +126,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
-    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -137,7 +134,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Edit').should('be.visible').click();
     cy.addTimeLink(4000, 'Second three', 1);
     saveEntity();
-    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -147,7 +143,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.get('.timelinks-form').scrollIntoView();
     cy.get('.delete-timestamp-btn').eq(1).click();
     saveEntity();
-    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -160,7 +155,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.timeSeconds"]', '57');
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
-    cy.get('.metadata-type-multimedia.metadata-name-video .translation').scrollIntoView();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
