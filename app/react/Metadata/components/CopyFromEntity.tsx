@@ -11,7 +11,8 @@ import { store } from 'app/store';
 
 import { SearchEntities } from './SearchEntities';
 
-export type CopyFromEntityProps = {
+type CopyFromEntityProps = {
+  isVisible: boolean;
   onSelect: Function;
   onCancel: Function;
   templates: IImmutable<Array<TemplateSchema>>;
@@ -19,13 +20,13 @@ export type CopyFromEntityProps = {
   formModel: string;
 };
 
-export type CopyFromEntityState = {
+type CopyFromEntityState = {
   selectedEntity: EntitySchema;
   propsToCopy: Array<string>;
   lastSearch?: string;
 };
 
-export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
+class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
   constructor(props: CopyFromEntityProps) {
     super(props);
 
@@ -48,6 +49,10 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
 
     this.setState({ selectedEntity, propsToCopy });
     this.props.onSelect(propsToCopy, selectedEntity);
+  }
+
+  onFinishedSearch(searchTerm: string) {
+    this.setState({ lastSearch: searchTerm });
   }
 
   copy() {
@@ -83,10 +88,7 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
   cancel() {
     this.props.onSelect([]);
     this.props.onCancel();
-  }
-
-  onFinishedSearch(searchTerm: string) {
-    this.setState({ lastSearch: searchTerm });
+    this.setState({ propsToCopy: [], selectedEntity: {} });
   }
 
   renderPanel() {
@@ -99,20 +101,24 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
             excludePreview
           />
         </div>
-        <div className="copy-from-buttons">
-          <button className="back-copy-from btn btn-light" onClick={this.backToSearch}>
+        <div className="copy-from-buttons btn-cluster">
+          <button
+            className="back-copy-from btn btn-light"
+            type="button"
+            onClick={this.backToSearch}
+          >
             <Icon icon="arrow-left" />
-            <span className="btn-label">
+            <span className="hidden btn-label">
               <Translate>Back to search</Translate>
             </span>
           </button>
-          <button className="cancel-copy-from btn btn-primary" onClick={this.cancel}>
+          <button className="cancel-copy-from btn btn-light" type="button" onClick={this.cancel}>
             <Icon icon="times" />
             <span className="btn-label">
               <Translate>Cancel</Translate>
             </span>
           </button>
-          <button className="copy-copy-from btn btn-success" onClick={this.copy}>
+          <button className="copy-copy-from btn btn-success" type="button" onClick={this.copy}>
             <Icon icon="copy-from" transform="left-0.075 up-0.1" />
             <span className="btn-label">
               <Translate>Copy Highlighted</Translate>
@@ -127,8 +133,8 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
           onFinishSearch={this.onFinishedSearch}
           initialSearchTerm={this.state.lastSearch}
         />
-        <div className="copy-from-buttons">
-          <button className="cancel-copy-from btn btn-primary" onClick={this.cancel}>
+        <div className="copy-from-buttons btn-cluster">
+          <button className="cancel-copy-from btn btn-light" type="button" onClick={this.cancel}>
             <Icon icon="times" />
             <span className="btn-label">
               <Translate>Cancel</Translate>
@@ -140,6 +146,9 @@ export class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntit
   }
 
   render() {
-    return <div className="copy-from">{this.renderPanel()}</div>;
+    return <div className="copy-from">{this.props.isVisible && this.renderPanel()}</div>;
   }
 }
+
+export type { CopyFromEntityProps, CopyFromEntityState };
+export { CopyFromEntity };

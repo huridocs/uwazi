@@ -341,6 +341,7 @@ class EntityViewer extends Component {
         <SidePanel className="copy-from-panel" open={copyFrom}>
           <div className="sidepanel-body">
             <CopyFromEntity
+              isVisible={copyFrom}
               originalEntity={this.props.entity.toJS()}
               templates={this.props.templates}
               onSelect={this.onCopyFromSelect}

@@ -654,6 +654,7 @@ class DocumentSidePanel extends Component {
                         highlightedProps={this.state.copyFromProps}
                       />
                       <CopyFromEntity
+                        isVisible={this.state.copyFrom}
                         originalEntity={this.props.formData}
                         templates={this.props.templates}
                         onSelect={this.onCopyFromSelect}
