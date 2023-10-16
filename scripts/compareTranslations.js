@@ -149,11 +149,9 @@ const reportByLanguage = language => {
 async function compareTranslations(locale, update, outdir) {
   try {
     const dbTranslations = await getTranslationsFromDB();
-    const {
-      keys: keysFromDB,
-      values: valuesFromDB,
-      keyValues: dbKeyValues,
-    } = dbTranslations.en.keys;
+    const keysFromDB = dbTranslations.en.keys;
+    const valuesFromDB = dbTranslations.en.values;
+    const dbKeyValues = dbTranslations.en.keyValues;
 
     const languages = locale ? [locale] : await getAvailableLanguages();
     const result = await Promise.all(
