@@ -202,6 +202,22 @@ describe('templates utils', () => {
       const result = getDeletedProperties(oldProperties, newProperties, 'id');
       expect(result).toEqual(['boromir']);
     });
+
+    it('should not return properties, where the label/name is still used in another element', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'label' },
+        { id: '2', label: 'label' },
+        { id: '3', label: 'another label' },
+        { id: '4', label: 'last label' },
+      ];
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'label' },
+        { id: '3', label: 'another label' },
+      ];
+
+      const result = getDeletedProperties(oldProperties, newProperties, 'id', 'label');
+      expect(result).toEqual(['last label']);
+    });
   });
 });
 

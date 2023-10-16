@@ -135,21 +135,23 @@ function getUpdatedNames(
   return propertiesWithNewName;
 }
 
-const notIncludedIn =
-  (propertyCollection: PropertyOrThesaurusSchema[], filterBy: 'id' | '_id') =>
-  (property: PropertyOrThesaurusSchema) =>
-    !propertyCollection.find(p => p[filterBy]?.toString() === property[filterBy]?.toString());
-
 function getDeletedProperties(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[] = [],
   filterBy: 'id' | '_id' = '_id',
   prop: 'name' | 'label' | 'id' = 'name'
 ) {
-  return flattenProperties(oldProperties)
-    .filter(notIncludedIn(flattenProperties(newProperties), filterBy))
+  const flatOld = flattenProperties(oldProperties);
+  const flatNew = flattenProperties(newProperties);
+  const newIds = new Set(flatNew.map(property => property[filterBy]?.toString()));
+  const newLabels = new Set(flatNew.map(property => property[prop]?.toString()));
+  const filteredById = flatOld
+    .filter(
+      property => !newIds.has(property[filterBy]?.toString()) && !newLabels.has(property[prop])
+    )
     .filter((property): property is { [k: string]: string } => typeof property[prop] === 'string')
     .map(property => property[prop]);
+  return filteredById;
 }
 
 function getRenamedTitle(
