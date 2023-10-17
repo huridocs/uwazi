@@ -6,7 +6,7 @@ import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { actions, FormatMetadata } from 'app/Metadata';
+import { actions, FormatMetadata, wrapEntityMetadata } from 'app/Metadata';
 import { store } from 'app/store';
 
 import { SearchEntities } from './SearchEntities';
@@ -60,6 +60,12 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
       return;
     }
 
+    const template = this.props.templates
+      .find(_template => _template?.get('_id') === this.props.originalEntity.template)
+      .toJS();
+
+    const originalEntity = wrapEntityMetadata(this.props.originalEntity, template);
+
     const updatedEntity = this.state.propsToCopy.reduce(
       (entity: EntitySchema, propName: string) => {
         if (!entity.metadata) {
@@ -73,7 +79,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
           metadata: { ...entity.metadata, [propName]: updatedMetadata },
         };
       },
-      { ...this.props.originalEntity }
+      { ...originalEntity }
     );
 
     actions
