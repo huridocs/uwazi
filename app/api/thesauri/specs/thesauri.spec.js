@@ -22,6 +22,7 @@ describe('thesauri', () => {
 
   afterAll(async () => {
     await testingDB.disconnect();
+    search.indexEntities.mockRestore();
   });
 
   describe('get()', () => {
@@ -99,6 +100,11 @@ describe('thesauri', () => {
       jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
     });
 
+    afterAll(() => {
+      templatesCountSpy.mockRestore();
+      translations.deleteContext.mockRestore();
+    });
+
     it('should delete a thesauri', async () => {
       const response = await thesauri.delete(dictionaryId);
       expect(response.ok).toBe(true);
@@ -171,6 +177,7 @@ describe('thesauri', () => {
         },
         'Thesaurus'
       );
+      translations.addContext.mockRestore();
     });
 
     it('should set a default value of [] to values property if its missing', async () => {
@@ -192,6 +199,7 @@ describe('thesauri', () => {
 
         const edited = await thesauri.getById(dictionaryId);
         expect(edited.name).toBe('changed name');
+        translations.addContext.mockRestore();
       });
 
       it('should update the translation', async () => {
@@ -203,8 +211,8 @@ describe('thesauri', () => {
         const response = await thesauri.save(data);
         expect(translations.updateContext).toHaveBeenCalledWith(
           { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
-          { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
-          ['Fundation'],
+          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
+          ['Enders game', 'Fundation', 'Top 2 scify books'],
           { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
         );
       });
@@ -223,10 +231,10 @@ describe('thesauri', () => {
           '2',
           dictionaryIdToTranslate
         );
+        entities.deleteThesaurusFromMetadata.mockRestore();
       });
 
       it('should properly delete values when thesauri have subgroups', async () => {
-        entities.deleteThesaurusFromMetadata.mockReset();
         jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
         const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
         thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
@@ -236,6 +244,7 @@ describe('thesauri', () => {
         const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.mock.calls[0][0];
 
         expect(deletedValuesFromEntities).toEqual('3');
+        entities.deleteThesaurusFromMetadata.mockRestore();
       });
 
       it('should update labels on entities with the thesauri values', async () => {
@@ -449,8 +458,7 @@ describe('thesauri', () => {
       });
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fdescribe('when changing elements', () => {
+    describe('when changing elements', () => {
       let db;
       let translationsV2Collection;
 
@@ -471,6 +479,7 @@ describe('thesauri', () => {
               'context.id': response._id.toString(),
             })
             .toArray();
+
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es' },
             { key: 'A', language: 'en' },

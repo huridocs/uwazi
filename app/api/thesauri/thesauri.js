@@ -56,18 +56,19 @@ const updateTranslation = (current, thesauri) => {
   const newProperties = flattenProperties(thesauri.values);
 
   const currentLabels = new Set(currentProperties.map(p => p.label));
+  currentLabels.add(current.name);
   const newLabels = new Set(newProperties.map(p => p.label));
+  newLabels.add(thesauri.name);
 
   const addedLabels = [...newLabels].filter(label => !currentLabels.has(label));
   const deletedLabels = [...currentLabels].filter(label => !newLabels.has(label));
 
   const context = thesauriToTranslationContext(thesauri);
-  context[thesauri.name] = thesauri.name;
 
   context[thesauri.name] = thesauri.name;
   return translations.updateContext(
     { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
-    addedLabels,
+    Object.fromEntries(addedLabels.map(label => [label, label])),
     deletedLabels,
     context
   );

@@ -65,7 +65,6 @@ export class UpsertTranslationsService {
 
       await this.translationsDS.updateContextLabel(context.id, context.label);
 
-      console.log(keyChanges);
       await this.translationsDS.updateKeysByContext(context.id, keyChanges);
 
       await this.updateKeyValueOnDefaultLanguage(Object.values(keyChanges), context);
