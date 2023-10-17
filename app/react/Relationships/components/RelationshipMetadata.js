@@ -98,7 +98,7 @@ class RelationshipMetadata extends Component {
         {form}
         <CopyFromEntity
           isVisible={this.state.copyFrom}
-          originalEntity={this.props.formMetadata}
+          originalEntity={this.props.entity}
           templates={this.props.templates}
           onSelect={this.onCopyFromSelect}
           formModel="relationships.metadata"

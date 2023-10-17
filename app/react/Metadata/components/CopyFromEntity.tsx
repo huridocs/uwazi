@@ -63,13 +63,17 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     const updatedEntity = this.state.propsToCopy.reduce(
       (entity: EntitySchema, propName: string) => {
         if (!entity.metadata) {
-          entity.metadata = {};
+          return { ...entity, metadata: {} };
         }
 
-        entity.metadata[propName] = this.state.selectedEntity.metadata![propName];
-        return entity;
+        const updatedMetadata = this.state.selectedEntity.metadata![propName];
+
+        return {
+          ...entity,
+          metadata: { ...entity.metadata, [propName]: updatedMetadata },
+        };
       },
-      { ...this.props.originalEntity, metadata: { ...this.props.originalEntity.metadata } }
+      { ...this.props.originalEntity }
     );
 
     actions
