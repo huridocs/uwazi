@@ -229,6 +229,7 @@ export {
   newThesauriId,
   safeName,
   denormalizeInheritedProperties,
+  flattenProperties,
   generateIds,
   getUpdatedNames,
   generateNames,

@@ -612,10 +612,10 @@ describe('thesauri', () => {
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es' },
             { key: 'A', language: 'en' },
-            { key: 'C', language: 'es' },
-            { key: 'C', language: 'en' },
             { key: 'B', language: 'es' },
             { key: 'B', language: 'en' },
+            { key: 'C', language: 'es' },
+            { key: 'C', language: 'en' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -678,10 +678,10 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'C', language: 'es' },
-            { key: 'C', language: 'en' },
             { key: 'B', language: 'es' },
             { key: 'B', language: 'en' },
+            { key: 'C', language: 'es' },
+            { key: 'C', language: 'en' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
