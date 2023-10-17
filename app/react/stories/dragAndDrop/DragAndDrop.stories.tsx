@@ -70,6 +70,7 @@ const DndContextState = ({
             {item.value.items && (
               <DndContextState
                 context={context}
+                //@ts-ignore
                 activeItems={item.value.items.filter(v => v)}
                 child
               />
@@ -115,8 +116,13 @@ const EditableItem = ({
   item: IDraggable<DnDValueExample>;
   index: number;
 }) => {
-  const debouncedChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
-    dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
+  const debouncedChangeHandler = useCallback(() => {
+    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+      dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
+    };
+
+    return debounce(changeHandler, 500);
+  }, [dndContext, item]);
 
   return (
     <input

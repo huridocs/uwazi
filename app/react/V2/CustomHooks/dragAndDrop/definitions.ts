@@ -1,6 +1,6 @@
 import { Dispatch } from 'react';
-import update from 'immutability-helper';
 import { omit } from 'lodash';
+import update from 'immutability-helper';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
 import ID from 'shared/uniqueID';
 
@@ -48,9 +48,9 @@ const removeChildFromParent = <T>(
   if (newItem.parent) {
     const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
 
-    setActiveItems((prevActiveItems: IDraggable<T>[]) => {
+    setActiveItems((prevActiveItems: IDraggable<any>[]) => {
       const index = prevActiveItems[indexOfCurrentParent].value.items!.findIndex(
-        ai => ai.id === newItem.id
+        (ai: IDraggable<T>) => ai.id === newItem.id
       );
       return update(prevActiveItems, {
         [indexOfCurrentParent]: { value: { items: { $splice: [[index, 1]] } } },
@@ -83,7 +83,7 @@ const addItemToParent = <T>(
 ) => {
   removeItemFromList(setActiveItems, indexOfNewItem);
 
-  setActiveItems((prevActiveItems: IDraggable<T>[]) => {
+  setActiveItems((prevActiveItems: IDraggable<any>[]) => {
     const indexOfParent = findItemIndex(prevActiveItems, parent);
     if (indexOfParent > -1) {
       return prevActiveItems[indexOfParent].value.items
@@ -127,6 +127,7 @@ const addActiveItem =
     } else if (indexOfNewItem === -1) {
       setActiveItems((prevActiveItems: IDraggable<T>[]) =>
         update(prevActiveItems, {
+          //@ts-ignore
           $push: [omit(newItem, ['parent', 'container', 'items'])],
         })
       );
@@ -149,9 +150,12 @@ const removeActiveItem =
       removeItemFromList(setActiveItems, index);
     }
 
-    const availableSubItems = (item.items || []).map(ai => omit(ai, ['parent', 'container']));
-    setAvailableItems(prevAvailableItems =>
+    const availableSubItems: IDraggable<T>[] = (item.value.items || []).map((ai: IDraggable<T>) =>
+      omit(ai, ['parent', 'container'])
+    );
+    setAvailableItems((prevAvailableItems: IDraggable<T>[]) =>
       update(prevAvailableItems, {
+        //@ts-ignore
         $push: [omit(item, ['parent', 'container', 'items']), ...availableSubItems],
       })
     );
@@ -168,17 +172,17 @@ const sortChildren = <T>(
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
 ) => {
   const indexOfParent = findItemIndex(activeItems, currentItem.parent!);
-  const targetIndex = findItemIndex(activeItems[indexOfParent].valueitems || [], target);
+  const targetIndex = findItemIndex(activeItems[indexOfParent].value.items || [], target);
 
   if (targetIndex === hoverIndex) {
-    setActiveItems((prevActiveItems: IDraggable<T>[]) =>
+    setActiveItems((prevActiveItems: IDraggable<any>[]) =>
       update(prevActiveItems, {
         [indexOfParent]: {
           value: {
             items: {
               $splice: [
                 [dragIndex, 1],
-                [hoverIndex, 0, prevActiveItems[indexOfParent].items![dragIndex]],
+                [hoverIndex, 0, prevActiveItems[indexOfParent].value.items![dragIndex]],
               ],
             },
           },
