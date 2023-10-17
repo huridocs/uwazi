@@ -11,6 +11,8 @@ import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonType
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import model from './templatesModel';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import properties from 'database/elastic_mapping/toc_properties';
 
 const safeName = sharedSafeName;
 
@@ -105,30 +107,46 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
     return [...flatProps, p];
   }, []);
 
+// eslint-disable-next-line max-statements
 function getUpdatedNames(
   {
     prop,
-    outKey,
     filterBy,
   }: {
     prop: 'name' | 'label';
-    outKey: 'name' | 'label' | 'id';
     filterBy: 'id' | '_id';
   },
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[] = []
 ) {
+  const indexOf = (p: PropertyOrThesaurusSchema) => p[filterBy]!.toString();
   const propertiesWithNewName: { [k: string]: string } = {};
-  flattenProperties(oldProperties).forEach(property => {
-    const newProperty = flattenProperties(newProperties).find(
-      p => p[filterBy]?.toString() === property[filterBy]?.toString()
-    );
-    if (newProperty && newProperty[prop] !== property[prop]) {
-      const key = property[outKey];
-      const theValue = newProperty[prop];
-      if (key && typeof theValue === 'string') {
-        propertiesWithNewName[key] = theValue;
-      }
+  const flatOld = flattenProperties(oldProperties);
+  const preExistingLabels = new Set(flatOld.map(property => property[prop]));
+  const labelAlreadyExisted = (p: PropertyOrThesaurusSchema) => preExistingLabels.has(p[prop]);
+  const flatNew = flattenProperties(newProperties);
+  const newByIndex = objectIndex(flatNew, indexOf, p => p);
+  const allNewLabels = new Set(flatNew.map(property => property[prop]));
+  const labelStillInUse = (p: PropertyOrThesaurusSchema) => allNewLabels.has(p[prop]);
+  const sameProp = (previous: PropertyOrThesaurusSchema, current: PropertyOrThesaurusSchema) =>
+    previous[prop] === current[prop];
+  const compareProps = (
+    previous: PropertyOrThesaurusSchema,
+    current: PropertyOrThesaurusSchema
+  ) => {
+    if (!current || sameProp(previous, current) || labelAlreadyExisted(current)) {
+      return { key: undefined, value: undefined };
+    }
+    if (labelStillInUse(previous)) {
+      return { key: current[prop], value: current[prop] };
+    }
+    return { key: previous[prop], value: current[prop] };
+  };
+  flatOld.forEach(property => {
+    const newProperty = newByIndex[indexOf(property)];
+    const { key, value } = compareProps(property, newProperty);
+    if (key && value) {
+      propertiesWithNewName[key] = value;
     }
   });
 

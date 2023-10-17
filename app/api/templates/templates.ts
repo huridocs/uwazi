@@ -60,7 +60,6 @@ const updateTranslation = async (
   const updatedLabels = getUpdatedNames(
     {
       prop: 'label',
-      outKey: 'label',
       filterBy: '_id',
     },
     currentProperties,

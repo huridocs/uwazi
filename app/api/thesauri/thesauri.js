@@ -95,7 +95,7 @@ async function updateOptionsInEntities(current, thesauri) {
     )
   );
 
-  const updatedIds = getUpdatedNames(
+  const updatedIds = getUpdatedIds(
     {
       prop: 'label',
       outKey: 'id',

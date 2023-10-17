@@ -42,7 +42,6 @@ const updateTranslation = (currentTemplate, template) => {
   const updatedLabels = getUpdatedNames(
     {
       prop: 'label',
-      outKey: 'label',
       filterBy: '_id',
     },
     currentProperties,

@@ -116,7 +116,6 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'name',
-          outKey: 'name',
           filterBy: '_id',
         },
         oldProperties,
@@ -152,7 +151,6 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'name',
-          outKey: 'name',
           filterBy: 'id',
         },
         oldProperties,
@@ -185,7 +183,6 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'label',
-          outKey: 'label',
           filterBy: 'id',
         },
         oldProperties,
@@ -218,7 +215,6 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'label',
-          outKey: 'label',
           filterBy: 'id',
         },
         firstProperties,
@@ -238,7 +234,6 @@ describe('templates utils', () => {
       const result2 = getUpdatedNames(
         {
           prop: 'label',
-          outKey: 'label',
           filterBy: 'id',
         },
         secondProperties,
@@ -271,7 +266,6 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'label',
-          outKey: 'label',
           filterBy: 'id',
         },
         firstProperties,
@@ -291,7 +285,6 @@ describe('templates utils', () => {
       const result2 = getUpdatedNames(
         {
           prop: 'label',
-          outKey: 'label',
           filterBy: 'id',
         },
         newProperties,
