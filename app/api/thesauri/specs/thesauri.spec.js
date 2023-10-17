@@ -13,8 +13,6 @@ import {
   dictionaryValueId,
   dictionaryWithValueGroups,
 } from './fixtures';
-import { Collection, Db } from 'mongodb';
-import { before } from 'lodash';
 
 describe('thesauri', () => {
   beforeEach(async () => {
@@ -578,37 +576,119 @@ describe('thesauri', () => {
           ]);
         });
       });
-      // describe('updating duplicated keys one by one', () => {
-      //   // eslint-disable-next-line jest/no-focused-tests
-      //   it('should update and/or remove values as necessary', async () => {
-      //     const data = {
-      //       name: 'dictionary 1',
-      //       values: [
-      //         { id: '1', label: 'value 1' },
-      //         { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 1' }] },
-      //       ],
-      //     };
-      //     const response = await thesauri.save(data);
-      //     const updatedThesauri = {
-      //       _id: response._id,
-      //       name: 'dictionary 1',
-      //       values: [
-      //         { id: '1', label: 'value' },
-      //         { id: '3', label: 'Parent', values: [{ id: '2', label: 'value 1' }] },
-      //       ],
-      //     };
-      //     await thesauri.save(updatedThesauri);
-      //     const updatedThesauri2 = {
-      //       _id: response._id,
-      //       name: 'dictionary 1',
-      //       values: [
-      //         { id: '1', label: 'value' },
-      //         { id: '3', label: 'Parent', values: [{ id: '2', label: 'value' }] },
-      //       ],
-      //     };
-      //     await thesauri.save(updatedThesauri2);
-      //   });
-      // });
+
+      describe('updating elements', () => {
+        let id;
+
+        beforeEach(async () => {
+          const thesaurusData = {
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'A' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          const response = await thesauri.save(thesaurusData);
+          id = response._id.toString();
+        });
+
+        it('should add a new translations, when an element gets a new label', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es' },
+            { key: 'A', language: 'en' },
+            { key: 'C', language: 'es' },
+            { key: 'C', language: 'en' },
+            { key: 'B', language: 'es' },
+            { key: 'B', language: 'en' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should add no new translation, when a label gets updated to another already existing label', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'C' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es' },
+            { key: 'A', language: 'en' },
+            { key: 'C', language: 'es' },
+            { key: 'C', language: 'en' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should remove translations when the last element using it is changed to something else', async () => {
+          let data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'B' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'C', language: 'es' },
+            { key: 'C', language: 'en' },
+            { key: 'B', language: 'es' },
+            { key: 'B', language: 'en' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+      });
     });
   });
 });

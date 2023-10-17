@@ -68,7 +68,6 @@ const updateTranslation = (current, thesauri) => {
     'id',
     'label'
   );
-  console.log('deletedPropertiesByLabel', deletedPropertiesByLabel);
   const context = thesauriToTranslationContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
