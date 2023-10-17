@@ -458,7 +458,7 @@ describe('thesauri', () => {
       });
     });
 
-    describe('when changing elements', () => {
+    fdescribe('when changing elements', () => {
       let db;
       let translationsV2Collection;
 
@@ -495,6 +495,14 @@ describe('thesauri', () => {
           };
           const response = await thesauri.save(data);
           const id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
 
           data._id = id;
           data.values.push({ id: '2', label: 'group', values: [{ id: '3', label: 'A' }] });
@@ -507,8 +515,8 @@ describe('thesauri', () => {
             .toArray();
 
           expect(relatedTranslations).toMatchObject([
-            { key: 'A', language: 'es' },
-            { key: 'A', language: 'en' },
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'A' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -530,6 +538,14 @@ describe('thesauri', () => {
           };
           const response = await thesauri.save(thesaurusData);
           id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
         });
 
         it('should not delete the translation key if it is still used by another element', async () => {
@@ -539,8 +555,8 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'A', language: 'es' },
-            { key: 'A', language: 'en' },
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'A' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -600,9 +616,53 @@ describe('thesauri', () => {
           };
           const response = await thesauri.save(thesaurusData);
           id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'C',
+              language: 'es',
+            },
+            { $set: { value: 'Ces' } }
+          );
         });
 
-        it('should add a new translations, when an element gets a new label', async () => {
+        it('should update the key, but change only the default language translation, when all of the same elements are changed at once', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'B' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'B', language: 'es', value: 'Aes' },
+            { key: 'B', language: 'en', value: 'B' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should add a new translations, when an element gets a new label, but the old one is still in use by other elements', async () => {
           const data = {
             _id: id,
             name: 'Test Thesaurus',
@@ -619,12 +679,12 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'A', language: 'es' },
-            { key: 'A', language: 'en' },
-            { key: 'B', language: 'es' },
-            { key: 'B', language: 'en' },
-            { key: 'C', language: 'es' },
-            { key: 'C', language: 'en' },
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'A' },
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'B' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -649,10 +709,10 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'A', language: 'es' },
-            { key: 'A', language: 'en' },
-            { key: 'C', language: 'es' },
-            { key: 'C', language: 'en' },
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'A' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -687,10 +747,10 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'B', language: 'es' },
-            { key: 'B', language: 'en' },
-            { key: 'C', language: 'es' },
-            { key: 'C', language: 'en' },
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'B' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
