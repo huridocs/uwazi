@@ -73,46 +73,63 @@ describe('Copy from entity', () => {
     });
   });
 
-  // describe('editing an existing entity', () => {
-  //   it('should edit an entity by using copy from', () => {
-  //     cy.contains('a', 'Library').click();
-  //     cy.contains(
-  //       'h2',
-  //       'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
-  //     ).click();
-  //     cy.contains('button', 'Edit').click();
-  //     cy.contains('button', 'Copy From').click();
+  describe('editing an existing entity', () => {
+    it('should edit an entity by using copy from', () => {
+      cy.contains('a', 'Library').click();
+      cy.contains(
+        'h2',
+        'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
+      ).click();
+      cy.contains('button', 'Edit').click();
+      cy.contains('button', 'Copy From').click();
 
-  //     cy.get('div.copy-from').within(() => {
-  //       cy.get('input').type(
-  //         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
-  //       );
-  //       cy.contains(
-  //         '.item-name',
-  //         'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
-  //       ).click();
-  //       cy.contains('button', 'Copy Highlighted').click();
-  //     });
-  //     cy.get('div.copy-from').should('not.exist');
+      cy.get('div.copy-from').within(() => {
+        cy.get('input').type(
+          'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+        );
+        cy.contains(
+          '.item-name',
+          'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+        ).click();
+        cy.contains('button', 'Copy Highlighted').click();
+      });
+      cy.get('div.copy-from').should('not.exist');
 
-  //     cy.get('[name="library.sidepanel.metadata.title"]').clear();
-  //     cy.get('[name="library.sidepanel.metadata.title"]').type('Edited orden de la corte');
-  //     cy.get('#metadataForm')
-  //       .contains('.multiselectItem-name', 'Comisión Interamericana de Derechos Humanos')
-  //       .click();
+      cy.get('[name="library.sidepanel.metadata.title"]').clear();
+      cy.get('[name="library.sidepanel.metadata.title"]').type('Edited orden de la corte');
+      cy.get('#metadataForm')
+        .contains('.multiselectItem-name', 'Comisión Interamericana de Derechos Humanos')
+        .click();
 
-  //     cy.contains('button', 'Save').click();
-  //   });
+      cy.contains('button', 'Save').click();
+    });
 
-  //   it('should view the edited entity', () => {
-  //     cy.contains('Entity updated').click();
-  //     cy.contains('h2', 'Edited orden de la corte').click();
-  //     cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
-  //       cy.contains('a', 'View').click();
-  //     });
-  //     cy.contains('h1', 'Edited orden de la corte');
-  //   });
+    it('should view the edited entity', () => {
+      cy.contains('Entity updated').click();
+      cy.contains('h2', 'Edited orden de la corte').click();
+      cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
+        cy.contains('a', 'View').click();
+      });
+      cy.contains('h1', 'Edited orden de la corte');
+    });
 
-  //   it('should check the data for the edited entity', () => {});
-  // });
+    it('should check the data for the edited entity', () => {
+      cy.get('.metadata.tab-content-visible').within(() => {
+        cy.contains('h1', 'Edited orden de la corte');
+
+        cy.get('.metadata-name-mecanismo').within(() => {
+          cy.contains('Comisión Interamericana de Derechos Humanos');
+          cy.contains('Corte Interamericana de Derechos Humanos');
+        });
+
+        cy.get('.metadata-name-fecha').contains('Dec 1, 2018');
+
+        cy.get('.metadata-name-pa_s').contains('Venezuela');
+
+        cy.get('.metadata-name-firmantes').contains('Cecilia Medina Quiroga');
+
+        cy.get('.metadata-name-tipo').contains('Supervisión de cumplimiento de Sentencia');
+      });
+    });
+  });
 });
