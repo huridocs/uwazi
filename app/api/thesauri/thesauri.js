@@ -52,24 +52,35 @@ const create = async thesauri => {
 };
 
 const updateTranslation = (current, thesauri) => {
-  const currentProperties = flattenProperties(current.values);
-  const newProperties = flattenProperties(thesauri.values);
+  const currentProperties = current.values;
+  const newProperties = thesauri.values;
 
-  const currentLabels = new Set(currentProperties.map(p => p.label));
-  currentLabels.add(current.name);
-  const newLabels = new Set(newProperties.map(p => p.label));
-  newLabels.add(thesauri.name);
-
-  const addedLabels = [...newLabels].filter(label => !currentLabels.has(label));
-  const deletedLabels = [...currentLabels].filter(label => !newLabels.has(label));
+  const updatedLabels = getUpdatedNames(
+    {
+      prop: 'label',
+      outKey: 'label',
+      filterBy: 'id',
+    },
+    currentProperties,
+    newProperties
+  );
+  if (current.name !== thesauri.name) {
+    updatedLabels[current.name] = thesauri.name;
+  }
+  const deletedPropertiesByLabel = getDeletedProperties(
+    currentProperties,
+    newProperties,
+    'id',
+    'label'
+  );
 
   const context = thesauriToTranslationContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
   return translations.updateContext(
     { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
-    Object.fromEntries(addedLabels.map(label => [label, label])),
-    deletedLabels,
+    updatedLabels,
+    deletedPropertiesByLabel,
     context
   );
 };
