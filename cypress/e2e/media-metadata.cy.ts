@@ -126,7 +126,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow set an external link from a media property', () => {

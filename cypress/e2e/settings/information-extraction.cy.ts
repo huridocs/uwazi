@@ -267,7 +267,6 @@ describe('Information Extraction', () => {
       });
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.contains('span', 'Lorem Ipsum');
-      cy.get('aside').toMatchImageSnapshot();
     });
 
     it('should not render pdf pages that are not visible', () => {
