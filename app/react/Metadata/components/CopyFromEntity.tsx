@@ -27,10 +27,13 @@ type CopyFromEntityState = {
 };
 
 class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
+  templates: TemplateSchema[];
+
   constructor(props: CopyFromEntityProps) {
     super(props);
 
     this.state = { propsToCopy: [], selectedEntity: {}, lastSearch: undefined };
+    this.templates = this.props.templates.toJS();
     this.onSelect = this.onSelect.bind(this);
     this.cancel = this.cancel.bind(this);
     this.copy = this.copy.bind(this);
@@ -40,11 +43,10 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
 
   onSelect(selectedEntity: EntitySchema) {
     const copyFromTemplateId = selectedEntity.template;
-    const templates = this.props.templates.toJS();
     const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
-      .comonProperties(templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
+      .comonProperties(this.templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });
@@ -60,11 +62,11 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
       return;
     }
 
-    const template = this.props.templates
-      .find(_template => _template?.get('_id') === this.props.originalEntity.template)
-      .toJS();
+    const entityTemplate = this.templates.find(
+      template => template._id === this.props.originalEntity.template
+    );
 
-    const originalEntity = wrapEntityMetadata(this.props.originalEntity, template);
+    const originalEntity = wrapEntityMetadata(this.props.originalEntity, entityTemplate);
 
     const updatedEntity = this.state.propsToCopy.reduce(
       (entity: EntitySchema, propName: string) => {
@@ -83,7 +85,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     );
 
     actions
-      .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.props.templates.toJS())
+      .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.templates)
       .forEach(action => store?.dispatch(action));
 
     this.props.onSelect([]);
