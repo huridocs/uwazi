@@ -145,7 +145,7 @@ function getUpdatedNames(
   oldProperties: PropertyOrThesaurusSchema[] = [],
   newProperties: PropertyOrThesaurusSchema[] = []
 ) {
-  const indexOf = (p: PropertyOrThesaurusSchema) => p[filterBy]!.toString();
+  const indexOf = (p: PropertyOrThesaurusSchema) => p[filterBy]?.toString() || '';
 
   const propertiesWithNewName: { [k: string]: string } = {};
   const deletedProperties: Set<string> = new Set();
