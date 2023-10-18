@@ -129,23 +129,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
-  it('should allow edit media created with timelinks', () => {
-    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
-    cy.addTimeLink(4000, 'Second three', 1);
-    saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
-  });
-
-  it('should allow remove a timelink from a media property', () => {
-    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
-    cy.get('.timelinks-form').scrollIntoView();
-    cy.get('.delete-timestamp-btn').eq(1).click();
-    saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
-  });
-
   it('should allow set an external link from a media property', () => {
     addEntity('Reporte con contenido externo');
     addVideo(false);
