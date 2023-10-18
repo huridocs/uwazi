@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
-import { Icon } from 'app/UI';
+import { Bars3Icon } from '@heroicons/react/20/solid';
+
 import type { IDraggable } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
 import { IDnDContext } from 'app/V2/CustomHooks';
@@ -16,6 +17,7 @@ interface DraggableItemProps<T> extends React.PropsWithChildren {
   context: any;
   className?: string;
   omitIcon?: boolean;
+  wrapperType?: 'li' | 'tr';
 }
 
 type DraggedResult<T> = {
@@ -60,8 +62,9 @@ function DraggableItemComponent<T>({
   context,
   className,
   omitIcon = false,
+  wrapperType = 'li',
 }: DraggableItemProps<T>) {
-  const ref = useRef<HTMLLIElement>(null);
+  const ref = useRef(null);
   const [, drop] = useDrop({
     accept: context.type,
     item: { item, index },
@@ -98,8 +101,10 @@ function DraggableItemComponent<T>({
   const opacity = getOpacityLevel(isDragging);
 
   drag(drop(ref));
+
+  const TagName = wrapperType;
   return (
-    <li
+    <TagName
       className={`${className} flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center ${getIconHandleClass(
         iconHandle
       )}`}
@@ -111,10 +116,10 @@ function DraggableItemComponent<T>({
       data-handler-id={handlerId}
     >
       {!omitIcon && (
-        <Icon icon="bars" className={`text-gray-400 ${getIconHandleClass(!iconHandle)}`} />
+        <Bars3Icon className={`w-4 text-gray-400 ${getIconHandleClass(!iconHandle)}`} />
       )}
       {children}
-    </li>
+    </TagName>
   );
 }
 
