@@ -15,14 +15,12 @@ interface ContainerProps<T> {
   context: IDnDContext<T>;
   itemComponent?: FC<IItemComponentProps<T>>;
   iconHandle?: boolean;
-  name?: string;
   className?: string;
   parent?: IDraggable<T>;
 }
 
 // eslint-disable-next-line react/function-component-definition
 function Container<T>({
-  name = 'container',
   context,
   iconHandle = false,
   itemComponent,
@@ -31,12 +29,11 @@ function Container<T>({
 }: ContainerProps<T>) {
   const currentItems = parent ? parent.value.items || [] : context.activeItems;
   return (
-    <div className="tw-content " data-testid={`active_filters_${name}`}>
+    <div className="tw-content " data-testid="active_filters_root">
       <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
         <ul>
           {currentItems
             .filter((item: IDraggable<T>) => item)
-            .map((item: IDraggable<T>) => ({ ...item, container: name }))
             .map((item: IDraggable<T>, index: number) => (
               <DraggableItem
                 item={item}
@@ -45,6 +42,7 @@ function Container<T>({
                 index={index}
                 className="flex flex-row gap-3 align-middle "
                 context={context}
+                container="root"
               >
                 <>
                   {itemComponent && itemComponent({ item, context, index })}
@@ -53,7 +51,12 @@ function Container<T>({
               </DraggableItem>
             ))}
         </ul>
-        <DropZone type={context.type} name={name} context={context} parent={parent} />
+        <DropZone
+          type={context.type}
+          context={context}
+          parent={parent}
+          name={parent === undefined ? 'root' : `group_${context.getDisplayName(parent)}`}
+        />
       </div>
     </div>
   );
@@ -62,7 +65,6 @@ Container.defaultProps = {
   iconHandle: false,
   itemComponent: undefined,
   className: '',
-  name: 'root',
   parent: undefined,
 };
 

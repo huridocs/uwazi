@@ -18,11 +18,13 @@ interface DraggableItemProps<T> extends React.PropsWithChildren {
   className?: string;
   omitIcon?: boolean;
   wrapperType?: 'li' | 'tr';
+  container?: string;
 }
 
 type DraggedResult<T> = {
   item: IDraggable<T>;
   index: number;
+  container: string;
 };
 
 function hasValidContext<T>(dropContext?: IDnDContext<T>) {
@@ -35,10 +37,10 @@ function isNotAutoContained<T>(
   dropParent?: { id?: string; item?: IDraggable<T> }
 ) {
   return (
-    (draggedResult.item.container !== currentItem.container ||
+    (draggedResult.container !== currentItem.container ||
       dropParent === undefined ||
       dropParent?.id !== draggedResult.item.parent?.id ||
-      draggedResult.item.container === undefined) &&
+      draggedResult.container === undefined) &&
     (dropParent === undefined || draggedResult.item.id !== dropParent.id)
   );
 }
@@ -63,11 +65,12 @@ function DraggableItemComponent<T>({
   className,
   omitIcon = false,
   wrapperType = 'li',
+  container,
 }: DraggableItemProps<T>) {
   const ref = useRef(null);
   const [, drop] = useDrop({
     accept: context.type,
-    item: { item, index },
+    item: { item: { ...item, container }, container, index },
     collect(monitor: any) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -75,12 +78,12 @@ function DraggableItemComponent<T>({
         isOverCurrent: monitor.isOver({ shallow: true }),
       };
     },
-    hover: hoverSortable(ref, item, index, context.sort),
+    hover: hoverSortable(ref, { ...item, container }, index, context.sort),
   });
 
   const [{ isDragging, handlerId }, drag] = useDrag({
     type: context.type,
-    item: { item, index },
+    item: { item: { ...item, container }, index },
     end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
@@ -105,17 +108,20 @@ function DraggableItemComponent<T>({
   const TagName = wrapperType;
   return (
     <TagName
-      className={`${className} flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center ${getIconHandleClass(
-        iconHandle
-      )}`}
+      className={`${
+        className ||
+        'flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center'
+      }  ${getIconHandleClass(iconHandle)}`}
       ref={ref}
       data-testid={`${
-        item.container || (item.parent && context.getDisplayName(item.parent)) || 'available'
+        (item.parent ? `group_${context.getDisplayName(item.parent)}` : '') ||
+        container ||
+        'available'
       }-draggable-item-${index}`}
       style={{ opacity }}
       data-handler-id={handlerId}
     >
-      {!omitIcon && (
+      {!omitIcon && wrapperType === 'li' && (
         <Bars3Icon className={`w-4 text-gray-400 ${getIconHandleClass(!iconHandle)}`} />
       )}
       {children}

@@ -160,7 +160,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
                 </DraggableItem>
               ))}
             </ul>
-            <DropZone type={dndContext.type} name="root" context={dndContext} />
+            <DropZone type={dndContext.type} context={dndContext} name="root" />
           </div>
           <div className="flex items-center ">
             <div data-testid="available-bin">
@@ -185,12 +185,7 @@ type Story = StoryObj<typeof DnDClient>;
 const CardWithDnD: FC<IItemComponentProps<DnDValueExample>> = ({ item, context, index }) => (
   <div className="flex flex-col w-full">
     <CardWithRemove item={item} context={context} index={index} />
-    <Container
-      context={context}
-      itemComponent={CardWithRemove}
-      name={`group_${context.getDisplayName(item)}`}
-      parent={item}
-    />
+    <Container context={context} itemComponent={CardWithRemove} parent={item} />
   </div>
 );
 

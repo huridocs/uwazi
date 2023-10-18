@@ -23,7 +23,10 @@ const setIdAndParent = <T>(item: IDraggable<T>, parent?: IDraggable<T>) => {
 
 function mapWithParent<T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] {
   return items.map(item => {
-    const draggableItem = { value: item } as IDraggable<T>;
+    const draggableItem = {
+      value: item,
+      ...(parent === undefined ? { container: 'root' } : {}),
+    } as IDraggable<T>;
     const itemWithId: IDraggable<T> = setIdAndParent(draggableItem, parent);
     if (draggableItem.value.items && draggableItem.value.items.length > 0) {
       return {
@@ -82,7 +85,6 @@ const addItemToParent = <T>(
   parent: IDraggable<T>
 ) => {
   removeItemFromList(setActiveItems, indexOfNewItem);
-
   setActiveItems((prevActiveItems: IDraggable<any>[]) => {
     const indexOfParent = findItemIndex(prevActiveItems, parent);
     if (indexOfParent > -1) {
