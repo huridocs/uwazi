@@ -5,14 +5,13 @@ import { differenceBy, intersectionBy } from 'lodash';
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
 import propertiesHelper from 'shared/comonProperties';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
 import { ExtractedMetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import model from './templatesModel';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import properties from 'database/elastic_mapping/toc_properties';
 
 const safeName = sharedSafeName;
 
@@ -107,6 +106,33 @@ const flattenProperties = (properties: PropertyOrThesaurusSchema[]) =>
     return [...flatProps, p];
   }, []);
 
+function getUpdatedIds(
+  {
+    prop,
+    filterBy,
+  }: {
+    prop: 'name' | 'label';
+    filterBy: 'id' | '_id';
+  },
+  oldProperties: PropertyOrThesaurusSchema[] = [],
+  newProperties: PropertyOrThesaurusSchema[] = []
+) {
+  const indexOf = (p: PropertyOrThesaurusSchema) => p[filterBy]!.toString();
+  const idsWithNewName: { [k: string]: string } = {};
+  const flatOld = flattenProperties(oldProperties);
+  const flatNew = flattenProperties(newProperties);
+  const newByIndex = objectIndex(flatNew, indexOf, p => p);
+  flatOld.forEach(property => {
+    const newProperty = newByIndex[indexOf(property)];
+    const oldValue = property[prop];
+    const newValue = newProperty?.[prop];
+    if (newProperty && typeof newValue === 'string' && newValue !== oldValue) {
+      idsWithNewName[indexOf(property)] = newValue;
+    }
+  });
+  return idsWithNewName;
+}
+
 // eslint-disable-next-line max-statements
 function getUpdatedNames(
   {
@@ -120,13 +146,17 @@ function getUpdatedNames(
   newProperties: PropertyOrThesaurusSchema[] = []
 ) {
   const indexOf = (p: PropertyOrThesaurusSchema) => p[filterBy]!.toString();
+
   const propertiesWithNewName: { [k: string]: string } = {};
+  const deletedProperties: Set<string> = new Set();
+
   const flatOld = flattenProperties(oldProperties);
   const preExistingLabels = new Set(flatOld.map(property => property[prop]));
-  const labelAlreadyExisted = (p: PropertyOrThesaurusSchema) => preExistingLabels.has(p[prop]);
   const flatNew = flattenProperties(newProperties);
   const newByIndex = objectIndex(flatNew, indexOf, p => p);
   const allNewLabels = new Set(flatNew.map(property => property[prop]));
+
+  const labelAlreadyExisted = (p: PropertyOrThesaurusSchema) => preExistingLabels.has(p[prop]);
   const labelStillInUse = (p: PropertyOrThesaurusSchema) => allNewLabels.has(p[prop]);
   const sameProp = (previous: PropertyOrThesaurusSchema, current: PropertyOrThesaurusSchema) =>
     previous[prop] === current[prop];
@@ -135,6 +165,7 @@ function getUpdatedNames(
     current: PropertyOrThesaurusSchema
   ) => {
     if (!current || sameProp(previous, current) || labelAlreadyExisted(current)) {
+      if (!labelStillInUse(previous)) deletedProperties.add(previous[prop]!);
       return { key: undefined, value: undefined };
     }
     if (labelStillInUse(previous)) {
@@ -149,8 +180,7 @@ function getUpdatedNames(
       propertiesWithNewName[key] = value;
     }
   });
-
-  return propertiesWithNewName;
+  return { update: propertiesWithNewName, delete: Array.from(deletedProperties) };
 }
 
 function getDeletedProperties(
@@ -249,6 +279,7 @@ export {
   denormalizeInheritedProperties,
   flattenProperties,
   generateIds,
+  getUpdatedIds,
   getUpdatedNames,
   generateNames,
   getDeletedProperties,

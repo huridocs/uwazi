@@ -3,6 +3,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
 import {
   generateIds,
+  getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
   generateNames,
@@ -121,7 +122,10 @@ describe('templates utils', () => {
         oldProperties,
         newProperties
       );
-      expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
+      expect(result).toEqual({
+        update: { my_prop_two: 'my_fancy_new_name' },
+        delete: [],
+      });
     });
 
     it('should work for sub values too (function is being used by relationships and thesauri)', () => {
@@ -156,7 +160,7 @@ describe('templates utils', () => {
         oldProperties,
         newProperties
       );
-      expect(result).toEqual({ look_at_me: 'I_changed' });
+      expect(result).toEqual({ update: { look_at_me: 'I_changed' }, delete: [] });
     });
 
     it('should return change when all of the same labels are changed at once', () => {
@@ -188,7 +192,7 @@ describe('templates utils', () => {
         oldProperties,
         newProperties
       );
-      expect(result).toEqual({ A: 'B' });
+      expect(result).toEqual({ update: { A: 'B' }, delete: [] });
     });
 
     it('should return a new entry, if only one of a duplicated label is changed into a new label', () => {
@@ -220,7 +224,7 @@ describe('templates utils', () => {
         firstProperties,
         secondProperties
       );
-      expect(result).toEqual({ B: 'B' });
+      expect(result).toEqual({ update: { B: 'B' }, delete: [] });
 
       const thirdProperties: PropertyOrThesaurusSchema[] = [
         { id: '1', label: 'B' },
@@ -239,7 +243,7 @@ describe('templates utils', () => {
         secondProperties,
         thirdProperties
       );
-      expect(result2).toEqual({});
+      expect(result2).toEqual({ update: {}, delete: ['A'] });
     });
 
     it('should return nothing, when labels are changed into an existing label', () => {
@@ -271,7 +275,7 @@ describe('templates utils', () => {
         firstProperties,
         newProperties
       );
-      expect(result).toEqual({});
+      expect(result).toEqual({ update: {}, delete: [] });
 
       const newProperties2: PropertyOrThesaurusSchema[] = [
         { id: '1', label: 'C' },
@@ -290,7 +294,68 @@ describe('templates utils', () => {
         newProperties,
         newProperties2
       );
-      expect(result2).toEqual({});
+      expect(result2).toEqual({ update: {}, delete: ['A'] });
+    });
+  });
+
+  describe('getUpdatedIds()', () => {
+    it('should return the properties that have a new name', () => {
+      const prop1Id = db.id();
+      const prop2Id = db.id();
+      const oldProperties: PropertySchema[] = [
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_prop_two', label: 'label', type: 'text' },
+      ];
+
+      const newProperties: PropertySchema[] = [
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
+      ];
+
+      const result = getUpdatedIds(
+        {
+          prop: 'name',
+          filterBy: '_id',
+        },
+        oldProperties,
+        newProperties
+      );
+      expect(result).toEqual({ [prop2Id.toString()]: 'my_fancy_new_name' });
+    });
+
+    it('should work for sub values too (function is being used by relationships and thesauri)', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
+        {
+          id: '2',
+          name: 'my_prop_two',
+          values: [{ id: '3', label: 'look at me', name: 'look_at_me' }],
+          label: 'label',
+          type: 'text',
+        },
+      ];
+
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
+        {
+          id: '2',
+          name: 'my_prop_two',
+
+          values: [{ id: '3', label: 'I changed', name: 'I_changed' }],
+          label: 'label',
+          type: 'text',
+        },
+      ];
+
+      const result = getUpdatedIds(
+        {
+          prop: 'name',
+          filterBy: 'id',
+        },
+        oldProperties,
+        newProperties
+      );
+      expect(result).toEqual({ 3: 'I_changed' });
     });
   });
 

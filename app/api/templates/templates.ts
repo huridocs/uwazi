@@ -64,7 +64,7 @@ const updateTranslation = async (
     },
     currentProperties,
     newProperties
-  );
+  ).update;
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }

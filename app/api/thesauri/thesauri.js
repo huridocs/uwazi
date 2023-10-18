@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import {
   generateIds,
+  getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
-  flattenProperties,
 } from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import { preloadOptionsLimit } from 'shared/config';
@@ -55,7 +55,7 @@ const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
 
-  const updatedLabels = getUpdatedNames(
+  const { update: updatedLabels, delete: removedThroughUpdate } = getUpdatedNames(
     {
       prop: 'label',
       outKey: 'label',
@@ -73,6 +73,7 @@ const updateTranslation = (current, thesauri) => {
     'id',
     'label'
   );
+  const allRemoved = Array.from(new Set(deletedPropertiesByLabel.concat(removedThroughUpdate)));
 
   const context = thesauriToTranslationContext(thesauri);
 
@@ -80,7 +81,7 @@ const updateTranslation = (current, thesauri) => {
   return translations.updateContext(
     { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
     updatedLabels,
-    deletedPropertiesByLabel,
+    allRemoved,
     context
   );
 };
@@ -98,7 +99,6 @@ async function updateOptionsInEntities(current, thesauri) {
   const updatedIds = getUpdatedIds(
     {
       prop: 'label',
-      outKey: 'id',
       filterBy: 'id',
     },
     currentProperties,

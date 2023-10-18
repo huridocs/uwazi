@@ -211,8 +211,8 @@ describe('thesauri', () => {
         const response = await thesauri.save(data);
         expect(translations.updateContext).toHaveBeenCalledWith(
           { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
-          { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' },
-          ['Enders game', 'Fundation', 'Top 2 scify books'],
+          { 'Top 2 scify books': 'Top 1 games', 'Enders game': 'Marios game' },
+          ['Fundation'],
           { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
         );
       });
@@ -458,7 +458,7 @@ describe('thesauri', () => {
       });
     });
 
-    fdescribe('when changing elements', () => {
+    describe('when changing elements', () => {
       let db;
       let translationsV2Collection;
 
@@ -503,6 +503,14 @@ describe('thesauri', () => {
             },
             { $set: { value: 'Aes' } }
           );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
 
           data._id = id;
           data.values.push({ id: '2', label: 'group', values: [{ id: '3', label: 'A' }] });
@@ -516,7 +524,7 @@ describe('thesauri', () => {
 
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es', value: 'Aes' },
-            { key: 'A', language: 'en', value: 'A' },
+            { key: 'A', language: 'en', value: 'Aen' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -546,6 +554,14 @@ describe('thesauri', () => {
             },
             { $set: { value: 'Aes' } }
           );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
         });
 
         it('should not delete the translation key if it is still used by another element', async () => {
@@ -556,7 +572,7 @@ describe('thesauri', () => {
             .toArray();
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es', value: 'Aes' },
-            { key: 'A', language: 'en', value: 'A' },
+            { key: 'A', language: 'en', value: 'Aen' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
             { key: 'group', language: 'es' },
@@ -574,8 +590,8 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'A', language: 'es' },
-            { key: 'A', language: 'en' },
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
             { key: 'Test Thesaurus', language: 'es' },
             { key: 'Test Thesaurus', language: 'en' },
           ]);
@@ -627,6 +643,14 @@ describe('thesauri', () => {
           await translationsV2Collection.updateOne(
             {
               'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
               key: 'C',
               language: 'es',
             },
@@ -651,8 +675,8 @@ describe('thesauri', () => {
             })
             .toArray();
           expect(relatedTranslations).toMatchObject([
-            { key: 'B', language: 'es', value: 'Aes' },
-            { key: 'B', language: 'en', value: 'B' },
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'Aen' },
             { key: 'C', language: 'es', value: 'Ces' },
             { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },
@@ -680,7 +704,7 @@ describe('thesauri', () => {
             .toArray();
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es', value: 'Aes' },
-            { key: 'A', language: 'en', value: 'A' },
+            { key: 'A', language: 'en', value: 'Aen' },
             { key: 'B', language: 'es', value: 'B' },
             { key: 'B', language: 'en', value: 'B' },
             { key: 'C', language: 'es', value: 'Ces' },
@@ -710,7 +734,7 @@ describe('thesauri', () => {
             .toArray();
           expect(relatedTranslations).toMatchObject([
             { key: 'A', language: 'es', value: 'Aes' },
-            { key: 'A', language: 'en', value: 'A' },
+            { key: 'A', language: 'en', value: 'Aen' },
             { key: 'C', language: 'es', value: 'Ces' },
             { key: 'C', language: 'en', value: 'C' },
             { key: 'Test Thesaurus', language: 'es' },

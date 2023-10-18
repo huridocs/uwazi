@@ -46,7 +46,7 @@ const updateTranslation = (currentTemplate, template) => {
     },
     currentProperties,
     newProperties
-  );
+  ).update;
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }
