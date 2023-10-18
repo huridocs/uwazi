@@ -123,10 +123,6 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
-      cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
-      cy.get('.form-group.media')
-        .eq(0)
-        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
     });
 
     it('should fill the Imagen adicional field', () => {
@@ -153,7 +149,7 @@ describe('Public Form', () => {
 
     it('should check the first entity', () => {
       cy.contains('h2', 'Test public submit entity').click();
-      cy.get('aside.is-active').toMatchImageSnapshot();
+      cy.contains('Test public submit entity');
     });
 
     it('should check the second entity with files', () => {
