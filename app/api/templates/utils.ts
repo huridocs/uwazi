@@ -133,7 +133,6 @@ function getUpdatedIds(
   return idsWithNewName;
 }
 
-// eslint-disable-next-line max-statements
 function getUpdatedNames(
   {
     prop,
@@ -173,6 +172,7 @@ function getUpdatedNames(
     }
     return { key: previous[prop], value: current[prop] };
   };
+
   flatOld.forEach(property => {
     const newProperty = newByIndex[indexOf(property)];
     const { key, value } = compareProps(property, newProperty);
@@ -180,6 +180,7 @@ function getUpdatedNames(
       propertiesWithNewName[key] = value;
     }
   });
+
   return { update: propertiesWithNewName, delete: Array.from(deletedProperties) };
 }
 
