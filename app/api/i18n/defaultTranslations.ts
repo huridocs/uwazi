@@ -2,11 +2,9 @@
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, readdir } from 'fs/promises';
 
-import { validateFormat } from 'api/csv/csv';
-import importFile from 'api/csv/importFile';
+import { CSVLoader } from 'api/csv';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { availableLanguages } from 'shared/languagesList';
-import { CSVLoader } from 'api/csv';
 
 const availableLanguagesByKey = objectIndex(
   availableLanguages,
