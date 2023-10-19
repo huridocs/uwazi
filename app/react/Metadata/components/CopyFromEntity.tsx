@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
+import { ClientEntitySchema } from 'app/istore';
 import { Translate } from 'app/I18N';
-import { actions, FormatMetadata } from 'app/Metadata';
+import { actions, FormatMetadata, wrapEntityMetadata } from 'app/Metadata';
 import { store } from 'app/store';
 
 import { SearchEntities } from './SearchEntities';
@@ -16,21 +16,24 @@ type CopyFromEntityProps = {
   onSelect: Function;
   onCancel: Function;
   templates: IImmutable<Array<TemplateSchema>>;
-  originalEntity: EntitySchema;
+  originalEntity: ClientEntitySchema;
   formModel: string;
 };
 
 type CopyFromEntityState = {
-  selectedEntity: EntitySchema;
+  selectedEntity: ClientEntitySchema;
   propsToCopy: Array<string>;
   lastSearch?: string;
 };
 
 class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState> {
+  templates: TemplateSchema[];
+
   constructor(props: CopyFromEntityProps) {
     super(props);
 
     this.state = { propsToCopy: [], selectedEntity: {}, lastSearch: undefined };
+    this.templates = this.props.templates.toJS();
     this.onSelect = this.onSelect.bind(this);
     this.cancel = this.cancel.bind(this);
     this.copy = this.copy.bind(this);
@@ -38,13 +41,12 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     this.onFinishedSearch = this.onFinishedSearch.bind(this);
   }
 
-  onSelect(selectedEntity: EntitySchema) {
+  onSelect(selectedEntity: ClientEntitySchema) {
     const copyFromTemplateId = selectedEntity.template;
-    const templates = this.props.templates.toJS();
     const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
-      .comonProperties(templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
+      .comonProperties(this.templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });
@@ -60,20 +62,33 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
       return;
     }
 
+    const entityTemplate = this.templates.find(
+      template => template._id === this.props.originalEntity.template
+    );
+
+    const originalEntity: ClientEntitySchema = wrapEntityMetadata(
+      this.props.originalEntity,
+      entityTemplate
+    );
+
     const updatedEntity = this.state.propsToCopy.reduce(
-      (entity: EntitySchema, propName: string) => {
+      (entity: ClientEntitySchema, propName: string) => {
         if (!entity.metadata) {
-          entity.metadata = {};
+          return { ...entity, metadata: {} };
         }
 
-        entity.metadata[propName] = this.state.selectedEntity.metadata![propName];
-        return entity;
+        const updatedMetadata = this.state.selectedEntity.metadata![propName];
+
+        return {
+          ...entity,
+          metadata: { ...entity.metadata, [propName]: updatedMetadata },
+        };
       },
-      { ...this.props.originalEntity, metadata: { ...this.props.originalEntity.metadata } }
+      { ...originalEntity }
     );
 
     actions
-      .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.props.templates.toJS())
+      .loadFetchedInReduxForm(this.props.formModel, updatedEntity, this.templates)
       .forEach(action => store?.dispatch(action));
 
     this.props.onSelect([]);
