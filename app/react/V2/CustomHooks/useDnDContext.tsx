@@ -40,8 +40,8 @@ const useDnDContext = <T, >(
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
     sort: sortActiveItems(activeItems, setActiveItems),
     updateItem,
-    updateActiveItems: (items: IDraggable<T>[]) => {
-      setActiveItems(items);
+    updateActiveItems: (items: T[]) => {
+      setActiveItems(mapWithParent(items));
     },
     activeItems,
     availableItems,

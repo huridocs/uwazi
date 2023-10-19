@@ -9,7 +9,7 @@ interface IDnDContext<T> {
   addItem: (item: IDraggable<T>) => void;
   removeItem: (item: IDraggable<T>) => void;
   updateItem: (values: IDraggable<T>) => void;
-  updateActiveItems: (items: IDraggable<T>[]) => void;
+  updateActiveItems: (items: T[]) => void;
   sort: Function;
   activeItems: IDraggable<T>[];
   availableItems: IDraggable<T>[];
