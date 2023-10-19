@@ -23,7 +23,7 @@ const peekHeaders = async (readStream: Readable): Promise<string[]> => {
 class ValidateFormatError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'ValidateColumnsError';
+    this.name = 'ValidateFormatError';
   }
 }
 

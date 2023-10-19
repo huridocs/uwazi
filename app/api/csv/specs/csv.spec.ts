@@ -1,6 +1,7 @@
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
+import { expectThrow } from 'api/utils/jestHelpers';
 import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '../csv';
 import { mockCsvFileReadStream } from './helpers';
 
@@ -8,27 +9,6 @@ const mockFileStream = (content: string) => {
   const mockedFile = mockCsvFileReadStream(content);
   const mockedFileStream = fs.createReadStream('mocked_file');
   return { mockedFile, mockedFileStream };
-};
-
-const expectThrow = async (
-  fn: () => Promise<void>,
-  errorClass: any,
-  message?: string,
-  finallyCallback?: () => Promise<void>
-) => {
-  try {
-    await fn();
-    expect.fail(`Should have thrown an ${errorClass.name} error.`);
-  } catch (e) {
-    expect(e).toBeInstanceOf(errorClass);
-    if (message) {
-      expect(e.message).toBe(message);
-    }
-  } finally {
-    if (finallyCallback) {
-      await finallyCallback();
-    }
-  }
 };
 
 describe('peekHeaders()', () => {
@@ -57,7 +37,7 @@ describe('validateFormat()', () => {
     );
   };
 
-  const validateProperly = async (content: string, options: ValidateFormatOptions) => {
+  const testValidationPass = async (content: string, options: ValidateFormatOptions) => {
     const { mockedFile, mockedFileStream } = mockFileStream(content);
     await validateFormat(mockedFileStream, options);
     mockedFile.mockRestore();
@@ -72,7 +52,7 @@ describe('validateFormat()', () => {
       'Expected 3 columns, but found 2.'
     );
 
-    await validateProperly(content, { column_number: 2 });
+    await testValidationPass(content, { column_number: 2 });
   });
 
   it('should be able to check the required column names', async () => {
@@ -84,7 +64,7 @@ describe('validateFormat()', () => {
       'Missing required headers: missing, also_missing.'
     );
 
-    await validateProperly(content, { required_headers: ['title', 'textprop'] });
+    await testValidationPass(content, { required_headers: ['title', 'textprop'] });
   });
 
   it('should be able to check for no empty values', async () => {
@@ -101,9 +81,9 @@ describe('validateFormat()', () => {
       { no_empty_values: true },
       'Empty value at row 2, column "textprop".'
     );
-    await validateProperly(missingInSecondLine, { no_empty_values: false });
+    await testValidationPass(missingInSecondLine, { no_empty_values: false });
 
     const full = 'title,textprop\nvalue1,value2';
-    await validateProperly(full, { no_empty_values: true });
+    await testValidationPass(full, { no_empty_values: true });
   });
 });

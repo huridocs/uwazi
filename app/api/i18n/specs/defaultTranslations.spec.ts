@@ -2,9 +2,13 @@
 import fs from 'fs';
 import { readdir } from 'fs/promises';
 
-import { validateFormat } from 'api/csv/csv';
+import { validateFormat, ValidateFormatError } from 'api/csv/csv';
+import { expectThrow } from 'api/utils/jestHelpers';
+import { DBFixture } from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { DefaultTranslations } from '../defaultTranslations';
+import translations from '../translations';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
 
@@ -53,17 +57,59 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
 ];
 const expectedFileNames = new Set(EXPECTED_DEFAULT_TRANSLATIONS.map(({ key }) => `${key}.csv`));
 
-describe('translations.importPredefined()', () => {
+// eslint-disable-next-line jest/no-focused-tests
+fdescribe('translations.importPredefined()', () => {
+  const fixtures: DBFixture = {
+    settings: [
+      {
+        languages: [
+          {
+            key: 'en',
+            label: 'English',
+            default: true,
+          },
+          {
+            key: 'es',
+            label: 'Spanish',
+          },
+        ],
+      },
+    ],
+  };
+
+  beforeAll(async () => {
+    DefaultTranslations.CONTENTS_DIRECTORY =
+      './app/api/i18n/specs/test_contents/filesForDefaultTranslations';
+    await testingEnvironment.setUp(fixtures);
+  });
+
+  afterAll(async () => {
+    DefaultTranslations.CONTENTS_DIRECTORY = TRANSLATION_FILES_DIR;
+    await testingEnvironment.tearDown();
+  });
+
   it('should expect the file to have 2 columns', async () => {
-    expect(true).toBe(false);
+    await expectThrow(
+      async () => translations.importPredefined('en'),
+      ValidateFormatError,
+      'Expected 2 columns, but found 3.'
+    );
   });
 
   it('should expect the file to have the columns "Key" and the long name of the language', async () => {
-    expect(true).toBe(false);
+    await expectThrow(
+      async () => translations.importPredefined('es'),
+      ValidateFormatError,
+      'Missing required headers: Spanish.'
+    );
   });
 
   it('should expect the file to have no empty values', async () => {
-    expect(true).toBe(false);
+    await expectThrow(
+      async () => translations.importPredefined('ru'),
+      ValidateFormatError,
+      'Empty value at row 3, column "Russian".'
+    );
   });
 });
 
