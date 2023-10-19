@@ -231,7 +231,7 @@ export default (app: Application) => {
       deleteLanguage(key, req).catch((error: Error) => {
         req.emitToSessionSocket('translationsDeleteError', error.message);
         // eslint-disable-next-line no-console
-        console.error(error.message);
+        console.error(error);
       });
       res.status(204).json('ok');
     }

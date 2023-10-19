@@ -6,6 +6,7 @@ import { validateFormat } from 'api/csv/csv';
 import importFile from 'api/csv/importFile';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { availableLanguages } from 'shared/languagesList';
+import { CSVLoader } from 'api/csv';
 
 const availableLanguagesByKey = objectIndex(
   availableLanguages,
@@ -26,8 +27,8 @@ export class DefaultTranslations {
   static async retrievePredefinedTranslations(locale: string) {
     try {
       const filePath = `${DefaultTranslations.CONTENTS_DIRECTORY}/${locale}.csv`;
-      const file = importFile(filePath);
-      await validateFormat(await file.readStream(), {
+      const loader = new CSVLoader();
+      await loader.validateFormat(filePath, {
         column_number: 2,
         no_empty_values: true,
         required_headers: ['Key', availableLanguagesByKey[locale]?.label],
