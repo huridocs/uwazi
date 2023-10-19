@@ -209,7 +209,7 @@ export default (app: Application) => {
       addLanguages(languages, req).catch((error: Error) => {
         req.emitToSessionSocket('translationsInstallError', error.message);
         // eslint-disable-next-line no-console
-        console.error(error.message);
+        console.error(error);
       });
       res.status(204).json('ok');
     }

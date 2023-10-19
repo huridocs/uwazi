@@ -1,13 +1,18 @@
 /* eslint-disable node/no-restricted-import */
 import fs from 'fs';
 import { readdir } from 'fs/promises';
+import request from 'supertest';
+import waitForExpect from 'wait-for-expect';
 
 import { validateFormat, ValidateFormatError } from 'api/csv/csv';
 import { expectThrow } from 'api/utils/jestHelpers';
 import { DBFixture } from 'api/utils/testing_db';
+import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { UserRole } from 'shared/types/userSchema';
 
 import { DefaultTranslations } from '../defaultTranslations';
+import i18nRoutes from '../routes';
 import translations from '../translations';
 
 const TRANSLATION_FILES_DIR = DefaultTranslations.CONTENTS_DIRECTORY;
@@ -57,26 +62,29 @@ const EXPECTED_DEFAULT_TRANSLATIONS: defaulTranslationInfo[] = [
 ];
 const expectedFileNames = new Set(EXPECTED_DEFAULT_TRANSLATIONS.map(({ key }) => `${key}.csv`));
 
-// eslint-disable-next-line jest/no-focused-tests
-fdescribe('translations.importPredefined()', () => {
-  const fixtures: DBFixture = {
-    settings: [
-      {
-        languages: [
-          {
-            key: 'en',
-            label: 'English',
-            default: true,
-          },
-          {
-            key: 'es',
-            label: 'Spanish',
-          },
-        ],
-      },
-    ],
-  };
+const fixtures: DBFixture = {
+  settings: [
+    {
+      languages: [
+        {
+          key: 'en',
+          label: 'English',
+          default: true,
+        },
+        {
+          key: 'es',
+          label: 'Spanish',
+        },
+      ],
+    },
+  ],
+};
 
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
+
+describe('translations.importPredefined()', () => {
   beforeAll(async () => {
     DefaultTranslations.CONTENTS_DIRECTORY =
       './app/api/i18n/specs/test_contents/filesForDefaultTranslations';
@@ -85,7 +93,6 @@ fdescribe('translations.importPredefined()', () => {
 
   afterAll(async () => {
     DefaultTranslations.CONTENTS_DIRECTORY = TRANSLATION_FILES_DIR;
-    await testingEnvironment.tearDown();
   });
 
   it('should expect the file to have 2 columns', async () => {
@@ -140,6 +147,20 @@ describe(`${TRANSLATION_FILES_DIR}`, () => {
 });
 
 describe('translation files', () => {
+  const app = setUpApp(i18nRoutes, (req, _res, next) => {
+    req.user = {
+      username: 'admin',
+      role: UserRole.ADMIN,
+      email: 'admin@test.com',
+    };
+    next();
+  });
+
+  beforeEach(async () => {
+    await testingEnvironment.setUp(fixtures);
+    iosocket.emit.mockReset();
+  });
+
   EXPECTED_DEFAULT_TRANSLATIONS.forEach(({ key, longName }) => {
     describe(`${key}.csv`, () => {
       it('should have a proper format', async () => {
@@ -153,7 +174,13 @@ describe('translation files', () => {
       });
 
       it('should be able to be loaded through the api without error', async () => {
-        expect(true).toBe(false);
+        await request(app)
+          .post('/api/translations/languages')
+          .send([{ key, label: longName }]);
+        const emits = iosocket.emit.mock.calls;
+        await waitForExpect(() => {
+          expect(emits[emits.length - 1]).toEqual(['translationsInstallDone', 'session']);
+        });
       });
     });
   });
