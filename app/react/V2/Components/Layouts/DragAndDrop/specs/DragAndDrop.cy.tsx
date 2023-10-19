@@ -60,7 +60,7 @@ describe('DragAndDrop', () => {
     it('should sort the active items from top to down', () => {
       cy.get('[data-testid="root-draggable-item-0"]').drag(
         '[data-testid="root-draggable-item-2"]',
-        { target: { x: 100, y: 20 } }
+        { target: { x: 100, y: 18 } }
       );
       shouldContainListItems('[data-testid="active-bin"]', ['Item 2', 'Item 3', 'Item 1']);
       shouldContainListItems('[data-testid="available-bin"]', ['Item 4', 'Item 5']);

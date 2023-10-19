@@ -53,6 +53,17 @@ const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
 
 const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
+// eslint-disable-next-line prettier/prettier
+const elementTestId = <T, >(
+  item: IDraggable<T>,
+  context: any,
+  container: string | undefined,
+  index: number
+) =>
+  `${
+    (item.parent ? `group_${context.getDisplayName(item.parent)}` : '') || container || 'available'
+  }-draggable-item-${index}`;
+
 // eslint-disable-next-line react/function-component-definition
 function DraggableItemComponent<T>({
   item,
@@ -113,11 +124,7 @@ function DraggableItemComponent<T>({
         'flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center'
       }  ${getIconHandleClass(iconHandle)}`}
       ref={ref}
-      data-testid={`${
-        (item.parent ? `group_${context.getDisplayName(item.parent)}` : '') ||
-        container ||
-        'available'
-      }-draggable-item-${index}`}
+      data-testid={elementTestId<T>(item, context, container, index)}
       style={{ opacity }}
       data-handler-id={handlerId}
     >
