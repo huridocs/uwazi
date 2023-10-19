@@ -62,12 +62,11 @@ const updateTranslation = async (
   const updatedLabels = getUpdatedNames(
     {
       prop: 'label',
-      outKey: 'label',
       filterBy: '_id',
     },
     currentProperties,
     newProperties
-  );
+  ).update;
   if (currentTemplate.name !== template.name) {
     updatedLabels[currentTemplate.name] = template.name;
   }

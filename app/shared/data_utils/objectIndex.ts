@@ -6,7 +6,7 @@ function objectIndex<T, U>(
   dataArray: T[],
   indexingFunction: (data: T) => IndexTypes,
   dataTransformation: (data: T) => U
-): Record<string, U> {
+): Record<IndexTypes, U> {
   const grouped = _.groupBy(dataArray, indexingFunction);
   const transformed = Object.fromEntries(
     Object.entries(grouped).map(([key, [elem]]) => [key, dataTransformation(elem)])
@@ -18,7 +18,7 @@ function objectIndexToArrays<T, U>(
   dataArray: T[],
   indexingFunction: (data: T) => IndexTypes,
   dataTransformation: (data: T) => U
-): Record<string, U[]> {
+): Record<IndexTypes, U[]> {
   const grouped = _.groupBy(dataArray, indexingFunction);
   const transformed = Object.fromEntries(
     Object.entries(grouped).map(([key, elems]) => [key, elems.map(dataTransformation)])
@@ -30,7 +30,7 @@ function objectIndexToSets<T, U>(
   dataArray: T[],
   indexingFunction: (data: T) => IndexTypes,
   dataTransformation: (data: T) => U
-): Record<string, Set<U>> {
+): Record<IndexTypes, Set<U>> {
   const grouped = _.groupBy(dataArray, indexingFunction);
   const transformed = Object.fromEntries(
     Object.entries(grouped).map(([key, elems]) => [key, new Set(elems.map(dataTransformation))])

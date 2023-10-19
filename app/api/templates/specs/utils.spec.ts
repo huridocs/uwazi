@@ -3,6 +3,7 @@ import { PropertySchema } from 'shared/types/commonTypes';
 import settings from 'api/settings/settings';
 import {
   generateIds,
+  getUpdatedIds,
   getUpdatedNames,
   getDeletedProperties,
   generateNames,
@@ -116,13 +117,15 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'name',
-          outKey: 'name',
           filterBy: '_id',
         },
         oldProperties,
         newProperties
       );
-      expect(result).toEqual({ my_prop_two: 'my_fancy_new_name' });
+      expect(result).toEqual({
+        update: { my_prop_two: 'my_fancy_new_name' },
+        delete: [],
+      });
     });
 
     it('should work for sub values too (function is being used by relationships and thesauri)', () => {
@@ -152,13 +155,207 @@ describe('templates utils', () => {
       const result = getUpdatedNames(
         {
           prop: 'name',
-          outKey: 'name',
           filterBy: 'id',
         },
         oldProperties,
         newProperties
       );
-      expect(result).toEqual({ look_at_me: 'I_changed' });
+      expect(result).toEqual({ update: { look_at_me: 'I_changed' }, delete: [] });
+    });
+
+    it('should return change when all of the same labels are changed at once', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'A' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'A' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'B' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'B' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const result = getUpdatedNames(
+        {
+          prop: 'label',
+          filterBy: 'id',
+        },
+        oldProperties,
+        newProperties
+      );
+      expect(result).toEqual({ update: { A: 'B' }, delete: [] });
+    });
+
+    it('should return a new entry, if only one of a duplicated label is changed into a new label', () => {
+      const firstProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'A' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'A' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const secondProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'A' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'B' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const result = getUpdatedNames(
+        {
+          prop: 'label',
+          filterBy: 'id',
+        },
+        firstProperties,
+        secondProperties
+      );
+      expect(result).toEqual({ update: { B: 'B' }, delete: [] });
+
+      const thirdProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'B' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'B' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+      const result2 = getUpdatedNames(
+        {
+          prop: 'label',
+          filterBy: 'id',
+        },
+        secondProperties,
+        thirdProperties
+      );
+      expect(result2).toEqual({ update: {}, delete: ['A'] });
+    });
+
+    it('should return nothing, when labels are changed into an existing label', () => {
+      const firstProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'A' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'A' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'A' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'C' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+
+      const result = getUpdatedNames(
+        {
+          prop: 'label',
+          filterBy: 'id',
+        },
+        firstProperties,
+        newProperties
+      );
+      expect(result).toEqual({ update: {}, delete: [] });
+
+      const newProperties2: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'C' },
+        {
+          id: '2',
+          values: [{ id: '3', label: 'C' }],
+          label: 'group',
+        },
+        { id: '4', label: 'C' },
+      ];
+      const result2 = getUpdatedNames(
+        {
+          prop: 'label',
+          filterBy: 'id',
+        },
+        newProperties,
+        newProperties2
+      );
+      expect(result2).toEqual({ update: {}, delete: ['A'] });
+    });
+  });
+
+  describe('getUpdatedIds()', () => {
+    it('should return the properties that have a new name', () => {
+      const prop1Id = db.id();
+      const prop2Id = db.id();
+      const oldProperties: PropertySchema[] = [
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_prop_two', label: 'label', type: 'text' },
+      ];
+
+      const newProperties: PropertySchema[] = [
+        { _id: prop1Id, name: 'my_prop', label: 'label', type: 'text' },
+        { _id: prop2Id, name: 'my_fancy_new_name', label: 'label', type: 'text' },
+      ];
+
+      const result = getUpdatedIds(
+        {
+          prop: 'name',
+          filterBy: '_id',
+        },
+        oldProperties,
+        newProperties
+      );
+      expect(result).toEqual({ [prop2Id.toString()]: 'my_fancy_new_name' });
+    });
+
+    it('should work for sub values too (function is being used by relationships and thesauri)', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
+        {
+          id: '2',
+          name: 'my_prop_two',
+          values: [{ id: '3', label: 'look at me', name: 'look_at_me' }],
+          label: 'label',
+          type: 'text',
+        },
+      ];
+
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', name: 'my_prop', label: 'label', type: 'text' },
+        {
+          id: '2',
+          name: 'my_prop_two',
+
+          values: [{ id: '3', label: 'I changed', name: 'I_changed' }],
+          label: 'label',
+          type: 'text',
+        },
+      ];
+
+      const result = getUpdatedIds(
+        {
+          prop: 'name',
+          filterBy: 'id',
+        },
+        oldProperties,
+        newProperties
+      );
+      expect(result).toEqual({ 3: 'I_changed' });
     });
   });
 
@@ -201,6 +398,22 @@ describe('templates utils', () => {
 
       const result = getDeletedProperties(oldProperties, newProperties, 'id');
       expect(result).toEqual(['boromir']);
+    });
+
+    it('should not return properties, where the label/name is still used in another element', () => {
+      const oldProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'label' },
+        { id: '2', label: 'label' },
+        { id: '3', label: 'another label' },
+        { id: '4', label: 'last label' },
+      ];
+      const newProperties: PropertyOrThesaurusSchema[] = [
+        { id: '1', label: 'label' },
+        { id: '3', label: 'another label' },
+      ];
+
+      const result = getDeletedProperties(oldProperties, newProperties, 'id', 'label');
+      expect(result).toEqual(['last label']);
     });
   });
 });
