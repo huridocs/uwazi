@@ -1,5 +1,3 @@
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import {
   LanguageDoesNotExist,
@@ -10,6 +8,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { CreateTranslationsService } from '../CreateTranslationsService';
 import { ValidateTranslationsService } from '../ValidateTranslationsService';
 
@@ -17,7 +16,7 @@ const collectionInDb = (collection = 'translationsV2') =>
   testingDB.mongodb?.collection(collection)!;
 
 const createService = () => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   return new CreateTranslationsService(
     DefaultTranslationsDataSource(transactionManager),
     new ValidateTranslationsService(

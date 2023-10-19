@@ -98,7 +98,7 @@ const Account = () => {
                   <InputField
                     id="new-password"
                     hasErrors={!!errors.passwordConfirm}
-                    label={<Translate>New Password</Translate>}
+                    label={<Translate>New password</Translate>}
                     {...register('password')}
                     type="password"
                   />
@@ -112,7 +112,7 @@ const Account = () => {
                   <InputField
                     id="confirm-new-password"
                     hasErrors={!!errors.passwordConfirm}
-                    label={<Translate>Confirm New Passowrd</Translate>}
+                    label={<Translate>Confirm new password</Translate>}
                     {...register('passwordConfirm', { validate: val => val === watch('password') })}
                     type="password"
                   />
@@ -125,7 +125,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="default"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button color="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
@@ -142,7 +142,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="yellow"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button
                     styling="outline"
                     className="flex-none"
@@ -165,7 +165,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="px-3 py-2 text-xs font-medium bg-white border rounded-lg hover:text-white text-error-700 border-error-700 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-700 border-error-700 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>
             </a>

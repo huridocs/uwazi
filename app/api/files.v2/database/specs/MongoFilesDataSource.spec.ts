@@ -1,7 +1,7 @@
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoFilesDataSource } from '../MongoFilesDataSource';
 
 const factory = getFixturesFactory();
@@ -24,7 +24,7 @@ afterAll(async () => {
 
 describe('MongoFilesDataSource', () => {
   it('should return true if the file exists and belongs to the entity', async () => {
-    const ds = new MongoFilesDataSource(getConnection(), new MongoTransactionManager(getClient()));
+    const ds = new MongoFilesDataSource(getConnection(), DefaultTransactionManager());
 
     expect(
       await ds.filesExistForEntities([

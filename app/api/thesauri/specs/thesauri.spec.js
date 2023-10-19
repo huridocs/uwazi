@@ -22,6 +22,7 @@ describe('thesauri', () => {
 
   afterAll(async () => {
     await testingDB.disconnect();
+    search.indexEntities.mockRestore();
   });
 
   describe('get()', () => {
@@ -99,6 +100,11 @@ describe('thesauri', () => {
       jest.spyOn(translations, 'deleteContext').mockImplementation(async () => Promise.resolve());
     });
 
+    afterAll(() => {
+      templatesCountSpy.mockRestore();
+      translations.deleteContext.mockRestore();
+    });
+
     it('should delete a thesauri', async () => {
       const response = await thesauri.delete(dictionaryId);
       expect(response.ok).toBe(true);
@@ -129,6 +135,10 @@ describe('thesauri', () => {
   describe('save', () => {
     beforeEach(() => {
       jest.spyOn(translations, 'updateContext').mockImplementation(async () => Promise.resolve());
+    });
+
+    afterAll(() => {
+      translations.updateContext.mockRestore();
     });
 
     it('should create a thesauri', async () => {
@@ -167,6 +177,7 @@ describe('thesauri', () => {
         },
         'Thesaurus'
       );
+      translations.addContext.mockRestore();
     });
 
     it('should set a default value of [] to values property if its missing', async () => {
@@ -188,6 +199,7 @@ describe('thesauri', () => {
 
         const edited = await thesauri.getById(dictionaryId);
         expect(edited.name).toBe('changed name');
+        translations.addContext.mockRestore();
       });
 
       it('should update the translation', async () => {
@@ -199,7 +211,7 @@ describe('thesauri', () => {
         const response = await thesauri.save(data);
         expect(translations.updateContext).toHaveBeenCalledWith(
           { id: response._id.toString(), label: 'Top 1 games', type: 'Thesaurus' },
-          { 'Enders game': 'Marios game', 'Top 2 scify books': 'Top 1 games' },
+          { 'Top 2 scify books': 'Top 1 games', 'Enders game': 'Marios game' },
           ['Fundation'],
           { 'Top 1 games': 'Top 1 games', 'Marios game': 'Marios game' }
         );
@@ -219,10 +231,10 @@ describe('thesauri', () => {
           '2',
           dictionaryIdToTranslate
         );
+        entities.deleteThesaurusFromMetadata.mockRestore();
       });
 
       it('should properly delete values when thesauri have subgroups', async () => {
-        entities.deleteThesaurusFromMetadata.mockReset();
         jest.spyOn(entities, 'deleteThesaurusFromMetadata').mockImplementation(() => {});
         const thesaurus = await thesauri.getById(dictionaryWithValueGroups);
         thesaurus.values = thesaurus.values.filter(value => value.id !== '3');
@@ -232,6 +244,7 @@ describe('thesauri', () => {
         const deletedValuesFromEntities = entities.deleteThesaurusFromMetadata.mock.calls[0][0];
 
         expect(deletedValuesFromEntities).toEqual('3');
+        entities.deleteThesaurusFromMetadata.mockRestore();
       });
 
       it('should update labels on entities with the thesauri values', async () => {
@@ -435,7 +448,6 @@ describe('thesauri', () => {
   describe('update', () => {
     describe('when the name of thesaurus is updated', () => {
       it('should update the translations key', async () => {
-        translations.updateContext.mockRestore();
         const data = { ...fixtures.dictionaries[1], name: 'new name' };
         const response = await thesauri.save(data);
         data.values.push({ id: '3', label: 'value 3' });
@@ -443,6 +455,332 @@ describe('thesauri', () => {
         const allTranslations = await translations.get({ locale: 'es' });
         const context = allTranslations[0].contexts.find(c => c.id === response._id.toString());
         expect(context.values['new name']).toBe('new name');
+      });
+    });
+
+    describe('when changing elements', () => {
+      let db;
+      let translationsV2Collection;
+
+      beforeEach(async () => {
+        db = testingDB.mongodb;
+        translationsV2Collection = db.collection('translationsV2');
+      });
+
+      describe('creating new elements', () => {
+        it('should create the translation key', async () => {
+          const data = {
+            name: 'Test Thesaurus',
+            values: [{ id: '1', label: 'A' }],
+          };
+          const response = await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': response._id.toString(),
+            })
+            .toArray();
+
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es' },
+            { key: 'A', language: 'en' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+          ]);
+        });
+
+        it('should not try to duplicate a translation', async () => {
+          const data = {
+            name: 'Test Thesaurus',
+            values: [{ id: '1', label: 'A' }],
+          };
+          const response = await thesauri.save(data);
+          const id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
+
+          data._id = id;
+          data.values.push({ id: '2', label: 'group', values: [{ id: '3', label: 'A' }] });
+          await thesauri.save(data);
+
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+      });
+
+      describe('deleting elements', () => {
+        let id;
+
+        beforeEach(async () => {
+          const thesaurusData = {
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'A' }] },
+            ],
+          };
+          const response = await thesauri.save(thesaurusData);
+          id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
+        });
+
+        it('should not delete the translation key if it is still used by another element', async () => {
+          let relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [{ id: '1', label: 'A' }],
+          };
+          await thesauri.save(data);
+          relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+          ]);
+        });
+
+        it('should delete the translation key if it is not used by another element', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [{ id: '2', label: 'group' }],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+      });
+
+      describe('updating elements', () => {
+        let id;
+
+        beforeEach(async () => {
+          const thesaurusData = {
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'A' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          const response = await thesauri.save(thesaurusData);
+          id = response._id.toString();
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'es',
+            },
+            { $set: { value: 'Aes' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'A',
+              language: 'en',
+            },
+            { $set: { value: 'Aen' } }
+          );
+          await translationsV2Collection.updateOne(
+            {
+              'context.id': id,
+              key: 'C',
+              language: 'es',
+            },
+            { $set: { value: 'Ces' } }
+          );
+        });
+
+        it('should update the key, but change only the default language translation, when all of the same elements are changed at once', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'B' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'Aen' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should add a new translations, when an element gets a new label, but the old one is still in use by other elements', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'B' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should add no new translation, when a label gets updated to another already existing label', async () => {
+          const data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'C' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'A', language: 'es', value: 'Aes' },
+            { key: 'A', language: 'en', value: 'Aen' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
+
+        it('should remove translations when the last element using it is changed to something else', async () => {
+          let data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'A' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          data = {
+            _id: id,
+            name: 'Test Thesaurus',
+            values: [
+              { id: '1', label: 'B' },
+              { id: '2', label: 'group', values: [{ id: '3', label: 'B' }] },
+              { id: '4', label: 'C' },
+            ],
+          };
+          await thesauri.save(data);
+          const relatedTranslations = await translationsV2Collection
+            .find({
+              'context.id': id,
+            })
+            .toArray();
+          expect(relatedTranslations).toMatchObject([
+            { key: 'B', language: 'es', value: 'B' },
+            { key: 'B', language: 'en', value: 'B' },
+            { key: 'C', language: 'es', value: 'Ces' },
+            { key: 'C', language: 'en', value: 'C' },
+            { key: 'Test Thesaurus', language: 'es' },
+            { key: 'Test Thesaurus', language: 'en' },
+            { key: 'group', language: 'es' },
+            { key: 'group', language: 'en' },
+          ]);
+        });
       });
     });
   });
