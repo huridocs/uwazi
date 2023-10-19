@@ -70,7 +70,6 @@ const csv = (readStream: Readable, stopOnError = false) => ({
   },
 });
 
-// eslint-disable-next-line max-statements
 const validateFormat = async (readStream: Readable, options: ValidateFormatOptions) => {
   const anyOption = Object.keys(options).length > 0;
   const headerOptions = options.required_headers || options.column_number;
@@ -81,7 +80,6 @@ const validateFormat = async (readStream: Readable, options: ValidateFormatOptio
 
   const csvObj = csv(readStream, true);
 
-  // eslint-disable-next-line max-statements
   csvObj.onRow(async (row: CSVRow, index: number) => {
     if (headerOptions && index === 0) {
       const headers = Object.keys(row);
