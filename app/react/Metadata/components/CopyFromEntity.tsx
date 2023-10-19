@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
 import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
+import { ClientEntitySchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { actions, FormatMetadata, wrapEntityMetadata } from 'app/Metadata';
 import { store } from 'app/store';
@@ -16,12 +16,12 @@ type CopyFromEntityProps = {
   onSelect: Function;
   onCancel: Function;
   templates: IImmutable<Array<TemplateSchema>>;
-  originalEntity: EntitySchema;
+  originalEntity: ClientEntitySchema;
   formModel: string;
 };
 
 type CopyFromEntityState = {
-  selectedEntity: EntitySchema;
+  selectedEntity: ClientEntitySchema;
   propsToCopy: Array<string>;
   lastSearch?: string;
 };
@@ -41,7 +41,7 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     this.onFinishedSearch = this.onFinishedSearch.bind(this);
   }
 
-  onSelect(selectedEntity: EntitySchema) {
+  onSelect(selectedEntity: ClientEntitySchema) {
     const copyFromTemplateId = selectedEntity.template;
     const originalTemplate = this.props.originalEntity.template;
 
@@ -66,10 +66,13 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
       template => template._id === this.props.originalEntity.template
     );
 
-    const originalEntity = wrapEntityMetadata(this.props.originalEntity, entityTemplate);
+    const originalEntity: ClientEntitySchema = wrapEntityMetadata(
+      this.props.originalEntity,
+      entityTemplate
+    );
 
     const updatedEntity = this.state.propsToCopy.reduce(
-      (entity: EntitySchema, propName: string) => {
+      (entity: ClientEntitySchema, propName: string) => {
         if (!entity.metadata) {
           return { ...entity, metadata: {} };
         }
