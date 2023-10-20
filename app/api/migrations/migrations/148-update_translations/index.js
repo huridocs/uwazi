@@ -46,7 +46,7 @@ const deletedKeys = [
 ];
 
 export default {
-  delta: 147,
+  delta: 148,
 
   reindex: false,
 
