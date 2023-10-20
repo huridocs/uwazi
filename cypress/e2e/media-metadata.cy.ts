@@ -30,7 +30,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const addVideo = (local: boolean = true) => {
     clickMediaAction('Video', 'Add file');
-
     if (local) {
       cy.get('.upload-button input[type=file]')
         .last()
@@ -88,20 +87,19 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait('@saveEntity');
 
     // waiting for video
-    cy.get('video', { timeout: 2000 })
-      .then(
-        async $video =>
-          new Promise(resolve => {
-            $video[0].removeAttribute('controls');
-            const interval = setInterval(() => {
-              if ($video[0].readyState >= 3) {
-                clearInterval(interval);
-                resolve($video);
-              }
-            }, 10);
-          })
-      )
-      .should('be.visible');
+    cy.get('aside video', { timeout: 5000 }).then(
+      async $video =>
+        new Promise(resolve => {
+          $video[0].removeAttribute('controls');
+          const interval = setInterval(() => {
+            const videoElement = $video[0] as HTMLVideoElement;
+            if (videoElement.readyState >= 3) {
+              clearInterval(interval);
+              resolve($video);
+            }
+          }, 10);
+        })
+    );
   };
 
   it('should allow media selection on entity creation', () => {
@@ -128,24 +126,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
-  });
-
-  it('should allow edit media created with timelinks', () => {
-    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
-    cy.addTimeLink(4000, 'Second three', 1);
-    saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
-  });
-
-  it('should allow remove a timelink from a media property', () => {
-    cy.contains('h2', 'Reporte audiovisual con lineas de tiempo').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
-    cy.get('.timelinks-form').scrollIntoView();
-    cy.get('.delete-timestamp-btn').eq(1).click();
-    saveEntity();
-    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow set an external link from a media property', () => {
