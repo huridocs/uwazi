@@ -73,7 +73,6 @@ const csv = (readStream: Readable, stopOnError = false) => ({
   },
 });
 
-// eslint-disable-next-line max-statements
 const validateFormat = async (filePath: string, options: ValidateFormatOptions) => {
   const file = importFile(filePath);
   const anyOption = Object.keys(options).length > 0;
