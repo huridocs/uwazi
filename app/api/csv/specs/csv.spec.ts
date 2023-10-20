@@ -20,6 +20,22 @@ describe('peekHeaders()', () => {
     expect(headers).toEqual(['title', ' textprop', ' textprop__es', ' textprop__en']);
     mockedFile.mockRestore();
   });
+
+  it('should handle path as input', async () => {
+    const path = 'app/api/csv/specs/arrangeThesauriTest.csv';
+    const headers = await peekHeaders(path);
+    expect(headers).toEqual([
+      'title',
+      'unrelated_property',
+      'select_property__en',
+      ' Select Property__es',
+      'Multiselect Property__en',
+      ' multiselect_property__es',
+      ' no_new_value_select',
+      ' Nested Select Property',
+      ' nested_multiselect_property',
+    ]);
+  });
 });
 
 describe('validateFormat()', () => {
@@ -28,9 +44,9 @@ describe('validateFormat()', () => {
     options: ValidateFormatOptions,
     message: string
   ) => {
-    const { mockedFile, mockedFileStream } = mockFileStream(content);
+    const { mockedFile } = mockFileStream(content);
     await expectThrow(
-      async () => validateFormat(mockedFileStream, options),
+      async () => validateFormat('mocked/file/path', options),
       ValidateFormatError,
       message,
       async () => mockedFile.mockRestore()
@@ -38,19 +54,24 @@ describe('validateFormat()', () => {
   };
 
   const testValidationPass = async (content: string, options: ValidateFormatOptions) => {
-    const { mockedFile, mockedFileStream } = mockFileStream(content);
-    await validateFormat(mockedFileStream, options);
+    const { mockedFile } = mockFileStream(content);
+    await validateFormat('mocked/file/path', options);
     mockedFile.mockRestore();
   };
 
-  it('should be able to check the number of columns', async () => {
-    const content = 'title,textprop\ntitle1, text1';
-
-    await expectValidateFormatError(
-      content,
-      { column_number: 3 },
-      'Expected 3 columns, but found 2.'
-    );
+  it.each([
+    {
+      content: 'title,textprop\ntitle1, text1',
+      columns: 3,
+      message: 'Expected 3 columns, but found 2.',
+    },
+    {
+      content: 'title,textprop\ntitle1',
+      columns: 1,
+      message: 'Expected 1 columns, but found 2.',
+    },
+  ])('should be able to check the number of columns', async ({ content, columns, message }) => {
+    await expectValidateFormatError(content, { column_number: columns }, message);
 
     await testValidationPass(content, { column_number: 2 });
   });

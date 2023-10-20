@@ -1,5 +1,4 @@
 /* eslint-disable node/no-restricted-import */
-import fs from 'fs';
 import { readdir } from 'fs/promises';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
@@ -95,13 +94,16 @@ describe('translations.importPredefined()', () => {
     DefaultTranslations.CONTENTS_DIRECTORY = TRANSLATION_FILES_DIR;
   });
 
-  it('should expect the file to have 2 columns', async () => {
-    await expectThrow(
-      async () => translations.importPredefined('en'),
-      ValidateFormatError,
-      'Expected 2 columns, but found 3.'
-    );
-  });
+  it.each([{ key: 'en' }, { key: 'ar' }])(
+    'should expect the file to have 2 columns',
+    async ({ key }) => {
+      await expectThrow(
+        async () => translations.importPredefined(key),
+        ValidateFormatError,
+        'Expected 2 columns, but found 3.'
+      );
+    }
+  );
 
   it('should expect the file to have the columns "Key" and the long name of the language', async () => {
     await expectThrow(
@@ -165,8 +167,7 @@ describe('translation files', () => {
     describe(`${key}.csv`, () => {
       it('should have a proper format', async () => {
         const filepath = `${TRANSLATION_FILES_DIR}/${key}.csv`;
-        const file = fs.createReadStream(filepath);
-        await validateFormat(file, {
+        await validateFormat(filepath, {
           column_number: 2,
           required_headers: ['Key', longName],
           no_empty_values: true,

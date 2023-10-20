@@ -221,8 +221,6 @@ export class CSVLoader extends EventEmitter {
 
   // eslint-disable-next-line class-methods-use-this
   async validateFormat(csvPath: string, options: ValidateFormatOptions) {
-    const file = importFile(csvPath);
-    const fileStream = await file.readStream();
-    return validateFormat(fileStream, options);
+    await validateFormat(csvPath, options);
   }
 }
