@@ -58,15 +58,15 @@ export default {
     const settings = await db.collection('settings').findOne();
     const languages = settings.languages.map(l => l.key);
     await db
-      .collection('translations')
+      .collection('translationsV2')
       .deleteMany({ key: { $in: deletedKeys.map(k => k.key) }, 'context.id': 'System' });
 
     const insertMany = languages.map(l =>
-      db.collection('translations').insertMany(
+      db.collection('translationsV2').insertMany(
         newKeys.map(k => ({
           key: k.key,
           value: k.key,
-          locale: l,
+          language: l,
           context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
         }))
       )
