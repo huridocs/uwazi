@@ -362,7 +362,7 @@
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nodemon": "^2.0.22",
     "plop": "^3.0.6",
-    "postcss": "^8.4.23",
+    "postcss": "^8.4.31",
     "prettier": "3.0.2",
     "puppeteer": "^13.5.2",
     "react-dnd-test-backend": "15.1.1",
