@@ -342,7 +342,7 @@ class EntityViewer extends Component {
           <div className="sidepanel-body">
             <CopyFromEntity
               isVisible={copyFrom}
-              originalEntity={this.props.entity.toJS()}
+              originalEntity={this.props.formState}
               templates={this.props.templates}
               onSelect={this.onCopyFromSelect}
               formModel="entityView.entityForm"
