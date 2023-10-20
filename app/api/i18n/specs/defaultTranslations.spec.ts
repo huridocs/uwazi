@@ -111,6 +111,12 @@ describe('translations.importPredefined()', () => {
       ValidateFormatError,
       'Missing required headers: Spanish.'
     );
+
+    await expectThrow(
+      async () => translations.importPredefined('fr'),
+      ValidateFormatError,
+      'Missing required headers: Key.'
+    );
   });
 
   it('should expect the file to have no empty values', async () => {
