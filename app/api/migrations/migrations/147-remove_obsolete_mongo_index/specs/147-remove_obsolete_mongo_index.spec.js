@@ -33,7 +33,7 @@ describe('migration remove_obsolete_mongo_index', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(146);
+    expect(migration.delta).toBe(147);
   });
 
   it('should remove the targeted indices', async () => {
