@@ -107,7 +107,7 @@ Some suites need MongoDB configured in Replica Set mode to run properly. The pro
 
 #### End to End (e2e)
 
-For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any exisisting data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
+For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any existing data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
 
 Running end to end tests require a running Uwazi app.
 
