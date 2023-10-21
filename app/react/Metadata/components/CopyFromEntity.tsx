@@ -46,7 +46,11 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     const originalTemplate = this.props.originalEntity.template;
 
     const propsToCopy = comonProperties
-      .comonProperties(this.templates, [originalTemplate, copyFromTemplateId], ['generatedid'])
+      .comonProperties(
+        this.templates,
+        [originalTemplate, copyFromTemplateId],
+        ['generatedid', 'media', 'image']
+      )
       .map(p => p.name);
 
     this.setState({ selectedEntity, propsToCopy });
