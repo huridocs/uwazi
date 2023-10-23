@@ -19,14 +19,14 @@ interface ContainerProps<T> {
   parent?: IDraggable<T>;
 }
 
-// eslint-disable-next-line react/function-component-definition
-function Container<T>({
+// eslint-disable-next-line prettier/prettier
+const Container = <T, >({
   context,
   iconHandle = false,
   itemComponent,
   className,
   parent,
-}: ContainerProps<T>) {
+}: ContainerProps<T>) => {
   const currentItems = parent ? parent.value.items || [] : context.activeItems;
   return (
     <div className="tw-content " data-testid="active_filters_root">
@@ -60,7 +60,8 @@ function Container<T>({
       </div>
     </div>
   );
-}
+};
+
 Container.defaultProps = {
   iconHandle: false,
   itemComponent: undefined,

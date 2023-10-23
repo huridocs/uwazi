@@ -21,8 +21,8 @@ const setIdAndParent = <T>(item: IDraggable<T>, parent?: IDraggable<T>) => {
   return { ...item, id, ...(parent ? { parent } : {}) };
 };
 
-function mapWithParent<T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] {
-  return items.map(item => {
+const mapWithParent = <T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] =>
+  items.map(item => {
     const draggableItem = {
       value: item,
       ...(parent === undefined ? { container: 'root' } : {}),
@@ -39,7 +39,6 @@ function mapWithParent<T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] {
     }
     return itemWithId;
   }) as IDraggable<T>[];
-}
 
 const mapWithID = <T>(items: IDraggable<T>[]) => items.map(item => setIdAndParent(item));
 

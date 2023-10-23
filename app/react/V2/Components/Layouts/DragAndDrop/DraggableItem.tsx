@@ -27,27 +27,23 @@ type DraggedResult<T> = {
   container: string;
 };
 
-function hasValidContext<T>(dropContext?: IDnDContext<T>) {
-  return dropContext !== undefined;
-}
+// eslint-disable-next-line prettier/prettier
+const hasValidContext = <T, >(dropContext?: IDnDContext<T>) => dropContext !== undefined;
 
-function isNotAutoContained<T>(
+// eslint-disable-next-line prettier/prettier
+const isNotAutoContained = <T, >(
   currentItem: IDraggable<T>,
   draggedResult: DraggedResult<T>,
   dropParent?: { id?: string; item?: IDraggable<T> }
-) {
-  return (
-    (draggedResult.container !== currentItem.container ||
-      dropParent === undefined ||
-      dropParent?.id !== draggedResult.item.parent?.id ||
-      draggedResult.container === undefined) &&
-    (dropParent === undefined || draggedResult.item.id !== dropParent.id)
-  );
-}
+) =>
+  (draggedResult.container !== currentItem.container ||
+    dropParent === undefined ||
+    dropParent?.id !== draggedResult.item.parent?.id ||
+    draggedResult.container === undefined) &&
+  (dropParent === undefined || draggedResult.item.id !== dropParent.id);
 
-function hasNoItems<T>(currentItem: IDraggable<T>) {
-  return currentItem.value.items === undefined || currentItem.value.items.length === 0;
-}
+// eslint-disable-next-line prettier/prettier
+const hasNoItems = <T, >(currentItem: IDraggable<T>) => currentItem.value.items === undefined || currentItem.value.items.length === 0;
 
 const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
 
