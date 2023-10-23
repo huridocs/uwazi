@@ -10,3 +10,4 @@ export { ImagePropertyIcon } from './ImagePropertyIcon';
 export { IDPropertyIcon } from './IDPropertyIcon';
 export { GeolocationPropertyIcon } from './GeolocationPropertyIcon';
 export { DatePropertyIcon } from './DatePropertyIcon';
+export { GrabDoubleIcon } from './GrabDoubleIcon';

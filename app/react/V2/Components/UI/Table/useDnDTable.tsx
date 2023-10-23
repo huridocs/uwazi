@@ -28,6 +28,7 @@ const useDnDTable = <T, >(
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortingState]);
+
   // eslint-disable-next-line prettier/prettier
   const DnDRow = ({ item, index, children }: TableRowProps<T>) => (
     <DraggableItem
