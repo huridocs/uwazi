@@ -3,7 +3,7 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as stories from 'app/stories/dragAndDrop/DragAndDrop.stories';
+import * as stories from 'app/stories/DragAndDrop.stories';
 
 const { Basic, WithItemComponent, Nested } = composeStories(stories);
 

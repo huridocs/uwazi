@@ -4,9 +4,9 @@ import { Bars3Icon } from '@heroicons/react/20/solid';
 
 import type { IDraggable } from 'app/V2/shared/types';
 import { withDnD } from 'app/componentWrappers';
-import { IDnDContext } from 'app/V2/CustomHooks';
 import { hoverSortable } from './SortFunction';
 import { IItemComponentProps } from './Container';
+import type { IDnDContext } from './DnDDefinitions';
 
 interface DraggableItemProps<T> extends React.PropsWithChildren {
   item: IDraggable<T>;

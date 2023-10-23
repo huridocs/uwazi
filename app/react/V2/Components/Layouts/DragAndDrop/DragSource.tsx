@@ -1,8 +1,8 @@
 import React from 'react';
 import { withDnD } from 'app/componentWrappers';
-import { IDnDContext } from 'app/V2/CustomHooks';
 import { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem } from './DraggableItem';
+import type { IDnDContext } from './DnDDefinitions';
 
 interface DragSourceComponentProps<T> {
   context: IDnDContext<T>;

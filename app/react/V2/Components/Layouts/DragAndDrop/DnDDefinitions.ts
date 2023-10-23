@@ -1,7 +1,7 @@
 import { Dispatch } from 'react';
 import { omit } from 'lodash';
 import update from 'immutability-helper';
-import { IDraggable, ItemTypes } from 'app/V2/shared/types';
+import { type IDraggable, ItemTypes } from 'app/V2/shared/types';
 import ID from 'shared/uniqueID';
 
 interface IDnDContext<T> {

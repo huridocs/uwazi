@@ -29,6 +29,7 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
 };
 export enum ItemTypes {
   BOX = 'box',
+  ROW = 'row',
 }
 
 export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue };

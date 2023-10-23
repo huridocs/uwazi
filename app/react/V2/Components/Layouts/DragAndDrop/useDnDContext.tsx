@@ -1,15 +1,16 @@
 /* eslint-disable max-statements */
 import { useState } from 'react';
 import update from 'immutability-helper';
-import { IDraggable, ItemTypes } from '../shared/types';
+import type { IDraggable } from 'app/V2/shared/types';
+import { ItemTypes } from 'app/V2/shared/types';
 import {
-  IDnDContext,
+  type IDnDContext,
   addActiveItem,
   removeActiveItem,
   mapWithID,
   mapWithParent,
   sortActiveItems,
-} from './dragAndDrop/definitions';
+} from './DnDDefinitions';
 
 // eslint-disable-next-line prettier/prettier
 const useDnDContext = <T, >(

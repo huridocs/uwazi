@@ -27,6 +27,7 @@ const Primary: Story = {
         initialState={args.initialState}
         footer={args.footer}
         setSorting={args.setSorting}
+        draggableRows={args.draggableRows === true}
       />
     </div>
   ),
@@ -90,7 +91,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -98,7 +99,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -153,7 +154,6 @@ const WithInitialState: Story = {
     initialState: { sorting: [{ id: 'description', desc: true }] },
   },
 };
-
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -188,6 +188,14 @@ const WithCheckboxes = {
   },
 };
 
-export { Basic, WithActions, WithCheckboxes, WithInitialState };
+const WithDnD: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    draggableRows: true,
+    initialState: { sorting: [{ id: 'description', desc: true }] },
+  },
+};
+export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD };
 
 export default meta;

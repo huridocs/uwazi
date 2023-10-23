@@ -1,10 +1,6 @@
 /* eslint-disable react/no-multi-comp */
-import React, { FC, PropsWithChildren, useCallback } from 'react';
-import { DndProvider } from 'react-dnd';
-import { Provider } from 'react-redux';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import React, { FC, useCallback } from 'react';
 import { TrashIcon } from '@heroicons/react/20/solid';
-import { Meta, StoryObj } from '@storybook/react';
 import { Button } from 'app/V2/Components/UI';
 import {
   Container,
@@ -12,12 +8,10 @@ import {
   DraggableItem,
   DropZone,
   IItemComponentProps,
+  useDnDContext,
+  IDnDContext,
 } from 'app/V2/Components/Layouts/DragAndDrop';
-import { useDnDContext } from 'app/V2/CustomHooks/useDnDContext';
-import type { IDnDContext } from 'app/V2/CustomHooks';
 import type { IDraggable } from 'app/V2/shared/types';
-import { ItemTypes } from 'app/V2/shared/types';
-import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import debounce from 'app/utils/debounce';
 
 interface DnDValueExample {
@@ -31,6 +25,7 @@ const sourceItems: IDraggable<DnDValueExample>[] = [
   { value: { name: 'Item 4' } },
   { value: { name: 'Item 5' } },
 ];
+
 const CardWithRemove: FC<IItemComponentProps<DnDValueExample>> = ({ item, context }) => (
   <div className="flex flex-row items-center justify-center w-full">
     <div>{context.getDisplayName(item)}</div>
@@ -45,6 +40,13 @@ const CardWithRemove: FC<IItemComponentProps<DnDValueExample>> = ({ item, contex
     >
       <TrashIcon className="w-4" />
     </Button>
+  </div>
+);
+
+const CardWithDnD: FC<IItemComponentProps<DnDValueExample>> = ({ item, context, index }) => (
+  <div className="flex flex-col w-full">
+    <CardWithRemove item={item} context={context} index={index} />
+    <Container context={context} itemComponent={CardWithRemove} parent={item} />
   </div>
 );
 
@@ -175,81 +177,12 @@ const DnDClientWithForm = ({ items, type }: any) => {
   );
 };
 
-const meta: Meta<typeof DnDClient> = {
-  title: 'Components/DragAndDrop',
-  component: DnDClient,
+export type { DnDValueExample };
+export {
+  DnDClientWithForm,
+  DnDClient,
+  CardWithDnD,
+  CardWithRemove,
+  sourceItems,
+  sampleDefaultName,
 };
-
-type Story = StoryObj<typeof DnDClient>;
-
-const CardWithDnD: FC<IItemComponentProps<DnDValueExample>> = ({ item, context, index }) => (
-  <div className="flex flex-col w-full">
-    <CardWithRemove item={item} context={context} index={index} />
-    <Container context={context} itemComponent={CardWithRemove} parent={item} />
-  </div>
-);
-
-const RenderWithProvider = ({ children }: PropsWithChildren) => (
-  <Provider store={createStore()}>
-    <DndProvider backend={HTML5Backend}>{children}</DndProvider>
-  </Provider>
-);
-
-const Primary: Story = {
-  render: args => (
-    <RenderWithProvider>
-      <DnDClient items={args.items} type={args.type} itemComponent={args.itemComponent} />
-    </RenderWithProvider>
-  ),
-};
-
-const WithForm: Story = {
-  render: args => (
-    <RenderWithProvider>
-      <DnDClientWithForm items={args.items} type={args.type} itemComponent={args.itemComponent} />
-    </RenderWithProvider>
-  ),
-};
-
-const Basic = {
-  ...Primary,
-  args: {
-    type: ItemTypes.BOX,
-    items: [{ name: 'Item 1' }, { name: 'Item 2' }, { name: 'Item 3' }],
-    iconHandle: true,
-  },
-};
-
-const WithItemComponent = {
-  ...Primary,
-  args: {
-    ...Basic.args,
-    itemComponent: CardWithRemove,
-  },
-};
-
-const Nested = {
-  ...Primary,
-  args: {
-    ...Basic.args,
-    iconHandle: false,
-    items: [
-      { name: 'Item 1', items: [{ name: 'Subitem 1' }] },
-      { name: 'Item 2', items: [] },
-      { name: 'Item 3', items: [] },
-    ],
-    itemComponent: CardWithDnD,
-  },
-};
-
-const Form = {
-  ...WithForm,
-  args: {
-    type: ItemTypes.BOX,
-    items: [{ name: 'Item 1' }, { name: 'Item 2' }, { name: 'Item 3' }],
-    iconHandle: true,
-  },
-};
-
-export { Basic, WithItemComponent, Nested, Form };
-export default meta;

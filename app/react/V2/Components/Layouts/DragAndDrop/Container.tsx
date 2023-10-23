@@ -1,9 +1,9 @@
 import React from 'react';
 import type { FC } from 'react';
 import { IDraggable } from 'app/V2/shared/types';
-import { IDnDContext } from 'app/V2/CustomHooks';
 import { DraggableItem } from './DraggableItem';
 import { DropZone } from './DropZone';
+import type { IDnDContext } from './DnDDefinitions';
 
 interface IItemComponentProps<T> {
   item: IDraggable<T>;
