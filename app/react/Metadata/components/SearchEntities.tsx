@@ -26,8 +26,8 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
     super(props);
     this.state = { searchResults: Immutable.fromJS([]), searching: false, touched: false };
     this.onSelect = this.onSelect.bind(this);
-    this.onChange = this.onChange.bind(this);
     this.search = this.search.bind(this);
+    this.onChange = debounce(this.onChange.bind(this), 400);
   }
 
   componentDidMount() {
@@ -62,7 +62,7 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
   onChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ touched: true });
     const searchTerm = e.target.value;
-    return debounce(this.search, 400)(searchTerm);
+    return this.search(searchTerm);
   }
 
   render() {
