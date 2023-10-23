@@ -21,6 +21,7 @@ import '../../app/react/App/styles/globals.css';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import React from 'react';
 import { mount } from 'cypress/react18';
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -31,8 +32,7 @@ Cypress.Commands.add('mount', mount);
 // Example use:
 // cy.mount(<MyComponent />)
 
-//@ts-ignore
-const check = components => {
+const check = (components: React.ReactNode[]) => {
   cy.injectAxe();
   //@ts-ignore
   components.forEach(component => {
@@ -41,4 +41,4 @@ const check = components => {
   });
 };
 
-Cypress.Commands.add('checkAccesibility', check);
+Cypress.Commands.add('checkAccessibility', check);
