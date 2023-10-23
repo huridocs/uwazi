@@ -40,6 +40,12 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
     this.props.onSelect(entity);
   }
 
+  onChange(e: React.ChangeEvent<HTMLInputElement>) {
+    this.setState({ touched: true });
+    const searchTerm = e.target.value;
+    return this.search(searchTerm);
+  }
+
   search(searchTerm: string) {
     this.setState({ searching: true });
     const requestParams = new RequestParams({
@@ -57,12 +63,6 @@ export class SearchEntities extends Component<SearchEntitiesProps, SearchEntitie
         this.props.onFinishSearch(searchTerm);
       }
     );
-  }
-
-  onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ touched: true });
-    const searchTerm = e.target.value;
-    return this.search(searchTerm);
   }
 
   render() {
