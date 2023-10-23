@@ -4,14 +4,15 @@ import { getIcon } from './TableElements';
 
 interface RowProps<T> {
   headerGroup: HeaderGroup<T>;
+  draggableRows: boolean;
 }
 // eslint-disable-next-line prettier/prettier
-const TableHeader = <T, >({ headerGroup }: RowProps<T>) => (
+const TableHeader = <T, >({ headerGroup, draggableRows }: RowProps<T>) => (
   <tr key={headerGroup.id}>
     {headerGroup.headers.map(header => {
       const isSortable = header.column.getCanSort();
       const isSelect = header.column.id === 'checkbox-select';
-      const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
+      const headerClassName = `${draggableRows ? 'pl-7' : ''} ${isSelect ? 'px-2' : 'px-6'} py-3 ${
         header.column.columnDef.meta?.headerClassName || ''
       }`;
 

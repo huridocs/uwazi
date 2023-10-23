@@ -17,7 +17,7 @@ interface DraggableItemProps<T> extends React.PropsWithChildren {
   context: any;
   className?: string;
   omitIcon?: boolean;
-  wrapperType?: 'li' | 'tr';
+  wrapperType?: 'li' | 'tr' | 'div';
   container?: string;
 }
 

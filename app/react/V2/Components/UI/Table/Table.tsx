@@ -110,7 +110,7 @@ const Table = <T,>({
 
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
-            <TableHeader headerGroup={headerGroup} />
+            <TableHeader headerGroup={headerGroup} draggableRows={draggableRows} />
           ))}
         </thead>
         <TableBody draggableRows>

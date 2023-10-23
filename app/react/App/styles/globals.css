@@ -3678,6 +3678,10 @@ input:checked + .toggle-bg {
   padding-left: 1.25rem;
 }
 
+.pl-7 {
+  padding-left: 1.75rem;
+}
+
 .pl-8 {
   padding-left: 2rem;
 }

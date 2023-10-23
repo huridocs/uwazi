@@ -13,39 +13,34 @@ interface TableRowProps<T> extends PropsWithChildren {
 }
 
 // eslint-disable-next-line prettier/prettier
-const BaseRow = <T, >({ draggableRow, item, index, dndContext, children }: TableRowProps<T>) =>
-  draggableRow ? (
-    <DraggableItem
-      key={item.id}
-      item={item as IDraggable<Row<T>>}
-      index={index}
-      context={dndContext}
-      wrapperType="tr"
-      className="bg-white border-b"
-      container="root"
-    >
-      {children}
-    </DraggableItem>
-  ) : (
-    <tr key={item.id} className="bg-white border-b">
-      {children}
-    </tr>
-  );
-
-// eslint-disable-next-line prettier/prettier
 const isRow = <T, >(row: Row<T> | IDraggable<Row<T>>): row is Row<T> =>
   (row as IDraggable<Row<T>>).value === undefined;
 
 // eslint-disable-next-line prettier/prettier
 const TableRow = <T, >({ draggableRow, item, index, dndContext }: TableRowProps<T>) => {
   const rowValue = (isRow(item) ? item : (item as IDraggable<Row<T>>).value) as Row<T>;
-  const icons = draggableRow ? [<GrabDoubleIcon className="w-2" />] : [];
+  const icons = draggableRow
+    ? [
+        <DraggableItem
+          key={item.id}
+          item={item as IDraggable<Row<T>>}
+          index={index}
+          context={dndContext}
+          wrapperType="div"
+          className="bg-white border-0"
+          container="root"
+          iconHandle
+        >
+          <GrabDoubleIcon className="w-2" />
+        </DraggableItem>,
+      ]
+    : [];
   return (
-    <BaseRow draggableRow={draggableRow} item={item} index={index} dndContext={dndContext}>
+    <tr key={item.id} className="bg-white border-b">
       {rowValue.getVisibleCells().map((cell, columnIndex) => {
         const firstColumnClass =
           cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)
-            ? 'flex px-2 items-center gap-1'
+            ? 'flex px-2 items-center gap-3'
             : 'px-6';
         return (
           <td
@@ -59,7 +54,7 @@ const TableRow = <T, >({ draggableRow, item, index, dndContext }: TableRowProps<
           </td>
         );
       })}
-    </BaseRow>
+    </tr>
   );
 };
 

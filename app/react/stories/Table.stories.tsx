@@ -66,6 +66,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
         title="Table A"
         enableSelection
         onSelection={setSelected1}
+        draggableRows={args.draggableRows}
       />
 
       <p className="m-1">Selected items for Table A: {selected1.length}</p>
