@@ -6,7 +6,7 @@ import comonProperties from 'shared/comonProperties';
 import { Icon } from 'UI';
 import { ClientEntitySchema } from 'app/istore';
 import { Translate } from 'app/I18N';
-import { actions, FormatMetadata, wrapEntityMetadata } from 'app/Metadata';
+import { actions, ShowMetadata, wrapEntityMetadata } from 'app/Metadata';
 import { store } from 'app/store';
 
 import { SearchEntities } from './SearchEntities';
@@ -114,8 +114,10 @@ class CopyFromEntity extends Component<CopyFromEntityProps, CopyFromEntityState>
     return this.state.selectedEntity._id ? (
       <>
         <div className="view">
-          <FormatMetadata
+          <ShowMetadata
             entity={this.state.selectedEntity}
+            showTitle
+            showType
             highlight={this.state.propsToCopy}
             excludePreview
           />

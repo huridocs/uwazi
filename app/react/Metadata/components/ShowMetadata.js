@@ -9,7 +9,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { FormatMetadata } from '../containers/FormatMetadata';
 
-export class ShowMetadata extends Component {
+class ShowMetadata extends Component {
   render() {
     const { entity, showTitle, showType, relationships, showSubset, groupGeolocations } =
       this.props;
@@ -53,6 +53,8 @@ export class ShowMetadata extends Component {
           showSubset={showSubset}
           groupGeolocations={groupGeolocations}
           renderLabel={(prop, label) => !prop.noLabel && label}
+          highlight={this.props.highlight}
+          excludePreview={this.props.excludePreview}
         />
       </div>
     );
@@ -61,6 +63,8 @@ export class ShowMetadata extends Component {
 ShowMetadata.defaultProps = {
   showSubset: undefined,
   groupGeolocations: false,
+  highlight: [],
+  excludePreview: false,
 };
 
 ShowMetadata.propTypes = {
@@ -71,8 +75,11 @@ ShowMetadata.propTypes = {
   showType: PropTypes.bool,
   showSubset: PropTypes.arrayOf(PropTypes.string),
   groupGeolocations: PropTypes.bool,
+  highlight: PropTypes.arrayOf(PropTypes.string),
+  excludePreview: PropTypes.bool,
 };
 
 const mapStateToProps = ({ templates }) => ({ templates });
 
+export { ShowMetadata };
 export default connect(mapStateToProps)(ShowMetadata);
