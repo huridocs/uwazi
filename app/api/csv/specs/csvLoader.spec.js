@@ -168,6 +168,7 @@ describe('csvLoader', () => {
         'additional_tag(s)',
         'multi_select_label',
         'date_label',
+        'language',
       ]);
     });
 
@@ -175,6 +176,11 @@ describe('csvLoader', () => {
       const textValues = imported.map(i => i.metadata.non_configured).filter(i => i);
 
       expect(textValues.length).toEqual(0);
+    });
+
+    it('should import properties named "Language" properly', () => {
+      const textValues = imported.map(i => i.metadata.language[0].value);
+      expect(textValues).toEqual(['English', 'Spanish', 'AnyStringIsGood']);
     });
 
     describe('metadata parsing', () => {
@@ -287,8 +293,8 @@ describe('csvLoader', () => {
     it('should fail when parsing throws an error', async () => {
       jest.spyOn(entities, 'save').mockImplementation(() => Promise.resolve({}));
       jest.spyOn(typeParsers, 'text').mockImplementation(entity => {
-        if (entity.title === 'title2') {
-          throw new Error(`error-${entity.title}`);
+        if (entity.propertiesFromColumns.title === 'title2') {
+          throw new Error(`error-${entity.propertiesFromColumns.title}`);
         }
       });
 

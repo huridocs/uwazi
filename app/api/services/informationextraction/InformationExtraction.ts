@@ -370,7 +370,7 @@ class InformationExtraction {
       return { status: 'ready', message: 'Ready' };
     }
 
-    return { status: 'error', message: '' };
+    return { status: 'error', message: 'No model found' };
   };
 
   materialsForModel = async (extractor: IXExtractorType, serviceUrl: string) => {

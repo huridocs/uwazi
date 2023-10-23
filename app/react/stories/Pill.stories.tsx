@@ -12,7 +12,9 @@ type Story = StoryObj<typeof Pill>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Pill color={args.color}>{args.children}</Pill>
+      <Pill color={args.color} className={args.className}>
+        {args.children}
+      </Pill>
     </div>
   ),
 };
@@ -22,6 +24,7 @@ const Basic = {
   args: {
     children: <span>Pill Content</span>,
     color: 'gray',
+    className: '',
   },
 };
 

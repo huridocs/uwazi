@@ -80,6 +80,15 @@ describe('Table', () => {
       cy.get('tr th').contains('Description').click();
       checkRowContent(1, ['Entity 2', '2', data[0].description]);
     });
+
+    it('should allow external control of sorting', () => {
+      const setSortingSpy = cy.stub().as('setSortingSpy');
+
+      mount(<Basic setSorting={setSortingSpy} />);
+      cy.get('tr th').contains('Title').click();
+
+      cy.get('@setSortingSpy').should('have.been.calledOnce');
+    });
   });
 
   describe('Selections', () => {

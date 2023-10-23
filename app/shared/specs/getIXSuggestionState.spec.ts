@@ -2,7 +2,7 @@ import { getSuggestionState, SuggestionValues } from '../getIXSuggestionState';
 
 describe('getIXSuggestionState', () => {
   describe('getSuggestionState', () => {
-    it('should return empty when suggestedValue, labeledValue and currentValue are empty', () => {
+    it('should mark when suggestedValue, labeledValue and currentValue are empty', () => {
       const values = <SuggestionValues>{
         currentValue: '',
         date: 1234,
@@ -13,10 +13,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Empty / Empty');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return empty / lebel when lebeledValue has value and suggestedValue is empty', () => {
+    it('should mark when lebeledValue has value and suggestedValue is empty', () => {
       const values = <SuggestionValues>{
         currentValue: '',
         date: 1234,
@@ -27,10 +36,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Empty / Label');
+      expect(state).toEqual({
+        labeled: true,
+        withValue: false,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return empty / value when currentValue has value and suggestedValue, labeledValue are empty', () => {
+    it('should mark when currentValue has value and suggestedValue, labeledValue are empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some value',
         date: 1234,
@@ -41,9 +59,18 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Empty / Value');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
-    it('should return error when error is not empty', () => {
+    it('should mark error when error is not empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some value',
         date: 1234,
@@ -55,10 +82,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Error');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: true,
+      });
     });
 
-    it('should return match / label when currentValue = suggestedValue, labeledValue is not empty', () => {
+    it('should mark when currentValue = suggestedValue, labeledValue is not empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some label value',
         date: 1234,
@@ -69,10 +105,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Match / Label');
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return match / value when currentValue = suggestedValue, labeledValue are empty', () => {
+    it('should mark when currentValue = suggestedValue, labeledValue are empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some value',
         date: 1234,
@@ -83,10 +128,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Match / Value');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: true,
+        match: true,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return mismatch / value when currentValue != suggestedValue, labeledValue are empty', () => {
+    it('should mark when currentValue != suggestedValue, labeledValue are empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some other value',
         date: 1234,
@@ -97,10 +151,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Mismatch / Value');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return mismatch / label when currentValue != suggestedValue, labeledValue is not empty', () => {
+    it('should mark when currentValue != suggestedValue, labeledValue is not empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some other value',
         date: 1234,
@@ -111,10 +174,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Mismatch / Label');
+      expect(state).toEqual({
+        labeled: true,
+        withValue: true,
+        withSuggestion: true,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return mismatch / empty when currentValue != suggestedValue, labeledValue is empty', () => {
+    it('should mark when currentValue != suggestedValue, labeledValue is empty', () => {
       const values = <SuggestionValues>{
         currentValue: '',
         date: 1234,
@@ -125,10 +197,19 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Mismatch / Empty');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: true,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      });
     });
 
-    it('should return obsolete when modelCreationDate < date', () => {
+    it('should mark obsolete when modelCreationDate < date', () => {
       const values = <SuggestionValues>{
         currentValue: '',
         date: 1234,
@@ -139,7 +220,16 @@ describe('getIXSuggestionState', () => {
 
       const state = getSuggestionState(values, 'text');
 
-      expect(state).toEqual('Obsolete');
+      expect(state).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: true,
+        match: false,
+        hasContext: false,
+        obsolete: true,
+        processing: false,
+        error: false,
+      });
     });
   });
 });

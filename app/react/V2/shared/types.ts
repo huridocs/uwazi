@@ -1,5 +1,5 @@
 interface IXExtractorInfo {
-  _id?: string;
+  _id: string;
   name: string;
   property: string;
   templates: string[];

@@ -1,9 +1,10 @@
+/* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
-import * as ixAPI from 'V2/api/ix';
+import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
@@ -12,7 +13,7 @@ import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { ExtractorModal } from './components/ExtractorModal';
-import { Extractor, tableColumns } from './components/TableElements';
+import { Extractor, extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
 
 const formatExtractors = (
@@ -21,7 +22,7 @@ const formatExtractors = (
 ): Extractor[] =>
   extractors.map(extractor => {
     let propertyType: Extractor['propertyType'] = 'text';
-    let propertyLabel = t('System', 'Title', null, false);
+    let propertyLabel = '';
 
     const namedTemplates = extractor.templates.map(extractorTemplate => {
       const templateName =
@@ -34,9 +35,16 @@ const formatExtractors = (
         templateProperty => templateProperty.name === extractor.property
       );
 
+      if (!property && !propertyLabel) {
+        propertyLabel = t(template._id, 'Title', null, false);
+      }
+
       if (property) {
         propertyType = property.type as Extractor['propertyType'];
-        propertyLabel = t(template._id, property.label, null, false);
+
+        if (!propertyLabel) {
+          propertyLabel = t(template._id, property.label, null, false);
+        }
       }
     });
 
@@ -48,6 +56,7 @@ const IXDashboard = () => {
     extractors: IXExtractorInfo[];
     templates: ClientTemplateSchema[];
   };
+  const [isSaving, setIsSaving] = useState(false);
   const revalidator = useRevalidator();
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -60,10 +69,11 @@ const IXDashboard = () => {
   );
 
   const deleteExtractors = async () => {
+    setIsSaving(true);
     const extractorIds = selected.map(selection => selection.original._id) as string[];
 
     try {
-      await ixAPI.remove(extractorIds);
+      await extractorsAPI.remove(extractorIds);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -75,12 +85,16 @@ const IXDashboard = () => {
         text: <Translate>An error occurred</Translate>,
         details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
       });
+    } finally {
+      setIsSaving(false);
     }
   };
 
   const handleSave = async (extractor: IXExtractorInfo) => {
+    setIsSaving(true);
+
     try {
-      await ixAPI.save(extractor);
+      await extractorsAPI.save(extractor);
       revalidator.revalidate();
       setNotifications({
         type: 'success',
@@ -92,6 +106,8 @@ const IXDashboard = () => {
         text: <Translate>An error occurred</Translate>,
         details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
       });
+    } finally {
+      setIsSaving(false);
     }
 
     setExtractorModal(false);
@@ -109,7 +125,7 @@ const IXDashboard = () => {
         <SettingsContent.Body>
           <Table<Extractor>
             data={formmatedExtractors}
-            columns={tableColumns}
+            columns={extractorsTableColumns}
             title={<Translate>Extractors</Translate>}
             enableSelection
             onSelection={setSelected}
@@ -119,17 +135,22 @@ const IXDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected.length === 1 ? (
-            <Button type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
 
           {selected.length ? (
-            <Button type="button" color="error" onClick={() => setConfirmModal(true)}>
+            <Button
+              type="button"
+              color="error"
+              onClick={() => setConfirmModal(true)}
+              disabled={isSaving}
+            >
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button type="button" onClick={() => setExtractorModal(true)}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}
@@ -165,7 +186,7 @@ const IXDashboard = () => {
 const dashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await ixAPI.get(headers);
+    const extractors = await extractorsAPI.get(headers);
     const templates = await templatesAPI.get(headers);
     return { extractors, templates };
   };

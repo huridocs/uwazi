@@ -20,11 +20,12 @@ import { DB } from 'api/odm';
 import { Db } from 'mongodb';
 import request from 'shared/JSONRequest';
 
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
+import { config } from 'api/config';
 import { PDFSegmentation } from '../PDFSegmentation';
 import { SegmentationModel } from '../segmentationModel';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 
@@ -72,7 +73,7 @@ describe('PDFSegmentation', () => {
   });
 
   beforeAll(async () => {
-    const uri = 'mongodb://localhost/';
+    const uri = config.DBHOST;
     await DB.connect(`${uri}PDFSegmentation_spec`);
   });
 

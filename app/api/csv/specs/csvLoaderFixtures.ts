@@ -110,6 +110,11 @@ export default {
           label: 'Date label',
           name: templateUtils.safeName('Date label'),
         },
+        {
+          type: propertyTypes.text,
+          label: 'Language',
+          name: templateUtils.safeName('Language'),
+        },
       ],
     },
     {

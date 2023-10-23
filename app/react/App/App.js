@@ -67,7 +67,7 @@ const App = ({ customParams }) => {
       <Notifications />
       <Cookiepopup />
       <div className="content">
-        <nav>
+        <nav className="library-nav">
           <h1>
             <SiteName />
           </h1>

@@ -14,7 +14,6 @@ import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import languages from 'shared/languages';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
@@ -130,7 +129,7 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
     {
       extractorId,
       date: { $lt: currentModel.creationDate },
-      state: { $ne: SuggestionState.error },
+      'state.error': { $ne: true },
     },
     'fileId',
     { limit: BATCH_SIZE }

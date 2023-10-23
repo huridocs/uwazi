@@ -11,6 +11,7 @@ export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
   extractorId: string;
+  entityTemplateId: string;
   sharedId: string;
   fileId: string;
   entityTitle: string;
@@ -27,21 +28,30 @@ export interface EntitySuggestionType {
   }[];
   segment: string;
   language: string;
-  state:
-    | 'Match / Label'
-    | 'Mismatch / Label'
-    | 'Match / Value'
-    | 'Mismatch / Value'
-    | 'Empty / Empty'
-    | 'Obsolete'
-    | 'Empty / Label'
-    | 'Empty / Value'
-    | 'Error'
-    | 'Processing'
-    | 'Mismatch / Empty';
+  state: IXSuggestionStateType;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
   date: number;
+}
+
+export interface IXAggregationQuery {
+  extractorId: ObjectIdSchema;
+}
+
+export interface IXSuggestionAggregation {
+  total: number;
+  labeled: {
+    _count: number;
+    match: number;
+    mismatch: number;
+  };
+  nonLabeled: {
+    _count: number;
+    noSuggestion: number;
+    noContext: number;
+    obsolete: number;
+    others: number;
+  };
 }
 
 export interface IXSuggestionType {
@@ -57,18 +67,7 @@ export interface IXSuggestionType {
   language: string;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';
-  state?:
-    | 'Match / Label'
-    | 'Mismatch / Label'
-    | 'Match / Value'
-    | 'Mismatch / Value'
-    | 'Empty / Empty'
-    | 'Obsolete'
-    | 'Empty / Label'
-    | 'Empty / Value'
-    | 'Error'
-    | 'Processing'
-    | 'Mismatch / Empty';
+  state?: IXSuggestionStateType;
   date?: number;
   error?: string;
   selectionRectangles?: {
@@ -80,33 +79,45 @@ export interface IXSuggestionType {
   }[];
 }
 
-export interface IXSuggestionsQuery {
-  filter?: IXSuggestionsFilter;
-  page?: {
-    number?: number;
-    size?: number;
-  };
+export interface IXSuggestionStateType {
+  labeled: boolean;
+  withValue: boolean;
+  withSuggestion: boolean;
+  match: boolean;
+  hasContext: boolean;
+  obsolete: boolean;
+  processing: boolean;
+  error: boolean;
 }
 
-export interface IXSuggestionsStatsQuery {
-  extractorId: string;
+export interface IXSuggestionsQuery {
+  filter: IXSuggestionsFilter;
+  page?: {
+    number: number;
+    size: number;
+  };
+  sort?: {
+    property: string;
+    order?: 'asc' | 'desc';
+  };
+  [k: string]: unknown | undefined;
+}
+
+export interface SuggestionCustomFilter {
+  labeled: {
+    match: boolean;
+    mismatch: boolean;
+  };
+  nonLabeled: {
+    noSuggestion: boolean;
+    noContext: boolean;
+    obsolete: boolean;
+    others: boolean;
+  };
 }
 
 export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;
-  states?: (
-    | 'Match / Label'
-    | 'Mismatch / Label'
-    | 'Match / Value'
-    | 'Mismatch / Value'
-    | 'Empty / Empty'
-    | 'Obsolete'
-    | 'Empty / Label'
-    | 'Empty / Value'
-    | 'Error'
-    | 'Processing'
-    | 'Mismatch / Empty'
-  )[];
-  entityTemplates?: string[];
+  customFilter?: SuggestionCustomFilter;
 }

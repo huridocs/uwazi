@@ -86,7 +86,7 @@ const TranslationsTables = ({
       header: FieldKeyHeader,
       cell: memoizedInput,
       enableSorting: false,
-      meta: { className: 'w-full' },
+      meta: { headerClassName: 'w-full' },
     }),
   ];
 

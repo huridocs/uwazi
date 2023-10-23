@@ -25,7 +25,7 @@ const filesRootPath = FILES_ROOT_PATH || rootPath;
 // when using multiple node processes
 const CLUSTER_MODE = process.env.CLUSTER_MODE || false;
 
-const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://localhost/');
+const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://127.0.0.1/');
 
 export const config = {
   VERSION: ENVIRONMENT ? version : `development-${version}`,
