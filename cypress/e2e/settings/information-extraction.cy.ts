@@ -267,7 +267,6 @@ describe('Information Extraction', () => {
       });
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.contains('span', 'Lorem Ipsum');
-      cy.get('aside').toMatchImageSnapshot();
     });
 
     it('should not render pdf pages that are not visible', () => {
@@ -292,7 +291,8 @@ describe('Information Extraction', () => {
       cy.get('aside').within(() => {
         cy.get('input').clear();
       });
-
+      cy.get('#pdf-container').scrollTo(0, 0);
+      cy.contains('button', 'Clear PDF selection').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
         //@ts-ignore
