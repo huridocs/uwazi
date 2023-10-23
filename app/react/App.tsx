@@ -2,8 +2,6 @@ import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { Provider } from 'react-redux';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
 import { settingsAtom } from './V2/atoms/settingsAtom';
@@ -21,13 +19,11 @@ const recoilGlobalState = ({ set }: MutableSnapshot) => {
 
 const App = () => (
   <Provider store={store as any}>
-    <DndProvider backend={HTML5Backend}>
-      <CustomProvider>
-        <RecoilRoot initializeState={recoilGlobalState}>
-          <RouterProvider router={router} fallbackElement={null} />
-        </RecoilRoot>
-      </CustomProvider>
-    </DndProvider>
+    <CustomProvider>
+      <RecoilRoot initializeState={recoilGlobalState}>
+        <RouterProvider router={router} fallbackElement={null} />
+      </RecoilRoot>
+    </CustomProvider>
   </Provider>
 );
 
