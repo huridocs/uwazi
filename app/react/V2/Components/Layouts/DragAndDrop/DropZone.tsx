@@ -13,14 +13,14 @@ interface DroppableProps<T> {
   parent?: IDraggable<T>;
 }
 
-// eslint-disable-next-line react/function-component-definition
-function DropZoneComponent<T>({
+// eslint-disable-next-line prettier/prettier
+const DropZoneComponent = <T, >({
   name,
   useDrop = () => {},
   type,
   context,
   parent,
-}: DroppableProps<T>) {
+}: DroppableProps<T>) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: type,
     drop: () => ({ name, context, parent }),
@@ -44,7 +44,7 @@ function DropZoneComponent<T>({
       <Translate>Drag items here</Translate>
     </div>
   );
-}
+};
 
 const DropZone = withDnD(DropZoneComponent);
 export { DropZone };

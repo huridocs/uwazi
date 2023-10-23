@@ -60,8 +60,8 @@ const elementTestId = <T, >(
     (item.parent ? `group_${context.getDisplayName(item.parent)}` : '') || container || 'available'
   }-draggable-item-${index}`;
 
-// eslint-disable-next-line react/function-component-definition
-function DraggableItemComponent<T>({
+// eslint-disable-next-line prettier/prettier
+const DraggableItemComponent = <T, >({
   item,
   useDrag = () => {},
   useDrop = () => {},
@@ -73,7 +73,7 @@ function DraggableItemComponent<T>({
   omitIcon = false,
   wrapperType = 'li',
   container,
-}: DraggableItemProps<T>) {
+}: DraggableItemProps<T>) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
     accept: context.type,
@@ -130,7 +130,7 @@ function DraggableItemComponent<T>({
       {children}
     </TagName>
   );
-}
+};
 
 const DraggableItem = withDnD(DraggableItemComponent);
 

@@ -30,6 +30,7 @@ const checkSortArea = (
   }
   return false;
 };
+
 const isOutOfSortArea = (
   ref: RefObject<HTMLElement>,
   monitor: any,
@@ -43,24 +44,17 @@ const isOutOfSortArea = (
   dragIndex === hoverIndex ||
   checkSortArea(monitor, ref.current.getBoundingClientRect(), dragIndex, hoverIndex);
 
-function isNotSortableItem<T>(
+const isNotSortableItem = <T>(
   currentItem: { id: string; item: IDraggable<T> },
   target: IDraggable<T> & { ID?: string }
-) {
-  return (
-    (currentItem.item.parent && !target.parent) ||
-    currentItem.id === target.id ||
-    currentItem.item.container === undefined
-  );
-}
+) =>
+  (currentItem.item.parent && !target.parent) ||
+  currentItem.id === target.id ||
+  currentItem.item.container === undefined;
 
-function hoverSortable<T>(
-  ref: RefObject<HTMLElement>,
-  target: IDraggable<T>,
-  index: number,
-  sortFunction?: Function
-) {
-  return (
+const hoverSortable =
+  <T>(ref: RefObject<HTMLElement>, target: IDraggable<T>, index: number, sortFunction?: Function) =>
+  (
     currentItem: {
       index: number;
       id: string;
@@ -90,6 +84,5 @@ function hoverSortable<T>(
     // eslint-disable-next-line no-param-reassign
     currentItem.index = hoverIndex;
   };
-}
 
 export { hoverSortable };
