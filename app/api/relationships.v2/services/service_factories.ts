@@ -17,7 +17,6 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { tenants } from 'api/tenants';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
@@ -70,7 +69,7 @@ const createUpdateStrategy = async (
   strategyKey: string | undefined,
   updater: GenericEntityRelationshipsUpdateService
 ) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
 
   switch (strategyKey) {
     case QueuedRelationshipPropertyUpdateStrategy.name:

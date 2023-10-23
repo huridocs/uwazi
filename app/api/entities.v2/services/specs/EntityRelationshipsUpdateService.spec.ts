@@ -1,12 +1,12 @@
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import testingDB from 'api/utils/testing_db';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { EntityRelationshipsUpdateService } from '../EntityRelationshipsUpdateService';
 
 const factory = getFixturesFactory();
@@ -136,7 +136,7 @@ afterAll(async () => {
 });
 
 function buildService() {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const settingsDataSource = new MongoSettingsDataSource(getConnection(), transactionManager);
   const templateDataSource = new MongoTemplatesDataSource(getConnection(), transactionManager);
   const entityDataSource = new MongoEntitiesDataSource(

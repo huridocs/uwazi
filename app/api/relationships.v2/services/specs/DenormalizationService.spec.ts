@@ -1,5 +1,4 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
@@ -9,6 +8,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { Db } from 'mongodb';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DenormalizationService } from '../DenormalizationService';
 import { RelationshipPropertyUpdateStrategy } from '../propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
 
@@ -319,7 +319,7 @@ beforeEach(async () => {
   updateByTemplateMock = jest.fn();
 
   db = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   triggerCommit = async () => transactionManager.executeOnCommitHandlers(undefined);
   const relationshipsDataSource = new MongoRelationshipsDataSource(db, transactionManager);
   const templatesDataSource = new MongoTemplatesDataSource(db, transactionManager);

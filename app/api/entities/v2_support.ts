@@ -1,14 +1,13 @@
 import { DenormalizationService } from 'api/relationships.v2/services/service_factories';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntitySchema } from 'shared/types/entityType';
 import { propertyTypes } from 'shared/propertyTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/data_source_defaults';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const datasource = DefaultRelationshipDataSource(transactionManager);
     await datasource.deleteByEntities([sharedId]);
@@ -22,7 +21,7 @@ const denormalizeAfterEntityCreation = async ({
   sharedId: string;
   language: string;
 }) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
@@ -37,7 +36,7 @@ const denormalizeAfterEntityUpdate = async ({
   sharedId: string;
   language: string;
 }) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
     const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterUpdatingEntities([sharedId], language);

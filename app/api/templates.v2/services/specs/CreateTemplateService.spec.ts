@@ -1,5 +1,4 @@
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { MongoRelationshipTypesDataSource } from 'api/relationshiptypes.v2/database/MongoRelationshipTypesDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
@@ -11,6 +10,7 @@ import { DenormalizationService } from 'api/relationships.v2/services/Denormaliz
 import { MongoRelationshipsDataSource } from 'api/relationships.v2/database/MongoRelationshipsDataSource';
 import { OnlineRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { CreateTemplateService } from '../CreateTemplateService';
 
 const fixturesFactory = getFixturesFactory();
@@ -43,7 +43,7 @@ afterAll(async () => {
 
 function setUpService() {
   const connection = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const templatesDS = new MongoTemplatesDataSource(connection, transactionManager);
   const relTypeDS = new MongoRelationshipTypesDataSource(connection, transactionManager);
   const settingsDS = new MongoSettingsDataSource(connection, transactionManager);
@@ -64,7 +64,7 @@ function setUpService() {
     new OnlineRelationshipPropertyUpdateStrategy(
       async () => {},
       new EntityRelationshipsUpdateService(entityDS, templatesDS, relationshipsDS),
-      new MongoTransactionManager(getClient()),
+      DefaultTransactionManager(),
       entityDS
     )
   );

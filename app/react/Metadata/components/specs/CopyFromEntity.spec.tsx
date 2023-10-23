@@ -95,7 +95,15 @@ describe('CopyFromEntity', () => {
         silent: true,
         type: 'rrf/change',
         value: {
-          metadata: { one: 'number one', two: 'number two', id: 'ABC123' },
+          metadata: {
+            id: {
+              value: 'ABC123',
+            },
+            one: {
+              value: 'number one',
+            },
+            two: 'number two',
+          },
           template: 'template_1',
           title: 'I want to be like you',
         },
