@@ -36,7 +36,7 @@ const DropZoneComponent = <T, >({
       className={`flex flex-col items-center justify-center  text-gray-400 uppercase p-15 h-14 text-base m-5 ${
         isActive
           ? ' bg-bray-800 dark:bg-gray-700 bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600'
-          : 'empty'
+          : ''
       } border border-gray-300 border-dashed rounded-sm cursor-pointer bg-gray-50 `}
       ref={drop}
       data-testid={name}
