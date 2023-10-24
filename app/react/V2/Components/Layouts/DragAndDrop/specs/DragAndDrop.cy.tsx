@@ -18,11 +18,7 @@ describe('DragAndDrop', () => {
       .within(() => {
         cy.get('ul > li')
           .should('have.length', items.length)
-          .then($els => {
-            const a = Cypress.$.makeArray($els).map(el => el.innerText);
-            console.log('a', a);
-            return a;
-          })
+          .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
           .should('deep.equal', items, { timeout: 200 });
       });
   };

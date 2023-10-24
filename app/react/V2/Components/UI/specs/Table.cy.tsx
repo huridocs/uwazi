@@ -141,10 +141,13 @@ describe('Table', () => {
   describe('DnD', () => {
     it('should sort rows by dragging', () => {
       mount(<WithDnD />);
-      cy.get('[data-testid="root-draggable-item-2"]').drag(
-        '[data-testid="root-draggable-item-0"]',
-        { target: { x: 1, y: 1 } }
-      );
+
+      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragstart');
+      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragleave');
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('drop', {
+        target: { x: 1, y: 3 },
+      });
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
 
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
