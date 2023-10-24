@@ -1,6 +1,6 @@
 /* eslint-disable comma-spacing */
 /* eslint-disable react/no-multi-comp */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext } from 'react';
 import {
   useLocation,
   useMatches,
