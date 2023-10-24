@@ -204,16 +204,16 @@ describe('DragAndDrop', () => {
       cy.get('[data-testid="group_Item 1-draggable-item-0"]').drag(
         '[data-testid="group_Item 1-draggable-item-1"]',
         {
-          target: { x: 100, y: 20 },
+          target: { x: 100, y: 30 },
         }
       );
       cy.get('[data-testid="root-draggable-item-2"]').drag('div[data-testid="group_Item 1"]', {
-        target: { x: 100, y: 15 },
+        target: { x: 100, y: 30 },
       });
       cy.get('[data-testid="available-draggable-item-0"]').drag(
         '[data-testid="group_Item 1"]>span',
         {
-          target: { x: 100, y: 15 },
+          target: { x: 100, y: 10 },
         }
       );
       cy.get('[data-testid="group_Item 1-draggable-item-3"]').drag(
@@ -222,7 +222,7 @@ describe('DragAndDrop', () => {
       cy.get('[data-testid="group_Item 1-draggable-item-2"]').drag(
         '[data-testid="group_Item 1-draggable-item-3"]',
         {
-          target: { x: 100, y: 20 },
+          target: { x: 100, y: 30 },
         }
       );
       shouldContainListItems('div[data-testid="active-bin"]', [
