@@ -5,7 +5,7 @@ import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/DragAndDrop.stories';
 
-const { Basic, WithItemComponent, Nested } = composeStories(stories);
+const { Basic, WithItemComponent, Nested, Form } = composeStories(stories);
 
 describe('DragAndDrop', () => {
   it('should be accessible', () => {
@@ -18,8 +18,12 @@ describe('DragAndDrop', () => {
       .within(() => {
         cy.get('ul > li')
           .should('have.length', items.length)
-          .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-          .should('deep.equal', items);
+          .then($els => {
+            const a = Cypress.$.makeArray($els).map(el => el.innerText);
+            console.log('a', a);
+            return a;
+          })
+          .should('deep.equal', items, { timeout: 200 });
       });
   };
 
@@ -162,6 +166,19 @@ describe('DragAndDrop', () => {
       ]);
     });
 
+    it('should add a released item', () => {
+      cy.get('[data-testid="root-draggable-item-0"]').within(() => {
+        cy.get('button').eq(0).click();
+      });
+      cy.get('[data-testid="available-draggable-item-2"]').drag('div[data-testid="root"]');
+
+      shouldContainListItems('div[data-testid="active-bin"]', [
+        'Item 2\nDRAG ITEMS HERE',
+        'Item 3\nDRAG ITEMS HERE',
+        'Item 1\nDRAG ITEMS HERE',
+      ]);
+    });
+
     it('should remove a child', () => {
       cy.get('[data-testid="group_Item 1-draggable-item-0"]').within(() => {
         cy.get('button').eq(0).click();
@@ -222,7 +239,7 @@ describe('DragAndDrop', () => {
       ]);
     });
 
-    it('should not change list when unallowed dragging', () => {
+    it('should not change list when dragging is not valid', () => {
       cy.get('[data-testid="root-draggable-item-0"]').drag('[data-testid="group_Item 1"]>span', {
         target: { x: 100, y: 15 },
       });
@@ -238,6 +255,25 @@ describe('DragAndDrop', () => {
         'Subitem 1',
         'Item 2\nDRAG ITEMS HERE',
         'Item 3\nDRAG ITEMS HERE',
+      ]);
+    });
+  });
+
+  describe('Form', () => {
+    beforeEach(() => {
+      mount(<Form />);
+    });
+
+    it('should update the state of a modified item', () => {
+      cy.get('[data-testid="root-draggable-item-0"]').within(() => cy.get('input').type(' ALL'));
+      cy.get('[data-testid="root-draggable-item-1"]').within(() => cy.get('input').type(' VALUES'));
+      cy.get('[data-testid="root-draggable-item-2"]').within(() =>
+        cy.get('input').type(' WERE UPDATED', { delay: 30 })
+      );
+      shouldContainListItems('div[data-testid="state-bin"]', [
+        'Item 1 ALL',
+        'Item 2 VALUES',
+        'Item 3 WERE UPDATED',
       ]);
     });
   });

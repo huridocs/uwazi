@@ -92,7 +92,7 @@ const addItemToParent = <T>(
             [indexOfParent]: {
               value: {
                 items: {
-                  $push: [{ ...omit(newItem, ['parent', 'container', 'items']), parent }],
+                  $push: [{ ...omit(newItem, ['parent', 'container', 'value.items']), parent }],
                 },
               },
             },
@@ -129,7 +129,7 @@ const addActiveItem =
       setActiveItems((prevActiveItems: IDraggable<T>[]) =>
         update(prevActiveItems, {
           //@ts-ignore
-          $push: [omit(newItem, ['parent', 'container', 'items'])],
+          $push: [omit(newItem, ['parent', 'container', 'value.items'])],
         })
       );
     }
@@ -154,10 +154,11 @@ const removeActiveItem =
     const availableSubItems: IDraggable<T>[] = (item.value.items || []).map((ai: IDraggable<T>) =>
       omit(ai, ['parent', 'container'])
     );
+    const releasedItem = omit(item, ['parent', 'container', 'value.items']);
     setAvailableItems((prevAvailableItems: IDraggable<T>[]) =>
       update(prevAvailableItems, {
         //@ts-ignore
-        $push: [omit(item, ['parent', 'container', 'items']), ...availableSubItems],
+        $push: [releasedItem, ...availableSubItems],
       })
     );
   };

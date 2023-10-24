@@ -118,19 +118,18 @@ const EditableItem = ({
   item: IDraggable<DnDValueExample>;
   index: number;
 }) => {
-  const debouncedChangeHandler = useCallback(() => {
-    const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-      dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
-    };
+  const handleChange = debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
+  }, 300);
 
-    return debounce(changeHandler, 500);
-  }, [dndContext, item]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedChangeHandler = useCallback(handleChange, [item, dndContext]);
 
   return (
     <input
       id={`name.${index}`}
       defaultValue={dndContext.getDisplayName(item)}
-      onInput={debouncedChangeHandler}
+      onChange={debouncedChangeHandler}
       aria-label={dndContext.getDisplayName(item)}
     />
   );
@@ -152,6 +151,7 @@ const DnDClientWithForm = ({ items, type }: any) => {
                   index={index}
                   className="flex flex-row gap-3 p-3 align-middle "
                   context={dndContext}
+                  container="root"
                 >
                   <EditableItem
                     key={`input_${item.id}`}
