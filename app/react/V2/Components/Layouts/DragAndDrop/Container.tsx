@@ -39,7 +39,7 @@ const Container = <T,>({
                 key={item.id}
                 iconHandle={iconHandle}
                 index={index}
-                className="flex flex-row gap-3 align-middle "
+                className="flex flex-row gap-3 p-1 align-middle"
                 context={context}
                 container="root"
               >

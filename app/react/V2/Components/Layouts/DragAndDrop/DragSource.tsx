@@ -17,7 +17,7 @@ const DragSourceComponent = <T,>({ context, className = '' }: DragSourceComponen
           key={item.id}
           item={item}
           index={index}
-          className="gap-5 p-3"
+          className="flex gap-5 p-3 w-50"
           context={context}
         >
           {context.getDisplayName(item)}
