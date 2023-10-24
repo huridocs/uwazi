@@ -29,7 +29,17 @@ const withDnD = <T,>(Component: React.FC<T>) =>
       useDrag: module.useDrag,
       useDrop: module.useDrop,
       useDragDropManager: module.useDragDropManager,
+      DndProvider: module.DndProvider,
     })
   );
 
-export { withDnD };
+/* eslint-disable comma-spacing */
+const withDnDBackend = <T,>(Component: React.FC<T>) =>
+  withLazy<T>(
+    Component,
+    async () => import('react-dnd-html5-backend'),
+    (module: any) => ({
+      HTML5Backend: module.HTML5Backend,
+    })
+  );
+export { withDnD, withDnDBackend };

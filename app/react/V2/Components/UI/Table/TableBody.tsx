@@ -1,15 +1,23 @@
 import React, { PropsWithChildren } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { withDnD, withDnDBackend } from '../../componentWrappers';
 
 interface TableBodyProps extends PropsWithChildren {
   draggableRows: boolean;
+  DndProvider?: React.FC<any>;
+  HTML5Backend?: any;
 }
-const TableBody = ({ draggableRows, children }: TableBodyProps) => (
+const TableBodyComponent = ({
+  draggableRows,
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  DndProvider = () => <></>,
+  children,
+  HTML5Backend = {},
+}: TableBodyProps) => (
   <tbody>
     {(draggableRows === true && <DndProvider backend={HTML5Backend}>{children}</DndProvider>) ||
       (draggableRows === false && <>{children}</>)}
   </tbody>
 );
 
+const TableBody = (props: TableBodyProps) => withDnD(withDnDBackend(TableBodyComponent))(props);
 export { TableBody };
