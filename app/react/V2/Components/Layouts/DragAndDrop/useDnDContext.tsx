@@ -15,7 +15,7 @@ import {
 // eslint-disable-next-line prettier/prettier
 const useDnDContext = <T, >(
   type: ItemTypes,
-  getDisplayName: (item: IDraggable<T>) => string,
+  operations: { getDisplayName: (item: IDraggable<T>) => string; sortCallback?: Function },
   initialItems: T[] = [],
   sourceItems: IDraggable<T>[] = []
 ) => {
@@ -39,14 +39,14 @@ const useDnDContext = <T, >(
     type,
     addItem: addActiveItem(activeItems, setActiveItems, availableItems, setAvailableItems),
     removeItem: removeActiveItem(activeItems, setActiveItems, setAvailableItems),
-    sort: sortActiveItems(activeItems, setActiveItems),
+    sort: sortActiveItems(activeItems, setActiveItems, operations.sortCallback),
     updateItem,
     updateActiveItems: (items: T[]) => {
       setActiveItems(mapWithParent(items));
     },
     activeItems,
     availableItems,
-    getDisplayName,
+    getDisplayName: operations.getDisplayName,
   };
   return dndContext;
 };

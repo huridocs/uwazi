@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, Row, SortingState } from '@tanstack/react-table';
 import { ItemTypes } from 'app/V2/shared/types';
 import type { IDraggable } from 'app/V2/shared/types';
@@ -10,16 +10,28 @@ const useDnDTable = <T>(
   table: Table<T>,
   sortingState?: SortingState
 ) => {
+  const [reset, setReset] = useState(false);
   const dndContext = useDnDContext<Row<T>>(
     ItemTypes.ROW,
-    getDisplayName,
+    {
+      getDisplayName,
+      sortCallback: () => {
+        setReset(true);
+        table.resetSorting(true);
+      },
+    },
     table.getRowModel().rows,
     []
   );
 
   useEffect(() => {
-    if (draggableRows) {
+    if (!draggableRows) {
+      return;
+    }
+    if (!reset) {
       dndContext.updateActiveItems(table.getRowModel().rows);
+    } else {
+      setReset(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortingState]);

@@ -84,7 +84,7 @@ const DndContextState = ({
   </div>
 );
 const DnDClient = ({ items, type, itemComponent }: any) => {
-  const dndContext = useDnDContext(type, sampleDefaultName, items, sourceItems);
+  const dndContext = useDnDContext(type, { getDisplayName: sampleDefaultName }, items, sourceItems);
 
   return (
     <div className="tw-content">
@@ -136,7 +136,7 @@ const EditableItem = ({
   );
 };
 const DnDClientWithForm = ({ items, type }: any) => {
-  const dndContext = useDnDContext(type, sampleDefaultName, items, sourceItems);
+  const dndContext = useDnDContext(type, { getDisplayName: sampleDefaultName }, items, sourceItems);
 
   return (
     <>

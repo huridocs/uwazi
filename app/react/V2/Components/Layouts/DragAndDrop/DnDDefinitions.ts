@@ -217,7 +217,8 @@ const sortParents = <T>(
 const sortActiveItems =
   <T>(
     activeItems: IDraggable<T>[],
-    setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>
+    setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
+    sortingCallback: Function = () => {}
   ) =>
   (currentItem: IDraggable<T>, target: IDraggable<T>, dragIndex: number, hoverIndex: number) => {
     if (currentItem.parent !== undefined) {
@@ -225,6 +226,7 @@ const sortActiveItems =
     } else {
       sortParents(activeItems, setActiveItems, { currentItem, target, dragIndex, hoverIndex });
     }
+    sortingCallback();
   };
 
 export type { IDnDContext };
