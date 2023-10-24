@@ -12,12 +12,12 @@ interface TableRowProps<T> extends PropsWithChildren {
   dndContext: IDnDContext<Row<T>>;
 }
 
-// eslint-disable-next-line prettier/prettier
-const isRow = <T, >(row: Row<T> | IDraggable<Row<T>>): row is Row<T> =>
+/* eslint-disable comma-spacing */
+const isRow = <T,>(row: Row<T> | IDraggable<Row<T>>): row is Row<T> =>
   (row as IDraggable<Row<T>>).value === undefined;
 
-// eslint-disable-next-line prettier/prettier
-const TableRow = <T, >({ draggableRow, item, index, dndContext }: TableRowProps<T>) => {
+/* eslint-disable comma-spacing */
+const TableRow = <T,>({ draggableRow, item, index, dndContext }: TableRowProps<T>) => {
   const rowValue = (isRow(item) ? item : (item as IDraggable<Row<T>>).value) as Row<T>;
   const icons = draggableRow
     ? [

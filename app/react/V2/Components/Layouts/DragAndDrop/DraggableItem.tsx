@@ -3,10 +3,10 @@ import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
 import { Bars3Icon } from '@heroicons/react/20/solid';
 
 import type { IDraggable } from 'app/V2/shared/types';
-import { withDnD } from 'app/componentWrappers';
 import { hoverSortable } from './SortFunction';
 import { IItemComponentProps } from './Container';
 import type { IDnDContext } from './DnDDefinitions';
+import { withDnD } from '../../componentWrappers';
 
 interface DraggableItemProps<T> extends React.PropsWithChildren {
   item: IDraggable<T>;
@@ -27,11 +27,11 @@ type DraggedResult<T> = {
   container: string;
 };
 
-// eslint-disable-next-line prettier/prettier
-const hasValidContext = <T, >(dropContext?: IDnDContext<T>) => dropContext !== undefined;
+/* eslint-disable comma-spacing */
+const hasValidContext = <T,>(dropContext?: IDnDContext<T>) => dropContext !== undefined;
 
-// eslint-disable-next-line prettier/prettier
-const isNotAutoContained = <T, >(
+/* eslint-disable comma-spacing */
+const isNotAutoContained = <T,>(
   currentItem: IDraggable<T>,
   draggedResult: DraggedResult<T>,
   dropParent?: { id?: string; item?: IDraggable<T> }
@@ -42,15 +42,16 @@ const isNotAutoContained = <T, >(
     draggedResult.container === undefined) &&
   (dropParent === undefined || draggedResult.item.id !== dropParent.id);
 
-// eslint-disable-next-line prettier/prettier
-const hasNoItems = <T, >(currentItem: IDraggable<T>) => currentItem.value.items === undefined || currentItem.value.items.length === 0;
+/* eslint-disable comma-spacing */
+const hasNoItems = <T,>(currentItem: IDraggable<T>) =>
+  currentItem.value.items === undefined || currentItem.value.items.length === 0;
 
 const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
 
 const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
-// eslint-disable-next-line prettier/prettier
-const elementTestId = <T, >(
+/* eslint-disable comma-spacing */
+const elementTestId = <T,>(
   item: IDraggable<T>,
   context: any,
   container: string | undefined,
@@ -60,8 +61,8 @@ const elementTestId = <T, >(
     (item.parent ? `group_${context.getDisplayName(item.parent)}` : '') || container || 'available'
   }-draggable-item-${index}`;
 
-// eslint-disable-next-line prettier/prettier
-const DraggableItemComponent = <T, >({
+/* eslint-disable comma-spacing */
+const DraggableItemComponent = <T,>({
   item,
   useDrag = () => {},
   useDrop = () => {},

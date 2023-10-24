@@ -6,8 +6,8 @@ interface RowProps<T> {
   headerGroup: HeaderGroup<T>;
   draggableRows: boolean;
 }
-// eslint-disable-next-line prettier/prettier
-const TableHeader = <T, >({ headerGroup, draggableRows }: RowProps<T>) => (
+/* eslint-disable comma-spacing */
+const TableHeader = <T,>({ headerGroup, draggableRows }: RowProps<T>) => (
   <tr key={headerGroup.id}>
     {headerGroup.headers.map(header => {
       const isSortable = header.column.getCanSort();

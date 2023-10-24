@@ -2,8 +2,8 @@
 import React from 'react';
 import type { DropTargetMonitor } from 'react-dnd/dist/types/monitors';
 import { Translate } from 'app/I18N';
-import { withDnD } from 'app/componentWrappers';
 import { IDraggable, ItemTypes } from 'app/V2/shared/types';
+import { withDnD } from '../../componentWrappers';
 
 interface DroppableProps<T> {
   name: string;
@@ -13,8 +13,8 @@ interface DroppableProps<T> {
   parent?: IDraggable<T>;
 }
 
-// eslint-disable-next-line prettier/prettier
-const DropZoneComponent = <T, >({
+/* eslint-disable comma-spacing */
+const DropZoneComponent = <T,>({
   name,
   useDrop = () => {},
   type,

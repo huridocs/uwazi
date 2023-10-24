@@ -1,5 +1,4 @@
-import React from 'react';
-import type { FC } from 'react';
+import React, { type FC } from 'react';
 import { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem } from './DraggableItem';
 import { DropZone } from './DropZone';
@@ -19,8 +18,8 @@ interface ContainerProps<T> {
   parent?: IDraggable<T>;
 }
 
-// eslint-disable-next-line prettier/prettier
-const Container = <T, >({
+/* eslint-disable comma-spacing */
+const Container = <T,>({
   context,
   iconHandle = false,
   itemComponent,

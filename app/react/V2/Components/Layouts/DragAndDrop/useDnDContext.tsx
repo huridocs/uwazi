@@ -12,8 +12,8 @@ import {
   sortActiveItems,
 } from './DnDDefinitions';
 
-// eslint-disable-next-line prettier/prettier
-const useDnDContext = <T, >(
+/* eslint-disable comma-spacing */
+const useDnDContext = <T,>(
   type: ItemTypes,
   operations: { getDisplayName: (item: IDraggable<T>) => string; sortCallback?: Function },
   initialItems: T[] = [],
