@@ -49,4 +49,5 @@ const withOutlet =
     const outlet = useOutlet(AppMainContext);
     return <Component {...props} outlet={outlet} />;
   };
+
 export { withRouter, withContext, withOutlet };

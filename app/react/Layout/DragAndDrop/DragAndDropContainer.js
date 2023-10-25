@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd-old';
 import { DNDHTMLBackend } from 'app/App/DNDHTML5Backend';
 import ID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';

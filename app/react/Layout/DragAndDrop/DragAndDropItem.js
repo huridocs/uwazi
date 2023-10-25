@@ -1,4 +1,4 @@
-import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd-old';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
