@@ -23,5 +23,6 @@ module.exports = {
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
     '^uuid$': require.resolve('uuid'),
   },
+  transformIgnorePatterns: ['/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd)'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 };

@@ -14,7 +14,8 @@ import { Icon } from 'UI';
 import { actions } from 'app/BasicReducer';
 import { IStore } from 'app/istore';
 import { searchParamsFromLocationSearch } from 'app/utils/routeHelpers';
-import { DropdownMenu, ILink } from './DropdownMenu';
+import { ILink } from 'app/V2/shared/types';
+import { DropdownMenu } from './DropdownMenu';
 
 interface MenuProps {
   className: string;

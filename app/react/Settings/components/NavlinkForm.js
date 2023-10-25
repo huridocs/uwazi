@@ -1,4 +1,4 @@
-import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd-old';
 import { Field } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';

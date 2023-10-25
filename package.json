@@ -151,6 +151,7 @@
     "helmet": "^7.0.0",
     "html-to-react": "^1.6.0",
     "htmlparser2": "^9.0.0",
+    "immutability-helper": "^3.1.1",
     "immutable": "^3.7.6",
     "is-reachable": "^5.2.1",
     "isomorphic-fetch": "3.0.0",
@@ -190,8 +191,10 @@
     "react-color": "^2.19.3",
     "react-datepicker": "4.18.0",
     "react-device-detect": "^2.2.3",
-    "react-dnd": "2.6.0",
-    "react-dnd-html5-backend": "^15.1.2",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-html5-backend-old": "yarn:react-dnd-html5-backend@^15.1.2",
+    "react-dnd-old": "yarn:react-dnd@2.6.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "14.2.3",
     "react-helmet": "^6.1.0",
@@ -242,6 +245,7 @@
     "yazl": "^2.5.1"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^2.2.5",
     "@babel/cli": "7.22.6",
     "@babel/core": "7.23.0",
     "@babel/eslint-parser": "7.22.15",
