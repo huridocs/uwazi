@@ -265,7 +265,7 @@
     "@babel/preset-react": "^7.22.15",
     "@babel/preset-typescript": "^7.22.15",
     "@babel/register": "^7.22.15",
-    "@babel/traverse": "^7.22.20",
+    "@babel/traverse": "^7.23.2",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
     "@cypress/react18": "^2.0.0",
     "@mdx-js/loader": "^2.3.0",
