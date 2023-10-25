@@ -543,6 +543,7 @@ export default {
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
+          content: '',
         },
         {
           _id: db.id(),
