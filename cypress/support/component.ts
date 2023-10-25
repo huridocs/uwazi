@@ -14,6 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
+import '@4tw/cypress-drag-drop';
 import './commands';
 import '../../app/react/App/styles/globals.css';
 
@@ -21,7 +22,6 @@ import '../../app/react/App/styles/globals.css';
 // require('./commands')
 
 import { mount } from 'cypress/react18';
-
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
 // Alternatively, can be defined in cypress/support/component.d.ts
@@ -30,3 +30,15 @@ import { mount } from 'cypress/react18';
 Cypress.Commands.add('mount', mount);
 // Example use:
 // cy.mount(<MyComponent />)
+
+//@ts-ignore
+const check = components => {
+  cy.injectAxe();
+  //@ts-ignore
+  components.forEach(component => {
+    mount(component);
+    cy.checkA11y();
+  });
+};
+
+Cypress.Commands.add('checkAccessibility', check);
