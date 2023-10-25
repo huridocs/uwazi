@@ -110,12 +110,17 @@ const Table = <T,>({
 
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
-            <TableHeader headerGroup={headerGroup} draggableRows={draggableRows} />
+            <TableHeader
+              key={headerGroup.id}
+              headerGroup={headerGroup}
+              draggableRows={draggableRows}
+            />
           ))}
         </thead>
         <TableBody draggableRows>
           {rowData.map((item: Row<T> | IDraggable<Row<T>>, index: number) => (
             <TableRow
+              key={item.id}
               item={item}
               draggableRow={draggableRows === true}
               index={index}

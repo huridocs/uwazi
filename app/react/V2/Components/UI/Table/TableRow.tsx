@@ -22,7 +22,7 @@ const TableRow = <T,>({ draggableRow, item, index, dndContext }: TableRowProps<T
   const icons = draggableRow
     ? [
         <DraggableItem
-          key={item.id}
+          key={`grab_${item.id}`}
           item={item as IDraggable<Row<T>>}
           index={index}
           context={dndContext}
