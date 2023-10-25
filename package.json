@@ -374,7 +374,7 @@
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "^1.63.6",
     "sass-loader": "13.3.2",
-    "sharp": "^0.32.1",
+    "sharp": "^0.32.6",
     "storybook": "^7.4.5",
     "stream-mock": "^2.0.5",
     "supertest": "6.3.3",
