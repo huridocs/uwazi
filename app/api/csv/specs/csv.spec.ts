@@ -1,7 +1,6 @@
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
-import { expectThrow } from 'api/utils/jestHelpers';
 import { ValidateFormatError, ValidateFormatOptions, peekHeaders, validateFormat } from '../csv';
 import { mockCsvFileReadStream } from './helpers';
 
@@ -45,12 +44,9 @@ describe('validateFormat()', () => {
     message: string
   ) => {
     const { mockedFile } = mockFileStream(content);
-    await expectThrow(
-      async () => validateFormat('mocked/file/path', options),
-      ValidateFormatError,
-      message,
-      async () => mockedFile.mockRestore()
-    );
+    await expect(async () => validateFormat('mocked/file/path', options))
+      .rejects.toThrow(new ValidateFormatError(message))
+      .finally(async () => mockedFile.mockRestore());
   };
 
   const testValidationPass = async (content: string, options: ValidateFormatOptions) => {

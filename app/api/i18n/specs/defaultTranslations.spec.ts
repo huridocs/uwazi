@@ -4,7 +4,6 @@ import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 
 import { validateFormat, ValidateFormatError } from 'api/csv/csv';
-import { expectThrow } from 'api/utils/jestHelpers';
 import { DBFixture } from 'api/utils/testing_db';
 import { iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -97,33 +96,25 @@ describe('translations.importPredefined()', () => {
   it.each([{ key: 'en' }, { key: 'ar' }])(
     'should expect the file to have 2 columns',
     async ({ key }) => {
-      await expectThrow(
-        async () => translations.importPredefined(key),
-        ValidateFormatError,
-        'Expected 2 columns, but found 3.'
+      await expect(async () => translations.importPredefined(key)).rejects.toThrow(
+        new ValidateFormatError('Expected 2 columns, but found 3.')
       );
     }
   );
 
   it('should expect the file to have the columns "Key" and the long name of the language', async () => {
-    await expectThrow(
-      async () => translations.importPredefined('es'),
-      ValidateFormatError,
-      'Missing required headers: Spanish.'
+    await expect(async () => translations.importPredefined('es')).rejects.toThrow(
+      new ValidateFormatError('Missing required headers: Spanish.')
     );
 
-    await expectThrow(
-      async () => translations.importPredefined('fr'),
-      ValidateFormatError,
-      'Missing required headers: Key.'
+    await expect(async () => translations.importPredefined('fr')).rejects.toThrow(
+      new ValidateFormatError('Missing required headers: Key.')
     );
   });
 
   it('should expect the file to have no empty values', async () => {
-    await expectThrow(
-      async () => translations.importPredefined('ru'),
-      ValidateFormatError,
-      'Empty value at row 3, column "Russian".'
+    await expect(async () => translations.importPredefined('ru')).rejects.toThrow(
+      new ValidateFormatError('Empty value at row 3, column "Russian".')
     );
   });
 });
