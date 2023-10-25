@@ -342,7 +342,7 @@ class EntityViewer extends Component {
           <div className="sidepanel-body">
             <CopyFromEntity
               isVisible={copyFrom}
-              originalEntity={this.props.formState}
+              originalEntity={this.props.entityState}
               templates={this.props.templates}
               onSelect={this.onCopyFromSelect}
               formModel="entityView.entityForm"
@@ -412,6 +412,7 @@ EntityViewer.propTypes = {
   // v2
   newRelationshipsEnabled: PropTypes.bool,
   formState: PropTypes.instanceOf(Object).isRequired,
+  entityState: PropTypes.instanceOf(Object).isRequired,
 };
 
 const selectRelationTypes = createSelector(
@@ -437,6 +438,7 @@ const mapStateToProps = state => {
     user: state.user,
     locale: state.locale,
     formState: state.entityView.entityFormState,
+    entityState: state.entityView.entityForm,
     // Is this used at all?
     library: state.library,
     // relationships v2
