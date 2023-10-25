@@ -1324,8 +1324,7 @@ describe('entities', () => {
       emitSpy.restore();
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
-    fit('should remove the entity from the relationship metadata of related entities', async () => {
+    it('should remove the entity from the relationship metadata of related entities', async () => {
       await entities.delete('shared2');
       const [related] = await db.mongodb
         .collection('entities')
