@@ -17,10 +17,10 @@ import {
 import { UpdateLog } from 'api/updatelogs';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { WithId } from 'api/odm/model';
 import { TemplateSchema } from 'shared/types/templateType';
 import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFactory';
+import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 
 function getIdMapper() {
@@ -141,6 +141,18 @@ function getFixturesFactory() {
       });
     },
 
+    fileExtractedMetadata: (
+      propertyName: string,
+      text: string,
+      rectangles = [{ top: 0, left: 0, width: 0, height: 0, page: '1' }]
+    ): ExtractedMetadataSchema => ({
+      name: propertyName,
+      selection: {
+        text,
+        selectionRectangles: rectangles,
+      },
+    }),
+
     file: (
       id: string,
       entity: string | undefined,
@@ -248,6 +260,18 @@ function getFixturesFactory() {
       templates: templates.map(idMapper),
     }),
 
+    ixModel: (
+      name: string,
+      extractor: string,
+      creationDate = 1,
+      status: IXModelType['status'] = 'ready'
+    ): IXModelType => ({
+      _id: idMapper(name),
+      status,
+      creationDate,
+      extractorId: idMapper(extractor),
+    }),
+
     ixSuggestion: (
       suggestionId: string,
       extractor: string,
@@ -269,7 +293,16 @@ function getFixturesFactory() {
       segment: '',
       suggestedValue: '',
       date: 1,
-      state: SuggestionState.valueEmpty,
+      state: {
+        labeled: false,
+        withValue: true,
+        withSuggestion: false,
+        match: false,
+        hasContext: false,
+        obsolete: false,
+        processing: false,
+        error: false,
+      },
       ...otherProps,
     }),
 

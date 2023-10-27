@@ -95,6 +95,7 @@ const MenuConfig = () => {
         <SettingsContent.Body>
           <Table<ClientSettingsLinkSchema>
             enableSelection
+            draggableRows
             columns={columns({ edit })}
             data={links || []}
             title={<Translate>Menu</Translate>}

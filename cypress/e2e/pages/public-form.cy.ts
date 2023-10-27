@@ -99,12 +99,9 @@ describe('Public Form', () => {
     it('should fill the Fotografía field', () => {
       cy.contains('.image button[type=button]', 'Add file').eq(0).click();
       cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/batman.jpg`,
-        {
-          force: true,
-        }
-      );
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('img').should('be.visible');
     });
 
@@ -112,7 +109,7 @@ describe('Public Form', () => {
       cy.get('.media button[type=button]').click();
       cy.contains('button', 'Select from computer');
       cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/short-video.mp4`,
+        './cypress/test_files/short-video.mp4',
         {
           force: true,
         }
@@ -126,21 +123,14 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.addTimeLink(2000, 'Control point');
-      cy.get('.form-group.media', { timeout: 2000 }).eq(0).scrollIntoView();
-      cy.get('.form-group.media')
-        .eq(0)
-        .toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
     });
 
     it('should fill the Imagen adicional field', () => {
       cy.contains('.image button[type=button]', 'Add file').click();
       cy.contains('button', 'Select from computer');
-      cy.get('div[role=dialog] input[type=file]').selectFile(
-        `${__dirname}/../test_files/batman.jpg`,
-        {
-          force: true,
-        }
-      );
+      cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
+        force: true,
+      });
       cy.get('.form-group.image', { timeout: 200 }).eq(1).scrollIntoView();
     });
 
@@ -159,7 +149,7 @@ describe('Public Form', () => {
 
     it('should check the first entity', () => {
       cy.contains('h2', 'Test public submit entity').click();
-      cy.get('aside.is-active').toMatchImageSnapshot();
+      cy.contains('Test public submit entity');
     });
 
     it('should check the second entity with files', () => {

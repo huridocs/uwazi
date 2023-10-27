@@ -1,11 +1,15 @@
 import moment from 'moment';
 import typeParsers from '../typeParsers';
 
+const rawEntityWithProps = props => ({
+  propertiesFromColumns: props,
+});
+
 describe('csvLoader typeParsers', () => {
   describe('text', () => {
     it('should return the value', async () => {
       const templateProp = { name: 'text_prop' };
-      const rawEntity = { text_prop: 'text' };
+      const rawEntity = rawEntityWithProps({ text_prop: 'text' });
 
       expect(await typeParsers.text(rawEntity, templateProp)).toEqual([{ value: 'text' }]);
     });
@@ -14,14 +18,14 @@ describe('csvLoader typeParsers', () => {
   describe('numeric', () => {
     it('should return numeric value', async () => {
       const templateProp = { name: 'numeric_prop' };
-      const rawEntity = { numeric_prop: '2019' };
+      const rawEntity = rawEntityWithProps({ numeric_prop: '2019' });
 
       expect(await typeParsers.numeric(rawEntity, templateProp)).toEqual([{ value: 2019 }]);
     });
 
     it('should return original value if value is NaN (will be catched by the entitiy validator)', async () => {
       const templateProp = { name: 'numeric_prop' };
-      const rawEntity = { numeric_prop: 'Not a number' };
+      const rawEntity = rawEntityWithProps({ numeric_prop: 'Not a number' });
 
       expect(await typeParsers.numeric(rawEntity, templateProp)).toEqual([
         { value: 'Not a number' },
@@ -32,7 +36,7 @@ describe('csvLoader typeParsers', () => {
   describe('link', () => {
     it('should use the text as url and label', async () => {
       const templateProp = { name: 'link_prop' };
-      const rawEntity = { link_prop: 'http://www.url.com' };
+      const rawEntity = rawEntityWithProps({ link_prop: 'http://www.url.com' });
 
       expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
         {
@@ -46,14 +50,14 @@ describe('csvLoader typeParsers', () => {
 
     it('should return null if url is not valid', async () => {
       const templateProp = { name: 'link_prop' };
-      const rawEntity = { link_prop: 'url' };
+      const rawEntity = rawEntityWithProps({ link_prop: 'url' });
 
       expect(await typeParsers.link(rawEntity, templateProp)).toBe(null);
     });
 
     it('should use "|" as separator for label and url', async () => {
       const templateProp = { name: 'link_prop' };
-      const rawEntity = { link_prop: 'label|http://www.url.com' };
+      const rawEntity = rawEntityWithProps({ link_prop: 'label|http://www.url.com' });
 
       expect(await typeParsers.link(rawEntity, templateProp)).toEqual([
         {
@@ -104,7 +108,11 @@ describe('csvLoader typeParsers', () => {
       async ({ dateProp, dateFormat, expectedDate }) => {
         const templateProp = { name: 'date_prop' };
 
-        const expected = await typeParsers.date({ date_prop: dateProp }, templateProp, dateFormat);
+        const expected = await typeParsers.date(
+          rawEntityWithProps({ date_prop: dateProp }),
+          templateProp,
+          dateFormat
+        );
 
         expect(moment.utc(expected[0].value, 'X').format('DD-MM-YYYY')).toEqual(expectedDate);
       }
@@ -129,7 +137,7 @@ describe('csvLoader typeParsers', () => {
         const templateProp = { name: 'date_prop' };
 
         const expected = await typeParsers.multidate(
-          { date_prop: dateProp },
+          rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );
@@ -160,7 +168,11 @@ describe('csvLoader typeParsers', () => {
           {
             value: { from, to },
           },
-        ] = await typeParsers.daterange({ date_prop: dateProp }, templateProp, dateFormat);
+        ] = await typeParsers.daterange(
+          rawEntityWithProps({ date_prop: dateProp }),
+          templateProp,
+          dateFormat
+        );
 
         expect({
           from: from && moment.utc(from, 'X').format('DD-MM-YYYY'),
@@ -249,7 +261,7 @@ describe('csvLoader typeParsers', () => {
         const templateProp = { name: 'date_prop' };
 
         const expected = await typeParsers.multidaterange(
-          { date_prop: dateProp },
+          rawEntityWithProps({ date_prop: dateProp }),
           templateProp,
           dateFormat
         );

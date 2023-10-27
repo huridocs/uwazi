@@ -1,6 +1,5 @@
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getClient, getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { propertyTypes } from 'shared/propertyTypes';
@@ -8,9 +7,8 @@ import { PropertySchema } from 'shared/types/commonTypes';
 
 async function checkFeatureEnabled() {
   const db = getConnection();
-  const client = getClient();
 
-  const transactionManager = new MongoTransactionManager(client);
+  const transactionManager = DefaultTransactionManager();
   const settingsDataSource = new MongoSettingsDataSource(db, transactionManager);
 
   return settingsDataSource.readNewRelationshipsAllowed();

@@ -1,14 +1,14 @@
 import { MongoPermissionsDataSource } from 'api/authorization.v2/database/MongoPermissionsDataSource';
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { User } from 'api/users.v2/model/User';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoRelationshipsDataSource } from '../../database/MongoRelationshipsDataSource';
 import { MissingRelationshipError } from '../../errors/relationshipErrors';
 import { DeleteRelationshipService } from '../DeleteRelationshipService';
@@ -81,7 +81,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
@@ -111,7 +111,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,
@@ -157,7 +157,7 @@ describe('delete()', () => {
       });
 
       const connection = getConnection();
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       const service = new DeleteRelationshipService(
         new MongoRelationshipsDataSource(connection, transactionManager),
         transactionManager,

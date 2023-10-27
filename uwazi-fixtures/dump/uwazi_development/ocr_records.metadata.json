@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_","ns":"uwazi_e2e.ocr_records"}],"uuid":"f04857c66d434206a96251c698ae105a","collectionName":"ocr_records","type":"collection"}

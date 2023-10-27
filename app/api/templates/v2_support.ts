@@ -1,16 +1,14 @@
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { WithId } from 'api/odm';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { validateCreateNewRelationshipProperty } from 'api/templates.v2/routes/validators/createNewRelationshipProperty';
 import { CreateTemplateService } from 'api/templates.v2/services/service_factories';
 import { ensure } from 'shared/tsUtils';
 import { TemplateSchema } from 'shared/types/templateType';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import templates from './templates';
 
 const processNewRelationshipProperties = async (template: TemplateSchema) => {
-  const client = getClient();
-  const transactionManager = new MongoTransactionManager(client);
+  const transactionManager = DefaultTransactionManager();
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return template;
   }
@@ -42,8 +40,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
   _oldTemplate: TemplateSchema,
   _newTemplate: TemplateSchema
 ) => {
-  const client = getClient();
-  const transactionManager = new MongoTransactionManager(client);
+  const transactionManager = DefaultTransactionManager();
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return _newTemplate;
   }
@@ -55,8 +52,7 @@ const processNewRelationshipPropertiesOnUpdate = async (
 };
 
 const processNewRelationshipPropertiesOnDelete = async (templateId: TemplateSchema['_id']) => {
-  const client = getClient();
-  const transactionManager = new MongoTransactionManager(client);
+  const transactionManager = DefaultTransactionManager();
   if (!(await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed())) {
     return;
   }

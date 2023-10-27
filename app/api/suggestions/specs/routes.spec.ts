@@ -3,24 +3,20 @@ import request from 'supertest';
 import { Application, NextFunction, Request, Response } from 'express';
 
 import entities from 'api/entities';
-import { WithId } from 'api/odm';
 import { search } from 'api/search';
 import {
   factory,
   fixtures,
-  heroTemplateId,
-  personTemplateId,
   shared2enId,
   shared2esId,
   shared6enId,
+  stateFilterFixtures,
   suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
 import { suggestionsRoutes } from 'api/suggestions/routes';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { EntitySchema } from 'shared/types/entityType';
-import { SuggestionState } from 'shared/types/suggestionSchema';
 import { Suggestions } from '../suggestions';
 
 jest.mock(
@@ -39,31 +35,31 @@ jest.mock('api/services/informationextraction/InformationExtraction', () => ({
   },
 }));
 
-const sortAggregateById = (array: { _id: string; count: number }[]) =>
-  array.sort((a, b) => a._id.localeCompare(b._id));
+let user: { username: string; role: string } | undefined;
+const getUser = () => user;
+
+beforeEach(async () => {
+  user = { username: 'user 1', role: 'admin' };
+  jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
+});
+
+const app: Application = setUpApp(
+  suggestionsRoutes,
+  (req: Request, _res: Response, next: NextFunction) => {
+    (req as any).user = getUser();
+    next();
+  }
+);
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
 
 describe('suggestions routes', () => {
-  let user: { username: string; role: string } | undefined;
-  const getUser = () => user;
-
   beforeAll(async () => {
     await testingEnvironment.setUp(fixtures);
     await Suggestions.updateStates({});
   });
-  beforeEach(async () => {
-    user = { username: 'user 1', role: 'admin' };
-    jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-  });
-
-  const app: Application = setUpApp(
-    suggestionsRoutes,
-    (req: Request, _res: Response, next: NextFunction) => {
-      (req as any).user = getUser();
-      next();
-    }
-  );
-
-  afterAll(async () => testingEnvironment.tearDown());
 
   describe('GET /api/suggestions', () => {
     it('should return the suggestions filtered by the request language and the property name', async () => {
@@ -77,36 +73,67 @@ describe('suggestions routes', () => {
         .expect(200);
       expect(response.body.suggestions).toMatchObject([
         {
-          entityId: shared2esId.toString(),
-          sharedId: 'shared2',
-          entityTitle: 'Batman es',
-          propertyName: 'super_powers',
-          suggestedValue: 'scientific knowledge es',
-          segment: 'el confía en su propio conocimiento científico',
-          state: SuggestionState.labelMismatch,
-          language: 'es',
-          page: 5,
-        },
-        {
           entityId: shared2enId.toString(),
           sharedId: 'shared2',
           entityTitle: 'Batman en',
           propertyName: 'super_powers',
           suggestedValue: 'scientific knowledge',
           segment: 'he relies on his own scientific knowledge',
-          state: SuggestionState.labelMatch,
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
           language: 'en',
           page: 5,
         },
+        {
+          entityId: shared2esId.toString(),
+          sharedId: 'shared2',
+          entityTitle: 'Batman es',
+          propertyName: 'super_powers',
+          suggestedValue: 'scientific knowledge es',
+          segment: 'el confía en su propio conocimiento científico',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'es',
+          page: 5,
+        },
+        {
+          entityId: factory.id('Alfred-english-entity').toString(),
+          sharedId: 'shared3',
+          entityTitle: 'Alfred',
+          propertyName: 'super_powers',
+          suggestedValue: 'puts up with Bruce Wayne',
+          segment: 'he puts up with Bruce Wayne',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: false,
+            hasContext: true,
+            obsolete: false,
+            processing: false,
+            error: false,
+          },
+          language: 'en',
+          page: 3,
+        },
       ]);
       expect(response.body.totalPages).toBe(1);
-      expect(response.body.aggregations).toMatchObject({
-        template: [{ _id: personTemplateId.toString(), count: 2 }],
-        state: [
-          { _id: 'Match / Label', count: 1 },
-          { _id: 'Mismatch / Label', count: 1 },
-        ],
-      });
     });
 
     it('should include failed suggestions but not processing ones', async () => {
@@ -118,30 +145,23 @@ describe('suggestions routes', () => {
           },
         })
         .expect(200);
-      expect(response.body.suggestions).toMatchObject(
-        expect.arrayContaining([
-          expect.objectContaining({
-            entityTitle: 'Joker',
-            propertyName: 'age',
-            segment: 'Joker age is 45',
-            sharedId: 'shared4',
-            state: 'Error',
-            suggestedValue: null,
-          }),
-        ])
+      const joker = response.body.suggestions.find(
+        (suggestion: any) => suggestion.entityTitle === 'Joker'
       );
-      expect(response.body.suggestions).not.toMatchObject(
-        expect.arrayContaining([
-          expect.objectContaining({
-            entityTitle: 'Alfred',
-            propertyName: 'age',
-            segment: 'Alfred 67 years old processing',
-            currentValue: 23,
-            sharedId: 'shared3',
-            state: 'Mismatch / Value',
-          }),
-        ])
+      expect(joker).toMatchObject({
+        entityTitle: 'Joker',
+        propertyName: 'age',
+        segment: 'Joker age is 45',
+        sharedId: 'shared4',
+        state: {
+          error: true,
+        },
+        suggestedValue: null,
+      });
+      const alfred = response.body.suggestions.find(
+        (suggestion: any) => suggestion.segment === 'Alfred 67 years old processing'
       );
+      expect(alfred).toBeUndefined();
     });
 
     describe('pagination', () => {
@@ -155,10 +175,12 @@ describe('suggestions routes', () => {
             page: { number: 2, size: 2 },
           })
           .expect(200);
+
         expect(response.body.suggestions).toMatchObject([
           { entityTitle: 'Alfred' },
           { entityTitle: 'Robin' },
         ]);
+
         expect(response.body.totalPages).toBe(3);
       });
 
@@ -186,146 +208,104 @@ describe('suggestions routes', () => {
           .query({
             filter: {
               extractorId: factory.id('enemy_extractor').toString(),
-              states: [SuggestionState.empty],
+              customFilter: {
+                labeled: {
+                  match: false,
+                  mismatch: false,
+                },
+                nonLabeled: {
+                  noSuggestion: true,
+                  noContext: false,
+                  obsolete: false,
+                  others: false,
+                },
+              },
             },
           })
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
             entityTitle: 'Catwoman',
-            state: SuggestionState.empty,
+            state: {
+              labeled: false,
+              withValue: false,
+              withSuggestion: false,
+              match: false,
+              hasContext: true,
+              obsolete: false,
+              processing: false,
+              error: false,
+            },
             suggestedValue: '',
             currentValue: '',
           }),
         ]);
       });
-
-      it('should filter by entity template', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-              entityTemplates: [personTemplateId.toString()],
-            },
-          })
-          .expect(200);
-        expect(response.body.suggestions).toMatchObject([
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared4',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared3',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared1',
-            language: 'en',
-          },
-          {
-            propertyName: 'title',
-            entityTemplateId: personTemplateId.toString(),
-            sharedId: 'shared1',
-            language: 'es',
-          },
-        ]);
-      });
     });
 
-    describe('aggregations', () => {
-      it('should return aggregations', async () => {
+    describe('sorting', () => {
+      it('should sort by entity title', async () => {
         const response = await request(app)
-          .get('/api/suggestions/')
+          .get('/api/suggestions')
           .query({
             filter: {
-              extractorId: factory.id('title_extractor').toString(),
+              extractorId: factory.id('super_powers_extractor').toString(),
             },
+            sort: { property: 'entityTitle', order: 'desc' },
           })
           .expect(200);
-        expect(response.body.aggregations).toMatchObject({
-          template: sortAggregateById([
-            { _id: heroTemplateId.toString(), count: 2 },
-            { _id: personTemplateId.toString(), count: 4 },
-          ]),
-          state: [
-            { _id: SuggestionState.valueMatch, count: 2 },
-            { _id: SuggestionState.valueMismatch, count: 4 },
-          ],
+
+        expect(response.body.suggestions[0]).toMatchObject({
+          sharedId: 'shared2',
+          entityTitle: 'Batman es',
+          language: 'es',
         });
+
+        expect(response.body.suggestions[1]).toMatchObject({
+          sharedId: 'shared2',
+          entityTitle: 'Batman en',
+          language: 'en',
+        });
+
+        expect(response.body.suggestions[2]).toMatchObject({
+          sharedId: 'shared3',
+          entityTitle: 'Alfred',
+          language: 'en',
+        });
+
+        expect(response.body.totalPages).toBe(1);
       });
 
-      it('should return aggregations for a specific template', async () => {
+      it('should sort by current value', async () => {
         const response = await request(app)
-          .get('/api/suggestions/')
+          .get('/api/suggestions')
           .query({
             filter: {
-              extractorId: factory.id('title_extractor').toString(),
-              entityTemplates: [heroTemplateId.toString()],
+              extractorId: factory.id('super_powers_extractor').toString(),
             },
+            sort: { property: 'currentValue' },
           })
           .expect(200);
-        expect(response.body.aggregations).toMatchObject({
-          template: sortAggregateById([
-            { _id: heroTemplateId.toString(), count: 2 },
-            { _id: personTemplateId.toString(), count: 4 },
-          ]),
-          state: [
-            { _id: SuggestionState.valueMatch, count: 1 },
-            { _id: SuggestionState.valueMismatch, count: 1 },
-          ],
-        });
-      });
 
-      it('should return aggregations for a specific state', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-              states: [SuggestionState.valueMatch],
-            },
-          })
-          .expect(200);
-        expect(response.body.aggregations).toMatchObject({
-          template: sortAggregateById([
-            { _id: heroTemplateId.toString(), count: 1 },
-            { _id: personTemplateId.toString(), count: 1 },
-          ]),
-          state: [
-            { _id: SuggestionState.valueMatch, count: 2 },
-            { _id: SuggestionState.valueMismatch, count: 4 },
-          ],
+        expect(response.body.suggestions[0]).toMatchObject({
+          currentValue: 'conocimiento científico',
+          entityTitle: 'Batman es',
+          sharedId: 'shared2',
         });
-      });
 
-      it('should return aggregations for a specific template and state', async () => {
-        const response = await request(app)
-          .get('/api/suggestions/')
-          .query({
-            filter: {
-              extractorId: factory.id('title_extractor').toString(),
-              entityTemplates: [heroTemplateId.toString()],
-              states: [SuggestionState.valueMatch],
-            },
-          })
-          .expect(200);
-        expect(response.body.aggregations).toMatchObject({
-          template: sortAggregateById([
-            { _id: heroTemplateId.toString(), count: 1 },
-            { _id: personTemplateId.toString(), count: 1 },
-          ]),
-          state: [
-            { _id: SuggestionState.valueMatch, count: 1 },
-            { _id: SuggestionState.valueMismatch, count: 1 },
-          ],
+        expect(response.body.suggestions[1]).toMatchObject({
+          currentValue: 'no super powers',
+          entityTitle: 'Alfred',
+          sharedId: 'shared3',
         });
+
+        expect(response.body.suggestions[2]).toMatchObject({
+          currentValue: 'scientific knowledge',
+          entityTitle: 'Batman en',
+          sharedId: 'shared2',
+        });
+
+        expect(response.body.totalPages).toBe(1);
       });
     });
 
@@ -391,12 +371,13 @@ describe('suggestions routes', () => {
       await request(app)
         .post('/api/suggestions/accept')
         .send({
-          suggestion: {
-            _id: suggestionSharedId6Title,
-            sharedId: 'shared6',
-            entityId: shared6enId,
-          },
-          allLanguages: false,
+          suggestions: [
+            {
+              _id: suggestionSharedId6Title,
+              sharedId: 'shared6',
+              entityId: shared6enId,
+            },
+          ],
         })
         .expect(200);
 
@@ -417,37 +398,7 @@ describe('suggestions routes', () => {
         '+fullText'
       );
     });
-    it('should update the suggestion for all the languages', async () => {
-      await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          allLanguages: true,
-          suggestion: {
-            _id: suggestionSharedId6Enemy,
-            sharedId: 'shared6',
-            entityId: shared6enId,
-          },
-        })
-        .expect(200);
 
-      const actualEntities = await entities.get({ sharedId: 'shared6' });
-      expect(actualEntities).toMatchObject([
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-        {
-          metadata: { enemy: [{ value: 'Batman' }], age: [{ value: 40 }] },
-        },
-      ]);
-      const entityIds = actualEntities.map((e: WithId<EntitySchema>) => e._id);
-      expect(search.indexEntities).toHaveBeenCalledWith(
-        { _id: { $in: expect.arrayContaining(entityIds) } },
-        '+fullText'
-      );
-    });
     it('should reject with unauthorized when user has not admin role', async () => {
       user = { username: 'user 1', role: 'editor' };
       const response = await request(app)
@@ -462,6 +413,62 @@ describe('suggestions routes', () => {
         })
         .expect(401);
       expect(response.unauthorized).toBe(true);
+    });
+  });
+});
+
+describe('aggregation routes', () => {
+  describe('GET /api/suggestions/aggregation', () => {
+    beforeAll(async () => {
+      await testingEnvironment.setUp(stateFilterFixtures);
+      await Suggestions.updateStates({});
+    });
+
+    describe('validation', () => {
+      it('should return a validation error if params are not valid', async () => {
+        const invalidQuery = { additionParam: true };
+        const response = await request(app).get('/api/suggestions/aggregation').query(invalidQuery);
+        expect(response.status).toBe(400);
+
+        const emptyQuery = {};
+        const response2 = await request(app).get('/api/suggestions/aggregation').query(emptyQuery);
+        expect(response2.status).toBe(400);
+      });
+    });
+
+    describe('authentication', () => {
+      it('should reject with unauthorized when the user does not have the admin role', async () => {
+        user = { username: 'user 1', role: 'editor' };
+        const response = await request(app)
+          .get('/api/suggestions/aggregation')
+          .query({})
+          .expect(401);
+        expect(response.unauthorized).toBe(true);
+      });
+    });
+
+    it('should return the aggregation of suggestions', async () => {
+      const response = await request(app)
+        .get('/api/suggestions/aggregation')
+        .query({
+          extractorId: factory.id('test_extractor').toString(),
+        })
+        .expect(200);
+      expect(response.body).toEqual({
+        total: 12,
+        labeled: {
+          _count: 4,
+          match: 2,
+          mismatch: 2,
+        },
+        nonLabeled: {
+          _count: 8,
+          noSuggestion: 2,
+          noContext: 4,
+          obsolete: 2,
+          others: 2,
+        },
+      });
     });
   });
 });

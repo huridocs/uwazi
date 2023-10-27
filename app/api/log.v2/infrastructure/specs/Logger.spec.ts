@@ -1,5 +1,7 @@
 import { Tenant } from 'api/tenants/tenantContext';
 import { StandardLogger } from '../StandardLogger';
+import { StandardJSONWriter } from '../writers/StandardJSONWriter';
+import { StandardWriter } from '../writers/StandardWriter';
 
 const tenant: Tenant = {
   name: 'testTenant',
@@ -11,7 +13,8 @@ const tenant: Tenant = {
   activityLogs: 'testTenant/activityLogs',
 };
 
-const logging = new StandardLogger(tenant);
+const jsonLogger = new StandardLogger(StandardJSONWriter, tenant);
+const standardLogger = new StandardLogger(StandardWriter, tenant);
 const mockedTimeStamp = Date.UTC(1999, 11, 31, 23, 59);
 const mockedDateString = '1999-12-31T23:59:00.000Z';
 
@@ -36,75 +39,75 @@ describe('Logger', () => {
 
   it.each([
     {
+      logger: standardLogger,
       level: 'debug',
       message: 'debug message',
-      asJSON: false,
       expected: `${mockedDateString} - [DEBUG] - [testTenant]:debug message\n`,
     },
     {
+      logger: jsonLogger,
       level: 'debug',
       message: 'debug message',
-      asJSON: true,
       expected: `{"time":"${mockedDateString}","level":"DEBUG","tenant":"testTenant","message":"debug message"}\n`,
     },
     {
+      logger: standardLogger,
       level: 'info',
       message: 'info message',
-      asJSON: false,
       expected: `${mockedDateString} - [INFO] - [testTenant]:info message\n`,
     },
     {
+      logger: jsonLogger,
       level: 'info',
       message: 'info message',
-      asJSON: true,
       expected: `{"time":"${mockedDateString}","level":"INFO","tenant":"testTenant","message":"info message"}\n`,
     },
     {
+      logger: standardLogger,
       level: 'warning',
       message: 'warning message',
-      asJSON: false,
       expected: `${mockedDateString} - [WARNING] - [testTenant]:warning message\n`,
     },
     {
+      logger: jsonLogger,
       level: 'warning',
       message: 'warning message',
-      asJSON: true,
       expected: `{"time":"${mockedDateString}","level":"WARNING","tenant":"testTenant","message":"warning message"}\n`,
     },
     {
+      logger: standardLogger,
       level: 'error',
       message: 'error message',
-      asJSON: false,
       expected: `${mockedDateString} - [ERROR] - [testTenant]:error message\n`,
     },
     {
+      logger: jsonLogger,
       level: 'error',
       message: 'error message',
-      asJSON: true,
       expected: `{"time":"${mockedDateString}","level":"ERROR","tenant":"testTenant","message":"error message"}\n`,
     },
     {
+      logger: standardLogger,
       level: 'critical',
       message: 'critical message',
-      asJSON: false,
       expected: `${mockedDateString} - [CRITICAL] - [testTenant]:critical message\n`,
     },
     {
+      logger: jsonLogger,
       level: 'critical',
       message: 'critical message',
-      asJSON: true,
       expected: `{"time":"${mockedDateString}","level":"CRITICAL","tenant":"testTenant","message":"critical message"}\n`,
     },
-  ])('should log $level', ({ level, message, asJSON, expected }) => {
+  ])('should log $level', ({ logger, level, message, expected }) => {
     // @ts-ignore
-    logging[level](message, asJSON);
+    logger[level](message);
     expect(stdoutMock).toHaveBeenCalledWith(expected);
   });
 
   it('should be able to log multiple lines together', () => {
     const message = ['multiple', 'line', 'message'];
+    standardLogger.debug(message);
     const expected = `${mockedDateString} - [DEBUG] - [testTenant]:multiple\nline\nmessage\n`;
-    logging.debug(message);
     expect(stdoutMock).toHaveBeenCalledWith(expected);
   });
 });

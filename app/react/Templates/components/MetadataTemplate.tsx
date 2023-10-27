@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import React, { Component } from 'react';
-import { DropTarget } from 'react-dnd';
+import { DropTarget } from 'react-dnd-old';
 import { List } from 'immutable';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';

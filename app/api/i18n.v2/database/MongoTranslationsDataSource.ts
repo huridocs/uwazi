@@ -17,7 +17,7 @@ export class MongoTranslationsDataSource
   async insert(translations: Translation[]): Promise<Translation[]> {
     const items = translations.map(translation => TranslationMappers.toDBO(translation));
     try {
-      await this.getCollection().insertMany(items);
+      if (items.length > 0) await this.getCollection().insertMany(items);
     } catch (e) {
       if (e instanceof MongoBulkWriteError && e.message.match('E11000')) {
         throw new DuplicatedKeyError(e.message);
@@ -118,6 +118,6 @@ export class MongoTranslationsDataSource
       ])
       .toArray();
 
-    return result?.notFoundKeys || [];
+    return result?.notFoundKeys || keys;
   }
 }

@@ -26,6 +26,7 @@ const InputFieldStory: Story = {
             placeholder={args.placeholder}
             value={args.value}
             errorMessage={args.errorMessage}
+            type={args.type}
           />
         </div>
       </div>

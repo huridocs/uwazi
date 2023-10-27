@@ -120,7 +120,7 @@ async function parseFile(file, translations) {
 }
 
 const getClient = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://localhost/';
+  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
   const client = new mongodb.MongoClient(url, { useUnifiedTopology: true });
   await client.connect();
 
@@ -130,11 +130,9 @@ const getClient = async () => {
 const getSystemUITranslations = async () => {
   const client = await getClient();
   const db = client.db(process.env.DATABASE_NAME || 'uwazi_development');
-  const collection = db.collection('translations');
-  const [firstTranslation] = await collection.find().toArray();
-  const systemContext = firstTranslation.contexts.find(c => c.id === 'System');
+  const collection = db.collection('translationsV2');
+  const translations = await collection.find({ 'context.id': 'System' }).toArray();
   client.close();
-  const translations = systemContext.values;
   const comparableTranslations = translations.map(t => ({
     ...t,
     plainValue: comparableString(t.value),

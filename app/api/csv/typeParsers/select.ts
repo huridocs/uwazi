@@ -20,7 +20,7 @@ const select = async (
   property: PropertySchema
 ): Promise<MetadataObjectSchema[] | null> => {
   const currentThesauri = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
-  const propValue = entityToImport[ensure<string>(property.name)];
+  const propValue = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
   const normalizedPropValue = normalizeThesaurusLabel(propValue);
 
   if (!normalizedPropValue) {

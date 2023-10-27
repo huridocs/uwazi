@@ -1,5 +1,4 @@
 import { adminLogin, logout } from '../helpers/login';
-import { host } from '../config';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import disableTransitions from '../helpers/disableTransitions';
@@ -24,42 +23,50 @@ describe('Entity Page view', () => {
       script
     );
     await expect(page).toClick('.slider');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
-  }, 60000);
+  }, 50000);
 
   it('should set the template as entity view', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
     await expect(page).toClick('a', { text: 'Templates' });
     await expect(page).toClick('a', { text: 'Medida Provisional' });
     await expect(page).toClick('.slider');
     await expect(page).toSelect('select.form-control', 'My entity view page');
-    await expect(page).toMatchElement('button', { text: 'Save' });
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatch('Saved successfully.');
   });
 
   describe('display the entity in custom page', () => {
-    beforeAll(async () => {
-      await page.goto(`${host}`);
-      await disableTransitions();
-      await expect(page).toClick(
-        'div.item-document:nth-child(3) > div:nth-child(3) > div:nth-child(2)'
-      );
+    it('should navigate to the library', async () => {
+      await expect(page).toClick('a', { text: 'Library' });
     });
+
+    it('should select the second entity for Medida Provisional', async () => {
+      await expect(page).toClick('.multiselectItem-name > span', {
+        text: 'Medida Provisional',
+      });
+
+      await expect(page).toMatchElement('span', { text: 'Acevedo Jaramillo' });
+
+      await expect(page).toClick('.item-document:nth-child(2) > .item-info');
+
+      await expect(page).toClick('.side-panel.is-active > .sidepanel-footer > div > a', {
+        text: 'View',
+      });
+    });
+
     it('should display raw values', async () => {
       await expect(page).toMatchElement('h1', {
         text: 'My entity view',
       });
       await expect(page).toMatchElement('.custom-title', {
-        text: 'Artavia Murillo y otros',
+        text: 'Acevedo Jaramillo',
       });
       await expect(page).toMatchElement('.custom-list', {
-        text: 'Costa Rica',
+        text: 'Peru',
       });
       await expect(page).toMatchElement('.raw-creation-date', {
-        text: '1479116602198',
+        text: '1479116482780',
       });
     });
 
@@ -77,22 +84,19 @@ describe('Entity Page view', () => {
         text: 'Descriptores',
       });
       await expect(page).toMatchElement('.envio-content', {
-        text: 'Dec 19, 2011',
+        text: 'Jan 15, 2004',
       });
       await expect(page).toMatchElement('.descripcion-content', {
         text: /(Los hechos del caso).*/g,
       });
-      await expect(page).toMatchElement('.descriptores-content', {
-        text: 'Derechos reproductivos',
+      await expect(page).toMatchElement('.dynamic-values', {
+        text: 'Entidad: Acevedo Jaramillo con template: Medida Provisional tiene estado Activo',
       });
       await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Entidad: Artavia Murillo y otros con template: Medida Provisional tiene estado Activo',
+        text: 'Código de estado: 35ae6c24-9f4c-4017-9f01-2bc42ff7ad83, índices: 1074124800',
       });
       await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Código de estado: 35ae6c24-9f4c-4017-9f01-2bc42ff7ad83, índices: 1324252800',
-      });
-      await expect(page).toMatchElement('.dynamic-values', {
-        text: 'Fecha de envío: Dec 19, 2011',
+        text: 'Fecha de envío: Jan 15, 2004',
       });
     });
 
@@ -101,13 +105,13 @@ describe('Entity Page view', () => {
         text: 'Title',
       });
       await expect(page).toMatchElement('.EntityData-title', {
-        text: 'Artavia Murillo y otros',
+        text: 'Acevedo Jaramillo',
       });
     });
 
     it('should get the page datasets from the redux store directly', async () => {
       await expect(page).toMatchElement('#entity-sharedId', {
-        text: 'mh5hwf3nzhq6w29',
+        text: 'yn70ln6v2ccba9k9',
       });
     });
 

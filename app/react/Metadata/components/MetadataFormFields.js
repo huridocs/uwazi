@@ -194,7 +194,7 @@ class MetadataFormFields extends Component {
                   return translateOptions(source);
                 })
             )
-            .slice(0, preloadOptionsLimit);
+            .slice(0, preloadOptionsLimit());
         }
 
         if (entityThesauris.get(property.name)) {

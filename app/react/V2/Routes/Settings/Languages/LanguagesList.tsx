@@ -110,7 +110,11 @@ const LanguagesList = () => {
       'You are about to uninstall a language.',
       'Uninstall',
       handleAction(
-        <Translate>Language uninstalled success</Translate>,
+        <Translate translationKey="Language Uninstall Start Message">
+          Language uninstallation process initiated. It may take several minutes to complete
+          depending on the size of the collection. Please wait until the uninstallation process is
+          finished.
+        </Translate>,
         I18NApi.deleteLanguage,
         'key',
         row.original as LanguageSchema
@@ -125,25 +129,25 @@ const LanguagesList = () => {
       id: 'label',
       header: LabelHeader,
       cell: LanguageLabel,
-      meta: { className: 'w-9/12' },
+      meta: { headerClassName: 'w-9/12' },
     }) as ColumnDef<LanguageSchema, 'label'>,
     columnHelper.accessor('default', {
       header: DefaultHeader,
       cell: DefaultButton,
       enableSorting: false,
-      meta: { action: setDefaultLanguage, className: 'text-center w-1/12' },
+      meta: { action: setDefaultLanguage, headerClassName: 'text-center w-1/12' },
     }) as ColumnDef<LanguageSchema, 'default'>,
     columnHelper.accessor('key', {
       header: ResetHeader,
       cell: ResetButton,
       enableSorting: false,
-      meta: { action: resetModal, className: 'text-center w-1/12' },
+      meta: { action: resetModal, headerClassName: 'text-center w-1/12' },
     }) as ColumnDef<LanguageSchema, 'key'>,
     columnHelper.accessor('_id', {
       header: UninstallHeader,
       cell: UninstallButton,
       enableSorting: false,
-      meta: { action: uninstallModal, className: 'text-center w-1/12' },
+      meta: { action: uninstallModal, headerClassName: 'text-center w-1/12' },
     }) as ColumnDef<LanguageSchema, '_id'>,
   ];
 

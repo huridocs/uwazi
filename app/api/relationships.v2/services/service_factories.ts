@@ -17,11 +17,11 @@ import { User } from 'api/users.v2/model/User';
 import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
 import { tenants } from 'api/tenants';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { DefaultDispatcher } from 'api/queue.v2/configuration/factories';
+import { EntityRelationshipsUpdateService as GenericEntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
+import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/service_factories';
 import {
   DefaultHubsDataSource,
   DefaultMigrationHubRecordDataSource,
@@ -42,6 +42,8 @@ import { MigrationService as GenericMigrationService } from './MigrationService'
 import { OnlineRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
 import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
+import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
+import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -65,9 +67,9 @@ const buildQueuedRelationshipPropertyUpdateStrategy: () => Promise<QueuedRelatio
 
 const createUpdateStrategy = async (
   strategyKey: string | undefined,
-  updater: EntityRelationshipsUpdateService
+  updater: GenericEntityRelationshipsUpdateService
 ) => {
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
 
   switch (strategyKey) {
     case QueuedRelationshipPropertyUpdateStrategy.name:
@@ -102,7 +104,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
     indexEntitiesCallback,
     await createUpdateStrategy(
       newRelationshipsSettings.updateStrategy,
-      new EntityRelationshipsUpdateService(entitiesDS, templatesDS, relationshipsDS)
+      EntityRelationshipsUpdateService(transactionManager)
     )
   );
 
@@ -234,6 +236,22 @@ const GetMigrationHubRecordsService = () => {
   return service;
 };
 
+const UpdateRelationshipPropertiesJob = () => {
+  const tenant = tenants.current().name;
+  const transactionManager = DefaultTransactionManager();
+  const updater = EntityRelationshipsUpdateService(transactionManager);
+  const indexEntity = async (sharedIds: string[]) =>
+    tenants.run(async () => search.indexEntities({ sharedId: { $in: sharedIds } }), tenant);
+
+  return new GenericUpdateRelationshipPropertiesJob(updater, transactionManager, indexEntity);
+};
+
+const UpdateTemplateRelationshipPropertiesJob = async () =>
+  new GenericUpdateTemplateRelationshipPropertiesJob(
+    DefaultEntitiesDataSource(DefaultTransactionManager()),
+    await DefaultDispatcher(tenants.current().name)
+  );
+
 export {
   CreateRelationshipMigrationFieldService,
   CreateRelationshipService,
@@ -245,4 +263,6 @@ export {
   DenormalizationService,
   MigrationService,
   UpsertRelationshipMigrationFieldService,
+  UpdateRelationshipPropertiesJob,
+  UpdateTemplateRelationshipPropertiesJob,
 };

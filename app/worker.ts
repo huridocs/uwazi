@@ -77,7 +77,7 @@ DB.connect(config.DBHOST, dbAuth)
       void new DistributedLoop('sync_job', async () => syncWorker.runAllTenants(), {
         port: config.redis.port,
         host: config.redis.host,
-        delayTimeBetweenTasks: 30000,
+        delayTimeBetweenTasks: 1000,
       }).start();
     });
   })

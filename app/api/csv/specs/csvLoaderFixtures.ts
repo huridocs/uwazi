@@ -2,7 +2,6 @@ import db from 'api/utils/testing_db';
 import { propertyTypes } from 'shared/propertyTypes';
 import { templateUtils } from 'api/templates';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
@@ -111,6 +110,11 @@ export default {
           label: 'Date label',
           name: templateUtils.safeName('Date label'),
         },
+        {
+          type: propertyTypes.text,
+          label: 'Language',
+          name: templateUtils.safeName('Language'),
+        },
       ],
     },
     {
@@ -164,11 +168,11 @@ export default {
     },
   ],
 
-  translations: fixturesTranslationsV2ToTranslationsLegacy([
+  translationsV2: [
     ...commonTranslationsV2('en'),
     ...commonTranslationsV2('es'),
     ...commonTranslationsV2('fr'),
-  ]),
+  ],
 };
 
 export { template1Id, templateWithGeneratedTitle, thesauri1Id };

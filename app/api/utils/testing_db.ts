@@ -1,10 +1,8 @@
 import { setupTestUploadedPaths } from 'api/files/filesystem';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
-import { migrateTranslationsToV2 } from 'api/i18n/v2_support';
 import { DB } from 'api/odm';
 import { models } from 'api/odm/model';
 import { RelationshipDBOType } from 'api/relationships.v2/database/schemas/relationshipTypes';
-import { tenants } from 'api/tenants';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { Db, ObjectId } from 'mongodb';
 import mongoose, { Connection } from 'mongoose';
@@ -17,6 +15,7 @@ import { IXSuggestionType } from 'shared/types/suggestionType';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { UserGroupSchema } from 'shared/types/userGroupType';
 import uniqueID from 'shared/uniqueID';
+import { config } from 'api/config';
 import { UserSchema } from '../../shared/types/userType';
 import { elasticTesting } from './elastic_testing';
 import { testingTenants } from './testingTenants';
@@ -73,7 +72,7 @@ const fixturer = {
 let mongooseConnection: Connection;
 
 const initMongoServer = async (dbName: string) => {
-  const uri = 'mongodb://localhost/';
+  const uri = config.DBHOST;
   mongooseConnection = await DB.connect(`${uri}${dbName}`);
   connected = true;
 };
@@ -91,6 +90,7 @@ const testingDB: {
    * @deprecated
    */
   clearAllAndLoad: (fixtures: DBFixture, elasticIndex?: string) => Promise<void>;
+  createIndices: () => Promise<void>;
   setupFixturesAndContext: (
     fixtures: DBFixture,
     elasticIndex?: string,
@@ -151,27 +151,24 @@ const testingDB: {
       optionalMongo = DB.connectionForDB(dbName).db;
     }
     await fixturer.clearAllAndLoad(optionalMongo || mongodb, fixtures);
-    this.UserInContextMockFactory.mockEditorUser();
+    await this.createIndices();
 
-    try {
-      if (
-        tenants.current().featureFlags?.translationsV2 &&
-        !expect.getState().testPath?.includes('api/migrations') &&
-        Object.keys(fixtures).includes('translations') &&
-        !Object.keys(fixtures).includes('translationsV2')
-      ) {
-        await migrateTranslationsToV2();
-      }
-    } catch (e) {
-      if (!e.message.match('nonexistent async')) {
-        throw e;
-      }
-    }
+    this.UserInContextMockFactory.mockEditorUser();
 
     if (elasticIndex) {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
     }
+  },
+
+  async createIndices() {
+    const newTranslationsCollection = 'translationsV2';
+
+    await mongodb
+      .collection(newTranslationsCollection)
+      .createIndex({ language: 1, key: 1, 'context.id': 1 }, { unique: true });
+
+    await mongodb.collection(newTranslationsCollection).createIndex({ 'context.id': 1, key: 1 });
   },
 
   /**

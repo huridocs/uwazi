@@ -5,7 +5,7 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Table.stories';
 
-const { Basic, WithActions, WithCheckboxes, WithInitialState } = composeStories(stories);
+const { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD } = composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.data || [];
@@ -80,6 +80,15 @@ describe('Table', () => {
       cy.get('tr th').contains('Description').click();
       checkRowContent(1, ['Entity 2', '2', data[0].description]);
     });
+
+    it('should allow external control of sorting', () => {
+      const setSortingSpy = cy.stub().as('setSortingSpy');
+
+      mount(<Basic setSorting={setSortingSpy} />);
+      cy.get('tr th').contains('Title').click();
+
+      cy.get('@setSortingSpy').should('have.been.calledOnce');
+    });
   });
 
   describe('Selections', () => {
@@ -126,6 +135,23 @@ describe('Table', () => {
 
       cy.contains('button', 'Reset table data').click();
       cy.contains('p', 'Selections of Table B: Entity 2, Entity 1, Entity 3,');
+    });
+  });
+
+  describe('DnD', () => {
+    it('should sort rows by dragging', () => {
+      mount(<WithDnD />);
+
+      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragstart');
+      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragleave');
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('drop', {
+        target: { x: 1, y: 3 },
+      });
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
+
+      checkRowContent(3, ['Entity 1', data[1].description, '1']);
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 3', data[2].description, '3']);
     });
   });
 });

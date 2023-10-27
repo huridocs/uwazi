@@ -125,10 +125,6 @@ const fixturesSnippetsSearch: DBFixture = {
       },
     },
   ],
-  translations: [
-    { locale: 'en', contexts: [] },
-    { locale: 'es', contexts: [] },
-  ],
 };
 
 export { fixturesSnippetsSearch, entity1enId, entity2enId };

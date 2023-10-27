@@ -1,5 +1,10 @@
 import _ from 'lodash';
-import { generateIds, getUpdatedNames, getDeletedProperties } from 'api/templates/utils';
+import {
+  generateIds,
+  getUpdatedIds,
+  getUpdatedNames,
+  getDeletedProperties,
+} from 'api/templates/utils';
 import entities from 'api/entities/entities';
 import { preloadOptionsLimit } from 'shared/config';
 import templates from 'api/templates/templates';
@@ -50,7 +55,7 @@ const updateTranslation = (current, thesauri) => {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
 
-  const updatedLabels = getUpdatedNames(
+  const { update: updatedLabels, delete: removedThroughUpdate } = getUpdatedNames(
     {
       prop: 'label',
       outKey: 'label',
@@ -68,13 +73,15 @@ const updateTranslation = (current, thesauri) => {
     'id',
     'label'
   );
+  const allRemoved = Array.from(new Set(deletedPropertiesByLabel.concat(removedThroughUpdate)));
+
   const context = thesauriToTranslationContext(thesauri);
 
   context[thesauri.name] = thesauri.name;
   return translations.updateContext(
     { id: current._id.toString(), label: thesauri.name, type: 'Thesaurus' },
     updatedLabels,
-    deletedPropertiesByLabel,
+    allRemoved,
     context
   );
 };
@@ -89,10 +96,9 @@ async function updateOptionsInEntities(current, thesauri) {
     )
   );
 
-  const updatedIds = getUpdatedNames(
+  const updatedIds = getUpdatedIds(
     {
       prop: 'label',
-      outKey: 'id',
       filterBy: 'id',
     },
     currentProperties,
@@ -193,7 +199,7 @@ const thesauri = {
     const _entities = await entities.getByTemplate(
       template._id,
       language,
-      preloadOptionsLimit,
+      preloadOptionsLimit(),
       onlyPublished
     );
     const values = this.entitiesToThesauri(_entities);

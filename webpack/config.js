@@ -40,7 +40,7 @@ module.exports = production => {
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
     resolve: {
-      extensions: ['*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
     },
     resolveLoader: {
       modules: ['node_modules'],
@@ -98,6 +98,12 @@ module.exports = production => {
         {
           test: /world-countries/,
           loader: path.join(__dirname, '/webpackLoaders/country-loader.js'),
+        },
+        {
+          test: /\.m?js$/,
+          resolve: {
+            fullySpecified: false,
+          },
         },
       ],
     },

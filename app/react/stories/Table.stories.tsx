@@ -26,6 +26,8 @@ const Primary: Story = {
         title={args.title}
         initialState={args.initialState}
         footer={args.footer}
+        setSorting={args.setSorting}
+        draggableRows={args.draggableRows === true}
       />
     </div>
   ),
@@ -64,6 +66,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
         title="Table A"
         enableSelection
         onSelection={setSelected1}
+        draggableRows={args.draggableRows}
       />
 
       <p className="m-1">Selected items for Table A: {selected1.length}</p>
@@ -124,7 +127,7 @@ const Basic: Story = {
       columnHelper.accessor('created', {
         header: 'Date added',
         cell: CustomCell,
-        meta: { className: 'something' },
+        meta: { headerClassName: 'something' },
       }),
     ],
     data: [
@@ -141,6 +144,7 @@ const Basic: Story = {
         description: 'Morbi congue et justo vitae congue. Vivamus porttitor et leo vitae efficitur',
       },
     ],
+    setSorting: undefined,
   },
 };
 
@@ -151,7 +155,6 @@ const WithInitialState: Story = {
     initialState: { sorting: [{ id: 'description', desc: true }] },
   },
 };
-
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -161,19 +164,19 @@ const WithActions: Story = {
       columnHelper.accessor('created', {
         id: 'created',
         header: 'Date added',
-        meta: { className: 'w-1/3' },
+        meta: { headerClassName: 'w-1/3' },
       }),
       columnHelper.accessor('description', {
         id: 'description',
         header: 'Description',
         enableSorting: false,
-        meta: { className: 'w-1/3 bg-red-200 text-blue' },
+        meta: { headerClassName: 'w-1/3 bg-red-200 text-blue' },
       }),
       columnHelper.display({
         id: 'action',
         header: 'Actions',
         cell: ActionsCell,
-        meta: { className: 'text-center' },
+        meta: { headerClassName: 'text-center' },
       }),
     ],
   },
@@ -186,6 +189,14 @@ const WithCheckboxes = {
   },
 };
 
-export { Basic, WithActions, WithCheckboxes, WithInitialState };
+const WithDnD: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    draggableRows: true,
+    initialState: { sorting: [{ id: 'description', desc: true }] },
+  },
+};
+export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD };
 
 export default meta;

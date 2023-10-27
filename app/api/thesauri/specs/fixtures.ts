@@ -1,4 +1,3 @@
-import { fixturesTranslationsV2ToTranslationsLegacy } from 'api/i18n/specs/fixturesTranslationsV2ToTranslationsLegacy';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture, testingDB } from 'api/utils/testing_db';
 
@@ -139,7 +138,7 @@ const fixtures: DBFixture = {
       ],
     },
   ],
-  translations: fixturesTranslationsV2ToTranslationsLegacy([
+  translationsV2: [
     createTranslationDBO('Parent', 'Parent', 'en', {
       id: dictionaryId,
       type: 'Thesaurus',
@@ -181,7 +180,7 @@ const fixtures: DBFixture = {
       type: 'Thesaurus',
       label: 'Dictionary',
     }),
-  ]),
+  ],
 };
 
 export {

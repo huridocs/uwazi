@@ -27,8 +27,8 @@ const textWithHtml = `<h1>The title</h1>
     I am a link to an external site
   </a>
   <br />
-  <a href="/entity/mh5hwf3nzhq6w29">
-    I am a link to an internal entity
+  <a href="/entity/4yl59bcq71ra4i">
+    I am a link to the internal Ecuador entity
   <a/>
   <ol class="someClass">
     <li>List item 1</li>
@@ -102,11 +102,11 @@ describe('Entities', () => {
     });
 
     it('should navigate to an entity via the rich text field link', async () => {
-      await expect(page).toClick('a', { text: 'I am a link to an internal entity' });
+      await expect(page).toClick('a', { text: 'I am a link to the internal Ecuador entity' });
       await page.waitForNavigation();
       await disableTransitions();
       await expect(page).toMatchElement('.content-header-title > h1:nth-child(1)', {
-        text: 'Artavia Murillo y otros',
+        text: 'Ecuador',
       });
     });
   });

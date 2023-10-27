@@ -1,4 +1,5 @@
-/* eslint-disable max-lines */
+import _ from 'lodash';
+
 import date from 'api/utils/date';
 import propertiesHelper from 'shared/comonProperties';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -9,6 +10,8 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { checkWritePermissions } from 'shared/permissionsUtils';
 import usersModel from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
+import { sequentialPromises } from 'shared/asyncUtils';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
 import documentQueryBuilder from './documentQueryBuilder';
@@ -264,7 +267,13 @@ const indexedDictionaryValues = dictionary =>
       return v;
     }, {});
 
-const _getAggregationDictionary = async (aggregation, language, property, dictionaries) => {
+const _getAggregationDictionary = async (
+  aggregation,
+  language,
+  property,
+  dictionariesById,
+  dictionaryCache
+) => {
   if (property.type === 'relationship' || property.type === propertyTypes.newRelationship) {
     const entitiesSharedId = aggregation.buckets.map(bucket => bucket.key);
 
@@ -284,57 +293,154 @@ const _getAggregationDictionary = async (aggregation, language, property, dictio
     return [dictionary, indexedDictionaryValues(dictionary)];
   }
 
-  const dictionary = dictionaries.find(d => d._id.toString() === property.content.toString());
-  return [dictionary, indexedDictionaryValues(dictionary)];
+  const propContent = property.content.toString();
+  if (!dictionaryCache[propContent]) {
+    const dictionary = dictionariesById[propContent];
+    const dictionaryValues = indexedDictionaryValues(dictionary);
+    dictionaryCache[propContent] = [dictionary, dictionaryValues];
+  }
+  return dictionaryCache[propContent];
 };
 
-const _formatDictionaryWithGroupsAggregation = (aggregation, dictionary) => {
-  const buckets = dictionary.values
-    .map(dictionaryValue => {
-      const bucket = aggregation.buckets.find(b => b.key === dictionaryValue.id);
-      if (bucket && dictionaryValue.values) {
+const extractMissingBucket = buckets => {
+  const [missingBuckets, remainingBuckets] = _.partition(buckets, b => b.key === 'missing');
+  const missingBucket = missingBuckets && missingBuckets.length ? missingBuckets[0] : null;
+  return { missingBucket, remainingBuckets };
+};
+
+const groupAndLimitBuckets = (buckets, dictionary, _limit) => {
+  const aggregationBucketsByKey = objectIndex(
+    buckets,
+    b => b.key,
+    b => b
+  );
+  const missingBucket = aggregationBucketsByKey.missing;
+  const limit = missingBucket ? _limit - 1 : _limit;
+  const newBuckets = [];
+
+  let dictIndex = 0;
+  while (newBuckets.length < limit && dictIndex < dictionary.values.length) {
+    const dictionaryValue = dictionary.values[dictIndex];
+    const bucket = aggregationBucketsByKey[dictionaryValue.id];
+    if (bucket) {
+      if (dictionaryValue.values) {
         bucket.values = dictionaryValue.values
-          .map(v => aggregation.buckets.find(b => b.key === v.id))
+          .map(v => aggregationBucketsByKey[v.id])
           .filter(b => b);
       }
-      return bucket;
-    })
-    .filter(b => b);
-  const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
-  if (bucketsIncludeMissing) {
-    buckets.push(bucketsIncludeMissing);
+      newBuckets.push(bucket);
+    }
+    dictIndex += 1;
   }
-  return Object.assign(aggregation, { buckets });
+
+  if (missingBucket) newBuckets.push(missingBucket);
+  return newBuckets;
 };
 
-const _denormalizeAggregations = async (aggregations, templates, dictionaries, language) => {
-  const properties = propertiesHelper.allProperties(templates);
-  const newRelationshipsEnabled = v2.checkFeatureEnabled();
-  return Object.keys(aggregations).reduce(async (denormaLizedAgregationsPromise, key) => {
-    const denormaLizedAgregations = await denormaLizedAgregationsPromise;
-    if (
-      !aggregations[key].buckets ||
-      aggregations[key].type === 'nested' ||
-      ['_types', 'generatedToc', '_permissions.self', '_published'].includes(key)
-    ) {
-      return Object.assign(denormaLizedAgregations, { [key]: aggregations[key] });
+const limitBuckets = (buckets, _limit) => {
+  if (buckets.length <= _limit) {
+    return buckets;
+  }
+
+  const { missingBucket, remainingBuckets } = extractMissingBucket(buckets);
+  const limit = missingBucket ? _limit - 1 : _limit;
+  const limitedBuckets = remainingBuckets.slice(0, limit);
+  if (missingBucket) limitedBuckets.push(missingBucket);
+
+  return limitedBuckets;
+};
+
+function assignLabels(buckets, dictionaryValues) {
+  const labeledBuckets = [];
+
+  buckets.forEach(bucket => {
+    const newBucket = {
+      ...bucket,
+    };
+
+    const labelItem =
+      bucket.key === 'missing' ? { label: 'No label' } : dictionaryValues[bucket.key];
+
+    if (bucket.values) {
+      newBucket.values = assignLabels(bucket.values, dictionaryValues);
     }
 
-    if (['_permissions.read', '_permissions.write'].includes(key)) {
+    if (labelItem) {
+      const { label, icon } = labelItem;
+      newBucket.label = label;
+      newBucket.icon = icon;
+      labeledBuckets.push(newBucket);
+    }
+  });
+
+  return labeledBuckets;
+}
+
+const SIMPLE_LIMIT_KEYS = new Set(['_types', 'generatedToc', '_permissions.self', '_published']);
+const PERMISSION_KEYS = new Set(['_permissions.read', '_permissions.write']);
+const _denormalizeAndLimitAggregations = async (
+  aggregations,
+  templates,
+  dictionaries,
+  language,
+  limit
+) => {
+  const properties = propertiesHelper.allProperties(templates);
+  const propertiesByName = objectIndex(
+    properties,
+    p => p.name,
+    p => p
+  );
+  const propertiesById = objectIndex(
+    properties,
+    p => p._id.toString(),
+    p => p
+  );
+  const newRelationshipsEnabled = v2.checkFeatureEnabled();
+  const dictionariesById = objectIndex(
+    dictionaries,
+    d => d._id.toString(),
+    d => d
+  );
+  const dictionaryCache = {};
+  const denormalizedAggregations = {};
+  // eslint-disable-next-line max-statements
+  await sequentialPromises(Object.keys(aggregations), async key => {
+    if (!aggregations[key].buckets || aggregations[key].type === 'nested') {
+      denormalizedAggregations[key] = aggregations[key];
+      return;
+    }
+
+    if (SIMPLE_LIMIT_KEYS.has(key)) {
+      denormalizedAggregations[key] = {
+        ...aggregations[key],
+        buckets: limitBuckets(aggregations[key].buckets, limit),
+      };
+      return;
+    }
+
+    if (PERMISSION_KEYS.has(key)) {
       const [users, groups] = await Promise.all([usersModel.get(), userGroups.get()]);
 
       const info = [
         ...users.map(u => ({ type: 'user', refId: u._id, label: u.username })),
         ...groups.map(g => ({ type: 'group', refId: g._id, label: g.name })),
       ];
+      const infoByRefId = objectIndex(
+        info,
+        i => i.refId.toString(),
+        i => i
+      );
 
       const role = permissionsContext.getUserInContext()?.role;
       const refIds = permissionsContext.permissionsRefIds();
 
-      const buckets = aggregations[key].buckets
-        .filter(bucket => role === UserRole.ADMIN || refIds.includes(bucket.key))
+      let buckets = limitBuckets(aggregations[key].buckets, limit);
+      buckets =
+        role === UserRole.ADMIN ? buckets : buckets.filter(bucket => refIds.includes(bucket.key));
+      buckets = buckets
         .map(bucket => {
-          const itemInfo = info.find(i => i.refId.toString() === bucket.key);
+          const itemInfo = infoByRefId[bucket.key];
 
           if (!itemInfo) return null;
 
@@ -346,13 +452,18 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
         })
         .filter(b => b);
 
-      return Object.assign(denormaLizedAgregations, { [key]: { ...aggregations[key], buckets } });
+      denormalizedAggregations[key] = { ...aggregations[key], buckets };
+      return;
     }
 
-    let property = properties.find(prop => prop.name === key || `__${prop.name}` === key);
+    let property = propertiesByName[key];
+    if (!property && key.startsWith('__')) {
+      const _key = key.substring(2);
+      property = _key in propertiesByName ? propertiesByName[_key] : null;
+    }
 
     if (property.inherit) {
-      property = propertiesHelper.getInheritedProperty(property, properties);
+      property = propertiesHelper.getInheritedProperty(property, properties, propertiesById);
     }
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
@@ -361,35 +472,28 @@ const _denormalizeAggregations = async (aggregations, templates, dictionaries, l
       aggregations[key],
       language,
       property,
-      dictionaries
+      dictionariesById,
+      dictionaryCache
     );
 
-    const buckets = aggregations[key].buckets
-      .map(bucket => {
-        const labelItem =
-          bucket.key === 'missing' ? { label: 'No label' } : dictionaryValues[bucket.key];
-
-        if (labelItem) {
-          const { label, icon } = labelItem;
-          return Object.assign(bucket, { label, icon });
-        }
-        return null;
-      })
-      .filter(item => item);
-
-    let denormalizedAggregation = Object.assign(aggregations[key], { buckets });
-
+    let groupedBuckets = aggregations[key].buckets;
     if (dictionary && dictionary.values.find(v => v.values)) {
-      denormalizedAggregation = _formatDictionaryWithGroupsAggregation(
-        denormalizedAggregation,
-        dictionary
-      );
+      groupedBuckets = groupAndLimitBuckets(groupedBuckets, dictionary, limit);
+    } else {
+      groupedBuckets = limitBuckets(groupedBuckets, limit);
     }
-    return Object.assign(denormaLizedAgregations, { [key]: denormalizedAggregation });
-  }, {});
+
+    const denormalizedBuckets = assignLabels(groupedBuckets, dictionaryValues);
+
+    const denormalizedAggregation = Object.assign(aggregations[key], {
+      buckets: denormalizedBuckets,
+    });
+    denormalizedAggregations[key] = denormalizedAggregation;
+  });
+  return denormalizedAggregations;
 };
 
-const _sanitizeAggregationsStructure = (aggregations, limit) => {
+const _sanitizeAggregationsStructure = aggregations => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
     const aggregation = aggregations[aggregationKey];
@@ -437,16 +541,7 @@ const _sanitizeAggregationsStructure = (aggregations, limit) => {
 
     if (aggregation.buckets) {
       aggregation.buckets = aggregation.buckets.filter(b => b.filtered.doc_count);
-      const missingBucket = aggregation.buckets.find(b => b.key === 'missing');
-
       aggregation.count = aggregation.buckets.length;
-      aggregation.buckets = aggregation.buckets.slice(0, limit);
-
-      const bucketsIncludeMissing = aggregation.buckets.find(b => b.key === 'missing');
-      if (!bucketsIncludeMissing && missingBucket) {
-        aggregation.buckets = aggregation.buckets.slice(0, limit - 1);
-        aggregation.buckets.push(missingBucket);
-      }
     }
 
     result[aggregationKey] = aggregation;
@@ -492,11 +587,17 @@ const _sanitizeAggregations = async (
   templates,
   dictionaries,
   language,
-  limit = preloadOptionsLimit
+  limit = preloadOptionsLimit()
 ) => {
-  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations, limit);
+  const sanitizedAggregations = _sanitizeAggregationsStructure(aggregations);
   const sanitizedAggregationNames = _sanitizeAgregationNames(sanitizedAggregations);
-  return _denormalizeAggregations(sanitizedAggregationNames, templates, dictionaries, language);
+  return _denormalizeAndLimitAggregations(
+    sanitizedAggregationNames,
+    templates,
+    dictionaries,
+    language,
+    limit
+  );
 };
 
 const permissionsInformation = (hit, user) => {
@@ -814,7 +915,7 @@ const search = {
       templates,
       dictionaries,
       language,
-      preloadOptionsSearch
+      preloadOptionsSearch()
     );
 
     const options = sanitizedAggregations[propertyName].buckets
@@ -829,7 +930,7 @@ const search = {
     const filteredOptions = filterOptions(searchTerm, options);
 
     return {
-      options: filteredOptions.slice(0, preloadOptionsLimit),
+      options: filteredOptions.slice(0, preloadOptionsLimit()),
       count: filteredOptions.length,
     };
   },
@@ -838,7 +939,7 @@ const search = {
     const queryBuilder = documentQueryBuilder()
       .include(['title', 'template', 'sharedId', 'icon'])
       .language(language)
-      .limit(preloadOptionsSearch)
+      .limit(preloadOptionsSearch())
       .filterByPermissions()
       .includeUnpublished();
 
@@ -862,7 +963,7 @@ const search = {
 
     const response = await elastic.search({ body });
 
-    const options = response.body.hits.hits.slice(0, preloadOptionsLimit).map(hit => ({
+    const options = response.body.hits.hits.slice(0, preloadOptionsLimit()).map(hit => ({
       value: hit._source.sharedId,
       label: hit._source.title,
       template: hit._source.template,
