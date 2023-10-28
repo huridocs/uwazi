@@ -36,7 +36,12 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
       {props.showUpdates === true && (
         <>
           <span>Updated Items</span>
-          <div>{tableRowsState?.map(row => <>{row.getAllCells().at(0)?.getValue()}</>)}</div>
+          <ul>
+            {tableRowsState?.map((row, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={`row_${index}`}>{row.getValue('title')}</li>
+            ))}
+          </ul>
         </>
       )}
     </>
