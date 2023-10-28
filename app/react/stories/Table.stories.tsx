@@ -15,22 +15,35 @@ type SampleSchema = {
   created: number;
 };
 
-type Story = StoryObj<typeof Table<SampleSchema>>;
+type Story = StoryObj<typeof Table<SampleSchema>> & { args?: { showUpdates?: boolean } };
 
+const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolean }) => {
+  const [tableRowsState, setTableRowsState] = useState<Row<SampleSchema>[]>();
+  return (
+    <>
+      <div className="tw-content">
+        <Table<SampleSchema>
+          columns={props.columns}
+          data={props.data}
+          title={props.title}
+          initialState={props.initialState}
+          footer={props.footer}
+          setSorting={props.setSorting}
+          draggableRows={props.draggableRows === true}
+          onChange={setTableRowsState}
+        />
+      </div>
+      {props.showUpdates === true && (
+        <>
+          <span>Updated Items</span>
+          <div>{tableRowsState?.map(row => <>{row.getAllCells().at(0)?.getValue()}</>)}</div>
+        </>
+      )}
+    </>
+  );
+};
 const Primary: Story = {
-  render: args => (
-    <div className="tw-content">
-      <Table<SampleSchema>
-        columns={args.columns}
-        data={args.data}
-        title={args.title}
-        initialState={args.initialState}
-        footer={args.footer}
-        setSorting={args.setSorting}
-        draggableRows={args.draggableRows === true}
-      />
-    </div>
-  ),
+  render: args => <StoryComponent {...args} />,
 };
 
 const CustomCell = ({ cell }: CellContext<SampleSchema, any>) => (
@@ -82,6 +95,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
         title="Table B"
         enableSelection
         onSelection={setSelected2}
+        draggableRows={args.draggableRows}
       />
 
       <p className="m-1">Selected items for Table B: {selected2.length}</p>
@@ -195,6 +209,7 @@ const WithDnD: Story = {
     ...Basic.args,
     draggableRows: true,
     initialState: { sorting: [{ id: 'description', desc: true }] },
+    showUpdates: true,
   },
 };
 export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD };
