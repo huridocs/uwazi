@@ -146,12 +146,13 @@ const Table = <T,>({
         <TableBody draggableRows>
           {(rowData || table.getRowModel().rows).map(
             (item: Row<T> | IDraggable<Row<T>>, index: number) => (
-              <TableRow
+              <TableRow<T>
                 key={item.id}
                 item={item}
                 draggableRow={draggableRows === true}
                 index={index}
                 dndContext={dndContext}
+                enableSelection
               />
             )
           )}
