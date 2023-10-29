@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useRef } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
 import type { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem, type IDnDContext } from '../../Layouts/DragAndDrop';
@@ -26,6 +26,7 @@ const TableRow = <T,>({
   enableSelection,
 }: TableRowProps<T>) => {
   const rowValue = (isRow(item) ? item : (item as IDraggable<Row<T>>).value) as Row<T>;
+  const previewRef = useRef<HTMLTableRowElement>(null);
   const icons = draggableRow
     ? [
         <DraggableItem
@@ -37,6 +38,7 @@ const TableRow = <T,>({
           className="bg-white border-0"
           container="root"
           iconHandle
+          previewRef={previewRef}
         >
           <GrabDoubleIcon className="w-2" />
         </DraggableItem>,
@@ -46,18 +48,18 @@ const TableRow = <T,>({
   let bg = rowValue.getCanExpand() || isSubGroup ? 'bg-primary-50' : 'bg-white';
   bg = rowValue.getCanExpand() && rowValue.getIsExpanded() ? 'bg-primary-100' : bg;
   return (
-    <tr key={item.id} className={`${bg} border-b`}>
-      {rowValue.getVisibleCells().map((cell, rowIndex) => {
+    <tr key={item.id} className={`${bg} border-b`} ref={previewRef}>
+      {rowValue.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
         const firstColumnClass =
-          cell.column.id === 'checkbox-select' || (draggableRow && rowIndex === 0)
+          cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)
             ? 'flex items-center gap-3'
             : '';
 
         let border = '';
         if (
-          (isSubGroup && enableSelection && rowIndex === 1) ||
-          (isSubGroup && !enableSelection && rowIndex === 0)
+          (isSubGroup && enableSelection && columnIndex === 1) ||
+          (isSubGroup && !enableSelection && columnIndex === 0)
         ) {
           border = 'border-l-2 border-primary-300';
         }
@@ -67,7 +69,7 @@ const TableRow = <T,>({
             key={cell.id}
             className={`${firstColumnClass} ${isSelect ? 'px-2' : 'px-6'} ${border} py-2`}
           >
-            {icons[rowIndex]}
+            {icons[columnIndex]}
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
         );

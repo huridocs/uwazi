@@ -17,6 +17,7 @@ interface TableProps<T> {
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
   subRowsKey?: string;
   draggableRows?: boolean;
+  onChange?: (rows: Row<T>[]) => void;
 }
 
 const IndeterminateCheckbox = ({

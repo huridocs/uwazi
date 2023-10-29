@@ -8,7 +8,8 @@ const useDnDTable = <T>(
   draggableRows: boolean,
   getDisplayName: (item: IDraggable<Row<T>>) => string,
   table: Table<T>,
-  sortingState?: SortingState
+  sortingState?: SortingState,
+  onChange: (rows: Row<T>[]) => void = () => {}
 ) => {
   const [reset, setReset] = useState(false);
   const dndContext = useDnDContext<Row<T>>(
@@ -19,6 +20,7 @@ const useDnDTable = <T>(
         setReset(true);
         table.resetSorting(true);
       },
+      onChange,
     },
     table.getRowModel().rows,
     []
@@ -36,7 +38,7 @@ const useDnDTable = <T>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortingState]);
 
-  return { activeItems: draggableRows ? dndContext.activeItems : [], dndContext };
+  return { activeItems: draggableRows ? dndContext.activeItems : [], dndContext, setReset };
 };
 
 export { useDnDTable };
