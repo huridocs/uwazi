@@ -1334,6 +1334,13 @@ describe('entities', () => {
         friends: [],
         enemies: [],
       });
+      const [related2] = await db.mongodb
+        .collection('entities')
+        .find({ sharedId: 'entityWithOnlyAnyRelationship' })
+        .toArray();
+      expect(related2.metadata).toMatchObject({
+        relationship_to_any_template: [],
+      });
     });
   });
 
