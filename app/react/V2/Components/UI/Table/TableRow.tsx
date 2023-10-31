@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useRef } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
 import type { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem, type IDnDContext } from '../../Layouts/DragAndDrop';
@@ -19,6 +19,7 @@ const isRow = <T,>(row: Row<T> | IDraggable<Row<T>>): row is Row<T> =>
 /* eslint-disable comma-spacing */
 const TableRow = <T,>({ draggableRow, item, index, dndContext }: TableRowProps<T>) => {
   const rowValue = (isRow(item) ? item : (item as IDraggable<Row<T>>).value) as Row<T>;
+  const previewRef = useRef<HTMLTableRowElement>(null);
   const icons = draggableRow
     ? [
         <DraggableItem
@@ -30,13 +31,15 @@ const TableRow = <T,>({ draggableRow, item, index, dndContext }: TableRowProps<T
           className="bg-white border-0"
           container="root"
           iconHandle
+          previewRef={previewRef}
         >
           <GrabDoubleIcon className="w-2" />
         </DraggableItem>,
       ]
     : [];
+
   return (
-    <tr key={item.id} className="bg-white border-b">
+    <tr key={item.id} className="bg-white border-b" ref={previewRef}>
       {rowValue.getVisibleCells().map((cell, columnIndex) => {
         const firstColumnClass =
           cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)

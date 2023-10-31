@@ -9,7 +9,7 @@ interface IDnDContext<T> {
   addItem: (item: IDraggable<T>) => void;
   removeItem: (item: IDraggable<T>) => void;
   updateItem: (values: IDraggable<T>) => void;
-  updateActiveItems: (items: T[]) => void;
+  updateActiveItems: (items: T[]) => IDraggable<T>[];
   sort: Function;
   activeItems: IDraggable<T>[];
   availableItems: IDraggable<T>[];
@@ -227,7 +227,7 @@ const sortActiveItems =
     } else {
       sortParents(activeItems, setActiveItems, { currentItem, target, dragIndex, hoverIndex });
     }
-    sortingCallback();
+    sortingCallback(activeItems.map(item => item.value));
   };
 
 export type { IDnDContext };

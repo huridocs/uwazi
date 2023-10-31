@@ -31,12 +31,15 @@ const Table = <T,>({
   setSorting,
   onSelection,
   draggableRows = false,
+  onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
   const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
     initialState?.sorting || []
   );
+
   const [rowSelection, setRowSelection] = useState({});
+  const [rowData, setRowData] = useState<Row<T>[] | IDraggable<Row<T>>[]>();
   const memoizedColumns = useMemo(
     () => [
       ...applyForSelection(
@@ -82,11 +85,12 @@ const Table = <T,>({
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const { activeItems, dndContext } = useDnDTable<T>(
+  const { activeItems, dndContext, setReset } = useDnDTable<T>(
     draggableRows,
     (row: any) => row.getValue('id'),
     table,
-    sortingState
+    sortingState,
+    onChange
   );
 
   useEffect(() => {
@@ -97,7 +101,20 @@ const Table = <T,>({
     }
   }, [onSelection, rowSelection, table]);
 
-  const rowData = draggableRows === true ? activeItems : table.getRowModel().rows;
+  useEffect(() => {
+    dndContext.updateActiveItems(table.getRowModel().rows);
+    setReset(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preparedData]);
+
+  useEffect(() => {
+    if (draggableRows) {
+      setRowData(activeItems);
+    } else {
+      setRowData(table.getRowModel().rows);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeItems, draggableRows]);
 
   return (
     <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
@@ -118,15 +135,17 @@ const Table = <T,>({
           ))}
         </thead>
         <TableBody draggableRows>
-          {rowData.map((item: Row<T> | IDraggable<Row<T>>, index: number) => (
-            <TableRow
-              key={item.id}
-              item={item}
-              draggableRow={draggableRows === true}
-              index={index}
-              dndContext={dndContext}
-            />
-          ))}
+          {(rowData || table.getRowModel().rows).map(
+            (item: Row<T> | IDraggable<Row<T>>, index: number) => (
+              <TableRow
+                key={item.id}
+                item={item}
+                draggableRow={draggableRows === true}
+                index={index}
+                dndContext={dndContext}
+              />
+            )
+          )}
         </TableBody>
       </table>
       {footer && <div className="p-4">{footer}</div>}
