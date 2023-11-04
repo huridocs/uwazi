@@ -1,10 +1,11 @@
 import { Dispatch } from 'react';
-import { omit } from 'lodash';
+import { get, omit } from 'lodash';
 import update from 'immutability-helper';
 import { type IDraggable, ItemTypes } from 'app/V2/shared/types';
 import ID from 'shared/uniqueID';
 
 interface IDnDContext<T> {
+  itemsProperty: string;
   type: ItemTypes;
   addItem: (item: IDraggable<T>) => void;
   removeItem: (item: IDraggable<T>) => void;
@@ -16,24 +17,45 @@ interface IDnDContext<T> {
   getDisplayName: (item: IDraggable<T>) => string;
 }
 
+interface IDnDOperations<T> {
+  getDisplayName: (item: IDraggable<T>) => string;
+  sortCallback?: Function;
+  onChange?: (items: T[]) => void;
+  itemsProperty?: string;
+}
+
+interface IDnDContextState<T> {
+  activeItems: IDraggable<T>[];
+  setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>;
+  availableItems: IDraggable<T>[];
+  setAvailableItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>;
+  itemsProperty: string;
+  operations: IDnDOperations<T>;
+}
+
 const setIdAndParent = <T>(item: IDraggable<T>, parent?: IDraggable<T>) => {
   const id = item.id || ID();
   return { ...item, id, ...(parent ? { parent } : {}) };
 };
 
-const mapWithParent = <T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] =>
+const mapWithParent = <T>(
+  items: T[],
+  parent?: IDraggable<T>,
+  itemsProperty: string = 'items'
+): IDraggable<T>[] =>
   items.map(item => {
     const draggableItem = {
       value: item,
       ...(parent === undefined ? { container: 'root' } : {}),
     } as IDraggable<T>;
+    const subItems = get(draggableItem.value, itemsProperty);
     const itemWithId: IDraggable<T> = setIdAndParent(draggableItem, parent);
-    if (draggableItem.value.items && draggableItem.value.items.length > 0) {
+    if (subItems && subItems.length > 0) {
       return {
         ...itemWithId,
         value: {
           ...itemWithId.value,
-          items: mapWithParent<T>(draggableItem.value.items as T[], itemWithId),
+          items: mapWithParent<T>(subItems as T[], itemWithId, itemsProperty),
         },
       };
     }
@@ -42,16 +64,11 @@ const mapWithParent = <T>(items: T[], parent?: IDraggable<T>): IDraggable<T>[] =
 
 const mapWithID = <T>(items: IDraggable<T>[]) => items.map(item => setIdAndParent(item));
 
-const removeChildFromParent = <T>(
-  activeItems: IDraggable<T>[],
-  setActiveItems: Dispatch<React.SetStateAction<IDraggable<T>[]>>,
-  newItem: IDraggable<T>
-) => {
+const removeChildFromParent = <T>(state: IDnDContextState<T>, newItem: IDraggable<T>) => {
   if (newItem.parent) {
-    const indexOfCurrentParent = activeItems.findIndex(ai => ai.id === newItem.parent!.id);
-
-    setActiveItems((prevActiveItems: IDraggable<any>[]) => {
-      const index = prevActiveItems[indexOfCurrentParent].value.items!.findIndex(
+    const indexOfCurrentParent = state.activeItems.findIndex(ai => ai.id === newItem.parent!.id);
+    state.setActiveItems((prevActiveItems: IDraggable<any>[]) => {
+      const index = prevActiveItems[indexOfCurrentParent].value.items.findIndex(
         (ai: IDraggable<T>) => ai.id === newItem.id
       );
       return update(prevActiveItems, {
@@ -78,13 +95,13 @@ const removeItemFromList = <T>(
 };
 
 const addItemToParent = <T>(
-  setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
+  state: IDnDContextState<T>,
   indexOfNewItem: number,
   newItem: IDraggable<T>,
   parent: IDraggable<T>
 ) => {
-  removeItemFromList(setActiveItems, indexOfNewItem);
-  setActiveItems((prevActiveItems: IDraggable<any>[]) => {
+  removeItemFromList(state.setActiveItems, indexOfNewItem);
+  state.setActiveItems((prevActiveItems: IDraggable<any>[]) => {
     const indexOfParent = findItemIndex(prevActiveItems, parent);
     if (indexOfParent > -1) {
       return prevActiveItems[indexOfParent].value.items
@@ -92,7 +109,12 @@ const addItemToParent = <T>(
             [indexOfParent]: {
               value: {
                 items: {
-                  $push: [{ ...omit(newItem, ['parent', 'container', 'value.items']), parent }],
+                  $push: [
+                    {
+                      ...omit(newItem, ['parent', 'container', 'value.items']),
+                      parent,
+                    },
+                  ],
                 },
               },
             },
@@ -112,50 +134,38 @@ const addItemToParent = <T>(
 };
 
 const addActiveItem =
-  <T>(
-    activeItems: IDraggable<T>[],
-    setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
-    availableItems: IDraggable<T>[],
-    setAvailableItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>
-  ) =>
+  <T>(state: IDnDContextState<T>) =>
   (newItem: IDraggable<T>, parent?: IDraggable<T>) => {
-    removeChildFromParent(activeItems, setActiveItems, newItem);
-
-    const indexOfNewItem = findItemIndex(activeItems, newItem);
-
+    removeChildFromParent(state, newItem);
+    const indexOfNewItem = findItemIndex(state.activeItems, newItem);
     if (parent) {
-      addItemToParent(setActiveItems, indexOfNewItem, newItem, parent);
+      addItemToParent(state, indexOfNewItem, newItem, parent);
     } else if (indexOfNewItem === -1) {
-      setActiveItems((prevActiveItems: IDraggable<T>[]) =>
+      state.setActiveItems((prevActiveItems: IDraggable<T>[]) =>
         update(prevActiveItems, {
           //@ts-ignore
           $push: [omit(newItem, ['parent', 'container', 'value.items'])],
         })
       );
     }
-    const indexOfSource = findItemIndex(availableItems, newItem);
-    removeItemFromList(setAvailableItems, indexOfSource);
+    const indexOfSource = findItemIndex(state.availableItems, newItem);
+    removeItemFromList(state.setAvailableItems, indexOfSource);
   };
 
 const removeActiveItem =
-  <T>(
-    activeItems: IDraggable<T>[],
-    setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
-    setAvailableItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>
-  ) =>
+  <T>(state: IDnDContextState<T>) =>
   (item: IDraggable<T>) => {
     if (item.parent !== undefined) {
-      removeChildFromParent(activeItems, setActiveItems, item);
+      removeChildFromParent(state, item);
     } else {
-      const index = findItemIndex(activeItems, item);
-      removeItemFromList(setActiveItems, index);
+      const index = findItemIndex(state.activeItems, item);
+      removeItemFromList(state.setActiveItems, index);
     }
-
     const availableSubItems: IDraggable<T>[] = (item.value.items || []).map((ai: IDraggable<T>) =>
       omit(ai, ['parent', 'container'])
     );
     const releasedItem = omit(item, ['parent', 'container', 'value.items']);
-    setAvailableItems((prevAvailableItems: IDraggable<T>[]) =>
+    state.setAvailableItems((prevAvailableItems: IDraggable<T>[]) =>
       update(prevAvailableItems, {
         //@ts-ignore
         $push: [releasedItem, ...availableSubItems],
@@ -164,8 +174,7 @@ const removeActiveItem =
   };
 
 const sortChildren = <T>(
-  activeItems: IDraggable<T>[],
-  setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
+  state: IDnDContextState<T>,
   {
     currentItem,
     target,
@@ -173,18 +182,17 @@ const sortChildren = <T>(
     hoverIndex,
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
 ) => {
-  const indexOfParent = findItemIndex(activeItems, currentItem.parent!);
-  const targetIndex = findItemIndex(activeItems[indexOfParent].value.items || [], target);
-
+  const indexOfParent = findItemIndex(state.activeItems, currentItem.parent!);
+  const targetIndex = findItemIndex(state.activeItems[indexOfParent].value.items || [], target);
   if (targetIndex === hoverIndex) {
-    setActiveItems((prevActiveItems: IDraggable<any>[]) =>
+    state.setActiveItems((prevActiveItems: IDraggable<any>[]) =>
       update(prevActiveItems, {
         [indexOfParent]: {
           value: {
             items: {
               $splice: [
                 [dragIndex, 1],
-                [hoverIndex, 0, prevActiveItems[indexOfParent].value.items![dragIndex]],
+                [hoverIndex, 0, prevActiveItems[indexOfParent].value.items[dragIndex]],
               ],
             },
           },
@@ -195,17 +203,16 @@ const sortChildren = <T>(
 };
 
 const sortParents = <T>(
-  activeItems: IDraggable<T>[],
-  setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
+  state: IDnDContextState<T>,
   {
     target,
     dragIndex,
     hoverIndex,
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
 ) => {
-  const targetIndex = findItemIndex(activeItems, target);
+  const targetIndex = findItemIndex(state.activeItems, target);
   if (targetIndex === hoverIndex) {
-    setActiveItems((prevActiveItems: IDraggable<T>[]) =>
+    state.setActiveItems((prevActiveItems: IDraggable<T>[]) =>
       update(prevActiveItems, {
         $splice: [
           [dragIndex, 1],
@@ -216,19 +223,17 @@ const sortParents = <T>(
   }
 };
 const sortActiveItems =
-  <T>(
-    activeItems: IDraggable<T>[],
-    setActiveItems: React.Dispatch<React.SetStateAction<IDraggable<T>[]>>,
-    sortingCallback: Function = () => {}
-  ) =>
+  <T>(state: IDnDContextState<T>) =>
   (currentItem: IDraggable<T>, target: IDraggable<T>, dragIndex: number, hoverIndex: number) => {
     if (currentItem.parent !== undefined) {
-      sortChildren(activeItems, setActiveItems, { currentItem, target, dragIndex, hoverIndex });
+      sortChildren(state, { currentItem, target, dragIndex, hoverIndex });
     } else {
-      sortParents(activeItems, setActiveItems, { currentItem, target, dragIndex, hoverIndex });
+      sortParents(state, { currentItem, target, dragIndex, hoverIndex });
     }
-    sortingCallback(activeItems.map(item => item.value));
+    if (state.operations.sortCallback) {
+      state.operations.sortCallback(state.activeItems.map(item => item.value));
+    }
   };
 
-export type { IDnDContext };
+export type { IDnDContext, IDnDContextState, IDnDOperations };
 export { addActiveItem, removeActiveItem, sortActiveItems, mapWithParent, mapWithID };

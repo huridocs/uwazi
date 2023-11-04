@@ -7,7 +7,6 @@ import {
   getExpandedRowModel,
   Row,
 } from '@tanstack/react-table';
-import type { IDraggable } from 'app/V2/shared/types';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -39,9 +38,13 @@ const Table = <T,>({
   const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
     initialState?.sorting || []
   );
-
   const [rowSelection, setRowSelection] = useState({});
-  const [rowData, setRowData] = useState<Row<T>[] | IDraggable<Row<T>>[]>();
+  const [internalData, setInternalData] = useState(data);
+
+  useEffect(() => {
+    setInternalData(data);
+  }, [data]);
+
   const memoizedColumns = useMemo(
     () => [
       ...applyForSelection(
@@ -68,8 +71,8 @@ const Table = <T,>({
 
   const preparedData = useMemo<T[]>(() => {
     setRowSelection({});
-    return data;
-  }, [data]);
+    return internalData;
+  }, [internalData]);
 
   const table = useReactTable({
     columns: memoizedColumns,
@@ -95,35 +98,22 @@ const Table = <T,>({
     },
   });
 
-  const { activeItems, dndContext, setReset } = useDnDTable<T>(
+  const { dndContext } = useDnDTable<T>(
     draggableRows,
-    (row: any) => row.getValue('id'),
     table,
-    sortingState,
-    onChange
+    {
+      getDisplayName: item => item.id!,
+      itemsProperty: subRowsKey,
+      onChange,
+    },
+    [internalData, setInternalData]
   );
-
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
     if (onSelection) {
       onSelection(selectedRows);
     }
   }, [onSelection, rowSelection, table]);
-
-  useEffect(() => {
-    dndContext.updateActiveItems(table.getRowModel().rows);
-    setReset(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preparedData]);
-
-  useEffect(() => {
-    if (draggableRows) {
-      setRowData(activeItems);
-    } else {
-      setRowData(table.getRowModel().rows);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeItems, draggableRows]);
 
   return (
     <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
@@ -144,22 +134,21 @@ const Table = <T,>({
           ))}
         </thead>
         <TableBody draggableRows>
-          {(rowData || table.getRowModel().rows).map(
-            (item: Row<T> | IDraggable<Row<T>>, index: number) => (
-              <TableRow<T>
-                key={item.id}
-                item={item}
-                draggableRow={draggableRows === true}
-                index={index}
-                dndContext={dndContext}
-                enableSelection
-              />
-            )
-          )}
+          {table.getRowModel().rows.map((item: Row<T>, index: number) => (
+            <TableRow<T>
+              key={item.id}
+              row={item}
+              draggableRow={draggableRows === true}
+              index={index}
+              dndContext={dndContext}
+              enableSelection
+            />
+          ))}
         </TableBody>
       </table>
       {footer && <div className="p-4">{footer}</div>}
     </div>
   );
 };
+
 export { Table };

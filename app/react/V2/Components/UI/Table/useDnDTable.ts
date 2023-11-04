@@ -1,44 +1,68 @@
-import { useEffect, useState } from 'react';
-import { Table, Row, SortingState } from '@tanstack/react-table';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { Table } from '@tanstack/react-table';
 import { ItemTypes } from 'app/V2/shared/types';
-import type { IDraggable } from 'app/V2/shared/types';
 import { useDnDContext } from '../../Layouts/DragAndDrop';
+import type { IDnDOperations } from '../../Layouts/DragAndDrop/DnDDefinitions';
 
 const useDnDTable = <T>(
   draggableRows: boolean,
-  getDisplayName: (item: IDraggable<Row<T>>) => string,
   table: Table<T>,
-  sortingState?: SortingState,
-  onChange: (rows: Row<T>[]) => void = () => {}
+  operations: IDnDOperations<T>,
+  [internalData, setInternalData]: [T[], Dispatch<SetStateAction<T[]>>]
 ) => {
-  const [reset, setReset] = useState(false);
-  const dndContext = useDnDContext<Row<T>>(
+  const [dndContextUpdated, setDndContextUpdated] = useState(false);
+  const firstRender = useRef(true);
+
+  const dndContext = useDnDContext<T>(
     ItemTypes.ROW,
     {
-      getDisplayName,
+      ...operations,
       sortCallback: () => {
-        setReset(true);
         table.resetSorting(true);
       },
-      onChange,
     },
-    table.getRowModel().rows,
+    internalData,
     []
   );
 
   useEffect(() => {
-    if (!draggableRows) {
-      return;
-    }
-    if (!reset) {
-      dndContext.updateActiveItems(table.getRowModel().rows);
-    } else {
-      setReset(false);
+    if (draggableRows && !firstRender.current) {
+      dndContext.updateActiveItems(internalData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortingState]);
+  }, [draggableRows, internalData]);
 
-  return { activeItems: draggableRows ? dndContext.activeItems : [], dndContext, setReset };
+  useEffect(() => {
+    if (draggableRows && !dndContextUpdated) {
+      const updatedData = table.getRowModel().rows.map(r => r.original);
+      dndContext.updateActiveItems(updatedData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draggableRows, table.getSortedRowModel()]);
+
+  useEffect(() => {
+    if (draggableRows && !dndContextUpdated && !firstRender.current) {
+      setInternalData(
+        dndContext.activeItems.map(x => {
+          const values = x.value.items ? x.value.items.map(s => s.value) : [];
+          return {
+            ...x.value,
+            ...(operations.itemsProperty ? { [operations.itemsProperty]: values } : {}),
+          };
+        })
+      );
+      setDndContextUpdated(true);
+    } else {
+      setDndContextUpdated(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dndContext.activeItems, draggableRows, operations.itemsProperty, setInternalData]);
+
+  useEffect(() => {
+    firstRender.current = false;
+  }, []);
+
+  return { dndContext };
 };
 
 export { useDnDTable };

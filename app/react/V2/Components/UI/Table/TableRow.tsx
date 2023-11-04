@@ -1,38 +1,29 @@
 /* eslint-disable react/no-multi-comp */
 import React, { PropsWithChildren, useRef } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
-import type { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem, type IDnDContext } from '../../Layouts/DragAndDrop';
 import { GrabDoubleIcon } from '../../CustomIcons';
 
 interface TableRowProps<T> extends PropsWithChildren {
   draggableRow: boolean;
-  item: Row<T> | IDraggable<Row<T>>;
+  row: Row<T>;
   index: number;
-  dndContext: IDnDContext<Row<T>>;
+  dndContext: IDnDContext<T>;
   enableSelection: boolean | undefined;
 }
 
 /* eslint-disable comma-spacing */
-const isRow = <T,>(row: Row<T> | IDraggable<Row<T>>): row is Row<T> =>
-  (row as IDraggable<Row<T>>).value === undefined;
-
-/* eslint-disable comma-spacing */
-const TableRow = <T,>({
-  draggableRow,
-  item,
-  index,
-  dndContext,
-  enableSelection,
-}: TableRowProps<T>) => {
-  const rowValue = (isRow(item) ? item : (item as IDraggable<Row<T>>).value) as Row<T>;
+const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
+  const di = row.parentId
+    ? dndContext.activeItems[row.getParentRow()!.index].value.items![row.index]
+    : dndContext.activeItems[row.index];
   const icons = draggableRow
     ? [
         <DraggableItem
-          key={`grab_${item.id}`}
-          item={item as IDraggable<Row<T>>}
-          index={index}
+          key={`grab_${row.id}`}
+          item={di}
+          index={row.index}
           context={dndContext}
           wrapperType="div"
           className="bg-white border-0"
@@ -44,12 +35,12 @@ const TableRow = <T,>({
         </DraggableItem>,
       ]
     : [];
-  const isSubGroup = rowValue.depth > 0;
-  let bg = rowValue.getCanExpand() || isSubGroup ? 'bg-primary-50' : 'bg-white';
-  bg = rowValue.getCanExpand() && rowValue.getIsExpanded() ? 'bg-primary-100' : bg;
+  const isSubGroup = row.depth > 0;
+  let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : 'bg-white';
+  bg = row.getCanExpand() && row.getIsExpanded() ? 'bg-primary-100' : bg;
   return (
-    <tr key={item.id} className={`${bg} border-b`} ref={previewRef}>
-      {rowValue.getVisibleCells().map((cell, columnIndex) => {
+    <tr key={row.id} className={`${bg} border-b`} ref={previewRef}>
+      {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
         const firstColumnClass =
           cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)

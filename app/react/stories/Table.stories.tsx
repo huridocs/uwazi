@@ -18,7 +18,7 @@ type SampleSchema = {
 type Story = StoryObj<typeof Table<SampleSchema>> & { args?: { showUpdates?: boolean } };
 
 const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolean }) => {
-  const [tableRowsState, setTableRowsState] = useState<Row<SampleSchema>[]>();
+  const [tableState, setTableState] = useState<SampleSchema[]>();
   return (
     <>
       <div className="tw-content">
@@ -30,16 +30,16 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
           footer={props.footer}
           setSorting={props.setSorting}
           draggableRows={props.draggableRows === true}
-          onChange={setTableRowsState}
+          onChange={setTableState}
         />
       </div>
       {props.showUpdates === true && (
         <>
           <span>Updated Items</span>
           <ul>
-            {tableRowsState?.map((row, index) => (
+            {tableState?.map((item, index) => (
               // eslint-disable-next-line react/no-array-index-key
-              <li key={`row_${index}`}>{row.getValue('title')}</li>
+              <li key={`item_${index}`}>{item.title}</li>
             ))}
           </ul>
         </>

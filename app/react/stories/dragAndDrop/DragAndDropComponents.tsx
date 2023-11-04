@@ -122,8 +122,7 @@ const EditableItem = ({
     dndContext.updateItem({ ...item, value: { ...item.value, name: e.target.value } });
   }, 300);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedChangeHandler = useCallback(handleChange, [item, dndContext]);
+  const debouncedChangeHandler = useCallback(handleChange, [handleChange]);
 
   return (
     <input
