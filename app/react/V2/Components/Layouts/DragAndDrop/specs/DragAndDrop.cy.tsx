@@ -264,7 +264,7 @@ describe('DragAndDrop', () => {
       cy.get('[data-testid="root-draggable-item-0"]').within(() => cy.get('input').type(' ALL'));
       cy.get('[data-testid="root-draggable-item-1"]').within(() => cy.get('input').type(' VALUES'));
       cy.get('[data-testid="root-draggable-item-2"]').within(() =>
-        cy.get('input').type(' WERE UPDATED', { delay: 100 })
+        cy.get('input').type(' WERE UPDATED', { delay: 150 })
       );
       shouldContainListItems('div[data-testid="state-bin"]', [
         'Item 1 ALL',
