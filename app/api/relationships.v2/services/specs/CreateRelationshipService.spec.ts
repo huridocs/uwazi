@@ -1,7 +1,6 @@
 import { AuthorizationService } from 'api/authorization.v2/services/AuthorizationService';
-import { getConnection, getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { partialImplementation } from 'api/common.v2/testing/partialImplementation';
 import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { MissingEntityError } from 'api/entities.v2/errors/entityErrors';
@@ -15,6 +14,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { ObjectId } from 'mongodb';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { CreateRelationshipService } from '../CreateRelationshipService';
 import { DenormalizationService } from '../DenormalizationService';
 
@@ -39,7 +39,7 @@ const denormalizationServiceMock = partialImplementation<DenormalizationService>
 
 const createService = () => {
   const connection = getConnection();
-  const transactionManager = new MongoTransactionManager(getClient());
+  const transactionManager = DefaultTransactionManager();
   const SettingsDataSource = new MongoSettingsDataSource(connection, transactionManager);
 
   validateAccessMock.mockReset();

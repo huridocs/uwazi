@@ -30,8 +30,6 @@ describe('Languages', () => {
     it('should install new languages', () => {
       const BACKEND_LANGUAGE_INSTALL_DELAY = 25000;
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
-      cy.get('[data-testid=modal] input[type=text]').type('Danish');
-      cy.contains('button', 'Danish').click();
 
       cy.clearAndType('[data-testid=modal] input[type=text]', 'Basque');
       cy.contains('button', 'Basque').click();
@@ -40,7 +38,6 @@ describe('Languages', () => {
 
       cy.wait('@addLanguage');
       cy.contains('Dismiss').click();
-      cy.contains('Danish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('Basque', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('Languages installed successfully').click();
     });

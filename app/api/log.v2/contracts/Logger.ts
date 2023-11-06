@@ -1,7 +1,7 @@
 export interface Logger {
-  debug(message: string | string[], asJSON?: boolean): void;
-  info(message: string | string[], asJSON?: boolean): void;
-  warning(message: string | string[], asJSON?: boolean): void;
-  error(message: string | string[], asJSON?: boolean): void;
-  critical(message: string | string[], asJSON?: boolean): void;
+  debug(message: string | string[]): void;
+  info(message: string | string[]): void;
+  warning(message: string | string[]): void;
+  error(message: string | string[]): void;
+  critical(message: string | string[]): void;
 }

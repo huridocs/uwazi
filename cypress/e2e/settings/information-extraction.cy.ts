@@ -221,15 +221,30 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Find suggestions').click();
       cy.wait('@trainSuggestions');
       cy.contains('Training model...');
-      cy.contains('Finding suggestions...');
+      cy.contains('2023');
     });
 
-    it('should accept a single suggestion', () => {
-      cy.intercept('POST', 'api/suggestions/accept').as('accept');
-      cy.contains('button', 'Accept', { timeout: 10000 }).eq(0).click();
-      cy.wait('@accept');
-      cy.checkA11y();
+    it('should accept a single suggestion without affecting the order', () => {
+      cy.contains('Lorem Ipsum').parent().siblings().contains('button', 'Accept').click();
+
+      cy.contains('Suggestion accepted.');
       cy.contains('button', 'Dismiss').click();
+
+      const titles = [
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
+        'Batman v Superman: Dawn of Justice',
+        '2023',
+        'Spider-Man: Shattered Dimensions',
+        'The Spectacular Spider-Man',
+        'Uwazi Heroes Investigation',
+      ];
+
+      cy.get('tr > td:nth-child(2) > div').each((element, index) => {
+        const text = element.get(0).innerText;
+        expect(text).to.be.equal(titles[index]);
+      });
+
+      cy.checkA11y();
     });
 
     it('should use filters', () => {
@@ -246,17 +261,16 @@ describe('Information Extraction', () => {
   describe('PDF sidepanel', () => {
     it('should display the PDF sidepanel with the pdf and selection rectangle', () => {
       cy.contains('button', 'Open PDF').click();
-      cy.contains('h1', 'Spider-Man__Into_the_Spider-Verse.pdf');
+      cy.contains('h1', 'SamplePDF.pdf');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2023');
       });
       cy.get('div.highlight-rectangle').should('be.visible');
-      cy.contains('span', 'Spider-Man: Into the Spider-Verse');
-      cy.get('aside').toMatchImageSnapshot();
+      cy.contains('span', 'Lorem Ipsum');
     });
 
     it('should not render pdf pages that are not visible', () => {
-      cy.get('[data-region-selector-id="3"]').within(() => {
+      cy.get('[data-region-selector-id="2"]').within(() => {
         cy.get('div').should('be.empty');
       });
     });
@@ -266,38 +280,66 @@ describe('Information Extraction', () => {
       cy.get('div.highlight-rectangle').should('have.length', 0);
     });
 
+    it('should clear the filters', () => {
+      cy.contains('button', 'Cancel').click();
+      cy.contains('button', 'Stats & Filters').click();
+      cy.contains('button', 'Clear all').click();
+    });
+
     it('should click to fill with a new text', () => {
-      //@ts-ignore
-      cy.contains('span[role="presentation"]', 'Spider-Man: Into the Spider-Verse').setSelection(
-        'Spider-Man: Into the Spider-Verse'
-      );
+      cy.contains('The Spectacular Spider-Man').parent().siblings().last().click();
+      cy.get('aside').within(() => {
+        cy.get('input').clear();
+      });
+      cy.get('#pdf-container').scrollTo(0, 0);
+      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
+        .eq(0)
+        //@ts-ignore
+        .setSelection('The Spectacular Spider-Man');
+
       cy.contains('button', 'Click to fill').click();
       cy.get('div.highlight-rectangle').should('be.visible');
       cy.get('aside').within(() => {
-        cy.get('input').should('have.value', 'Spider-Man: Into the Spider-Verse');
+        cy.get('input').should('have.value', 'The Spectacular Spider-Man');
       });
     });
 
     it('should manually edit the field and save', () => {
       cy.get('aside').within(() => {
-        cy.get('input').type(' edited');
+        cy.get('input').clear();
+        cy.get('input').type('A title');
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');
       cy.contains('button', 'Dismiss').click();
-      cy.contains('button', 'Stats & Filters').click();
-      cy.contains('button', 'Clear all').click();
-      cy.get('tbody').within(() => {
-        cy.get('tr:nth-child(3)').within(() => {
-          cy.get('td:nth-child(2)').should('contain', 'Spider-Man: Into the Spider-Verse edited');
-        });
+      cy.contains('A title');
+    });
+
+    it('should check that the table updated and the ordering is not affected', () => {
+      const titles = [
+        '2023',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
+        'Batman v Superman: Dawn of Justice',
+        'Spider-Man: Shattered Dimensions',
+        'A title',
+        'Uwazi Heroes Investigation',
+      ];
+
+      cy.get('tr > td:nth-child(2) > div').each((element, index) => {
+        const text = element.get(0).innerText;
+        expect(text).to.be.equal(titles[index]);
       });
     });
 
     it('should open the pdf on the page of the selection', () => {
       cy.contains('a', 'Metadata Extraction').eq(0).click();
       cy.contains('Fechas from relevant templates').siblings().last().click();
-      cy.contains('Spider-Man: Into the Spider-Verse edited').parent().siblings().last().click();
+      cy.contains('Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009')
+        .parent()
+        .siblings()
+        .last()
+        .click();
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2018-12-01');
         cy.contains('New York City teenager Miles Morales');

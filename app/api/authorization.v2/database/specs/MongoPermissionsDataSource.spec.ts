@@ -1,12 +1,11 @@
 import { Db } from 'mongodb';
 
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoPermissionsDataSource } from '../MongoPermissionsDataSource';
 
 const factory = getFixturesFactory();
@@ -82,10 +81,7 @@ describe('MongoPermissionsDataSource', () => {
   ])(
     'should return the permissions for entities with the given sharedIds',
     async ({ sharedIds, expected }) => {
-      const dataSource = new MongoPermissionsDataSource(
-        db!,
-        new MongoTransactionManager(getClient())
-      );
+      const dataSource = new MongoPermissionsDataSource(db!, DefaultTransactionManager());
       const resultSet = dataSource.getByEntities(sharedIds);
       expect(resultSet).toBeInstanceOf(MongoResultSet);
       const result = await resultSet.all();

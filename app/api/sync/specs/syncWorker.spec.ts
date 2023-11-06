@@ -20,8 +20,6 @@ import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
 import bodyParser from 'body-parser';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
-import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { getClient } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
@@ -32,6 +30,7 @@ import { Server } from 'http';
 import 'isomorphic-fetch';
 import _ from 'lodash';
 import { FetchResponseError } from 'shared/JSONRequest';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { syncWorker } from '../syncWorker';
 import {
   host1Fixtures,
@@ -336,7 +335,7 @@ describe('syncWorker', () => {
 
   it('should syncronize translations v2 that match configured properties', async () => {
     await tenants.run(async () => {
-      const transactionManager = new MongoTransactionManager(getClient());
+      const transactionManager = DefaultTransactionManager();
       await new CreateTranslationsService(
         DefaultTranslationsDataSource(transactionManager),
         new ValidateTranslationsService(
