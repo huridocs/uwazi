@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React, { Component } from 'react';
-import { DragDropContext } from 'react-dnd';
+import { DragDropContext } from 'react-dnd-old';
 import { Provider } from 'react-redux';
 import { modelReducer, formReducer, Field, Control } from 'react-redux-form';
 import TestUtils from 'react-dom/test-utils';
@@ -22,8 +22,8 @@ import {
 } from 'app/Templates/components/MetadataTemplate';
 import MetadataProperty from 'app/Templates/components/MetadataProperty';
 import { dragSource } from 'app/Templates/components/PropertyOption';
-import * as templateActions from '../../actions/templateActions';
 import { BrowserRouter } from 'react-router-dom';
+import * as templateActions from '../../actions/templateActions';
 
 function sourceTargetTestContext(Target, Source, actions) {
   return DragDropContext(TestBackend)(

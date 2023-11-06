@@ -64,6 +64,13 @@ describe('MongoTranslationsDataSource', () => {
           ])
         ).rejects.toBeInstanceOf(DuplicatedKeyError);
       });
+
+      it('should not fail on an empty input', async () => {
+        const transactionManager = DefaultTransactionManager();
+        await expect(
+          new MongoTranslationsDataSource(getConnection(), transactionManager).insert([])
+        ).resolves.toEqual([]);
+      });
     });
 
     describe('when any other error happens', () => {

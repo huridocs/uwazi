@@ -35,6 +35,14 @@ describe('CopyFromEntity', () => {
             { name: 'id', type: 'generatedid' },
           ],
         },
+        {
+          _id: 'template_3',
+          properties: [
+            { name: 'description', type: 'markdown' },
+            { name: 'portrait', type: 'image' },
+            { name: 'interview', type: 'media' },
+          ],
+        },
       ]),
       originalEntity: {
         title: 'I want to be like you',
@@ -106,6 +114,44 @@ describe('CopyFromEntity', () => {
           },
           template: 'template_1',
           title: 'I want to be like you',
+        },
+      });
+    });
+
+    it('should ignore image and media fields', () => {
+      const entityWithMedia = {
+        title: 'Entity with media 1',
+        template: 'template_3',
+        metadata: {
+          portrait: [{ value: '/api/files/image.jpg' }],
+          interview: [{ value: 'https://youtube.com/interview' }],
+          description: [{ value: 'description of interview' }],
+        },
+      };
+
+      props.originalEntity = {
+        title: 'New entity with media',
+        template: 'template_3',
+        metadata: {},
+      };
+
+      render();
+      component.instance().onSelect(entityWithMedia);
+      component.instance().copy();
+
+      expect(store?.dispatch).toHaveBeenCalledWith({
+        external: true,
+        load: true,
+        model: 'myForm',
+        multi: false,
+        silent: true,
+        type: 'rrf/change',
+        value: {
+          metadata: {
+            description: 'description of interview',
+          },
+          template: 'template_3',
+          title: 'New entity with media',
         },
       });
     });

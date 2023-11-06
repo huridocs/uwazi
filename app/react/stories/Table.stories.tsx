@@ -15,21 +15,40 @@ type SampleSchema = {
   created: number;
 };
 
-type Story = StoryObj<typeof Table<SampleSchema>>;
+type Story = StoryObj<typeof Table<SampleSchema>> & { args?: { showUpdates?: boolean } };
 
+const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolean }) => {
+  const [tableRowsState, setTableRowsState] = useState<Row<SampleSchema>[]>();
+  return (
+    <>
+      <div className="tw-content">
+        <Table<SampleSchema>
+          columns={props.columns}
+          data={props.data}
+          title={props.title}
+          initialState={props.initialState}
+          footer={props.footer}
+          setSorting={props.setSorting}
+          draggableRows={props.draggableRows === true}
+          onChange={setTableRowsState}
+        />
+      </div>
+      {props.showUpdates === true && (
+        <>
+          <span>Updated Items</span>
+          <ul>
+            {tableRowsState?.map((row, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={`row_${index}`}>{row.getValue('title')}</li>
+            ))}
+          </ul>
+        </>
+      )}
+    </>
+  );
+};
 const Primary: Story = {
-  render: args => (
-    <div className="tw-content">
-      <Table<SampleSchema>
-        columns={args.columns}
-        data={args.data}
-        title={args.title}
-        initialState={args.initialState}
-        footer={args.footer}
-        setSorting={args.setSorting}
-      />
-    </div>
-  ),
+  render: args => <StoryComponent {...args} />,
 };
 
 const CustomCell = ({ cell }: CellContext<SampleSchema, any>) => (
@@ -65,6 +84,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
         title="Table A"
         enableSelection
         onSelection={setSelected1}
+        draggableRows={args.draggableRows}
       />
 
       <p className="m-1">Selected items for Table A: {selected1.length}</p>
@@ -80,6 +100,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
         title="Table B"
         enableSelection
         onSelection={setSelected2}
+        draggableRows={args.draggableRows}
       />
 
       <p className="m-1">Selected items for Table B: {selected2.length}</p>
@@ -90,7 +111,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -98,7 +119,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -153,7 +174,6 @@ const WithInitialState: Story = {
     initialState: { sorting: [{ id: 'description', desc: true }] },
   },
 };
-
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -188,6 +208,15 @@ const WithCheckboxes = {
   },
 };
 
-export { Basic, WithActions, WithCheckboxes, WithInitialState };
+const WithDnD: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    draggableRows: true,
+    initialState: { sorting: [{ id: 'description', desc: true }] },
+    showUpdates: true,
+  },
+};
+export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD };
 
 export default meta;

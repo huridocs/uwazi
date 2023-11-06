@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource, DropTarget } from 'react-dnd-old';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { editProperty } from 'app/Templates/actions/uiActions';
