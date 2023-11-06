@@ -57,9 +57,11 @@ export default {
   async up(db) {
     const settings = await db.collection('settings').findOne();
     const languages = settings.languages.map(l => l.key);
-    await db
-      .collection('translationsV2')
-      .deleteMany({ key: { $in: deletedKeys.map(k => k.key) }, 'context.id': 'System' });
+
+    await db.collection('translationsV2').deleteMany({
+      key: { $in: deletedKeys.concat(newKeys).map(k => k.key) },
+      'context.id': 'System',
+    });
 
     const insertMany = languages.map(l =>
       db.collection('translationsV2').insertMany(

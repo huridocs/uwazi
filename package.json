@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.139.0-rc5",
+  "version": "1.142.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -357,7 +357,7 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "29.0.1",
     "jest-environment-jsdom": "29.6.1",
-    "jest-extended": "4.0.0",
+    "jest-extended": "4.0.2",
     "jest-image-snapshot": "^6.0.0",
     "jest-jasmine2": "^29.6.4",
     "jest-puppeteer": "6.1.0",
