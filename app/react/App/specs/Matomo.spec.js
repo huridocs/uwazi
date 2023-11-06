@@ -1,12 +1,15 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import Immutable from 'immutable';
 import React from 'react';
-
-import { shallow } from 'enzyme';
-
+import { mount } from 'enzyme';
 import { mapStateToProps, MatomoComponent } from '../Matomo';
 
 describe('Matomo', () => {
   let props;
+
   beforeEach(() => {
     props = {
       url: 'url/',
@@ -15,20 +18,45 @@ describe('Matomo', () => {
   });
 
   it('should include matomo script when url and id are set', () => {
-    const component = shallow(<MatomoComponent {...props} />);
-    expect(component).toMatchSnapshot();
+    delete window._paq;
+    mount(<MatomoComponent {...props} />);
+    expect(window._paq).toEqual([
+      ['trackPageView'],
+      ['enableLinkTracking'],
+      ['setTrackerUrl', 'url/piwik.php'],
+      ['setSiteId', 'id'],
+    ]);
   });
 
   it('should add "/" at the end of url when not set', () => {
+    delete window._paq;
     props.url = 'url';
-    const component = shallow(<MatomoComponent {...props} />);
-    expect(component).toMatchSnapshot();
+    mount(<MatomoComponent {...props} />);
+    expect(window._paq).toEqual([
+      ['trackPageView'],
+      ['enableLinkTracking'],
+      ['setTrackerUrl', 'url/piwik.php'],
+      ['setSiteId', 'id'],
+    ]);
   });
 
   it('should not include script when id or url are not set', () => {
+    delete window._paq;
     props = {};
-    const component = shallow(<MatomoComponent {...props} />);
-    expect(component).toMatchSnapshot();
+    mount(<MatomoComponent {...props} />);
+    expect(window._paq).toEqual(undefined);
+  });
+
+  it('should not pollute existing keys in the window object', () => {
+    window._paq = [['googleTracker', 'idForTracker']];
+    mount(<MatomoComponent {...props} />);
+    expect(window._paq).toEqual([
+      ['googleTracker', 'idForTracker'],
+      ['trackPageView'],
+      ['enableLinkTracking'],
+      ['setTrackerUrl', 'url/piwik.php'],
+      ['setSiteId', 'id'],
+    ]);
   });
 
   describe('mapStateToProps', () => {

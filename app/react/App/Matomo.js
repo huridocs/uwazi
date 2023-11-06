@@ -18,14 +18,16 @@ const MatomoComponent = ({ id, url }) => {
     _paq.push(['enableLinkTracking']);
     _paq.push(['setTrackerUrl', `${matomoUrl}piwik.php`]);
     _paq.push(['setSiteId', id]);
-    const d = document;
-    const g = d.createElement('script');
-    const s = d.getElementsByTagName('script')[0];
+
+    const g = document.createElement('script');
     g.type = 'text/javascript';
     g.async = true;
     g.defer = true;
     g.src = `${matomoUrl}piwik.js`;
-    s.parentNode.insertBefore(g, s);
+    g.id = 'matomo-script';
+
+    const s = document.getElementById('matomo-script');
+    s?.parentNode.insertBefore(g, s);
   }, [id, url]);
 
   return undefined;
