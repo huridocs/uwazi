@@ -56,7 +56,9 @@ export default {
 
   async up(db) {
     const settings = await db.collection('settings').findOne();
-    const languages = settings.languages.map(l => l.key);
+    const languages = settings.languages
+      .map(l => l.key)
+      .filter((value, index, array) => array.indexOf(value) === index);
 
     await db.collection('translationsV2').deleteMany({
       key: { $in: deletedKeys.concat(newKeys).map(k => k.key) },
