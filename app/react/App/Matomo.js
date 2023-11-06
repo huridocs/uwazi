@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-const Matomo = ({ id, url }) => {
+const MatomoComponent = ({ id, url }) => {
   // eslint-disable-next-line max-statements
   useEffect(() => {
     if (!id && !url) {
@@ -29,12 +29,12 @@ const Matomo = ({ id, url }) => {
   return undefined;
 };
 
-Matomo.defaultProps = {
+MatomoComponent.defaultProps = {
   id: '',
   url: '',
 };
 
-Matomo.propTypes = {
+MatomoComponent.propTypes = {
   id: PropTypes.string,
   url: PropTypes.string,
 };
@@ -48,6 +48,6 @@ function mapStateToProps({ settings }) {
   }
 }
 
-export { Matomo, mapStateToProps };
+const Matomo = connect(mapStateToProps)(MatomoComponent);
 
-export default connect(mapStateToProps)(Matomo);
+export { Matomo, MatomoComponent, mapStateToProps };

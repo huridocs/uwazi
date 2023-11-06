@@ -3,7 +3,7 @@ import React from 'react';
 
 import { shallow } from 'enzyme';
 
-import { mapStateToProps, Matomo } from '../Matomo';
+import { mapStateToProps, MatomoComponent } from '../Matomo';
 
 describe('Matomo', () => {
   let props;
@@ -15,19 +15,19 @@ describe('Matomo', () => {
   });
 
   it('should include matomo script when url and id are set', () => {
-    const component = shallow(<Matomo {...props} />);
+    const component = shallow(<MatomoComponent {...props} />);
     expect(component).toMatchSnapshot();
   });
 
   it('should add "/" at the end of url when not set', () => {
     props.url = 'url';
-    const component = shallow(<Matomo {...props} />);
+    const component = shallow(<MatomoComponent {...props} />);
     expect(component).toMatchSnapshot();
   });
 
   it('should not include script when id or url are not set', () => {
     props = {};
-    const component = shallow(<Matomo {...props} />);
+    const component = shallow(<MatomoComponent {...props} />);
     expect(component).toMatchSnapshot();
   });
 
