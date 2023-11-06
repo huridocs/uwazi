@@ -5,16 +5,18 @@ import PropTypes from 'prop-types';
 const MatomoComponent = ({ id, url }) => {
   // eslint-disable-next-line max-statements
   useEffect(() => {
-    if (!id && !url) {
+    if (!id || !url) {
       return;
     }
 
-    const _paq = window._paq || [];
+    // eslint-disable-next-line no-multi-assign
+    const _paq = (window._paq = window._paq || []);
+
+    const matomoUrl = url.replace(/\/?$/, '/');
 
     _paq.push(['trackPageView']);
     _paq.push(['enableLinkTracking']);
-    const u = url.replace(/\/?$/, '/');
-    _paq.push(['setTrackerUrl', `${u}piwik.php`]);
+    _paq.push(['setTrackerUrl', `${matomoUrl}piwik.php`]);
     _paq.push(['setSiteId', id]);
     const d = document;
     const g = d.createElement('script');
@@ -22,7 +24,7 @@ const MatomoComponent = ({ id, url }) => {
     g.type = 'text/javascript';
     g.async = true;
     g.defer = true;
-    g.src = `${u}piwik.js`;
+    g.src = `${matomoUrl}piwik.js`;
     s.parentNode.insertBefore(g, s);
   }, [id, url]);
 
