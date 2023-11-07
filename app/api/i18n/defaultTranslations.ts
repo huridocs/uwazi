@@ -2,6 +2,16 @@
 // eslint-disable-next-line node/no-restricted-import
 import { readFile, readdir } from 'fs/promises';
 
+import { CSVLoader } from 'api/csv';
+import { objectIndex } from 'shared/data_utils/objectIndex';
+import { availableLanguages } from 'shared/languagesList';
+
+const availableLanguagesByKey = objectIndex(
+  availableLanguages,
+  l => l.key,
+  l => l
+);
+
 export class UITranslationNotAvailable extends Error {
   constructor(message: string) {
     super(message);
@@ -14,7 +24,15 @@ export class DefaultTranslations {
 
   static async retrievePredefinedTranslations(locale: string) {
     try {
-      return (await readFile(`${DefaultTranslations.CONTENTS_DIRECTORY}/${locale}.csv`)).toString();
+      const filePath = `${DefaultTranslations.CONTENTS_DIRECTORY}/${locale}.csv`;
+      const loader = new CSVLoader();
+      await loader.validateFormat(filePath, {
+        column_number: 2,
+        no_empty_values: true,
+        required_headers: ['Key', availableLanguagesByKey[locale]?.label],
+      });
+      const content = (await readFile(filePath)).toString();
+      return content;
     } catch (e) {
       if (e.code === 'ENOENT') {
         throw new UITranslationNotAvailable(

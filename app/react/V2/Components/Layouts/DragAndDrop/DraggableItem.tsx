@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { RefObject, useEffect, useRef } from 'react';
 import type { DragSourceMonitor } from 'react-dnd/dist/types/monitors';
 import { Bars3Icon } from '@heroicons/react/20/solid';
 
@@ -19,6 +19,7 @@ interface DraggableItemProps<T> extends React.PropsWithChildren {
   omitIcon?: boolean;
   wrapperType?: 'li' | 'tr' | 'div';
   container?: string;
+  previewRef?: RefObject<HTMLElement>;
 }
 
 type DraggedResult<T> = {
@@ -74,6 +75,7 @@ const DraggableItemComponent = <T,>({
   omitIcon = false,
   wrapperType = 'li',
   container,
+  previewRef,
 }: DraggableItemProps<T>) => {
   const ref = useRef(null);
   const [, drop] = useDrop({
@@ -89,7 +91,7 @@ const DraggableItemComponent = <T,>({
     hover: hoverSortable(ref, { ...item, container }, index, context.sort),
   });
 
-  const [{ isDragging, handlerId }, drag] = useDrag({
+  const [{ isDragging, handlerId }, drag, preview] = useDrag({
     type: context.type,
     item: { item: { ...item, container }, index },
     end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
@@ -108,6 +110,12 @@ const DraggableItemComponent = <T,>({
       handlerId: monitor.getHandlerId(),
     }),
   });
+
+  useEffect(() => {
+    if (previewRef !== undefined) {
+      preview(previewRef);
+    }
+  }, [preview, previewRef]);
 
   const opacity = getOpacityLevel(isDragging);
 

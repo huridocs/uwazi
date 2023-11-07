@@ -13,27 +13,27 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 import * as Tracing from '@sentry/tracing';
 
-import { appContextMiddleware } from 'api/utils/appContextMiddleware';
-import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import { registerEventListeners } from 'api/eventListeners';
 import { applicationEventsBus } from 'api/eventsbus';
+import { appContextMiddleware } from 'api/utils/appContextMiddleware';
+import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import uwaziMessage from '../message';
 import apiRoutes from './api/api';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
 
+import { versionRoutes } from './api/version/routes';
 import { migrator } from './api/migrations/migrator';
+import { DB } from './api/odm';
+import { permissionsContext } from './api/permissions/permissionsContext';
+import { closeSockets } from './api/socketio/setupSockets';
+import { tenants } from './api/tenants/tenantContext';
 import errorHandlingMiddleware from './api/utils/error_handling_middleware';
 import { handleError } from './api/utils/handleError.js';
-import { serverSideRender } from './react/server';
-import { DB } from './api/odm';
-import { tenants } from './api/tenants/tenantContext';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
-import { closeSockets } from './api/socketio/setupSockets';
-import { permissionsContext } from './api/permissions/permissionsContext';
-
+import { serverSideRender } from './react/server';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
 mongoose.Promise = Promise;
@@ -114,6 +114,7 @@ console.info('==> Connecting to', config.DBHOST);
 DB.connect(config.DBHOST, dbAuth).then(async () => {
   await tenants.setupTenants();
   authRoutes(app);
+  versionRoutes(app);
   app.use(privateInstanceMiddleware);
   app.use('/flag-images', express.static(path.resolve(__dirname, '../dist/flags')));
 

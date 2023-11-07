@@ -16,6 +16,7 @@ describe('Translations', () => {
 
   describe('translations list', () => {
     it('should be accessible', () => {
+      cy.contains('User Interface');
       cy.get('[data-testid=settings-translations]').toMatchImageSnapshot();
       cy.checkA11y();
     });
