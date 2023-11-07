@@ -31,6 +31,8 @@ describe('Image is rendered when editing an entity in document view', () => {
   it('Should select image for image property from supporting files', async () => {
     await expect(page).toClick('.metadata-sidepanel.is-active a', { text: 'View' });
 
+    await expect(page).toMatchElement('h1.item-name', { text: 'With image' });
+
     await expect(page).toClick('.metadata-sidepanel button.edit-metadata', {
       text: 'Edit',
     });

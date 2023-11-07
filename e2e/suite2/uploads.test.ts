@@ -78,7 +78,9 @@ describe('Uploads', () => {
         page.waitForFileChooser(),
         page.click('label[for="pdf-upload-button"]'),
       ]);
+
       await fileChooser.accept([`${__dirname}/../test_files/invalid.pdf`]);
+      await expect(page).toMatchElement('span', { text: 'Invalid' });
       await expectDocumentCountAfterSearch(page, 3);
 
       const title = await getText(entityTitle(firstEntitySelector));
