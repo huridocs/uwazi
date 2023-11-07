@@ -1,7 +1,7 @@
 import db from 'api/utils/testing_db';
 
 const fixturesDB = {
-  settings: [{ _id: db.id(), languages: [{ key: 'en' }, { key: 'es' }] }],
+  settings: [{ _id: db.id(), languages: [{ key: 'en' }, { key: 'es' }, { key: 'es' }] }],
   translationsV2: [
     {
       _id: db.id(),
