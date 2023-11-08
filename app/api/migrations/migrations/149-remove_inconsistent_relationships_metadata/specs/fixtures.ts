@@ -149,6 +149,95 @@ const noReindexFixtures: FixtureType = {
   ],
 };
 
-const fixtures: FixtureType = {};
+const fixtures: FixtureType = {
+  ...noReindexFixtures,
+  entities: [
+    ...(noReindexFixtures.entities || []),
+    {
+      title: 'bad_entity_with_typed_relationship',
+      template: ids.templateWithOneTypedRelationship,
+      sharedId: 'bad_entity_with_typed_relationship',
+      language: 'en',
+      metadata: {
+        relationship_typed_target: [
+          {
+            value: 'source_2',
+            label: 'source_2',
+          },
+          {
+            value: 'source_A',
+            label: 'source_A',
+          },
+        ],
+      },
+    },
+    {
+      title: 'bad_entity_with_untyped_relationship',
+      template: ids.templateWithOneUntypedRelationship,
+      sharedId: 'bad_entity_with_untyped_relationship',
+      language: 'en',
+      metadata: {
+        relationship_untyped_target: [
+          {
+            value: 'source_B',
+            label: 'source_B',
+          },
+        ],
+      },
+    },
+    {
+      title: 'bad_entity_with_two_relationships',
+      template: ids.templateWithTwoRelationships,
+      sharedId: 'bad_entity_with_two_relationships',
+      language: 'en',
+      metadata: {
+        relationship_typed_target: [
+          {
+            value: 'source_1',
+            label: 'source_1',
+          },
+          {
+            value: 'source_C',
+            label: 'source_C',
+          },
+          {
+            value: 'source_2',
+            label: 'source_2',
+          },
+        ],
+        relationship_untyped_target: [
+          {
+            value: 'source_D',
+            label: 'source_D',
+          },
+          {
+            value: 'source_1',
+            label: 'source_1',
+          },
+          {
+            value: 'source_E',
+            label: 'source_E',
+          },
+          {
+            value: 'source_2',
+            label: 'source_2',
+          },
+          {
+            value: 'source_F',
+            label: 'source_F',
+          },
+          {
+            value: 'source_3',
+            label: 'source_3',
+          },
+          {
+            value: 'source_G',
+            label: 'source_G',
+          },
+        ],
+      },
+    },
+  ],
+};
 
 export { fixtures, ids, noReindexFixtures };

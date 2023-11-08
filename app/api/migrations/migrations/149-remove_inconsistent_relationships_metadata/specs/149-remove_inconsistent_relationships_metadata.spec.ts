@@ -12,6 +12,23 @@ beforeAll(async () => {
 
 let db: Db;
 
+const expectedForUnchanged = [
+  {
+    unrelated_text_prop: ['unrelated_text_prop'],
+    unrelated_numeric_prop: [1],
+  },
+  {
+    relationship_typed_target: ['source_1'],
+  },
+  {
+    relationship_untyped_target: ['source_2', 'source_3'],
+  },
+  {
+    relationship_typed_target: ['source_1', 'source_2'],
+    relationship_untyped_target: ['source_3'],
+  },
+];
+
 const getValues = async () => {
   const entities = await db
     .collection<EntitySchema>('entities')
@@ -38,6 +55,23 @@ describe('migration remove_inconsistent_relationships_metadata', () => {
       expect(migration.delta).toBe(149);
     });
 
+    it('should remove metadata values without related entities', async () => {
+      const values = await getValues();
+      expect(values).toMatchObject([
+        ...expectedForUnchanged,
+        {
+          relationship_typed_target: ['source_2'],
+        },
+        {
+          relationship_untyped_target: [],
+        },
+        {
+          relationship_typed_target: ['source_1', 'source_2'],
+          relationship_untyped_target: ['source_1', 'source_2', 'source_3'],
+        },
+      ]);
+    });
+
     it('should signal reindex', async () => {
       expect(migration.reindex).toBe(true);
     });
@@ -52,22 +86,7 @@ describe('migration remove_inconsistent_relationships_metadata', () => {
 
     it('should not remove anything', async () => {
       const values = await getValues();
-      expect(values).toMatchObject([
-        {
-          unrelated_text_prop: ['unrelated_text_prop'],
-          unrelated_numeric_prop: [1],
-        },
-        {
-          relationship_typed_target: ['source_1'],
-        },
-        {
-          relationship_untyped_target: ['source_2', 'source_3'],
-        },
-        {
-          relationship_typed_target: ['source_1', 'source_2'],
-          relationship_untyped_target: ['source_3'],
-        },
-      ]);
+      expect(values).toMatchObject(expectedForUnchanged);
     });
 
     it('should not signal reindex', async () => {
