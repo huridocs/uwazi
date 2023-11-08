@@ -1,13 +1,20 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import {
+  LoaderFunction,
+  useLoaderData,
+  useRevalidator,
+  unstable_useBlocker as useBlocker,
+} from 'react-router-dom';
+
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
 
 import { Translate } from 'app/I18N';
 import * as SettingsAPI from 'app/V2/api/settings';
+import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
@@ -31,6 +38,21 @@ const MenuConfig = () => {
   const revalidator = useRevalidator();
   const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
   const [linkToEdit, setLinkToEdit] = useState<ClientSettingsLinkSchema | undefined>();
+  const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    setLinkChanges(links);
+    console.log('links', links);
+  }, [links]);
+
+  const blocker = useBlocker(links !== linkChanges);
+
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      setShowModal(true);
+    }
+  }, [blocker, setShowModal]);
 
   const edit = (row: Row<ClientSettingsLinkSchema>) => {
     setLinkToEdit(row.original);
@@ -47,12 +69,8 @@ const MenuConfig = () => {
     setIsSidepanelOpen(true);
   };
 
-  const deleteSelected = async () => {
-    const newLinks = links?.filter(
-      link => !selectedLinks.map(selected => selected.original).includes(link)
-    );
-
-    await SettingsAPI.saveLinks(newLinks);
+  const save = async () => {
+    await SettingsAPI.saveLinks(linkChanges);
     revalidator.revalidate();
     setNotifications({
       type: 'success',
@@ -60,28 +78,32 @@ const MenuConfig = () => {
     });
   };
 
+  const deleteSelected = async () => {
+    const newLinks = links?.filter(
+      link => !selectedLinks.map(selected => selected.original).includes(link)
+    );
+
+    setLinkChanges(newLinks);
+  };
+
   const formSubmit = async (formValues: ClientSettingsLinkSchema & { groupId?: string }) => {
     const { groupId, ...linkData } = formValues;
+    const currentLinks = [...linkChanges] || [];
 
     if (linkData.type === 'group') {
       linkData.sublinks = [];
-      links?.push(linkData);
+      currentLinks?.push(linkData);
     } else {
-      const group = links?.find(_link => _link._id === groupId);
+      const group = currentLinks?.find(_link => _link._id === groupId);
       if (group) {
         group.sublinks?.push(linkData);
       } else {
-        links.push(linkData);
+        currentLinks.push(linkData);
       }
     }
 
-    await SettingsAPI.saveLinks(links);
-    revalidator.revalidate();
+    setLinkChanges(currentLinks);
     setIsSidepanelOpen(false);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Updated</Translate>,
-    });
   };
 
   return (
@@ -97,7 +119,8 @@ const MenuConfig = () => {
             enableSelection
             draggableRows
             columns={columns({ edit })}
-            data={links || []}
+            data={linkChanges}
+            onChange={setLinkChanges}
             title={<Translate>Menu</Translate>}
             subRowsKey="sublinks"
             onSelection={setSelectedLinks}
@@ -117,13 +140,25 @@ const MenuConfig = () => {
             </div>
           )}
           {selectedLinks.length === 0 && (
-            <div className="flex gap-2">
-              <Button type="button" onClick={addLink}>
-                <Translate>Add link</Translate>
-              </Button>
-              <Button type="button" onClick={addGroup}>
-                <Translate>Add group</Translate>
-              </Button>
+            <div className="flex justify-between w-full">
+              <div className="flex gap-2">
+                <Button type="button" onClick={addLink}>
+                  <Translate>Add link</Translate>
+                </Button>
+                <Button type="button" onClick={addGroup}>
+                  <Translate>Add group</Translate>
+                </Button>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={save}
+                  color="success"
+                  disabled={links === linkChanges}
+                >
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
             </div>
           )}
         </SettingsContent.Footer>
@@ -148,6 +183,9 @@ const MenuConfig = () => {
           links={links}
         />
       </Sidepanel>
+      {showModal && (
+        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };
