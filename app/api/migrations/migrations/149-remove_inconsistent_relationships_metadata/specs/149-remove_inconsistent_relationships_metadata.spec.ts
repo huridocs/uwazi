@@ -7,7 +7,7 @@ import { EntitySchema } from '../types';
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
+  jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
 });
 
 let db: Db;
@@ -48,6 +48,7 @@ describe('migration remove_inconsistent_relationships_metadata', () => {
       await testingDB.setupFixturesAndContext(fixtures);
       db = testingDB.mongodb!;
       migration.reindex = false;
+      migration.batchSize = 4;
       await migration.up(db);
     });
 
@@ -81,6 +82,7 @@ describe('migration remove_inconsistent_relationships_metadata', () => {
     beforeAll(async () => {
       await testingDB.setupFixturesAndContext(noReindexFixtures);
       db = testingDB.mongodb!;
+      migration.reindex = false;
       await migration.up(db);
     });
 

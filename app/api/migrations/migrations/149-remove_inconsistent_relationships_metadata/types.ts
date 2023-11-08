@@ -79,4 +79,4 @@ type FixtureType = {
   relationTypes?: RelationshipType[];
 };
 
-export type { EntitySchema, FixtureType, RelationshipType, TemplateSchema };
+export type { EntitySchema, FixtureType, PropertySchema, RelationshipType, TemplateSchema };
