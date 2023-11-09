@@ -37,10 +37,10 @@ const isNotAutoContained = <T,>(
   draggedResult: DraggedResult<T>,
   dropParent?: { id?: string; item?: IDraggable<T> }
 ) =>
-  (draggedResult.container !== currentItem.container ||
+  (draggedResult.item.container !== currentItem.container ||
     dropParent === undefined ||
     dropParent?.id !== draggedResult.item.parent?.id ||
-    draggedResult.container === undefined) &&
+    draggedResult.item.container === undefined) &&
   (dropParent === undefined || draggedResult.item.id !== dropParent.id);
 
 /* eslint-disable comma-spacing */
@@ -97,6 +97,7 @@ const DraggableItemComponent = <T,>({
     end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
+
       if (
         hasValidContext(dropContext) &&
         isNotAutoContained(item, draggedResult, dropParent) &&
@@ -118,6 +119,10 @@ const DraggableItemComponent = <T,>({
   }, [preview, previewRef]);
 
   const opacity = getOpacityLevel(isDragging);
+  if (isDragging && previewRef && previewRef.current) {
+    // eslint-disable-next-line no-param-reassign
+    previewRef.current.className = `${previewRef?.current?.className} border border-gray-800 border-solid`;
+  }
 
   drag(drop(ref));
 

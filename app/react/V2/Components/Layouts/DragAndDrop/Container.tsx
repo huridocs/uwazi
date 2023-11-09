@@ -29,7 +29,7 @@ const Container = <T,>({
   const currentItems = parent ? parent.value.items || [] : context.activeItems;
   return (
     <div className="tw-content " data-testid="active_filters_root">
-      <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
+      <div className={`${className || ''}`} style={{ overflow: 'hidden', clear: 'both' }}>
         <ul>
           {currentItems
             .filter((item: IDraggable<T>) => item)
