@@ -33,7 +33,7 @@ const useDnDTable = <T>(
   }, [draggableRows, internalData]);
 
   useEffect(() => {
-    if (draggableRows && !dndContextUpdated) {
+    if (draggableRows && !dndContextUpdated && !firstRender.current) {
       const updatedData = table.getRowModel().rows.map(r => r.original);
       dndContext.updateActiveItems(updatedData);
     }
