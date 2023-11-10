@@ -119,7 +119,6 @@ const MenuConfig = () => {
   };
 
   const formSubmit = async (values: ClientSettingsLinkSchema[]) => {
-    console.log('formSubmit', values);
     setLinkChanges(values);
     setIsSidepanelOpen(false);
   };

@@ -34,7 +34,10 @@ const useDnDTable = <T>(
 
   useEffect(() => {
     if (draggableRows && !dndContextUpdated && !firstRender.current) {
-      const updatedData = table.getRowModel().rows.map(r => r.original);
+      const updatedData = table
+        .getRowModel()
+        .rows.filter(r => !r.parentId)
+        .map(r => r.original);
       dndContext.updateActiveItems(updatedData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

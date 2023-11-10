@@ -43,7 +43,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
       title: link?.title || '',
       type: link?.type || 'link',
       url: link?.url || '',
-      sublinks: link?.sublinks || [],
+      sublinks: link?.sublinks,
       _id: link?._id?.toString(),
       groupId: link?.groupId?.toString(),
     },
@@ -53,6 +53,10 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
   const onSubmit = (formValues: SettingsLinkForm) => {
     const { groupId, ...linkData } = formValues;
     let currentLinks = [...links] || [];
+
+    if (linkData.type === 'link') {
+      delete linkData.sublinks;
+    }
 
     if (!groupId) {
       let linkIndex = currentLinks.findIndex(_link => _link._id === linkData._id);

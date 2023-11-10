@@ -42,6 +42,7 @@ const Table = <T,>({
   const [internalData, setInternalData] = useState(data);
 
   useEffect(() => {
+    setRowSelection({});
     setInternalData(data);
   }, [data]);
 
@@ -69,15 +70,10 @@ const Table = <T,>({
   const sortingState = manualSorting ? sorting : internalSorting;
   const sortingFunction = manualSorting ? setSorting : setInternalSortingSorting;
 
-  const preparedData = useMemo<T[]>(() => {
-    setRowSelection({});
-    return internalData;
-  }, [internalData]);
-
   const table = useReactTable({
     columns: memoizedColumns,
     manualSorting,
-    data: preparedData,
+    data: internalData,
     initialState,
     state: {
       sorting: sortingState,
