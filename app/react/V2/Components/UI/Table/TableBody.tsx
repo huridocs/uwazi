@@ -18,7 +18,9 @@ const TableBodyComponent = <T,>({
   dndContext,
 }: TableBodyProps<T>) =>
   draggableRows && dndContext ? (
-    <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+    <tbody>
+      <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+    </tbody>
   ) : (
     <tbody>{children}</tbody>
   );

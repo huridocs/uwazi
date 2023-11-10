@@ -14,12 +14,11 @@ interface MenuFormProps {
   closePanel: () => void;
   link?: ClientSettingsLinkSchema & { groupId?: string };
   links?: ClientSettingsLinkSchema[];
-  submit: (formValues: SettingsLinkForm) => void;
+  submit: (formValues: ClientSettingsLinkSchema[]) => void;
 }
 
 const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
   const [groups, setGroups] = useState<OptionSchema[]>([]);
-  console.log(link);
   useEffect(() => {
     if (links) {
       const _groups = links
@@ -40,9 +39,47 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<SettingsLinkForm>({
-    defaultValues: { ...link, _id: link?._id?.toString(), groupId: link?.groupId },
+    values: {
+      title: link?.title || '',
+      type: link?.type || 'link',
+      url: link?.url || '',
+      sublinks: link?.sublinks || [],
+      _id: link?._id?.toString(),
+      groupId: link?.groupId?.toString(),
+    },
     mode: 'onSubmit',
   });
+
+  const onSubmit = (formValues: SettingsLinkForm) => {
+    const { groupId, ...linkData } = formValues;
+    let currentLinks = [...links] || [];
+
+    if (!groupId) {
+      let linkIndex = currentLinks.findIndex(_link => _link._id === linkData._id);
+      linkIndex = linkIndex === -1 ? currentLinks.length : linkIndex;
+      currentLinks[linkIndex] = linkData;
+    }
+
+    currentLinks = currentLinks.map(_link => {
+      if (!_link.sublinks) {
+        return _link;
+      }
+
+      if (_link._id !== groupId) {
+        return {
+          ..._link,
+          sublinks: _link.sublinks.filter(sublink => sublink._id !== linkData._id),
+        };
+      }
+
+      let sublinkIndex = _link.sublinks.findIndex(sublink => sublink._id === linkData._id);
+      sublinkIndex = sublinkIndex === -1 ? _link.sublinks.length : sublinkIndex;
+      const sublinks = [..._link.sublinks];
+      sublinks[sublinkIndex] = linkData;
+      return { ..._link, sublinks };
+    });
+    submit(currentLinks);
+  };
 
   return (
     <div className="relative h-full">
@@ -60,7 +97,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           </Translate>
         </div>
       </div>
-      <form onSubmit={handleSubmit(submit)} id="menu-form">
+      <form onSubmit={handleSubmit(onSubmit)} id="menu-form">
         <Card
           title={
             link?.type === 'group' ? <Translate>Group</Translate> : <Translate>Link</Translate>
@@ -97,7 +134,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           <Translate>Cancel</Translate>
         </Button>
         <Button className="grow" type="submit" form="menu-form">
-          <Translate>Add</Translate>
+          {link?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
         </Button>
       </div>
     </div>

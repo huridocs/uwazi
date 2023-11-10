@@ -21,7 +21,7 @@ import { notificationAtom } from 'app/V2/atoms';
 
 import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-
+import uniqueID from 'shared/uniqueID';
 import { MenuForm } from './components/MenuForm';
 
 import { columns } from './components/TableComponents';
@@ -44,7 +44,11 @@ const MenuConfig = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    setLinkChanges([...links]);
+    const linksWIthid = links?.map(link => {
+      const sublinks = link.sublinks?.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` }));
+      return { ...link, sublinks };
+    });
+    setLinkChanges(linksWIthid);
   }, [links]);
 
   const blocker = useBlocker(links !== linkChanges);
@@ -55,25 +59,41 @@ const MenuConfig = () => {
     }
   }, [blocker, setShowModal]);
 
-  const edit = (row: Row<ClientSettingsLinkSchema>, group: string | undefined) => {
-    console.log(row);
+  const edit = (row: Row<ClientSettingsLinkSchema>) => {
+    const parent = row.getParentRow();
+
     const link = row.original;
-    setFormValues({ ...link, groupId: group });
+    setFormValues({ ...link, groupId: parent?.original._id });
     setIsSidepanelOpen(true);
   };
 
   const addLink = () => {
-    setFormValues({ title: '', type: 'link', url: '' });
+    setFormValues({ _id: `tmp_${uniqueID()}`, title: '', type: 'link', url: '' });
     setIsSidepanelOpen(true);
   };
 
   const addGroup = () => {
-    setFormValues({ title: '', type: 'group', sublinks: [] });
+    setFormValues({ _id: `tmp_${uniqueID()}`, title: '', type: 'group', sublinks: [] });
     setIsSidepanelOpen(true);
   };
 
+  const sanitizeIds = (link: ClientSettingsLinkSchema) => {
+    if (link._id?.startsWith('tmp_')) {
+      delete link._id;
+    }
+    if (link.sublinks) {
+      link.sublinks = link.sublinks.map(sublink => {
+        if (sublink._id?.startsWith('tmp_')) {
+          delete sublink._id;
+        }
+        return sublink;
+      });
+    }
+    return link;
+  };
+
   const save = async () => {
-    await SettingsAPI.saveLinks(linkChanges);
+    await SettingsAPI.saveLinks(linkChanges.map(sanitizeIds));
     revalidator.revalidate();
     setNotifications({
       type: 'success',
@@ -82,30 +102,25 @@ const MenuConfig = () => {
   };
 
   const deleteSelected = async () => {
-    const newLinks = links?.filter(
-      link => !selectedLinks.map(selected => selected.original).includes(link)
+    let newLinks = linkChanges.filter(
+      link => !selectedLinks.find(selected => selected.original._id === link._id)
     );
+
+    newLinks = newLinks.map(link => {
+      if (link.sublinks) {
+        link.sublinks = link.sublinks.filter(
+          sublink => !selectedLinks.find(selected => selected.original._id === sublink._id)
+        );
+      }
+      return link;
+    });
 
     setLinkChanges(newLinks);
   };
 
-  const formSubmit = async (values: ClientSettingsLinkSchema & { groupId?: string }) => {
-    const { groupId, ...linkData } = values;
-    const currentLinks = [...linkChanges] || [];
-
-    if (linkData.type === 'group') {
-      linkData.sublinks = [];
-      currentLinks?.push(linkData);
-    } else {
-      const group = currentLinks?.find(_link => _link._id === groupId);
-      if (group) {
-        group.sublinks?.push(linkData);
-      } else {
-        currentLinks.push(linkData);
-      }
-    }
-
-    setLinkChanges(currentLinks);
+  const formSubmit = async (values: ClientSettingsLinkSchema[]) => {
+    console.log('formSubmit', values);
+    setLinkChanges(values);
     setIsSidepanelOpen(false);
   };
 
