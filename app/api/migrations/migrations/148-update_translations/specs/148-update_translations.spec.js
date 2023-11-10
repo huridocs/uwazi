@@ -41,6 +41,10 @@ describe('migration update translations of settings new Users/Groups UI', () => 
       .find({ key: { $in: newKeys.map(k => k.key) } })
       .toArray();
 
-    expect(translations.length).toBe(newKeys.length * fixtures.settings[0].languages.length);
+    expect(translations.length).toBe(26);
+  });
+
+  it('should be idempotent (do not throw an error on multiple runs)', async () => {
+    await expect(migration.up(testingDB.mongodb)).resolves.toBe(undefined);
   });
 });

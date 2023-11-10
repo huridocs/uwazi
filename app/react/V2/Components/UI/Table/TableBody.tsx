@@ -1,23 +1,29 @@
 import React, { PropsWithChildren } from 'react';
 import { withDnD, withDnDBackend } from '../../componentWrappers';
+import { IDnDContext } from '../../Layouts/DragAndDrop';
 
-interface TableBodyProps extends PropsWithChildren {
+interface TableBodyProps<T> extends PropsWithChildren {
   draggableRows: boolean;
   DndProvider?: React.FC<any>;
   HTML5Backend?: any;
+  dndContext?: IDnDContext<T>;
 }
-const TableBodyComponent = ({
+// eslint-disable-next-line comma-spacing
+const TableBodyComponent = <T,>({
   draggableRows,
   // eslint-disable-next-line react/jsx-no-useless-fragment
   DndProvider = () => <></>,
   children,
   HTML5Backend = {},
-}: TableBodyProps) => (
-  <tbody>
-    {(draggableRows === true && <DndProvider backend={HTML5Backend}>{children}</DndProvider>) ||
-      (draggableRows === false && <>{children}</>)}
-  </tbody>
-);
+  dndContext,
+}: TableBodyProps<T>) =>
+  draggableRows && dndContext ? (
+    <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+  ) : (
+    <tbody>{children}</tbody>
+  );
 
-const TableBody = (props: TableBodyProps) => withDnD(withDnDBackend(TableBodyComponent))(props);
+const TableBody = (props: TableBodyProps<any>) =>
+  withDnD(withDnDBackend(TableBodyComponent))(props);
+
 export { TableBody };
