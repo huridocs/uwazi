@@ -37,13 +37,14 @@ const MenuConfig = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
   const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
-  const [linkToEdit, setLinkToEdit] = useState<ClientSettingsLinkSchema | undefined>();
+  const [formValues, setFormValues] = useState<ClientSettingsLinkSchema & { groupId?: string }>(
+    {} as ClientSettingsLinkSchema & { groupId?: string }
+  );
   const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    setLinkChanges(links);
-    console.log('links', links);
+    setLinkChanges([...links]);
   }, [links]);
 
   const blocker = useBlocker(links !== linkChanges);
@@ -54,18 +55,20 @@ const MenuConfig = () => {
     }
   }, [blocker, setShowModal]);
 
-  const edit = (row: Row<ClientSettingsLinkSchema>) => {
-    setLinkToEdit(row.original);
+  const edit = (row: Row<ClientSettingsLinkSchema>, group: string | undefined) => {
+    console.log(row);
+    const link = row.original;
+    setFormValues({ ...link, groupId: group });
     setIsSidepanelOpen(true);
   };
 
   const addLink = () => {
-    setLinkToEdit({ title: '', type: 'link', url: '' });
+    setFormValues({ title: '', type: 'link', url: '' });
     setIsSidepanelOpen(true);
   };
 
   const addGroup = () => {
-    setLinkToEdit({ title: '', type: 'group', sublinks: [] });
+    setFormValues({ title: '', type: 'group', sublinks: [] });
     setIsSidepanelOpen(true);
   };
 
@@ -86,8 +89,8 @@ const MenuConfig = () => {
     setLinkChanges(newLinks);
   };
 
-  const formSubmit = async (formValues: ClientSettingsLinkSchema & { groupId?: string }) => {
-    const { groupId, ...linkData } = formValues;
+  const formSubmit = async (values: ClientSettingsLinkSchema & { groupId?: string }) => {
+    const { groupId, ...linkData } = values;
     const currentLinks = [...linkChanges] || [];
 
     if (linkData.type === 'group') {
@@ -166,8 +169,8 @@ const MenuConfig = () => {
       <Sidepanel
         title={
           <Translate className="uppercase">
-            {`${linkToEdit?.title === '' ? 'New' : 'Edit'} ${
-              linkToEdit?.type === 'group' ? 'Group' : 'Link'
+            {`${formValues?.title === '' ? 'New' : 'Edit'} ${
+              formValues?.type === 'group' ? 'Group' : 'Link'
             }`}
           </Translate>
         }
@@ -179,8 +182,8 @@ const MenuConfig = () => {
         <MenuForm
           submit={formSubmit}
           closePanel={() => setIsSidepanelOpen(false)}
-          link={linkToEdit}
-          links={links}
+          link={formValues}
+          links={linkChanges}
         />
       </Sidepanel>
       {showModal && (

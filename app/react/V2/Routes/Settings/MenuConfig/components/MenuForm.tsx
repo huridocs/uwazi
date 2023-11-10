@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import { InputField, Select, OptionSchema } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
@@ -12,25 +12,25 @@ type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string };
 
 interface MenuFormProps {
   closePanel: () => void;
-  link?: ClientSettingsLinkSchema;
+  link?: ClientSettingsLinkSchema & { groupId?: string };
   links?: ClientSettingsLinkSchema[];
   submit: (formValues: SettingsLinkForm) => void;
 }
 
 const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
   const [groups, setGroups] = useState<OptionSchema[]>([]);
-
+  console.log(link);
   useEffect(() => {
     if (links) {
       const _groups = links
         .filter(_link => _link.type === 'group' && _link.title && _link._id)
         .map(_link => ({
-          label: <Translate context="Menu">{_link.title}</Translate>,
+          label: t('Menu', _link.title, _link.title, false),
           value: _link._id?.toString(),
           key: _link._id?.toString(),
         })) as OptionSchema[];
 
-      const emptyGroup = { label: <Translate>No group</Translate>, value: '', key: '-' };
+      const emptyGroup = { label: t('System', 'No Group', 'No Group', false), value: '', key: '-' };
       setGroups([emptyGroup, ..._groups]);
     }
   }, [links]);
@@ -40,7 +40,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
     handleSubmit,
     formState: { errors },
   } = useForm<SettingsLinkForm>({
-    defaultValues: { ...link, _id: link?._id?.toString() },
+    defaultValues: { ...link, _id: link?._id?.toString(), groupId: link?.groupId },
     mode: 'onSubmit',
   });
 
