@@ -299,93 +299,96 @@ const PDFSidepanel = ({
       title={pdf?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
-      <form className="flex flex-col gap-4 h-full" onSubmit={handleSubmit(onSubmit)}>
-        <p className="mb-1 font-bold">{propertyLabel}</p>
-        <div className="sm:text-right">
-          <div className="flex flex-wrap gap-1">
-            <Button
-              type="button"
-              styling="light"
-              size="small"
-              color="primary"
-              onClick={async () => handleClickToFill()}
-              disabled={!selectedText?.selectionRectangles.length || isSubmitting}
-            >
-              <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
-            </Button>
+      <form className="flex flex-col h-full gap-4" onSubmit={handleSubmit(onSubmit)}>
+        <Sidepanel.Body>
+          <p className="mb-1 font-bold">{propertyLabel}</p>
+          <div className="sm:text-right">
+            <div className="flex flex-wrap gap-1">
+              <Button
+                type="button"
+                styling="light"
+                size="small"
+                color="primary"
+                onClick={async () => handleClickToFill()}
+                disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+              >
+                <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
+              </Button>
 
-            <InputField
-              className="grow"
-              id={propertyLabel}
-              label={propertyLabel}
-              hideLabel
-              type={propertyType}
-              hasErrors={errors.field?.type === 'required'}
-              {...register('field', {
-                required: isRequired,
-                valueAsDate: propertyType === 'date' || undefined,
-              })}
-            />
+              <InputField
+                className="grow"
+                id={propertyLabel}
+                label={propertyLabel}
+                hideLabel
+                type={propertyType}
+                hasErrors={errors.field?.type === 'required'}
+                {...register('field', {
+                  required: isRequired,
+                  valueAsDate: propertyType === 'date' || undefined,
+                })}
+              />
+            </div>
+
+            <button
+              type="button"
+              disabled={Boolean(!highlights) || isSubmitting}
+              className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
+              onClick={() => {
+                setHighlights(undefined);
+                setSelections(
+                  selectionHandlers.deleteFileSelection(
+                    { name: suggestion?.propertyName || '' },
+                    pdf?.extractedMetadata
+                  )
+                );
+              }}
+            >
+              <Translate>Clear PDF selection</Translate>
+            </button>
+            <SelectionError error={selectionError} />
           </div>
 
-          <button
-            type="button"
-            disabled={Boolean(!highlights) || isSubmitting}
-            className="pt-2 text-sm sm:pt-0 enabled:hover:underline disabled:text-gray-500 w-fit"
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear PDF selection</Translate>
-          </button>
-          <SelectionError error={selectionError} />
-        </div>
-
-        <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
-          {pdf && (
-            <PDF
-              fileUrl={`/api/files/${pdf.filename}`}
-              highlights={highlights}
-              onSelect={selection => {
-                if (!selection.selectionRectangles.length) {
-                  setSelectionError('Could not detect the area for the selected text');
-                  setSelectedText(undefined);
-                } else {
-                  setSelectionError(undefined);
-                  setSelectedText(selection);
-                }
+          <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
+            {pdf && (
+              <PDF
+                fileUrl={`/api/files/${pdf.filename}`}
+                highlights={highlights}
+                onSelect={selection => {
+                  if (!selection.selectionRectangles.length) {
+                    setSelectionError('Could not detect the area for the selected text');
+                    setSelectedText(undefined);
+                  } else {
+                    setSelectionError(undefined);
+                    setSelectedText(selection);
+                  }
+                }}
+                size={{
+                  height: `${pdfContainerHeight}px`,
+                }}
+                scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
+              />
+            )}
+          </div>
+        </Sidepanel.Body>
+        <Sidepanel.Footer>
+          <div className="flex gap-2">
+            <Button
+              className="flex-grow"
+              type="button"
+              styling="outline"
+              disabled={isSubmitting}
+              onClick={() => {
+                setShowSidepanel(false);
+                reset();
               }}
-              size={{
-                height: `${pdfContainerHeight}px`,
-              }}
-              scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
-            />
-          )}
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            className="flex-grow"
-            type="button"
-            styling="outline"
-            disabled={isSubmitting}
-            onClick={() => {
-              setShowSidepanel(false);
-              reset();
-            }}
-          >
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button className="flex-grow" type="submit" disabled={isSubmitting}>
-            <Translate>Accept</Translate>
-          </Button>
-        </div>
+            >
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="flex-grow" type="submit" disabled={isSubmitting}>
+              <Translate>Accept</Translate>
+            </Button>
+          </div>
+        </Sidepanel.Footer>
       </form>
     </Sidepanel>
   );

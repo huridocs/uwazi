@@ -168,134 +168,142 @@ const UserFormSidepanel = ({
         title={selectedUser ? <Translate>Edit user</Translate> : <Translate>New user</Translate>}
       >
         <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-          <div className="flex flex-col flex-grow gap-4">
-            <Card title={<Translate>General Information</Translate>}>
-              <div className="mb-4">
-                <InputField
-                  label={<Translate className="block mb-1 font-bold">Username</Translate>}
-                  id="username"
-                  errorMessage={getFieldError('username', errors.username?.type)}
-                  autoComplete="off"
-                  className="mb-1"
-                  {...register('username', {
-                    required: true,
-                    validate: {
-                      isUnique: username => isUnique(username, selectedUser, users),
-                      noSpaces: username => !/\s/.test(username),
-                    },
-                    maxLength: 50,
-                    minLength: 3,
-                  })}
+          <Sidepanel.Body>
+            <div className="flex flex-col flex-grow gap-4">
+              <Card title={<Translate>General Information</Translate>}>
+                <div className="mb-4">
+                  <InputField
+                    label={<Translate className="block mb-1 font-bold">Username</Translate>}
+                    id="username"
+                    errorMessage={getFieldError('username', errors.username?.type)}
+                    autoComplete="off"
+                    className="mb-1"
+                    {...register('username', {
+                      required: true,
+                      validate: {
+                        isUnique: username => isUnique(username, selectedUser, users),
+                        noSpaces: username => !/\s/.test(username),
+                      },
+                      maxLength: 50,
+                      minLength: 3,
+                    })}
+                  />
+                </div>
+
+                <Select
+                  label={
+                    <div className="flex gap-2 mb-1 font-bold align-middle">
+                      <Translate>User Role</Translate>
+                      <button type="button" onClick={() => setShowModal(true)}>
+                        <span className="sr-only">{t('System', 'Permission', null, false)}</span>
+                        <QuestionMarkCircleIcon className="w-5" />
+                      </button>
+                    </div>
+                  }
+                  className="mb-4"
+                  id="roles"
+                  options={userRoles}
+                  {...register('role')}
                 />
-              </div>
 
-              <Select
-                label={
-                  <div className="flex gap-2 mb-1 font-bold align-middle">
-                    <Translate>User Role</Translate>
-                    <button type="button" onClick={() => setShowModal(true)}>
-                      <span className="sr-only">{t('System', 'Permission', null, false)}</span>
-                      <QuestionMarkCircleIcon className="w-5" />
-                    </button>
-                  </div>
-                }
-                className="mb-4"
-                id="roles"
-                options={userRoles}
-                {...register('role')}
-              />
+                <div>
+                  <InputField
+                    label={<Translate className="block mb-1 font-bold">Email</Translate>}
+                    type="email"
+                    autoComplete="off"
+                    id="email"
+                    className="mb-1"
+                    errorMessage={getFieldError('email', errors.email?.type)}
+                    {...register('email', {
+                      required: true,
+                      validate: email => isUnique(email, selectedUser, users),
+                      maxLength: 256,
+                    })}
+                  />
+                </div>
+              </Card>
 
-              <div>
+              <Card title={<Translate>Security</Translate>}>
                 <InputField
-                  label={<Translate className="block mb-1 font-bold">Email</Translate>}
-                  type="email"
+                  label={
+                    <span className="mb-1 font-bold">
+                      <Translate>Password</Translate>
+                    </span>
+                  }
+                  id="password"
+                  type="password"
                   autoComplete="off"
-                  id="email"
-                  className="mb-1"
-                  errorMessage={getFieldError('email', errors.email?.type)}
-                  {...register('email', {
-                    required: true,
-                    validate: email => isUnique(email, selectedUser, users),
-                    maxLength: 256,
-                  })}
+                  errorMessage={getFieldError('password', errors.password?.type)}
+                  className="mb-4"
+                  {...register('password', { maxLength: 50 })}
                 />
-              </div>
-            </Card>
 
-            <Card title={<Translate>Security</Translate>}>
-              <InputField
-                label={
-                  <span className="mb-1 font-bold">
-                    <Translate>Password</Translate>
-                  </span>
-                }
-                id="password"
-                type="password"
-                autoComplete="off"
-                errorMessage={getFieldError('password', errors.password?.type)}
-                className="mb-4"
-                {...register('password', { maxLength: 50 })}
-              />
+                <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
+                  {selectedUser?._id && (
+                    <>
+                      <Button
+                        type="button"
+                        styling="light"
+                        onClick={() => onClickSubmit('reset-password')}
+                      >
+                        <Translate>Reset Password</Translate>
+                      </Button>
 
-              <div className="flex flex-col gap-1 w-fit md:with-full md:gap-4 md:flex-row md:justify-start">
-                {selectedUser?._id && (
-                  <>
+                      <Button
+                        type="button"
+                        styling="light"
+                        onClick={() => onClickSubmit('reset-2fa')}
+                      >
+                        <Translate>Reset 2FA</Translate>
+                      </Button>
+                    </>
+                  )}
+
+                  {selectedUser?.accountLocked && (
                     <Button
                       type="button"
                       styling="light"
-                      onClick={() => onClickSubmit('reset-password')}
+                      color="error"
+                      onClick={() => onClickSubmit('unlock-user')}
                     >
-                      <Translate>Reset Password</Translate>
+                      <Translate>Unlock account</Translate>
                     </Button>
+                  )}
+                </div>
+              </Card>
 
-                    <Button
-                      type="button"
-                      styling="light"
-                      onClick={() => onClickSubmit('reset-2fa')}
-                    >
-                      <Translate>Reset 2FA</Translate>
-                    </Button>
-                  </>
-                )}
-
-                {selectedUser?.accountLocked && (
-                  <Button
-                    type="button"
-                    styling="light"
-                    color="error"
-                    onClick={() => onClickSubmit('unlock-user')}
-                  >
-                    <Translate>Unlock account</Translate>
-                  </Button>
-                )}
+              <div className="border rounded-md shadow-sm border-gray-50">
+                <MultiSelect
+                  label={
+                    <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
+                      Groups
+                    </Translate>
+                  }
+                  onChange={selectedGroups => {
+                    const values = calculateSelectedGroups(selectedGroups, groups);
+                    setValue('groups', values, { shouldDirty: true });
+                  }}
+                  options={multiselectOptions}
+                  placeholder="Nothing selected"
+                />
               </div>
-            </Card>
-
-            <div className="rounded-md border border-gray-50 shadow-sm">
-              <MultiSelect
-                label={
-                  <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
-                    Groups
-                  </Translate>
-                }
-                onChange={selectedGroups => {
-                  const values = calculateSelectedGroups(selectedGroups, groups);
-                  setValue('groups', values, { shouldDirty: true });
-                }}
-                options={multiselectOptions}
-                placeholder="Nothing selected"
-              />
             </div>
-          </div>
-
-          <div className="flex gap-2">
-            <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button className="flex-grow" type="submit">
-              <Translate>Save</Translate>
-            </Button>
-          </div>
+          </Sidepanel.Body>
+          <Sidepanel.Footer>
+            <div className="flex gap-2">
+              <Button
+                className="flex-grow"
+                type="button"
+                styling="outline"
+                onClick={closeSidepanel}
+              >
+                <Translate>Cancel</Translate>
+              </Button>
+              <Button className="flex-grow" type="submit">
+                <Translate>Save</Translate>
+              </Button>
+            </div>
+          </Sidepanel.Footer>
         </form>
       </Sidepanel>
       <PermissionsListModal showModal={showModal} closeModal={() => setShowModal(false)} />
