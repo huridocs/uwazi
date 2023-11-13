@@ -3,13 +3,16 @@ import readline from 'readline';
 import csvtojson from 'csvtojson';
 
 import { Readable } from 'stream';
+import importFile, { ImportFile } from './importFile';
 
 type CSVRow = { [k: string]: string };
 
 const DELIMITERS = [',', ';'];
 const DELIMITER_REGEX = new RegExp(`[${DELIMITERS.join('')}]`);
 
-const peekHeaders = async (readStream: Readable): Promise<string[]> => {
+const peekHeaders = async (readSource: Readable | string): Promise<string[]> => {
+  const readStream =
+    typeof readSource === 'string' ? await importFile(readSource).readStream() : readSource;
   let headers: string[] = [];
   const rl = readline.createInterface({ input: readStream });
   const line = (await rl[Symbol.asyncIterator]().next()).value;
@@ -19,6 +22,24 @@ const peekHeaders = async (readStream: Readable): Promise<string[]> => {
   readStream.destroy();
   return headers;
 };
+
+class ValidateFormatError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidateFormatError';
+  }
+}
+
+type ValidateHeaderOptions = {
+  column_number?: number;
+  required_headers?: string[];
+};
+
+type ValidateCSVBodyOptions = {
+  no_empty_values?: boolean;
+};
+
+type ValidateFormatOptions = ValidateHeaderOptions & ValidateCSVBodyOptions;
 
 const csv = (readStream: Readable, stopOnError = false) => ({
   reading: false,
@@ -57,6 +78,59 @@ const csv = (readStream: Readable, stopOnError = false) => ({
   },
 });
 
+const validateHeader = async (file: ImportFile, options: ValidateHeaderOptions) => {
+  const headerOptions = options.required_headers || options.column_number;
+  if (!headerOptions) return;
+
+  const header = await peekHeaders(await file.readStream());
+
+  if (options.column_number) {
+    if (header.length !== options.column_number) {
+      throw new ValidateFormatError(
+        `Expected ${options.column_number} columns, but found ${header.length}.`
+      );
+    }
+  }
+
+  if (options.required_headers) {
+    const headerSet = new Set(header);
+    const missingHeaders = options.required_headers.filter(name => !headerSet.has(name));
+    if (missingHeaders.length) {
+      throw new ValidateFormatError(`Missing required headers: ${missingHeaders.join(', ')}.`);
+    }
+  }
+};
+
+const validateCSVBody = async (file: ImportFile, options: ValidateCSVBodyOptions) => {
+  const bodyOptions = options.no_empty_values;
+  if (!bodyOptions) return;
+
+  const readStream = await file.readStream();
+  const csvObj = csv(readStream, true);
+
+  csvObj.onRow(async (row: CSVRow, index: number) => {
+    if (options.no_empty_values) {
+      Object.entries(row).forEach(([header, value]) => {
+        if (!value) {
+          throw new ValidateFormatError(`Empty value at row ${index + 1}, column "${header}".`);
+        }
+      });
+    }
+  });
+
+  csvObj.onError(async (e: Error) => {
+    throw e;
+  });
+
+  await csvObj.read();
+};
+
+const validateFormat = async (filePath: string, options: ValidateFormatOptions) => {
+  const file = importFile(filePath);
+  await validateHeader(file, options);
+  await validateCSVBody(file, options);
+};
+
 export default csv;
-export type { CSVRow };
-export { peekHeaders };
+export type { CSVRow, ValidateFormatOptions };
+export { peekHeaders, validateFormat, ValidateFormatError };

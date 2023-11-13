@@ -1,14 +1,17 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  flexRender,
   getSortedRowModel,
   getCoreRowModel,
   useReactTable,
   SortingState,
+  Row,
 } from '@tanstack/react-table';
-import { TableProps, CheckBoxHeader, CheckBoxCell, getIcon } from './TableElements';
+import type { IDraggable } from 'app/V2/shared/types';
+import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
+import { TableHeader } from './TableHeader';
+import { TableBody } from './TableBody';
+import { TableRow } from './TableRow';
+import { useDnDTable } from './useDnDTable';
 
 const applyForSelection = (
   withSelection: any,
@@ -16,7 +19,7 @@ const applyForSelection = (
   enableSelection: boolean = false
 ) => (enableSelection ? withSelection : withOutSelection);
 
-// eslint-disable-next-line comma-spacing
+// eslint-disable-next-line comma-spacing, max-statements
 const Table = <T,>({
   columns,
   data,
@@ -27,12 +30,16 @@ const Table = <T,>({
   sorting,
   setSorting,
   onSelection,
+  draggableRows = false,
+  onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
   const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
     initialState?.sorting || []
   );
+
   const [rowSelection, setRowSelection] = useState({});
+  const [rowData, setRowData] = useState<Row<T>[] | IDraggable<Row<T>>[]>();
   const memoizedColumns = useMemo(
     () => [
       ...applyForSelection(
@@ -78,6 +85,14 @@ const Table = <T,>({
     getSortedRowModel: getSortedRowModel(),
   });
 
+  const { activeItems, dndContext, setReset } = useDnDTable<T>(
+    draggableRows,
+    (row: any) => row.getValue('id'),
+    table,
+    sortingState,
+    onChange
+  );
+
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
 
@@ -86,8 +101,23 @@ const Table = <T,>({
     }
   }, [onSelection, rowSelection, table]);
 
+  useEffect(() => {
+    dndContext.updateActiveItems(table.getRowModel().rows);
+    setReset(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preparedData]);
+
+  useEffect(() => {
+    if (draggableRows) {
+      setRowData(activeItems);
+    } else {
+      setRowData(table.getRowModel().rows);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeItems, draggableRows]);
+
   return (
-    <div className="overflow-x-auto relative rounded-md border border-gray-50 shadow-sm">
+    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
@@ -97,50 +127,26 @@ const Table = <T,>({
 
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                const isSortable = header.column.getCanSort();
-                const isSelect = header.column.id === 'checkbox-select';
-                const headerClassName = `${isSelect ? 'px-2' : 'px-6'} py-3 ${
-                  header.column.columnDef.meta?.headerClassName || ''
-                }`;
-
-                return (
-                  <th key={header.id} scope="col" className={headerClassName}>
-                    <div
-                      className={`inline-flex ${isSortable ? 'cursor-pointer select-none' : ''}`}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {isSortable && getIcon(header.column.getIsSorted())}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
+            <TableHeader
+              key={headerGroup.id}
+              headerGroup={headerGroup}
+              draggableRows={draggableRows}
+            />
           ))}
         </thead>
-
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className="bg-white border-b">
-              {row.getVisibleCells().map(cell => {
-                const isSelect = cell.column.id === 'checkbox-select';
-
-                return (
-                  <td
-                    key={cell.id}
-                    className={`${isSelect ? 'px-2' : 'px-6'} py-3 ${
-                      cell.column.columnDef.meta?.contentClassName || ''
-                    }`}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
+        <TableBody draggableRows>
+          {(rowData || table.getRowModel().rows).map(
+            (item: Row<T> | IDraggable<Row<T>>, index: number) => (
+              <TableRow
+                key={item.id}
+                item={item}
+                draggableRow={draggableRows === true}
+                index={index}
+                dndContext={dndContext}
+              />
+            )
+          )}
+        </TableBody>
       </table>
       {footer && <div className="p-4">{footer}</div>}
     </div>

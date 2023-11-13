@@ -91,8 +91,8 @@ const Button = ({
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
-      border focus:outline-none focus:ring-4 focus:ring-indigo-200 ${className}`}
+      className={`${className} ${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
       form={form}
     >
       {children}
