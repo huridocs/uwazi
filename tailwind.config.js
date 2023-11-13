@@ -65,6 +65,9 @@ module.exports = {
       colors: {
         blue: colors.indigo,
       },
+      minWidth: {
+        56: '14rem',
+      },
     },
   },
   plugins: [

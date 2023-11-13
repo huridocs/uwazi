@@ -173,7 +173,7 @@ const UserFormSidepanel = ({
               <Card title={<Translate>General Information</Translate>}>
                 <div className="mb-4">
                   <InputField
-                    label={<Translate className="block mb-1 font-bold">Username</Translate>}
+                    label={<Translate className="block mb-1 font-semibold">Username</Translate>}
                     id="username"
                     errorMessage={getFieldError('username', errors.username?.type)}
                     autoComplete="off"
@@ -192,7 +192,7 @@ const UserFormSidepanel = ({
 
                 <Select
                   label={
-                    <div className="flex gap-2 mb-1 font-bold align-middle">
+                    <div className="flex gap-2 mb-1 font-semibold align-middle">
                       <Translate>User Role</Translate>
                       <button type="button" onClick={() => setShowModal(true)}>
                         <span className="sr-only">{t('System', 'Permission', null, false)}</span>
@@ -208,7 +208,7 @@ const UserFormSidepanel = ({
 
                 <div>
                   <InputField
-                    label={<Translate className="block mb-1 font-bold">Email</Translate>}
+                    label={<Translate className="block mb-1 font-semibold">Email</Translate>}
                     type="email"
                     autoComplete="off"
                     id="email"
@@ -226,7 +226,7 @@ const UserFormSidepanel = ({
               <Card title={<Translate>Security</Translate>}>
                 <InputField
                   label={
-                    <span className="mb-1 font-bold">
+                    <span className="mb-1 font-semibold">
                       <Translate>Password</Translate>
                     </span>
                   }
