@@ -33,7 +33,7 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
         <Translate>Navigate back</Translate>
       </span>
     </Link>
-    <Breadcrumb className="!relative p-1 flex right-0 h-4 !bg-transparent m-0 !w-full flex-wrap align-middle">
+    <Breadcrumb className="!relative p-1 flex right-0 !bg-transparent m-0 !w-full flex-wrap align-middle">
       {Array.from(path?.entries() || []).map(([key, value]) => (
         <Breadcrumb.Item key={key} href={value} className="max-w-xs">
           <Translate className="max-w-xs truncate hover:underline">{key}</Translate>
