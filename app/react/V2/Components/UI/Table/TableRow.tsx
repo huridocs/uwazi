@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import React, { PropsWithChildren, useRef } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
 import { type IDnDContext } from '../../Layouts/DragAndDrop';
@@ -10,6 +9,7 @@ interface TableRowProps<T> extends PropsWithChildren {
   dndContext: IDnDContext<T>;
   enableSelection: boolean | undefined;
 }
+
 /* eslint-disable comma-spacing */
 const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
@@ -25,6 +25,7 @@ const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableR
       draggableRow={draggableRow}
       row={row}
       dndContext={dndContext}
+      innerRef={previewRef}
     >
       {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';

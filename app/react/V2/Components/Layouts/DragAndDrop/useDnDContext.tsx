@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { useEffect, useState } from 'react';
 import update from 'immutability-helper';
 import type { IDraggable } from 'app/V2/shared/types';

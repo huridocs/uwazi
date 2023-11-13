@@ -47,7 +47,7 @@ const isNotAutoContained = <T,>(
 const hasNoItems = <T,>(currentItem: IDraggable<T>) =>
   currentItem.value.items === undefined || currentItem.value.items.length === 0;
 
-const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
+const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0 : 1);
 
 const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
@@ -119,9 +119,9 @@ const DraggableItemComponent = <T,>({
   }, [preview, previewRef]);
 
   const opacity = getOpacityLevel(isDragging);
-  if (isDragging && previewRef && previewRef.current) {
+  if (previewRef && previewRef.current) {
     // eslint-disable-next-line no-param-reassign
-    previewRef.current.className = `${previewRef?.current?.className} border border-gray-800 border-solid`;
+    previewRef.current.style.opacity = getOpacityLevel(isDragging).toString();
   }
 
   drag(drop(ref));

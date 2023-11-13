@@ -189,7 +189,7 @@ describe('DragAndDrop', () => {
     it('should sort parents', () => {
       cy.get('[data-testid="root-draggable-item-0"]').drag(
         '[data-testid="root-draggable-item-2"]',
-        { target: { x: 1, y: 100 } }
+        { target: { x: 15, y: 135 } }
       );
       shouldContainListItems('div[data-testid="active-bin"]', [
         'Item 2\nDRAG ITEMS HERE',
@@ -266,6 +266,7 @@ describe('DragAndDrop', () => {
       cy.get('[data-testid="root-draggable-item-2"]').within(() =>
         cy.get('input').type(' WERE UPDATED', { delay: 150 })
       );
+      cy.get('div[data-testid="state-bin"]').contains('WERE UPDATED');
       shouldContainListItems('div[data-testid="state-bin"]', [
         'Item 1 ALL',
         'Item 2 VALUES',

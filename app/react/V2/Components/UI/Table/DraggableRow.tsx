@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, RefObject } from 'react';
 import { Row } from '@tanstack/react-table';
 import { DraggableItem, DropZone, type IDnDContext } from '../../Layouts/DragAndDrop';
 import { GrabDoubleIcon } from '../../CustomIcons';
@@ -7,7 +7,7 @@ import { GrabDoubleIcon } from '../../CustomIcons';
 interface GrabIconProps<T> extends PropsWithChildren {
   row: Row<T>;
   dndContext: IDnDContext<T>;
-  previewRef?: any;
+  previewRef?: RefObject<HTMLElement>;
 }
 
 interface RowWrapperProps<T> extends PropsWithChildren {
@@ -15,6 +15,7 @@ interface RowWrapperProps<T> extends PropsWithChildren {
   dndContext: IDnDContext<T>;
   className?: string;
   draggableRow?: boolean;
+  innerRef?: RefObject<HTMLElement>;
 }
 
 // eslint-disable-next-line comma-spacing
@@ -41,7 +42,7 @@ const GrabIcon = <T,>({ dndContext, row, previewRef }: GrabIconProps<T>) => {
 
 const RowWrapper =
   // eslint-disable-next-line comma-spacing
-  <T,>({ children, dndContext, row, draggableRow, className }: RowWrapperProps<T>) => {
+  <T,>({ children, dndContext, row, draggableRow, className, innerRef }: RowWrapperProps<T>) => {
     if (!draggableRow) {
       return <tr>{children}</tr>;
     }
@@ -54,6 +55,7 @@ const RowWrapper =
         name={`group_${row.id}`}
         wrapperType="tr"
         parent={row.parentId ? dndContext.activeItems[row.getParentRow()!.index] : undefined}
+        innerRef={innerRef}
       >
         {children}
       </DropZone>
