@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
 import { isString, sortBy } from 'lodash';
 import { usePopper } from 'react-popper';
-import { Popover, Transition } from '@headlessui/react';
+import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
