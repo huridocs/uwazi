@@ -16,6 +16,7 @@ const templateWithEntityAsThesauri = db.id();
 const templateWithEntityAsThesauri2 = db.id();
 const templateWithOnlySelect = db.id();
 const templateWithOnlyMultiselect = db.id();
+const templateWithOnlyAnyRelationship = db.id();
 const templateChangingNamesProps = {
   prop1id: db.id(),
   prop2id: db.id(),
@@ -516,6 +517,19 @@ export default {
         some_property: [{ value: 'value3' }],
       },
     },
+    {
+      sharedId: 'entityWithOnlyAnyRelationship',
+      type: 'entity',
+      template: templateWithOnlyAnyRelationship,
+      language: 'en',
+      title: 'entityWithOnlyAnyRelationship',
+      published: true,
+      metadata: {
+        relationship_to_any_template: [
+          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+        ],
+      },
+    },
   ],
   settings: [
     {
@@ -543,6 +557,7 @@ export default {
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
+          content: '',
         },
         {
           _id: db.id(),
@@ -624,6 +639,18 @@ export default {
       _id: entityGetTestTemplateId,
       name: 'entityGetTestTemplate',
       properties: [{ _id: db.id(), type: 'text', name: 'some_property' }],
+    },
+    {
+      _id: templateWithOnlyAnyRelationship,
+      name: 'templateWithOnlyAnyRelationship',
+      properties: [
+        {
+          _id: db.id(),
+          type: 'relationship',
+          name: 'relationship_to_any_template',
+          content: '',
+        },
+      ],
     },
   ],
   connections: [
@@ -788,6 +815,7 @@ export {
   templateChangingNames,
   templateChangingNamesProps,
   templateWithEntityAsThesauri,
+  templateWithOnlyAnyRelationship,
   docId1,
   shared2,
   docId2,
