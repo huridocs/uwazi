@@ -32,7 +32,9 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
     onTabSelected(newActiveTab);
   };
 
-  const buttonClass = 'flex-1 text-gray-700 font-medium py-2 w-80 h-14';
+  const buttonClass = 'text-sm flex-1 font-medium py-2 w-80 h-14';
+  const activeClass = 'text-gray-900 bg-gray-50';
+  const inactiveClass = 'text-gray-500';
 
   return (
     <>
@@ -44,9 +46,9 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
           <button
             key={child.props.id}
             type="button"
-            className={`${buttonClass} ${activeTab === child.props.id ? 'bg-gray-50' : ''} ${
-              index !== children.length - 1 ? 'border-r-2 border-gray-50' : ''
-            }`}
+            className={`${buttonClass} ${
+              activeTab === child.props.id ? activeClass : inactiveClass
+            } ${index !== children.length - 1 ? 'border-r-2 border-gray-50' : ''}`}
             onClick={e => handleClick(e, child.props.id)}
           >
             {child.props.label}

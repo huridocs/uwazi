@@ -43,14 +43,12 @@ const TableRow = <T,>({ draggableRow, item, index, dndContext }: TableRowProps<T
       {rowValue.getVisibleCells().map((cell, columnIndex) => {
         const firstColumnClass =
           cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)
-            ? 'flex px-2 items-center gap-3'
-            : 'px-6';
+            ? 'flex p-4 items-center gap-3'
+            : 'px-6 py-3';
         return (
           <td
             key={cell.id}
-            className={`${firstColumnClass} py-3 ${
-              cell.column.columnDef.meta?.contentClassName || ''
-            }`}
+            className={`${firstColumnClass} ${cell.column.columnDef.meta?.contentClassName || ''}`}
           >
             {icons[columnIndex]}
             {flexRender(cell.column.columnDef.cell, cell.getContext())}

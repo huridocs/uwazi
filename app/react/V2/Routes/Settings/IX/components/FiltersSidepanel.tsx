@@ -101,7 +101,7 @@ const FiltersSidepanel = ({
       }
     >
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
-        <div className="flex flex-col flex-grow gap-4">
+        <Sidepanel.Body className="flex flex-col flex-grow gap-4">
           <Card
             title={<Header label={t('System', 'Labeled')} total={aggregation.labeled._count} />}
           >
@@ -200,15 +200,17 @@ const FiltersSidepanel = ({
               </div>
             </div>
           </Card>
-        </div>
-        <div className="flex gap-2">
-          <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
-            <Translate>Clear all</Translate>
-          </Button>
-          <Button className="flex-grow" type="submit">
-            <Translate>Apply</Translate>
-          </Button>
-        </div>
+        </Sidepanel.Body>
+        <Sidepanel.Footer>
+          <div className="flex gap-2">
+            <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
+              <Translate>Clear all</Translate>
+            </Button>
+            <Button className="flex-grow" type="submit">
+              <Translate>Apply</Translate>
+            </Button>
+          </div>
+        </Sidepanel.Footer>
       </form>
     </Sidepanel>
   );
