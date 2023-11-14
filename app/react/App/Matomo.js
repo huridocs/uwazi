@@ -3,31 +3,26 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const MatomoComponent = ({ id, url }) => {
-  // eslint-disable-next-line max-statements
   useEffect(() => {
-    if (!id || !url) {
-      return;
+    if (id && url) {
+      const matomoUrl = url.replace(/\/?$/, '/');
+
+      const script = document.createElement('script');
+
+      script.innerHTML = `
+      var _paq = _paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="${matomoUrl}";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '${id}']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();`;
+
+      document.body.appendChild(script);
     }
-
-    // eslint-disable-next-line no-multi-assign
-    const _paq = (window._paq = window._paq || []);
-
-    const matomoUrl = url.replace(/\/?$/, '/');
-
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    _paq.push(['setTrackerUrl', `${matomoUrl}piwik.php`]);
-    _paq.push(['setSiteId', id]);
-
-    const g = document.createElement('script');
-    g.type = 'text/javascript';
-    g.async = true;
-    g.defer = true;
-    g.src = `${matomoUrl}piwik.js`;
-    g.id = 'matomo-script';
-
-    const s = document.getElementById('matomo-script');
-    s?.parentNode.insertBefore(g, s);
   }, [id, url]);
 
   return undefined;

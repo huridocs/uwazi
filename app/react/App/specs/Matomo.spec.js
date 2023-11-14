@@ -10,22 +10,22 @@ import { mapStateToProps, MatomoComponent } from '../Matomo';
 describe('Matomo', () => {
   it.each`
     url       | id
-    ${'url/'} | ${'id'}
-    ${'url'}  | ${'id'}
+    ${'url/'} | ${'id1'}
+    ${'url'}  | ${'id2'}
   `('should include matomo script when url and id are set', ({ url, id }) => {
-    delete window._paq;
+    window._paq = undefined;
 
     mount(<MatomoComponent url={url} id={id} />);
     expect(window._paq).toEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
       ['setTrackerUrl', 'url/piwik.php'],
-      ['setSiteId', 'id'],
+      ['setSiteId', id],
     ]);
   });
 
   it('should not include script when id or url are not set', () => {
-    delete window._paq;
+    window._paq = undefined;
 
     mount(<MatomoComponent />);
     expect(window._paq).toEqual(undefined);
