@@ -316,7 +316,9 @@ export default {
     if (key) {
       return Promise.all([
         passwordRecoveriesModel.delete(key._id),
-        model.save({ _id: key.user, password: await encryptPassword(credentials.password) }),
+        model
+          .save({ _id: key.user, password: await encryptPassword(credentials.password) })
+          .then(() => this.simpleUnlock({ _id: key.user })),
       ]);
     }
     throw createError('key not found', 403);
