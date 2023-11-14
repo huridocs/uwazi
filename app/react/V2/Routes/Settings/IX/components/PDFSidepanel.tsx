@@ -299,8 +299,12 @@ const PDFSidepanel = ({
       title={pdf?.originalname}
       closeSidepanelFunction={() => setShowSidepanel(false)}
     >
-      <form className="flex flex-col h-full gap-4" onSubmit={handleSubmit(onSubmit)}>
-        <Sidepanel.Body>
+      <Sidepanel.Body>
+        <form
+          id="ixpdfform"
+          className="flex flex-col h-full gap-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <p className="mb-1 font-bold">{propertyLabel}</p>
           <div className="sm:text-right">
             <div className="flex flex-wrap gap-1">
@@ -369,27 +373,27 @@ const PDFSidepanel = ({
               />
             )}
           </div>
-        </Sidepanel.Body>
-        <Sidepanel.Footer>
-          <div className="flex gap-2">
-            <Button
-              className="flex-grow"
-              type="button"
-              styling="outline"
-              disabled={isSubmitting}
-              onClick={() => {
-                setShowSidepanel(false);
-                reset();
-              }}
-            >
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button className="flex-grow" type="submit" disabled={isSubmitting}>
-              <Translate>Accept</Translate>
-            </Button>
-          </div>
-        </Sidepanel.Footer>
-      </form>
+        </form>{' '}
+      </Sidepanel.Body>
+      <Sidepanel.Footer>
+        <div className="flex gap-2">
+          <Button
+            className="flex-grow"
+            type="button"
+            styling="outline"
+            disabled={isSubmitting}
+            onClick={() => {
+              setShowSidepanel(false);
+              reset();
+            }}
+          >
+            <Translate>Cancel</Translate>
+          </Button>
+          <Button className="flex-grow" type="submit" form="ixpdfform" disabled={isSubmitting}>
+            <Translate>Accept</Translate>
+          </Button>
+        </div>
+      </Sidepanel.Footer>
     </Sidepanel>
   );
 };
