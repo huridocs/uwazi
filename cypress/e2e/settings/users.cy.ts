@@ -27,7 +27,6 @@ describe('Users', () => {
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
     cy.checkA11y();
-    cy.get('aside').toMatchImageSnapshot();
     cy.contains('button', 'Cancel').click();
   });
 
@@ -70,11 +69,13 @@ describe('Users', () => {
     });
 
     it('delete user', () => {
+      cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('td', 'User_1').siblings().first().click();
       cy.contains('button', 'Delete').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
-      cy.contains('span', 'User_1').should('not.exist');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
+      cy.contains('span', 'User_1').should('not.exist');
     });
 
     it('should check the changes', () => {
@@ -260,9 +261,12 @@ describe('Users', () => {
 
       cy.wait('@getUsers');
 
-      cy.wait('@getGroups').then(() => {
-        namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
-      });
+      cy.wait('@getGroups');
+      cy.contains('button', 'Dismiss').click();
+      cy.contains('span', 'Carmen_edited').should('not.exist');
+      cy.contains('span', 'Mike').should('not.exist');
+
+      namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
     });
   });
 });

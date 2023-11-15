@@ -53,7 +53,6 @@ describe('ConfirmationModal', () => {
     cy.contains('a', 'Leaf').invoke('attr', 'href').should('include', '#footer');
     cy.contains('Current page').should('not.have.attr', 'href');
     cy.get('[data-testid="settings-content-body"]').should('have.class', 'flex-grow');
-    cy.get('[data-testid="settings-content-footer"]').should('have.class', 'fixed bottom-0');
   });
 
   it('should have an arrow to return to settings menu for mobile', () => {

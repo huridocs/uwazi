@@ -45,7 +45,9 @@ const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableR
         return (
           <td
             key={cell.id}
-            className={`${firstColumnClass} ${isSelect ? 'px-2' : 'px-6'} ${border} py-2`}
+            className={`${firstColumnClass} ${isSelect ? 'px-2' : 'px-6'} ${border} py-2 ${
+              cell.column.columnDef.meta?.contentClassName || ''
+            }`}
           >
             {icons[columnIndex]}
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
