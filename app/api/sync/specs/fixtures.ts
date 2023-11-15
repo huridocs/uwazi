@@ -878,6 +878,198 @@ const host2Fixtures: DBFixture = {
   ],
 };
 
+const orderedHostIds = {
+  settings: db.id(),
+  translationsV2: db.id(),
+  dictionaries: db.id(),
+  relationtypes: db.id(),
+  templates: db.id(),
+  prop: db.id(),
+  files: db.id(),
+  connection1: db.id(),
+  connection2: db.id(),
+  hub: db.id(),
+  entity1: db.id(),
+  entity2: db.id(),
+  syncs: db.id(),
+  updatelogs: db.id(),
+};
+const orderedHostFixtures = {
+  settings: [
+    {
+      _id: orderedHostIds.settings,
+      languages: [{ key: 'en' as 'en', default: true, label: 'en' }],
+      sync: [
+        {
+          url: 'http://localhost:6667',
+          name: 'target1',
+          active: true,
+          username: 'user',
+          password: 'password',
+          config: {
+            templates: {
+              [orderedHostIds.templates.toString()]: {
+                properties: [orderedHostIds.prop.toString()],
+                attachments: true,
+              },
+            },
+            relationtypes: [orderedHostIds.relationtypes.toString()],
+            dictionaries: [orderedHostIds.dictionaries.toString()],
+          },
+        },
+      ],
+    },
+  ],
+  translationsV2: [
+    {
+      _id: orderedHostIds.translationsV2,
+      context: {
+        type: 'Uwazi UI' as 'Uwazi UI',
+        label: 'User Interface',
+        id: 'System',
+      },
+      key: 'Search',
+      language: 'en' as 'en',
+      value: 'Search',
+    },
+  ],
+  dictionaries: [
+    {
+      _id: orderedHostIds.dictionaries,
+      name: 'dict',
+      values: [
+        {
+          label: 'a',
+        },
+      ],
+    },
+  ],
+  relationtypes: [{ _id: orderedHostIds.relationtypes, name: 'reltype' }],
+  templates: [
+    {
+      _id: orderedHostIds.templates,
+      name: 'template1',
+      properties: [
+        {
+          _id: orderedHostIds.prop,
+          name: 'prop',
+          label: 'prop',
+          type: 'select' as 'select',
+          content: orderedHostIds.dictionaries.toString(),
+        },
+      ],
+    },
+  ],
+  files: [
+    {
+      _id: orderedHostIds.files,
+      entity: 'entity1',
+      type: 'attachment' as 'attachment',
+      filename: 'test.txt',
+    },
+  ],
+  connections: [
+    {
+      _id: orderedHostIds.connection1,
+      entity: 'entity1',
+      hub: orderedHostIds.hub,
+      template: orderedHostIds.relationtypes,
+    },
+    {
+      _id: orderedHostIds.connection2,
+      entity: 'entity2',
+      hub: orderedHostIds.hub,
+      template: orderedHostIds.relationtypes,
+    },
+  ],
+  entities: [
+    {
+      _id: orderedHostIds.entity1,
+      language: 'en' as 'en',
+      sharedId: 'entity1',
+      title: '1',
+      template: orderedHostIds.templates,
+      metadata: {},
+    },
+    {
+      _id: orderedHostIds.entity2,
+      language: 'en' as 'en',
+      sharedId: 'entity2',
+      title: '2',
+      template: orderedHostIds.templates,
+      metadata: {},
+    },
+  ],
+  syncs: [
+    {
+      lastSync: 0,
+      name: 'target1',
+    },
+  ],
+  updatelogs: [
+    {
+      timestamp: 1000,
+      namespace: 'settings',
+      mongoId: orderedHostIds.settings,
+      deleted: false,
+    },
+    {
+      timestamp: 700,
+      namespace: 'translationsV2',
+      mongoId: orderedHostIds.translationsV2,
+      deleted: false,
+    },
+    {
+      timestamp: 600,
+      namespace: 'dictionaries',
+      mongoId: orderedHostIds.dictionaries,
+      deleted: false,
+    },
+    {
+      timestamp: 500,
+      namespace: 'relationtypes',
+      mongoId: orderedHostIds.relationtypes,
+      deleted: false,
+    },
+    {
+      timestamp: 40,
+      namespace: 'templates',
+      mongoId: orderedHostIds.templates,
+      deleted: false,
+    },
+    {
+      timestamp: 30,
+      namespace: 'files',
+      mongoId: orderedHostIds.files,
+      deleted: false,
+    },
+    {
+      timestamp: 20,
+      namespace: 'connections',
+      mongoId: orderedHostIds.connection1,
+      deleted: false,
+    },
+    {
+      timestamp: 20,
+      namespace: 'connections',
+      mongoId: orderedHostIds.connection2,
+      deleted: false,
+    },
+    {
+      timestamp: 1,
+      namespace: 'entities',
+      mongoId: orderedHostIds.entity1,
+      deleted: false,
+    },
+    {
+      timestamp: 1,
+      namespace: 'entities',
+      mongoId: orderedHostIds.entity2,
+      deleted: false,
+    },
+  ],
+};
+
 export {
   host1Fixtures,
   host2Fixtures,
@@ -887,6 +1079,8 @@ export {
   thesauri1Value2,
   newDoc1,
   newDoc3,
+  orderedHostFixtures,
+  orderedHostIds,
   relationtype4,
   relationship9,
   hub3,

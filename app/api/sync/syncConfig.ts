@@ -87,7 +87,11 @@ const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
   return relationtypesConfig.concat(validTemplateRelationtypes);
 };
 
-export const createSyncConfig = async (config: SyncConfig, targetName: string) => {
+export const createSyncConfig = async (
+  config: SyncConfig,
+  targetName: string,
+  updateLogFirstBatchLimit: number = 50
+) => {
   const [{ lastSync }] = await syncsModel.find({ name: targetName });
 
   return {
@@ -104,7 +108,7 @@ export const createSyncConfig = async (config: SyncConfig, targetName: string) =
         undefined,
         {
           sort: { timestamp: 1 },
-          limit: 50,
+          limit: updateLogFirstBatchLimit,
           lean: true,
         }
       );

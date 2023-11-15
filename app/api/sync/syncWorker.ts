@@ -51,6 +51,8 @@ const validateConfig = (config: SettingsSyncSchema) => {
 };
 
 export const syncWorker = {
+  UPDATE_LOG_FIRST_BATCH_LIMIT: 50,
+
   async runAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
@@ -78,13 +80,19 @@ export const syncWorker = {
   async syncronizeConfig(config: SyncConfig, cookie: string) {
     await createSyncIfNotExists(config);
 
-    const syncConfig = await createSyncConfig(config, config.name);
+    const syncConfig = await createSyncConfig(
+      config,
+      config.name,
+      this.UPDATE_LOG_FIRST_BATCH_LIMIT
+    );
 
     await (
       await syncConfig.lastChanges()
     ).reduce(async (previousChange, change) => {
       await previousChange;
+      console.log('syncing change', change);
       const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
+      console.log('shouldSync', shouldSync);
       if (shouldSync.skip) {
         await synchronizer.syncDelete(change, config.url, cookie);
       }
