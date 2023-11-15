@@ -894,7 +894,7 @@ const orderedHostIds = {
   syncs: db.id(),
   updatelogs: db.id(),
 };
-const orderedHostFixtures = {
+const orderedHostFixtures: DBFixture = {
   settings: [
     {
       _id: orderedHostIds.settings,
@@ -914,7 +914,6 @@ const orderedHostFixtures = {
               },
             },
             relationtypes: [orderedHostIds.relationtypes.toString()],
-            dictionaries: [orderedHostIds.dictionaries.toString()],
           },
         },
       ],

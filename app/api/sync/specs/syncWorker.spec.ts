@@ -564,4 +564,16 @@ describe('syncWorker', () => {
     await applyFixtures();
     syncWorker.UPDATE_LOG_FIRST_BATCH_LIMIT = originalBatchLimit;
   });
+
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should throw an error, when trying to sync a collection that is not in the order list', async () => {
+    const fixtures = _.cloneDeep(orderedHostFixtures);
+    //@ts-ignore
+    fixtures.settings[0].sync[0].config.pages = [];
+    await applyFixtures(fixtures, {});
+
+    await expect(runAllTenants).rejects.toThrowError();
+
+    await applyFixtures();
+  });
 });
