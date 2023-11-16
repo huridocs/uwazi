@@ -124,47 +124,50 @@ const GroupFormSidepanel = ({
       title={selectedGroup ? <Translate>Edit group</Translate> : <Translate>New group</Translate>}
     >
       <form onSubmit={handleSubmit(formSubmit)} className="flex flex-col h-full">
-        <div className="flex flex-col flex-grow gap-4">
-          <Card title={<Translate>Group Options</Translate>}>
-            <div>
-              <InputField
-                label={<Translate className="block mb-1 font-bold">Name</Translate>}
-                id="name"
-                autoComplete="off"
-                errorMessage={getFieldError(errors.name?.type)}
-                className="mb-1"
-                {...register('name', {
-                  required: true,
-                  validate: username => isUnique(username, selectedGroup, groups),
-                  maxLength: 50,
-                  minLength: 3,
-                })}
+        <Sidepanel.Body>
+          <div className="flex flex-col flex-grow gap-4">
+            <Card title={<Translate>Group Options</Translate>}>
+              <div>
+                <InputField
+                  label={<Translate className="block mb-1 font-bold">Name</Translate>}
+                  id="name"
+                  autoComplete="off"
+                  errorMessage={getFieldError(errors.name?.type)}
+                  className="mb-1"
+                  {...register('name', {
+                    required: true,
+                    validate: username => isUnique(username, selectedGroup, groups),
+                    maxLength: 50,
+                    minLength: 3,
+                  })}
+                />
+              </div>
+            </Card>
+
+            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
+              <MultiSelect
+                label={
+                  <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
+                    Members
+                  </Translate>
+                }
+                onChange={options => onChange(options)}
+                options={availableUsers || []}
+                placeholder="Nothing selected"
               />
             </div>
-          </Card>
-
-          <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
-            <MultiSelect
-              label={
-                <Translate className="block w-full text-lg font-semibold bg-gray-50 text-primary-700">
-                  Members
-                </Translate>
-              }
-              onChange={options => onChange(options)}
-              options={availableUsers || []}
-              placeholder="Nothing selected"
-            />
           </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button className="flex-grow" type="submit">
-            <Translate>Save</Translate>
-          </Button>
-        </div>
+        </Sidepanel.Body>
+        <Sidepanel.Footer>
+          <div className="flex gap-2">
+            <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="flex-grow" type="submit">
+              <Translate>Save</Translate>
+            </Button>
+          </div>
+        </Sidepanel.Footer>
       </form>
     </Sidepanel>
   );

@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { Sidepanel } from 'V2/Components/UI';
+import { Sidepanel, Button } from 'V2/Components/UI';
 import { SidePanelProps } from 'app/V2/Components/UI/Sidepanel';
 import { GeneratedContent } from './helpers/GeneratedContent';
 
@@ -61,13 +61,7 @@ const SidePanelContainer = (args: SidePanelProps) => {
 
             <hr className="mb-2" />
 
-            <button
-              type="button"
-              className="p-1 text-white rounded border-2 border-primary-400 bg-primary-700"
-              onClick={() => setShowSidepanel(!showSidepanel)}
-            >
-              Open/Close sidepanel
-            </button>
+            <Button onClick={() => setShowSidepanel(!showSidepanel)}>Open/Close sidepanel</Button>
           </article>
           <Sidepanel
             isOpen={showSidepanel}
@@ -76,7 +70,12 @@ const SidePanelContainer = (args: SidePanelProps) => {
             closeSidepanelFunction={() => setShowSidepanel(false)}
             size={args.size}
           >
-            <GeneratedContent />
+            <Sidepanel.Body>
+              <GeneratedContent />
+            </Sidepanel.Body>
+            <Sidepanel.Footer>
+              <Button onClick={() => setShowSidepanel(false)}>Close</Button>
+            </Sidepanel.Footer>
           </Sidepanel>
         </div>
       </div>

@@ -37,15 +37,15 @@ const Button = ({
   let bgHover;
   switch (color) {
     case 'error':
-      bgColor = 'bg-error-700';
-      bgHover = 'enabled:hover:bg-error-800';
-      bgDisabled = ' disabled:bg-error-300';
+      bgColor = 'bg-error-600';
+      bgHover = 'enabled:hover:bg-error-700';
+      bgDisabled = ' disabled:bg-error-400';
       border = 'border-error-700';
-      borderHover = 'enabled:hover:border-error-800';
-      borderDisabled = 'disabled:border-error-300';
-      text = 'text-error-700';
-      textDisabled = 'disabled:text-error-300';
-      textHover = 'enabled:hover:text-error-700';
+      borderHover = 'enabled:hover:border-error-700';
+      borderDisabled = 'disabled:border-error-400';
+      text = 'text-error-600';
+      textDisabled = 'disabled:text-error-400';
+      textHover = 'enabled:hover:text-error-600';
       break;
 
     case 'success':
