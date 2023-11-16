@@ -71,6 +71,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const [temporalResource, setTemporalResource] = useState<string>();
   const [mediaURL, setMediaURL] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -319,6 +320,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
     return () => {
       setErrorFlag(false);
+      setIsLoading(true);
       URL.revokeObjectURL(url);
       setMediaURL('');
     };
@@ -357,6 +359,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
+      {isLoading && <Translate>Loading</Translate>}
       <div>
         <ReactPlayer
           className="react-player"
@@ -376,11 +379,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
               setErrorFlag(true);
             }
           }}
+          onReady={() => {
+            setIsLoading(false);
+          }}
         />
       </div>
 
-      {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
-      {editing && (
+      {!editing && !isLoading && <div>{timeLinks(config.options.timelinks)}</div>}
+      {editing && !isLoading && (
         <div className="timelinks-form">
           <button
             type="button"
