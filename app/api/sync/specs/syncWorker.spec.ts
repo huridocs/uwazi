@@ -508,11 +508,10 @@ describe('syncWorker', () => {
     }, 10000);
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should sync collections in correct preference order', async () => {
-    const originalBatchLimit = syncWorker.UPDATE_LOG_FIRST_BATCH_LIMIT;
-    syncWorker.UPDATE_LOG_FIRST_BATCH_LIMIT = 1;
-    const { target1db } = await applyFixtures(orderedHostFixtures, {});
+  it('should sync collections in correct preference order', async () => {
+    const originalBatchLimit = syncWorker.UPDATE_LOG_TARGET_COUNT;
+    syncWorker.UPDATE_LOG_TARGET_COUNT = 1;
+    const { host1db, target1db } = await applyFixtures(orderedHostFixtures, {});
 
     const runAndCheck = async (
       currentCollection: string,
@@ -521,7 +520,7 @@ describe('syncWorker', () => {
       syncTimeStampExpectation: number
     ) => {
       await runAllTenants();
-      const syncLog = await target1db!.collection('syncs').findOne({ name: 'target1' });
+      const syncLog = await host1db!.collection('syncs').findOne({ name: 'target1' });
 
       const currentSyncedContent = await target1db!
         .collection(currentCollection)
@@ -537,7 +536,12 @@ describe('syncWorker', () => {
       }
     };
 
-    await runAndCheck('settings', 'translationsV2', [{ _id: orderedHostIds.settings }], 1000);
+    await runAndCheck(
+      'settings',
+      'translationsV2',
+      [{ languages: [{ key: 'en' as 'en', default: true, label: 'en' }] }],
+      1000
+    );
     await runAndCheck(
       'translationsV2',
       'dictionaries',
@@ -562,17 +566,18 @@ describe('syncWorker', () => {
     );
 
     await applyFixtures();
-    syncWorker.UPDATE_LOG_FIRST_BATCH_LIMIT = originalBatchLimit;
+    syncWorker.UPDATE_LOG_TARGET_COUNT = originalBatchLimit;
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fit('should throw an error, when trying to sync a collection that is not in the order list', async () => {
+  it('should throw an error, when trying to sync a collection that is not in the order list', async () => {
     const fixtures = _.cloneDeep(orderedHostFixtures);
     //@ts-ignore
     fixtures.settings[0].sync[0].config.pages = [];
     await applyFixtures(fixtures, {});
 
-    await expect(runAllTenants).rejects.toThrowError();
+    await expect(runAllTenants).rejects.toThrowError(
+      new Error('Invalid elements found in ordering - pages')
+    );
 
     await applyFixtures();
   });

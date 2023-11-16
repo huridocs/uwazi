@@ -372,7 +372,6 @@ class ProcessNamespaces {
       return await this[method as MethodNames]();
     } catch (err) {
       if (err.message === noDataFound) {
-        console.log('no data found for, skip');
         return { skip: true };
       }
       throw err;

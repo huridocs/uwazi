@@ -2,7 +2,9 @@ import { DataType } from 'api/odm';
 import { SyncConfig } from 'api/sync/syncWorker';
 import templatesModel from 'api/templates/templatesModel';
 import { model as updateLog, UpdateLog } from 'api/updatelogs';
+import { explicitOrdering } from 'shared/data_utils/arrayUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { ProcessNamespaces } from './processNamespaces';
 import syncsModel from './syncsModel';
 
@@ -54,24 +56,34 @@ const getValuesFromTemplateProperties = async (
   );
 };
 
+const COLLECTION_SYNC_ORDER = [
+  'settings',
+  'translationsV2',
+  'dictionaries',
+  'relationtypes',
+  'templates',
+  'files',
+  'connections',
+  'entities',
+];
+const TEMPLATE_DEPENDENCIES = [
+  'settings',
+  'entities',
+  'files',
+  'connections',
+  'dictionaries',
+  'translationsV2',
+  'relationtypes',
+];
+
 const getApprovedCollections = (config: SyncConfig['config']) => {
-  const collections = Object.keys(config);
-  const whitelistedCollections = collections.includes('templates')
-    ? collections.concat([
-        'settings',
-        'entities',
-        'files',
-        'connections',
-        'dictionaries',
-        'translations',
-        'translationsV2',
-        'relationtypes',
-      ])
+  let collections = Object.keys(config);
+  collections = collections.includes('templates')
+    ? collections.concat(TEMPLATE_DEPENDENCIES)
     : collections;
+  collections = explicitOrdering(COLLECTION_SYNC_ORDER, collections, true);
 
-  const blacklistedCollections = ['migrations', 'sessions'];
-
-  return whitelistedCollections.filter(c => !blacklistedCollections.includes(c));
+  return collections;
 };
 
 const getApprovedThesauri = async (config: SyncConfig['config']) =>
@@ -90,25 +102,24 @@ const getApprovedRelationtypes = async (config: SyncConfig['config']) => {
 export const createSyncConfig = async (
   config: SyncConfig,
   targetName: string,
-  updateLogFirstBatchLimit: number = 50
+  updateLogTargetCount: number = 50
 ) => {
-  const [{ lastSync }] = await syncsModel.find({ name: targetName });
+  const [{ lastSyncs }] = await syncsModel.find({ name: targetName });
 
   return {
-    lastSync,
+    lastSyncs: lastSyncs || {},
     config: await removeDeletedTemplatesFromConfig(config.config),
 
-    async lastChanges() {
-      const approvedCollections = getApprovedCollections(this.config);
+    async lastChangesForCollection(collection: string, lastSync: number, limit: number) {
       const firstBatch = await updateLog.find(
         {
           timestamp: { $gt: lastSync },
-          namespace: { $in: approvedCollections },
+          namespace: collection,
         },
         undefined,
         {
           sort: { timestamp: 1 },
-          limit: updateLogFirstBatchLimit,
+          limit,
           lean: true,
         }
       );
@@ -122,7 +133,7 @@ export const createSyncConfig = async (
       return updateLog.find(
         {
           $and: [{ timestamp: { $gt: lastSync } }, { timestamp: { $lte: endTimestamp } }],
-          namespace: { $in: approvedCollections },
+          namespace: collection,
         },
         undefined,
         {
@@ -132,6 +143,24 @@ export const createSyncConfig = async (
           lean: true,
         }
       );
+    },
+
+    async lastChanges() {
+      const approvedCollections = getApprovedCollections(this.config);
+      let currentLimit = updateLogTargetCount;
+      const changes: UpdateLog[] = [];
+      await syncedPromiseLoop(approvedCollections, async collection => {
+        const lastSync = this.lastSyncs[collection] || 0;
+        const collectionChanges = await this.lastChangesForCollection(
+          collection,
+          lastSync,
+          currentLimit
+        );
+        changes.push(...collectionChanges);
+        currentLimit -= collectionChanges.length;
+        return currentLimit > 0;
+      });
+      return changes;
     },
 
     async shouldSync(change: DataType<UpdateLog>) {
