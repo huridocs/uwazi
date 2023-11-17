@@ -23,12 +23,12 @@ Read the [user guide](https://uwazi.io/page/9852italrtk/support)
 Before anything else you will need to install the application dependencies:
 
 - **NodeJs >= 18.16.1** For ease of update, use nvm: https://github.com/creationix/nvm.
-- **ElasticSearch 7.17.6** https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6 Please note that ElasticSearch requires java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
+- **ElasticSearch 7.17.6** https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6 Please note that ElasticSearch requires Java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
 - **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
-- **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ . If you have a previous version installed, please follow instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/). The new mongosh dependency needs to be added [installation](https://www.mongodb.com/docs/mongodb-shell/).
+- **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ . If you have a previous version installed, please follow the instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/). The new mongosh dependency needs to be added [installation](https://www.mongodb.com/docs/mongodb-shell/).
 - **Yarn** https://yarnpkg.com/en/docs/install.
-- **pdftotext (Poppler)** tested to work on version 0.86 but its recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
+- **pdftotext (Poppler)** tested to work on version 0.86 but it's recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 
 # Production
 
@@ -59,7 +59,7 @@ If the main Uwazi repository had already been cloned/downloaded and now you want
 $ git submodule update --init
 ```
 
-There may be an issue with pngquant not running correctly. If you encounter this issue, you are probably missing library **libpng-dev**. Please run:
+There may be an issue with pngquant not running correctly. If you encounter this issue, you are probably missing the library **libpng-dev**. Please run:
 
 ```
 $ sudo rm -rf node_modules
@@ -89,7 +89,7 @@ This will launch a webpack server and nodemon app server for hot reloading any c
 $ yarn webpack-server
 ```
 
-This will launch a webpack server. You can also pass `--analyze`to get a detailed info of the webpack build.
+This will launch a webpack server. You can also pass `--analyze`to get detailed info on the webpack build.
 
 ### Testing
 
@@ -109,7 +109,7 @@ Some suites need MongoDB configured in Replica Set mode to run properly. The pro
 
 For End-to-End testing, we have a full set of fixtures that test the overall functionality. Be advised that, for the time being, these tests are run ON THE SAME DATABASE as the default database (uwazi_developmet), so running these tests will DELETE any existing data and replace it with the testing fixtures. DO NOT RUN ON PRODUCTION ENVIRONMENTS!
 
-Running end to end tests require a running Uwazi app.
+Running end to end tests requires a running Uwazi app.
 
 Running tests with Nightmare
 
@@ -135,11 +135,11 @@ On a different console tab, run
 $ yarn e2e-puppeteer
 ```
 
-Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in a the same port at the same time.
+Note that if you already have an instance running, this will likely throw an error of ports already been used. Only one instance of Uwazi may be run in the same port at the same time.
 
 ### Default login
 
-The application's default log in is admin / change this password now
+The application's default login is admin / change this password now
 
 Note the subtle nudge ;)
 
