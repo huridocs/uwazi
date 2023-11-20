@@ -151,7 +151,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         <input
           type="number"
           onChange={event => {
-            let hours = parseInt(event.target.value || '0', 10);
+            const hours = parseInt(event.target.value || '0', 10);
             setNewTimeline({ ...newTimeline, timeHours: hours <= 0 ? '00' : hours.toString() });
           }}
           className="timestamp-hours"
