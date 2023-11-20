@@ -617,6 +617,24 @@ describe('Users', () => {
       const response2 = await passwordRecoveriesModel.get({ key: expectedKey });
       expect(response2.length).toBe(0);
     });
+
+    it('should reset the unsuccessful logins count and unlock the user', async () => {
+      let [user] = await users.get({ _id: recoveryUserId });
+      user.failedLogins = 6;
+      user.accountLocked = true;
+      user.accountUnlockCode = 'unlockCode';
+      await usersModel.save(user);
+
+      await users.resetPassword({ key: expectedKey, password: '1234' });
+
+      [user] = await users.get(
+        { _id: recoveryUserId },
+        '+failedLogins +accountLocked +accountUnlockCode'
+      );
+      expect(user.failedLogins).toBe(undefined);
+      expect(user.accountLocked).toBe(undefined);
+      expect(user.accountUnlockCode).toBe(undefined);
+    });
   });
 
   describe('delete()', () => {
