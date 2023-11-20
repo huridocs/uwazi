@@ -307,15 +307,20 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           url = URL.createObjectURL(blob);
           setMediaURL(url);
         })
-        .catch(_e => {});
+        .catch(_e => {})
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else if (config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
+      setIsLoading(false);
     } else {
       if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
         setTemporalResource(mediaURL);
       }
       setMediaURL(config.url);
+      setIsLoading(false);
     }
 
     return () => {
@@ -359,7 +364,18 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
-      {isLoading && <Translate>Loading</Translate>}
+      {isLoading && (
+        <div
+          style={{
+            width: dimensions.width,
+            height: dimensions.height,
+          }}
+        >
+          <div>
+            <Translate>Loading</Translate>
+          </div>
+        </div>
+      )}
       <div>
         <ReactPlayer
           className="react-player"
@@ -378,9 +394,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
               setErrorFlag(true);
             }
-          }}
-          onReady={() => {
-            setIsLoading(false);
           }}
         />
       </div>

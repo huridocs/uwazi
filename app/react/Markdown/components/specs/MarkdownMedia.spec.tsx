@@ -68,11 +68,6 @@ describe('MarkdownMedia', () => {
   };
 
   describe('render', () => {
-    it('should render a loading message until the media is ready', async () => {
-      await render();
-      expect(renderResult.getByText('Loading')).toBeInTheDocument();
-    });
-
     describe('uploaded files', () => {
       it('should render an iframe that displays the video from the blob resource', async () => {
         await render();
