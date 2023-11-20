@@ -2,12 +2,11 @@ import mongoose from 'mongoose';
 import { MultiTenantMongooseModel } from 'api/odm/MultiTenantMongooseModel';
 
 const syncSchema = new mongoose.Schema({
-  lastSync: Number,
+  lastSyncs: { type: mongoose.Schema.Types.Mixed, default: {} },
   name: String,
 });
-
 export interface Sync extends mongoose.Document {
-  lastSync: number;
+  lastSyncs: { [key: string]: number };
   name: string;
 }
 

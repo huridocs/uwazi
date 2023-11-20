@@ -95,7 +95,7 @@ const testingDB: {
     fixtures: DBFixture,
     elasticIndex?: string,
     dbName?: string
-  ) => Promise<void>;
+  ) => Promise<Db | null>;
   clearAllAndLoadFixtures: (fixtures: DBFixture, dbName?: string) => Promise<void>;
 } = {
   mongodb: null,
@@ -159,6 +159,8 @@ const testingDB: {
       testingTenants.changeCurrentTenant({ indexName: elasticIndex });
       await elasticTesting.reindex();
     }
+
+    return optionalMongo || this.mongodb;
   },
 
   async createIndices() {
