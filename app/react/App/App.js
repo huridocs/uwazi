@@ -15,7 +15,7 @@ import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
-import Matomo from './Matomo';
+import { Matomo } from './Matomo';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'react-widgets/lib/scss/react-widgets.scss';
 import 'nprogress/nprogress.css';

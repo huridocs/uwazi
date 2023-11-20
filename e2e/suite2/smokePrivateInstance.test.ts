@@ -25,6 +25,7 @@ describe('Private instance', () => {
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toClick(selectors.collection.togglePrivate);
     await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert', { text: 'Settings updated.' });
   });
 
   it('shoud log out and be redirected to login page instead of library page', async () => {
