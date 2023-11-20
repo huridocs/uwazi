@@ -246,7 +246,7 @@
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.2.5",
-    "@babel/cli": "7.22.6",
+    "@babel/cli": "7.23.0",
     "@babel/core": "7.23.2",
     "@babel/eslint-parser": "7.22.15",
     "@babel/helper-call-delegate": "^7.12.13",
