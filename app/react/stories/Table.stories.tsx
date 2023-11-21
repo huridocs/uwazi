@@ -189,7 +189,7 @@ const WithActions: Story = {
         id: 'description',
         header: 'Description',
         enableSorting: false,
-        meta: { headerClassName: 'w-1/3 bg-red-300 text-blue' },
+        meta: { headerClassName: 'w-1/3 bg-error-100 text-blue-600' },
       }),
       columnHelper.display({
         id: 'action',
