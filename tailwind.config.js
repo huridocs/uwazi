@@ -57,13 +57,16 @@ module.exports = {
     colors: {
       primary: colors.indigo,
       success: colors.green,
-      error: colors.red,
+      error: colors.pink,
       warning: colors.yellow,
       blue: colors.blue,
     },
     extend: {
       colors: {
         blue: colors.indigo,
+      },
+      minWidth: {
+        56: '14rem',
       },
     },
   },

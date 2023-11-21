@@ -107,7 +107,7 @@ const Table = <T,>({
           </caption>
         )}
 
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+        <thead className="text-xs text-gray-500 uppercase bg-gray-50">
           {table.getHeaderGroups().map(headerGroup => (
             <TableHeader
               key={headerGroup.id}

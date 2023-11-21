@@ -49,18 +49,18 @@ const columns = (actions: { edit: Function }) => [
     header: TitleHeader,
     cell: TitleCell,
     enableSorting: false,
-    meta: { className: 'w-6/12' },
+    meta: { headerClassName: 'w-6/12' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'title'>,
   columnHelper.accessor('url', {
     header: URLHeader,
     enableSorting: false,
-    meta: { className: 'w-6/12' },
+    meta: { headerClassName: 'w-6/12' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'default'>,
   columnHelper.accessor('key', {
     header: ActionHeader,
     cell: EditButton,
     enableSorting: false,
-    meta: { action: actions.edit, className: 'w-0 text-center' },
+    meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'key'>,
 ];
 export { EditButton, TitleHeader, URLHeader, ActionHeader, TitleCell, columns };

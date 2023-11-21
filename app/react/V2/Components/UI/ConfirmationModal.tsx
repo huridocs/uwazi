@@ -43,7 +43,7 @@ const ConfirmationModal = ({
       </Modal.Header>
       {warningText && (
         <div
-          className="p-4 text-sm text-red-800 bg-red-50 border-t border-b border-red-300 top--3 dark:bg-gray-800 dark:text-red-400"
+          className="p-4 text-sm border-t border-b border-error-300 text-error-800 bg-error-50 top--3 dark:bg-gray-800 dark:text-error-400"
           role="alert"
         >
           {renderChild(warningText)}

@@ -62,7 +62,7 @@ describe('Table', () => {
     mount(<WithActions />);
     cy.get('table > thead > tr > th:nth-child(3)').should(
       'have.class',
-      'px-6 py-3 w-1/3 bg-red-200'
+      'px-6 py-3 w-1/3 bg-red-300'
     );
   });
 

@@ -34,7 +34,7 @@ const Select = React.forwardRef(
     ref: Ref<any>
   ) => {
     const fieldStyles = hasErrors
-      ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-red-900'
+      ? 'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900'
       : 'border-gray-300 border text-gray-900';
 
     return (
