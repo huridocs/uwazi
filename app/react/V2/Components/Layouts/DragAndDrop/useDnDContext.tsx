@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import update from 'immutability-helper';
 import type { IDraggable } from 'app/V2/shared/types';
 import { ItemTypes } from 'app/V2/shared/types';
+import { omit } from 'lodash';
 import type { IDnDContext, IDnDOperations } from './DnDDefinitions';
 import {
   addActiveItem,
@@ -41,7 +42,22 @@ const useDnDContext = <T,>(
 
   useEffect(() => {
     if (internalChange === true && operations.onChange !== undefined) {
-      operations.onChange(activeItems.map(item => item.value));
+      const sortedItems = activeItems
+        .filter(item => item)
+        .map(item => {
+          const values = item.value.items
+            ? item.value.items.map(subItem =>
+                omit(subItem.value, ['_id', 'id', 'items', operations.itemsProperty || ''])
+              )
+            : [];
+          return {
+            ...omit(item.value, ['items', 'id', operations.itemsProperty || '']),
+            ...(operations.itemsProperty && values.length > 0
+              ? { [operations.itemsProperty]: values }
+              : {}),
+          } as T;
+        });
+      operations.onChange(sortedItems);
     } else {
       setInternalChange(true);
     }
@@ -72,6 +88,7 @@ const useDnDContext = <T,>(
     availableItems,
     getDisplayName: operations.getDisplayName,
     itemsProperty,
+    operations,
   };
   return dndContext;
 };

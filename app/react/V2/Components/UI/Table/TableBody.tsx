@@ -1,31 +1,116 @@
 import React, { PropsWithChildren } from 'react';
+import { get } from 'lodash';
+import { Row } from '@tanstack/react-table';
+import { ItemTypes } from 'app/V2/shared/types';
+import { TableRow } from './TableRow';
 import { withDnD, withDnDBackend } from '../../componentWrappers';
-import { IDnDContext } from '../../Layouts/DragAndDrop';
+import { useDnDContext } from '../../Layouts/DragAndDrop';
 
-interface TableBodyProps<T> extends PropsWithChildren {
+interface TableBodyProps extends PropsWithChildren {
   draggableRows: boolean;
   DndProvider?: React.FC<any>;
   HTML5Backend?: any;
-  dndContext?: IDnDContext<T>;
+  items: any;
+  table: any;
+  onChange?: any;
+  subRowsKey?: string;
 }
+
+type TypeWithId<T> = T & {
+  id: string;
+};
 // eslint-disable-next-line comma-spacing
 const TableBodyComponent = <T,>({
   draggableRows,
   // eslint-disable-next-line react/jsx-no-useless-fragment
-  DndProvider = () => <></>,
-  children,
-  HTML5Backend = {},
-  dndContext,
-}: TableBodyProps<T>) =>
-  draggableRows && dndContext ? (
+  DndProvider,
+  HTML5Backend,
+  items,
+  table,
+  subRowsKey,
+  onChange,
+}: TableBodyProps) => {
+  const setRowId: (records: T[], parent?: TypeWithId<T>) => TypeWithId<T>[] = (records, parent) =>
+    records !== undefined
+      ? records
+          .filter(f => f)
+          .map((item, index) => {
+            const itemWithId: TypeWithId<T> = {
+              ...item,
+              id: parent ? `${parent.id}.${index}` : index.toString(),
+            };
+            return {
+              ...itemWithId,
+              ...(subRowsKey
+                ? {
+                    [subRowsKey]: setRowId(get(item, subRowsKey), itemWithId),
+                  }
+                : {}),
+            };
+          })
+      : [];
+
+  const dndContext = useDnDContext<T>(
+    ItemTypes.ROW,
+    {
+      getDisplayName: item => item.id!,
+      itemsProperty: subRowsKey,
+      onChange,
+    },
+    setRowId(items),
+    []
+  );
+  return draggableRows && DndProvider && HTML5Backend ? (
     <tbody>
-      <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+      <DndProvider backend={HTML5Backend}>
+        {dndContext.activeItems
+          .filter(
+            item =>
+              item && table.getRowModel().rowsById[(item.value as TypeWithId<T>).id] !== undefined
+          )
+          .map(item => {
+            const itemValue = item.value as TypeWithId<T>;
+            const row = table.getRowModel().rowsById[itemValue.id];
+            const children =
+              row && row.getIsExpanded()
+                ? (item.value.items || []).map(subItem => {
+                    const subItemValue = subItem.value as TypeWithId<T>;
+                    const childRow = table.getRowModel().rowsById[subItemValue.id];
+                    return (
+                      <TableRow
+                        key={subItem.id}
+                        draggableRow
+                        row={childRow}
+                        dndContext={dndContext}
+                        enableSelection={false}
+                      />
+                    );
+                  })
+                : [];
+            return (
+              <>
+                <TableRow
+                  key={item.id}
+                  draggableRow
+                  row={row}
+                  dndContext={dndContext}
+                  enableSelection={false}
+                />
+                {children}
+              </>
+            );
+          })}
+      </DndProvider>
     </tbody>
   ) : (
-    <tbody>{children}</tbody>
+    <tbody>
+      {table.getRowModel().rows.map((row: Row<T>) => (
+        <TableRow<T> key={row.id} row={row} enableSelection={false} />
+      ))}
+    </tbody>
   );
+};
 
-const TableBody = (props: TableBodyProps<any>) =>
-  withDnD(withDnDBackend(TableBodyComponent))(props);
+const TableBody = (props: TableBodyProps) => withDnD(withDnDBackend(TableBodyComponent))(props);
 
 export { TableBody };

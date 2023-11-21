@@ -63,6 +63,7 @@ const elementTestId = <T,>(
   }-draggable-item-${index}`;
 
 /* eslint-disable comma-spacing */
+// eslint-disable-next-line max-statements
 const DraggableItemComponent = <T,>({
   item,
   useDrag = () => {},
@@ -86,6 +87,7 @@ const DraggableItemComponent = <T,>({
         handlerId: monitor.getHandlerId(),
         isOver: monitor.isOver(),
         isOverCurrent: monitor.isOver({ shallow: true }),
+        offSet: monitor.getClientOffset(),
       };
     },
     hover: hoverSortable(ref, { ...item, container }, index, context.sort),
@@ -117,26 +119,34 @@ const DraggableItemComponent = <T,>({
       preview(previewRef);
     }
   }, [preview, previewRef]);
+  if (!previewRef) {
+    previewRef = ref;
+  }
 
   const opacity = getOpacityLevel(isDragging);
+  const border = '';
+
   if (previewRef && previewRef.current) {
     // eslint-disable-next-line no-param-reassign
     previewRef.current.style.opacity = getOpacityLevel(isDragging).toString();
   }
-
-  drag(drop(ref));
+  drag(ref);
+  drop(previewRef);
+  drop(ref);
 
   const TagName = wrapperType;
+
   return (
     <TagName
       className={`${
         className ||
         'flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center'
-      }  ${getIconHandleClass(iconHandle)}`}
+      }  ${getIconHandleClass(iconHandle)} ${border}`}
       ref={ref}
       data-testid={elementTestId<T>(item, context, container, index)}
       style={{ opacity }}
       data-handler-id={handlerId}
+      key={TagName + item.id}
     >
       {!omitIcon && wrapperType === 'li' && (
         <Bars3Icon className={`w-4 text-gray-400 ${getIconHandleClass(!iconHandle)}`} />

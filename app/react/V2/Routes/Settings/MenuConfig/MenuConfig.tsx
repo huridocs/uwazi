@@ -13,6 +13,7 @@ import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
 
 import { Translate } from 'app/I18N';
+import { isEqual } from 'lodash';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 
@@ -45,13 +46,35 @@ const MenuConfig = () => {
 
   useEffect(() => {
     const linksWIthid = links?.map(link => {
-      const sublinks = link.sublinks?.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` }));
-      return { ...link, sublinks };
+      const subLinks =
+        (link.sublinks || []).length > 0
+          ? { sublinks: link.sublinks?.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` })) }
+          : {};
+      return { ...link, ...subLinks };
     });
     setLinkChanges(linksWIthid);
   }, [links]);
+  const sanitizeIds = (link: ClientSettingsLinkSchema) => {
+    if (link._id?.startsWith('tmp_')) {
+      delete link._id;
+    }
+    if (link.sublinks) {
+      link.sublinks = link.sublinks.map(sublink => {
+        if (sublink._id?.startsWith('tmp_')) {
+          delete sublink._id;
+        }
+        return sublink;
+      });
+    }
+    return link;
+  };
 
-  const blocker = useBlocker(links !== linkChanges);
+  const blocker = useBlocker(
+    !isEqual(
+      links,
+      linkChanges.map(l => sanitizeIds(l))
+    )
+  );
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -75,21 +98,6 @@ const MenuConfig = () => {
   const addGroup = () => {
     setFormValues({ _id: `tmp_${uniqueID()}`, title: '', type: 'group', sublinks: [] });
     setIsSidepanelOpen(true);
-  };
-
-  const sanitizeIds = (link: ClientSettingsLinkSchema) => {
-    if (link._id?.startsWith('tmp_')) {
-      delete link._id;
-    }
-    if (link.sublinks) {
-      link.sublinks = link.sublinks.map(sublink => {
-        if (sublink._id?.startsWith('tmp_')) {
-          delete sublink._id;
-        }
-        return sublink;
-      });
-    }
-    return link;
   };
 
   const save = async () => {
@@ -137,7 +145,9 @@ const MenuConfig = () => {
             draggableRows
             columns={columns({ edit })}
             data={linkChanges}
-            onChange={setLinkChanges}
+            onChange={data => {
+              setLinkChanges(data);
+            }}
             title={<Translate>Menu</Translate>}
             subRowsKey="sublinks"
             onSelection={setSelectedLinks}

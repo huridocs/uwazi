@@ -48,7 +48,7 @@ const DropZoneComponent = <T,>({
     tr: className || '',
     'active-div':
       activeClassName ||
-      ' bg-bray-800 dark:bg-gray-700 bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600',
+      ' bg-gray-800 dark:bg-gray-700 bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600',
     'active-tr': activeClassName || '',
   };
 

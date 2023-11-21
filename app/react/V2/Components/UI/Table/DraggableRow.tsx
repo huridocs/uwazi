@@ -12,9 +12,9 @@ interface GrabIconProps<T> extends PropsWithChildren {
 
 interface RowWrapperProps<T> extends PropsWithChildren {
   row: Row<T>;
-  dndContext: IDnDContext<T>;
   className?: string;
   draggableRow?: boolean;
+  dndContext?: IDnDContext<T>;
   innerRef?: RefObject<HTMLElement>;
 }
 
@@ -43,7 +43,7 @@ const GrabIcon = <T,>({ dndContext, row, previewRef }: GrabIconProps<T>) => {
 const RowWrapper =
   // eslint-disable-next-line comma-spacing
   <T,>({ children, dndContext, row, draggableRow, className, innerRef }: RowWrapperProps<T>) => {
-    if (!draggableRow) {
+    if (!draggableRow || !dndContext) {
       return <tr>{children}</tr>;
     }
     return (
@@ -53,6 +53,7 @@ const RowWrapper =
         activeClassName="border-t-4 border-primary-300"
         context={dndContext}
         name={`group_${row.id}`}
+        key={`group_${row.id}`}
         wrapperType="tr"
         parent={row.parentId ? dndContext.activeItems[row.getParentRow()!.index] : undefined}
         innerRef={innerRef}

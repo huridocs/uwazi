@@ -18,13 +18,13 @@ type SampleSchema = {
 type Story = StoryObj<typeof Table<SampleSchema>> & { args?: { showUpdates?: boolean } };
 
 const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolean }) => {
-  const [tableState, setTableState] = useState<SampleSchema[]>();
+  const [tableState, setTableState] = useState<SampleSchema[]>(props.data);
   return (
     <>
       <div className="tw-content">
         <Table<SampleSchema>
           columns={props.columns}
-          data={props.data}
+          data={tableState}
           title={props.title}
           initialState={props.initialState}
           footer={props.footer}

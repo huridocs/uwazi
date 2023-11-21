@@ -5,13 +5,10 @@ import {
   useReactTable,
   SortingState,
   getExpandedRowModel,
-  Row,
 } from '@tanstack/react-table';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
-import { TableRow } from './TableRow';
-import { useDnDTable } from './useDnDTable';
 
 const applyForSelection = (
   withSelection: any,
@@ -94,16 +91,6 @@ const Table = <T,>({
     },
   });
 
-  const { dndContext } = useDnDTable<T>(
-    draggableRows,
-    table,
-    {
-      getDisplayName: item => item.id!,
-      itemsProperty: subRowsKey,
-      onChange,
-    },
-    [internalData, setInternalData]
-  );
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
     if (onSelection) {
@@ -129,17 +116,13 @@ const Table = <T,>({
             />
           ))}
         </thead>
-        <TableBody draggableRows={draggableRows} dndContext={dndContext}>
-          {table.getRowModel().rows.map((item: Row<T>) => (
-            <TableRow<T>
-              key={item.id}
-              row={item}
-              draggableRow={draggableRows === true}
-              dndContext={dndContext}
-              enableSelection
-            />
-          ))}
-        </TableBody>
+        <TableBody
+          draggableRows={draggableRows}
+          items={data}
+          table={table}
+          subRowsKey={subRowsKey}
+          onChange={onChange}
+        />
       </table>
       {footer && <div className="p-4">{footer}</div>}
     </div>

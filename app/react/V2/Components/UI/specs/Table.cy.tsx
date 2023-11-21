@@ -94,7 +94,8 @@ describe('Table', () => {
   describe('Selections', () => {
     it('should select items from each table', () => {
       mount(<WithCheckboxes />);
-      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+      cy.contains('Short text');
+      cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
       cy.get('tbody')
         .eq(1)
@@ -111,8 +112,9 @@ describe('Table', () => {
 
     it('should clear selected items when data changes', () => {
       mount(<WithCheckboxes />);
+      cy.contains('Short text');
 
-      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+      cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
       cy.get('tbody')
         .eq(1)
@@ -129,7 +131,8 @@ describe('Table', () => {
 
     it('should not clear selections if data is not changed', () => {
       mount(<WithCheckboxes />);
-      cy.get('table')
+      cy.contains('Short text');
+      cy.get('[data-testid="table"]')
         .eq(1)
         .within(() => cy.get('thead > tr > th').eq(0).click());
 
@@ -142,16 +145,14 @@ describe('Table', () => {
     it('should sort rows by dragging', () => {
       mount(<WithDnD />);
 
-      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragstart');
-      cy.get('[data-testid="root-draggable-item-2"]').trigger('dragleave');
-      cy.get('[data-testid="root-draggable-item-0"]').trigger('drop', {
-        target: { x: 1, y: 3 },
-      });
-      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
+      cy.get('[data-testid="root-draggable-item-2"]').drag(
+        '[data-testid="root-draggable-item-0"]',
+        { target: { x: 5, y: 0 } }
+      );
 
+      checkRowContent(1, ['Entity 3', data[2].description, '3']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
-      checkRowContent(1, ['Entity 2', data[0].description, '2']);
-      checkRowContent(2, ['Entity 3', data[2].description, '3']);
     });
   });
 });

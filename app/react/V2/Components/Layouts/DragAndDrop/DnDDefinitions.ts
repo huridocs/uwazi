@@ -4,6 +4,13 @@ import update from 'immutability-helper';
 import { type IDraggable, ItemTypes } from 'app/V2/shared/types';
 import ID from 'shared/uniqueID';
 
+interface IDnDOperations<T> {
+  getDisplayName: (item: IDraggable<T>) => string;
+  sortCallback?: Function;
+  onChange?: (items: T[]) => void;
+  itemsProperty?: string;
+}
+
 interface IDnDContext<T> {
   itemsProperty: string;
   type: ItemTypes;
@@ -15,13 +22,7 @@ interface IDnDContext<T> {
   activeItems: IDraggable<T>[];
   availableItems: IDraggable<T>[];
   getDisplayName: (item: IDraggable<T>) => string;
-}
-
-interface IDnDOperations<T> {
-  getDisplayName: (item: IDraggable<T>) => string;
-  sortCallback?: Function;
-  onChange?: (items: T[]) => void;
-  itemsProperty?: string;
+  operations: IDnDOperations<T>;
 }
 
 interface IDnDContextState<T> {
@@ -33,8 +34,8 @@ interface IDnDContextState<T> {
   operations: IDnDOperations<T>;
 }
 
-const setIdAndParent = <T>(item: IDraggable<T>, parent?: IDraggable<T>) => {
-  const id = item.id || ID();
+const setIdAndParent = <T>(item: IDraggable<T & { id?: string }>, parent?: IDraggable<T>) => {
+  const id = item.value.id !== undefined ? item.value.id : ID();
   return { ...item, id, ...(parent ? { parent } : {}) };
 };
 
@@ -47,7 +48,7 @@ const mapWithParent = <T>(
     const draggableItem = {
       value: item,
       ...(parent === undefined ? { container: 'root' } : {}),
-    } as IDraggable<T>;
+    } as IDraggable<T & { id?: string }>;
     const subItems = get(draggableItem.value, itemsProperty);
     const itemWithId: IDraggable<T> = setIdAndParent(draggableItem, parent);
     if (subItems && subItems.length > 0) {
@@ -62,7 +63,9 @@ const mapWithParent = <T>(
     return itemWithId;
   }) as IDraggable<T>[];
 
-const mapWithID = <T>(items: IDraggable<T>[]) => items.map(item => setIdAndParent(item));
+const mapWithID = <T extends { id?: string | undefined }>(
+  items: IDraggable<T & { id?: string }>[]
+) => items.map(item => setIdAndParent(item));
 
 const removeChildFromParent = <T>(state: IDnDContextState<T>, newItem: IDraggable<T>) => {
   if (newItem.parent) {

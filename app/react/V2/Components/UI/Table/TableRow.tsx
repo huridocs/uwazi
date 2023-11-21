@@ -4,21 +4,23 @@ import { type IDnDContext } from '../../Layouts/DragAndDrop';
 import { GrabIcon, RowWrapper } from './DraggableRow';
 
 interface TableRowProps<T> extends PropsWithChildren {
-  draggableRow: boolean;
   row: Row<T>;
-  dndContext: IDnDContext<T>;
   enableSelection: boolean | undefined;
+  draggableRow?: boolean;
+  dndContext?: IDnDContext<T>;
 }
 
 /* eslint-disable comma-spacing */
 const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
-  const icons = draggableRow
-    ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} />]
-    : [];
+  const icons =
+    draggableRow && dndContext
+      ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} />]
+      : [];
   const isSubGroup = row.depth > 0;
-  let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : 'bg-white';
+  let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : '';
   bg = row.getCanExpand() && row.getIsExpanded() ? 'bg-primary-100' : bg;
+
   return (
     <RowWrapper
       className={`${bg} border-b`}
@@ -26,6 +28,7 @@ const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableR
       row={row}
       dndContext={dndContext}
       innerRef={previewRef}
+      key={`row${row.id}`}
     >
       {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
