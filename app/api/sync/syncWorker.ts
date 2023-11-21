@@ -9,13 +9,13 @@ import { synchronizer } from './synchronizer';
 import { createSyncConfig } from './syncConfig';
 import syncsModel from './syncsModel';
 
-const updateSyncs = async (name: string, lastSync: number) =>
-  syncsModel._updateMany({ name }, { $set: { lastSync } }, {});
+const updateSyncs = async (name: string, collection: string, lastSync: number) =>
+  syncsModel._updateMany({ name }, { $set: { [`lastSyncs.${collection}`]: lastSync } }, {});
 
 async function createSyncIfNotExists(config: SettingsSyncSchema) {
   const syncs = await syncsModel.find({ name: config.name });
   if (syncs.length === 0) {
-    await syncsModel.create({ lastSync: 0, name: config.name });
+    await syncsModel.create({ lastSyncs: {}, name: config.name });
   }
 }
 
@@ -51,6 +51,8 @@ const validateConfig = (config: SettingsSyncSchema) => {
 };
 
 export const syncWorker = {
+  UPDATE_LOG_TARGET_COUNT: 50,
+
   async runAllTenants() {
     return Object.keys(tenants.tenants).reduce(async (previous, tenantName) => {
       await previous;
@@ -78,7 +80,7 @@ export const syncWorker = {
   async syncronizeConfig(config: SyncConfig, cookie: string) {
     await createSyncIfNotExists(config);
 
-    const syncConfig = await createSyncConfig(config, config.name);
+    const syncConfig = await createSyncConfig(config, config.name, this.UPDATE_LOG_TARGET_COUNT);
 
     await (
       await syncConfig.lastChanges()
@@ -100,7 +102,7 @@ export const syncWorker = {
           'post'
         );
       }
-      await updateSyncs(config.name, change.timestamp);
+      await updateSyncs(config.name, change.namespace, change.timestamp);
     }, Promise.resolve());
   },
 
