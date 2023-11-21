@@ -13,7 +13,7 @@ import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
 
-const addLanguage = async (language: any) => {
+const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);
   const addedTranslations = await translations.addLanguage(language.key);
   const newTranslations = addedTranslations
@@ -237,3 +237,5 @@ export default (app: Application) => {
     }
   );
 };
+
+export { addLanguage };
