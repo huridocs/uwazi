@@ -1,48 +1,44 @@
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
 
-export class Matomo extends Component {
-  render() {
-    if (!this.props.id && !this.props.url) {
-      return false;
+const MatomoComponent = ({ id, url }) => {
+  useEffect(() => {
+    if (id && url) {
+      const matomoUrl = url.replace(/\/?$/, '/');
+
+      const script = document.createElement('script');
+
+      script.innerHTML = `
+      var _paq = _paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="${matomoUrl}";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '${id}']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();`;
+
+      document.body.appendChild(script);
     }
+  }, [id, url]);
 
-    const url = this.props.url.replace(/\/?$/, '/');
+  return undefined;
+};
 
-    return (
-      <script
-        type="text/javascript"
-        dangerouslySetInnerHTML={{
-          __html: `
-              var _paq = _paq || [];
-              _paq.push(['trackPageView']);
-              _paq.push(['enableLinkTracking']);
-              (function() {
-                var u="${url}";
-                _paq.push(['setTrackerUrl', u+'piwik.php']);
-                _paq.push(['setSiteId', '${this.props.id}']);
-                var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-                g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-              })();
-        `,
-        }}
-      />
-    );
-  }
-}
-
-Matomo.defaultProps = {
+MatomoComponent.defaultProps = {
   id: '',
   url: '',
 };
 
-Matomo.propTypes = {
+MatomoComponent.propTypes = {
   id: PropTypes.string,
   url: PropTypes.string,
 };
 
-export function mapStateToProps({ settings }) {
+function mapStateToProps({ settings }) {
   try {
     const { id, url } = JSON.parse(settings.collection.get('matomoConfig'));
     return { id, url };
@@ -51,4 +47,6 @@ export function mapStateToProps({ settings }) {
   }
 }
 
-export default connect(mapStateToProps)(Matomo);
+const Matomo = connect(mapStateToProps)(MatomoComponent);
+
+export { Matomo, MatomoComponent, mapStateToProps };

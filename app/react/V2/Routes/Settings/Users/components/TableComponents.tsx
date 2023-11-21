@@ -69,14 +69,14 @@ const UsernameCell = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['
   const userIsBlocker = cell.row.original.accountLocked;
   return (
     <div className="flex items-start gap-1">
-      <span className={userIsBlocker ? 'text-red-600' : ''}>{cell.getValue()}</span>
+      <span className={userIsBlocker ? 'text-error-600' : ''}>{cell.getValue()}</span>
       {userIsBlocker && (
         <Tooltip
           content={t('System', 'Account locked', null, false)}
           // eslint-disable-next-line react/style-prop-object
           style="light"
         >
-          <LockClosedIcon className="w-4 text-red-600 cursor-pointer" />
+          <LockClosedIcon className="w-4 cursor-pointer text-error-600" />
         </Tooltip>
       )}
     </div>

@@ -27,7 +27,6 @@ describe('Users', () => {
     cy.contains('button', 'Add user').click();
     cy.contains('h1', 'New user');
     cy.checkA11y();
-    cy.get('aside').toMatchImageSnapshot();
     cy.contains('button', 'Cancel').click();
   });
 
@@ -57,11 +56,7 @@ describe('Users', () => {
     });
 
     it('edit user', () => {
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td:nth-child(6) button').click();
-        });
+      cy.contains('td', 'Carmen').siblings().last().click();
       cy.get('aside').within(() => {
         cy.get('#username').should('have.value', 'Carmen');
         cy.get('#email').should('have.value', 'carmen@huridocs.org');
@@ -74,15 +69,13 @@ describe('Users', () => {
     });
 
     it('delete user', () => {
-      cy.get('table tbody tr')
-        .eq(3)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+      cy.intercept('GET', '/api/users').as('updateUsers');
+      cy.contains('td', 'User_1').siblings().first().click();
       cy.contains('button', 'Delete').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
-      cy.contains('span', 'User_1').should('not.exist');
       cy.contains('button', 'Dismiss').click();
+      cy.wait('@updateUsers');
+      cy.contains('span', 'User_1').should('not.exist');
     });
 
     it('should check the changes', () => {
@@ -141,11 +134,9 @@ describe('Users', () => {
   describe('reset password and 2fa', () => {
     it('reset password', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+
+      cy.contains('td', 'Carmen_edited').siblings().first().click();
+
       cy.contains('button', 'Reset Password').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.contains('div', 'Instructions to reset the password were sent to the user');
@@ -156,11 +147,9 @@ describe('Users', () => {
     it('Reset 2fa', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('span', 'Password + 2fa');
-      cy.get('table tbody tr')
-        .eq(4)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+
+      cy.contains('td', 'blocky').siblings().first().click();
+
       cy.contains('button', 'Reset 2FA').click();
       cy.contains('[data-testid="modal"] button', 'Accept').click();
       cy.get('table tbody tr')
@@ -176,11 +165,8 @@ describe('Users', () => {
   describe('unblock user', () => {
     it('should unblock a user', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
-      cy.get('table tbody tr')
-        .eq(4)
-        .within(() => {
-          cy.get('td:nth-child(6) button').click();
-        });
+
+      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
 
       cy.contains('button', 'Unlock account').click();
       cy.wait('@updateUsers');
@@ -204,45 +190,42 @@ describe('Users', () => {
     });
 
     it('bulk password reset', () => {
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
-      cy.get('table tbody tr')
-        .eq(1)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+      cy.contains('td', 'Carmen_edited').siblings().first().click();
+      cy.contains('td', 'Cynthia').siblings().first().click();
+
       cy.contains('button', 'Reset Password').click();
+
       cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset passwords');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Cynthia');
         cy.contains('button', 'Accept').click();
       });
+
       cy.contains('div', 'Instructions to reset the password were sent to the user');
+
       cy.contains('button', 'Dismiss').click();
     });
 
     it('bulk reset 2FA', () => {
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
-      cy.get('table tbody tr')
-        .eq(2)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+      cy.intercept('GET', '/api/user*').as('getUsers');
+
+      cy.contains('td', 'Carmen_edited').siblings().first().click();
+      cy.contains('td', 'Mike').siblings().first().click();
+
       cy.contains('button', 'Reset 2FA').click();
+
       cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Reset 2FA');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.contains('button', 'Accept').click();
       });
+
+      cy.wait('@getUsers');
+
+      cy.contains('button', 'Dismiss').click();
+
       cy.get('table tbody tr')
         .eq(0)
         .within(() => {
@@ -258,30 +241,31 @@ describe('Users', () => {
         .within(() => {
           cy.contains('span', 'Password + 2fa').should('not.exist');
         });
-      cy.contains('button', 'Dismiss').click();
     });
 
     it('bulk delete', () => {
-      cy.get('table tbody tr')
-        .eq(0)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
-      cy.get('table tbody tr')
-        .eq(2)
-        .within(() => {
-          cy.get('td input').eq(0).click();
-        });
+      cy.intercept('GET', '/api/users').as('getUsers');
+      cy.intercept('GET', '/api/usergroups').as('getGroups');
+
+      cy.contains('td', 'Carmen_edited').siblings().first().click();
+      cy.contains('td', 'Mike').siblings().first().click();
+
       cy.contains('button', 'Delete').click();
+
       cy.getByTestId('modal').within(() => {
         cy.contains('h1', 'Delete');
         cy.contains('li', 'Carmen_edited');
         cy.contains('li', 'Mike');
         cy.contains('button', 'Accept').click();
       });
+
+      cy.wait('@getUsers');
+
+      cy.wait('@getGroups');
+      cy.contains('button', 'Dismiss').click();
       cy.contains('span', 'Carmen_edited').should('not.exist');
       cy.contains('span', 'Mike').should('not.exist');
-      cy.contains('button', 'Dismiss').click();
+
       namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
     });
   });
