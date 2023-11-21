@@ -189,7 +189,8 @@ export default {
   async addLanguage(language: LanguageSchema) {
     const currentSettings = await this.get();
     currentSettings.languages = currentSettings.languages || [];
-    currentSettings.languages.push(language);
+    const keys = new Set(currentSettings.languages.map(l => l.key));
+    if (!keys.has(language.key)) currentSettings.languages.push(language);
     return settingsModel.save(currentSettings);
   },
 
