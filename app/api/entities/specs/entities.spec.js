@@ -1325,8 +1325,7 @@ describe('entities', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
-  fdescribe('addLanguage()', () => {
+  describe('addLanguage()', () => {
     let createThumbnailSpy;
 
     beforeAll(async () => {
