@@ -796,7 +796,7 @@ export default {
 
   async addLanguage(language, limit = 50) {
     const [languageTranslationAlreadyExists] = await this.getUnrestrictedWithDocuments(
-      { locale: language },
+      { language },
       null,
       {
         limit: 1,

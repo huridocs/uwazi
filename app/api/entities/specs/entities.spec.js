@@ -1325,9 +1325,12 @@ describe('entities', () => {
     });
   });
 
-  describe('addLanguage()', () => {
-    it('should duplicate all the entities from the default language to the new one', async () => {
-      jest.spyOn(entities, 'createThumbnail').mockImplementation(entity => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fdescribe('addLanguage()', () => {
+    let createThumbnailSpy;
+
+    beforeAll(async () => {
+      createThumbnailSpy = jest.spyOn(entities, 'createThumbnail').mockImplementation(entity => {
         if (!entity.file) {
           return Promise.reject(
             new Error('entities without file should not try to create thumbnail')
@@ -1335,6 +1338,13 @@ describe('entities', () => {
         }
         return Promise.resolve();
       });
+    });
+
+    afterAll(() => {
+      createThumbnailSpy.mockRestore();
+    });
+
+    it('should duplicate all the entities from the default language to the new one', async () => {
       await entities.saveMultiple([{ _id: docId1, file: {} }]);
 
       await entities.addLanguage('ab', 2);
@@ -1344,6 +1354,13 @@ describe('entities', () => {
       const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
       const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');
       expect(toCheckPermissions.permissions).toEqual(fromCheckPermissions.permissions);
+    });
+
+    it('should not try to add already existing languages', async () => {
+      const oldCount = (await entities.get({ language: 'en' })).length;
+      await entities.addLanguage('en');
+      const newCount = (await entities.get({ language: 'en' })).length;
+      expect(newCount).toBe(oldCount);
     });
   });
 
