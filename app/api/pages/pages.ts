@@ -84,7 +84,7 @@ export default {
   },
 
   async addLanguage(language: string) {
-    const [lanuageTranslationAlreadyExists] = await this.get({ locale: language });
+    const [lanuageTranslationAlreadyExists] = await this.get({ language });
     if (lanuageTranslationAlreadyExists) {
       return Promise.resolve();
     }
