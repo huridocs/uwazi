@@ -1,5 +1,5 @@
 import { Dispatch } from 'react';
-import { get, omit } from 'lodash';
+import { get, has, omit } from 'lodash';
 import update from 'immutability-helper';
 import { type IDraggable, ItemTypes } from 'app/V2/shared/types';
 import ID from 'shared/uniqueID';
@@ -34,8 +34,8 @@ interface IDnDContextState<T> {
   operations: IDnDOperations<T>;
 }
 
-const setIdAndParent = <T>(item: IDraggable<T & { id?: string }>, parent?: IDraggable<T>) => {
-  const id = item.value.id !== undefined ? item.value.id : ID();
+const setIdAndParent = <T>(item: IDraggable<T | (T & { id?: string })>, parent?: IDraggable<T>) => {
+  const id = has(item.value, 'id') ? get(item.value, 'id') : ID();
   return { ...item, id, ...(parent ? { parent } : {}) };
 };
 
@@ -63,9 +63,8 @@ const mapWithParent = <T>(
     return itemWithId;
   }) as IDraggable<T>[];
 
-const mapWithID = <T extends { id?: string | undefined }>(
-  items: IDraggable<T & { id?: string }>[]
-) => items.map(item => setIdAndParent(item));
+const mapWithID = <T>(items: IDraggable<T | (T & { id?: string })>[]) =>
+  items.map(item => setIdAndParent(item));
 
 const removeChildFromParent = <T>(state: IDnDContextState<T>, newItem: IDraggable<T>) => {
   if (newItem.parent) {
