@@ -1,5 +1,7 @@
 import db from 'api/utils/testing_db';
 
+import entities from 'api/entities';
+import pages from 'api/pages';
 import settings from 'api/settings';
 import thesauri from 'api/thesauri/thesauri.js';
 import { ContextType } from 'shared/translationSchema';
@@ -9,6 +11,7 @@ import { UITranslationNotAvailable } from '../defaultTranslations';
 import translations from '../translations';
 import fixtures, { dictionaryId } from './fixtures';
 import { sortByLocale } from './sortByLocale';
+import { addLanguage } from '../routes';
 
 describe('translations', () => {
   beforeEach(async () => {
@@ -352,8 +355,7 @@ describe('translations', () => {
 
   describe('addLanguage', () => {
     it('should clone translations of default language and change language to the one added', async () => {
-      await settings.addLanguage({ key: 'fr', label: 'french' });
-      await translations.addLanguage('fr');
+      await addLanguage({ key: 'fr', label: 'french' });
       const allTranslations = await translations.get();
 
       const frTranslation = allTranslations.find(t => t.locale === 'fr');
@@ -362,16 +364,26 @@ describe('translations', () => {
       expect(frTranslation?.contexts?.[0].values).toEqual(defaultTranslation.contexts?.[0].values);
     });
 
-    describe('when translation already exists', () => {
+    describe('when the language already exists', () => {
       it('should not clone it again', async () => {
-        await settings.addLanguage({ key: 'fr', label: 'french' });
-        await translations.addLanguage('fr');
-        await translations.addLanguage('fr');
+        await addLanguage({ key: 'fr', label: 'french' });
+
+        const firstEntitiesCount = (await entities.get({ language: 'fr' })).length;
+        const firstPagesCount = (await pages.get({ language: 'fr' })).length;
+
+        await addLanguage({ key: 'fr', label: 'french' });
+
+        const settingsLanguages = (await settings.get()).languages?.map(l => l.key);
+        expect(settingsLanguages).toEqual(['es', 'en', 'zh', 'fr']);
+
         const allTranslations = await translations.get();
-
         const frTranslations = allTranslations.filter(t => t.locale === 'fr');
-
         expect(frTranslations.length).toBe(1);
+
+        const secondEntitiesCount = (await entities.get({ language: 'fr' })).length;
+        const secondPagesCount = (await pages.get({ language: 'fr' })).length;
+        expect(firstEntitiesCount).toBe(secondEntitiesCount);
+        expect(firstPagesCount).toBe(secondPagesCount);
       });
     });
   });
