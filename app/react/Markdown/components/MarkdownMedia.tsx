@@ -366,9 +366,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     <div className={`video-container ${compact ? 'compact' : ''}`}>
       {isLoading && (
         <div className="loader">
-          <div>
-            <Translate>Loading</Translate>
-            <span> ...</span>
+          <Translate>Loading</Translate>
+          <div className="bouncing-dots">
+            <div className="dot" />
+            <div className="dot" />
+            <div className="dot" />
           </div>
         </div>
       )}

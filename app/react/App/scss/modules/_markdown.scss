@@ -221,8 +221,33 @@
     height: 100% !important;
     background-color: $c-grey-lighten;
     display: flex;
+    gap: 2px;
     justify-content: center;
     align-items: center;
+
+    .bouncing-dots {
+      .dot {
+        display: inline-block;
+        margin-right: 2px;
+        margin-bottom: 4px;
+        width: 2px;
+        height: 2px;
+        border-radius: 50%;
+        background-color: black;
+
+        &:nth-last-child(1) {
+          animation: jumpingAnimation 0.7s 0.1s ease-in infinite;
+        }
+
+        &:nth-last-child(2) {
+          animation: jumpingAnimation 0.7s 0.2s ease-in infinite;
+        }
+
+        &:nth-last-child(3) {
+          animation: jumpingAnimation 0.7s 0.3s ease-in infinite;
+        }
+      }
+    }
   }
 }
 
