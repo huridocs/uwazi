@@ -59,12 +59,26 @@ const shallowObjectDiff = (left, right, ignoredProps) => {
   };
 };
 
+const uniqueConcatProps = (objs, prop) => _.uniq(_.flatten(objs.map(o => o[prop])));
+
+const combineDiffs = diffs => ({
+  isDifferent: diffs.some(diff => diff.isDifferent),
+  missing: uniqueConcatProps(diffs, 'missing'),
+  extra: uniqueConcatProps(diffs, 'extra'),
+  differentValue: uniqueConcatProps(diffs, 'differentValue'),
+  all: uniqueConcatProps(diffs, 'all'),
+});
+
 const diffDocs = async (sharedId, language, collectionName, db) => {
   const collection = db.collection(collectionName);
-  const [left, right] = await collection.find({ sharedId, language }).toArray();
-  assert(left);
-  assert(right);
-  const diff = shallowObjectDiff(left, right, ['_id']);
+  const docs = await collection.find({ sharedId, language }).toArray();
+  assert(docs.length > 1);
+  const diffs = [];
+  for (let i = 0; i < docs.length - 1; i += 1) {
+    const diff = shallowObjectDiff(docs[i], docs[i + 1], ['_id']);
+    diffs.push(diff);
+  }
+  const diff = combineDiffs(diffs);
   return diff;
 };
 
@@ -109,11 +123,13 @@ const countSharedIdLanguageDuplicates = async (db, collectionName) => {
   let languagesWithDuplications = new Set();
   let duplicatedCount = 0;
   let differenceLog = await logDifferences(counts, collectionName, db);
+  const moreThanTwos = {};
 
-  Object.entries(counts).forEach(([, languages]) => {
+  Object.entries(counts).forEach(([sharedId, languages]) => {
     const langEntries = Object.entries(languages);
     correctTotalCount += langEntries.length;
     const duplicated = langEntries.filter(([, count]) => count > 1);
+    const moreThanTwo = duplicated.filter(([, count]) => count > 2);
     duplicated.forEach(([, count]) => {
       if (count > maximumMultiplicity) {
         maximumMultiplicity = count;
@@ -121,6 +137,9 @@ const countSharedIdLanguageDuplicates = async (db, collectionName) => {
     });
     duplicatedCount += duplicated.length;
     duplicated.forEach(([language]) => languagesWithDuplications.add(language));
+    if (moreThanTwo.length) {
+      moreThanTwos[sharedId] = moreThanTwo;
+    }
   });
 
   languagesWithDuplications = Array.from(languagesWithDuplications);
@@ -131,6 +150,7 @@ const countSharedIdLanguageDuplicates = async (db, collectionName) => {
     maximumMultiplicity,
     languagesWithDuplications,
     differenceLog,
+    moreThanTwos,
   };
 };
 
@@ -155,6 +175,27 @@ const prettyPrintDiffLog = diffLog => {
   diffLines.forEach(line => println(line));
 };
 
+const prettyPrintCategory = (category, countObj) => {
+  println(
+    `${countObj.duplicatedCount} of ${countObj.correctTotalCount}(${
+      (100 * countObj.duplicatedCount) / countObj.correctTotalCount
+    }%) duplicated sharedId-language pairs in ${category}. Maximum multiplicity is ${
+      countObj.maximumMultiplicity
+    }. Languages with duplications: ${countObj.languagesWithDuplications.join(', ')}.`
+  );
+  // if (Object.keys(countObj.moreThanTwos).length) {
+  //   println('  More than two instances:');
+  //   Object.entries(countObj.moreThanTwos).forEach(([sharedId, languages]) => {
+  //     println(
+  //       `    ${sharedId}: ${languages
+  //         .map(([language, count]) => `${language}(${count})`)
+  //         .join(', ')}`
+  //     );
+  //   });
+  // }
+  prettyPrintDiffLog(countObj.differenceLog);
+};
+
 const prettyPrintResult = result => {
   const resultEntries = Object.entries(result);
   resultEntries.forEach(([dbName, tenantResult]) => {
@@ -172,22 +213,8 @@ const prettyPrintResult = result => {
         settingsLanguages.duplicated.length
       } duplicated languages in settings: ${settingsLanguages.duplicated.join(', ')}.`
     );
-    println(
-      `${entities.duplicatedCount} of ${entities.correctTotalCount}(${
-        (100 * entities.duplicatedCount) / entities.correctTotalCount
-      }%) duplicated sharedId-language pairs in entities. Maximum multiplicity is ${
-        entities.maximumMultiplicity
-      }. Languages with duplications: ${entities.languagesWithDuplications.join(', ')}.`
-    );
-    prettyPrintDiffLog(entities.differenceLog);
-    println(
-      `${pages.duplicatedCount} of ${pages.correctTotalCount}(${
-        (100 * pages.duplicatedCount) / pages.correctTotalCount
-      }%) duplicated sharedId-language pairs in pages. Maximum multiplicity is ${
-        pages.maximumMultiplicity
-      }. Languages with duplications: ${pages.languagesWithDuplications.join(', ')}.`
-    );
-    prettyPrintDiffLog(pages.differenceLog);
+    prettyPrintCategory('entities', entities);
+    prettyPrintCategory('pages', pages);
     println('');
   });
 };
