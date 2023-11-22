@@ -7,6 +7,7 @@
   text-align: center;
   font-size: 12px;
   line-height: 16px;
+
   &:focus-visible {
     outline: none;
   }
@@ -20,11 +21,13 @@
     padding: 15px;
     font-family: $f-mono;
   }
+
   .tab-nav {
     position: absolute;
     right: 0;
     bottom: 100%;
   }
+
   .tab-link {
     display: inline-block;
     padding: 5px 5px 0;
@@ -34,17 +37,20 @@
     cursor: pointer;
     color: $c-grey-dark;
     border-bottom: 1px dotted $c-white;
+
     &:hover {
       text-decoration: none;
       color: $c-black;
       border-bottom: 1px dotted $c-black;
     }
+
     &.tab-link-active {
       color: $c-primary;
       font-weight: bold;
       border-bottom: 1px solid $c-primary;
     }
   }
+
   .tab-content {
     float: left;
     width: 100%;
@@ -59,10 +65,12 @@
     font-style: italic;
     font-weight: 300;
     border: 0;
+
     p {
       font-size: $f-size-lg;
     }
   }
+
   code {
     padding: 3px 6px 2px;
     position: relative;
@@ -72,6 +80,7 @@
     color: $c-primary;
     background-color: $c-grey-lighten;
   }
+
   p a,
   td a {
     display: inline;
@@ -79,20 +88,24 @@
     border-bottom: 1px solid $c-primary-light;
     text-decoration: none !important;
     padding: 0 2px;
+
     &:hover {
       color: $c-primary;
       border-color: $c-primary;
     }
   }
+
   img {
     max-width: 100%;
   }
+
   p,
   li {
     font-family: $f-regular;
     font-size: $f-size-lg;
     line-height: 1.5em;
   }
+
   li {
     margin-bottom: 5px;
   }
@@ -101,29 +114,37 @@
     width: 100%;
     table-layout: fixed;
   }
+
   th,
   td {
     padding: 7px 10px;
   }
+
   th {
     background-color: $c-grey-lighten;
     border-bottom: 1px solid $c-grey-light;
   }
+
   th:not(:last-of-type) {
     border-right: 1px solid $c-white;
   }
+
   tr:not(:last-of-type) {
     border-bottom: 1px solid $c-grey-light;
   }
+
   h1 {
     margin-top: 60px;
   }
+
   h2 {
     margin-top: 45px;
   }
+
   h3 {
     margin-top: 30px;
   }
+
   h4 {
     margin-top: 15px;
   }
@@ -133,6 +154,7 @@
   .markdownEditor {
     margin-top: 15px;
   }
+
   .tab-link {
     padding: 15px 15px 0;
     font-size: $f-size-sm;
@@ -140,6 +162,7 @@
 }
 
 .side-panel {
+
   .markdownViewer,
   .markdownEditor {
     p {
@@ -149,6 +172,7 @@
 }
 
 .item {
+
   .markdownViewer,
   .markdownEditor {
     p {
@@ -157,7 +181,7 @@
   }
 }
 
-.video-container > div:first-child {
+.video-container>div:first-child {
   position: relative;
   padding-bottom: 73.25%;
   height: 0;
@@ -165,6 +189,7 @@
   margin-top: 5px;
   margin-bottom: 5px;
 }
+
 .video-container iframe,
 .video-container object,
 .video-container embed {
@@ -174,7 +199,7 @@
   height: 100%;
 }
 
-.video-container.compact > div:first-child {
+.video-container.compact>div:first-child {
   height: 0;
   padding-bottom: 0;
   position: relative;
@@ -185,6 +210,44 @@
     position: absolute;
     left: 0;
     top: 0;
+  }
+}
+
+.video-container {
+  .loader {
+    padding-top: 0 !important;
+    width: 100% !important;
+    min-height: 210px !important;
+    height: 100% !important;
+    background-color: $c-grey-lighten;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    align-items: center;
+
+    .bouncing-dots {
+      .dot {
+        display: inline-block;
+        margin-right: 2px;
+        margin-bottom: 4px;
+        width: 2px;
+        height: 2px;
+        border-radius: 50%;
+        background-color: black;
+
+        &:nth-last-child(1) {
+          animation: jumpingAnimation 0.7s 0.1s ease-in infinite;
+        }
+
+        &:nth-last-child(2) {
+          animation: jumpingAnimation 0.7s 0.2s ease-in infinite;
+        }
+
+        &:nth-last-child(3) {
+          animation: jumpingAnimation 0.7s 0.3s ease-in infinite;
+        }
+      }
+    }
   }
 }
 
@@ -234,7 +297,7 @@
   }
 }
 
-.video-container > .timelinks-form {
+.video-container>.timelinks-form {
   margin-top: 10px;
   margin-bottom: 10px;
 
@@ -265,13 +328,15 @@
 
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
-        /* display: none; <- Crashes Chrome on hover */
-        -webkit-appearance: none;
-        margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+      /* display: none; <- Crashes Chrome on hover */
+      -webkit-appearance: none;
+      margin: 0;
+      /* <-- Apparently some margin are still there even though it's hidden */
     }
 
     input[type=number] {
-        -moz-appearance:textfield; /* Firefox */
+      -moz-appearance: textfield;
+      /* Firefox */
     }
 
     &:focus-visible,
@@ -284,10 +349,12 @@
       padding-left: 4px;
       @include timeline-time();
     }
+
     .timestamp-minutes {
       width: 33%;
       @include timeline-time();
     }
+
     .seperator {
       width: auto;
       line-height: 16px;
@@ -296,6 +363,7 @@
       padding-top: 4px;
       border: none;
     }
+
     .timestamp-seconds {
       width: 33%;
       padding-right: 4px;
@@ -333,7 +401,7 @@
   }
 }
 
-.page-viewer .markdown-viewer > *:not(.hero) {
+.page-viewer .markdown-viewer>*:not(.hero) {
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
@@ -346,10 +414,12 @@
 .side-panel,
 .entity-viewer {
   .markdown-viewer {
+
     p,
     li {
       font-size: $f-size;
     }
+
     h1,
     h2,
     h3,
@@ -366,6 +436,7 @@
     h1 {
       font-size: $f-size-xxl;
     }
+
     h2 {
       font-size: $f-size-xxl;
     }

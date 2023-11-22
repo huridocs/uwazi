@@ -71,6 +71,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const [temporalResource, setTemporalResource] = useState<string>();
   const [mediaURL, setMediaURL] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -150,7 +151,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
         <input
           type="number"
           onChange={event => {
-            let hours = parseInt(event.target.value || '0', 10);
+            const hours = parseInt(event.target.value || '0', 10);
             setNewTimeline({ ...newTimeline, timeHours: hours <= 0 ? '00' : hours.toString() });
           }}
           className="timestamp-hours"
@@ -306,19 +307,25 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           url = URL.createObjectURL(blob);
           setMediaURL(url);
         })
-        .catch(_e => {});
+        .catch(_e => {})
+        .finally(() => {
+          setIsLoading(false);
+        });
     } else if (config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
+      setIsLoading(false);
     } else {
       if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
         setTemporalResource(mediaURL);
       }
       setMediaURL(config.url);
+      setIsLoading(false);
     }
 
     return () => {
       setErrorFlag(false);
+      setIsLoading(true);
       URL.revokeObjectURL(url);
       setMediaURL('');
     };
@@ -357,30 +364,40 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
-      <div>
-        <ReactPlayer
-          className="react-player"
-          playing={isVideoPlaying}
-          ref={playerRef}
-          url={mediaURL}
-          {...dimensions}
-          controls
-          onPause={() => {
-            setVideoPlaying(false);
-          }}
-          onPlay={() => {
-            setVideoPlaying(true);
-          }}
-          onError={e => {
-            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-              setErrorFlag(true);
-            }
-          }}
-        />
-      </div>
-
-      {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
-      {editing && (
+      {isLoading ? (
+        <div className="loader">
+          <Translate>Loading</Translate>
+          <div className="bouncing-dots">
+            <div className="dot" />
+            <div className="dot" />
+            <div className="dot" />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <ReactPlayer
+            className="react-player"
+            playing={isVideoPlaying}
+            ref={playerRef}
+            url={mediaURL}
+            {...dimensions}
+            controls
+            onPause={() => {
+              setVideoPlaying(false);
+            }}
+            onPlay={() => {
+              setVideoPlaying(true);
+            }}
+            onError={e => {
+              if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+                setErrorFlag(true);
+              }
+            }}
+          />
+        </div>
+      )}
+      {!editing && !isLoading && <div>{timeLinks(config.options.timelinks)}</div>}
+      {editing && !isLoading && (
         <div className="timelinks-form">
           <button
             type="button"
