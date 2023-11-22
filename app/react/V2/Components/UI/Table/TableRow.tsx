@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useRef } from 'react';
 import { Row, flexRender } from '@tanstack/react-table';
+import { IDraggable } from 'app/V2/shared/types';
 import { type IDnDContext } from '../../Layouts/DragAndDrop';
 import { GrabIcon, RowWrapper } from './DraggableRow';
 
@@ -8,14 +9,21 @@ interface TableRowProps<T> extends PropsWithChildren {
   enableSelection: boolean | undefined;
   draggableRow?: boolean;
   dndContext?: IDnDContext<T>;
+  item?: IDraggable<T>;
 }
 
 /* eslint-disable comma-spacing */
-const TableRow = <T,>({ draggableRow, row, dndContext, enableSelection }: TableRowProps<T>) => {
+const TableRow = <T,>({
+  draggableRow,
+  row,
+  dndContext,
+  enableSelection,
+  item,
+}: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
   const icons =
-    draggableRow && dndContext
-      ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} />]
+    draggableRow && dndContext && item
+      ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
       : [];
   const isSubGroup = row.depth > 0;
   let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : '';

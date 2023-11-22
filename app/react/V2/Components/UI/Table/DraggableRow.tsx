@@ -1,6 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React, { PropsWithChildren, RefObject } from 'react';
 import { Row } from '@tanstack/react-table';
+import { IDraggable } from 'app/V2/shared/types';
 import { DraggableItem, DropZone, type IDnDContext } from '../../Layouts/DragAndDrop';
 import { GrabDoubleIcon } from '../../CustomIcons';
 
@@ -8,6 +9,7 @@ interface GrabIconProps<T> extends PropsWithChildren {
   row: Row<T>;
   dndContext: IDnDContext<T>;
   previewRef?: RefObject<HTMLElement>;
+  item: IDraggable<T>;
 }
 
 interface RowWrapperProps<T> extends PropsWithChildren {
@@ -19,26 +21,21 @@ interface RowWrapperProps<T> extends PropsWithChildren {
 }
 
 // eslint-disable-next-line comma-spacing
-const GrabIcon = <T,>({ dndContext, row, previewRef }: GrabIconProps<T>) => {
-  const di = row.parentId
-    ? dndContext.activeItems[row.getParentRow()!.index].value.items![row.index]
-    : dndContext.activeItems[row.index];
-  return (
-    <DraggableItem
-      key={`grab_${row.id}`}
-      item={di}
-      index={row.index}
-      context={dndContext}
-      wrapperType="div"
-      className="border-0"
-      container={row.parentId ? `group_${row.parentId}` : 'root'}
-      iconHandle
-      previewRef={previewRef}
-    >
-      <GrabDoubleIcon className="w-2" />
-    </DraggableItem>
-  );
-};
+const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) => (
+  <DraggableItem
+    key={`grab_${row.id}`}
+    item={item}
+    index={row.index}
+    context={dndContext}
+    wrapperType="div"
+    className="border-0"
+    container={row.parentId ? `group_${row.parentId}` : 'root'}
+    iconHandle
+    previewRef={previewRef}
+  >
+    <GrabDoubleIcon className="w-2" />
+  </DraggableItem>
+);
 
 const RowWrapper =
   // eslint-disable-next-line comma-spacing

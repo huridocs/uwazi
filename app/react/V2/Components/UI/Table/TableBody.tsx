@@ -64,28 +64,30 @@ const TableBodyComponent = <T,>({
     <tbody>
       <DndProvider backend={HTML5Backend}>
         {dndContext.activeItems
-          .filter(
-            item =>
-              item && table.getRowModel().rowsById[(item.value as TypeWithId<T>).id] !== undefined
-          )
           .map(item => {
             const itemValue = item.value as TypeWithId<T>;
             const row = table.getRowModel().rowsById[itemValue.id];
+            if (row === undefined) {
+              return undefined;
+            }
             const children =
               row && row.getIsExpanded()
-                ? (item.value.items || []).map(subItem => {
-                    const subItemValue = subItem.value as TypeWithId<T>;
-                    const childRow = table.getRowModel().rowsById[subItemValue.id];
-                    return (
-                      <TableRow
-                        key={subItem.id}
-                        draggableRow
-                        row={childRow}
-                        dndContext={dndContext}
-                        enableSelection={false}
-                      />
-                    );
-                  })
+                ? (item.value.items || [])
+                    .map(subItem => {
+                      const subItemValue = subItem.value as TypeWithId<T>;
+                      const childRow = table.getRowModel().rowsById[subItemValue.id];
+                      return childRow !== undefined ? (
+                        <TableRow
+                          key={subItem.id}
+                          draggableRow
+                          row={childRow}
+                          dndContext={dndContext}
+                          enableSelection={false}
+                          item={subItem}
+                        />
+                      ) : undefined;
+                    })
+                    .filter(child => child !== undefined)
                 : [];
             return (
               <>
@@ -95,11 +97,13 @@ const TableBodyComponent = <T,>({
                   row={row}
                   dndContext={dndContext}
                   enableSelection={false}
+                  item={item}
                 />
                 {children}
               </>
             );
-          })}
+          })
+          .filter(row => row !== undefined)}
       </DndProvider>
     </tbody>
   ) : (

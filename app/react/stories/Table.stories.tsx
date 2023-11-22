@@ -36,7 +36,7 @@ const Basic: Story = {
         created: 1,
         description:
           'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel efficitur quam. Donec feugiat at libero at rutrum.',
-          children: [
+        children: [
           {
             title: 'Entity a',
             created: 4,
