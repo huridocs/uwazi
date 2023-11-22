@@ -364,7 +364,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
-      {isLoading && (
+      {isLoading ? (
         <div className="loader">
           <Translate>Loading</Translate>
           <div className="bouncing-dots">
@@ -373,29 +373,29 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
             <div className="dot" />
           </div>
         </div>
+      ) : (
+        <div>
+          <ReactPlayer
+            className="react-player"
+            playing={isVideoPlaying}
+            ref={playerRef}
+            url={mediaURL}
+            {...dimensions}
+            controls
+            onPause={() => {
+              setVideoPlaying(false);
+            }}
+            onPlay={() => {
+              setVideoPlaying(true);
+            }}
+            onError={e => {
+              if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+                setErrorFlag(true);
+              }
+            }}
+          />
+        </div>
       )}
-      <div>
-        <ReactPlayer
-          className="react-player"
-          playing={isVideoPlaying}
-          ref={playerRef}
-          url={mediaURL}
-          {...dimensions}
-          controls
-          onPause={() => {
-            setVideoPlaying(false);
-          }}
-          onPlay={() => {
-            setVideoPlaying(true);
-          }}
-          onError={e => {
-            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-              setErrorFlag(true);
-            }
-          }}
-        />
-      </div>
-
       {!editing && !isLoading && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && !isLoading && (
         <div className="timelinks-form">
