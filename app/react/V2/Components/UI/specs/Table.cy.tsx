@@ -62,7 +62,7 @@ describe('Table', () => {
     mount(<WithActions />);
     cy.get('table > thead > tr > th:nth-child(3)').should(
       'have.class',
-      'px-6 py-3 w-1/3 bg-red-300'
+      'px-6 py-3 w-1/3 bg-error-100 text-blue-600'
     );
   });
 
@@ -113,7 +113,6 @@ describe('Table', () => {
     it('should clear selected items when data changes', () => {
       mount(<WithCheckboxes />);
       cy.contains('Short text');
-
       cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
       cy.get('tbody')
