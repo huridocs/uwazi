@@ -1,11 +1,10 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { CellContext } from '@tanstack/react-table';
+import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { LinkSchema } from 'shared/types/commonTypes';
 import { EmbededButton, Button } from 'app/V2/Components/UI';
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 
 const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
