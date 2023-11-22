@@ -240,7 +240,15 @@ describe('settings', () => {
     it('should add a to settings list language', async () => {
       await settings.addLanguage({ key: 'fr', label: 'Frances' });
       const result = await settings.get();
-      expect(result.languages?.length).toBe(3);
+      const languages = result.languages?.map(l => l.key);
+      expect(languages).toEqual(['es', 'en', 'fr']);
+    });
+
+    it('should not add a language if it already exists', async () => {
+      await settings.addLanguage({ key: 'en', label: 'English' });
+      const result = await settings.get();
+      const languages = result.languages?.map(l => l.key);
+      expect(languages).toEqual(['es', 'en']);
     });
   });
 
