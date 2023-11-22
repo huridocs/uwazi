@@ -3,6 +3,7 @@
 import assert from 'assert';
 import process from 'process';
 
+import _ from 'lodash';
 import mongodb from 'mongodb';
 
 const sharedDbName = 'uwazi_shared_db';
@@ -40,6 +41,52 @@ const countSettingsLanguages = async db => {
   return counts;
 };
 
+const shallowObjectDiff = (left, right, ignoredProps) => {
+  const ignoredPropSet = new Set(ignoredProps);
+  const leftProps = new Set(Object.keys(left).filter(p => !ignoredPropSet.has(p)));
+  const rightProps = new Set(Object.keys(right).filter(p => !ignoredPropSet.has(p)));
+  const missing = Array.from(leftProps).filter(p => !rightProps.has(p));
+  const extra = Array.from(rightProps).filter(p => !leftProps.has(p));
+  const inBoth = Array.from(leftProps).filter(p => rightProps.has(p));
+  const differentValue = inBoth.filter(p => !_.isEqual(left[p], right[p]));
+  const all = missing.concat(extra, differentValue);
+  return {
+    isDifferent: !!all.length,
+    missing,
+    extra,
+    differentValue,
+    all,
+  };
+};
+
+const diffDocs = async (sharedId, language, collectionName, db) => {
+  const collection = db.collection(collectionName);
+  const [left, right] = await collection.find({ sharedId, language }).toArray();
+  assert(left);
+  assert(right);
+  const diff = shallowObjectDiff(left, right, ['_id']);
+  return diff;
+};
+
+const logDifferences = async (counts, collectionName, db) => {
+  const _counts = _.cloneDeep(counts);
+  const countEntries = Object.entries(_counts);
+  const duplicatedCounts = [];
+  for (let i = 0; i < countEntries.length; i += 1) {
+    const [sharedId, languagesObj] = countEntries[i];
+    const diffObj = {};
+    const languages = Object.entries(languagesObj);
+    const duplicated = languages.filter(([, count]) => count > 1);
+    for (let j = 0; j < duplicated.length; j += 1) {
+      const [language] = duplicated[j];
+      const diff = await diffDocs(sharedId, language, collectionName, db);
+      diffObj[language] = diff;
+    }
+    duplicatedCounts.push([sharedId, diffObj]);
+  }
+  return duplicatedCounts;
+};
+
 const countSharedIdLanguageDuplicates = async (db, collectionName) => {
   const collection = db.collection(collectionName);
   const cursor = collection.find({});
@@ -58,27 +105,68 @@ const countSharedIdLanguageDuplicates = async (db, collectionName) => {
   }
 
   let correctTotalCount = 0;
+  let maximumMultiplicity = 1;
   let languagesWithDuplications = new Set();
   let duplicatedCount = 0;
+  let differenceLog = await logDifferences(counts, collectionName, db);
 
   Object.entries(counts).forEach(([, languages]) => {
     const langEntries = Object.entries(languages);
     correctTotalCount += langEntries.length;
     const duplicated = langEntries.filter(([, count]) => count > 1);
+    duplicated.forEach(([, count]) => {
+      if (count > maximumMultiplicity) {
+        maximumMultiplicity = count;
+      }
+    });
     duplicatedCount += duplicated.length;
     duplicated.forEach(([language]) => languagesWithDuplications.add(language));
   });
 
   languagesWithDuplications = Array.from(languagesWithDuplications);
 
-  return { correctTotalCount, duplicatedCount, languagesWithDuplications };
+  return {
+    correctTotalCount,
+    duplicatedCount,
+    maximumMultiplicity,
+    languagesWithDuplications,
+    differenceLog,
+  };
+};
+
+const prettyPrintDiffLog = diffLog => {
+  let sameCount = 0;
+  const diffLines = [];
+  diffLog.forEach(([sharedId, languages]) => {
+    Object.entries(languages).forEach(([language, diff]) => {
+      if (!diff.isDifferent) {
+        sameCount += 1;
+        return;
+      }
+      diffLines.push(`  ${sharedId} ${language}:`);
+      if (diff.missing.length) diffLines.push(`    missing: ${diff.missing.join(', ')}`);
+      if (diff.extra.length) diffLines.push(`    extra: ${diff.extra.join(', ')}`);
+      if (diff.differentValue.length) {
+        diffLines.push(`    differentValue: ${diff.differentValue.join(', ')}`);
+      }
+    });
+  });
+  println(`  ${sameCount} documents are the same.`);
+  diffLines.forEach(line => println(line));
 };
 
 const prettyPrintResult = result => {
   const resultEntries = Object.entries(result);
   resultEntries.forEach(([dbName, tenantResult]) => {
-    println(`${dbName}`);
     const { settingsLanguages, entities, pages } = tenantResult;
+    if (
+      settingsLanguages.duplicated.length === 0 &&
+      entities.duplicatedCount === 0 &&
+      pages.duplicatedCount === 0
+    ) {
+      return;
+    }
+    println(`${dbName}`);
     println(
       `${
         settingsLanguages.duplicated.length
@@ -87,17 +175,19 @@ const prettyPrintResult = result => {
     println(
       `${entities.duplicatedCount} of ${entities.correctTotalCount}(${
         (100 * entities.duplicatedCount) / entities.correctTotalCount
-      }%) duplicated sharedId-language pairs in entities. Languages with duplications: ${entities.languagesWithDuplications.join(
-        ', '
-      )}.`
+      }%) duplicated sharedId-language pairs in entities. Maximum multiplicity is ${
+        entities.maximumMultiplicity
+      }. Languages with duplications: ${entities.languagesWithDuplications.join(', ')}.`
     );
+    prettyPrintDiffLog(entities.differenceLog);
     println(
       `${pages.duplicatedCount} of ${pages.correctTotalCount}(${
         (100 * pages.duplicatedCount) / pages.correctTotalCount
-      }%) duplicated sharedId-language pairs in pages. Languages with duplications: ${pages.languagesWithDuplications.join(
-        ', '
-      )}.`
+      }%) duplicated sharedId-language pairs in pages. Maximum multiplicity is ${
+        pages.maximumMultiplicity
+      }. Languages with duplications: ${pages.languagesWithDuplications.join(', ')}.`
     );
+    prettyPrintDiffLog(pages.differenceLog);
     println('');
   });
 };
