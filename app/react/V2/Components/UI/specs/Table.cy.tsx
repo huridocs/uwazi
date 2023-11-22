@@ -62,7 +62,7 @@ describe('Table', () => {
     mount(<WithActions />);
     cy.get('table > thead > tr > th:nth-child(3)').should(
       'have.class',
-      'px-6 py-3 w-1/3 bg-red-300'
+      'px-6 py-3 w-1/3 bg-error-100 text-blue-600'
     );
   });
 
@@ -94,7 +94,8 @@ describe('Table', () => {
   describe('Selections', () => {
     it('should select items from each table', () => {
       mount(<WithCheckboxes />);
-      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+      cy.contains('Short text');
+      cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
       cy.get('tbody')
         .eq(1)
@@ -111,8 +112,8 @@ describe('Table', () => {
 
     it('should clear selected items when data changes', () => {
       mount(<WithCheckboxes />);
-
-      cy.get('table').eq(0).get('thead > tr > th').eq(0).click();
+      cy.contains('Short text');
+      cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
       cy.get('tbody')
         .eq(1)
@@ -129,7 +130,8 @@ describe('Table', () => {
 
     it('should not clear selections if data is not changed', () => {
       mount(<WithCheckboxes />);
-      cy.get('table')
+      cy.contains('Short text');
+      cy.get('[data-testid="table"]')
         .eq(1)
         .within(() => cy.get('thead > tr > th').eq(0).click());
 

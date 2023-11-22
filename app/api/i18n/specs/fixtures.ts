@@ -205,6 +205,26 @@ const fixtures: DBFixture = {
       type: 'template',
     },
   ],
+  entities: [
+    {
+      language: 'en',
+      sharedId: 'entity1',
+      title: '1',
+      template: entityTemplateId,
+      published: false,
+      metadata: {},
+    },
+  ],
+  pages: [
+    {
+      title: 'testpage',
+      metadata: {
+        content: '',
+      },
+      language: 'en',
+      sharedId: 'aj07me9fino',
+    },
+  ],
 };
 
 export default fixtures;
