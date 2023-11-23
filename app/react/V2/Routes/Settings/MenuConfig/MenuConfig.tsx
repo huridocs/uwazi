@@ -2,12 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState, useMemo } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import {
-  LoaderFunction,
-  useLoaderData,
-  useRevalidator,
-  unstable_useBlocker as useBlocker,
-} from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
