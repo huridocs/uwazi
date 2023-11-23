@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
@@ -5,7 +6,8 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Table.stories';
 
-const { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD } = composeStories(stories);
+const { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD, NestedDnD } =
+  composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.data || [];
@@ -152,6 +154,95 @@ describe('Table', () => {
       checkRowContent(1, ['Entity 3', data[2].description, '3']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
+    });
+  });
+
+  describe('Nested DnD', () => {
+    it('should render children as subRows', () => {
+      mount(<NestedDnD />);
+
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 1', data[1].description, '1']);
+      checkRowContent(3, ['Entity 3', data[2].description, '3']);
+    });
+
+    it('should expand a group', () => {
+      mount(<NestedDnD />);
+
+      cy.contains('children').click();
+
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 1', data[1].description, '1']);
+      checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
+      checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
+      checkRowContent(5, ['Entity 3', data[2].description, '3']);
+    });
+
+    it('should sort and expanded row', () => {
+      mount(<NestedDnD />);
+      cy.contains('children').click();
+
+      cy.get('[data-testid="root-draggable-item-1"]').drag(
+        '[data-testid="root-draggable-item-0"]',
+        { target: { x: 5, y: 0 } }
+      );
+
+      checkRowContent(1, ['Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Entity 3', data[2].description, '3']);
+    });
+
+    it('should sort children of a group', () => {
+      mount(<NestedDnD />);
+
+      cy.contains('children').click();
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragstart');
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragleave');
+      cy.get('[data-testid="group_1.1"]').trigger('drop', {
+        target: { x: 5, y: 0 },
+      });
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
+
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 1', data[1].description, '1']);
+      checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
+      checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
+      checkRowContent(5, ['Entity 3', data[2].description, '3']);
+    });
+
+    it('should move a parent into a group', () => {
+      mount(<NestedDnD />);
+      cy.contains('children').click();
+
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragstart');
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragleave');
+      cy.get('[data-testid="group_1.0"]').trigger('drop', {
+        target: { x: 5, y: 0 },
+      });
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
+      cy.contains('children').click();
+      checkRowContent(1, ['Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Entity a', data[1].children![0].description, '4']);
+      checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
+      checkRowContent(4, ['Entity 2', data[0].description, '2']);
+      checkRowContent(5, ['Entity 3', data[2].description, '3']);
+    });
+
+    it('should move a child outsides a group', () => {
+      mount(<NestedDnD />);
+      cy.contains('children').click();
+
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragstart');
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragleave');
+      cy.get('[data-testid="root-draggable-item-0"]').trigger('drop', {
+        target: { x: 5, y: 0 },
+      });
+      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
+      cy.contains('children').click();
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 1', data[1].description, '1']);
+      checkRowContent(3, ['Entity 3', data[2].description, '3']);
+      checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
     });
   });
 });

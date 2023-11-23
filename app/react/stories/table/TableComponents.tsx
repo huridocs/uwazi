@@ -139,6 +139,7 @@ const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
         icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
         onClick={() => row.toggleExpanded()}
         color="indigo"
+        data-test-id="chevron-icon"
       >
         children
       </EmbededButton>
