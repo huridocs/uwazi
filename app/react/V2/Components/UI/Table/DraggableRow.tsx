@@ -21,21 +21,25 @@ interface RowWrapperProps<T> extends PropsWithChildren {
 }
 
 // eslint-disable-next-line comma-spacing
-const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) => (
-  <DraggableItem
-    key={`grab_${row.id}`}
-    item={item}
-    index={row.index}
-    context={dndContext}
-    wrapperType="div"
-    className="border-0"
-    container={row.parentId ? `group_${row.parentId}` : 'root'}
-    iconHandle
-    previewRef={previewRef}
-  >
-    <GrabDoubleIcon className="w-2" />
-  </DraggableItem>
-);
+const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) => {
+  const grabIconColor =
+    row.getCanExpand() || row.depth > 0 ? 'rgb(199 210 254)' : 'rgb(224 231 255)';
+  return (
+    <DraggableItem
+      key={`grab_${row.id}`}
+      item={item}
+      index={row.index}
+      context={dndContext}
+      wrapperType="div"
+      className="border-0"
+      container={row.parentId ? `group_${row.parentId}` : 'root'}
+      iconHandle
+      previewRef={previewRef}
+    >
+      <GrabDoubleIcon className="w-2" color={`${grabIconColor}`} />
+    </DraggableItem>
+  );
+};
 
 const RowWrapper =
   // eslint-disable-next-line comma-spacing
