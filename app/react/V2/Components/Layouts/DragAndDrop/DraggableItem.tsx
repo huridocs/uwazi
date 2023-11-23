@@ -114,24 +114,22 @@ const DraggableItemComponent = <T,>({
     }),
   });
 
+  const previewReference = previewRef || ref;
+
   useEffect(() => {
-    if (previewRef !== undefined) {
-      preview(previewRef);
-    }
-  }, [preview, previewRef]);
-  if (!previewRef) {
-    previewRef = ref;
-  }
+    preview(previewReference);
+  }, [preview, previewReference]);
 
   const opacity = getOpacityLevel(isDragging);
   const border = '';
 
-  if (previewRef && previewRef.current) {
+  if (previewReference && previewReference.current) {
     // eslint-disable-next-line no-param-reassign
-    previewRef.current.style.opacity = getOpacityLevel(isDragging).toString();
+    previewReference.current.style.opacity = getOpacityLevel(isDragging).toString();
   }
+
   drag(ref);
-  drop(previewRef);
+  drop(previewReference);
   drop(ref);
 
   const TagName = wrapperType;
