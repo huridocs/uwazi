@@ -1,5 +1,9 @@
 /* eslint-disable max-statements */
 /* eslint-disable no-await-in-loop */
+/*
+Run this script simply with node, from the project root folder: node ./scripts/checkLanguageDuplication.mjs
+Depending on the state of the database, the output may be long, it is useful to pipe it to a file.
+*/
 import assert from 'assert';
 import process from 'process';
 
