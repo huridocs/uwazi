@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 
 type Language = {
   label: string;
-  key: string;
+  key: 'en' | 'es' | 'fr';
   default?: boolean;
 };
 
@@ -27,6 +27,7 @@ interface Entity {
   language?: string;
   title?: string;
   template?: ObjectId;
+  [k: string]: unknown | undefined;
 }
 
 type Fixture = {

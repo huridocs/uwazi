@@ -2,16 +2,20 @@ import { Db } from 'mongodb';
 
 import testingDB from 'api/utils/testing_db';
 import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import { Fixture } from '../types.js';
 
 let db: Db | null;
+
+const initTest = async (fixture: Fixture) => {
+  await testingDB.setupFixturesAndContext(fixture);
+  db = testingDB.mongodb!;
+  migration.reindex = false;
+  await migration.up(db);
+};
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
-  await testingDB.setupFixturesAndContext(fixtures);
-  db = testingDB.mongodb!;
-  await migration.up(db);
 });
 
 afterAll(async () => {

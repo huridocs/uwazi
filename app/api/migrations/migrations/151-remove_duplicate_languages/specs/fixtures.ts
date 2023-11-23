@@ -48,7 +48,7 @@ const defaultLanguageDuplication: Fixture = {
 
 const templateId = new ObjectId();
 
-const fixture: Fixture = {
+const allCases: Fixture = {
   settings: [
     {
       languages: [
@@ -65,6 +65,18 @@ const fixture: Fixture = {
           label: 'Spanish',
           key: 'es',
         },
+        {
+          label: 'French',
+          key: 'fr',
+        },
+        {
+          label: 'French',
+          key: 'fr',
+        },
+        {
+          label: 'French',
+          key: 'fr',
+        },
       ],
     },
   ],
@@ -72,67 +84,92 @@ const fixture: Fixture = {
     {
       title: 'Correct page',
       language: 'en',
-      sharedId: 'page1',
+      sharedId: 'correctPage',
     },
     {
       title: 'Correct page',
       language: 'es',
-      sharedId: 'page1',
+      sharedId: 'correctPage',
+    },
+    {
+      title: 'Correct page',
+      language: 'fr',
+      sharedId: 'correctPage',
     },
     {
       title: 'Duplicated in non default language',
       language: 'en',
-      sharedId: 'page2',
+      sharedId: 'nonDefDuplicatePage',
     },
     {
       title: 'Duplicated in non default language',
       language: 'es',
-      sharedId: 'page2',
+      sharedId: 'nonDefDuplicatePage',
     },
     {
       title: 'Duplicated in non default language',
       language: 'es',
-      sharedId: 'page2',
+      sharedId: 'nonDefDuplicatePage',
+    },
+    {
+      title: 'Duplicated in non default language',
+      language: 'fr',
+      sharedId: 'nonDefDuplicatePage',
     },
     {
       title: 'Duplicated in default language',
       language: 'en',
-      sharedId: 'page3',
+      sharedId: 'defDuplicatePage',
     },
     {
       title: 'Duplicated in default language',
       language: 'en',
-      sharedId: 'page3',
+      sharedId: 'defDuplicatePage',
     },
     {
       title: 'Duplicated in default language',
       language: 'es',
-      sharedId: 'page3',
+      sharedId: 'defDuplicatePage',
+    },
+    {
+      title: 'Duplicated in default language',
+      language: 'fr',
+      sharedId: 'defDuplicatePage',
     },
     {
       title: 'Multiples in all languages',
       language: 'en',
-      sharedId: 'page4',
+      sharedId: 'allMultiplesPage',
     },
     {
       title: 'Multiples in all languages',
       language: 'en',
-      sharedId: 'page4',
+      sharedId: 'allMultiplesPage',
     },
     {
       title: 'Multiples in all languages',
       language: 'es',
-      sharedId: 'page4',
+      sharedId: 'allMultiplesPage',
     },
     {
       title: 'Multiples in all languages',
       language: 'es',
-      sharedId: 'page4',
+      sharedId: 'allMultiplesPage',
     },
     {
       title: 'Multiples in all languages',
       language: 'es',
-      sharedId: 'page4',
+      sharedId: 'allMultiplesPage',
+    },
+    {
+      title: 'Multiples in all languages',
+      language: 'fr',
+      sharedId: 'allMultiplesPage',
+    },
+    {
+      title: 'Multiples in all languages',
+      language: 'fr',
+      sharedId: 'allMultiplesPage',
     },
   ],
   templates: [
@@ -146,81 +183,105 @@ const fixture: Fixture = {
       title: 'Correct entity',
       template: templateId,
       language: 'en',
-      sharedId: 'entity1',
+      sharedId: 'correctEntity',
     },
     {
       title: 'Correct entity',
       template: templateId,
       language: 'es',
-      sharedId: 'entity1',
+      sharedId: 'correctEntity',
     },
     {
       title: 'Duplicated in non default language',
       template: templateId,
       language: 'en',
-      sharedId: 'entity2',
+      sharedId: 'nonDefDuplicateEntity',
     },
     {
       title: 'Duplicated in non default language',
       template: templateId,
       language: 'es',
-      sharedId: 'entity2',
+      sharedId: 'nonDefDuplicateEntity',
     },
     {
       title: 'Duplicated in non default language',
       template: templateId,
       language: 'es',
-      sharedId: 'entity2',
+      sharedId: 'nonDefDuplicateEntity',
+    },
+    {
+      title: 'Duplicated in non default language',
+      template: templateId,
+      language: 'fr',
+      sharedId: 'nonDefDuplicateEntity',
     },
     {
       title: 'Duplicated in default language',
       template: templateId,
       language: 'en',
-      sharedId: 'entity3',
+      sharedId: 'defDuplicateEntity',
     },
     {
       title: 'Duplicated in default language',
       template: templateId,
       language: 'en',
-      sharedId: 'entity3',
+      sharedId: 'defDuplicateEntity',
     },
     {
       title: 'Duplicated in default language',
       template: templateId,
       language: 'es',
-      sharedId: 'entity3',
+      sharedId: 'defDuplicateEntity',
+    },
+    {
+      title: 'Duplicated in default language',
+      template: templateId,
+      language: 'fr',
+      sharedId: 'defDuplicateEntity',
     },
     {
       title: 'Multiples in all languages',
       template: templateId,
       language: 'en',
-      sharedId: 'entity4',
+      sharedId: 'allMultiplesEntity',
     },
     {
       title: 'Multiples in all languages',
       template: templateId,
       language: 'en',
-      sharedId: 'entity4',
+      sharedId: 'allMultiplesEntity',
     },
     {
       title: 'Multiples in all languages',
       template: templateId,
       language: 'es',
-      sharedId: 'entity4',
+      sharedId: 'allMultiplesEntity',
     },
     {
       title: 'Multiples in all languages',
       template: templateId,
       language: 'es',
-      sharedId: 'entity4',
+      sharedId: 'allMultiplesEntity',
     },
     {
       title: 'Multiples in all languages',
       template: templateId,
       language: 'es',
-      sharedId: 'entity4',
+      sharedId: 'allMultiplesEntity',
+    },
+    {
+      title: 'Multiples in all languages',
+      template: templateId,
+      language: 'fr',
+      sharedId: 'allMultiplesEntity',
+    },
+    {
+      title: 'Multiples in all languages',
+      template: templateId,
+      language: 'fr',
+      sharedId: 'allMultiplesEntity',
     },
   ],
 };
 
-export { settingsOnlyDuplication, defaultLanguageDuplication, templateId, fixture };
+export { settingsOnlyDuplication, defaultLanguageDuplication, templateId, allCases as fixture };
