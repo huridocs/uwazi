@@ -6,7 +6,6 @@ import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { validMediaFile } from 'app/Metadata/helpers/validator';
 
 interface MarkdownMediaProps {
   compact?: boolean;
@@ -71,7 +70,6 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const [isVideoPlaying, setVideoPlaying] = useState<boolean>(false);
   const [temporalResource, setTemporalResource] = useState<string>();
   const [mediaURL, setMediaURL] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const { control, register, getValues } = useForm<{ timelines: TimeLink[] }>({
     defaultValues: { timelines: originalTimelinks },
   });
@@ -291,42 +289,22 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   const config = propsToConfig(props);
 
   useEffect(() => {
-    let url: string;
+    if (!ReactPlayer.canPlay(config.url)) {
+      return setErrorFlag(true);
+    }
 
     if (config.url.startsWith('/api/files/')) {
-      fetch(config.url)
-        .then(async res => {
-          if (validMediaFile(res)) {
-            return res.blob();
-          }
-          setErrorFlag(true);
-          throw new Error('Invalid file');
-        })
-        .then(blob => {
-          setErrorFlag(false);
-          url = URL.createObjectURL(blob);
-          setMediaURL(url);
-        })
-        .catch(_e => {})
-        .finally(() => {
-          setIsLoading(false);
-        });
+      setMediaURL(config.url);
     } else if (config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
-      setIsLoading(false);
-    } else {
-      if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
-        setTemporalResource(mediaURL);
-      }
+    } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
+      setTemporalResource(mediaURL);
       setMediaURL(config.url);
-      setIsLoading(false);
     }
 
     return () => {
       setErrorFlag(false);
-      setIsLoading(true);
-      URL.revokeObjectURL(url);
       setMediaURL('');
     };
   }, [config.url]);
@@ -364,40 +342,29 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`}>
-      {isLoading ? (
-        <div className="loader">
-          <Translate>Loading</Translate>
-          <div className="bouncing-dots">
-            <div className="dot" />
-            <div className="dot" />
-            <div className="dot" />
-          </div>
-        </div>
-      ) : (
-        <div>
-          <ReactPlayer
-            className="react-player"
-            playing={isVideoPlaying}
-            ref={playerRef}
-            url={mediaURL}
-            {...dimensions}
-            controls
-            onPause={() => {
-              setVideoPlaying(false);
-            }}
-            onPlay={() => {
-              setVideoPlaying(true);
-            }}
-            onError={e => {
-              if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
-                setErrorFlag(true);
-              }
-            }}
-          />
-        </div>
-      )}
-      {!editing && !isLoading && <div>{timeLinks(config.options.timelinks)}</div>}
-      {editing && !isLoading && (
+      <div>
+        <ReactPlayer
+          className="react-player"
+          playing={isVideoPlaying}
+          ref={playerRef}
+          url={mediaURL}
+          {...dimensions}
+          controls
+          onPause={() => {
+            setVideoPlaying(false);
+          }}
+          onPlay={() => {
+            setVideoPlaying(true);
+          }}
+          onError={e => {
+            if (e.target.error.message.search(/MEDIA_ELEMENT_ERROR/) === -1) {
+              setErrorFlag(true);
+            }
+          }}
+        />
+      </div>
+      {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
+      {editing && (
         <div className="timelinks-form">
           <button
             type="button"
