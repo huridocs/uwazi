@@ -27,6 +27,13 @@ const ActionsCell = () => (
 
 const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolean }) => {
   const [tableState, setTableState] = useState<SampleSchema[]>(props.data);
+  const [firstLoad, setFirstLoad] = useState(true);
+
+  const onChangeHandler = (data: SampleSchema[]) => {
+    setTableState(data);
+    setFirstLoad(false);
+  };
+
   return (
     <>
       <div className="tw-content">
@@ -38,13 +45,13 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
           footer={props.footer}
           setSorting={props.setSorting}
           draggableRows={props.draggableRows === true}
-          onChange={setTableState}
+          onChange={onChangeHandler}
           subRowsKey={props.subRowsKey}
         />
       </div>
-      {props.showUpdates === true && (
-        <>
-          <span>Updated Items</span>
+      {props.showUpdates === true && !firstLoad && (
+        <div data-testid="update_items">
+          <span>Updated state</span>
           <ul>
             {tableState?.map((item: SampleSchema, index: number) => {
               const children = props.subRowsKey
@@ -56,7 +63,7 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
               );
             })}
           </ul>
-        </>
+        </div>
       )}
     </>
   );

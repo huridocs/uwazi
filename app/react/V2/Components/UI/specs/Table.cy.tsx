@@ -145,6 +145,7 @@ describe('Table', () => {
   describe('DnD', () => {
     it('should sort rows by dragging', () => {
       mount(<WithDnD />);
+      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
 
       cy.get('[data-testid="root-draggable-item-2"]').drag(
         '[data-testid="root-draggable-item-0"]',
@@ -154,6 +155,11 @@ describe('Table', () => {
       checkRowContent(1, ['Entity 3', data[2].description, '3']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
+
+      cy.get('[data-testid="update_items"] > ul > li')
+        .should('have.length', 3)
+        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+        .should('deep.equal', ['Entity 3', 'Entity 2', 'Entity 1']);
     });
   });
 
@@ -164,6 +170,8 @@ describe('Table', () => {
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
       checkRowContent(2, ['Entity 1', data[1].description, '1']);
       checkRowContent(3, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
     });
 
     it('should expand a group', () => {
@@ -176,9 +184,11 @@ describe('Table', () => {
       checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
       checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
       checkRowContent(5, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
     });
 
-    it('should sort and expanded row', () => {
+    it('should sort an expanded row', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
 
@@ -190,6 +200,11 @@ describe('Table', () => {
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
       checkRowContent(3, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="update_items"] > ul > li')
+        .should('have.length', 3)
+        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+        .should('deep.equal', ['Entity 1 Entity a, Entity b', 'Entity 2', 'Entity 3']);
     });
 
     it('should sort children of a group', () => {
@@ -208,6 +223,11 @@ describe('Table', () => {
       checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
       checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
       checkRowContent(5, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="update_items"] > ul > li')
+        .should('have.length', 3)
+        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+        .should('deep.equal', ['Entity 2', 'Entity 1 Entity b, Entity a', 'Entity 3']);
     });
 
     it('should move a parent into a group', () => {
@@ -226,6 +246,11 @@ describe('Table', () => {
       checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
       checkRowContent(4, ['Entity 2', data[0].description, '2']);
       checkRowContent(5, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="update_items"] > ul > li')
+        .should('have.length', 2)
+        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+        .should('deep.equal', ['Entity 1 Entity a, Entity b, Entity 2', 'Entity 3']);
     });
 
     it('should move a child outsides a group', () => {
@@ -243,6 +268,11 @@ describe('Table', () => {
       checkRowContent(2, ['Entity 1', data[1].description, '1']);
       checkRowContent(3, ['Entity 3', data[2].description, '3']);
       checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
+
+      cy.get('[data-testid="update_items"] > ul > li')
+        .should('have.length', 4)
+        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+        .should('deep.equal', ['Entity 2', 'Entity 1 Entity b', 'Entity 3', 'Entity a']);
     });
   });
 });
