@@ -10,6 +10,7 @@ import {
 import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 
@@ -29,6 +30,7 @@ export function saveEntity(entity) {
     dispatch(formActions.reset('entityView.entityForm'));
     dispatch(actions.set('entityView/entity', updatedDoc));
     dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
+    dispatch(reloadThesauri());
   };
 }
 
@@ -42,6 +44,7 @@ export function deleteEntity(entity) {
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
     await dispatch(unselectDocument(entity._id));
+    dispatch(reloadThesauri());
   };
 }
 
@@ -51,5 +54,6 @@ export function deleteEntities(entities) {
     dispatch(notificationActions.notify(t('System', 'Deletion success', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocuments(entities));
+    dispatch(reloadThesauri());
   };
 }
