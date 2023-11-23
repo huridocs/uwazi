@@ -121,7 +121,6 @@ const DraggableItemComponent = <T,>({
   }, [preview, previewReference]);
 
   const opacity = getOpacityLevel(isDragging);
-  const border = '';
 
   if (previewReference && previewReference.current) {
     // eslint-disable-next-line no-param-reassign
@@ -139,7 +138,7 @@ const DraggableItemComponent = <T,>({
       className={`${
         className ||
         'flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center'
-      }  ${getIconHandleClass(iconHandle)} ${border}`}
+      }  ${getIconHandleClass(iconHandle)} `}
       ref={ref}
       data-testid={elementTestId<T>(item, context, container, index)}
       style={{ opacity }}

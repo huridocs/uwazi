@@ -20,29 +20,30 @@ type TypeWithId<T> = T & {
   id: string;
 };
 
+// eslint-disable-next-line comma-spacing
+const setItemId = <T,>(item: T, parent: TypeWithId<T> | undefined, index: number) => ({
+  ...item,
+  id: parent ? `${parent.id}.${index}` : index.toString(),
+});
+
 const setRowId: <T>(subRowsKey: string, records: T[], parent?: TypeWithId<T>) => TypeWithId<T>[] = (
   subRowsKey,
   records,
   parent
 ) =>
-  records !== undefined
-    ? records
-        .filter(f => f)
-        .map((item, index) => {
-          const itemWithId = {
-            ...item,
-            id: parent ? `${parent.id}.${index}` : index.toString(),
-          };
-          return {
-            ...itemWithId,
-            ...(subRowsKey
-              ? {
-                  [subRowsKey]: setRowId(subRowsKey, get(item, subRowsKey), itemWithId),
-                }
-              : {}),
-          };
-        })
-    : [];
+  (records || [])
+    .filter(f => f)
+    .map((item, index) => {
+      const itemWithId = setItemId(item, parent, index);
+      return {
+        ...itemWithId,
+        ...(subRowsKey
+          ? {
+              [subRowsKey]: setRowId(subRowsKey, get(item, subRowsKey), itemWithId),
+            }
+          : {}),
+      };
+    });
 
 // eslint-disable-next-line comma-spacing
 const TableBodyComponent = <T,>({

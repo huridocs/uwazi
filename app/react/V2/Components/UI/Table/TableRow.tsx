@@ -47,10 +47,11 @@ const TableRow = <T,>({
 
         let border = '';
         if (
-          (isSubGroup && enableSelection && columnIndex === 1) ||
-          (isSubGroup && !enableSelection && columnIndex === 0)
+          isSelect &&
+          ((isSubGroup && enableSelection && columnIndex === 1) ||
+            (isSubGroup && !enableSelection && columnIndex === 0))
         ) {
-          border = 'border-l-2 border-primary-300';
+          border = 'border-r-2 border-primary-300';
         }
 
         return (
