@@ -284,4 +284,4 @@ const allCases: Fixture = {
   ],
 };
 
-export { settingsOnlyDuplication, defaultLanguageDuplication, templateId, allCases as fixture };
+export { settingsOnlyDuplication, defaultLanguageDuplication, templateId, allCases };
