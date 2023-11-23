@@ -192,6 +192,12 @@ const allCases: Fixture = {
       sharedId: 'correctEntity',
     },
     {
+      title: 'Correct entity',
+      template: templateId,
+      language: 'fr',
+      sharedId: 'correctEntity',
+    },
+    {
       title: 'Duplicated in non default language',
       template: templateId,
       language: 'en',

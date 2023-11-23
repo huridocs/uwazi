@@ -1,9 +1,9 @@
-import { Db } from 'mongodb';
+import { Collection, Db } from 'mongodb';
 
 import testingDB from 'api/utils/testing_db';
 import { settingsOnlyDuplication, defaultLanguageDuplication, allCases } from './fixtures';
 import migration from '../index';
-import { Fixture } from '../types';
+import { Entity, Fixture, Page } from '../types';
 
 let db: Db | null;
 
@@ -49,9 +49,17 @@ describe('migration remove_duplicate_entities', () => {
     ]);
   });
 
-  describe('when there are duplications', () => {
+  describe('when there are duplications in everything', () => {
+    let defaultBatchSize: number;
+
     beforeAll(async () => {
+      defaultBatchSize = migration.batchSize;
+      migration.batchSize = 4;
       await initTest(allCases);
+    });
+
+    afterAll(() => {
+      migration.batchSize = defaultBatchSize;
     });
 
     it('should reindex', async () => {
@@ -75,6 +83,68 @@ describe('migration remove_duplicate_entities', () => {
           key: 'fr',
         },
       ]);
+    });
+
+    describe('in pages', () => {
+      let collection: Collection<Page>;
+
+      beforeAll(async () => {
+        collection = db!.collection<Page>('pages');
+      });
+
+      it.each([
+        {
+          case: 'keep correct pages',
+          sharedId: 'correctPage',
+        },
+        {
+          case: 'handle duplication in non-default languages',
+          sharedId: 'nonDefDuplicatePage',
+        },
+        {
+          case: 'handle duplication in the default language',
+          sharedId: 'defDuplicatePage',
+        },
+        {
+          case: 'handle multiples in all languages',
+          sharedId: 'allMultiplesPage',
+        },
+      ])('should $case', async ({ sharedId }) => {
+        const pages = await collection.find({ sharedId }).toArray();
+        const languages = pages.map(p => p.language);
+        expect(languages).toEqual(['en', 'es', 'fr']);
+      });
+    });
+
+    describe('in entities', () => {
+      let collection: Collection<Entity>;
+
+      beforeAll(async () => {
+        collection = db!.collection<Entity>('entities');
+      });
+
+      it.each([
+        {
+          case: 'keep correct pages',
+          sharedId: 'correctEntity',
+        },
+        {
+          case: 'handle duplication in non-default languages',
+          sharedId: 'nonDefDuplicateEntity',
+        },
+        {
+          case: 'handle duplication in the default language',
+          sharedId: 'defDuplicateEntity',
+        },
+        {
+          case: 'handle multiples in all languages',
+          sharedId: 'allMultiplesEntity',
+        },
+      ])('should $case', async ({ sharedId }) => {
+        const entities = await collection.find({ sharedId }).toArray();
+        const languages = entities.map(p => p.language);
+        expect(languages).toEqual(['en', 'es', 'fr']);
+      });
     });
   });
 });
