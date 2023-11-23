@@ -15,12 +15,10 @@ interface Page {
   title: string;
   language?: string;
   sharedId?: string;
-  metadata?: {
-    content?: string;
-  };
 }
 
 interface Template {
+  _id?: ObjectId;
   name: string;
 }
 
@@ -33,9 +31,9 @@ interface Entity {
 
 type Fixture = {
   settings: Settings[];
-  pages: Page[];
-  templates: Template[];
-  entities: Entity[];
+  pages?: Page[];
+  templates?: Template[];
+  entities?: Entity[];
 };
 
 export type { Settings, Page, Template, Entity, Language, LanguagesList, Fixture };
