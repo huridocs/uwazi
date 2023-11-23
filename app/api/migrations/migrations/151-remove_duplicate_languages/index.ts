@@ -13,8 +13,6 @@ export default {
 
   reindex: false,
 
-  batchSize: 1000,
-
   async removeDuplicatedLanguagesFromSettings(db: Db) {
     const settingsCollection = db.collection<Settings>('settings');
     const [settings] = await settingsCollection.find().toArray();
