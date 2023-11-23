@@ -114,6 +114,13 @@ describe('pages', () => {
       const newPages = await pages.get({ language: 'ab' });
       expect(newPages.length).toBe(3);
     });
+
+    it('should not duplicate the pages if the language already exists', async () => {
+      const oldCount = await pages.get({ language: 'en' });
+      await pages.addLanguage('en');
+      const newCount = await pages.get({ language: 'en' });
+      expect(newCount.length).toBe(oldCount.length);
+    });
   });
 
   describe('getById', () => {

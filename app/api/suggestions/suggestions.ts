@@ -124,7 +124,7 @@ const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
       };
     }
 
-    return files.save(file);
+    await files.save(file);
   });
 };
 
