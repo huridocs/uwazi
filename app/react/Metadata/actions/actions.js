@@ -8,6 +8,7 @@ import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libra
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { generateID } from 'shared/IDGenerator';
 import emptyTemplate from '../helpers/defaultTemplate';
 
@@ -146,6 +147,7 @@ export function loadInReduxForm(form, _entity, templates) {
 
 export function changeTemplate(form, templateId) {
   return (dispatch, getState) => {
+    dispatch(reloadThesauri());
     const entity = { ...getModel(getState(), form) };
     const { templates } = getState();
     const template = templates.find(temp => temp.get('_id') === templateId);
