@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
-import { get } from 'lodash';
 import { Row } from '@tanstack/react-table';
+import { get } from 'lodash';
 import { ItemTypes } from 'app/V2/shared/types';
 import { TableRow } from './TableRow';
 import { withDnD, withDnDBackend } from '../../componentWrappers';
@@ -29,7 +29,7 @@ const setRowId: <T>(subRowsKey: string, records: T[], parent?: TypeWithId<T>) =>
     ? records
         .filter(f => f)
         .map((item, index) => {
-          const itemWithId: TypeWithId<T> = {
+          const itemWithId = {
             ...item,
             id: parent ? `${parent.id}.${index}` : index.toString(),
           };
