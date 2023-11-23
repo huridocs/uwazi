@@ -3,9 +3,9 @@ import { Db } from 'mongodb';
 export default {
   delta: 151,
 
-  name: 'remove_duplicate_entities',
+  name: 'remove_duplicate_languages',
 
-  description: 'Repair cases, where an entity has multiple entries in a language.',
+  description: 'Remove duplicate languages from settings, entities and pages.',
 
   reindex: false,
 
