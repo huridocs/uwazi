@@ -16,21 +16,21 @@ interface TableBodyProps extends PropsWithChildren {
   subRowsKey?: string;
 }
 
-type TypeWithId<T> = T & {
-  id: string;
+type TypeWithDnDId<T> = T & {
+  dndId: string;
 };
 
 // eslint-disable-next-line comma-spacing
-const setItemId = <T,>(item: T, parent: TypeWithId<T> | undefined, index: number) => ({
+const setItemId = <T,>(item: T, parent: TypeWithDnDId<T> | undefined, index: number) => ({
   ...item,
-  id: parent ? `${parent.id}.${index}` : index.toString(),
+  dndId: parent ? `${parent.dndId}.${index}` : index.toString(),
 });
 
-const setRowId: <T>(subRowsKey: string, records: T[], parent?: TypeWithId<T>) => TypeWithId<T>[] = (
-  subRowsKey,
-  records,
-  parent
-) =>
+const setRowId: <T>(
+  subRowsKey: string,
+  records: T[],
+  parent?: TypeWithDnDId<T>
+) => TypeWithDnDId<T>[] = (subRowsKey, records, parent) =>
   (records || [])
     .filter(f => f)
     .map((item, index) => {
@@ -59,7 +59,7 @@ const TableBodyComponent = <T,>({
   const dndContext = useDnDContext<T>(
     ItemTypes.ROW,
     {
-      getDisplayName: item => item.id!,
+      getDisplayName: item => item.dndId!,
       itemsProperty: subRowsKey,
       onChange,
     },
@@ -71,16 +71,16 @@ const TableBodyComponent = <T,>({
       <DndProvider backend={HTML5Backend}>
         {dndContext.activeItems
           .map(item => {
-            const itemValue = item.value as TypeWithId<T>;
-            const row = table.getRowModel().rowsById[itemValue.id];
+            const itemValue = item.value as TypeWithDnDId<T>;
+            const row = table.getRowModel().rowsById[itemValue.dndId];
             const children =
               row && row.getIsExpanded()
                 ? (item.value.items || []).map(subItem => {
-                    const subItemValue = subItem.value as TypeWithId<T>;
-                    const childRow = table.getRowModel().rowsById[subItemValue.id];
+                    const subItemValue = subItem.value as TypeWithDnDId<T>;
+                    const childRow = table.getRowModel().rowsById[subItemValue.dndId];
                     return (
                       <TableRow
-                        key={subItem.id}
+                        key={subItem.dndId}
                         draggableRow
                         row={childRow}
                         dndContext={dndContext}
@@ -93,7 +93,7 @@ const TableBodyComponent = <T,>({
             return (
               <>
                 <TableRow
-                  key={item.id}
+                  key={item.dndId}
                   draggableRow
                   row={row}
                   dndContext={dndContext}

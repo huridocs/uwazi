@@ -67,7 +67,7 @@ const DndContextState = ({
       <h1 className={`mb-4 ${!child ? 'text-xl font-bold' : 'text-sm'}`}>State Items</h1>
       <ul className="mb-8 list-disc ">
         {activeItems.map((item: IDraggable<DnDValueExample>) => (
-          <li className="flex items-center gap-10 space-x-3" key={item.id}>
+          <li className="flex items-center gap-10 space-x-3" key={item.dndId}>
             <span>{context.getDisplayName(item)}</span>
             {item.value.items && (
               <DndContextState
@@ -146,14 +146,14 @@ const DnDClientWithForm = ({ items, type }: any) => {
               {dndContext.activeItems.map((item: IDraggable<DnDValueExample>, index: number) => (
                 <DraggableItem
                   item={{ ...item, container: 'root' }}
-                  key={item.id}
+                  key={item.dndId}
                   index={index}
                   className="flex flex-row gap-3 p-3 align-middle "
                   context={dndContext}
                   container="root"
                 >
                   <EditableItem
-                    key={`input_${item.id}`}
+                    key={`input_${item.dndId}`}
                     dndContext={dndContext}
                     item={item}
                     index={index}

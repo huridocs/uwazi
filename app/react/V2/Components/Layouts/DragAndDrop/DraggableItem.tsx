@@ -35,13 +35,13 @@ const hasValidContext = <T,>(dropContext?: IDnDContext<T>) => dropContext !== un
 const isNotAutoContained = <T,>(
   currentItem: IDraggable<T>,
   draggedResult: DraggedResult<T>,
-  dropParent?: { id?: string; item?: IDraggable<T> }
+  dropParent?: { dndId?: string; item?: IDraggable<T> }
 ) =>
   (draggedResult.item.container !== currentItem.container ||
     dropParent === undefined ||
-    dropParent?.id !== draggedResult.item.parent?.id ||
+    dropParent?.dndId !== draggedResult.item.parent?.dndId ||
     draggedResult.item.container === undefined) &&
-  (dropParent === undefined || draggedResult.item.id !== dropParent.id);
+  (dropParent === undefined || draggedResult.item.dndId !== dropParent.dndId);
 
 /* eslint-disable comma-spacing */
 const hasNoItems = <T,>(currentItem: IDraggable<T>) =>
@@ -143,7 +143,7 @@ const DraggableItemComponent = <T,>({
       data-testid={elementTestId<T>(item, context, container, index)}
       style={{ opacity }}
       data-handler-id={handlerId}
-      key={TagName + item.id}
+      key={TagName + item.dndId}
     >
       {!omitIcon && wrapperType === 'li' && (
         <Bars3Icon className={`w-4 text-gray-400 ${getIconHandleClass(!iconHandle)}`} />

@@ -55,10 +55,8 @@ const MenuConfig = () => {
     }
     if (link.sublinks) {
       link.sublinks = link.sublinks.map(sublink => {
-        if (sublink._id?.startsWith('tmp_')) {
-          delete sublink._id;
-        }
-        return sublink;
+        const { _id, ...rest } = sublink;
+        return rest;
       });
     }
     return link;

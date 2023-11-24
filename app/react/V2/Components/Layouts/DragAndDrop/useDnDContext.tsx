@@ -31,7 +31,7 @@ const useDnDContext = <T,>(
   const updateItem = (item: IDraggable<T>) => {
     setInternalChange(true);
     setActiveItems((prevActiveItems: IDraggable<T>[]) => {
-      const index = prevActiveItems.findIndex(x => x.id === item.id);
+      const index = prevActiveItems.findIndex(x => x.dndId === item.dndId);
       return update(prevActiveItems, {
         [index]: {
           $set: item,
@@ -47,11 +47,11 @@ const useDnDContext = <T,>(
         .map(item => {
           const values = item.value.items
             ? item.value.items.map(subItem =>
-                omit(subItem.value, ['_id', 'id', 'items', operations.itemsProperty || ''])
+                omit(subItem.value, ['dndId', 'items', operations.itemsProperty || ''])
               )
             : [];
           return {
-            ...omit(item.value, ['items', 'id', operations.itemsProperty || '']),
+            ...omit(item.value, ['items', 'dndId', operations.itemsProperty || '']),
             ...(operations.itemsProperty && values.length > 0
               ? { [operations.itemsProperty]: values }
               : {}),

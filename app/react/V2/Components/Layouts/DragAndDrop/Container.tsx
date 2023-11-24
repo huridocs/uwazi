@@ -36,7 +36,7 @@ const Container = <T,>({
             .map((item: IDraggable<T>, index: number) => (
               <DraggableItem
                 item={item}
-                key={item.id}
+                key={item.dndId}
                 iconHandle={iconHandle}
                 index={index}
                 className="flex flex-row gap-3 p-1 align-middle"

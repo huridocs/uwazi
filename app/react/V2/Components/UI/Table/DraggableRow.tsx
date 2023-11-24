@@ -26,7 +26,7 @@ const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) =
     row.getCanExpand() || row.depth > 0 ? 'rgb(199 210 254)' : 'rgb(224 231 255)';
   return (
     <DraggableItem
-      key={`grab_${row.id}`}
+      key={`grab_${item.dndId}`}
       item={item}
       index={row.index}
       context={dndContext}

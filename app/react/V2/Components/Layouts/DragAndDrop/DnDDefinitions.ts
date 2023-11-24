@@ -35,8 +35,9 @@ interface IDnDContextState<T> {
 }
 
 const setIdAndParent = <T>(item: IDraggable<T | (T & { id?: string })>, parent?: IDraggable<T>) => {
-  const id = has(item.value, 'id') ? get(item.value, 'id') : ID();
-  return { ...item, id, ...(parent ? { parent } : {}) };
+  const idField = has(item.value, 'dndId') ? 'dndId' : 'id';
+  const dndId = has(item.value, idField) ? get(item.value, idField) : ID();
+  return { ...item, dndId, ...(parent ? { parent } : {}) };
 };
 
 const mapWithParent = <T>(
@@ -68,10 +69,12 @@ const mapWithID = <T>(items: IDraggable<T | (T & { id?: string })>[]) =>
 
 const removeChildFromParent = <T>(state: IDnDContextState<T>, newItem: IDraggable<T>) => {
   if (newItem.parent) {
-    const indexOfCurrentParent = state.activeItems.findIndex(ai => ai.id === newItem.parent!.id);
+    const indexOfCurrentParent = state.activeItems.findIndex(
+      ai => ai.dndId === newItem.parent!.dndId
+    );
     state.setActiveItems((prevActiveItems: IDraggable<any>[]) => {
       const index = prevActiveItems[indexOfCurrentParent].value.items.findIndex(
-        (ai: IDraggable<T>) => ai.id === newItem.id
+        (ai: IDraggable<T>) => ai.dndId === newItem.dndId
       );
       return update(prevActiveItems, {
         [indexOfCurrentParent]: { value: { items: { $splice: [[index, 1]] } } },
@@ -81,7 +84,7 @@ const removeChildFromParent = <T>(state: IDnDContextState<T>, newItem: IDraggabl
 };
 
 const findItemIndex = <T>(items: IDraggable<T>[], searchedItem: IDraggable<T>) =>
-  items.findIndex(item => item.id === searchedItem.id);
+  items.findIndex(item => item.dndId === searchedItem.dndId);
 
 const removeItemFromList = <T>(
   setActiveItems: Dispatch<React.SetStateAction<IDraggable<T>[]>>,

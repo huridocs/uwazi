@@ -45,11 +45,11 @@ const isOutOfSortArea = (
   checkSortArea(monitor, ref.current.getBoundingClientRect(), dragIndex, hoverIndex);
 
 const isNotSortableItem = <T>(
-  currentItem: { id: string; item: IDraggable<T> },
+  currentItem: { dndId: string; item: IDraggable<T> },
   target: IDraggable<T> & { ID?: string }
 ) =>
   (currentItem.item.parent && !target.parent) ||
-  currentItem.id === target.id ||
+  currentItem.dndId === target.dndId ||
   currentItem.item.container === undefined;
 
 const hoverSortable =
@@ -57,7 +57,7 @@ const hoverSortable =
   (
     currentItem: {
       index: number;
-      id: string;
+      dndId: string;
       type: string;
       item: IDraggable<T>;
     },
