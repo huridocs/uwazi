@@ -47,7 +47,9 @@ describe('MarkdownMedia', () => {
     mockedCreateObjectURL.mockReset();
     mockedRevokeObjectURL.mockReset();
   });
+
   const onTimeLinkAdded = jest.fn();
+
   const render = async (
     options: { compact?: boolean; editing?: boolean } = { compact: false, editing: false },
     URL = '/api/files/1683080859038pwqi670wk7r.mp4'
@@ -69,8 +71,10 @@ describe('MarkdownMedia', () => {
     describe('uploaded files', () => {
       it('should render an iframe that displays the video from the blob resource', async () => {
         await render();
-        expect(renderResult.asFragment()).toMatchSnapshot();
+
         expect(mockedCreateObjectURL.mock.calls[0].toString()).toEqual('[object Blob]');
+
+        expect(renderResult.asFragment()).toMatchSnapshot();
       });
 
       it('should revoke the created blob', async () => {
