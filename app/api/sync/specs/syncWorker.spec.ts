@@ -1,3 +1,12 @@
+/* eslint-disable max-statements */
+import { Server } from 'http';
+// eslint-disable-next-line node/no-restricted-import
+import { rm, writeFile } from 'fs/promises';
+
+import bodyParser from 'body-parser';
+import 'isomorphic-fetch';
+import _ from 'lodash';
+
 import authRoutes from 'api/auth/routes';
 import entities from 'api/entities';
 import entitiesModel from 'api/entities/entitiesModel';
@@ -16,19 +25,13 @@ import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import mailer from 'api/utils/mailer';
-import db from 'api/utils/testing_db';
+import db, { DBFixture } from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
-import bodyParser from 'body-parser';
 import express, { NextFunction, Request, RequestHandler, Response } from 'express';
 import { DefaultTranslationsDataSource } from 'api/i18n.v2/database/data_source_defaults';
 import { CreateTranslationsService } from 'api/i18n.v2/services/CreateTranslationsService';
 import { ValidateTranslationsService } from 'api/i18n.v2/services/ValidateTranslationsService';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-// eslint-disable-next-line node/no-restricted-import
-import { rm, writeFile } from 'fs/promises';
-import { Server } from 'http';
-import 'isomorphic-fetch';
-import _ from 'lodash';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { syncWorker } from '../syncWorker';
@@ -38,6 +41,8 @@ import {
   hub3,
   newDoc1,
   newDoc3,
+  orderedHostFixtures,
+  orderedHostIds,
   relationship9,
   template1,
   template2,
@@ -55,11 +60,14 @@ async function runAllTenants() {
   }
 }
 
-async function applyFixtures() {
-  await db.setupFixturesAndContext(host1Fixtures, undefined, 'host1');
-  await db.setupFixturesAndContext(host2Fixtures, undefined, 'host2');
-  await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
-  await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
+async function applyFixtures(
+  _host1Fixtures: DBFixture = host1Fixtures,
+  _host2Fixtures = host2Fixtures
+) {
+  const host1db = await db.setupFixturesAndContext(_host1Fixtures, undefined, 'host1');
+  const host2db = await db.setupFixturesAndContext(_host2Fixtures, undefined, 'host2');
+  const target1db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target1');
+  const target2db = await db.setupFixturesAndContext({ settings: [{}] }, undefined, 'target2');
   db.UserInContextMockFactory.restore();
 
   await tenants.run(async () => {
@@ -81,6 +89,8 @@ async function applyFixtures() {
       email: 'user2@testing',
     });
   }, 'target2');
+
+  return { host1db, host2db, target1db, target2db };
 }
 
 describe('syncWorker', () => {
@@ -496,5 +506,79 @@ describe('syncWorker', () => {
         expect(syncedTemplates).toHaveLength(1);
       }, 'target1');
     }, 10000);
+  });
+
+  it('should sync collections in correct preference order', async () => {
+    const originalBatchLimit = syncWorker.UPDATE_LOG_TARGET_COUNT;
+    syncWorker.UPDATE_LOG_TARGET_COUNT = 1;
+    const { host1db, target1db } = await applyFixtures(orderedHostFixtures, {});
+
+    const runAndCheck = async (
+      currentCollection: string,
+      nextCollection: string | undefined,
+      currentExpectation: any[],
+      syncTimeStampExpectation: number
+    ) => {
+      await runAllTenants();
+      const syncLog = await host1db!.collection('syncs').findOne({ name: 'target1' });
+
+      const currentSyncedContent = await target1db!
+        .collection(currentCollection)
+        .find({})
+        .toArray();
+      expect(currentSyncedContent).toMatchObject(currentExpectation);
+      expect(syncLog!.lastSyncs[currentCollection]).toBe(syncTimeStampExpectation);
+
+      if (nextCollection) {
+        const nextSyncedContent = await target1db!.collection(nextCollection).find({}).toArray();
+        expect(nextSyncedContent).toEqual([]);
+        expect(syncLog!.lastSyncs[nextCollection]).toBeUndefined();
+      }
+    };
+
+    await runAndCheck(
+      'settings',
+      'translationsV2',
+      [{ languages: [{ key: 'en' as 'en', default: true, label: 'en' }] }],
+      1000
+    );
+    await runAndCheck(
+      'translationsV2',
+      'dictionaries',
+      [{ _id: orderedHostIds.translationsV2 }],
+      700
+    );
+    await runAndCheck('dictionaries', 'relationtypes', [{ _id: orderedHostIds.dictionaries }], 600);
+    await runAndCheck('relationtypes', 'templates', [{ _id: orderedHostIds.relationtypes }], 500);
+    await runAndCheck('templates', 'files', [{ _id: orderedHostIds.templates }], 40);
+    await runAndCheck('files', 'connections', [{ _id: orderedHostIds.files }], 30);
+    await runAndCheck(
+      'connections',
+      'entities',
+      [{ _id: orderedHostIds.connection1 }, { _id: orderedHostIds.connection2 }],
+      20
+    );
+    await runAndCheck(
+      'entities',
+      undefined,
+      [{ _id: orderedHostIds.entity1 }, { _id: orderedHostIds.entity2 }],
+      1
+    );
+
+    await applyFixtures();
+    syncWorker.UPDATE_LOG_TARGET_COUNT = originalBatchLimit;
+  });
+
+  it('should throw an error, when trying to sync a collection that is not in the order list', async () => {
+    const fixtures = _.cloneDeep(orderedHostFixtures);
+    //@ts-ignore
+    fixtures.settings[0].sync[0].config.pages = [];
+    await applyFixtures(fixtures, {});
+
+    await expect(runAllTenants).rejects.toThrowError(
+      new Error('Invalid elements found in ordering - pages')
+    );
+
+    await applyFixtures();
   });
 });
