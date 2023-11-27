@@ -6,7 +6,6 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { refreshIndex } from '../helpers/elastichelpers';
-import { waitFor } from '@testing-library/react';
 
 describe('multi edit', () => {
   beforeAll(async () => {
