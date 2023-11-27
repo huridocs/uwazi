@@ -52,6 +52,5 @@ export function deleteEntities(entities) {
     dispatch(notificationActions.notify(t('System', 'Deletion success', null, false), 'success'));
     await dispatch(unselectAllDocuments());
     dispatch(removeDocuments(entities));
-    dispatch(reloadThesauri());
   };
 }
