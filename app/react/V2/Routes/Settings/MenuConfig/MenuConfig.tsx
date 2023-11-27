@@ -41,15 +41,19 @@ const MenuConfig = () => {
 
   useEffect(() => {
     const linksWIthid = links?.map(link => {
-      const subLinks =
-        (link.sublinks || []).length > 0
-          ? { sublinks: link.sublinks?.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` })) }
-          : {};
-      return { ...link, ...subLinks };
+      const _id = link._id || `tmp_${uniqueID()}`;
+      if (link.sublinks) {
+        const sublinks = link.sublinks.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` }));
+        return { ...link, sublinks, _id };
+      }
+
+      return { ...link, _id };
     });
     setLinkChanges(linksWIthid);
   }, [links]);
-  const sanitizeIds = (link: ClientSettingsLinkSchema) => {
+
+  const sanitizeIds = (_link: ClientSettingsLinkSchema) => {
+    const link = { ..._link };
     if (link._id?.startsWith('tmp_')) {
       delete link._id;
     }
@@ -149,7 +153,12 @@ const MenuConfig = () => {
         <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
           {selectedLinks.length > 0 && (
             <div className="flex items-center gap-2">
-              <Button type="button" onClick={deleteSelected} color="error">
+              <Button
+                type="button"
+                onClick={deleteSelected}
+                color="error"
+                data-testid="menu-delete-link"
+              >
                 <Translate>Delete</Translate>
               </Button>
               <Translate>Selected</Translate> {selectedLinks.length} <Translate>of</Translate>{' '}
@@ -162,10 +171,10 @@ const MenuConfig = () => {
           {selectedLinks.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Button type="button" onClick={addLink}>
+                <Button type="button" onClick={addLink} data-testid="menu-add-link">
                   <Translate>Add link</Translate>
                 </Button>
-                <Button type="button" onClick={addGroup}>
+                <Button type="button" onClick={addGroup} data-testid="menu-add-group">
                   <Translate>Add group</Translate>
                 </Button>
               </div>
@@ -175,6 +184,7 @@ const MenuConfig = () => {
                   onClick={save}
                   color="success"
                   disabled={links === linkChanges}
+                  data-testid="menu-save"
                 >
                   <Translate>Save</Translate>
                 </Button>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { Button, Card } from 'app/V2/Components/UI';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import uniqueID from 'shared/uniqueID';
 
 type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string };
 
@@ -22,13 +23,12 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
   useEffect(() => {
     if (links) {
       const _groups = links
-        .filter(_link => _link.type === 'group' && _link.title && _link._id)
+        .filter(_link => _link.type === 'group' && _link.title)
         .map(_link => ({
           label: t('Menu', _link.title, _link.title, false),
           value: _link._id?.toString(),
           key: _link._id?.toString(),
         })) as OptionSchema[];
-
       const emptyGroup = { label: t('System', 'No Group', 'No Group', false), value: '', key: '-' };
       setGroups([emptyGroup, ..._groups]);
     }
@@ -50,39 +50,58 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
     mode: 'onSubmit',
   });
 
-  const onSubmit = (formValues: SettingsLinkForm) => {
-    const { groupId, ...linkData } = formValues;
+  const updateInGroups = (groupId: string | undefined, linkData: SettingsLinkForm) => {
     let currentLinks = [...links] || [];
-
-    if (linkData.type === 'link') {
-      delete linkData.sublinks;
-    }
-
     if (!groupId) {
       let linkIndex = currentLinks.findIndex(_link => _link._id === linkData._id);
       linkIndex = linkIndex === -1 ? currentLinks.length : linkIndex;
       currentLinks[linkIndex] = linkData;
     }
 
-    currentLinks = currentLinks.map(_link => {
-      if (!_link.sublinks) {
-        return _link;
-      }
+    if (groupId) {
+      currentLinks = currentLinks.filter(_link => _link._id !== linkData._id);
 
-      if (_link._id !== groupId) {
-        return {
-          ..._link,
-          sublinks: _link.sublinks.filter(sublink => sublink._id !== linkData._id),
-        };
-      }
+      currentLinks = currentLinks.map(_link => {
+        if (!_link.sublinks) {
+          return _link;
+        }
 
-      let sublinkIndex = _link.sublinks.findIndex(sublink => sublink._id === linkData._id);
-      sublinkIndex = sublinkIndex === -1 ? _link.sublinks.length : sublinkIndex;
-      const sublinks = [..._link.sublinks];
-      sublinks[sublinkIndex] = linkData;
-      return { ..._link, sublinks };
-    });
-    submit(currentLinks);
+        console.log(_link._id, groupId);
+        if (_link._id !== groupId) {
+          console.log('not the same');
+          const toBeReturned = {
+            ..._link,
+            sublinks: _link.sublinks.filter(sublink => sublink._id !== linkData._id),
+          };
+          console.log(toBeReturned);
+          return toBeReturned;
+        }
+        console.log('the same');
+        let sublinkIndex = _link.sublinks.findIndex(sublink => sublink._id === linkData._id);
+        sublinkIndex = sublinkIndex === -1 ? _link.sublinks.length : sublinkIndex;
+        const sublinks = [..._link.sublinks];
+        sublinks[sublinkIndex] = linkData;
+        return { ..._link, sublinks };
+      });
+    }
+
+    return currentLinks;
+  };
+
+  const onSubmit = (formValues: SettingsLinkForm) => {
+    const { groupId, ...linkData } = formValues;
+
+    if (!linkData._id) {
+      linkData._id = `tmp_${uniqueID()}`;
+    }
+
+    if (linkData.type === 'link') {
+      delete linkData.sublinks;
+    }
+
+    const updatedLinks = updateInGroups(groupId, linkData);
+
+    submit(updatedLinks);
   };
 
   return (
@@ -110,6 +129,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           <div className="flex flex-col gap-4">
             <InputField
               id="link-title"
+              data-testid="menu-form-link-title"
               label={<Translate>Title</Translate>}
               {...register('title', { required: true })}
               hasErrors={!!errors.title}
@@ -117,13 +137,15 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
             {link?.type === 'link' && (
               <>
                 <InputField
-                  id="link-title"
+                  id="link-url"
+                  data-testid="menu-form-link-url"
                   label={<Translate>Url</Translate>}
                   {...register('url', { required: true })}
                   hasErrors={!!errors.url}
                 />
                 <Select
                   id="link-group"
+                  data-testid="menu-form-link-group"
                   label={<Translate>Group</Translate>}
                   {...register('groupId')}
                   options={groups}
@@ -134,10 +156,15 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
         </Card>
       </form>
       <div className="absolute bottom-0 flex w-full gap-2">
-        <Button styling="light" onClick={closePanel} className="grow">
+        <Button
+          styling="light"
+          onClick={closePanel}
+          className="grow"
+          data-testid="menu-form-cancel"
+        >
           <Translate>Cancel</Translate>
         </Button>
-        <Button className="grow" type="submit" form="menu-form">
+        <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
           {link?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
         </Button>
       </div>
