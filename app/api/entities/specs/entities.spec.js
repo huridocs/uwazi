@@ -1323,6 +1323,25 @@ describe('entities', () => {
       });
       emitSpy.restore();
     });
+
+    it('should remove the entity from the relationship metadata of related entities', async () => {
+      await entities.delete('shared2');
+      const [related] = await db.mongodb
+        .collection('entities')
+        .find({ sharedId: 'shared', title: 'Batman finishes' })
+        .toArray();
+      expect(related.metadata).toMatchObject({
+        friends: [],
+        enemies: [],
+      });
+      const [related2] = await db.mongodb
+        .collection('entities')
+        .find({ sharedId: 'entityWithOnlyAnyRelationship' })
+        .toArray();
+      expect(related2.metadata).toMatchObject({
+        relationship_to_any_template: [],
+      });
+    });
   });
 
   describe('addLanguage()', () => {

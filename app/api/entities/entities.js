@@ -727,15 +727,17 @@ export default {
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
-    const allTemplates = await templates.get({ 'properties.content': propertyContent });
+    const allTemplates = await templates.get({
+      'properties.content': { $in: [propertyContent, ''] },
+    });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
     const properties = allProperties.filter(p => propTypes.includes(p.type));
     const query = { $or: [] };
     const changes = {};
+    const contentMatches = p =>
+      (p.content && p.content.toString() === propertyContent.toString()) || p.content === '';
     query.$or = properties
-      .filter(
-        p => propertyContent && p.content && propertyContent.toString() === p.content.toString()
-      )
+      .filter(p => propertyContent && contentMatches(p))
       .map(property => {
         const p = {};
         p[`metadata.${property.name}.value`] = deletedId;
