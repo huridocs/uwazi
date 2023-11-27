@@ -152,6 +152,7 @@ describe('Metadata Properties', () => {
     await expect(page).toFill('.form-group.markdown textarea', '***smile***');
 
     await expect(page).toClick('button', { text: 'Save' });
+    await page.waitForSelector('div.alert-success');
     await expect(page).toClick('div.alert-success');
   });
 
