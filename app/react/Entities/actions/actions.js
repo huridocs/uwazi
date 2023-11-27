@@ -30,7 +30,6 @@ export function saveEntity(entity) {
     dispatch(formActions.reset('entityView.entityForm'));
     dispatch(actions.set('entityView/entity', updatedDoc));
     dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
-    dispatch(reloadThesauri());
   };
 }
 
@@ -44,7 +43,6 @@ export function deleteEntity(entity) {
     dispatch(notificationActions.notify(t('System', 'Entity deleted', null, false), 'success'));
     dispatch(removeDocument(entity));
     await dispatch(unselectDocument(entity._id));
-    dispatch(reloadThesauri());
   };
 }
 
