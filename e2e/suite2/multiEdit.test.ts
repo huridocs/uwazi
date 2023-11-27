@@ -6,6 +6,7 @@ import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 import { refreshIndex } from '../helpers/elastichelpers';
+import { waitFor } from '@testing-library/react';
 
 describe('multi edit', () => {
   beforeAll(async () => {
@@ -34,6 +35,7 @@ describe('multi edit', () => {
     await expect(page).toFill('#metadataForm textarea:first-child', title);
     await expect(page).toSelect('#metadataForm select:first-child', type);
     await expect(page).toClick('button', { text: 'Save' });
+    await page.waitForSelector('.alert.alert-success');
     await expect(page).toClick('.alert.alert-success');
     await expect(page).toClick('button.close-modal');
   };
