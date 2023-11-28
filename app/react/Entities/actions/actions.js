@@ -27,7 +27,7 @@ export function saveEntity(entity) {
         )
       );
     }
-    dispatch(reloadThesauri());
+    await reloadThesauri()(dispatch);
     dispatch(formActions.reset('entityView.entityForm'));
     dispatch(actions.set('entityView/entity', updatedDoc));
     dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));
