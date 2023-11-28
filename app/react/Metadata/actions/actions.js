@@ -146,8 +146,8 @@ export function loadInReduxForm(form, _entity, templates) {
 }
 
 export function changeTemplate(form, templateId) {
-  return (dispatch, getState) => {
-    dispatch(reloadThesauri());
+  return async (dispatch, getState) => {
+    await dispatch(reloadThesauri());
     const entity = { ...getModel(getState(), form) };
     const { templates } = getState();
     const template = templates.find(temp => temp.get('_id') === templateId);
