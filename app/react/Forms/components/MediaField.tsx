@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { isObject } from 'lodash';
 import { Translate } from 'app/I18N';
@@ -15,13 +16,30 @@ type MediaFieldProps = MediaModalProps & {
   multipleEdition: boolean;
 };
 
-const getValue = (value: MediaFieldProps['value']) =>
-  isObject(value) && value.data ? value.data : (value as string);
+const getValue = (value: MediaFieldProps['value']) => {
+  let valueString = value as string;
+
+  if (isObject(value)) {
+    const hasTimeLinks = value.data.startsWith('(');
+
+    if (hasTimeLinks) {
+      valueString = value.data.substring(1, value.data.indexOf(','));
+    } else {
+      valueString = value.data;
+    }
+  }
+
+  return valueString;
+};
 
 const prepareValue = (
   value: MediaFieldProps['value'],
   localAttachments: MediaFieldProps['localAttachments']
 ) => {
+  if (!value) {
+    return undefined;
+  }
+
   const valueString = getValue(value);
   const values = {
     data: valueString,
@@ -76,6 +94,7 @@ const MediaField = (props: MediaFieldProps) => {
   };
 
   const file = prepareValue(value, localAttachments);
+
   const constructTimelinksString = (timelinks: TimeLink[]) => {
     if (!file || !file.data) {
       return null;
