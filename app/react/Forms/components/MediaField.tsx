@@ -60,11 +60,6 @@ const prepareValue = (
     file => values.data === (file.url || file.fileLocalID || `/api/files/${file.filename}`)
   );
 
-  if (values.type === 'uploadId' && supportingFile) {
-    values.originalFile = supportingFile;
-    values.fileURL = prepareHTMLMediaView(supportingFile);
-  }
-
   return { ...values, supportingFile };
 };
 
@@ -78,12 +73,27 @@ const MediaField = (props: MediaFieldProps) => {
     name: formField,
     multipleEdition,
   } = props;
+  const file = prepareValue(value, localAttachments);
+
   const [openModal, setOpenModal] = useState(false);
   const [imageRenderError, setImageRenderError] = useState(false);
+  const [fileURLObject, setFileURLObject] = useState<string>();
 
   useEffect(() => {
     setImageRenderError(false);
   }, [localAttachments]);
+
+  useEffect(() => {
+    if (file?.type === 'uploadId' && file.supportingFile) {
+      setFileURLObject(prepareHTMLMediaView(file.supportingFile));
+    }
+
+    return () => {
+      if (fileURLObject) {
+        URL.revokeObjectURL(fileURLObject);
+      }
+    };
+  }, []);
 
   const handleCloseMediaModal = () => {
     setOpenModal(false);
@@ -92,8 +102,6 @@ const MediaField = (props: MediaFieldProps) => {
   const handleImageRemove = () => {
     onChange(null);
   };
-
-  const file = prepareValue(value, localAttachments);
 
   const constructTimelinksString = (timelinks: TimeLink[]) => {
     if (!file || !file.data) {
@@ -116,15 +124,6 @@ const MediaField = (props: MediaFieldProps) => {
     onChange(constructTimelinksString(timelinks));
   };
 
-  useEffect(
-    () => () => {
-      if (file && file.supportingFile?.serializedFile && file.fileURL) {
-        URL.revokeObjectURL(file.fileURL);
-      }
-    },
-    []
-  );
-
   return (
     <div className="search__filter--selected__media">
       <div className="search__filter--selected__media-toolbar">
@@ -139,7 +138,6 @@ const MediaField = (props: MediaFieldProps) => {
           </button>
         )}
       </div>
-
       {(() => {
         if (imageRenderError) {
           return (
@@ -157,7 +155,7 @@ const MediaField = (props: MediaFieldProps) => {
         ) {
           return file?.fileURL ? (
             <img
-              src={file?.fileURL}
+              src={fileURLObject || file?.fileURL}
               alt=""
               onError={() => {
                 if (file?.fileURL) {
@@ -173,7 +171,7 @@ const MediaField = (props: MediaFieldProps) => {
         if (file?.fileURL) {
           return (
             <MarkdownMedia
-              config={file?.fileURL}
+              config={fileURLObject || file?.fileURL}
               editing
               onTimeLinkAdded={updateTimeLinks}
               type={file?.type}
@@ -181,7 +179,6 @@ const MediaField = (props: MediaFieldProps) => {
           );
         }
       })()}
-
       <MediaModal
         isOpen={openModal}
         onClose={handleCloseMediaModal}
