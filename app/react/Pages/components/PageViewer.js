@@ -136,7 +136,7 @@ const mapStateToProps = ({ page }) => ({
   error: page.error,
 });
 
-function mapDispatchToProps(dispatch, props) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       reloadThesauri,
