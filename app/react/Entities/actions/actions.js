@@ -10,7 +10,6 @@ import {
 import { saveEntityWithFiles } from 'app/Library/actions/saveEntityWithFiles';
 import { notificationActions } from 'app/Notifications';
 import { actions as relationshipActions } from 'app/Relationships';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import { actions as formActions } from 'react-redux-form';
 
@@ -27,7 +26,6 @@ export function saveEntity(entity) {
         )
       );
     }
-    await reloadThesauri()(dispatch);
     dispatch(formActions.reset('entityView.entityForm'));
     dispatch(actions.set('entityView/entity', updatedDoc));
     dispatch(relationshipActions.reloadRelationships(updatedDoc.sharedId));

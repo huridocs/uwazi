@@ -7,6 +7,7 @@ import { wrapDispatch } from 'app/Multireducer';
 import { NeedAuthorization } from 'app/Auth';
 import { Translate, I18NLink } from 'app/I18N';
 import { Icon } from 'UI';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 
 import { ShareButton } from 'app/Permissions/components/ShareButton';
 import * as actions from '../actions/actions';
@@ -56,6 +57,7 @@ class MetadataFormButtons extends Component {
                     this.props.templates.toJS()
                   );
                   this.props.clearMetadataSelections();
+                  this.props.reloadThesauri();
                 }}
                 className="edit-metadata btn btn-default"
               >
@@ -149,6 +151,7 @@ MetadataFormButtons.defaultProps = {
 
 MetadataFormButtons.propTypes = {
   loadInReduxForm: PropTypes.func.isRequired,
+  reloadThesauri: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
   clearMetadataSelections: PropTypes.func.isRequired,
   delete: PropTypes.func,
@@ -182,6 +185,7 @@ function mapDispatchToProps(dispatch, props) {
       loadInReduxForm: actions.loadInReduxForm,
       resetForm: actions.resetReduxForm,
       clearMetadataSelections: actions.clearMetadataSelections,
+      reloadThesauri,
     },
     wrapDispatch(dispatch, props.storeKey)
   );
