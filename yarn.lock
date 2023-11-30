@@ -18635,10 +18635,10 @@ react-icons@^4.11.0:
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.12.0.tgz#54806159a966961bfd5cdb26e492f4dafd6a8d78"
   integrity sha512-IBaDuHiShdZqmfc/TwHu6+d6k2ltNCf3AszxNmjJc1KUfXdEeRJOKyNvLmAHaarhzGmTSVygNdyu8/opXv2gaw==
 
-react-image-gallery@^1.2.12:
-  version "1.2.12"
-  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-1.2.12.tgz#b08a633cc336bab2a5afdb96941e023925043c6a"
-  integrity sha512-JIh85lh0Av/yewseGJb/ycg00Y/weQiZEC/BQueC2Z5jnYILGB6mkxnrOevNhsM2NdZJpvcDekCluhy6uzEoTA==
+react-image-gallery@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-1.3.0.tgz#789035b12d8149bdd2ab296c155f989205077ffb"
+  integrity sha512-lKnPaOzxqSdujPFyl+CkVw0j1aYoNCHk61cvr1h7aahf5aWqmPcR9YhUB4cYrt5Tn5KHDaPUzYm5/+cX9WxzaA==
 
 react-indiana-drag-scroll@^2.2.0:
   version "2.2.0"
