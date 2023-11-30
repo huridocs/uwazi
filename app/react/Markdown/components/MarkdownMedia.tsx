@@ -116,7 +116,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
               }
             }}
           >
-            <Icon icon={linkIndex === playingTimelinkIndex ? 'pause' : 'play'} />
+            <Icon icon={linkIndex === playingTimelinkIndex && isVideoPlaying ? 'pause' : 'play'} />
           </b>
           <div
             className="timelink-time-label"
@@ -293,27 +293,22 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       return setErrorFlag(true);
     }
 
-    if (config.url.startsWith('/api/files/')) {
-      setMediaURL(config.url);
-    } else if (config.url.match(validMediaUrlRegExp)) {
+    if (config.url.startsWith('/api/files/') || config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
     } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
+      setErrorFlag(false);
       setTemporalResource(mediaURL);
       setMediaURL(config.url);
     }
 
     return () => {
-      setErrorFlag(false);
+      setErrorFlag(true);
       setMediaURL('');
+      setTemporalResource('');
+      setVideoPlaying(false);
     };
   }, [config.url]);
-
-  useEffect(() => () => {
-    if (isVideoPlaying) {
-      setVideoPlaying(false);
-    }
-  });
 
   useEffect(() => {
     if (
@@ -345,11 +340,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       <div>
         <ReactPlayer
           className="react-player"
+          controls
+          {...dimensions}
+          config={{ file: { attributes: { preload: 'none' } } }}
           playing={isVideoPlaying}
           ref={playerRef}
           url={mediaURL}
-          {...dimensions}
-          controls
           onPause={() => {
             setVideoPlaying(false);
           }}
@@ -363,6 +359,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           }}
         />
       </div>
+
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && (
         <div className="timelinks-form">
