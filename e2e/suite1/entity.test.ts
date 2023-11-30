@@ -42,7 +42,6 @@ const addSupportingFile = async (filePath: string) => {
 
 const saveEntityAndClosePanel = async (text?: string) => {
   await expect(page).toClick('button', { text: text || 'Save' });
-  await page.waitForSelector('.alert.alert-success');
   await expect(page).toClick('.alert.alert-success');
   await refreshIndex();
   await expect(page).toClick('.is-active button.closeSidepanel');
