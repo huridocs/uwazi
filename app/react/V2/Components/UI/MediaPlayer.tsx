@@ -81,7 +81,6 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }
           onClickPreview={() => !playing && setPlaying(true)}
-          stopOnUnmount
         />
       )}
     </div>
