@@ -13,8 +13,13 @@ import { act, fireEvent, screen } from '@testing-library/react';
 import { fromJS } from 'immutable';
 import { Provider } from 'react-redux';
 import { LibraryFooter } from '../LibraryFooter';
+import * as thesauriActions from 'app/Thesauri/actions/thesaurisActions';
 
 describe('LibraryFooter', () => {
+  beforeEach(() => {
+    spyOn(thesauriActions, 'reloadThesauri').and.returnValue(async () => Promise.resolve([]));
+  });
+
   it.each(['library', 'uploads'])(
     'should dispatch an action to open the entity creation panel',
     storeKey => {
@@ -24,6 +29,7 @@ describe('LibraryFooter', () => {
 
       const createButton = component.find({ icon: 'plus' }).parent();
       createButton.simulate('click');
+      expect(thesauriActions.reloadThesauri).toHaveBeenCalled();
       expect(uploadActions.newEntity).toHaveBeenCalledWith(storeKey);
     }
   );
