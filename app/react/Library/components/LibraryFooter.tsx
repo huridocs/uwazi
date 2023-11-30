@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import Export from './ExportButton';
 import { PDFUploadButton } from './PDFUploadButton';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
+import { reloadThesauri as reloadThesauriAction } from 'app/Thesauri/actions/thesaurisActions';
 
 interface LibraryFooterOwnProps {
   storeKey: string;
@@ -94,7 +94,11 @@ const LibraryFooterComponent = ({
 
 function mapDispatchToProps(dispatch: Dispatch<any>, props: LibraryFooterOwnProps) {
   return bindActionCreators(
-    { newEntity: newEntityAction, showImportPanel: showImportPanelAction, reloadThesauri },
+    {
+      newEntity: newEntityAction,
+      showImportPanel: showImportPanelAction,
+      reloadThesauri: reloadThesauriAction,
+    },
     wrapDispatch(dispatch, props.storeKey)
   );
 }
