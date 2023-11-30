@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { NeedAuthorization } from 'app/Auth';
 import Export from './ExportButton';
 import { PDFUploadButton } from './PDFUploadButton';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 
 interface LibraryFooterOwnProps {
   storeKey: string;
@@ -20,6 +21,7 @@ interface LibraryFooterOwnProps {
 interface LibraryFooterActions {
   newEntity: (storeKey: string) => void;
   showImportPanel: () => void;
+  reloadThesauri: () => void;
 }
 
 type LibraryFooterProps = LibraryFooterActions & LibraryFooterOwnProps;
@@ -28,6 +30,7 @@ const LibraryFooterComponent = ({
   storeKey,
   newEntity,
   showImportPanel,
+  reloadThesauri,
   scrollCount,
 }: LibraryFooterProps) => {
   const [footerVisible, setFooterVisible] = useState(false);
@@ -55,7 +58,10 @@ const LibraryFooterComponent = ({
             <button
               className="btn btn-default btn-footer-hover-success"
               type="button"
-              onClick={() => newEntity(storeKey)}
+              onClick={() => {
+                reloadThesauri();
+                newEntity(storeKey);
+              }}
             >
               <Icon icon="plus" />
               <span className="btn-label">
@@ -88,7 +94,7 @@ const LibraryFooterComponent = ({
 
 function mapDispatchToProps(dispatch: Dispatch<any>, props: LibraryFooterOwnProps) {
   return bindActionCreators(
-    { newEntity: newEntityAction, showImportPanel: showImportPanelAction },
+    { newEntity: newEntityAction, showImportPanel: showImportPanelAction, reloadThesauri },
     wrapDispatch(dispatch, props.storeKey)
   );
 }

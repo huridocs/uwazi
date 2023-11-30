@@ -13,7 +13,7 @@ import { t } from 'app/I18N';
 import { APIURL } from '../../config.js';
 import api from '../../utils/api';
 import EntitiesApi from '../../Entities/EntitiesAPI';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
+// import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 
 export function enterUploads() {
   return {
@@ -55,9 +55,9 @@ export function newEntity(storeKey = 'uploads') {
     dispatch(basicActions.set('library.sidepanel.tab', 'metadata'));
     dispatch(basicActions.set('relationships/list/connectionsGroups', []));
     await dispatch(selectSingleDocument(newEntityMetadata));
-    setTimeout(() => {
-      dispatch(reloadThesauri());
-    });
+    // setTimeout(() => {
+    //   dispatch(reloadThesauri());
+    // });
   };
 }
 
