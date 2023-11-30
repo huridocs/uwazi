@@ -55,7 +55,9 @@ export function newEntity(storeKey = 'uploads') {
     dispatch(basicActions.set('library.sidepanel.tab', 'metadata'));
     dispatch(basicActions.set('relationships/list/connectionsGroups', []));
     await dispatch(selectSingleDocument(newEntityMetadata));
-    dispatch(reloadThesauri());
+    setTimeout(() => {
+      dispatch(reloadThesauri());
+    });
   };
 }
 
