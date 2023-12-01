@@ -34,7 +34,6 @@ describe('multi edit', () => {
     await expect(page).toFill('#metadataForm textarea:first-child', title);
     await expect(page).toSelect('#metadataForm select:first-child', type);
     await expect(page).toClick('button', { text: 'Save' });
-    await page.waitForSelector('.alert.alert-success');
     await expect(page).toClick('.alert.alert-success');
     await expect(page).toClick('button.close-modal');
   };
