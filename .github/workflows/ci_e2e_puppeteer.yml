@@ -81,7 +81,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      - run: xvfb-run -a yarn ee2-puppeteer-all e2e/suite1/entity.test.ts'
+      - run: xvfb-run -a yarn ee2-puppeteer-all e2e/suite1/entity.test.ts
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017
