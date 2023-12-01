@@ -82,9 +82,8 @@ describe('Entities', () => {
 
   it('Should create new entity', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
-    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title', {
-      delay: 200,
-    });
+    await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
+    await page.waitForNetworkIdle();
     await expect(page).toMatchElement('button', { text: 'Save' });
     await saveEntityAndClosePanel({ title: 'Test title' });
   });
