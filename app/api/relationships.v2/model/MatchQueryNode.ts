@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { Relationship } from 'api/relationships.v2/model/Relationship';
 import _ from 'lodash';
 import { QueryNode } from './QueryNode';
@@ -67,6 +68,14 @@ export class MatchQueryNode extends QueryNode {
       this.traversals.length === other.traversals.length &&
       this.traversals.every((traversal, index) => traversal.isSame(other.traversals[index]))
     );
+  }
+
+  getDepth(): number {
+    if (!this.traversals.length) {
+      return 0;
+    }
+
+    return 1 + Math.max(...this.traversals.map(traversal => traversal.getDepth()));
   }
 
   chainsDecomposition(): MatchQueryNode[] {
@@ -205,6 +214,60 @@ export class MatchQueryNode extends QueryNode {
     }
 
     return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
+  }
+
+  determinesRelationships(): boolean {
+    const hasDepth2 = this.getDepth() === 2;
+    const hasSigleTypePerBranch = this.traversals.every(
+      traversal => traversal.getFilters().types?.length === 1
+    );
+
+    let hasAllTemplates = false;
+
+    const templatesOccurences: Record<string, number> = {};
+    const templatesInLeaves = this.getTemplatesInLeaves();
+    templatesInLeaves.forEach(record => {
+      if (record.templates.length === 0) {
+        hasAllTemplates = true;
+      }
+
+      record.templates.forEach(template => {
+        if (!templatesOccurences[template]) {
+          templatesOccurences[template] = 0;
+        }
+
+        templatesOccurences[template] += 1;
+      });
+    });
+
+    const hasOneLeave = templatesInLeaves.length === 1;
+
+    const templatesAppearOnce = Object.values(templatesOccurences).every(count => count === 1);
+    return (
+      hasDepth2 && hasSigleTypePerBranch && templatesAppearOnce && (!hasAllTemplates || hasOneLeave)
+    );
+  }
+
+  determineRelationship(rootEntity: Entity, targetEntity: Entity): any {
+    const templatesInLeaves = this.getTemplatesInLeaves();
+    const matchingBranch = templatesInLeaves.find(record =>
+      record.templates.includes(targetEntity.template)
+    );
+
+    if (!matchingBranch) {
+      throw new Error('Cannot determine relationship: no match for the template');
+    }
+
+    const matchingTraversal = this.traversals[matchingBranch.path[0]];
+    const direction = matchingTraversal.getDirection();
+
+    const [first, second] = direction === 'out' ? ['from', 'to'] : ['to', 'from'];
+
+    return {
+      type: matchingTraversal.getFilters().types![0],
+      [first]: rootEntity.sharedId,
+      [second]: targetEntity.sharedId,
+    };
   }
 
   static forEntity(sharedId: string, traversals?: TraversalQueryNode[]) {
