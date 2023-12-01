@@ -80,7 +80,7 @@ describe('Entities', () => {
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await saveEntityAndClosePanel();
-  });
+  }, 4000);
 
   describe('Rich text fields', () => {
     it('should create an entity with HTML on a rich text field', async () => {
@@ -319,7 +319,7 @@ describe('Entities', () => {
       await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
 
       await saveEntityAndClosePanel('Guardar');
-    });
+    }, 4000);
 
     it('should check the values for the entity in Spanish', async () => {
       await expect(page).toClick('.item-document', {
@@ -337,7 +337,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.multiline > .item-value > a', {
         text: 'Argentina',
       });
-    });
+    }, 4000);
 
     it('should edit the text field in English', async () => {
       await changeLanguage('English');
@@ -365,7 +365,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.multiline > .item-value > a', {
         text: 'Argentina',
       });
-    });
+    }, 4000);
 
     it('should not affect the text field in Spanish', async () => {
       await changeLanguage('Español');
@@ -377,7 +377,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.metadata-type-text > dd', {
         text: 'Resumen en español',
       });
-    });
+    }, 4000);
   });
 
   describe('new thesauri values shortcut', () => {
