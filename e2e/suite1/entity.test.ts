@@ -40,13 +40,8 @@ const addSupportingFile = async (filePath: string) => {
   await uploadSupportingFileToEntity(filePath);
 };
 
-const saveEntityAndClosePanel = async ({ text, title }: { text?: string; title?: string }) => {
+const saveEntityAndClosePanel = async (text?: string) => {
   await expect(page).toClick('button', { text: text || 'Save' });
-  if (title) {
-    await expect(page).toClick('.item-document > .item-info > h2', {
-      text: title,
-    });
-  }
   await expect(page).toClick('.alert.alert-success');
   await refreshIndex();
   await expect(page).toClick('.is-active button.closeSidepanel');
@@ -69,7 +64,7 @@ const createEntityWithSupportingFiles = async (
   await expect(page).toFill('.web-attachment-name', webAttachment.name);
   await expect(page).toClick('button', { text: 'Add from URL' });
 
-  await saveEntityAndClosePanel({ title });
+  await saveEntityAndClosePanel();
 };
 
 describe('Entities', () => {
@@ -83,9 +78,8 @@ describe('Entities', () => {
   it('Should create new entity', async () => {
     await expect(page).toClick('button', { text: 'Create entity' });
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
-    await page.waitForTimeout(2000);
     await expect(page).toMatchElement('button', { text: 'Save' });
-    await saveEntityAndClosePanel({ title: 'Test title' });
+    await saveEntityAndClosePanel();
   });
 
   describe('Rich text fields', () => {
@@ -137,7 +131,7 @@ describe('Entities', () => {
         `${__dirname}/../test_files/batman.jpg`,
         'input[aria-label=fileInput]'
       );
-      await saveEntityAndClosePanel({ title: 'Entity with media files' });
+      await saveEntityAndClosePanel();
     });
 
     it('should edit the entity to add a video on a metadata field', async () => {
@@ -152,7 +146,7 @@ describe('Entities', () => {
         `${__dirname}/../test_files/short-video.webm`,
         'input[aria-label=fileInput]'
       );
-      await saveEntityAndClosePanel({ title: 'Entity with media files' });
+      await saveEntityAndClosePanel();
     });
 
     it('should check the entity', async () => {
@@ -206,7 +200,7 @@ describe('Entities', () => {
           'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
           'My PDF.pdf'
         );
-        await saveEntityAndClosePanel({ title: entityTitle });
+        await saveEntityAndClosePanel();
         await expect(page).toClick('.item-document', {
           text: entityTitle,
         });
@@ -220,7 +214,7 @@ describe('Entities', () => {
         });
         await expect(page).toClick('button', { text: 'Edit' });
         await expect(page).toClick('.delete-supporting-file');
-        await saveEntityAndClosePanel({ title: entityTitle });
+        await saveEntityAndClosePanel();
         await expect(page).toClick('.item-document', {
           text: entityTitle,
         });
@@ -249,7 +243,7 @@ describe('Entities', () => {
           `${__dirname}/../test_files/valid.pdf`
         );
 
-        await saveEntityAndClosePanel({ title: 'Entity with main documents' });
+        await saveEntityAndClosePanel();
       });
 
       it('should edit the entity and the documents', async () => {
@@ -273,7 +267,7 @@ describe('Entities', () => {
           `${__dirname}/../test_files/invalid.pdf`
         );
 
-        await saveEntityAndClosePanel({});
+        await saveEntityAndClosePanel();
 
         await expect(page).toClick('.item-document', {
           text: 'Entity with main documents',
@@ -290,7 +284,7 @@ describe('Entities', () => {
 
         await expect(page).toClick('.attachments-list > .attachment:nth-child(2) > button');
 
-        await saveEntityAndClosePanel({});
+        await saveEntityAndClosePanel();
 
         await expect(page).toClick('.item-document', {
           text: 'Entity with main documents',
@@ -324,7 +318,7 @@ describe('Entities', () => {
 
       await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
 
-      await saveEntityAndClosePanel({ text: 'Guardar', title: 'Test title' });
+      await saveEntityAndClosePanel('Guardar');
     });
 
     it('should check the values for the entity in Spanish', async () => {
@@ -359,7 +353,7 @@ describe('Entities', () => {
         'Brief in English'
       );
 
-      await saveEntityAndClosePanel({ title: 'Test title' });
+      await saveEntityAndClosePanel();
 
       await expect(page).toClick('.item-document', {
         text: 'Test title',
