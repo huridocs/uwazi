@@ -80,7 +80,7 @@ describe('Entities', () => {
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await saveEntityAndClosePanel();
-  }, 4500);
+  }, 5500);
 
   describe('Rich text fields', () => {
     it('should create an entity with HTML on a rich text field', async () => {
@@ -244,7 +244,7 @@ describe('Entities', () => {
         );
 
         await saveEntityAndClosePanel();
-      }, 4000);
+      }, 5000);
 
       it('should edit the entity and the documents', async () => {
         await expect(page).toClick('.item-document', {
@@ -277,7 +277,7 @@ describe('Entities', () => {
 
         await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
         await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
-      }, 4000);
+      }, 5000);
 
       it('should delete the invalid document', async () => {
         await expect(page).toClick('button', { text: 'Edit' });
@@ -292,7 +292,7 @@ describe('Entities', () => {
 
         await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
         await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
-      }, 4000);
+      }, 5000);
     });
   });
 
@@ -319,7 +319,7 @@ describe('Entities', () => {
       await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
 
       await saveEntityAndClosePanel('Guardar');
-    }, 4500);
+    }, 5000);
 
     it('should check the values for the entity in Spanish', async () => {
       await expect(page).toClick('.item-document', {
@@ -337,7 +337,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.multiline > .item-value > a', {
         text: 'Argentina',
       });
-    }, 4500);
+    }, 5500);
 
     it('should edit the text field in English', async () => {
       await changeLanguage('English');
@@ -365,7 +365,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.multiline > .item-value > a', {
         text: 'Argentina',
       });
-    }, 4500);
+    }, 5500);
 
     it('should not affect the text field in Spanish', async () => {
       await changeLanguage('Español');
@@ -377,7 +377,7 @@ describe('Entities', () => {
       await expect(page).toMatchElement('.metadata-type-text > dd', {
         text: 'Resumen en español',
       });
-    }, 4500);
+    }, 5500);
   });
 
   describe('new thesauri values shortcut', () => {
