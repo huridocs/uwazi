@@ -55,6 +55,9 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
+  const config = propsToConfig(props);
+  const isApiFile = config.url.startsWith('/api/files/');
+
   const playerRef: Ref<ReactPlayer> | undefined = useRef(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
@@ -286,14 +289,12 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
     </>
   );
 
-  const config = propsToConfig(props);
-
   useEffect(() => {
     if (!ReactPlayer.canPlay(config.url)) {
       return setErrorFlag(true);
     }
 
-    if (config.url.startsWith('/api/files/') || config.url.match(validMediaUrlRegExp)) {
+    if (isApiFile || config.url.match(validMediaUrlRegExp)) {
       setErrorFlag(false);
       setMediaURL(config.url);
     } else if (mediaURL && mediaURL.match(validMediaUrlRegExp) && !temporalResource) {
@@ -342,7 +343,11 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           className="react-player"
           controls
           {...dimensions}
-          config={{ file: { attributes: { preload: 'none' } } }}
+          config={{
+            file: {
+              attributes: { preload: isApiFile ? 'none' : 'preload' },
+            },
+          }}
           playing={isVideoPlaying}
           ref={playerRef}
           url={mediaURL}
@@ -361,6 +366,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
       </div>
 
       {!editing && <div>{timeLinks(config.options.timelinks)}</div>}
+
       {editing && (
         <div className="timelinks-form">
           <button
