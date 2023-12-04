@@ -86,7 +86,6 @@ const getRoutesLayout = (
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
-      <Route path="navlinks2" element={adminsOnlyRoute(<NavlinksSettings />)} />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
