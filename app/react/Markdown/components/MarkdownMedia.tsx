@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useRef, Ref, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FieldArrayWithId, useFieldArray, useForm } from 'react-hook-form';
 import ReactPlayer from 'react-player';
 import { Icon } from 'UI';
@@ -56,7 +56,8 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
-  const playerRef: Ref<ReactPlayer> | undefined = useRef(null);
+  const playerRef = useRef<ReactPlayer>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '',
@@ -363,7 +364,7 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
   }
 
   return (
-    <div className={`video-container ${compact ? 'compact' : ''}`}>
+    <div className={`video-container ${compact ? 'compact' : ''}`} ref={containerRef}>
       {isLoading ? (
         <div className="loader">
           <Translate>Loading</Translate>
@@ -378,6 +379,14 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
           <ReactPlayer
             className="react-player"
             playing={isVideoPlaying}
+            config={{
+              facebook: {
+                attributes: {
+                  'data-width': containerRef.current?.clientWidth,
+                  'data-height': containerRef.current?.clientHeight,
+                },
+              },
+            }}
             ref={playerRef}
             url={mediaURL}
             {...dimensions}
