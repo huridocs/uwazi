@@ -22281,10 +22281,10 @@ worker-loader@^3.0.8:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-world-countries@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/world-countries/-/world-countries-4.0.0.tgz"
-  integrity sha512-LsFFYmggquj0U+i7VUaJOZYz5F4QNu+oceGw8odnyVHMT2LxYSdVncqdouOEnq1esr7yCakp9+3BZTztuSw1Pg==
+world-countries@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/world-countries/-/world-countries-5.0.0.tgz#6f75ebcce3d5224d84e9117eaf0d75a7726b6501"
+  integrity sha512-wAfOT9Y5i/xnxNOdKJKXdOCw9Q3yQLahBUeuRol+s+o20F6h2a4tLEbJ1lBCYwEQ30Sf9Meqeipk1gib3YwF5w==
 
 "wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
   version "7.0.0"
