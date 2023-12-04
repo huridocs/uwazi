@@ -82,7 +82,7 @@ describe('Entities', () => {
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await saveEntityAndClosePanel();
-  });
+  }, 5000);
 
   describe('Rich text fields', () => {
     it('should create an entity with HTML on a rich text field', async () => {
@@ -301,6 +301,7 @@ describe('Entities', () => {
   describe('Languages', () => {
     it('should change the entity in Spanish', async () => {
       await changeLanguage('Español');
+      await page.waitForTimeout(2000);
 
       await expect(page).toClick('.item-document', {
         text: 'Test title',
