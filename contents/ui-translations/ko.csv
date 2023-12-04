@@ -1,4 +1,4 @@
-Key,Korean
+key,value
 % of sentences above threshold,임계값 이상 문장 비율
 (view page),(페이지 보기)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
@@ -62,9 +62,9 @@ ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
 Allow captcha bypass,Allow captcha bypass
-An error has occurred during data export,An error has occurred during data export
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
@@ -420,9 +420,9 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,언어
 Language Code,Language Code
 Language deleted,언어가 삭제되었습니다.
-Language Install Start Message,"Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished."
+Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,"Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished."
+Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Languages,언어
 Languages installed successfully,Languages installed successfully
@@ -511,6 +511,7 @@ No Connections description,Connections are the direct relationships between this
 No context,No context
 No Documents found,문서를 찾지 못했습니다.
 no filters for templates,The combination of entity types doesn't have any filters in common.
+No Group,No Group
 No icon / flag,아이콘/플래그 없음
 No Label,라벨 없음
 No options,No options
@@ -864,6 +865,7 @@ Untranslated Terms,Untranslated Terms
 Update,업데이트
 UPDATE,업데이트
 Update success,Update success
+Updated,Updated
 Updated file,Updated file
 Updated multiple entities,Updated multiple entities
 Updated permissions on entity,Updated permissions on entity
@@ -900,6 +902,7 @@ Users,사용자
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,Google Authenticator 사용 중
+Using URLs,Using URLs
 Uwazi is developed by,Uwazi 제작 및 개발:
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi 가 라벨링된 문서를 학습하고 있습니다. 이 과정은 최대 2 시간이 소요될 수 있습니다. 완료 후 Uwazi 의 자동 제안을 검토할 수 있습니다.
 Uwazi UI,Uwazi UI

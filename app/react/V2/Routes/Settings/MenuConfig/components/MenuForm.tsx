@@ -104,6 +104,8 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
     submit(updatedLinks);
   };
 
+  const hostname = window?.location?.origin || '';
+
   return (
     <div className="relative h-full">
       <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
@@ -113,10 +115,17 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           </div>
           <Translate>Using URLs</Translate>
         </div>
-        <div className="">
-          <Translate key="Settings menu tip">
-            If it is an external URL, use a fully formed URL (including http://example.com or
-            https://example.com). If it is an internal URL, use a relative URL (e.g. /page/123).
+        <div className="force-ltr">
+          <Translate>
+            If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.
+          </Translate>
+          <br />
+          <Translate translationKey="Navigation menu tool tip part 1">
+            If it is an internal URL within this website, be sure to delete the first part
+          </Translate>{' '}
+          ({hostname}),{' '}
+          <Translate translationKey="Navigation menu tool tip part 2">
+            leaving only a relative URL starting with a slash character. Ie. /some_url.
           </Translate>
         </div>
       </div>
@@ -139,7 +148,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
                 <InputField
                   id="link-url"
                   data-testid="menu-form-link-url"
-                  label={<Translate>Url</Translate>}
+                  label={<Translate>URL</Translate>}
                   {...register('url', { required: true })}
                   hasErrors={!!errors.url}
                 />
