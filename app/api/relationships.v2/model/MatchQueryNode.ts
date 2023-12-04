@@ -216,7 +216,8 @@ export class MatchQueryNode extends QueryNode {
     return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
   }
 
-  determinesRelationships(): boolean {
+  // eslint-disable-next-line max-statements
+  determinesRelationships(): false | string[] {
     const hasDepth2 = this.getDepth() === 2;
     const hasSigleTypePerBranch = this.traversals.every(
       traversal => traversal.getFilters().types?.length === 1
@@ -243,9 +244,16 @@ export class MatchQueryNode extends QueryNode {
     const hasOneLeave = templatesInLeaves.length === 1;
 
     const templatesAppearOnce = Object.values(templatesOccurences).every(count => count === 1);
-    return (
-      hasDepth2 && hasSigleTypePerBranch && templatesAppearOnce && (!hasAllTemplates || hasOneLeave)
-    );
+
+    if (hasAllTemplates && hasOneLeave) {
+      return [];
+    }
+
+    if (hasDepth2 && hasSigleTypePerBranch && templatesAppearOnce && !hasAllTemplates) {
+      return Object.keys(templatesOccurences);
+    }
+
+    return false;
   }
 
   determineRelationship(rootEntity: Entity, targetEntity: Entity): any {

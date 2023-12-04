@@ -447,6 +447,7 @@ export default {
       type: 'template',
     });
     const sortedValues = this.getThesauriValues(thesaurusValues, thesaurus, doc);
+    console.trace({ sortedValues });
     return { label: property.get('label'), name: property.get('name'), value: sortedValues };
   },
 

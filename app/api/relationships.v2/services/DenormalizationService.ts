@@ -121,6 +121,8 @@ export class DenormalizationService {
   ) {
     const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
 
+    console.trace({ candidates });
+
     if (invalidateMetadataCacheCallback) {
       await invalidateMetadataCacheCallback(ids);
     } else {
@@ -166,6 +168,7 @@ export class DenormalizationService {
   }
 
   async denormalizeAfterCreatingRelationships(relationshipIds: string[]) {
+    console.trace({ relationshipIds });
     const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     return this.runQueriesAndInvalidateMetadataCaches(relationshipIds, async id =>
       this.getCandidateEntitiesForRelationship(id, defaultLanguage)

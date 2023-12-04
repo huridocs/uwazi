@@ -7,7 +7,7 @@ describe('when checkin if, given an entity, the query defines a relationship', (
       new TraversalQueryNode('out', { types: ['type1'] }, [new MatchQueryNode({})]),
     ]);
 
-    expect(query.determinesRelationships()).toBe(true);
+    expect(query.determinesRelationships()).toEqual([]);
   });
 
   it('should be false if any branch is longer than 1', () => {
@@ -20,7 +20,7 @@ describe('when checkin if, given an entity, the query defines a relationship', (
       ]),
     ]);
 
-    expect(query.determinesRelationships()).toBe(false);
+    expect(query.determinesRelationships()).toEqual(false);
   });
 
   it('should be false if not every branch has only one relationship type', () => {
@@ -70,8 +70,8 @@ describe('when checkin if, given an entity, the query defines a relationship', (
       new TraversalQueryNode('out', { types: ['type1'] }, [new MatchQueryNode()]),
     ]);
 
-    expect(query1.determinesRelationships()).toBe(true);
-    expect(query2.determinesRelationships()).toBe(true);
+    expect(query1.determinesRelationships()).toEqual(['template1', 'template2']);
+    expect(query2.determinesRelationships()).toEqual([]);
   });
 });
 

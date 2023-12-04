@@ -80,6 +80,8 @@ export class EntityRelationshipsUpdateService {
               )
               .all();
 
+            console.trace({ results });
+
             metadataToUpdate[property.name] = await this.transformToDenormalizedData(
               property,
               results
