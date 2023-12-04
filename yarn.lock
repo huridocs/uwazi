@@ -5211,7 +5211,7 @@
     "@storybook/preview-api" "7.5.3"
     "@storybook/theming" "7.5.3"
 
-"@storybook/addon-viewport@7.5.3", "@storybook/addon-viewport@^7.5.3":
+"@storybook/addon-viewport@7.5.3":
   version "7.5.3"
   resolved "https://registry.yarnpkg.com/@storybook/addon-viewport/-/addon-viewport-7.5.3.tgz#05fb97114d0186977e25a5a448dea5fba66042ce"
   integrity sha512-gT2XX0NNBrzSs1nrxadl6LnvcwgN7z2R0LzTK8/hxvx4D0EnXrV3feXLzjewr8ZYjzfEeSpO+W+bQTVNm3fNsg==
@@ -5225,6 +5225,13 @@
     "@storybook/theming" "7.5.3"
     memoizerific "^1.11.3"
     prop-types "^15.7.2"
+
+"@storybook/addon-viewport@^7.6.3":
+  version "7.6.3"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-viewport/-/addon-viewport-7.6.3.tgz#70b8920f0b272ab723b5b2a3819cdaf10acfa051"
+  integrity sha512-I9FQxHi4W7RUyZut4NziYa+nkBCpD1k2YpEDE5IwSC3lqQpDzFZN89eNWQtZ38tIU4c90jL3L1k69IHvANGHsA==
+  dependencies:
+    memoizerific "^1.11.3"
 
 "@storybook/blocks@7.5.3":
   version "7.5.3"
