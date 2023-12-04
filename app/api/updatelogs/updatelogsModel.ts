@@ -9,6 +9,7 @@ const updateLogSchema = new mongoose.Schema({
   deleted: Boolean,
 });
 
+updateLogSchema.index({ namespace: 1, timestamp: 1 });
 export interface UpdateLog extends mongoose.Document {
   timestamp: number;
   namespace: string;
