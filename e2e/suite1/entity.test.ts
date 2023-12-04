@@ -41,9 +41,9 @@ const addSupportingFile = async (filePath: string) => {
 };
 
 const saveEntityAndClosePanel = async (text?: string) => {
-  await page.waitForTimeout(2000);
+  await page.waitForNetworkIdle();
   await expect(page).toClick('button', { text: text || 'Save' });
-  await page.waitForTimeout(2000);
+  await page.waitForNetworkIdle();
   await expect(page).toClick('.alert.alert-success');
   await refreshIndex();
   await expect(page).toClick('.is-active button.closeSidepanel');
@@ -301,7 +301,7 @@ describe('Entities', () => {
   describe('Languages', () => {
     it('should change the entity in Spanish', async () => {
       await changeLanguage('Español');
-      await page.waitForTimeout(2000);
+      await page.waitForNetworkIdle();
 
       await expect(page).toClick('.item-document', {
         text: 'Test title',
