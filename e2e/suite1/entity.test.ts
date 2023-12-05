@@ -82,7 +82,7 @@ describe('Entities', () => {
     await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', 'Test title');
     await expect(page).toMatchElement('button', { text: 'Save' });
     await saveEntityAndClosePanel();
-  }, 5000);
+  });
 
   describe('Rich text fields', () => {
     it('should create an entity with HTML on a rich text field', async () => {

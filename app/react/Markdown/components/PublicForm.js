@@ -11,6 +11,7 @@ import { LocalForm } from 'app/Forms/Form';
 import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
 import { Loader } from 'app/components/Elements/Loader';
@@ -192,8 +193,9 @@ class PublicFormComponent extends Component {
   }
 
   render() {
-    const { template, thesauris, file, attachments } = this.props;
+    const { template, thesauris, file, attachments, reloadThesauri } = this.props;
     const { submiting } = this.state;
+    reloadThesauri();
     return (
       <LocalForm
         validators={this.validators}
@@ -232,6 +234,7 @@ PublicFormComponent.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
+  reloadThesauri: PropTypes.func.isRequired,
 };
 export const mapStateToProps = (state, props) => ({
   template: state.templates.find(template => template.get('_id') === props.template),
@@ -241,7 +244,7 @@ export const mapStateToProps = (state, props) => ({
   attachments: props.attachments !== undefined,
 });
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ submit: publicSubmit }, dispatch);
+  return bindActionCreators({ submit: publicSubmit, reloadThesauri }, dispatch);
 }
 export { PublicFormComponent };
 export default connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);

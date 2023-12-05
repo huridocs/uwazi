@@ -18,8 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # suite-dir: ['regression_suites', 'suite1', 'suite2', 'mobile']
-        suite-dir: ['suite1']
+        suite-dir: ['regression_suites', 'suite1', 'suite2', 'mobile']
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
@@ -81,8 +80,7 @@ jobs:
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
         timeout-minutes: 2
-      # - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
-      - run: xvfb-run -a yarn e2e-puppeteer-all e2e/suite1/entity.test.ts
+      - run: xvfb-run -a yarn e2e-puppeteer-all --roots '<rootDir>/${{ matrix.suite-dir }}'
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017

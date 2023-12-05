@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Immutable from 'immutable';
-import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
@@ -13,8 +12,6 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
-
 import { NeedAuthorization } from 'app/Auth';
 import Script from './Script';
 
@@ -74,7 +71,6 @@ class PageViewer extends Component {
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
     const parsedPageError = parseSSRError(error);
-    this.props.reloadThesauri();
     return (
       <div className="row">
         {!parsedPageError && (
@@ -112,7 +108,6 @@ class PageViewer extends Component {
 }
 
 PageViewer.defaultProps = {
-  reloadThesauri: () => {},
   page: Immutable.fromJS({}),
   itemLists: Immutable.fromJS([]),
   datasets: Immutable.fromJS({}),
@@ -121,7 +116,6 @@ PageViewer.defaultProps = {
 };
 
 PageViewer.propTypes = {
-  reloadThesauri: PropTypes.func.isRequired,
   page: PropTypes.instanceOf(Immutable.Map),
   itemLists: PropTypes.instanceOf(Immutable.List),
   datasets: PropTypes.instanceOf(Immutable.Map),
@@ -136,15 +130,6 @@ const mapStateToProps = ({ page }) => ({
   error: page.error,
 });
 
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators(
-    {
-      reloadThesauri,
-    },
-    dispatch
-  );
-}
-
-const container = connect(mapStateToProps, mapDispatchToProps)(PageViewer);
+const container = connect(mapStateToProps)(PageViewer);
 
 export { container as PageViewer };

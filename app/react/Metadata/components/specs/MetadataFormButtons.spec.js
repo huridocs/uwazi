@@ -16,7 +16,6 @@ describe('MetadataFormButtons', () => {
   beforeEach(() => {
     context = { confirm: jasmine.createSpy('confirm') };
     props = {
-      reloadThesauri: jasmine.createSpy('reloadThesauri'),
       loadInReduxForm: jasmine.createSpy('loadInReduxForm'),
       resetForm: jasmine.createSpy('resetForm'),
       clearMetadataSelections: jasmine.createSpy('resetForm'),
