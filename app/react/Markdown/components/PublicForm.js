@@ -193,9 +193,15 @@ class PublicFormComponent extends Component {
   }
 
   render() {
-    const { template, thesauris, file, attachments, reloadThesauri } = this.props;
+    const {
+      template,
+      thesauris,
+      file,
+      attachments,
+      reloadThesauri: reloadThesauriAction,
+    } = this.props;
     const { submiting } = this.state;
-    reloadThesauri();
+    reloadThesauriAction();
     return (
       <LocalForm
         validators={this.validators}
