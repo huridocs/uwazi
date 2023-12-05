@@ -39,11 +39,13 @@ const I18NLink = (props: I18NLinkProps) => {
         title: confirmTitle,
         message: confirmMessage,
       });
+      return;
     }
 
     if (onClick) {
       onClick(e);
       navigate(to);
+      return;
     }
 
     navigate(to);
