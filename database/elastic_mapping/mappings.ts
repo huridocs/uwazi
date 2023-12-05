@@ -1,3 +1,5 @@
+import { s } from "src/data/unitShortcuts";
+
 const { USE_ELASTIC_ICU } = process.env;
 // eslint-disable-next-line import/no-mutable-exports
 let textSortField = {};
@@ -100,9 +102,16 @@ const linkType = () => ({
   },
 });
 
-const selectType = () => ({
+const selectTypeBase = () => ({
   label: text,
   value: id,
+});
+
+const selectType = () => ({
+  ...selectTypeBase(),
+  parent: {
+    properties: selectTypeBase(),
+  },
 });
 
 const numericType = () => ({
