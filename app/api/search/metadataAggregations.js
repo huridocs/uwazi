@@ -1,23 +1,31 @@
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 
-const aggregation = (key, should, filters) => ({
-  terms: {
-    field: key,
-    missing: 'missing',
-    size: preloadOptionsSearch(),
-  },
-  aggregations: {
-    filtered: {
-      filter: {
-        bool: {
-          should,
-          filter: filters,
+const aggregation = (key, should, filters, nestedAggregationName, nestedAggregation) => {
+  const agg = {
+    terms: {
+      field: key,
+      missing: 'missing',
+      size: preloadOptionsSearch(),
+    },
+    aggregations: {
+      filtered: {
+        filter: {
+          bool: {
+            should,
+            filter: filters,
+          },
         },
       },
     },
-  },
-});
+  };
+
+  if (nestedAggregationName && nestedAggregation) {
+    agg.aggregations[nestedAggregationName] = nestedAggregation;
+  }
+
+  return agg;
+};
 
 const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
   const agg = {
@@ -149,6 +157,14 @@ const extractFilters = (baseQuery, path) => {
 const getpath = (property, suggested) =>
   suggested ? `suggestedMetadata.${property.name}` : `metadata.${property.name}`;
 
+const getSelectParentPath = path => {
+  const parentPathSplit = path.split('.');
+  parentPathSplit[parentPathSplit.length - 1] = 'parent';
+  parentPathSplit.push('value');
+  const parentPath = parentPathSplit.join('.');
+  return parentPath;
+};
+
 export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
   const filters = extractFilters(baseQuery, path);
@@ -158,14 +174,25 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
     return nestedAggregation(property, should, filters);
   }
 
-  const dictionary = property.content
-    ? dictionaries.find(d => property.content.toString() === d._id.toString())
-    : null;
-
-  const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
-  if (isADictionaryWithGroups) {
-    return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
+  if (property.type === 'select' || property.type === 'multiselect') {
+    return aggregation(
+      getSelectParentPath(path),
+      should,
+      filters,
+      'children',
+      aggregation(path, should, filters)
+    );
   }
+
+
+  // const dictionary = property.content
+  //   ? dictionaries.find(d => property.content.toString() === d._id.toString())
+  //   : null;
+
+  // const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
+  // if (isADictionaryWithGroups) {
+  //   return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
+  // }
 
   return aggregation(path, should, filters);
 };
