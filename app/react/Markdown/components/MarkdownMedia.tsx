@@ -365,25 +365,25 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
 
   return (
     <div className={`video-container ${compact ? 'compact' : ''}`} ref={containerRef}>
-      {isLoading ? (
-        <div className="loader">
-          <Translate>Loading</Translate>
-          <div className="bouncing-dots">
-            <div className="dot" />
-            <div className="dot" />
-            <div className="dot" />
+      <div>
+        {isLoading ? (
+          <div className="loader">
+            <Translate>Loading</Translate>
+            <div className="bouncing-dots">
+              <div className="dot" />
+              <div className="dot" />
+              <div className="dot" />
+            </div>
           </div>
-        </div>
-      ) : (
-        <div>
+        ) : (
           <ReactPlayer
             className="react-player"
             playing={isVideoPlaying}
             config={{
               facebook: {
                 attributes: {
-                  'data-width': containerRef.current?.clientWidth,
-                  'data-height': containerRef.current?.clientHeight,
+                  'data-width': editing ? '' : containerRef.current?.clientWidth,
+                  'data-height': editing ? '300' : containerRef.current?.clientHeight,
                 },
               },
             }}
@@ -403,8 +403,8 @@ const MarkdownMedia = (props: MarkdownMediaProps) => {
               }
             }}
           />
-        </div>
-      )}
+        )}
+      </div>
       {!editing && !isLoading && <div>{timeLinks(config.options.timelinks)}</div>}
       {editing && !isLoading && (
         <div className="timelinks-form">
