@@ -63,12 +63,10 @@ describe('Entities', () => {
   });
 
   it('Should create new entity', () => {
-    cy.intercept('POST', 'api/entities').as('createEntity');
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
     cy.get('[name="library.sidepanel.metadata.title"]').type('Test title', { force: true });
     cy.contains('button', 'Save').click();
-    cy.wait('@createEntity');
   });
 
   describe('Rich text fields', () => {
@@ -99,7 +97,6 @@ describe('Entities', () => {
     it('should create and entity with and image in a metadata field', () => {
       goToRestrictedEntities();
       clickOnCreateEntity();
-      cy.intercept('POST', 'api/entities').as('createEntity');
       cy.get('[name="library.sidepanel.metadata.title"]').click();
       cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with media files', {
         force: true,
@@ -113,53 +110,54 @@ describe('Entities', () => {
         force: true,
       });
       cy.contains('button', 'Save').click();
-      cy.wait('@createEntity');
     });
 
     it('should edit the entity to add a video on a metadata field', () => {
-      // await expect(page).toClick('.item-document', {
-      //   text: 'Entity with media files',
-      // });
       cy.contains('.item-document', 'Entity with media files').click();
-      // await expect(page).toClick('button', { text: 'Edit' });
       clickOnEditEntity();
-      // await expect(page).toClick(
-      //   '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
-      // );
+      // cy.get('.sidepanel-body.scrollable').scrollTo('center');
       cy.get(
         '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       ).click();
-      // await uploadFileInMetadataField(
-      //   `${__dirname}/../test_files/short-video.webm`,
-      //   'input[aria-label=fileInput]'
-      // );
       cy.get('input[aria-label=fileInput]')
         .first()
         .selectFile('./cypress/test_files/short-video.webm', {
           force: true,
         });
-      // await saveEntityAndClosePanel();
       cy.contains('button', 'Save').click();
     });
 
     it('should check the entity', () => {
       // await page.goto(`${host}/library`);
       // await goToRestrictedEntities();
+      goToRestrictedEntities();
       // await expect(page).toClick('.item-name span', {
       //   text: 'Entity with media files',
       // });
+      cy.contains('.item-name span', 'Entity with media files').click();
       // await page.waitForSelector('#tabpanel-metadata video');
       // await expect(page).toMatchElement('.metadata-name-descripci_n > dd > div > p', {
       //   text: 'A description of the report',
       // });
+      cy.get('.metadata-name-descripci_n > dd > div > p').should(
+        'contain.text',
+        'A description of the report'
+      );
       // const [fotografiaFieldSource] = await page.$$eval(
       //   '.metadata-name-fotograf_a > dd > img',
       //   el => el.map(x => x.getAttribute('src'))
       // );
+
+      cy.get('.metadata-name-fotograf_a > dd > img')
+        .should('have.prop', 'src')
+        .and('match', /\w+\/api\/files\/\w+\.jpg$/);
       // const [videoFieldSource] = await page.$$eval(
       //   '.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video',
       //   el => el.map(x => x.getAttribute('src'))
       // );
+      cy.get('.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video')
+        .should('have.prop', 'src')
+        .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
       // await checkStringValuesInSelectors([
       //   { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
       //   { selector: videoFieldSource, expected: /^blob:http:\/\/localhost:3000\/[\w-]+$/ },
