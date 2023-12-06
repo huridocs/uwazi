@@ -2,7 +2,7 @@ import { authenticator } from 'otplib';
 import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
 
-describe('Public Form', () => {
+describe('Account', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn blank-state', { env });
