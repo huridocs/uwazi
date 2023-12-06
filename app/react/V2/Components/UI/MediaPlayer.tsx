@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactPlayer, { ReactPlayerProps } from 'react-player';
 import { PlayIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
@@ -50,6 +50,8 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
 
 const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
+  const [FBPlayerHeight, setFBPlayerHeight] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const mediaType: MediaType = verifyUrl(url);
 
@@ -60,28 +62,46 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const renderThumbnail =
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
 
+  useEffect(() => {
+    if (containerRef.current) {
+      setFBPlayerHeight(containerRef.current?.clientHeight);
+    }
+  }, []);
+
   return (
-    <div style={{ width: width || '100%', height: height || '100%' }} className="relative">
-      {mediaType === 'invalid' ? (
+    <div
+      style={{ width: width || '100%', height: height || '100%' }}
+      className="relative"
+      ref={containerRef}
+    >
+      {mediaType === 'invalid' && (
         <div className="flex absolute left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border touseV2Playerp-0">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>
         </div>
-      ) : (
+      )}
+
+      {mediaType !== 'invalid' && FBPlayerHeight && (
         <ReactPlayer
           className="absolute top-0 left-0"
-          url={url}
-          playing={playing}
           width="100%"
           height="100%"
           controls
+          url={url}
+          playing={playing}
           light={renderThumbnail}
+          config={{
+            facebook: {
+              attributes: {
+                'data-height': FBPlayerHeight,
+              },
+            },
+          }}
           playIcon={
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
           }
           onClickPreview={() => !playing && setPlaying(true)}
-          stopOnUnmount
         />
       )}
     </div>
