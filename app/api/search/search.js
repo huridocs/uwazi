@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import date from 'api/utils/date';
@@ -21,6 +22,8 @@ import templatesModel from '../templates';
 import { bulkIndex, indexEntities, updateMapping } from './entitiesIndex';
 import thesauri from '../thesauri';
 import * as v2 from './v2_support';
+
+import __tempsearchlog from './__tempsearchlog';
 
 function processParentThesauri(property, values, dictionaries, properties) {
   if (!values) {
@@ -476,14 +479,10 @@ const _denormalizeAndLimitAggregations = async (
       dictionaryCache
     );
 
-    let groupedBuckets = aggregations[key].buckets;
-    if (dictionary && dictionary.values.find(v => v.values)) {
-      groupedBuckets = groupAndLimitBuckets(groupedBuckets, dictionary, limit);
-    } else {
-      groupedBuckets = limitBuckets(groupedBuckets, limit);
-    }
+    let limitedBuckets = aggregations[key].buckets;
+    limitedBuckets = limitBuckets(limitedBuckets, limit);
 
-    const denormalizedBuckets = assignLabels(groupedBuckets, dictionaryValues);
+    const denormalizedBuckets = assignLabels(limitedBuckets, dictionaryValues);
 
     const denormalizedAggregation = Object.assign(aggregations[key], {
       buckets: denormalizedBuckets,
@@ -493,17 +492,33 @@ const _denormalizeAndLimitAggregations = async (
   return denormalizedAggregations;
 };
 
+const _sanitizeGroupedSelectAggregationStructure = buckets => {
+  const missingBucket = buckets.find(b => b.key === 'missing');
+  const rest = buckets.filter(b => b.key !== 'missing');
+  const newBuckets = rest.filter(b => !b.children);
+  rest
+    .filter(b => b.children)
+    .forEach(b => {
+      const { children, ...newBucket } = b;
+      newBucket.values = children.buckets;
+      newBuckets.push(newBucket);
+    });
+  if (missingBucket) {
+    missingBucket.children.buckets.forEach(b => {
+      newBuckets.push(b);
+    });
+  }
+  return newBuckets;
+};
+
 const _sanitizeAggregationsStructure = aggregations => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
     const aggregation = aggregations[aggregationKey];
 
     //grouped dictionary
-    if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
-      aggregation.buckets = Object.keys(aggregation.buckets).map(key => ({
-        key,
-        ...aggregation.buckets[key],
-      }));
+    if (aggregation.buckets && aggregation.buckets.some(b => b.children)) {
+      aggregation.buckets =_sanitizeGroupedSelectAggregationStructure(aggregation.buckets);
     }
 
     //permissions
@@ -781,6 +796,10 @@ const search = {
       searchGeolocation(queryBuilder, templates);
     }
 
+    __tempsearchlog.cleanFile();
+    // __tempsearchlog.appendObject(query, 'api query');
+    // __tempsearchlog.appendObject(queryBuilder.query(), 'elastic query');
+
     if (query.aggregatePermissionsByLevel) {
       queryBuilder.permissionsLevelAgreggations();
     }
@@ -799,7 +818,18 @@ const search = {
 
     return elastic
       .search({ body: queryBuilder.query() })
-      .then(response => processResponse(response, templates, dictionaries, language, query.filters))
+      .then(async response => {
+        // __tempsearchlog.appendObject(response, 'raw elastic response');
+        const processed = await processResponse(
+          response,
+          templates,
+          dictionaries,
+          language,
+          query.filters
+        );
+        __tempsearchlog.appendObject(processed.aggregations.all.select, 'processed response');
+        return processed;
+      })
       .catch(e => {
         throw createError(e, 400);
       });
