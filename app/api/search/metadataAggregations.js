@@ -27,36 +27,6 @@ const aggregation = (key, should, filters, nestedAggregationName, nestedAggregat
   return agg;
 };
 
-const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
-  const agg = {
-    filters: { filters: {} },
-    aggregations: {
-      filtered: {
-        filter: {
-          bool: {
-            should,
-            filter: filters,
-          },
-        },
-      },
-    },
-  };
-  const addMatch = value => {
-    const match = { terms: {} };
-    match.terms[key] = value.values ? value.values.map(v => v.id) : [value.id];
-    agg.filters.filters[value.id.toString()] = match;
-    if (value.values) {
-      value.values.forEach(addMatch);
-    }
-  };
-  dictionary.values.forEach(addMatch);
-
-  const missingMatch = { bool: { must_not: { exists: { field: key } } } };
-  agg.filters.filters.missing = missingMatch;
-
-  return agg;
-};
-
 const nestedMatcherIsAggregationProperty = (nestedMatcher, nestedPropPath) =>
   !nestedMatcher.nested ||
   !nestedMatcher.nested.query.bool.must ||
