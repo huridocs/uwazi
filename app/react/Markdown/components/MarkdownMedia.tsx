@@ -56,8 +56,9 @@ const formatTimeLinks = (timelinks: any): TimeLink[] =>
   });
 
 const MarkdownMedia = (props: MarkdownMediaProps) => {
-  const playerRef = useRef<ReactPlayer>(null);
+  //Given the testing conditions, ref should be declared in this specific order.
   const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<ReactPlayer>(null);
 
   const [newTimeline, setNewTimeline] = useState<TimeLink>({
     timeHours: '',
