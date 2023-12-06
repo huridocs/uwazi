@@ -50,7 +50,7 @@ const ThumbnailOverlay = ({ thumbnail }: { thumbnail?: MediaPlayerProps['thumbna
 
 const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
   const [playing, setPlaying] = useState(false);
-  const [FBPlayerHeight, setFBPlayerHeight] = useState(0);
+  const [playerHeight, setPlayerHeight] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const mediaType: MediaType = verifyUrl(url);
@@ -64,7 +64,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
 
   useEffect(() => {
     if (containerRef.current?.clientHeight) {
-      setFBPlayerHeight(containerRef.current.clientHeight);
+      setPlayerHeight(containerRef.current.clientHeight);
     }
   }, []);
 
@@ -82,7 +82,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
         </div>
       )}
 
-      {mediaType !== 'invalid' && FBPlayerHeight ? (
+      {mediaType !== 'invalid' && playerHeight ? (
         <ReactPlayer
           className="absolute top-0 left-0"
           width="100%"
@@ -94,7 +94,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           config={{
             facebook: {
               attributes: {
-                'data-height': FBPlayerHeight,
+                'data-height': playerHeight,
               },
             },
           }}
