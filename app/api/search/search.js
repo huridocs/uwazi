@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import date from 'api/utils/date';
@@ -293,14 +292,14 @@ const _getAggregationDictionary = async (
     );
 
     const dictionary = thesauri.entitiesToThesauri(bucketEntities);
-    return [dictionary, indexedDictionaryValues(dictionary)];
+    return indexedDictionaryValues(dictionary);
   }
 
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
     const dictionaryValues = indexedDictionaryValues(dictionary);
-    dictionaryCache[propContent] = [dictionary, dictionaryValues];
+    dictionaryCache[propContent] = dictionaryValues;
   }
   return dictionaryCache[propContent];
 };
@@ -309,35 +308,6 @@ const extractMissingBucket = buckets => {
   const [missingBuckets, remainingBuckets] = _.partition(buckets, b => b.key === 'missing');
   const missingBucket = missingBuckets && missingBuckets.length ? missingBuckets[0] : null;
   return { missingBucket, remainingBuckets };
-};
-
-const groupAndLimitBuckets = (buckets, dictionary, _limit) => {
-  const aggregationBucketsByKey = objectIndex(
-    buckets,
-    b => b.key,
-    b => b
-  );
-  const missingBucket = aggregationBucketsByKey.missing;
-  const limit = missingBucket ? _limit - 1 : _limit;
-  const newBuckets = [];
-
-  let dictIndex = 0;
-  while (newBuckets.length < limit && dictIndex < dictionary.values.length) {
-    const dictionaryValue = dictionary.values[dictIndex];
-    const bucket = aggregationBucketsByKey[dictionaryValue.id];
-    if (bucket) {
-      if (dictionaryValue.values) {
-        bucket.values = dictionaryValue.values
-          .map(v => aggregationBucketsByKey[v.id])
-          .filter(b => b);
-      }
-      newBuckets.push(bucket);
-    }
-    dictIndex += 1;
-  }
-
-  if (missingBucket) newBuckets.push(missingBucket);
-  return newBuckets;
 };
 
 const limitBuckets = (buckets, _limit) => {
@@ -471,7 +441,7 @@ const _denormalizeAndLimitAggregations = async (
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
 
-    const [dictionary, dictionaryValues] = await _getAggregationDictionary(
+    const dictionaryValues = await _getAggregationDictionary(
       aggregations[key],
       language,
       property,
@@ -518,7 +488,7 @@ const _sanitizeAggregationsStructure = aggregations => {
 
     //grouped dictionary
     if (aggregation.buckets && aggregation.buckets.some(b => b.children)) {
-      aggregation.buckets =_sanitizeGroupedSelectAggregationStructure(aggregation.buckets);
+      aggregation.buckets = _sanitizeGroupedSelectAggregationStructure(aggregation.buckets);
     }
 
     //permissions
@@ -775,7 +745,7 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, dictionaries, includeReviewAggregations);
+  queryBuilder.aggregations(aggregations, includeReviewAggregations);
 
   return queryBuilder;
 };

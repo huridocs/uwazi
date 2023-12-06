@@ -165,7 +165,7 @@ const getSelectParentPath = path => {
   return parentPath;
 };
 
-export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
+export const propertyToAggregation = (property, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
@@ -183,16 +183,6 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
       aggregation(path, should, filters)
     );
   }
-
-
-  // const dictionary = property.content
-  //   ? dictionaries.find(d => property.content.toString() === d._id.toString())
-  //   : null;
-
-  // const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
-  // if (isADictionaryWithGroups) {
-  //   return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
-  // }
 
   return aggregation(path, should, filters);
 };
