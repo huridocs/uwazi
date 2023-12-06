@@ -63,8 +63,8 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
     mediaType === 'internal' ? <ThumbnailOverlay thumbnail={thumbnail} /> : false;
 
   useEffect(() => {
-    if (containerRef.current) {
-      setFBPlayerHeight(containerRef.current?.clientHeight);
+    if (containerRef.current?.clientHeight) {
+      setFBPlayerHeight(containerRef.current.clientHeight);
     }
   }, []);
 
@@ -82,7 +82,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
         </div>
       )}
 
-      {mediaType !== 'invalid' && FBPlayerHeight && (
+      {mediaType !== 'invalid' && FBPlayerHeight ? (
         <ReactPlayer
           className="absolute top-0 left-0"
           width="100%"
@@ -103,6 +103,8 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
           }
           onClickPreview={() => !playing && setPlaying(true)}
         />
+      ) : (
+        <div />
       )}
     </div>
   );
