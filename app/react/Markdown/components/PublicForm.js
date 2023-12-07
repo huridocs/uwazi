@@ -233,6 +233,11 @@ class PublicFormComponent extends Component {
     );
   }
 }
+
+PublicFormComponent.defaultProps = {
+  reloadThesauri: () => {},
+};
+
 PublicFormComponent.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
