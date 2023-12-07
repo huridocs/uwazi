@@ -285,7 +285,15 @@ describe('Entities', () => {
         // await expect(page).toClick('button', { text: 'Edit' });
         clickOnEditEntity();
         // await expect(page).toClick('.delete-supporting-file');
-        cy.get('.delete-supporting-file').click();
+        cy.get('#attachment-dropdown-actions').eq(0).click();
+        cy.get('.dropdown-menu.dropdown-menu-right')
+          .eq(0)
+          .within(() => {
+            cy.intercept('DELETE', 'api/files*').as('deleteFile');
+            cy.contains('button', 'Delete').click();
+            cy.contains('button', '.confirm-button').click();
+            cy.wait('@deleteFile');
+          });
         // await saveEntityAndClosePanel();
         cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
