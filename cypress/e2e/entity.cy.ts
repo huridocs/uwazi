@@ -4,7 +4,7 @@ import { changeLanguage } from './helpers/language';
 
 const host = 'http://localhost:3000';
 
-const filesAttachments = [`./cypress/test_files/valid.pdf`, `./cypress/test_files/batman.jpg`];
+const filesAttachments = ['./cypress/test_files/valid.pdf', './cypress/test_files/batman.jpg'];
 
 const entityTitle = 'Entity with supporting files';
 const textWithHtml = `<h1>The title</h1>
@@ -255,7 +255,8 @@ describe('Entities', () => {
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.metadata-type-text', 'An entity with main documents').click();
         clickOnEditEntity();
-        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').click().clear();
+        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').click();
+        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').clear();
         cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').type(
           'Renamed file.pdf',
           { force: true }
