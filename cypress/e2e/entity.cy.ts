@@ -1,15 +1,6 @@
 /* eslint-disable max-lines */
-/*global page*/
-
 import { clearCookiesAndLogin } from './helpers/login';
-// import disableTransitions from '../helpers/disableTransitions';
-// import { uploadFileInMetadataField, scrollTo } from '../helpers/formActions';
-// import { uploadSupportingFileToEntity } from '../helpers/createEntity';
-// import { goToRestrictedEntities } from '../helpers/publishedFilter';
-// import { refreshIndex } from '../helpers/elastichelpers';
-// import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
 import { changeLanguage } from './helpers/language';
-// import { host } from '../config';
 
 const host = 'http://localhost:3000';
 
