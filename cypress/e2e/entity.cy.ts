@@ -355,7 +355,7 @@ describe('Entities', () => {
         //   'input[name="library.sidepanel.metadata.documents.0.originalname"]',
         //   'Renamed file.pdf'
         // );
-        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').click();
+        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').click().clear();
         cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').type(
           'Renamed file.pdf',
           { force: true }
@@ -537,7 +537,7 @@ describe('Entities', () => {
         force: true,
       });
       // await expect(page).toClick('.confirm-button', { text: 'Save' });
-      cy.contains('button', 'Save').click();
+      cy.contains('button.confirm-button', 'Save').click();
       // await expect(page).toMatchElement(
       //   '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
       //   { text: 'New Value' }
