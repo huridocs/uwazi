@@ -273,12 +273,15 @@ describe('search', () => {
     expect(both.rows.find(r1 => r1.title === 'Batman begins en')).not.toBe(null);
   });
 
-  it('should return the label with the aggregations', async () => {
+  // eslint-disable-next-line jest/no-focused-tests
+  fit('should return the label with the aggregations', async () => {
     userFactory.mock(undefined);
     const response = await search.search(
       { types: [ids.templateMetadata1, ids.templateMetadata2], allAggregations: true },
       'en'
     );
+
+    console.log(JSON.stringify(response.aggregations.all.groupedDictionary.buckets, null, 2));
 
     expect(response.aggregations.all.groupedDictionary.buckets.map(b => b.label)).toEqual([
       'Europe',

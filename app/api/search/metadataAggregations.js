@@ -144,7 +144,12 @@ export const propertyToAggregation = (property, baseQuery, suggested = false) =>
     return nestedAggregation(property, should, filters);
   }
 
-  if (property.type === 'select' || property.type === 'multiselect') {
+  if (
+    property.type === 'select' ||
+    property.type === 'multiselect' ||
+    property.inherit?.type === 'select' ||
+    property.inherit?.type === 'multiselect'
+  ) {
     return aggregation(
       getSelectParentPath(path),
       should,

@@ -767,8 +767,8 @@ const search = {
     }
 
     __tempsearchlog.cleanFile();
-    // __tempsearchlog.appendObject(query, 'api query');
-    // __tempsearchlog.appendObject(queryBuilder.query(), 'elastic query');
+    __tempsearchlog.appendObject(query, 'api query');
+    __tempsearchlog.appendObject(queryBuilder.query(), 'elastic query');
 
     if (query.aggregatePermissionsByLevel) {
       queryBuilder.permissionsLevelAgreggations();
@@ -789,7 +789,7 @@ const search = {
     return elastic
       .search({ body: queryBuilder.query() })
       .then(async response => {
-        // __tempsearchlog.appendObject(response, 'raw elastic response');
+        __tempsearchlog.appendObject(response, 'raw elastic response');
         const processed = await processResponse(
           response,
           templates,
@@ -797,7 +797,10 @@ const search = {
           language,
           query.filters
         );
-        __tempsearchlog.appendObject(processed.aggregations.all.select, 'processed response');
+        __tempsearchlog.appendObject(
+          processed.aggregations.all.inherited_select,
+          'processed response'
+        );
         return processed;
       })
       .catch(e => {
