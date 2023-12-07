@@ -269,7 +269,7 @@ describe('Entities', () => {
         cy.contains('.item-document', entityTitle).click();
         // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
         // expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
-        const expectedRenamedFiles = ['batman.jpg', 'Resource from web', 'My PDF.pdf'];
+        const expectedRenamedFiles = ['batman.jpg', 'My PDF.pdf', 'Resource from web'];
         cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
           const content = element.text();
           console.log(content);
