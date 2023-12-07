@@ -256,6 +256,7 @@ describe('Entities', () => {
         //   'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
         //   'My PDF.pdf'
         // );
+        cy.get('input[name="library.sidepanel.metadata.attachments.2.originalname"]').clear();
         cy.get('input[name="library.sidepanel.metadata.attachments.2.originalname"]').type(
           'My PDF.pdf',
           { force: true }
@@ -268,9 +269,10 @@ describe('Entities', () => {
         cy.contains('.item-document', entityTitle).click();
         // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
         // expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
-        const expectedRenamedFiles = ['batman.jpg', 'My PDF.pdf', 'Resource from web'];
+        const expectedRenamedFiles = ['batman.jpg', 'Resource from web', 'My PDF.pdf'];
         cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
           const content = element.text();
+          console.log(content);
           cy.wrap(content).should('eq', expectedRenamedFiles[index]);
         });
       });
