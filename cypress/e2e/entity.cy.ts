@@ -11,6 +11,7 @@ import { clearCookiesAndLogin } from './helpers/login';
 // import { changeLanguage } from '../helpers/changeLanguage';
 // import { host } from '../config';
 
+const host = 'http://localhost:3000';
 const entityTitle = 'Entity with supporting files';
 const textWithHtml = `<h1>The title</h1>
   <a href="https://duckduckgo.com/" target="_blank">
@@ -25,20 +26,25 @@ const textWithHtml = `<h1>The title</h1>
     <li>List item 2</li>
   </ol>`;
 
+const webAttachments = {
+  name: 'Resource from web',
+  url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+};
+
 const clickOnCreateEntity = () => {
   cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
   cy.contains('button', 'Create entity').click();
   cy.wait('@fetchThesauri');
 };
 
-const clickOnEditEntity = () => {
+const clickOnEditEntity = (buttonTitle: string = 'Edit') => {
   cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
-  cy.contains('button', 'Edit').click();
+  cy.contains('button', buttonTitle).click();
   cy.wait('@fetchThesauri');
 };
 
 const goToRestrictedEntities = () => {
-  cy.visit('http://localhost:3000');
+  cy.visit(host);
   cy.get('#publishedStatuspublished').then(element => {
     const publishedStatus = element.val();
     cy.get('#publishedStatusrestricted').then(restrictedElement => {
@@ -115,7 +121,6 @@ describe('Entities', () => {
     it('should edit the entity to add a video on a metadata field', () => {
       cy.contains('.item-document', 'Entity with media files').click();
       clickOnEditEntity();
-      // cy.get('.sidepanel-body.scrollable').scrollTo('center');
       cy.get(
         '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       ).click();
@@ -129,6 +134,7 @@ describe('Entities', () => {
 
     it('should check the entity', () => {
       // await page.goto(`${host}/library`);
+      cy.visit(`${host}/library`);
       // await goToRestrictedEntities();
       goToRestrictedEntities();
       // await expect(page).toClick('.item-name span', {
@@ -158,12 +164,12 @@ describe('Entities', () => {
       cy.get('.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video')
         .should('have.prop', 'src')
         .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
-      // await checkStringValuesInSelectors([
+      // TODO: await checkStringValuesInSelectors([
       //   { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
       //   { selector: videoFieldSource, expected: /^blob:http:\/\/localhost:3000\/[\w-]+$/ },
       // ]);
-      // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-      // expect(fileList).toEqual(['batman.jpg', 'short-video.webm']);
+      // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      // TODO: expect(fileList).toEqual(['batman.jpg', 'short-video.webm']);
     });
   });
 
@@ -171,181 +177,296 @@ describe('Entities', () => {
     describe('Entity with supporting files', () => {
       it('Should create a new entity with supporting files', () => {
         // await goToRestrictedEntities();
+        goToRestrictedEntities();
         // await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
+        // await expect(page).toClick('button', { text: 'Create entity' });
+        clickOnCreateEntity();
+        // await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', title);
+        cy.get('[name="library.sidepanel.metadata.title"]').click();
+        cy.get('[name="library.sidepanel.metadata.title"]').type(entityTitle, {
+          force: true,
+        });
+        // TODO: await addSupportingFile(files[0]);
+        // TODO: await addSupportingFile(files[1]);
+
+        // await expect(page).toClick('button', { text: 'Add file' });
+        cy.contains('button', 'Add file').click();
+        // await expect(page).toClick('.tab-link', { text: 'Add from web' });
+        cy.contains('.tab-link', 'Add from web').click();
+        // await expect(page).toFill('.web-attachment-url', webAttachment.url);
+        cy.get('.web-attachment-url').click();
+        cy.get('.web-attachment-url').type(webAttachments.url, { force: true });
+        // await expect(page).toFill('.web-attachment-name', webAttachment.name);
+        cy.get('.web-attachment-name').click();
+        cy.get('.web-attachment-name').type(webAttachments.name, { force: true });
+        // await expect(page).toClick('button', { text: 'Add from URL' });
+        cy.contains('button', 'Add from URL').click();
+
+        // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
         //   text: entityTitle,
         // });
-        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
+        cy.contains('.item-document', entityTitle).click();
+        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // TODO: expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
       });
 
       it('should rename a supporting file', () => {
         // await expect(page).toClick('.item-document', {
         //   text: entityTitle,
         // });
+        cy.contains('.item-document', entityTitle).click();
         // await expect(page).toClick('button', { text: 'Edit' });
+        clickOnEditEntity();
         // await expect(page).toFill(
         //   'input[name="library.sidepanel.metadata.attachments.2.originalname"]',
         //   'My PDF.pdf'
         // );
+        cy.get('input[name="library.sidepanel.metadata.attachments.2.originalname"]').type(
+          'My PDF.pdf',
+          { force: true }
+        );
         // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
         //   text: entityTitle,
         // });
-        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
+        cy.contains('.item-document', entityTitle).click();
+        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // TODO: expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
       });
 
       it('should delete the first supporting file', () => {
         // await expect(page).toClick('.item-document', {
         //   text: entityTitle,
         // });
+        cy.contains('.item-document', entityTitle).click();
         // await expect(page).toClick('button', { text: 'Edit' });
+        clickOnEditEntity();
         // await expect(page).toClick('.delete-supporting-file');
+        cy.get('.delete-supporting-file').click();
         // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
         //   text: entityTitle,
         // });
-        // await page.waitForSelector('.attachment-name');
-        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+        cy.contains('.item-document', entityTitle).click();
+        // TODO: await page.waitForSelector('.attachment-name');
+        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // TODO: expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
       });
     });
 
     describe('Entity with main documents', () => {
       it('Should create a new entity with a main documents', () => {
         // await goToRestrictedEntities();
+        goToRestrictedEntities();
         // await expect(page).toClick('button', { text: 'Create entity' });
+        clickOnCreateEntity();
         // await expect(page).toFill(
         //   'textarea[name="library.sidepanel.metadata.title"]',
         //   'Entity with main documents'
         // );
+        cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
+        cy.get('textarea[name="library.sidepanel.metadata.title"]').type(
+          'Entity with main documents',
+          { force: true }
+        );
         // await expect(page).toFill(
         //   'input[name="library.sidepanel.metadata.metadata.resumen"]',
         //   'An entity with main documents'
         // );
+        cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
+        cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
+          'An entity with main documents',
+          { force: true }
+        );
         // await expect(page).toUploadFile(
         //   '.document-list-parent > input',
         //   `${__dirname}/../test_files/valid.pdf`
         // );
+        cy.get('.document-list-parent > input')
+          .first()
+          .selectFile('./cypress/test_files/valid.pdf', {
+            force: true,
+          });
         // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
       });
 
       it('should edit the entity and the documents', () => {
         // await expect(page).toClick('.item-document', {
         //   text: 'Entity with main documents',
         // });
+        cy.contains('.item-document', 'Entity with main documents').click();
         // await expect(page).toMatchElement('.metadata-type-text', {
         //   text: 'An entity with main documents',
         // });
+        cy.contains('.metadata-type-text', 'An entity with main documents').click();
         // await expect(page).toClick('button', { text: 'Edit' });
+        clickOnEditEntity();
         // await expect(page).toFill(
         //   'input[name="library.sidepanel.metadata.documents.0.originalname"]',
         //   'Renamed file.pdf'
         // );
+        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').click();
+        cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').type(
+          'Renamed file.pdf',
+          { force: true }
+        );
         // await expect(page).toUploadFile(
         //   '.document-list-parent > input',
         //   `${__dirname}/../test_files/invalid.pdf`
         // );
+        cy.get('.document-list-parent > input')
+          .first()
+          .selectFile('./cypress/test_files/invalid.pdf', {
+            force: true,
+          });
         // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
         //   text: 'Entity with main documents',
         // });
-        // await page.waitForSelector('.file-originalname');
-        // await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
-        // await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        cy.contains('.item-document', 'Entity with main documents').click();
+
+        // TODO: await page.waitForSelector('.file-originalname');
+        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
+        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
       });
 
       it('should delete the invalid document', () => {
         // await expect(page).toClick('button', { text: 'Edit' });
+        clickOnEditEntity();
         // await expect(page).toClick('.attachments-list > .attachment:nth-child(2) > button');
+        cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
         // await saveEntityAndClosePanel();
+        cy.contains('button', 'Save').click();
         // await expect(page).toClick('.item-document', {
         //   text: 'Entity with main documents',
         // });
-        // await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
-        // await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        cy.contains('.item-document', 'Entity with main documents').click();
+        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
+        // TODO: await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
       });
     });
   });
 
   describe('Languages', () => {
     it('should change the entity in Spanish', () => {
-      // await changeLanguage('Español');
+      // TODO: await changeLanguage('Español');
       // await expect(page).toClick('.item-document', {
       //   text: 'Test title',
       // });
+      cy.contains('.item-document', 'Test title').click();
       // await expect(page).toClick('button', { text: 'Editar' });
+      clickOnEditEntity('Editar');
       // await expect(page).toFill(
       //   'textarea[name="library.sidepanel.metadata.title"]',
       //   'Título de prueba'
       // );
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
+      cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Título de prueba', {
+        force: true,
+      });
       // await expect(page).toFill(
       //   'input[name="library.sidepanel.metadata.metadata.resumen"]',
       //   'Resumen en español'
       // );
+      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
+      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
+        'Resumen en español',
+        { force: true }
+      );
       // await expect(page).toClick('.multiselectItem-name', { text: 'Argentina' });
+      cy.contains('.multiselectItem-name', 'Argentina').click();
       // await saveEntityAndClosePanel('Guardar');
+      cy.contains('button', 'Guardar').click();
     });
 
     it('should check the values for the entity in Spanish', () => {
       // await expect(page).toClick('.item-document', {
       //   text: 'Título de prueba',
       // });
+      cy.contains('.item-document', 'Título de prueba').click();
       // await expect(page).toMatchElement('h1.item-name', {
       //   text: 'Título de prueba',
       // });
+      cy.contains('h1.item-name', 'Título de prueba').should('exist');
       // await expect(page).toMatchElement('.metadata-type-text > dd', {
       //   text: 'Resumen en español',
       // });
+      cy.contains('.metadata-type-text > dd', 'Resumen en español').should('exist');
       // await expect(page).toMatchElement('.multiline > .item-value > a', {
       //   text: 'Argentina',
       // });
+      cy.contains('.multiline > .item-value > a', 'Argentina').should('exist');
     });
 
     it('should edit the text field in English', () => {
-      // await changeLanguage('English');
+      // TODO: await changeLanguage('English');
       // await expect(page).toClick('.item-document', {
       //   text: 'Test title',
       // });
+      cy.contains('.item-document', 'Test title').click();
       // await expect(page).toClick('button', { text: 'Edit' });
+      clickOnEditEntity();
       // await expect(page).toFill(
       //   'input[name="library.sidepanel.metadata.metadata.resumen"]',
       //   'Brief in English'
       // );
+      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
+      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type('Brief in English', {
+        force: true,
+      });
       // await saveEntityAndClosePanel();
+      cy.contains('button', 'Save').click();
       // await expect(page).toClick('.item-document', {
       //   text: 'Test title',
       // });
+      cy.contains('.item-document', 'Test title').click();
       // await expect(page).toMatchElement('.metadata-type-text > dd', {
       //   text: 'Brief in English',
       // });
+      cy.contains('.metadata-type-text > dd', 'Brief in English').should('exist');
       // await expect(page).toMatchElement('.multiline > .item-value > a', {
       //   text: 'Argentina',
       // });
+      cy.contains('.multiline > .item-value > a', 'Argentina').should('exist');
     });
 
     it('should not affect the text field in Spanish', () => {
-      // await changeLanguage('Español');
+      // TODO: await changeLanguage('Español');
       // await expect(page).toClick('.item-document', {
       //   text: 'Título de prueba',
       // });
+      cy.contains('.item-document', 'Título de prueba').click();
       // await expect(page).toMatchElement('.metadata-type-text > dd', {
       //   text: 'Resumen en español',
       // });
+      cy.contains('.metadata-type-text > dd', 'Resumen en español').should('exist');
     });
   });
 
   describe('new thesauri values shortcut', () => {
     before(() => {
-      // await changeLanguage('English');
+      // TODO: await changeLanguage('English');
       // await expect(page).toClick('li[title=Published]');
+      cy.get('li[title=Published]').click();
       // await expect(page).toMatchElement('span', { text: 'Ordenes de la corte' });
+      cy.contains('span', 'Ordenes de la corte').should('exist');
       // await expect(page).toClick('span', { text: 'Ordenes de la corte' });
+      cy.contains('span', 'Ordenes de la corte').click();
       // await expect(page).toClick('.item-document', {
       //   text: 'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014',
       // });
+      cy.contains(
+        '.item-document',
+        'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
+      ).click();
       // await expect(page).toClick('button.edit-metadata', { text: 'Edit' });
+      clickOnEditEntity();
     });
 
     it('should add a thesauri value on a multiselect field and select it', () => {
@@ -353,16 +474,29 @@ describe('Entities', () => {
       //   '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span',
       //   { text: 'add value' }
       // );
+      cy.contains(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span',
+        'add value'
+      ).click();
       // await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      cy.get('input[name=value]#newThesauriValue').click();
+      cy.get('input[name=value]#newThesauriValue').type('New Value', {
+        force: true,
+      });
       // await expect(page).toClick('.confirm-button', { text: 'Save' });
+      cy.contains('button', 'Save').click();
       // await expect(page).toMatchElement(
       //   '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
       //   { text: 'New Value' }
       // );
-      // const selectedItems = await getContentBySelector(
+      cy.contains(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
+        'New Value'
+      ).should('exist');
+      // TODO: const selectedItems = await getContentBySelector(
       //   '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li.wide > div > ul > li > label > .multiselectItem-name'
       // );
-      // expect(selectedItems).toEqual([
+      // TODO: expect(selectedItems).toEqual([
       //   'De asunto',
       //   'Medidas Provisionales',
       //   'New Value',
@@ -376,8 +510,17 @@ describe('Entities', () => {
       //   '#metadataForm > div:nth-child(3) > .form-group.select > ul > .wide > div > div > button > span',
       //   { text: 'add value' }
       // );
+      cy.contains(
+        '#metadataForm > div:nth-child(3) > .form-group.select > ul > .wide > div > div > button > span',
+        'add value'
+      ).click();
       // await expect(page).toFill('input[name=value]#newThesauriValue', 'New Value');
+      cy.get('input[name=value]#newThesauriValue').click();
+      cy.get('input[name=value]#newThesauriValue').type('New Value', {
+        force: true,
+      });
       // await expect(page).toClick('.confirm-button', { text: 'Save' });
+      cy.contains('.confirm-button', 'Save').click();
     });
   });
 });
