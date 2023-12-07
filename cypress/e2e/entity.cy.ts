@@ -189,10 +189,13 @@ describe('Entities', () => {
         // await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
         clickOnCreateEntity();
         cy.contains('button', 'Add file').click();
-        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[0], {
+        cy.get('#tab-uploadComputer').click();
+        cy.get('input[aria-label="fileInput"]').first().selectFile(filesAttachments[0], {
           force: true,
         });
-        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[1], {
+        cy.contains('button', 'Add file').click();
+        cy.get('#tab-uploadComputer').click();
+        cy.get('input[aria-label="fileInput"]').first().selectFile(filesAttachments[1], {
           force: true,
         });
         // await expect(page).toClick('button', { text: 'Create entity' });
@@ -204,11 +207,14 @@ describe('Entities', () => {
         });
         // await addSupportingFile(files[0]);
         cy.contains('button', 'Add file').click();
-        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[0], {
+        cy.get('#tab-uploadComputer').click();
+        cy.get('input[aria-label="fileInput"]').first().selectFile(filesAttachments[0], {
           force: true,
         });
         // await addSupportingFile(files[1]);
-        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[1], {
+        cy.contains('button', 'Add file').click();
+        cy.get('#tab-uploadComputer').click();
+        cy.get('input[aria-label="fileInput"]').first().selectFile(filesAttachments[1], {
           force: true,
         });
         // await expect(page).toClick('button', { text: 'Add file' });
