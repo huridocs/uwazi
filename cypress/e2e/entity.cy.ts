@@ -8,10 +8,13 @@ import { clearCookiesAndLogin } from './helpers/login';
 // import { goToRestrictedEntities } from '../helpers/publishedFilter';
 // import { refreshIndex } from '../helpers/elastichelpers';
 // import { checkStringValuesInSelectors, getContentBySelector } from '../helpers/selectorUtils';
-// import { changeLanguage } from '../helpers/changeLanguage';
+import { changeLanguage } from './helpers/language';
 // import { host } from '../config';
 
 const host = 'http://localhost:3000';
+
+const filesAttachments = [`./cypress/test_files/valid.pdf`, `./cypress/test_files/batman.jpg`];
+
 const entityTitle = 'Entity with supporting files';
 const textWithHtml = `<h1>The title</h1>
   <a href="https://duckduckgo.com/" target="_blank">
@@ -161,15 +164,20 @@ describe('Entities', () => {
       //   '.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video',
       //   el => el.map(x => x.getAttribute('src'))
       // );
-      cy.get('.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video')
-        .should('have.prop', 'src')
-        .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
-      // TODO: await checkStringValuesInSelectors([
+      // await checkStringValuesInSelectors([
       //   { selector: fotografiaFieldSource, expected: /^\/api\/files\/\w+\.jpg$/ },
       //   { selector: videoFieldSource, expected: /^blob:http:\/\/localhost:3000\/[\w-]+$/ },
       // ]);
-      // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-      // TODO: expect(fileList).toEqual(['batman.jpg', 'short-video.webm']);
+      cy.get('.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video')
+        .should('have.prop', 'src')
+        .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
+      // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+      // expect(fileList).toEqual(['batman.jpg', 'short-video.webm']);
+      const expectedNewEntityFiles = ['batman.jpg', 'short-video.webm'];
+      cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
+        const content = element.text();
+        cy.wrap(content).should('eq', expectedNewEntityFiles[index]);
+      });
     });
   });
 
@@ -179,6 +187,14 @@ describe('Entities', () => {
         // await goToRestrictedEntities();
         goToRestrictedEntities();
         // await createEntityWithSupportingFiles(entityTitle, filesAttachments, webAttachments);
+        clickOnCreateEntity();
+        cy.contains('button', 'Add file').click();
+        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[0], {
+          force: true,
+        });
+        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[1], {
+          force: true,
+        });
         // await expect(page).toClick('button', { text: 'Create entity' });
         clickOnCreateEntity();
         // await expect(page).toFill('textarea[name="library.sidepanel.metadata.title"]', title);
@@ -186,9 +202,15 @@ describe('Entities', () => {
         cy.get('[name="library.sidepanel.metadata.title"]').type(entityTitle, {
           force: true,
         });
-        // TODO: await addSupportingFile(files[0]);
-        // TODO: await addSupportingFile(files[1]);
-
+        // await addSupportingFile(files[0]);
+        cy.contains('button', 'Add file').click();
+        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[0], {
+          force: true,
+        });
+        // await addSupportingFile(files[1]);
+        cy.get('div.attachments-modal__dropzone > button').first().selectFile(filesAttachments[1], {
+          force: true,
+        });
         // await expect(page).toClick('button', { text: 'Add file' });
         cy.contains('button', 'Add file').click();
         // await expect(page).toClick('.tab-link', { text: 'Add from web' });
@@ -208,8 +230,13 @@ describe('Entities', () => {
         //   text: entityTitle,
         // });
         cy.contains('.item-document', entityTitle).click();
-        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // TODO: expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
+        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // expect(fileList).toEqual(['batman.jpg', 'Resource from web', 'valid.pdf']);
+        const expectedNewFiles = ['batman.jpg', 'Resource from web', 'valid.pdf'];
+        cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
+          const content = element.text();
+          cy.wrap(content).should('eq', expectedNewFiles[index]);
+        });
       });
 
       it('should rename a supporting file', () => {
@@ -233,8 +260,13 @@ describe('Entities', () => {
         //   text: entityTitle,
         // });
         cy.contains('.item-document', entityTitle).click();
-        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // TODO: expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
+        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // expect(fileList).toEqual(['batman.jpg', 'My PDF.pdf', 'Resource from web']);
+        const expectedRenamedFiles = ['batman.jpg', 'My PDF.pdf', 'Resource from web'];
+        cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
+          const content = element.text();
+          cy.wrap(content).should('eq', expectedRenamedFiles[index]);
+        });
       });
 
       it('should delete the first supporting file', () => {
@@ -252,9 +284,14 @@ describe('Entities', () => {
         //   text: entityTitle,
         // });
         cy.contains('.item-document', entityTitle).click();
-        // TODO: await page.waitForSelector('.attachment-name');
-        // TODO: const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
-        // TODO: expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+        // await page.waitForSelector('.attachment-name');
+        // const fileList = await getContentBySelector('.attachment-name span:not(.attachment-size)');
+        // expect(fileList).toEqual(['My PDF.pdf', 'Resource from web']);
+        const expectedSupportingFiles = ['My PDF.pdf', 'Resource from web'];
+        cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
+          const content = element.text();
+          cy.wrap(content).should('eq', expectedSupportingFiles[index]);
+        });
       });
     });
 
@@ -331,9 +368,11 @@ describe('Entities', () => {
         // });
         cy.contains('.item-document', 'Entity with main documents').click();
 
-        // TODO: await page.waitForSelector('.file-originalname');
-        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
-        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        // await page.waitForSelector('.file-originalname');
+        // await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
+        cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
+        // await expect(page).toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        cy.contains('.file-originalname', 'invalid.pdf').should('exist');
       });
 
       it('should delete the invalid document', () => {
@@ -347,15 +386,18 @@ describe('Entities', () => {
         //   text: 'Entity with main documents',
         // });
         cy.contains('.item-document', 'Entity with main documents').click();
-        // TODO: await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
-        // TODO: await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        // await expect(page).toMatchElement('.file-originalname', { text: 'Renamed file.pdf' });
+        cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
+        // await expect(page).not.toMatchElement('.file-originalname', { text: 'invalid.pdf' });
+        cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
       });
     });
   });
 
   describe('Languages', () => {
     it('should change the entity in Spanish', () => {
-      // TODO: await changeLanguage('Español');
+      // await changeLanguage('Español');
+      changeLanguage('Español');
       // await expect(page).toClick('.item-document', {
       //   text: 'Test title',
       // });
@@ -405,7 +447,8 @@ describe('Entities', () => {
     });
 
     it('should edit the text field in English', () => {
-      // TODO: await changeLanguage('English');
+      // await changeLanguage('English');
+      changeLanguage('English');
       // await expect(page).toClick('.item-document', {
       //   text: 'Test title',
       // });
@@ -437,7 +480,8 @@ describe('Entities', () => {
     });
 
     it('should not affect the text field in Spanish', () => {
-      // TODO: await changeLanguage('Español');
+      // await changeLanguage('Español');
+      changeLanguage('Español');
       // await expect(page).toClick('.item-document', {
       //   text: 'Título de prueba',
       // });
@@ -451,7 +495,8 @@ describe('Entities', () => {
 
   describe('new thesauri values shortcut', () => {
     before(() => {
-      // TODO: await changeLanguage('English');
+      // await changeLanguage('English');
+      changeLanguage('English');
       // await expect(page).toClick('li[title=Published]');
       cy.get('li[title=Published]').click();
       // await expect(page).toMatchElement('span', { text: 'Ordenes de la corte' });
@@ -493,16 +538,29 @@ describe('Entities', () => {
         '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
         'New Value'
       ).should('exist');
-      // TODO: const selectedItems = await getContentBySelector(
+      // const selectedItems = await getContentBySelector(
       //   '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li.wide > div > ul > li > label > .multiselectItem-name'
       // );
-      // TODO: expect(selectedItems).toEqual([
+      // expect(selectedItems).toEqual([
       //   'De asunto',
       //   'Medidas Provisionales',
       //   'New Value',
       //   'Excepciones Preliminares',
       //   'Fondo',
       // ]);
+      const expectedMultiselect = [
+        'De asunto',
+        'Medidas Provisionales',
+        'New Value',
+        'Excepciones Preliminares',
+        'Fondo',
+      ];
+      cy.get(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > li.wide > div > ul > li > label > .multiselectItem-name'
+      ).each((element, index) => {
+        const content = element.text();
+        cy.wrap(content).should('eq', expectedMultiselect[index]);
+      });
     });
 
     it('should add a thesauti value on a single select field and select it', () => {
