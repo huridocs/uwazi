@@ -65,7 +65,7 @@ describe('Public Form', () => {
       cy.wait('@fetchThesauri');
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
-      cy.get('input[name="publicform.title"]').type('Test public submit entity');
+      cy.get('input[name="publicform.title"]').type('Test public submit entity', { force: true });
       cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
@@ -94,7 +94,9 @@ describe('Public Form', () => {
       cy.wait('@fetchThesauri');
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
-      cy.get('input[name="publicform.title"]').type('Entity with image and media fields');
+      cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
+        force: true,
+      });
       cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10');
       cy.get('textarea').type('A description for the report');
