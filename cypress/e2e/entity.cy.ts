@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import { clearCookiesAndLogin } from './helpers/login';
 import { changeLanguage } from './helpers/language';
+import { clickOnCreateEntity, clickOnEditEntity } from './helpers/entities';
 
 const host = 'http://localhost:3000';
 
@@ -23,18 +24,6 @@ const textWithHtml = `<h1>The title</h1>
 const webAttachments = {
   name: 'Resource from web',
   url: 'https://fonts.googleapis.com/icon?family=Material+Icons',
-};
-
-const clickOnCreateEntity = () => {
-  cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
-  cy.contains('button', 'Create entity').click();
-  cy.wait('@fetchThesauri');
-};
-
-const clickOnEditEntity = (buttonTitle: string = 'Edit') => {
-  cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
-  cy.contains('button', buttonTitle).click();
-  cy.wait('@fetchThesauri');
 };
 
 const goToRestrictedEntities = () => {

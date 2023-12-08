@@ -60,7 +60,9 @@ describe('Public Form', () => {
     });
 
     it('should visit the page and do a submit for the first template', () => {
+      cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
       cy.contains('a', 'Public Form Link').click();
+      cy.wait('@fetchThesauri');
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Test public submit entity');
@@ -87,7 +89,9 @@ describe('Public Form', () => {
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
+      cy.intercept('GET', 'api/thesauris').as('fetchThesauri');
       cy.contains('a', 'Public Form Link').click();
+      cy.wait('@fetchThesauri');
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields');

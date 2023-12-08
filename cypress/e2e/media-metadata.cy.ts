@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { clickOnCreateEntity, clickOnEditEntity } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
@@ -18,7 +19,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const addEntity = (title: string) => {
-    cy.contains('button', 'Create entity').click();
+    clickOnCreateEntity();
     cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
     cy.get('#metadataForm')
       .contains('Type')
@@ -114,7 +115,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   it('should allow add timelinks to an existing entity media property', () => {
     cy.contains('h2', 'Reporte audiovisual').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
+    cy.contains('button', 'Edit').should('be.visible');
+    clickOnEditEntity();
     cy.addTimeLink(2000, 'Control point');
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
@@ -155,7 +157,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   it('should allow unlink the value of a media property', () => {
     cy.contains('h2', 'Reporte con propiedades audiovisuales corregidas').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
+    cy.contains('button', 'Edit').should('be.visible');
+    clickOnEditEntity();
     clickMediaAction('Video', 'Unlink');
     cy.contains('button', 'Save').click();
     cy.wait('@saveEntity');

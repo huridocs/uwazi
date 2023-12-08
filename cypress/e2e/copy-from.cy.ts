@@ -1,3 +1,4 @@
+import { clickOnCreateEntity, clickOnEditEntity } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Copy from entity', () => {
@@ -9,7 +10,7 @@ describe('Copy from entity', () => {
 
   describe('Creating a new entity', () => {
     it('should copy the metadata from an existing entity to create a new one', () => {
-      cy.contains('button', 'Create entity').click();
+      clickOnCreateEntity();
       cy.get('[name="library.sidepanel.metadata.title"]').type('New orden de la corte');
       cy.get('#metadataForm').find('select').select('Ordenes de la corte');
       cy.get('#metadataForm').find('.form-group.select').find('select').select('d3b1s0w3lzi');
@@ -80,7 +81,7 @@ describe('Copy from entity', () => {
         'h2',
         'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
       ).click();
-      cy.contains('button', 'Edit').click();
+      clickOnEditEntity();
       cy.contains('button', 'Copy From').click();
 
       cy.get('div.copy-from').within(() => {
