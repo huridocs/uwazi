@@ -24,6 +24,7 @@ exports[`Link should render a slideshow 1`] = `
   }
   lazyLoad={false}
   onBeforeSlide={null}
+  onBulletClick={null}
   onClick={null}
   onErrorImageURL=""
   onImageError={null}
