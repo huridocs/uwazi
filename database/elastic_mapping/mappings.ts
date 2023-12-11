@@ -1,5 +1,3 @@
-import { s } from "src/data/unitShortcuts";
-
 const { USE_ELASTIC_ICU } = process.env;
 // eslint-disable-next-line import/no-mutable-exports
 let textSortField = {};
