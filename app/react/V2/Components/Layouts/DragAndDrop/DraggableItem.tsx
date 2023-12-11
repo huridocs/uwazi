@@ -82,21 +82,14 @@ const DraggableItemComponent = <T,>({
   const [, drop] = useDrop({
     accept: context.type,
     item: { item: { ...item, container }, container, index },
-    collect(monitor: any) {
-      return {
-        handlerId: monitor.getHandlerId(),
-        isOver: monitor.isOver(),
-        isOverCurrent: monitor.isOver({ shallow: true }),
-        offSet: monitor.getClientOffset(),
-      };
-    },
-    hover: hoverSortable(ref, { ...item, container }, index, context.sort),
-  });
 
+    hover: hoverSortable(ref, { ...item, container }, index, context.sort, context.setDragging),
+  });
   const [{ isDragging, handlerId }, drag, preview] = useDrag({
     type: context.type,
     item: { item: { ...item, container }, index },
     end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
+      context.setDragging(false);
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
 
@@ -129,7 +122,6 @@ const DraggableItemComponent = <T,>({
 
   drag(ref);
   drop(previewReference);
-  drop(ref);
 
   const TagName = wrapperType;
 

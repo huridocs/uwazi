@@ -23,6 +23,7 @@ interface IDnDContext<T> {
   availableItems: IDraggable<T>[];
   getDisplayName: (item: IDraggable<T>) => string;
   operations: IDnDOperations<T>;
+  setDragging: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface IDnDContextState<T> {
@@ -215,17 +216,14 @@ const sortParents = <T>(
     hoverIndex,
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
 ) => {
-  const targetIndex = findItemIndex(state.activeItems, target);
-  if (targetIndex === hoverIndex) {
-    state.setActiveItems((prevActiveItems: IDraggable<T>[]) =>
-      update(prevActiveItems, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, prevActiveItems[dragIndex]],
-        ],
-      })
-    );
-  }
+  state.setActiveItems((prevActiveItems: IDraggable<T>[]) =>
+    update(prevActiveItems, {
+      $splice: [
+        [dragIndex, 1],
+        [hoverIndex, 0, prevActiveItems[dragIndex]],
+      ],
+    })
+  );
 };
 const sortActiveItems =
   <T>(state: IDnDContextState<T>) =>

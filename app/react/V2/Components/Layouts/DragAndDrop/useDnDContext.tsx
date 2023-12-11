@@ -23,6 +23,8 @@ const useDnDContext = <T,>(
     mapWithParent(initialItems, undefined, operations.itemsProperty)
   );
   const [internalChange, setInternalChange] = useState(false);
+  const [dragging, setDragging] = useState(false);
+
   const [availableItems, setAvailableItems] = useState<IDraggable<T>[]>(
     mapWithID(sourceItems || [])
   );
@@ -41,7 +43,7 @@ const useDnDContext = <T,>(
   };
 
   useEffect(() => {
-    if (internalChange === true && operations.onChange !== undefined) {
+    if (internalChange === true && !dragging && operations.onChange !== undefined) {
       const sortedItems = activeItems
         .filter(item => item)
         .map(item => {
@@ -62,7 +64,7 @@ const useDnDContext = <T,>(
       setInternalChange(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeItems]);
+  }, [activeItems, dragging]);
 
   const state = {
     activeItems,
@@ -89,6 +91,7 @@ const useDnDContext = <T,>(
     getDisplayName: operations.getDisplayName,
     itemsProperty,
     operations,
+    setDragging,
   };
   return dndContext;
 };
