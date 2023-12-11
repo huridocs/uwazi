@@ -16,6 +16,7 @@ const setupTest = async () => {
     pdf: `${__dirname}/../test_files/valid.pdf`,
     supportingFile: `${__dirname}/../test_files/batman.jpg`,
   });
+  await page.waitForNetworkIdle();
 };
 
 describe('Image is rendered when editing an entity in document view', () => {
