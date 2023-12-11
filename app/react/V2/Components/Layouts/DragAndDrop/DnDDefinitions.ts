@@ -211,7 +211,6 @@ const sortChildren = <T>(
 const sortParents = <T>(
   state: IDnDContextState<T>,
   {
-    target,
     dragIndex,
     hoverIndex,
   }: { currentItem: IDraggable<T>; target: IDraggable<T>; dragIndex: number; hoverIndex: number }
