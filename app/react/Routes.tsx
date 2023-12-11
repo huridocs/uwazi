@@ -19,7 +19,6 @@ import {
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  NavlinksSettings,
   RelationTypesList,
   Settings,
   ThesauriList,
