@@ -25,6 +25,7 @@ import {
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
+  createNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -89,14 +90,22 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
-        ignoreNewRelationshipsMetadata(currentDoc, toSave, template);
+        const { newRelationships } = await ignoreNewRelationshipsMetadata(
+          currentDoc,
+          toSave,
+          template
+        );
 
         const fullEntity = { ...currentDoc, ...toSave };
 
         if (template._id) {
           await denormalizeRelated(fullEntity, template, currentDoc);
         }
-        return saveFunc(toSave);
+        const saveResult = await saveFunc(toSave);
+
+        await createNewRelationships(newRelationships, permissionsContext.getUserInContext());
+
+        return saveResult;
       }
 
       const toSave = { ...d };

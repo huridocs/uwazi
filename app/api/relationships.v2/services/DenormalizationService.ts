@@ -6,6 +6,8 @@ import { RelationshipProperty } from 'api/templates.v2/model/RelationshipPropert
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { inspect } from 'util';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -46,9 +48,11 @@ export class DenormalizationService {
 
   private async getCandidateEntities(
     invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[],
-    language: string
+    language: string,
+    relatedEntities: Entity[] = []
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
+    console.log(inspect({ properties }, undefined, 20));
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property =>
@@ -60,10 +64,17 @@ export class DenormalizationService {
                 property: property.name,
               });
             });
+            relatedEntities.forEach(re => {
+              entities.push({
+                sharedId: re.sharedId,
+                property: property.name,
+              });
+            });
           })
         )
       )
     );
+    console.log(inspect({ entities }, undefined, 20));
     return entities;
   }
 
@@ -78,7 +89,8 @@ export class DenormalizationService {
 
     return this.getCandidateEntities(
       property => property.buildQueryInvertedFromRelationship(relationship, relatedEntities),
-      language
+      language,
+      relatedEntities
     );
   }
 

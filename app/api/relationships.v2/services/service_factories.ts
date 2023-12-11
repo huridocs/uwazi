@@ -51,10 +51,10 @@ const indexEntitiesCallback = async (sharedIds: string[]) => {
   }
 };
 
-const userFromRequest = (request: Request) => {
-  const { user } = request as any;
+const userFromRequest = ({ user }: { user: any }) => {
   if (user) {
     const groups = user.groups?.map((g: any) => g._id.toHexString());
+    console.log(user, user._id);
     return new User(user._id.toHexString(), user.role as UserRole, groups ?? []);
   }
 
@@ -132,7 +132,7 @@ const GetRelationshipService = (request: Request) => {
   return service;
 };
 
-const CreateRelationshipService = async (request: Request) => {
+const CreateRelationshipService = async (request: { user: any }) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);

@@ -39,6 +39,7 @@ import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
 import { AddThesauriValueButton } from './AddThesauriValueButton';
+import { inspect } from 'util';
 
 const translateOptions = thesauri =>
   thesauri
@@ -510,6 +511,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   if (storeKey === 'library') {
     const selectedDocuments = state.library.ui.get('selectedDocuments');
+    console.log(inspect({ selectedDocuments }, undefined, 10));
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
     localAttachments = state.library.sidepanel.metadata.attachments;
   }

@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
 import { Property } from '../model/Property';
@@ -6,11 +7,15 @@ import { Template } from '../model/Template';
 import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
-import { TemplateDBO } from './schemas/TemplateDBO';
+import { RelationshipPropertyDBO, TemplateDBO } from './schemas/TemplateDBO';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 
-const propertyToApp = (property: PropertyDBO, _templateId: TemplateDBO['_id']): Property => {
+function propertyToApp(
+  property: RelationshipPropertyDBO,
+  _templateId: TemplateDBO['_id']
+): RelationshipProperty;
+function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): Property {
   const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
   switch (property.type) {
@@ -36,7 +41,7 @@ const propertyToApp = (property: PropertyDBO, _templateId: TemplateDBO['_id']): 
     default:
       return new Property(propertyId, property.type, property.name, property.label, templateId);
   }
-};
+}
 
 const TemplateMappers = {
   propertyToApp,
@@ -44,7 +49,7 @@ const TemplateMappers = {
     new Template(
       MongoIdHandler.mapToApp(tdbo._id),
       tdbo.name,
-      tdbo.properties.map(p => propertyToApp(p, tdbo._id))
+      tdbo.properties.map(p => propertyToApp(p as any, tdbo._id))
     ),
 };
 

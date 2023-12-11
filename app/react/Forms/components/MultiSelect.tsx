@@ -596,7 +596,6 @@ class MultiSelect extends MultiSelectBase<string[]> {
   static defaultProps = { ...defaultProps, value: [] as string[] };
 
   markChecked(value: string[], option: Option): string[] {
-    console.log(value);
     const newValue = value.slice(0);
     newValue.push(option[this.props.optionsValue]);
     return newValue;
