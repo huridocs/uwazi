@@ -135,6 +135,17 @@ const getSelectParentPath = path => {
   return parentPath;
 };
 
+const selectAggregation = (path, should, filters) => {
+  const parentPath = getSelectParentPath(path);
+  return {
+    filter: { match_all: {} },
+    aggregations: {
+      self: aggregation(path, should, filters),
+      parent: aggregation(parentPath, should, filters),
+    },
+  };
+};
+
 export const propertyToAggregation = (property, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
   const filters = extractFilters(baseQuery, path);
@@ -150,13 +161,7 @@ export const propertyToAggregation = (property, baseQuery, suggested = false) =>
     property.inherit?.type === 'select' ||
     property.inherit?.type === 'multiselect'
   ) {
-    return aggregation(
-      getSelectParentPath(path),
-      should,
-      filters,
-      'children',
-      aggregation(path, should, filters)
-    );
+    return selectAggregation(path, should, filters);
   }
 
   return aggregation(path, should, filters);

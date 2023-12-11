@@ -292,14 +292,14 @@ const _getAggregationDictionary = async (
     );
 
     const dictionary = thesauri.entitiesToThesauri(bucketEntities);
-    return indexedDictionaryValues(dictionary);
+    return [dictionary, indexedDictionaryValues(dictionary)];
   }
 
   const propContent = property.content.toString();
   if (!dictionaryCache[propContent]) {
     const dictionary = dictionariesById[propContent];
     const dictionaryValues = indexedDictionaryValues(dictionary);
-    dictionaryCache[propContent] = dictionaryValues;
+    dictionaryCache[propContent] = [dictionary, dictionaryValues];
   }
   return dictionaryCache[propContent];
 };
@@ -308,6 +308,35 @@ const extractMissingBucket = buckets => {
   const [missingBuckets, remainingBuckets] = _.partition(buckets, b => b.key === 'missing');
   const missingBucket = missingBuckets && missingBuckets.length ? missingBuckets[0] : null;
   return { missingBucket, remainingBuckets };
+};
+
+const groupAndLimitBuckets = (buckets, dictionary, _limit) => {
+  const aggregationBucketsByKey = objectIndex(
+    buckets,
+    b => b.key,
+    b => b
+  );
+  const missingBucket = aggregationBucketsByKey.missing;
+  const limit = missingBucket ? _limit - 1 : _limit;
+  const newBuckets = [];
+
+  let dictIndex = 0;
+  while (newBuckets.length < limit && dictIndex < dictionary.values.length) {
+    const dictionaryValue = dictionary.values[dictIndex];
+    const bucket = aggregationBucketsByKey[dictionaryValue.id];
+    if (bucket) {
+      if (dictionaryValue.values) {
+        bucket.values = dictionaryValue.values
+          .map(v => aggregationBucketsByKey[v.id])
+          .filter(b => b);
+      }
+      newBuckets.push(bucket);
+    }
+    dictIndex += 1;
+  }
+
+  if (missingBucket) newBuckets.push(missingBucket);
+  return newBuckets;
 };
 
 const limitBuckets = (buckets, _limit) => {
@@ -441,7 +470,7 @@ const _denormalizeAndLimitAggregations = async (
 
     property = v2.findDenormalizedProperty(property, properties, newRelationshipsEnabled);
 
-    const dictionaryValues = await _getAggregationDictionary(
+    const [dictionary, dictionaryValues] = await _getAggregationDictionary(
       aggregations[key],
       language,
       property,
@@ -449,10 +478,14 @@ const _denormalizeAndLimitAggregations = async (
       dictionaryCache
     );
 
-    let limitedBuckets = aggregations[key].buckets;
-    limitedBuckets = limitBuckets(limitedBuckets, limit);
+    let groupedBuckets = aggregations[key].buckets;
+    if (dictionary && dictionary.values.find(v => v.values)) {
+      groupedBuckets = groupAndLimitBuckets(groupedBuckets, dictionary, limit);
+    } else {
+      groupedBuckets = limitBuckets(groupedBuckets, limit);
+    }
 
-    const denormalizedBuckets = assignLabels(limitedBuckets, dictionaryValues);
+    const denormalizedBuckets = assignLabels(groupedBuckets, dictionaryValues);
 
     const denormalizedAggregation = Object.assign(aggregations[key], {
       buckets: denormalizedBuckets,
@@ -462,22 +495,11 @@ const _denormalizeAndLimitAggregations = async (
   return denormalizedAggregations;
 };
 
-const _sanitizeGroupedSelectAggregationStructure = buckets => {
-  const missingBucket = buckets.find(b => b.key === 'missing');
-  const rest = buckets.filter(b => b.key !== 'missing');
-  const newBuckets = rest.filter(b => !b.children);
-  rest
-    .filter(b => b.children)
-    .forEach(b => {
-      const { children, ...newBucket } = b;
-      newBucket.values = children.buckets;
-      newBuckets.push(newBucket);
-    });
-  if (missingBucket) {
-    missingBucket.children.buckets.forEach(b => {
-      newBuckets.push(b);
-    });
-  }
+const _sanitizeGroupedSelectAggregationStructure = aggregation => {
+  const parentBuckets = aggregation.parent.buckets.filter(b => b.key !== 'missing');
+  const valueBuckets = aggregation.self.buckets;
+  const newBuckets = parentBuckets.concat(valueBuckets);
+  console.log('newBuckets', newBuckets);
   return newBuckets;
 };
 
@@ -487,8 +509,8 @@ const _sanitizeAggregationsStructure = aggregations => {
     const aggregation = aggregations[aggregationKey];
 
     //grouped dictionary
-    if (aggregation.buckets && aggregation.buckets.some(b => b.children)) {
-      aggregation.buckets = _sanitizeGroupedSelectAggregationStructure(aggregation.buckets);
+    if (aggregation.parent && aggregation.self) {
+      aggregation.buckets = _sanitizeGroupedSelectAggregationStructure(aggregation);
     }
 
     //permissions
