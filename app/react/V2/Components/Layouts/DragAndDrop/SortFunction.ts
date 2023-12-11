@@ -53,7 +53,13 @@ const isNotSortableItem = <T>(
   currentItem.item.container === undefined;
 
 const hoverSortable =
-  <T>(ref: RefObject<HTMLElement>, target: IDraggable<T>, index: number, sortFunction?: Function) =>
+  <T>(
+    ref: RefObject<HTMLElement>,
+    target: IDraggable<T>,
+    index: number,
+    setDragging: React.Dispatch<React.SetStateAction<boolean>>,
+    sortFunction?: Function
+  ) =>
   (
     currentItem: {
       index: number;
@@ -63,13 +69,14 @@ const hoverSortable =
     },
     monitor: any
   ) => {
+    setDragging(true);
     const dragIndex = currentItem.index;
     const hoverIndex = index;
     if (
       !ref.current ||
       isNotSortableItem(currentItem, target) ||
       !sortFunction ||
-      !monitor.isOver({ shallow: true }) ||
+      !monitor.isOver({ shallow: false }) ||
       isOutOfSortArea(ref, monitor, dragIndex, hoverIndex)
     ) {
       return;

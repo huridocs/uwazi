@@ -82,8 +82,7 @@ const DraggableItemComponent = <T,>({
   const [, drop] = useDrop({
     accept: context.type,
     item: { item: { ...item, container }, container, index },
-
-    hover: hoverSortable(ref, { ...item, container }, index, context.sort, context.setDragging),
+    hover: hoverSortable(ref, { ...item, container }, index, context.setDragging, context.sort),
   });
   const [{ isDragging, handlerId }, drag, preview] = useDrag({
     type: context.type,
