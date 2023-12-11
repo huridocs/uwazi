@@ -20,7 +20,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   const addEntity = (title: string) => {
     clickOnCreateEntity();
-    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
+    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { force: true });
     cy.get('#metadataForm')
       .contains('Type')
       .parentsUntil('.form-group')

@@ -66,7 +66,10 @@ describe('Public Form', () => {
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Test public submit entity', { force: true });
-      cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
+      cy.get('input[name="publicform.metadata.resumen"]').type(
+        'This was submited via public form',
+        { force: true }
+      );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
