@@ -497,7 +497,6 @@ const _sanitizeGroupedSelectAggregationStructure = aggregation => {
   const parentBuckets = aggregation.parent.buckets.filter(b => b.key !== 'missing');
   const valueBuckets = aggregation.self.buckets;
   const newBuckets = parentBuckets.concat(valueBuckets);
-  console.log('newBuckets', newBuckets);
   return newBuckets;
 };
 
