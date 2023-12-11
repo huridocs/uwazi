@@ -63,11 +63,12 @@ const TableBodyComponent = <T,>({
       itemsProperty: subRowsKey,
       onChange,
     },
-    setRowId(subRowsKey || 'items', items),
+    items,
     []
   );
+
   return draggableRows && DndProvider && HTML5Backend ? (
-    <tbody>
+    <tbody data-testid="dnd_table_body">
       <DndProvider backend={HTML5Backend}>
         {dndContext.activeItems
           .map(item => {
@@ -91,9 +92,8 @@ const TableBodyComponent = <T,>({
                   })
                 : [];
             return (
-              <>
+              <React.Fragment key={item.dndId}>
                 <TableRow
-                  key={item.dndId}
                   draggableRow
                   row={row}
                   dndContext={dndContext}
@@ -101,7 +101,7 @@ const TableBodyComponent = <T,>({
                   item={item}
                 />
                 {children}
-              </>
+              </React.Fragment>
             );
           })
           .filter(row => row !== undefined)}
@@ -116,6 +116,11 @@ const TableBodyComponent = <T,>({
   );
 };
 
-const TableBody = (props: TableBodyProps) => withDnD(withDnDBackend(TableBodyComponent))(props);
+const typedMemo: <T>(c: T) => T = React.memo;
+
+const TableBody = (props: TableBodyProps) => {
+  const tableBodyProps = { ...props, items: setRowId(props.subRowsKey || 'items', props.items) };
+  return withDnD(typedMemo(withDnDBackend(TableBodyComponent)))(tableBodyProps);
+};
 
 export { TableBody };

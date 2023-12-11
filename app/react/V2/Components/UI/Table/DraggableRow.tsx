@@ -45,8 +45,16 @@ const RowWrapper =
   // eslint-disable-next-line comma-spacing
   <T,>({ children, dndContext, row, draggableRow, className, innerRef }: RowWrapperProps<T>) => {
     if (!draggableRow || !dndContext) {
-      return <tr>{children}</tr>;
+      return <tr key={`row_${row.id}`}>{children}</tr>;
     }
+    if (!row.parentId && row.getLeafRows().length === 0) {
+      return (
+        <tr key={`row_${row.id}`} ref={innerRef! as RefObject<HTMLTableRowElement>}>
+          {children}
+        </tr>
+      );
+    }
+    const parentItem = dndContext.activeItems.find(item => item.dndId === row.parentId);
     return (
       <DropZone
         type={dndContext.type}
@@ -56,7 +64,7 @@ const RowWrapper =
         name={`group_${row.id}`}
         key={`group_${row.id}`}
         wrapperType="tr"
-        parent={row.parentId ? dndContext.activeItems[row.getParentRow()!.index] : undefined}
+        parent={row.parentId ? parentItem : undefined}
         innerRef={innerRef}
       >
         {children}
