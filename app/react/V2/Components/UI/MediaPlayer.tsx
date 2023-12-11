@@ -97,6 +97,9 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
                 'data-height': playerHeight,
               },
             },
+            file: {
+              attributes: { crossorigin: 'use-credentials' },
+            },
           }}
           playIcon={
             <PlayIcon className={`absolute w-1/5 min-w-[20px] max-w-[120px] ${playIconColor}`} />
