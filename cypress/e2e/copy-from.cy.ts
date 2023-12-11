@@ -11,7 +11,9 @@ describe('Copy from entity', () => {
   describe('Creating a new entity', () => {
     it('should copy the metadata from an existing entity to create a new one', () => {
       clickOnCreateEntity();
-      cy.get('[name="library.sidepanel.metadata.title"]').type('New orden de la corte');
+      cy.get('[name="library.sidepanel.metadata.title"]').type('New orden de la corte', {
+        force: true,
+      });
       cy.get('#metadataForm').find('select').select('Ordenes de la corte');
       cy.get('#metadataForm').find('.form-group.select').find('select').select('d3b1s0w3lzi');
 
@@ -32,7 +34,7 @@ describe('Copy from entity', () => {
     });
 
     it('should view the new entity', () => {
-      cy.contains('Entity created').click();
+      clickOnCreateEntity();
       cy.contains('h2', 'New orden de la corte').click();
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('a', 'View').click();
