@@ -5,7 +5,7 @@ import { actions as formActions } from 'react-redux-form';
 import Immutable from 'immutable';
 
 import * as actions from 'app/Library/actions/filterActions';
-import comonPropertiesHelper from 'shared/comonProperties';
+import comonPropertiesHelper from 'shared/commonProperties';
 import * as libraryActions from 'app/Library/actions/libraryActions';
 import libraryHelper from 'app/Library/helpers/libraryFilters';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';

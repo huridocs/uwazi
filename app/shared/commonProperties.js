@@ -7,6 +7,15 @@ function sameProperty(prop1, prop2) {
   );
 }
 
+function isSelect(property) {
+  return (
+    property.type === 'select' ||
+    property.type === 'multiselect' ||
+    property.inherit?.type === 'select' ||
+    property.inherit?.type === 'multiselect'
+  );
+}
+
 function templateHasProperty(template, property) {
   return template.properties.filter(prop => sameProperty(prop, property)).length;
 }
@@ -94,4 +103,5 @@ export default {
   defaultFilters,
   allUniqueProperties,
   textFields,
+  isSelect,
 };

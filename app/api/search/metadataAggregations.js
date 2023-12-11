@@ -1,5 +1,6 @@
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import commonProperties from 'shared/commonProperties';
 
 const aggregation = (key, should, filters, nestedAggregationName, nestedAggregation) => {
   const agg = {
@@ -155,12 +156,7 @@ export const propertyToAggregation = (property, baseQuery, suggested = false) =>
     return nestedAggregation(property, should, filters);
   }
 
-  if (
-    property.type === 'select' ||
-    property.type === 'multiselect' ||
-    property.inherit?.type === 'select' ||
-    property.inherit?.type === 'multiselect'
-  ) {
+  if (commonProperties.isSelect(property)) {
     return selectAggregation(path, should, filters);
   }
 
