@@ -149,7 +149,10 @@ describe('Table', () => {
 
       cy.get('[data-testid="root-draggable-item-2"]').drag(
         '[data-testid="root-draggable-item-0"]',
-        { target: { x: 5, y: 0 } }
+        {
+          target: { x: 5, y: 0 },
+          force: true,
+        }
       );
 
       checkRowContent(1, ['Entity 3', data[2].description, '3']);
@@ -194,7 +197,10 @@ describe('Table', () => {
 
       cy.get('[data-testid="root-draggable-item-1"]').drag(
         '[data-testid="root-draggable-item-0"]',
-        { target: { x: 5, y: 0 } }
+        {
+          target: { x: 5, y: 0 },
+          force: true,
+        }
       );
 
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
@@ -257,11 +263,13 @@ describe('Table', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
 
-      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragstart');
-      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragleave');
-      cy.get('[data-testid="root-draggable-item-0"]').trigger('drop', {
-        target: { x: 5, y: 0 },
-      });
+      cy.get('[data-testid="group_1-draggable-item-0"]').drag(
+        '[data-testid="root-draggable-item-1"]',
+        {
+          target: { x: 5, y: 0 },
+          force: true,
+        }
+      );
       cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
       cy.contains('children').click();
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
