@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import date from 'api/utils/date';
-import propertiesHelper from 'shared/comonProperties';
+import propertiesHelper from 'shared/commonProperties';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
@@ -892,6 +892,19 @@ const search = {
     return elastic.deleteByQuery({ body: query });
   },
 
+  appendAutoCompleteFilters(property, searchTerm, aggregation) {
+    const aggregationObjectsToUpdate = propertiesHelper.isSelect(property)
+      ? [aggregation.aggregations.self, aggregation.aggregations.parent]
+      : [aggregation];
+    aggregationObjectsToUpdate.forEach(aggregationObject => {
+      aggregationObject.aggregations.filtered.filter.bool.filter.push({
+        wildcard: {
+          [`metadata.${property.name}.label`]: { value: `*${searchTerm.toLowerCase()}*` },
+        },
+      });
+    });
+  },
+
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
     const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
@@ -915,9 +928,7 @@ const search = {
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    aggregation.aggregations.filtered.filter.bool.filter.push({
-      wildcard: { [`metadata.${propertyName}.label`]: { value: `*${searchTerm.toLowerCase()}*` } },
-    });
+    this.appendAutoCompleteFilters(property, searchTerm, aggregation);
 
     const response = await elastic.search({
       body,

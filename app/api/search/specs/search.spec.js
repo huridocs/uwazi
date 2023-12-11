@@ -1167,6 +1167,7 @@ describe('search', () => {
     });
   });
 
+  // eslint-disable-next-line jest/no-focused-tests
   describe('autocompleteAggregations()', () => {
     it('should return a list of options matching by label and options related to the matching one', async () => {
       const query = {
@@ -1201,7 +1202,7 @@ describe('search', () => {
         'p',
         editorUser
       );
-      expect(defaultResponse.options.map(o => o.label)).toEqual(['Egypt', 'Spain']);
+      expect(defaultResponse.options.map(o => o.label)).toEqual(['Egypt', 'Spain', 'Europe']);
       mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(1);
       const limitedResponse = await search.autocompleteAggregations(
         query,
