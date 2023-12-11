@@ -149,7 +149,6 @@ MetadataFormButtons.defaultProps = {
 
 MetadataFormButtons.propTypes = {
   loadInReduxForm: PropTypes.func.isRequired,
-  reloadThesauri: PropTypes.func.isRequired,
   resetForm: PropTypes.func.isRequired,
   clearMetadataSelections: PropTypes.func.isRequired,
   delete: PropTypes.func,

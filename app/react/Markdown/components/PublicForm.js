@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-pascal-case */
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { actions, Control } from 'react-redux-form';
 import { bindActionCreators } from 'redux';
@@ -11,7 +11,6 @@ import { LocalForm } from 'app/Forms/Form';
 import { MetadataFormFields, validator, prepareMetadataAndFiles } from 'app/Metadata';
 import { Translate } from 'app/I18N';
 import { publicSubmit } from 'app/Uploads/actions/uploadsActions';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { FormGroup } from 'app/Forms';
 import { Icon } from 'UI';
 import { Loader } from 'app/components/Elements/Loader';
@@ -193,15 +192,8 @@ class PublicFormComponent extends Component {
   }
 
   render() {
-    const {
-      template,
-      thesauris,
-      file,
-      attachments,
-      reloadThesauri: reloadThesauriAction,
-    } = this.props;
+    const { template, thesauris, file, attachments } = this.props;
     const { submiting } = this.state;
-    reloadThesauriAction();
     return (
       <LocalForm
         validators={this.validators}
@@ -233,11 +225,6 @@ class PublicFormComponent extends Component {
     );
   }
 }
-
-PublicFormComponent.defaultProps = {
-  reloadThesauri: () => {},
-};
-
 PublicFormComponent.propTypes = {
   file: PropTypes.bool.isRequired,
   attachments: PropTypes.bool.isRequired,
@@ -245,7 +232,6 @@ PublicFormComponent.propTypes = {
   template: PropTypes.instanceOf(Immutable.Map).isRequired,
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
-  reloadThesauri: PropTypes.func.isRequired,
 };
 export const mapStateToProps = (state, props) => ({
   template: state.templates.find(template => template.get('_id') === props.template),
@@ -255,7 +241,7 @@ export const mapStateToProps = (state, props) => ({
   attachments: props.attachments !== undefined,
 });
 export function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ submit: publicSubmit, reloadThesauri }, dispatch);
+  return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
 export { PublicFormComponent };
 export default connect(mapStateToProps, mapDispatchToProps)(PublicFormComponent);
