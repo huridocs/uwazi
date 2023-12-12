@@ -793,7 +793,6 @@ describe('search', () => {
       expect(templateAggs.find(a => a.key === ids.template2)).not.toBeDefined();
     });
 
-    // eslint-disable-next-line jest/no-focused-tests
     it('should limit the number of buckets', async () => {
       userFactory.mock(undefined);
       const defaultResult = await search.search({ types: [ids.templateMetadata1] }, 'en');
@@ -1167,7 +1166,6 @@ describe('search', () => {
     });
   });
 
-  // eslint-disable-next-line jest/no-focused-tests
   describe('autocompleteAggregations()', () => {
     it('should return a list of options matching by label and options related to the matching one', async () => {
       const query = {
