@@ -18,11 +18,10 @@ import { applicationEventsBus } from 'api/eventsbus';
 import { appContextMiddleware } from 'api/utils/appContextMiddleware';
 import { requestIdMiddleware } from 'api/utils/requestIdMiddleware';
 import uwaziMessage from '../message';
-import apiRoutes from './api/api';
+import apiRoutes from './api/api.js';
 import privateInstanceMiddleware from './api/auth/privateInstanceMiddleware';
 import authRoutes from './api/auth/routes';
 import { config } from './api/config';
-
 import { versionRoutes } from './api/version/routes';
 import { migrator } from './api/migrations/migrator';
 import { DB } from './api/odm';
@@ -33,6 +32,7 @@ import errorHandlingMiddleware from './api/utils/error_handling_middleware';
 import { handleError } from './api/utils/handleError.js';
 import { multitenantMiddleware } from './api/utils/multitenantMiddleware';
 import { routesErrorHandler } from './api/utils/routesErrorHandler';
+
 import { serverSideRender } from './react/server';
 import { startLegacyServicesNoMultiTenant } from './startLegacyServicesNoMultiTenant';
 
