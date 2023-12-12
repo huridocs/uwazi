@@ -209,7 +209,7 @@
     "react-router-dom": "6.20.0",
     "react-table": "^7.8.0",
     "react-table-sticky": "^1.1.3",
-    "react-tabs": "^6.0.1",
+    "react-tabs": "^6.0.2",
     "react-tabs-redux": "4.0.0",
     "react-text-selection-handler": "0.1.0",
     "react-widgets": "v4.6.1",
