@@ -16,6 +16,7 @@
   "license": "MIT",
   "author": "huridocs.org",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
