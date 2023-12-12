@@ -10,7 +10,7 @@ import { Icon } from 'UI';
 
 import { setFilter } from '../actions/actions';
 
-export class ConnectionsGroup extends Component {
+class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {
     if (props.group.get('templates').size > state.groupTemplates.size) {
       return {
@@ -141,7 +141,7 @@ ConnectionsGroup.propTypes = {
   setFilter: PropTypes.func,
 };
 
-export const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       setFilter,
@@ -149,4 +149,5 @@ export const mapDispatchToProps = dispatch =>
     dispatch
   );
 
+export { ConnectionsGroup, mapDispatchToProps };
 export default connect(null, mapDispatchToProps)(ConnectionsGroup);

@@ -63,16 +63,7 @@ exports[`MultiSelect should display a not found message when there are no option
 exports[`MultiSelect should not render aggregations on the groups when not defined 1`] = `
 <span
   className="multiselectItem-results"
->
-  <span
-    className="multiselectItem-action"
-    onClick={[Function]}
-  >
-    <Connect(Icon)
-      icon="caret-down"
-    />
-  </span>
-</span>
+/>
 `;
 
 exports[`MultiSelect should not render an empty group 1`] = `
@@ -170,14 +161,14 @@ exports[`MultiSelect should not render an empty group 1`] = `
         Option1
       </span>
        
-      <span
-        className="multiselectItem-results"
-      >
-        <span>
-          5
-        </span>
-      </span>
     </label>
+    <span
+      className="multiselectItem-results"
+    >
+      <span>
+        5
+      </span>
+    </span>
   </li>
   <li
     className="multiselectItem"
@@ -247,14 +238,14 @@ exports[`MultiSelect should not render an empty group 1`] = `
         Option2
       </span>
        
-      <span
-        className="multiselectItem-results"
-      >
-        <span>
-          4
-        </span>
-      </span>
     </label>
+    <span
+      className="multiselectItem-results"
+    >
+      <span>
+        4
+      </span>
+    </span>
   </li>
   <li
     aria-label="group"
@@ -325,22 +316,22 @@ exports[`MultiSelect should not render an empty group 1`] = `
           Sub Group
         </span>
          
-        <span
-          className="multiselectItem-results"
-        >
-          <span>
-            3
-          </span>
-          <span
-            className="multiselectItem-action"
-            onClick={[Function]}
-          >
-            <Connect(Icon)
-              icon="caret-down"
-            />
-          </span>
-        </span>
       </label>
+      <span
+        className="multiselectItem-results"
+      >
+        <span>
+          3
+        </span>
+      </span>
+      <span
+        className="multiselectItem-action"
+        onClick={[Function]}
+      >
+        <Connect(Icon)
+          icon="caret-down"
+        />
+      </span>
     </div>
     <ShowIf
       if={false}
@@ -416,14 +407,14 @@ exports[`MultiSelect should not render an empty group 1`] = `
               Group option1
             </span>
              
-            <span
-              className="multiselectItem-results"
-            >
-              <span>
-                2
-              </span>
-            </span>
           </label>
+          <span
+            className="multiselectItem-results"
+          >
+            <span>
+              2
+            </span>
+          </span>
         </li>
         <li
           className="multiselectItem"
@@ -493,14 +484,14 @@ exports[`MultiSelect should not render an empty group 1`] = `
               Group option2
             </span>
              
-            <span
-              className="multiselectItem-results"
-            >
-              <span>
-                1
-              </span>
-            </span>
           </label>
+          <span
+            className="multiselectItem-results"
+          >
+            <span>
+              1
+            </span>
+          </span>
         </li>
       </ul>
     </ShowIf>

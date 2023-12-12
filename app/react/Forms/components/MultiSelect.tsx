@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this,max-lines */
 
 import { Link } from 'react-router-dom';
