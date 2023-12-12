@@ -208,9 +208,9 @@ class DocumentTypesList extends Component {
           </label>
           <span className="multiselectItem-results">
             <span>{this.aggregations(item)}</span>
-            <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
-              <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
-            </span>
+          </span>
+          <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, item)}>
+            <Icon icon={this.state.ui[item.id] ? 'caret-up' : 'caret-down'} />
           </span>
         </div>
         <ShowIf if={this.showSubOptions(item)}>

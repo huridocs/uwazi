@@ -103,9 +103,9 @@ export class ConnectionsGroup extends Component {
           </label>
           <span className="multiselectItem-results">
             <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
-            <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
-              <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
-            </span>
+          </span>
+          <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
+            <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
           </span>
         </div>
         <ShowIf if={this.state.expanded}>

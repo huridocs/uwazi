@@ -346,44 +346,43 @@ abstract class MultiSelectBase<ValueType> extends Component<
     const { optionsValue, optionsLabel, prefix } = this.props;
     const clickEvent = isSelect ? () => {} : this.toggleOptions.bind(this, option);
     return (
-      <label
-        className="multiselectItem-label multiselectItem-option"
-        htmlFor={prefix + option[optionsValue]}
-        onClick={clickEvent}
-      >
-        <span
-          className={`multiselectItem-icon${
-            !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
-          }`}
+      <>
+        <label
+          className="multiselectItem-label multiselectItem-option"
+          htmlFor={prefix + option[optionsValue]}
+          onClick={clickEvent}
         >
-          <Icon icon={['far', 'square']} className="checkbox-empty" />
-          <Icon icon="check" className="checkbox-checked" />
-          <Icon icon="minus" className="checkbox-partial" />
-          <Icon icon={['fas', 'square']} className="checkbox-group" />
-          <Icon icon="chevron-right" className="chevron-right" />
-          <Icon icon="chevron-down" className="chevron-down" />
-        </span>
-        <span className="multiselectItem-name" onClick={clickEvent}>
-          <CustomIcon className="item-icon" data={option.icon} />
-          {this.state.serverSideRender && option.url ? (
-            <Link to={option.url}>{option[optionsLabel]}</Link>
-          ) : (
-            option[optionsLabel]
-          )}
-        </span>
-        &nbsp;
+          <span
+            className={`multiselectItem-icon${
+              !isSelect ? ` no-select${this.state.ui[option.id] ? ' expanded' : ''}` : ''
+            }`}
+          >
+            <Icon icon={['far', 'square']} className="checkbox-empty" />
+            <Icon icon="check" className="checkbox-checked" />
+            <Icon icon="minus" className="checkbox-partial" />
+            <Icon icon={['fas', 'square']} className="checkbox-group" />
+            <Icon icon="chevron-right" className="chevron-right" />
+            <Icon icon="chevron-down" className="chevron-down" />
+          </span>
+          <span className="multiselectItem-name" onClick={clickEvent}>
+            <CustomIcon className="item-icon" data={option.icon} />
+            {this.state.serverSideRender && option.url ? (
+              <Link to={option.url}>{option[optionsLabel]}</Link>
+            ) : (
+              option[optionsLabel]
+            )}
+          </span>
+          &nbsp;
+        </label>
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
-          {isSelect && option.options && (
-            <span
-              className="multiselectItem-action"
-              onClick={this.toggleOptions.bind(this, option)}
-            >
-              <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
-            </span>
-          )}
         </span>
-      </label>
+        {isSelect && option.options && (
+          <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
+            <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
+          </span>
+        )}
+      </>
     );
   }
 
