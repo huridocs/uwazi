@@ -97,11 +97,11 @@ const prepareValuesToSave = (
 
 const composeTableValues = (formValues: formValuesType, termIndex: number) =>
   formValues.map((language, languageIndex) => {
-    const languaLabel = availableLanguages.find(
+    const languageLabel = availableLanguages.find(
       availableLanguage => availableLanguage.key === language.locale
     )?.localized_label;
     return {
-      language: languaLabel,
+      language: languageLabel,
       translationStatus: {
         languageKey: language.locale,
         status: formValues[languageIndex].values[termIndex]?.translationStatus || 'untranslated',
@@ -110,7 +110,7 @@ const composeTableValues = (formValues: formValuesType, termIndex: number) =>
     };
   });
 
-const getTraslationStatus = (
+const getTranslationStatus = (
   defaultLanguageValues: { [key: string]: string },
   evaluatedTerm: { key: string; value: string },
   currentLanguageKey: string,
@@ -138,7 +138,7 @@ const prepareFormValues = (translations: ClientTranslationSchema[], defaultLangu
         [index]: {
           key,
           value,
-          translationStatus: getTraslationStatus(
+          translationStatus: getTranslationStatus(
             defaultLanguageValues || {},
             { key, value },
             language.locale,
@@ -187,7 +187,7 @@ const EditTranslations = () => {
   const isSubmitting = fetcher.state === 'submitting';
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
-  const formValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+  const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
 
   const {
     register,
@@ -196,13 +196,20 @@ const EditTranslations = () => {
     getFieldState,
     reset,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    formState: { isDirty, errors, isSubmitting: formIsSubmitting },
+    formState: { dirtyFields, isSubmitting: formIsSubmitting, isSubmitSuccessful },
   } = useForm({
-    defaultValues: { formValues },
+    defaultValues: { formValues: defaultFormValues },
     mode: 'onSubmit',
   });
 
-  const blocker = useBlocker(isDirty && !formIsSubmitting);
+  const isDirtyAlt = !!Object.keys(dirtyFields).length;
+  const blocker = useBlocker(isDirtyAlt && !formIsSubmitting);
+
+  React.useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset({}, { keepValues: true });
+    }
+  }, [isSubmitSuccessful, reset]);
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -239,7 +246,7 @@ const EditTranslations = () => {
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
 
-  const tablesData = calculateTableData(contextTerms, formValues, hideTranslated);
+  const tablesData = calculateTableData(contextTerms, defaultFormValues, hideTranslated);
 
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();

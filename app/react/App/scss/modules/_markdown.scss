@@ -162,7 +162,6 @@
 }
 
 .side-panel {
-
   .markdownViewer,
   .markdownEditor {
     p {
@@ -172,7 +171,6 @@
 }
 
 .item {
-
   .markdownViewer,
   .markdownEditor {
     p {
@@ -181,7 +179,7 @@
   }
 }
 
-.video-container>div:first-child {
+.video-container > div:first-child {
   position: relative;
   padding-bottom: 73.25%;
   height: 0;
@@ -199,7 +197,7 @@
   height: 100%;
 }
 
-.video-container.compact>div:first-child {
+.video-container.compact > div:first-child {
   height: 0;
   padding-bottom: 0;
   position: relative;
@@ -215,10 +213,11 @@
 
 .video-container {
   .loader {
-    padding-top: 0 !important;
-    width: 100% !important;
-    min-height: 210px !important;
-    height: 100% !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
     background-color: $c-grey-lighten;
     display: flex;
     gap: 4px;
@@ -297,7 +296,7 @@
   }
 }
 
-.video-container>.timelinks-form {
+.video-container > .timelinks-form {
   margin-top: 10px;
   margin-bottom: 10px;
 
@@ -334,7 +333,7 @@
       /* <-- Apparently some margin are still there even though it's hidden */
     }
 
-    input[type=number] {
+    input[type='number'] {
       -moz-appearance: textfield;
       /* Firefox */
     }
@@ -401,7 +400,7 @@
   }
 }
 
-.page-viewer .markdown-viewer>*:not(.hero) {
+.page-viewer .markdown-viewer > *:not(.hero) {
   max-width: 1000px;
   margin-left: auto;
   margin-right: auto;
@@ -414,7 +413,6 @@
 .side-panel,
 .entity-viewer {
   .markdown-viewer {
-
     p,
     li {
       font-size: $f-size;
