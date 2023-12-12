@@ -1,33 +1,40 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const webpack = require('webpack');
-const express = require('express');
-const cors = require('cors');
+import webpack from 'webpack';
+import express from 'express';
+import cors from 'cors';
+
+import _http, { request as _request } from 'http';
+// TEMP
+import { process as _process } from 'rtlcss';
+import webpackConfig, { output } from './webpack.config.hot.js';
 
 const app = express();
 app.use(cors());
 
-const http = require('http').Server(app);
-
-const httpRequest = require('http');
-// TEMP
-const rtlcss = require('rtlcss');
-const webpackConfig = require('./webpack.config.hot');
+const http = _http.Server(app);
 
 const compiler = webpack(webpackConfig);
 
-app.use(
-  require('webpack-dev-middleware')(compiler, {
-    publicPath: webpackConfig.output.publicPath,
+const webpackDevMiddleware = (async () => {
+  const { default: webpackDevMiddlewareModule } = await import('webpack-dev-middleware');
+  return webpackDevMiddlewareModule(compiler, {
+    publicPath: output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },
     stats: 'errors-warnings',
-  })
-);
+  });
+})();
 
-app.use(require('webpack-hot-middleware')(compiler));
+const webpackHotMiddleware = (async () => {
+  const { default: webpackHotMiddlewareModule } = await import('webpack-hot-middleware');
+  return webpackHotMiddlewareModule(compiler);
+})();
+
+app.use(webpackHotMiddleware);
+app.use(webpackDevMiddleware);
 
 app.get('/CSS/:file', (req, res) => {
-  const request = httpRequest.request(
+  const request = _request(
     { host: 'localhost', port: 8080, path: `/${req.params.file}` },
     response => {
       let data = '';
@@ -37,7 +44,7 @@ app.get('/CSS/:file', (req, res) => {
       response.on('end', () => {
         if (req.query.rtl === 'true') {
           process.stdout.write('Processing RTL...\r\n');
-          data = rtlcss.process(data);
+          data = _process(data);
           process.stdout.write('Done!\r\n');
         } else {
           process.stdout.write('Using standard CSS.\r\n');

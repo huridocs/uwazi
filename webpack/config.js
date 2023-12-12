@@ -1,25 +1,26 @@
-const path = require('path');
-const webpack = require('webpack');
-const AssetsPlugin = require('assets-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const RtlCssPlugin = require('rtlcss-webpack-plugin');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+import { join } from 'path';
+import webpack from 'webpack';
+import AssetsPlugin from 'assets-webpack-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import MiniCssExtractPlugin, { loader as _loader } from 'mini-css-extract-plugin';
+import RtlCssPlugin from 'rtlcss-webpack-plugin';
+import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
-const rootPath = path.join(__dirname, '/../');
+const rootPath = join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
+const { ProvidePlugin, HotModuleReplacementPlugin } = webpack;
 
-module.exports = production => {
+export default production => {
   let stylesName = '[name].css';
   let rtlStylesName = 'rtl-[name].css';
   let jsChunkHashName = '';
-  let outputPath = path.join(rootPath, 'dist');
+  let outputPath = join(rootPath, 'dist');
 
   if (production) {
-    outputPath = path.join(rootPath, 'prod/dist');
+    outputPath = join(rootPath, 'prod/dist');
     stylesName = '[name].[chunkhash].css';
     rtlStylesName = 'rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
@@ -30,8 +31,8 @@ module.exports = production => {
     devtool: 'eval-source-map',
     mode: 'development',
     entry: {
-      main: path.join(rootPath, 'app/react/entry-client'),
-      nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
+      main: join(rootPath, 'app/react/entry-client'),
+      nprogress: join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {
       path: outputPath,
@@ -64,7 +65,7 @@ module.exports = production => {
       rules: [
         {
           test: /\.(js|jsx|ts|tsx)$/,
-          include: path.join(rootPath, 'app'),
+          include: join(rootPath, 'app'),
           exclude: /node_modules/,
           use: [
             {
@@ -78,7 +79,7 @@ module.exports = production => {
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            _loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
@@ -97,7 +98,7 @@ module.exports = production => {
         },
         {
           test: /world-countries/,
-          loader: path.join(__dirname, '/webpackLoaders/country-loader.js'),
+          loader: join(__dirname, '/webpackLoaders/country-loader.js'),
         },
         {
           test: /\.m?js$/,
@@ -108,7 +109,7 @@ module.exports = production => {
       ],
     },
     plugins: [
-      new webpack.ProvidePlugin({
+      new ProvidePlugin({
         process: 'process/browser',
       }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
@@ -132,7 +133,7 @@ module.exports = production => {
         ],
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
-      new webpack.HotModuleReplacementPlugin(),
+      new HotModuleReplacementPlugin(),
     ],
   };
 };

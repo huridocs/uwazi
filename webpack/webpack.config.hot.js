@@ -1,11 +1,14 @@
 /* eslint-disable */
-const path = require('path');
-const webpack = require('webpack');
+import { join } from 'path';
+import webpack from 'webpack';
+import RtlCssPlugin from 'rtlcss-webpack-plugin';
+import config from './config.js';
 
-const config = require('./config')();
+const { HotModuleReplacementPlugin, DefinePlugin } = webpack;
+
+config();
 
 const rootPath = `${__dirname}/../`;
-const RtlCssPlugin = require('rtlcss-webpack-plugin');
 
 config['infrastructureLogging'] = {
   level: 'error',
@@ -13,9 +16,9 @@ config['infrastructureLogging'] = {
 
 config.plugins = config.plugins.filter(plugin => !(plugin instanceof RtlCssPlugin));
 config.plugins = config.plugins.concat([
-  new webpack.HotModuleReplacementPlugin(),
+  new HotModuleReplacementPlugin(),
   // enable HMR globally
-  new webpack.DefinePlugin({ 'process.env': { HOT: true } }),
+  new DefinePlugin({ 'process.env': { HOT: true } }),
 ]);
 
 config.optimization.moduleIds = 'named';
@@ -28,11 +31,11 @@ config.output = {
 
 config.entry.main = [
   'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
-  path.join(rootPath, 'app/react/entry-client.tsx'),
+  join(rootPath, 'app/react/entry-client.tsx'),
 ];
 
 config.watchOptions = {
   ignored: '**/node_modules/*',
 };
 
-module.exports = config;
+export default config;
