@@ -10,7 +10,7 @@ import { Icon } from 'UI';
 
 import { setFilter } from '../actions/actions';
 
-export class ConnectionsGroup extends Component {
+class ConnectionsGroup extends Component {
   static getDerivedStateFromProps(props, state) {
     if (props.group.get('templates').size > state.groupTemplates.size) {
       return {
@@ -103,9 +103,9 @@ export class ConnectionsGroup extends Component {
           </label>
           <span className="multiselectItem-results">
             <span>{group.templates.reduce((size, i) => size + i.count, 0)}</span>
-            <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
-              <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
-            </span>
+          </span>
+          <span className="multiselectItem-action" onClick={this.toggleExpandGroup.bind(this)}>
+            <Icon icon={this.state.expanded ? 'caret-up' : 'caret-down'} />
           </span>
         </div>
         <ShowIf if={this.state.expanded}>
@@ -127,6 +127,7 @@ export class ConnectionsGroup extends Component {
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>
                 <span className="multiselectItem-results">{template.count}</span>
+                <span className="multiselectItem-action placeholder" />
               </li>
             ))}
           </ul>
@@ -141,7 +142,7 @@ ConnectionsGroup.propTypes = {
   setFilter: PropTypes.func,
 };
 
-export const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       setFilter,
@@ -149,4 +150,5 @@ export const mapDispatchToProps = dispatch =>
     dispatch
   );
 
+export { ConnectionsGroup, mapDispatchToProps };
 export default connect(null, mapDispatchToProps)(ConnectionsGroup);
