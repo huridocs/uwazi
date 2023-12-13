@@ -378,10 +378,12 @@ abstract class MultiSelectBase<ValueType> extends Component<
         <span className="multiselectItem-results">
           {option.results && <span>{option.results}</span>}
         </span>
-        {isSelect && option.options && (
+        {isSelect && option.options ? (
           <span className="multiselectItem-action" onClick={this.toggleOptions.bind(this, option)}>
             <Icon icon={this.state.ui[option.id] ? 'caret-up' : 'caret-down'} />
           </span>
+        ) : (
+          <span className="multiselectItem-action placeholder" />
         )}
       </>
     );

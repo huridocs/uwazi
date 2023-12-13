@@ -276,6 +276,10 @@
   input {
     border: #2b56c1;
   }
+
+  .multiselectItem-results>span {
+    font-weight: 300;
+  }
 }
 
 .search__filter {
@@ -613,9 +617,6 @@
   padding-right: 3px;
   color: $c-grey-dark;
 
-  span {
-    font-weight: 300;
-  }
 }
 
 .multiselectItem-action {
@@ -630,6 +631,14 @@
   &:hover {
     border-color: $c-black;
     cursor: pointer;
+  }
+
+  &.placeholder {
+    border: unset;
+
+    &:hover {
+      cursor: auto;
+    }
   }
 }
 

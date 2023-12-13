@@ -127,6 +127,7 @@ class ConnectionsGroup extends Component {
                   <span className="multiselectItem-name">{t(template._id, template.label)}</span>
                 </label>
                 <span className="multiselectItem-results">{template.count}</span>
+                <span className="multiselectItem-action placeholder" />
               </li>
             ))}
           </ul>

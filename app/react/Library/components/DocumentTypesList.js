@@ -182,6 +182,7 @@ class DocumentTypesList extends Component {
         </label>
         &nbsp;
         <span className="multiselectItem-results">{this.aggregations(item)}</span>
+        <span className="multiselectItem-action placeholder" />
       </li>
     );
   }
