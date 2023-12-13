@@ -99,7 +99,7 @@ describe('ConnectionsGroup', () => {
   describe('when the group is collapsed', () => {
     beforeEach(() => {
       render();
-      component.find('.multiselectItem-action').simulate('click');
+      component.find('.multiselectItem-action').at(0).simulate('click');
     });
 
     it('should not show the group templates', () => {
