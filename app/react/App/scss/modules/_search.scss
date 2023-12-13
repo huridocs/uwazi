@@ -1,8 +1,10 @@
 .library-filters {
   z-index: 6;
   top: $header-height;
+
   @media (min-width: 1024px) {
     z-index: 4;
+
     &.is-hidden:not(.unpinned-mode) {
       right: 0;
     }
@@ -22,6 +24,7 @@
   .input-group {
     width: 100%;
   }
+
   .form-control {
     height: $header-height * 0.88;
     padding-left: 15px;
@@ -39,6 +42,7 @@
       @include placeholder(transparent);
     }
   }
+
   .input-group .fa-search,
   .input-group .fa-flask,
   .input-group .fa-times {
@@ -48,12 +52,14 @@
     transform: translateY(-50%);
     z-index: 4;
   }
+
   .input-group .fa-search,
   .input-group .fa-flask {
     right: 20px;
     font-size: $f-size-lg;
     cursor: pointer;
   }
+
   .input-group .fa-times {
     display: none;
     right: 50px;
@@ -66,20 +72,24 @@
     border: 1px solid $c-grey;
     border-radius: 50%;
     cursor: pointer;
+
     &:hover {
       color: $c-black;
       border-color: $c-black;
     }
   }
+
   .input-group.is-active .fa-times {
     display: block;
   }
+
   .modal-tip-label {
     font-size: $f-size-xs;
     color: $c-primary;
     border-bottom: 1px solid $c-primary-light;
     cursor: pointer;
   }
+
   .search-icon-wrapper {
     padding: 0;
     background-color: transparent;
@@ -98,6 +108,7 @@
   line-height: $header-height + 2px;
   padding: 0;
   z-index: 3;
+
   @media (min-width: 1024px) {
     display: none;
   }
@@ -105,11 +116,12 @@
   &,
   &:hover,
   &:active {
-    @if $theme == light {
+    @if $theme ==light {
       color: $c-black;
     } @else {
       color: $c-white;
     }
+
     box-shadow: none;
   }
 
@@ -117,9 +129,11 @@
     position: absolute;
     width: $header-height;
     margin-left: 0;
+
     @media (min-width: 454px) {
       right: 400px;
     }
+
     @media (min-width: 1024px) {
       position: relative;
       right: 0;
@@ -158,6 +172,7 @@
   color: $c-black;
   border-bottom: 1px solid $c-grey-light;
   line-height: 1em;
+
   &.is-active {
     display: block;
     box-shadow: $box-shadow;
@@ -168,6 +183,7 @@
   position: relative;
   margin: 0;
   border-top: 1px solid $c-grey-light;
+
   &:hover {
     background: $c-grey-lighten;
   }
@@ -184,9 +200,12 @@
     color: $c-black;
     text-decoration: none;
   }
+
   b {
     background-color: transparentize(yellow, 0.4);
-    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
+    box-shadow:
+      -2px 0 0 0 transparentize(yellow, 0.4),
+      2px 0 0 0 transparentize(yellow, 0.4);
   }
 
   .fa {
@@ -207,6 +226,7 @@
   border-top: 1px solid $c-grey-light;
   box-shadow: none !important;
   outline: none !important;
+
   &:hover {
     background: $c-grey-light;
   }
@@ -214,6 +234,7 @@
   .fa {
     margin-right: 5px;
   }
+
   button {
     width: 100%;
     text-align: left;
@@ -255,6 +276,10 @@
   input {
     border: #2b56c1;
   }
+
+  .multiselectItem-results > span {
+    font-weight: 300;
+  }
 }
 
 .search__filter {
@@ -280,6 +305,7 @@
     margin-bottom: 0;
     color: $c-grey-dark;
     line-height: inherit;
+
     label {
       font-size: $f-size;
       text-transform: none;
@@ -305,6 +331,7 @@
   .fa-caret-left {
     color: $c-success;
   }
+
   .fa-caret-left + span {
     margin-left: 5px;
     color: $c-success;
@@ -313,6 +340,7 @@
   .fa-times {
     color: $c-danger;
   }
+
   .fa-times + span {
     margin-left: 5px;
     color: $c-danger;
@@ -328,11 +356,13 @@
     cursor: pointer;
     margin: 0;
   }
+
   label {
     font-family: $f-regular !important;
     font-size: $f-size !important;
     font-weight: bold;
   }
+
   .btn {
     width: 97%;
     margin-bottom: 5px;
@@ -373,6 +403,7 @@
       border-top: 0;
       padding: 5px 12px;
     }
+
     input {
       margin-right: 5px;
     }
@@ -429,12 +460,14 @@
 
 .switcher-wrapper {
   float: right;
+
   span {
     font-family: $f-regular;
     font-size: $f-size-sm;
     letter-spacing: 0.1em;
     color: $c-grey;
   }
+
   span.is-active {
     color: $c-primary;
     font-weight: bold;
@@ -471,6 +504,7 @@
     background-color: $c-white;
     border-radius: 50%;
   }
+
   :checked + & {
     &:after {
       right: auto;
@@ -537,6 +571,7 @@
     color: $c-black;
   }
 }
+
 .multiselectLabel-icon {
   float: right;
   font-size: $f-size-lg;
@@ -544,22 +579,22 @@
 
 .multiselectItem {
   display: flex;
-  align-items: center;
   position: relative;
 }
 
 .multiselectItem-name {
   color: $c-grey-dark;
   max-width: calc(100% - 50px);
+  margin-bottom: 7px;
+
+  &:hover {
+    border-bottom: 1px solid;
+    margin-bottom: 6px;
+  }
 
   svg {
     font-size: $f-size-xs;
     width: 1.1em !important;
-  }
-
-  .multiselectItem-label:hover & {
-    border-bottom: 1px solid;
-    margin-bottom: -1px;
   }
 
   a {
@@ -568,6 +603,7 @@
     text-transform: none;
     letter-spacing: 0;
     font-weight: 300;
+
     &:hover {
       text-decoration: none;
     }
@@ -575,24 +611,14 @@
 }
 
 .multiselectItem-results {
-  position: absolute;
-  top: 0;
-  right: 15px;
+  text-align: right;
   font-size: $f-size;
-  font-weight: 300;
-  width: 30px;
-  line-height: 24px;
   height: 24px;
   padding-right: 3px;
   color: $c-grey-dark;
-  text-align: right;
 }
 
 .multiselectItem-action {
-  display: inline-block;
-  position: absolute;
-  top: 3px;
-  left: 100%;
   font-size: $f-size-sm;
   width: 16px;
   height: 16px;
@@ -600,9 +626,18 @@
   text-align: center;
   border: 1px solid $c-grey;
   border-radius: $border-radius;
+
   &:hover {
     border-color: $c-black;
     cursor: pointer;
+  }
+
+  &.placeholder {
+    border: unset;
+
+    &:hover {
+      cursor: auto;
+    }
   }
 }
 
@@ -621,6 +656,7 @@
   vertical-align: middle;
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+
   &:hover {
     border-color: $c-black;
     background: rgba(0, 0, 0, 0.2);
@@ -665,9 +701,11 @@
   padding-top: 8px;
   position: relative;
   font-size: 12px;
+
   .form-group {
     position: relative;
     display: inline-block;
+
     svg {
       position: absolute;
       top: 10px;
@@ -699,6 +737,7 @@
       background: none;
       border: none;
       color: #2b56c1;
+
       &:hover {
         text-decoration: underline;
       }
@@ -732,7 +771,6 @@
 
 .multiselectItem {
   line-height: 1.2em;
-  padding: 5px 0;
   width: 100%;
 
   &.no-top-level-select {
@@ -748,21 +786,26 @@
     display: block;
     color: $c-grey;
   }
+
   .checkbox-checked {
     display: none;
     color: $c-success;
   }
+
   .checkbox-partial {
     display: none;
     color: $c-success;
   }
+
   .checkbox-group {
     display: none;
     color: $c-success;
   }
+
   .chevron-right {
     display: none;
   }
+
   .chevron-down {
     display: none;
   }
@@ -771,6 +814,7 @@
     .checkbox-empty {
       display: none;
     }
+
     .chevron-right {
       display: block;
     }
@@ -779,6 +823,7 @@
       .chevron-right {
         display: none;
       }
+
       .chevron-down {
         display: block;
       }
@@ -791,13 +836,16 @@
     .checkbox-empty {
       display: none;
     }
+
     .checkbox-checked {
       display: block;
       color: $c-grey-dark;
     }
+
     .checkbox-partial {
       display: none;
     }
+
     .checkbox-group {
       display: none;
     }
@@ -809,12 +857,15 @@
     .checkbox-empty {
       display: none;
     }
+
     .checkbox-checked {
       display: none;
     }
+
     .checkbox-group {
       display: block;
     }
+
     .checkbox-partial {
       display: none;
     }
@@ -826,14 +877,17 @@
     color: $c-black;
   }
 }
+
 .multiselectItem-input[data-state='2'] {
   & + label {
     .checkbox-empty {
       display: none;
     }
+
     .checkbox-checked {
       display: block;
     }
+
     .checkbox-group {
       display: none;
     }
@@ -845,17 +899,21 @@
     color: $c-black;
   }
 }
+
 .multiselectItem-input[data-state='1'] {
   & + label {
     .checkbox-empty {
       display: none;
     }
+
     .checkbox-checked {
       display: none;
     }
+
     .checkbox-partial {
       display: block;
     }
+
     .checkbox-group {
       display: none;
     }
@@ -891,6 +949,7 @@
     .checkbox-empty {
       display: none;
     }
+
     .checkbox-checked {
       display: block;
     }
@@ -921,10 +980,12 @@
     color: $c-grey-dark;
     padding-left: 10px;
   }
+
   & > div {
     width: 100%;
     z-index: 1;
   }
+
   input {
     padding-left: 70px;
     padding-right: 0;
@@ -975,6 +1036,7 @@
     font-size: $f-size;
     line-height: 1.6em;
     width: 100%;
+
     a,
     span {
       padding: 5px 5px 5px 10px;
