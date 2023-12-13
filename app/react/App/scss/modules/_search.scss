@@ -118,9 +118,7 @@
   &:active {
     @if $theme ==light {
       color: $c-black;
-    }
-
-    @else {
+    } @else {
       color: $c-white;
     }
 
@@ -205,7 +203,9 @@
 
   b {
     background-color: transparentize(yellow, 0.4);
-    box-shadow: -2px 0 0 0 transparentize(yellow, 0.4), 2px 0 0 0 transparentize(yellow, 0.4);
+    box-shadow:
+      -2px 0 0 0 transparentize(yellow, 0.4),
+      2px 0 0 0 transparentize(yellow, 0.4);
   }
 
   .fa {
@@ -260,11 +260,11 @@
 }
 
 .admin-filter {
-  &>ul>li:first-child {
+  & > ul > li:first-child {
     color: #2b56c1;
   }
 
-  &>ul>li.spaced {
+  & > ul > li.spaced {
     margin-top: 15px;
   }
 
@@ -277,7 +277,7 @@
     border: #2b56c1;
   }
 
-  .multiselectItem-results>span {
+  .multiselectItem-results > span {
     font-weight: 300;
   }
 }
@@ -295,7 +295,7 @@
     border-bottom: 1px solid $c-grey-light;
   }
 
-  >li:first-child {
+  > li:first-child {
     position: relative;
     margin: 0;
     width: 100%;
@@ -314,15 +314,15 @@
     }
   }
 
-  >li {
+  > li {
     line-height: 19px;
     width: 50%;
   }
 
-  >li.wide {
+  > li.wide {
     width: 100%;
 
-    >div {
+    > div {
       display: table;
       width: 100%;
     }
@@ -332,7 +332,7 @@
     color: $c-success;
   }
 
-  .fa-caret-left+span {
+  .fa-caret-left + span {
     margin-left: 5px;
     color: $c-success;
   }
@@ -341,7 +341,7 @@
     color: $c-danger;
   }
 
-  .fa-times+span {
+  .fa-times + span {
     margin-left: 5px;
     color: $c-danger;
     cursor: pointer;
@@ -427,7 +427,7 @@
     margin: 0px;
     height: 100%;
 
-    >div:first-child {
+    > div:first-child {
       padding-bottom: initial;
       overflow: initial;
       height: 100%;
@@ -505,7 +505,7 @@
     border-radius: 50%;
   }
 
-  :checked+& {
+  :checked + & {
     &:after {
       right: auto;
       left: 0;
@@ -518,8 +518,8 @@
   position: absolute;
   right: -5px;
 
-  &>div,
-  &>label {
+  & > div,
+  & > label {
     float: left;
     cursor: pointer;
   }
@@ -534,7 +534,7 @@
     border-bottom: 1px dotted $c-grey;
   }
 
-  &>.no-options-message span {
+  & > .no-options-message span {
     color: $c-grey;
   }
 }
@@ -567,7 +567,7 @@
     left: 6px;
   }
 
-  input.form-control:focus~.fa {
+  input.form-control:focus ~ .fa {
     color: $c-black;
   }
 }
@@ -616,7 +616,6 @@
   height: 24px;
   padding-right: 3px;
   color: $c-grey-dark;
-
 }
 
 .multiselectItem-action {
@@ -775,7 +774,6 @@
   width: 100%;
 
   &.no-top-level-select {
-
     .multiselectItem-icon,
     .multiselectItem-name {
       cursor: pointer;
@@ -834,7 +832,7 @@
 }
 
 .multiselectItem-input:disabled {
-  &+label {
+  & + label {
     .checkbox-empty {
       display: none;
     }
@@ -855,7 +853,7 @@
 }
 
 .multiselectItem-input[data-state='3'] {
-  &+label {
+  & + label {
     .checkbox-empty {
       display: none;
     }
@@ -873,15 +871,15 @@
     }
   }
 
-  &~.multiselectItem-label .multiselectItem-name,
-  &~.multiselectItem-results {
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
     font-weight: bold;
     color: $c-black;
   }
 }
 
 .multiselectItem-input[data-state='2'] {
-  &+label {
+  & + label {
     .checkbox-empty {
       display: none;
     }
@@ -895,15 +893,15 @@
     }
   }
 
-  &~.multiselectItem-label .multiselectItem-name,
-  &~.multiselectItem-results {
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
     font-weight: bold;
     color: $c-black;
   }
 }
 
 .multiselectItem-input[data-state='1'] {
-  &+label {
+  & + label {
     .checkbox-empty {
       display: none;
     }
@@ -921,8 +919,8 @@
     }
   }
 
-  &~.multiselectItem-label .multiselectItem-name,
-  &~.multiselectItem-results {
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
     font-weight: 500;
     color: $c-grey-dark;
   }
@@ -947,7 +945,7 @@
 
 .documentTypes-selector .multiselectItem-input:checked,
 .relationshipFilters .multiselectItem-input:checked {
-  &+label {
+  & + label {
     .checkbox-empty {
       display: none;
     }
@@ -957,8 +955,8 @@
     }
   }
 
-  &~.multiselectItem-label .multiselectItem-name,
-  &~.multiselectItem-results {
+  & ~ .multiselectItem-label .multiselectItem-name,
+  & ~ .multiselectItem-results {
     font-weight: bold;
     color: $c-black;
   }
@@ -974,7 +972,7 @@
   background: $c-white;
   border-radius: 4px;
 
-  >span {
+  > span {
     display: inline-block;
     line-height: 34px;
     width: 60px;
@@ -983,7 +981,7 @@
     padding-left: 10px;
   }
 
-  &>div {
+  & > div {
     width: 100%;
     z-index: 1;
   }

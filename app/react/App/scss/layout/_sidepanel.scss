@@ -54,7 +54,7 @@ $c-sidebar: $c-white;
   &.two-columns .sidepanel-body .tab-content.tab-content-visible {
     display: flex;
 
-    >div {
+    > div {
       border-left: 1px solid $c-grey-light;
     }
   }
@@ -190,7 +190,9 @@ $c-sidebar: $c-white;
     }
 
     &.relationship-active {
-      box-shadow: inset 0 0 0 1px $c-primary, inset 0 0 0 4px transparentize($c-primary, 0.7);
+      box-shadow:
+        inset 0 0 0 1px $c-primary,
+        inset 0 0 0 4px transparentize($c-primary, 0.7);
     }
   }
 
@@ -342,14 +344,14 @@ $c-sidebar: $c-white;
   border-bottom: 1px solid $c-grey-light;
   padding: 0 15px;
 
-  .button-list>button {
+  .button-list > button {
     margin-right: 15px;
   }
 
   &.buttons-align-right {
     text-align: right;
 
-    .button-list>button {
+    .button-list > button {
       margin-left: 15px;
       margin-right: unset;
     }
