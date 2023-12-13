@@ -11968,10 +11968,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
-flowbite-react@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.7.0.tgz#0b182d6f786b7c402fc7d318e556c9ede8bbecaf"
-  integrity sha512-QWFtfkTAfiF8kRnpeeokU1Ip8p+unFJeDIbceNNEFwDAPiLVTZKmsa3Xz32KQk+s5KLHJU1EkH3bwikTwPbDSg==
+flowbite-react@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.7.2.tgz#d7efd218b7d5ee0987c4bf9c2e250fbbb80b7117"
+  integrity sha512-Qq+yKW3955ZWjABzNq02NAS91rE86AHjCVRTXHXZ3dkcoGghqViIpsDCxOBo0NO7xnKkshYU3DocmczcP4pYTA==
   dependencies:
     "@floating-ui/react" "^0.26.2"
     contentlayer "^0.3.4"
