@@ -169,6 +169,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
         5
       </span>
     </span>
+    <span
+      className="multiselectItem-action placeholder"
+    />
   </li>
   <li
     className="multiselectItem"
@@ -246,6 +249,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
         4
       </span>
     </span>
+    <span
+      className="multiselectItem-action placeholder"
+    />
   </li>
   <li
     aria-label="group"
@@ -415,6 +421,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
               2
             </span>
           </span>
+          <span
+            className="multiselectItem-action placeholder"
+          />
         </li>
         <li
           className="multiselectItem"
@@ -492,6 +501,9 @@ exports[`MultiSelect should not render an empty group 1`] = `
               1
             </span>
           </span>
+          <span
+            className="multiselectItem-action placeholder"
+          />
         </li>
       </ul>
     </ShowIf>
