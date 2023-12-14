@@ -1,7 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
 import React, { HTMLProps, useEffect, useRef, Dispatch, SetStateAction } from 'react';
-import { ColumnDef, TableState, Row, Table as TableDef, SortingState } from '@tanstack/react-table';
+import {
+  ColumnDef,
+  TableState,
+  Row,
+  Table as TableDef,
+  SortingState,
+  Header,
+} from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t } from 'app/I18N';
 
@@ -53,15 +60,18 @@ const IndeterminateCheckbox = ({
   );
 };
 
-const getIcon = (sorting: false | 'asc' | 'desc') => {
+// eslint-disable-next-line comma-spacing
+const getIcon = <T,>(header: Header<T, any>, sortedChanged: boolean) => {
+  const sorting = !sortedChanged ? header.column.getIsSorted() : false;
+  const testId = `${header.id}_${sorting.toString()}`;
   switch (sorting) {
     case false:
-      return <ChevronUpDownIcon className="w-4" />;
+      return <ChevronUpDownIcon data-testid={testId} className="w-4" />;
     case 'asc':
-      return <ChevronUpIcon className="w-4" />;
+      return <ChevronUpIcon data-testid={testId} className="w-4" />;
     case 'desc':
     default:
-      return <ChevronDownIcon className="w-4" />;
+      return <ChevronDownIcon data-testid={testId} className="w-4" />;
   }
 };
 
@@ -87,14 +97,6 @@ const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
       disabled: !row.getCanSelect(),
       indeterminate: row.getIsSomeSelected() || row.getIsAllSubRowsSelected(),
       onChange: e => {
-        // const parent = row.getParentRow();
-        // if (parent) {
-        //   const allChildSelected = parent.subRows.every(subRow =>
-        //     subRow === row ? !row.getIsSelected() : subRow.getIsSelected()
-        //   );
-
-        //   parent.toggleSelected(allChildSelected);
-        // }
         row.getToggleSelectedHandler()(e);
         row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
       },

@@ -146,6 +146,7 @@ describe('Table', () => {
     it('should sort rows by dragging', () => {
       mount(<WithDnD />);
       cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
+      cy.get('[data-testid="description_desc"]').should('have.length', 1);
 
       cy.get('[data-testid="root-draggable-item-2"]').drag(
         '[data-testid="root-draggable-item-0"]',
@@ -155,6 +156,8 @@ describe('Table', () => {
         }
       );
 
+      cy.get('[data-testid="description_false"]').should('have.length', 1);
+
       checkRowContent(1, ['Entity 3', data[2].description, '3']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
@@ -163,6 +166,40 @@ describe('Table', () => {
         .should('have.length', 3)
         .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
         .should('deep.equal', ['Entity 3', 'Entity 2', 'Entity 1']);
+    });
+
+    it('should sort rows by header', () => {
+      mount(<WithDnD />);
+
+      cy.get('[data-testid="root-draggable-item-2"]').drag(
+        '[data-testid="root-draggable-item-0"]',
+        {
+          target: { x: 5, y: 0 },
+          force: true,
+        }
+      );
+
+      cy.get('[data-testid="title_false"]').click();
+
+      checkRowContent(1, ['Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Entity 3', data[2].description, '3']);
+
+      cy.get('[data-testid="title_asc"]').should('have.length', 1);
+
+      cy.get('[data-testid="root-draggable-item-0"]').drag(
+        '[data-testid="root-draggable-item-2"]',
+        {
+          target: { x: 5, y: 20 },
+          force: true,
+        }
+      );
+
+      cy.get('[data-testid="title_false"]').should('have.length', 1);
+
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 3', data[2].description, '3']);
+      checkRowContent(3, ['Entity 1', data[1].description, '1']);
     });
   });
 

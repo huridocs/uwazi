@@ -5,9 +5,10 @@ import { getIcon } from './TableElements';
 interface RowProps<T> {
   headerGroup: HeaderGroup<T>;
   draggableRows: boolean;
+  sortedChanged: boolean;
 }
 /* eslint-disable comma-spacing */
-const TableHeader = <T,>({ headerGroup, draggableRows }: RowProps<T>) => (
+const TableHeader = <T,>({ headerGroup, draggableRows, sortedChanged }: RowProps<T>) => (
   <tr>
     {headerGroup.headers.map(header => {
       const isSortable = header.column.getCanSort();
@@ -23,7 +24,7 @@ const TableHeader = <T,>({ headerGroup, draggableRows }: RowProps<T>) => (
             onClick={header.column.getToggleSortingHandler()}
           >
             {flexRender(header.column.columnDef.header, header.getContext())}
-            {isSortable && getIcon(header.column.getIsSorted())}
+            {isSortable && getIcon(header, sortedChanged)}
           </div>
         </th>
       );
