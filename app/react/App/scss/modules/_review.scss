@@ -15,16 +15,20 @@ $header-height: 44px;
 
 .btn-toggle-on {
   background-color: #ccc;
+
   &:focus {
     background-color: #ccc;
   }
+
   &:hover {
     border-color: #ccc;
   }
+
   svg {
     color: darkgreen;
   }
 }
+
 .btn-toggle-off {
   svg {
     color: grey;
@@ -43,10 +47,12 @@ $header-height: 44px;
   color: #541a1a;
   background-color: #e9afaf;
 }
+
 .confidence-bubble.medium {
   color: #574e1f;
   background-color: #e9dcaf;
 }
+
 .confidence-bubble.high {
   color: #1f572b;
   background-color: #afe9bb;
@@ -61,6 +67,7 @@ $header-height: 44px;
     // This is just to allow 'absolute' children to be relative to this.
     position: relative;
   }
+
   .content-header {
     display: flex;
     flex-direction: row;
@@ -88,6 +95,7 @@ $header-height: 44px;
         height: 28px;
         display: inline-block;
       }
+
       span.separator {
         width: 0px;
         height: 28px;
@@ -101,10 +109,12 @@ $header-height: 44px;
       line-height: 0;
       margin-left: 4px;
       margin-right: 5px;
+
       .btn-label {
         margin-left: 5px;
         margin-right: 0;
       }
+
       &:focus:not(.btn-disabled) {
         color: #333;
         background-color: #fff;
@@ -132,23 +142,28 @@ $header-height: 44px;
     .nav-tabs {
       position: unset;
       height: $header-height;
+
       li {
         width: $header-height;
+
         div {
           padding: unset;
         }
       }
     }
   }
+
   .side-panel {
     display: flex;
     flex-direction: column;
+
     .closeSidepanel {
       position: unset;
       height: $header-height;
       width: $header-height;
     }
   }
+
   .sidepanel-footer {
     position: unset;
     transform: unset;
@@ -170,6 +185,7 @@ $header-height: 44px;
   .side-panel {
     position: unset;
   }
+
   .side-panel.is-hidden {
     width: 0;
     visibility: hidden;
@@ -262,11 +278,13 @@ $header-height: 44px;
       line-height: unset;
       padding-top: 1px;
       padding-bottom: 12px;
+
       .btn-color {
         margin: 0 16px;
         white-space: nowrap;
         height: 23px;
       }
+
       h1 {
         font-style: normal;
         font-weight: 600;
@@ -278,9 +296,11 @@ $header-height: 44px;
         white-space: pre-wrap !important;
       }
     }
+
     .view {
       dl {
         padding: 12px 15px;
+
         dt {
           font-size: 15px;
           font-weight: normal;
@@ -288,6 +308,7 @@ $header-height: 44px;
           color: #222222;
           letter-spacing: -0.00458773px;
         }
+
         dd {
           font-size: 14px;
           font-weight: 350;
@@ -298,9 +319,11 @@ $header-height: 44px;
       }
     }
   }
+
   .attachments-list-parent {
     margin-top: 36px;
   }
+
   .form-group {
     ul {
       li.title {
@@ -316,6 +339,7 @@ $header-height: 44px;
           padding-bottom: 16px;
         }
       }
+
       li {
         select {
           margin-top: -8px;
@@ -328,9 +352,9 @@ $header-height: 44px;
         }
       }
     }
+
     .multiselectItem {
       padding: 0;
-      padding-top: 4px;
       height: 28px;
       font-style: normal;
       font-weight: normal;
@@ -342,20 +366,25 @@ $header-height: 44px;
         max-width: calc(100% - 110px);
       }
     }
+
     .multiselectActions {
       .form-group {
         width: 100%;
+
         input {
           width: 100%;
         }
       }
+
       .btn {
         border: 1px solid rgba(0, 0, 0, 0.2);
         border-radius: 4px;
       }
     }
+
     .suggestions.multiselect {
       padding-bottom: 8px;
+
       .suggestions-title {
         font-style: normal;
         font-weight: 500;
@@ -366,6 +395,7 @@ $header-height: 44px;
       }
     }
   }
+
   .ContextMenu {
     z-index: 100;
   }
