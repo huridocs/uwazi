@@ -13,12 +13,10 @@ const pdfjsLoader = async () => {
 
     if (process.env.HOT || process.env.NODE_ENV === 'test') {
       pdfjsLib = pdfjs;
+      pdfjsLib.GlobalWorkerOptions.workerSrc = await import('pdfjs-dist/build/pdf.worker.min.mjs');
     } else {
       pdfjsLib = await import('pdfjs-dist/webpack.mjs');
     }
-
-    const { WorkerMessageHandler } = await import('pdfjs-dist/build/pdf.worker.min.mjs');
-    pdfjsLib.GlobalWorkerOptions.workerSrc = WorkerMessageHandler;
   }
 };
 
