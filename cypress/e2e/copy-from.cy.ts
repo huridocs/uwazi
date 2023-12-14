@@ -34,7 +34,7 @@ describe('Copy from entity', () => {
     });
 
     it('should view the new entity', () => {
-      clickOnCreateEntity();
+      cy.contains('Entity created').click();
       cy.contains('h2', 'New orden de la corte').click();
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('a', 'View').click();
