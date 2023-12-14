@@ -29,8 +29,9 @@ describe('Copy from entity', () => {
         cy.contains('button', 'Copy Highlighted').click();
       });
       cy.get('div.copy-from').should('not.exist');
-
+      cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('button', 'Save').click();
+      cy.wait('lastRequest');
     });
 
     it('should view the new entity', () => {
@@ -84,7 +85,7 @@ describe('Copy from entity', () => {
         'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
       ).click();
       clickOnEditEntity();
-      cy.contains('button', 'Copy From').click();
+      cy.contains('button', 'Copy From').click({ force: true });
 
       cy.get('div.copy-from').within(() => {
         cy.get('input').type(
@@ -103,8 +104,9 @@ describe('Copy from entity', () => {
       cy.get('#metadataForm')
         .contains('.multiselectItem-name', 'Comisión Interamericana de Derechos Humanos')
         .click();
-
+      cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('button', 'Save').click();
+      cy.wait('lastRequest');
     });
 
     it('should view the edited entity', () => {
