@@ -29,9 +29,9 @@ describe('Copy from entity', () => {
         cy.contains('button', 'Copy Highlighted').click();
       });
       cy.get('div.copy-from').should('not.exist');
-      cy.intercept('GET', 'api/references/search*').as('lastRequest');
+      cy.intercept('GET', 'api/references/search*').as('searchRequest');
       cy.contains('button', 'Save').click();
-      cy.wait('lastRequest');
+      cy.wait('@searchRequest');
     });
 
     it('should view the new entity', () => {
@@ -106,7 +106,7 @@ describe('Copy from entity', () => {
         .click();
       cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('button', 'Save').click();
-      cy.wait('lastRequest');
+      cy.wait('@lastRequest');
     });
 
     it('should view the edited entity', () => {
