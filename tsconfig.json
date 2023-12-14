@@ -6,7 +6,7 @@
     "useUnknownInCatchVariables": false,
     "allowJs": true,
     "noEmit": true,
-    "module": "commonjs",
+    "module": "ES2022",
     "target": "es2022",
     "jsx": "react",
     "moduleResolution": "node",
