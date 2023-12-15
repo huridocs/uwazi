@@ -233,7 +233,7 @@
     "stopword": "^2.0.8",
     "superagent": "8.0.9",
     "svg-captcha": "^1.4.0",
-    "tiny-cookie": "^2.4.1",
+    "tiny-cookie": "^2.5.1",
     "typescript": "5.1.5",
     "underscore": "^1.13.6",
     "url-join": "^4.0.1",
