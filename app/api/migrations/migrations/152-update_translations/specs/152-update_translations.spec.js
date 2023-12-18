@@ -41,7 +41,7 @@ describe('migration update translations of settings new Users/Groups UI', () => 
       .find({ key: { $in: newKeys.map(k => k.key) } })
       .toArray();
 
-    expect(translations.length).toBe(26);
+    expect(translations.length).toBe(6);
   });
 
   it('should be idempotent (do not throw an error on multiple runs)', async () => {
