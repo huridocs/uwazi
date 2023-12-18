@@ -3,7 +3,7 @@ const newKeys = [{ key: 'Updated' }, { key: 'No Group' }, { key: 'Using URLs' }]
 const deletedKeys = [];
 
 export default {
-  delta: 151,
+  delta: 152,
 
   reindex: false,
 
