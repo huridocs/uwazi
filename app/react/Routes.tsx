@@ -32,6 +32,7 @@ import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
+import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
 import { ClientSettings } from 'app/apiResponseTypes';
@@ -84,11 +85,16 @@ const getRoutesLayout = (
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
-      <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
         loader={menuConfigloader(headers)}
+      />
+      <Route path="collection2" element={adminsOnlyRoute(<CollectionSettings />)} />
+      <Route
+        path="collection"
+        element={adminsOnlyRoute(<Collection />)}
+        loader={collectionLoader(headers)}
       />
       <Route
         path="users"

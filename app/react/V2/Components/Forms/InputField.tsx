@@ -14,7 +14,7 @@ interface InputFieldProps {
   errorMessage?: string | React.ReactNode;
   value?: string;
   className?: string;
-  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search';
+  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file';
   autoComplete?: 'on' | 'off';
   name?: string;
   clearFieldAction?: () => any;
@@ -72,7 +72,9 @@ const InputField = React.forwardRef(
             ref={ref}
             disabled={disabled}
             value={value}
-            className={`${fieldStyles} disabled:text-gray-500 rounded-lg block flex-1 w-full text-sm p-2.5`}
+            className={`${fieldStyles} disabled:text-gray-500 rounded-lg block flex-1 w-full text-sm ${
+              type !== 'file' ? 'p-2.5' : ''
+            }`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (
