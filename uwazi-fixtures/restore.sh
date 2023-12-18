@@ -16,14 +16,14 @@ cp ./uwazi-fixtures/uploaded_documents/* ./uploaded_documents/
 
 echo "Running migrations..."
 if [ "$TRANSPILED" = true ]; then
-  node ./prod/scripts/migrate.js
+  INDEX_NAME=$DB DATABASE_NAME=$DB node ./prod/scripts/migrate.js
 else
-  yarn migrate
+  INDEX_NAME=$DB DATABASE_NAME=$DB yarn migrate
 fi
 
 echo "Reindexing..."
 if [ "$TRANSPILED" = true ]; then
-  node ./prod/database/reindex_elastic.js
+  INDEX_NAME=$DB DATABASE_NAME=$DB node ./prod/database/reindex_elastic.js
 else
-  yarn reindex
+  INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex
 fi
