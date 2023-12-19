@@ -143,7 +143,12 @@ class Attachment extends Component {
     const sizeString = file.size ? filesize(file.size) : '';
     const item = getItemOptions(file.filename, file.url);
     let name = (
-      <a className="attachment-link" href={item.url || item.downloadHref}>
+      <a
+        className="attachment-link"
+        href={item.url || item.downloadHref}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {Attachment.conformThumbnail(file, item)}
         <span className="attachment-name">
           <span>{file.originalname}</span>
