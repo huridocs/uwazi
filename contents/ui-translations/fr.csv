@@ -1,4 +1,4 @@
-key,value
+Key,French
 % of sentences above threshold,% des phrases en-dessus du seuil
 (view page),(voir page)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
@@ -62,9 +62,9 @@ ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
 Allow captcha bypass,Allow captcha bypass
+An error has occurred during data export,An error has occurred during data export
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
-An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
@@ -419,9 +419,9 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,Langue
 Language Code,Language Code
 Language deleted,Language deleted
-Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
+Language Install Start Message,"Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished."
 Language reset success,Language reset success
-Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
+Language Uninstall Start Message,"Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished."
 Language uninstalled successfully,Language uninstalled successfully
 Languages,Languages
 Languages installed successfully,Languages installed successfully
@@ -510,7 +510,6 @@ No Connections description,Connections are the direct relationships between this
 No context,No context
 No Documents found,No Documents found
 no filters for templates,The combination of entity types doesn't have any filters in common.
-No Group,No Group
 No icon / flag,No icon / flag
 No Label,Aucune étiquettes
 No options,No options
@@ -864,7 +863,6 @@ Untranslated Terms,Untranslated Terms
 Update,Mettre à jour
 UPDATE,Mettre à jour
 Update success,Update success
-Updated,Updated
 Updated file,Updated file
 Updated multiple entities,Updated multiple entities
 Updated permissions on entity,Updated permissions on entity
@@ -901,7 +899,6 @@ Users,Utilisateurs
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,Utilisation de Google Authenticator
-Using URLs,Using URLs
 Uwazi is developed by,Uwazi est développé par
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi apprend en utilisant les documents étiquetés. Cela peut prendre jusqu'à 2 heures, et une fois terminé, vous pouvez revoir les suggestions faites par Uwazi pour votre collection."
 Uwazi UI,Interface utilisateur d'Uwazi
