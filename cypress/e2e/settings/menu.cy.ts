@@ -63,12 +63,12 @@ describe('Menu configuration', () => {
   });
 
   it('tests Edit', () => {
-    cy.getByTestId('group_0').contains('Edit').click();
+    cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
     cy.get('#link-title').type(' edited');
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
-    cy.get('td:nth-of-type(2) button span').click();
-    cy.get("[data-testid='group_0'] button").click();
+    cy.get('tbody td:nth-of-type(2) button span').click();
+    cy.get('tbody tr:nth-of-type(2) button').click();
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
     cy.getByTestId('menu-save').click();
@@ -77,12 +77,12 @@ describe('Menu configuration', () => {
   });
 
   it('tests edit groups', () => {
-    cy.getByTestId('group_1').contains('button', 'Group').click();
-    cy.getByTestId('group_1.0').contains('Edit').click();
+    cy.get('tbody tr:nth-of-type(2)').contains('button', 'Group').click();
+    cy.get('tbody tr:nth-of-type(3)').contains('Edit').click();
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
 
-    cy.getByTestId('group_0').contains('Edit').click();
+    cy.get('tbody tr:nth-of-type(4)').contains('Edit').click();
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
 
@@ -92,11 +92,9 @@ describe('Menu configuration', () => {
   });
 
   it('tests delete', () => {
-    cy.get("[data-testid='group_1.1'] input").click();
-    cy.getByTestId('menu-delete-link').click();
+    cy.get('tbody tr:nth-of-type(1) input').click();
 
-    cy.getByTestId('group_0').contains('button', 'Group').click();
-    cy.get("[data-testid='group_0'] input").click();
+    cy.get('tbody tr:nth-of-type(3) input').click();
     cy.getByTestId('menu-delete-link').click();
 
     cy.getByTestId('menu-save').click();
