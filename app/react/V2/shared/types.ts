@@ -11,7 +11,7 @@ type DraggableValue<T> = T & {
 };
 
 interface IDraggable<T> {
-  id?: string;
+  dndId?: string;
   value: DraggableValue<T>;
   iconHandle?: boolean;
   parent?: IDraggable<T>;

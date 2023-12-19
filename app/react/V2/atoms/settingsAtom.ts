@@ -1,10 +1,9 @@
 import { atom } from 'recoil';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 
 const settingsAtom = atom({
   key: 'settings',
-  default: {} as Settings,
+  default: {} as ClientSettings,
 });
 
-export type { Settings };
 export { settingsAtom };

@@ -12,7 +12,7 @@ import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 import {
   DefaultHeader,
@@ -31,7 +31,7 @@ const languagesListLoader =
     I18NApi.getLanguages(new RequestParams({}, headers));
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
-  const { languages: collectionLanguages = [] } = useRecoilValue<Settings>(settingsAtom);
+  const { languages: collectionLanguages = [] } = useRecoilValue<ClientSettings>(settingsAtom);
   const { requestAction } = useApiCaller();
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
