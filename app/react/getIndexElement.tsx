@@ -11,7 +11,7 @@ import { ViewerRoute } from './Viewer/ViewerRoute';
 
 const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
-  const queryString = `(${query.substring(1)})`;
+  let queryString = query ? `(${query.substring(1)})` : '';
 
   if (customHomePage.includes('map')) {
     return <LibraryMap params={{ q: queryString }} />;
