@@ -11943,10 +11943,10 @@ flowbite-typography@^1.0.3:
     lodash.isplainobject "^4.0.6"
     lodash.merge "^4.6.2"
 
-flowbite@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/flowbite/-/flowbite-2.0.0.tgz#f149f63f4752722d888b1300a5f5071a6bf98b7d"
-  integrity sha512-gP/iC/WuznQ5XBzikhaSs4RDs49zrvoAdHbWMHSY3l7nVJX0xJz+dELIlLjh+czLdEVTMLxUjuARYYwCb5q34A==
+flowbite@^2.0.0, flowbite@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/flowbite/-/flowbite-2.2.1.tgz#9e22be9ff746bccb9fcf87979bbc5e41a16eaf7a"
+  integrity sha512-iiZyBTtriEDRHrqXZgpKHaxl4B2J8HZUP8Yn1RXozUDKszWHDVj4GxQqMMB9AJHRWOgXV/4E/LJZ/zqQgBUhWA==
   dependencies:
     "@popperjs/core" "^2.9.3"
     mini-svg-data-uri "^1.4.3"
