@@ -3,11 +3,10 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { Entity } from 'api/entities.v2/model/Entity';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { inspect } from 'util';
 
 interface IndexEntitiesCallback {
   (sharedIds: string[]): Promise<void>;
@@ -52,7 +51,6 @@ export class DenormalizationService {
     relatedEntities: Entity[] = []
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
-    console.log(inspect({ properties }, undefined, 20));
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
       properties.map(async property =>
@@ -74,7 +72,6 @@ export class DenormalizationService {
         )
       )
     );
-    console.log(inspect({ entities }, undefined, 20));
     return entities;
   }
 
@@ -133,8 +130,6 @@ export class DenormalizationService {
   ) {
     const candidates = (await Promise.all(ids.map(async id => findCandidatesCallback(id)))).flat();
 
-    console.trace({ candidates });
-
     if (invalidateMetadataCacheCallback) {
       await invalidateMetadataCacheCallback(ids);
     } else {
@@ -180,7 +175,6 @@ export class DenormalizationService {
   }
 
   async denormalizeAfterCreatingRelationships(relationshipIds: string[]) {
-    console.trace({ relationshipIds });
     const defaultLanguage = await this.settingsDS.getDefaultLanguageKey();
     return this.runQueriesAndInvalidateMetadataCaches(relationshipIds, async id =>
       this.getCandidateEntitiesForRelationship(id, defaultLanguage)

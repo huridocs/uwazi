@@ -1,5 +1,6 @@
 import {
   CreateRelationshipService,
+  DeleteRelationshipService,
   DenormalizationService,
 } from 'api/relationships.v2/services/service_factories';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
@@ -80,17 +81,18 @@ const ignoreNewRelationshipsMetadata = async (
   template: TemplateSchema
 ) => {
   const newRelationships: { sharedId: string; template: string }[] = [];
+  const removedRelationships: string[] = [];
+  const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
   await Promise.all(
     (template.properties || []).map(async property => {
       if (isRelationshipProperty(property)) {
         if (toSave.metadata && currentDoc.metadata) {
-          const { newValues } = calculateDiff(currentDoc, toSave, property.name);
+          const { newValues, deletedValues } = calculateDiff(currentDoc, toSave, property.name);
           const propertyModel = TemplateMappers.propertyToApp(
             property,
             new ObjectId(template._id!)
           );
           const query = new MatchQueryNode({ sharedId: currentDoc.sharedId }, propertyModel.query);
-          const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
           await entitiesDataSource.getByIds(newValues as string[]).forEach(async targetEntity => {
             newRelationships.push(
               query.determineRelationship(
@@ -103,13 +105,27 @@ const ignoreNewRelationshipsMetadata = async (
             );
           });
 
+          await entitiesDataSource
+            .getByIds(deletedValues as string[])
+            .forEach(async targetEntity => {
+              removedRelationships.push(
+                query.determineRelationship(
+                  { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
+                  {
+                    sharedId: targetEntity.sharedId,
+                    template: targetEntity.template,
+                  }
+                )
+              );
+            });
+
           // eslint-disable-next-line no-param-reassign
           toSave.metadata[property.name] = currentDoc.metadata[property.name];
         }
       }
     })
   );
-  return { newRelationships };
+  return { newRelationships, removedRelationships };
 };
 
 const createNewRelationships = async (
@@ -132,10 +148,28 @@ const createNewRelationships = async (
   );
 };
 
+const deleteRemovedRelationships = async (
+  relationships: { type: string; to: string; from: string }[],
+  user: any
+) => {
+  const transactionManager = DefaultTransactionManager();
+  const dataSource = DefaultRelationshipDataSource(transactionManager);
+  const service = await DeleteRelationshipService({ user });
+  await relationships.reduce(async (prev, relationship) => {
+    await prev;
+    const rels = await dataSource
+      .getByDefinition(relationship.from, relationship.type, relationship.to)
+      .all();
+
+    await service.delete(rels.map(rel => rel._id));
+  }, Promise.resolve());
+};
+
 export {
   deleteRelatedNewRelationships,
   ignoreNewRelationshipsMetadata,
   createNewRelationships,
+  deleteRemovedRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
 };

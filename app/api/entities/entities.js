@@ -26,6 +26,7 @@ import {
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
   createNewRelationships,
+  deleteRemovedRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -90,7 +91,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
-        const { newRelationships } = await ignoreNewRelationshipsMetadata(
+        const { newRelationships, removedRelationships } = await ignoreNewRelationshipsMetadata(
           currentDoc,
           toSave,
           template
@@ -104,6 +105,10 @@ async function updateEntity(entity, _template, unrestricted = false) {
         const saveResult = await saveFunc(toSave);
 
         await createNewRelationships(newRelationships, permissionsContext.getUserInContext());
+        await deleteRemovedRelationships(
+          removedRelationships,
+          permissionsContext.getUserInContext()
+        );
 
         return saveResult;
       }

@@ -158,7 +158,7 @@ const CreateRelationshipService = async (request: { user: any }) => {
   return service;
 };
 
-const DeleteRelationshipService = async (request: Request) => {
+const DeleteRelationshipService = async (request: { user: any }) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
