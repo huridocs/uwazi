@@ -480,7 +480,14 @@ export default {
     const entities = await this.get(query, select, pagination);
     return Promise.all(
       entities.map(async entity => {
-        entity.relations = await relationships.getByDocument(entity.sharedId, entity.language);
+        entity.relations = await relationships.getByDocument(
+          entity.sharedId,
+          entity.language,
+          undefined,
+          undefined,
+          undefined,
+          false
+        );
         return entity;
       })
     );
