@@ -15,13 +15,16 @@ import { setReferences } from './actions/referencesActions';
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {
     const { sharedId } = requestParams.data;
-    const [entity] = await EntitiesAPI.get(
-      requestParams.set({ sharedId, omitRelationships: true })
-    );
-
-    return entity.documents.length
-      ? PDFViewComponent.requestState(requestParams, globalResources)
-      : EntityView.requestState(requestParams, globalResources);
+    try {
+      const [entity] = await EntitiesAPI.get(
+        requestParams.set({ sharedId, omitRelationships: true })
+      );
+      return entity.documents.length
+        ? PDFViewComponent.requestState(requestParams, globalResources)
+        : EntityView.requestState(requestParams, globalResources);
+    } catch (e) {
+      return e.status === 404 ? [showTab('404')] : [];
+    }
   }
 
   componentWillUnmount() {
