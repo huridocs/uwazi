@@ -356,7 +356,7 @@
     "html-webpack-plugin": "5.6.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "29.0.1",
-    "jest-environment-jsdom": "29.6.1",
+    "jest-environment-jsdom": "29.7.0",
     "jest-extended": "4.0.2",
     "jest-image-snapshot": "^6.0.0",
     "jest-jasmine2": "^29.7.0",
