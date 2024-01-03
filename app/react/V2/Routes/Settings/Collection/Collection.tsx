@@ -10,12 +10,11 @@ import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 
-import { InputField, Select } from 'app/V2/Components/Forms';
+import { InputField, Select, EnableButtonCheckbox } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate } from 'app/I18N';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { EnableButton } from 'app/V2/Components/UI';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -61,6 +60,8 @@ const Collection = () => {
       text: <Translate>Settings updated</Translate>,
     });
   };
+
+  console.log(formData.private);
 
   return (
     <div
@@ -116,8 +117,8 @@ const Collection = () => {
                   />
                 </div>
                 <div className="">
-                  <EnableButton {...register('private')} className="mr-4" />
-                  <Translate className="block mb-2 text-sm font-medium text-gray-700">
+                  <EnableButtonCheckbox {...register('private')} className="mr-4" />
+                  <Translate className="mb-2 text-sm font-medium text-gray-700">
                     Public instance
                   </Translate>
                 </div>

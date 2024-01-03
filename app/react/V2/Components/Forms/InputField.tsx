@@ -55,7 +55,7 @@ const InputField = React.forwardRef(
     if (clearFieldAction) {
       fieldStyles = `${fieldStyles} pr-10`;
     }
-
+    console.log(value);
     return (
       <div className={className}>
         <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>

@@ -7,3 +7,4 @@ export { ConfirmNavigationModal } from './ConfirmNavigationModal';
 export type { MultiSelectProps } from './MultiSelect';
 export type { SelectProps, OptionSchema } from './Select';
 export { Checkbox } from './Checkbox';
+export { EnableButtonCheckbox } from './EnableButtonCheckbox';
