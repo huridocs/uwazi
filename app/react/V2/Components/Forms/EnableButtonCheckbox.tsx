@@ -6,7 +6,6 @@ interface CheckboxProps {
   onChange?: ReactEventHandler<HTMLInputElement>;
   checked?: boolean;
   defaultChecked?: boolean;
-  label: string;
   className?: string;
   disabled?: boolean;
 }
@@ -22,23 +21,24 @@ const EnableButtonCheckbox = React.forwardRef(
 
     return (
       <label
-        className={`relative inline-flex items-center mb-5 text-sm font-medium text-gray-900 cursor-pointer ${
+        className={`relative inline-flex items-center text-sm font-medium text-gray-900 cursor-pointer ${
           disabled ? '!text-gray-300' : ''
         } ${className} `}
-        htmlFor={name}
       >
         <input
           type="checkbox"
           disabled={disabled}
           name={name}
+          checked={checked}
           defaultChecked={defaultChecked}
           ref={ref}
           className="sr-only peer"
           onChange={onChange}
         />
+
         <div
-          className={`bg-white peer ${styles} peer-checked:text-white text-sm px-5 py-2.5 peer-disabled:cursor-not-allowed font-medium rounded-lg
-        border focus:outline-none`}
+          className={`bg-white peer ${styles} peer-checked:text-white text-sm px-3 py-2 peer-disabled:cursor-not-allowed font-medium rounded-lg
+    border focus:outline-none`}
         >
           <Translate>{checked ? 'Active' : 'Enable'}</Translate>
         </div>

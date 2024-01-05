@@ -6,7 +6,7 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Provider } from 'react-redux';
 
 const meta: Meta<typeof EnableButtonCheckbox> = {
-  title: 'Components/Forms/EnableButtonCheckbox',
+  title: 'Forms/EnableButtonCheckbox',
   component: EnableButtonCheckbox,
   argTypes: {
     onChange: { action: 'changed' },
@@ -16,17 +16,18 @@ const meta: Meta<typeof EnableButtonCheckbox> = {
 type Story = StoryObj<typeof EnableButtonCheckbox>;
 
 const Container = (args: any) => {
-  const [value, setValue] = React.useState(args.value);
+  const [checked, setChecked] = React.useState(args.checked);
   return (
     <div className="tw-content">
       <EnableButtonCheckbox
         onChange={() => {
+          console.log('changed');
           args.onChange();
-          setValue(!value);
+          setChecked(!checked);
         }}
         disabled={args.disabled}
         name={args.name}
-        value={value}
+        checked={checked}
       />
     </div>
   );
@@ -45,8 +46,8 @@ const Basic: Story = {
   args: {
     name: 'option',
     disabled: false,
+    checked: false,
     className: '',
-    value: 'one',
     onChange: action('changed'),
   },
 };

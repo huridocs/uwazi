@@ -1,25 +1,35 @@
+/* eslint-disable max-lines */
 /* eslint-disable camelcase */
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import SettingsAPI from 'app/Settings/SettingsAPI';
+import TemplatesAPI from 'app/Templates/TemplatesAPI';
 
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 
-import { InputField, Select, EnableButtonCheckbox } from 'app/V2/Components/Forms';
+import { Geolocation } from 'app/Forms';
+import { InputField, Select, MultiSelect } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Translate } from 'app/I18N';
-import { ClientSettings } from 'app/apiResponseTypes';
+import { Translate, t } from 'app/I18N';
+import { ClientSettings, Template } from 'app/apiResponseTypes';
+import { Tooltip } from 'flowbite-react';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import * as tips from './collectionSettingsTips';
+import { CollectionOptionToggle } from './CollectionOptionToggle';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    SettingsAPI.get(new RequestParams({}, headers));
+  async () => {
+    const settings = await SettingsAPI.get(new RequestParams({}, headers));
+    const templates = await TemplatesAPI.get(new RequestParams({}, headers));
+    return { settings, templates };
+  };
 
 const dateOptions = () => {
   const date = new Date();
@@ -27,23 +37,49 @@ const dateOptions = () => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
 
+  const yearLabel = t('System', 'Year', null, false);
+  const monthLabel = t('System', 'Month', null, false);
+  const dayLabel = t('System', 'Day', null, false);
+
   return [
-    { value: 'yyyy/MM/dd', key: `${year}/${month}/${day}` },
-    { value: 'dd/MM/yyyy', key: `${day}/${month}/${year}` },
-    { value: 'MM/dd/yyyy', key: `${month}/${day}/${year}` },
-    { value: 'yyyy-MM-dd', key: `${year}-${month}-${day}` },
-    { value: 'dd-MM-yyyy', key: `${day}-${month}-${year}` },
-    { value: 'MM-dd-yyyy', key: `${month}-${day}-${year}` },
+    {
+      value: 'yyyy/MM/dd',
+      label: `${year}/${month}/${day} (${yearLabel}/${monthLabel}/${dayLabel})`,
+    },
+    {
+      value: 'dd/MM/yyyy',
+      label: `${day}/${month}/${year} (${dayLabel}/${monthLabel}/${yearLabel})`,
+    },
+    {
+      value: 'MM/dd/yyyy',
+      label: `${month}/${day}/${year} (${monthLabel}/${dayLabel}/${yearLabel})`,
+    },
+    {
+      value: 'yyyy-MM-dd',
+      label: `${year}-${month}-${day} (${yearLabel}-${monthLabel}-${dayLabel})`,
+    },
+    {
+      value: 'dd-MM-yyyy',
+      label: `${day}-${month}-${year} (${dayLabel}-${monthLabel}-${yearLabel})`,
+    },
+    {
+      value: 'MM-dd-yyyy',
+      label: `${month}-${day}-${year} (${monthLabel}-${dayLabel}-${yearLabel})`,
+    },
   ];
 };
 
 const Collection = () => {
-  const settings = useLoaderData() as ClientSettings;
+  const { settings, templates } = useLoaderData() as {
+    settings: ClientSettings;
+    templates: Template[];
+  };
   const { links, custom, ...formData } = settings;
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
   const {
     register,
+    setValue,
     watch,
     handleSubmit,
     formState: { errors, isSubmitted },
@@ -61,7 +97,25 @@ const Collection = () => {
     });
   };
 
-  console.log(formData.private);
+  const labelWithTip = (label: string, tip: React.ReactNode) => (
+    <span className="flex gap-4">
+      {label}
+      <Tooltip
+        // eslint-disable-next-line react/style-prop-object
+        style="light"
+        content={tip}
+        placement="right"
+      >
+        <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+      </Tooltip>
+    </span>
+  );
+
+  const templateOptions = templates.map(template => ({
+    label: template.name,
+    value: template._id,
+    selected: settings.allowedPublicTemplates?.includes(template._id),
+  }));
 
   return (
     <div
@@ -74,7 +128,7 @@ const Collection = () => {
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(submit)} id="collection-form">
             <Card className="mb-4" title={<Translate>General</Translate>}>
-              <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6">
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <InputField
                     id="collection-name"
@@ -92,17 +146,14 @@ const Collection = () => {
                     {...register('favicon')}
                   />
                 </div>
-              </div>
-              <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default View</Translate>}
-                    className="mb-4"
                     id="roles"
                     options={[
-                      { key: 'map', value: 'map' },
-                      { key: 'cards', value: 'cards' },
-                      { key: 'table', value: 'table' },
+                      { label: 'Map', value: 'map' },
+                      { label: 'Cards', value: 'cards' },
+                      { label: 'Table', value: 'table' },
                     ]}
                     {...register('defaultLibraryView')}
                   />
@@ -110,17 +161,161 @@ const Collection = () => {
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default date format</Translate>}
-                    className="mb-4"
                     id="roles"
                     options={dateOptions()}
                     {...register('dateFormat')}
                   />
                 </div>
-                <div className="">
-                  <EnableButtonCheckbox {...register('private')} className="mr-4" />
-                  <Translate className="mb-2 text-sm font-medium text-gray-700">
-                    Public instance
-                  </Translate>
+                <div className="sm:col-span-2">
+                  <InputField
+                    id="landing-page"
+                    preText="eg. https://yourdomain"
+                    label={labelWithTip('Custom landing page', tips.landingPageTip)}
+                    {...register('home_page')}
+                  />
+                </div>
+                <CollectionOptionToggle
+                  valueKey="private"
+                  label="Public instance"
+                  tip={tips.publicSharing}
+                  register={register}
+                />
+                <CollectionOptionToggle
+                  valueKey="cookiepolicy"
+                  label="Show cookie policy"
+                  tip={tips.cookiePolicy}
+                  register={register}
+                />
+                <CollectionOptionToggle
+                  valueKey="allowcustomJS"
+                  label="Global JS"
+                  tip={tips.globalJS}
+                  register={register}
+                />
+                {!settings.newNameGeneration && (
+                  <CollectionOptionToggle
+                    valueKey="newNameGeneration"
+                    label="Non-latin characters support"
+                    tip={tips.characterSupport}
+                    register={register}
+                  />
+                )}
+              </div>
+            </Card>
+            <Card
+              className="mb-4"
+              title={
+                <span className="flex gap-4">
+                  <Translate>Analytics</Translate>
+                  <Tooltip
+                    // eslint-disable-next-line react/style-prop-object
+                    style="light"
+                    content={tips.analytics}
+                    placement="right"
+                  >
+                    <QuestionMarkCircleIcon className="w-5 h-5 text-gray-500" />
+                  </Tooltip>
+                </span>
+              }
+            >
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                <div className="sm:col-span-1">
+                  <InputField
+                    id="google-analytics"
+                    label={<Translate>Google</Translate>}
+                    {...register('analyticsTrackingId')}
+                  />
+                </div>
+                <div className="sm:col-span-1">
+                  <InputField
+                    id="matomo-analytics"
+                    label={<Translate>Matomo</Translate>}
+                    {...register('matomoConfig')}
+                  />
+                </div>
+              </div>
+            </Card>
+            {settings.features?.ocr?.url && (
+              <Card className="mb-4" title={<Translate>Services</Translate>}>
+                <CollectionOptionToggle
+                  valueKey="ocrServiceEnabled"
+                  label="Document OCR trigger"
+                  tip={tips.ocrTrigger}
+                  register={register}
+                />
+              </Card>
+            )}
+            <Card className="mb-4" title={<Translate>Forms and email configuration</Translate>}>
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                <div className="sm:col-span-1">
+                  <InputField
+                    id="sending-email"
+                    label={labelWithTip('Sending email', tips.emails[1])}
+                    hasErrors={!!errors.site_name}
+                    {...register('senderEmail')}
+                  />
+                </div>
+                <div className="sm:col-span-1">
+                  <InputField
+                    id="receiving-email"
+                    label={labelWithTip('Contact form email', tips.receivingEmail)}
+                    {...register('contactEmail')}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <InputField
+                    id="public-form-destination"
+                    label={labelWithTip('Public Form submit URL', tips.publicForm[1])}
+                    {...register('publicFormDestination')}
+                  />
+                </div>
+                <CollectionOptionToggle
+                  valueKey="openPublicEndpoint"
+                  label="Allow captcha bypass"
+                  tip={tips.openPublicForm}
+                  register={register}
+                />
+                <div className="sm:col-span-2">
+                  <MultiSelect
+                    label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
+                    options={templateOptions}
+                    onChange={newValues => {
+                      setValue(
+                        'allowedPublicTemplates',
+                        newValues.map(({ value }) => value)
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+            </Card>
+            <Card className="mb-4" title={<Translate>Map</Translate>}>
+              <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+                <div className="sm:col-span-1">
+                  <Select
+                    label={<Translate>Map Provider</Translate>}
+                    id="roles"
+                    options={[
+                      { label: 'Mapbox', value: 'mapbox' },
+                      { label: 'Google', value: 'google' },
+                    ]}
+                    {...register('tilesProvider')}
+                  />
+                </div>
+                <div className="sm:col-span-1">
+                  <InputField
+                    id="map-key"
+                    label={labelWithTip('Map API key', tips.mapApiKey)}
+                    {...register('mapApiKey', { pattern: /^[a-zA-Z0-9._]+$/ })}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Geolocation
+                    value={watch('mapStartingPoint')}
+                    onChange={(values: ClientSettings['mapStartingPoint']) => {
+                      setValue('mapStartingPoint', values);
+                    }}
+                  />
                 </div>
               </div>
             </Card>
