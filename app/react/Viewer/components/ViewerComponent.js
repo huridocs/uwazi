@@ -7,6 +7,8 @@ import { bindActionCreators } from 'redux';
 import EntityView from 'app/Viewer/EntityView';
 import { Loader } from 'app/components/Elements/Loader';
 import { actions } from 'app/BasicReducer';
+import { t } from 'app/I18N';
+import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { PDFView } from '../PDFView';
 
 class EntityViewerComponent extends Component {
@@ -16,9 +18,14 @@ class EntityViewerComponent extends Component {
   }
 
   render() {
-    const { entity } = this.props;
+    const { entity, notFound } = this.props;
 
     if (!entity.get('_id')) {
+      if (notFound) {
+        return (
+          <ErrorFallback error={{ code: 404, message: t('System', 'Not Found', null, false) }} />
+        );
+      }
       return <Loader />;
     }
 
@@ -26,9 +33,14 @@ class EntityViewerComponent extends Component {
   }
 }
 
+EntityViewerComponent.defaultProps = {
+  notFound: false,
+};
+
 EntityViewerComponent.propTypes = {
   entity: PropTypes.instanceOf(Map).isRequired,
   setSidepanelTrigger: PropTypes.func.isRequired,
+  notFound: PropTypes.bool,
 };
 
 const setSidepanelTrigger = () => actions.set('library.sidepanel.view', 'entity');
@@ -38,8 +50,10 @@ const mapStateToProps = state => {
     ? state.documentViewer.doc
     : state.entityView.entity;
 
+  const notFound = state.entityView.uiState.get('tab') === '404';
   return {
     entity,
+    notFound,
   };
 };
 
