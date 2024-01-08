@@ -20,13 +20,11 @@ export interface SettingsFilterSchema {
 
 export interface SettingsLinkSchema {
   _id?: ObjectIdSchema;
-  title?: string;
+  title: string;
   url?: string;
-  sublinks?: {
-    title?: string;
-    [k: string]: unknown | undefined;
-  }[];
-  type?: string;
+  localId?: string;
+  sublinks?: SettingsSublinkSchema[];
+  type: 'link' | 'group';
 }
 
 export interface PreserveConfig {
@@ -118,6 +116,13 @@ export interface Settings {
     lon: number;
   }[];
   tilesProvider?: string;
+}
+
+export interface SettingsSublinkSchema {
+  title: string;
+  type: 'link';
+  url: string;
+  localId?: string;
 }
 
 export type SettingsSyncRelationtypesSchema = string[];

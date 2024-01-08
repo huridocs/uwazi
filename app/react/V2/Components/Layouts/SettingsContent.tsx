@@ -9,6 +9,10 @@ interface SettingsContentProps extends PropsWithChildren {
   className?: string;
 }
 
+interface SettingsContentFooterProps extends SettingsContentProps {
+  highlighted?: boolean;
+}
+
 interface SettingsHeaderProps extends PropsWithChildren {
   title?: string;
   contextId?: string;
@@ -58,11 +62,15 @@ SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
   </div>
 );
 
-SettingsContent.Footer = ({ children, className }: SettingsContentProps) => (
+SettingsContent.Footer = ({
+  children,
+  className = '',
+  highlighted = false,
+}: SettingsContentFooterProps) => (
   <div
     className={`bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 ${
-      className || ''
-    }`}
+      highlighted ? 'bg-primary-50' : 'bg-white'
+    } ${className}`}
     data-testid="settings-content-footer"
   >
     {children}

@@ -3,14 +3,14 @@
  */
 import React from 'react';
 import { getIndexElement } from 'app/getIndexElement';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { Login } from 'app/Users/Login';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import { PageView } from 'app/Pages/PageView';
 import { ViewerRoute } from 'app/Viewer/ViewerRoute';
 import { LibraryMap } from 'app/Library/LibraryMap';
 
-let settings: Settings;
+let settings: ClientSettings;
 let userId: string;
 
 describe('Routes', () => {
