@@ -184,7 +184,7 @@ describe('MultiSelect', () => {
       render();
       component
         .find('.multiselectItem-action')
-        .first()
+        .at(2)
         .simulate('click', { preventDefault: () => {} });
       expect(component.state().ui).toEqual({ Group: true });
     });
