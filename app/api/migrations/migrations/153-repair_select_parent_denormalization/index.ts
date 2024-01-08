@@ -1,3 +1,5 @@
+import { Db } from 'mongodb';
+
 export default {
   delta: 153,
 
@@ -7,7 +9,7 @@ export default {
 
   reindex: false,
 
-  async up() {
+  async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
     return Promise.reject(new Error('error! change this, recently created migration'));
   },
