@@ -30,8 +30,11 @@ export interface ClientSettingsFilterSchema extends Omit<SettingsFilterSchema, '
   _id?: string;
 }
 
-export interface ClientSettingsLinkSchema extends Omit<SettingsLinkSchema, '_id'> {
+export interface ClientSublink extends Omit<ClientSettingsLinkSchema, 'sublinks'> {}
+
+export interface ClientSettingsLinkSchema extends Omit<SettingsLinkSchema, '_id' | 'sublinks'> {
   _id?: string;
+  sublinks?: ClientSublink[];
 }
 
 export interface ClientPreserveConfig extends Omit<PreserveConfig, 'config'> {

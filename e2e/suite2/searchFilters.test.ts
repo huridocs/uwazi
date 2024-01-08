@@ -263,8 +263,10 @@ describe('search filters path', () => {
       );
 
       await expect(page).toMatchElement(
-        'li.multiselectItem:nth-child(25) > label:nth-child(2) > span:nth-child(3) > span',
-        { text: '15' }
+        'li.multiselectItem:nth-child(25) > .multiselectItem-results > span',
+        {
+          text: '15',
+        }
       );
     });
   });

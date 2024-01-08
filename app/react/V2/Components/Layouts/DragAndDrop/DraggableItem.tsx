@@ -35,19 +35,19 @@ const hasValidContext = <T,>(dropContext?: IDnDContext<T>) => dropContext !== un
 const isNotAutoContained = <T,>(
   currentItem: IDraggable<T>,
   draggedResult: DraggedResult<T>,
-  dropParent?: { id?: string; item?: IDraggable<T> }
+  dropParent?: { dndId?: string; item?: IDraggable<T> }
 ) =>
-  (draggedResult.container !== currentItem.container ||
+  (draggedResult.item.container !== currentItem.container ||
     dropParent === undefined ||
-    dropParent?.id !== draggedResult.item.parent?.id ||
-    draggedResult.container === undefined) &&
-  (dropParent === undefined || draggedResult.item.id !== dropParent.id);
+    dropParent?.dndId !== draggedResult.item.parent?.dndId ||
+    draggedResult.item.container === undefined) &&
+  (dropParent === undefined || draggedResult.item.dndId !== dropParent.dndId);
 
 /* eslint-disable comma-spacing */
 const hasNoItems = <T,>(currentItem: IDraggable<T>) =>
   currentItem.value.items === undefined || currentItem.value.items.length === 0;
 
-const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0.4 : 1);
+const getOpacityLevel = (isDragging: boolean) => (isDragging ? 0 : 1);
 
 const getIconHandleClass = (condition: boolean) => (condition ? 'cursor-move' : '');
 
@@ -63,6 +63,7 @@ const elementTestId = <T,>(
   }-draggable-item-${index}`;
 
 /* eslint-disable comma-spacing */
+// eslint-disable-next-line max-statements
 const DraggableItemComponent = <T,>({
   item,
   useDrag = () => {},
@@ -81,22 +82,16 @@ const DraggableItemComponent = <T,>({
   const [, drop] = useDrop({
     accept: context.type,
     item: { item: { ...item, container }, container, index },
-    collect(monitor: any) {
-      return {
-        handlerId: monitor.getHandlerId(),
-        isOver: monitor.isOver(),
-        isOverCurrent: monitor.isOver({ shallow: true }),
-      };
-    },
-    hover: hoverSortable(ref, { ...item, container }, index, context.sort),
+    hover: hoverSortable(ref, { ...item, container }, index, context.setDragging, context.sort),
   });
-
   const [{ isDragging, handlerId }, drag, preview] = useDrag({
     type: context.type,
     item: { item: { ...item, container }, index },
     end: (draggedResult: DraggedResult<T>, monitor: DragSourceMonitor) => {
+      context.setDragging(false);
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
+
       if (
         hasValidContext(dropContext) &&
         isNotAutoContained(item, draggedResult, dropParent) &&
@@ -111,27 +106,35 @@ const DraggableItemComponent = <T,>({
     }),
   });
 
+  const previewReference = previewRef || ref;
+
   useEffect(() => {
-    if (previewRef !== undefined) {
-      preview(previewRef);
-    }
-  }, [preview, previewRef]);
+    preview(previewReference);
+  }, [preview, previewReference]);
 
   const opacity = getOpacityLevel(isDragging);
 
-  drag(drop(ref));
+  if (previewReference && previewReference.current) {
+    // eslint-disable-next-line no-param-reassign
+    previewReference.current.style.opacity = getOpacityLevel(isDragging).toString();
+  }
+
+  drag(ref);
+  drop(previewReference);
 
   const TagName = wrapperType;
+
   return (
     <TagName
       className={`${
         className ||
         'flex flex-row pl-3 mt-2 mb-2 border border-gray-200 border-solid min-w-full items-center'
-      }  ${getIconHandleClass(iconHandle)}`}
+      }  ${getIconHandleClass(iconHandle)} `}
       ref={ref}
       data-testid={elementTestId<T>(item, context, container, index)}
       style={{ opacity }}
       data-handler-id={handlerId}
+      key={TagName + item.dndId}
     >
       {!omitIcon && wrapperType === 'li' && (
         <Bars3Icon className={`w-4 text-gray-400 ${getIconHandleClass(!iconHandle)}`} />

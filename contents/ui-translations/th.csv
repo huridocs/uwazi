@@ -62,9 +62,9 @@ ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
 Allow captcha bypass,Allow captcha bypass
-An error has occurred during data export,An error has occurred during data export
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
+An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
@@ -420,9 +420,9 @@ Important: You must use relative URLs. These start with a forward slash and do n
 Language,ภาษา
 Language Code,Language Code
 Language deleted,ลบภาษาแล้ว
-Language Install Start Message,"Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished."
+Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
 Language reset success,Language reset success
-Language Uninstall Start Message,"Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished."
+Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
 Languages,ภาษา
 Languages installed successfully,Languages installed successfully
@@ -511,6 +511,7 @@ No Connections description,Connections are the direct relationships between this
 No context,No context
 No Documents found,ไม่พบเอกสาร
 no filters for templates,The combination of entity types doesn't have any filters in common.
+No Group,No Group
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
 No Label,ไม่มีลาเบล
 No options,No options
@@ -866,6 +867,7 @@ Untranslated Terms,Untranslated Terms
 Update,แก้ไขเมื่อ
 UPDATE,แก้ไขเมื่อ
 Update success,Update success
+Updated,Updated
 Updated file,Updated file
 Updated multiple entities,Updated multiple entities
 Updated permissions on entity,Updated permissions on entity
@@ -902,6 +904,7 @@ Users,ผู้ใช้
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using Google Authenticator,ใช้ Google Authenticator
+Using URLs,Using URLs
 Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 "Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi กำลังเรียนรู้โดยใช้เอกสารที่ถูกจำแนกประเภท 
 มันอาจจะใช้เวลาไม่เกิน 2 ชั่วโมง และเมื่อเสร็จสมบูรณ์คุณจะสามารถตรวจสอบ

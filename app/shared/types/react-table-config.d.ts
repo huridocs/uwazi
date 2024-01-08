@@ -34,6 +34,7 @@ declare module '@tanstack/table-core' {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     action?: Function;
+    className?: string;
     headerClassName?: string;
     contentClassName?: string;
     data?: any;

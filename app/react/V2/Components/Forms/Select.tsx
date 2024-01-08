@@ -1,9 +1,12 @@
 import React, { ChangeEventHandler, Ref } from 'react';
+import { Label } from './Label';
 
+type OptionSchema = { key: string; value: string; label?: string | React.ReactNode };
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
-  options: { key: string; value: string; selected?: boolean }[];
+  options: OptionSchema[];
+  value?: string;
   disabled?: boolean;
   hideLabel?: boolean;
   hasErrors?: boolean;
@@ -19,6 +22,7 @@ const Select = React.forwardRef(
       id,
       label,
       options,
+      value,
       disabled,
       hideLabel,
       hasErrors,
@@ -36,9 +40,9 @@ const Select = React.forwardRef(
     return (
       <div className={className}>
         <div className="relative w-full">
-          <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors)}>
             {label}
-          </label>
+          </Label>
           <select
             className={`${fieldStyles} disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5`}
             id={id}
@@ -47,10 +51,11 @@ const Select = React.forwardRef(
             name={name}
             onBlur={onBlur}
             onChange={onChange}
+            value={value}
           >
-            {options.map(({ key, value, selected }) => (
-              <option key={key} value={value} selected={selected}>
-                {value}
+            {options.map(({ key, value: optionValue, label: optionLabel }) => (
+              <option key={key} value={optionValue}>
+                {optionLabel || optionValue}
               </option>
             ))}
           </select>
@@ -60,4 +65,5 @@ const Select = React.forwardRef(
   }
 );
 
+export type { SelectProps, OptionSchema };
 export { Select };
