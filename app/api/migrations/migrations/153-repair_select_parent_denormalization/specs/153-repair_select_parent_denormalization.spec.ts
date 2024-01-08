@@ -23,15 +23,6 @@ afterAll(async () => {
 });
 
 describe('migration repair_select_parent_denormalization', () => {
-  beforeEach(async () => {
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
-    await testingDB.setupFixturesAndContext(fixtures);
-  });
-
-  afterAll(async () => {
-    await testingDB.tearDown();
-  });
-
   it('should have a delta number', () => {
     expect(migration.delta).toBe(153);
   });
