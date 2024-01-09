@@ -60,10 +60,55 @@ interface Template {
   properties?: PropertySchema[];
 }
 
-interface Fixture {
-  dictionaries?: Thesaurus[];
-  templates?: Template[];
-  relationtypes?: RelationType[];
+type PropertyValueSchema = null | string | number | boolean;
+
+interface MetadataObjectSchema {
+  value: PropertyValueSchema;
+  label?: string;
+  inheritedValue?: {
+    value: PropertyValueSchema;
+    label?: string;
+  }[];
+  inheritedType?: string;
+  parent?: {
+    value: string;
+    label: string;
+  };
 }
 
-export type { Fixture, Thesaurus, ThesaurusValue, Template };
+interface Metadata {
+  [k: string]: MetadataObjectSchema[] | undefined;
+}
+
+interface EntitySchema {
+  _id?: ObjectId;
+  sharedId?: string;
+  language?: string;
+  title?: string;
+  template?: ObjectId;
+  metadata?: Metadata;
+}
+
+type TestedLanguages = 'en' | 'es' | 'pt';
+
+interface Translation {
+  _id?: ObjectId;
+  language: TestedLanguages;
+  key: string;
+  value: string;
+  context: {
+    type: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+    label: string;
+    id: string;
+  };
+}
+
+interface Fixture {
+  dictionaries?: Thesaurus[];
+  translationsV2?: Translation[];
+  templates?: Template[];
+  relationtypes?: RelationType[];
+  entities?: EntitySchema[];
+}
+
+export type { Fixture, Thesaurus, ThesaurusValue, Template, Translation, Metadata };
