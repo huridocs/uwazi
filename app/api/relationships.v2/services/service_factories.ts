@@ -54,7 +54,6 @@ const indexEntitiesCallback = async (sharedIds: string[]) => {
 const userFromRequest = ({ user }: { user: any }) => {
   if (user) {
     const groups = user.groups?.map((g: any) => g._id.toHexString());
-    console.log(user, user._id);
     return new User(user._id.toHexString(), user.role as UserRole, groups ?? []);
   }
 

@@ -511,7 +511,6 @@ export const mapStateToProps = (state, ownProps) => {
 
   if (storeKey === 'library') {
     const selectedDocuments = state.library.ui.get('selectedDocuments');
-    console.log(inspect({ selectedDocuments }, undefined, 10));
     attachments = selectedDocuments.size ? selectedDocuments.get(0).get('attachments') : undefined;
     localAttachments = state.library.sidepanel.metadata.attachments;
   }

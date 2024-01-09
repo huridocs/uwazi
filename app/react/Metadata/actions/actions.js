@@ -32,6 +32,7 @@ const defaultValueByType = (type, options) => {
       return !options.resetExisting ? generateID(3, 4, 4) : undefined;
     case 'multiselect':
     case 'relationship':
+    case 'newRelationship':
     case 'nested':
     case 'multidate':
     case 'multidaterange':

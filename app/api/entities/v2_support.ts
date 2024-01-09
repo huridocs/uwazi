@@ -120,7 +120,7 @@ const ignoreNewRelationshipsMetadata = async (
             });
 
           // eslint-disable-next-line no-param-reassign
-          toSave.metadata[property.name] = currentDoc.metadata[property.name];
+          toSave.metadata[property.name] = currentDoc.metadata[property.name] || [];
         }
       }
     })

@@ -163,6 +163,17 @@ async function updateEntity(entity, _template, unrestricted = false) {
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
+
+  const { newRelationships, removedRelationships } = await ignoreNewRelationshipsMetadata(
+    {
+      sharedId,
+      template: docTemplate._id,
+      metadata: {},
+    },
+    doc,
+    docTemplate
+  );
+
   const result = await Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
@@ -189,6 +200,9 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
       return model.save(langDoc);
     })
   );
+
+  await createNewRelationships(newRelationships, permissionsContext.getUserInContext());
+  await deleteRemovedRelationships(removedRelationships, permissionsContext.getUserInContext());
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;
