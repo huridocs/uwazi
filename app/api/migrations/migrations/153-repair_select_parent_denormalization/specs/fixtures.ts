@@ -108,7 +108,7 @@ const incorrectMetadata: Metadata = {
   ],
 };
 
-const entities = {
+const baseEntities = {
   correct1: {
     title: 'entity_with_correct_selects',
     language: 'en',
@@ -217,6 +217,46 @@ const entities = {
   },
 };
 
+const entities = {
+  ...baseEntities,
+  correctInheritance: {
+    title: 'entity_with_correct_inherited_selects',
+    language: 'en',
+    sharedId: 'entity_with_correct_inherited_selects',
+    template: ids.inheritedSelectsTemplate,
+    metadata: {
+      inherited_select: [
+        {
+          value: baseEntities.correct1.sharedId,
+          label: baseEntities.correct1.title,
+          inheritedType: 'select',
+          inheritedValue: baseEntities.correct1.metadata.select,
+        },
+        {
+          value: baseEntities.correct2.sharedId,
+          label: baseEntities.correct2.title,
+          inheritedType: 'select',
+          inheritedValue: baseEntities.correct2.metadata.select,
+        },
+      ],
+      inherited_multiselect: [
+        {
+          value: baseEntities.correct1.sharedId,
+          label: baseEntities.correct1.title,
+          inheritedType: 'multiselect',
+          inheritedValue: baseEntities.correct1.metadata.multiselect,
+        },
+        {
+          value: baseEntities.correct2.sharedId,
+          label: baseEntities.correct2.title,
+          inheritedType: 'multiselect',
+          inheritedValue: baseEntities.correct2.metadata.multiselect,
+        },
+      ],
+    },
+  },
+};
+
 const relationtypes = [
   {
     _id: ids.reltype,
@@ -319,42 +359,7 @@ const oneLanguageFixtures: Fixture = {
     },
     entities.correct1,
     entities.correct2,
-    {
-      title: 'entity_with_correct_inherited_selects',
-      language: 'en',
-      sharedId: 'entity_with_correct_inherited_selects',
-      template: ids.inheritedSelectsTemplate,
-      metadata: {
-        inherited_select: [
-          {
-            value: entities.correct1.sharedId,
-            label: entities.correct1.title,
-            inheritedType: 'select',
-            inheritedValue: entities.correct1.metadata.select,
-          },
-          {
-            value: entities.correct2.sharedId,
-            label: entities.correct2.title,
-            inheritedType: 'select',
-            inheritedValue: entities.correct2.metadata.select,
-          },
-        ],
-        inherited_multiselect: [
-          {
-            value: entities.correct1.sharedId,
-            label: entities.correct1.title,
-            inheritedType: 'multiselect',
-            inheritedValue: entities.correct1.metadata.multiselect,
-          },
-          {
-            value: entities.correct2.sharedId,
-            label: entities.correct2.title,
-            inheritedType: 'multiselect',
-            inheritedValue: entities.correct2.metadata.multiselect,
-          },
-        ],
-      },
-    },
+    entities.correctInheritance,
     entities.incorrect,
     {
       title: 'entity_with_incorrect_inherited_selects',
@@ -414,54 +419,63 @@ const multiLanguageFixtures: Fixture = {
   ],
   translationsV2: [
     {
+      _id: new ObjectId(),
       language: 'en',
       key: '1',
       value: '1',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'en',
       key: 'A',
       value: 'A',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'en',
       key: 'A1',
       value: 'A1',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'es',
       key: '1',
       value: '1_es',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'es',
       key: 'A',
       value: 'A_es',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'es',
       key: 'A1',
       value: 'A1_es',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'pt',
       key: '1',
       value: '1_pt',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'pt',
       key: 'A',
       value: 'A_pt',
       context: multiLanguageDictionaryContext,
     },
     {
+      _id: new ObjectId(),
       language: 'pt',
       key: 'A1',
       value: 'A1_pt',
@@ -492,4 +506,11 @@ const multiLanguageFixtures: Fixture = {
   ],
 };
 
-export { oneLanguageFixtures, multiLanguageFixtures };
+const correctFixtures = {
+  dictionaries: oneLanguageFixtures.dictionaries,
+  relationtypes: oneLanguageFixtures.relationtypes,
+  templates: oneLanguageFixtures.templates,
+  entities: [...(oneLanguageFixtures.entities?.slice(0, 4) || [])],
+};
+
+export { entities, oneLanguageFixtures, multiLanguageFixtures, correctFixtures };
