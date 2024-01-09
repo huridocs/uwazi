@@ -155,14 +155,17 @@ const deleteRemovedRelationships = async (
   const transactionManager = DefaultTransactionManager();
   const dataSource = DefaultRelationshipDataSource(transactionManager);
   const service = await DeleteRelationshipService({ user });
+  const toDelete: string[] = [];
+
   await relationships.reduce(async (prev, relationship) => {
     await prev;
     const rels = await dataSource
       .getByDefinition(relationship.from, relationship.type, relationship.to)
       .all();
-
-    await service.delete(rels.map(rel => rel._id));
+    toDelete.push(...rels.map(rel => rel._id));
   }, Promise.resolve());
+
+  await service.delete(toDelete);
 };
 
 export {
