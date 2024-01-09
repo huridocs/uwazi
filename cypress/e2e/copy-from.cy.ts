@@ -11,11 +11,11 @@ describe('Copy from entity', () => {
   describe('Creating a new entity', () => {
     it('should copy the metadata from an existing entity to create a new one', () => {
       clickOnCreateEntity();
+      cy.get('#metadataForm').find('select').select('Ordenes de la corte');
+      cy.get('#metadataForm').find('.form-group.select').find('select').select('d3b1s0w3lzi');
       cy.get('[name="library.sidepanel.metadata.title"]').type('New orden de la corte', {
         force: true,
       });
-      cy.get('#metadataForm').find('select').select('Ordenes de la corte');
-      cy.get('#metadataForm').find('.form-group.select').find('select').select('d3b1s0w3lzi');
 
       cy.contains('button', 'Copy From').click();
       cy.get('div.copy-from').within(() => {
@@ -79,6 +79,7 @@ describe('Copy from entity', () => {
 
   describe('editing an existing entity', () => {
     it('should edit an entity by using copy from', () => {
+      cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('a', 'Library').click();
       cy.contains(
         'h2',
@@ -104,7 +105,6 @@ describe('Copy from entity', () => {
       cy.get('#metadataForm')
         .contains('.multiselectItem-name', 'Comisión Interamericana de Derechos Humanos')
         .click();
-      cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('button', 'Save').click();
       cy.wait('@lastRequest');
     });
