@@ -39,7 +39,6 @@ import { MediaModalType } from './MediaModal';
 import { MetadataExtractor } from './MetadataExtractor';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
 import { AddThesauriValueButton } from './AddThesauriValueButton';
-import { inspect } from 'util';
 
 const translateOptions = thesauri =>
   thesauri
