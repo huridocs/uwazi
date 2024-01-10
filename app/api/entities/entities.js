@@ -15,6 +15,7 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
+import { inspect } from 'util';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';

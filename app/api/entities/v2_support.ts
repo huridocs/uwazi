@@ -93,17 +93,19 @@ const ignoreNewRelationshipsMetadata = async (
             new ObjectId(template._id!)
           );
           const query = new MatchQueryNode({ sharedId: currentDoc.sharedId }, propertyModel.query);
-          await entitiesDataSource.getByIds(newValues as string[]).forEach(async targetEntity => {
-            newRelationships.push(
-              query.determineRelationship(
-                { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
-                {
-                  sharedId: targetEntity.sharedId,
-                  template: targetEntity.template,
-                }
-              )
-            );
-          });
+          await entitiesDataSource
+            .getByIds(newValues as string[], currentDoc.language)
+            .forEach(async targetEntity => {
+              newRelationships.push(
+                query.determineRelationship(
+                  { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
+                  {
+                    sharedId: targetEntity.sharedId,
+                    template: targetEntity.template,
+                  }
+                )
+              );
+            });
 
           await entitiesDataSource
             .getByIds(deletedValues as string[])
@@ -162,7 +164,9 @@ const deleteRemovedRelationships = async (
     const rels = await dataSource
       .getByDefinition(relationship.from, relationship.type, relationship.to)
       .all();
-    toDelete.push(...rels.map(rel => rel._id));
+    rels.forEach(rel => {
+      toDelete.push(rel._id);
+    });
   }, Promise.resolve());
 
   await service.delete(toDelete);
