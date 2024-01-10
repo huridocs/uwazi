@@ -128,6 +128,12 @@ export const publicForm = [
   </Translate>,
 ];
 
+export const mapLayers = (
+  <Translate translationKey="Map layers description">
+    Here you can configure the map layers that will be available in the maps.
+  </Translate>
+);
+
 export const openPublicForm = (
   <Translate translationKey="Captcha bypass">
     By toggling this on you can allow users to submit to your whitelisted templates without having

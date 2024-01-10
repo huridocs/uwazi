@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
@@ -5,7 +6,6 @@ import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
 import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
-import { t } from 'app/I18N';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 
@@ -18,6 +18,7 @@ type MapComponentProps = {
   showControls?: boolean;
   renderPopupInfo?: boolean;
   layers?: Layer[];
+  zoom?: number;
 };
 
 const mapStateToProps = ({ settings, templates }: IStore) => ({
@@ -36,7 +37,11 @@ const MapComponent = ({ collectionSettings, templates, ...props }: ComponentProp
   ];
   const tilesProvider = collectionSettings?.get('tilesProvider') || 'mapbox';
   const mapApiKey = collectionSettings?.get('mapApiKey');
-  const mapLayers = props.layers || collectionSettings?.get('mapLayers')?.toJS();
+  let mapLayers: Layer[] = props.layers || collectionSettings?.get('mapLayers')?.toJS();
+
+  if (tilesProvider === 'google') {
+    mapLayers = mapLayers?.filter(layer => layer !== 'Dark');
+  }
 
   if (tilesProvider === 'google' && mapApiKey) {
     const loader = new Loader({

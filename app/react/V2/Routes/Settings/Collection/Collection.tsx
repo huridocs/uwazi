@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable camelcase */
 /* eslint-disable react/jsx-props-no-spreading */
@@ -14,6 +15,7 @@ import { notificationAtom } from 'app/V2/atoms';
 
 import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate, t } from 'app/I18N';
 import { ClientSettings, Template } from 'app/apiResponseTypes';
@@ -21,7 +23,6 @@ import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
-import { set } from 'lodash';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -76,13 +77,14 @@ const Collection = () => {
   };
   const { links, custom, ...formData } = settings;
   const setNotifications = useSetRecoilState(notificationAtom);
+  const setSettings = useSetRecoilState(settingsAtom);
   const revalidator = useRevalidator();
   const {
     register,
     setValue,
     watch,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors },
   } = useForm<ClientSettings>({
     defaultValues: formData,
     mode: 'onSubmit',
@@ -91,6 +93,7 @@ const Collection = () => {
   const submit = async (data: ClientSettings) => {
     await SettingsAPI.save(data);
     await revalidator.revalidate();
+    setSettings(data);
     setNotifications({
       type: 'success',
       text: <Translate>Settings updated</Translate>,
@@ -118,10 +121,22 @@ const Collection = () => {
   }));
 
   const mapLayersOptions = [
-    { label: 'Dark', value: 'Dark' },
-    { label: 'Streets', value: 'Streets' },
-    { label: 'Satellite', value: 'Satellite' },
-    { label: 'Hybrid', value: 'Hybrid' },
+    { label: 'Dark', value: 'Dark', selected: settings.mapLayers?.includes('Dark') },
+    {
+      label: 'Streets',
+      value: 'Streets',
+      selected: settings.mapLayers?.includes('Streets') || !settings.mapLayers?.length,
+    },
+    {
+      label: 'Satellite',
+      value: 'Satellite',
+      selected: settings.mapLayers?.includes('Satellite') || !settings.mapLayers?.length,
+    },
+    {
+      label: 'Hybrid',
+      value: 'Hybrid',
+      selected: settings.mapLayers?.includes('Hybrid') || !settings.mapLayers?.length,
+    },
   ];
 
   return (
@@ -148,7 +163,6 @@ const Collection = () => {
                   <InputField
                     id="favicon"
                     type="text"
-                    hasErrors={!!errors.site_name}
                     label={<Translate>Custom Favicon</Translate>}
                     {...register('favicon')}
                   />
@@ -258,7 +272,6 @@ const Collection = () => {
                   <InputField
                     id="sending-email"
                     label={labelWithTip('Sending email', tips.emails[1])}
-                    hasErrors={!!errors.site_name}
                     {...register('senderEmail')}
                   />
                 </div>
@@ -289,7 +302,7 @@ const Collection = () => {
                     onChange={newValues => {
                       setValue(
                         'allowedPublicTemplates',
-                        newValues.map(({ value }) => value)
+                        newValues.filter(({ selected }) => selected).map(({ value }) => value)
                       );
                     }}
                   />
@@ -318,12 +331,12 @@ const Collection = () => {
                 </div>
                 <div className="sm:col-span-2">
                   <MultiSelect
-                    label={labelWithTip('Map Layers', tips.publicForm[2])}
+                    label={labelWithTip('Map Layers', tips.mapLayers)}
                     options={mapLayersOptions}
                     onChange={newValues => {
                       setValue(
                         'mapLayers',
-                        newValues.map(({ value }) => value)
+                        newValues.filter(({ selected }) => selected).map(({ value }) => value)
                       );
                     }}
                   />

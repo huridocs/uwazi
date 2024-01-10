@@ -88,7 +88,6 @@ const Geolocation = ({
       <Map
         onClick={mapClick}
         height={370}
-        mapStyleSwitcher
         showControls
         zoom={zoom}
         layers={layers}

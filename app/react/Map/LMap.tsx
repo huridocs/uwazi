@@ -78,7 +78,7 @@ const LMap = ({
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
     const mapLayers = { ...baseMaps };
-    if (layers) {
+    if (layers && layers.length) {
       Object.keys(mapLayers).forEach(key => {
         if (!layers.includes(key as Layer)) {
           delete mapLayers[key];
@@ -107,7 +107,8 @@ const LMap = ({
       L.control.layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
 
-    const initialLayer = layers ? mapLayers[layers[0]] : Object.values(mapLayers)[0];
+    const initialLayer =
+      layers && layers.length ? mapLayers[layers[0]] : Object.values(mapLayers)[0];
     initialLayer.options.zIndex = 0;
     initialLayer.addTo(map);
     initMarkers();
@@ -123,11 +124,13 @@ const LMap = ({
       checkMapInitialization(map, containerId);
       initMap();
     }
+
     return () => {
       if (map && reRender) {
         map.remove();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pointMarkers, props.tilesProvider, props.mapApiKey]);
 
   return (
