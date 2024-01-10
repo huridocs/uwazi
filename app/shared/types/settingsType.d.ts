@@ -65,6 +65,7 @@ export interface Settings {
   customCSS?: string;
   customJS?: string;
   mapApiKey?: string;
+  mapLayers?: string[];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema[];
@@ -106,9 +107,7 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy:
-            | 'OnlineRelationshipPropertyUpdateStrategy'
-            | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     [k: string]: unknown | undefined;
   };
@@ -117,7 +116,6 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
-  mapLayers?: string[];
   tilesProvider?: string;
 }
 
