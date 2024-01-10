@@ -6,7 +6,7 @@ import fs from 'fs';
 import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { omit } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -193,7 +193,9 @@ const setReduxState = async (
       headers
     );
 
-    if (requestParams.data) {
+    console.log(requestParams.data);
+
+    if (requestParams.data && !isEmpty(requestParams.data)) {
       // @ts-ignore
       requestParams.data.q = decodeURI(requestParams.data.q);
     }
@@ -211,6 +213,7 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
+        console.log(e.json.errors);
         throw new ServerRenderingFetchError(
           `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
         );
