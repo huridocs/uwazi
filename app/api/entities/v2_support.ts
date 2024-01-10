@@ -11,10 +11,10 @@ import { DefaultRelationshipDataSource } from 'api/relationships.v2/database/dat
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { TemplateMappers } from 'api/templates.v2/database/TemplateMappers';
 import { ObjectId } from 'mongodb';
-import { PropertySchema } from 'api/migrations/migrations/149-remove_inconsistent_relationships_metadata/types';
 import { RelationshipPropertyDBO } from 'api/templates.v2/database/schemas/TemplateDBO';
 import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { PropertySchema } from 'shared/types/commonTypes';
 
 const deleteRelatedNewRelationships = async (sharedId: string) => {
   const transactionManager = DefaultTransactionManager();

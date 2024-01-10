@@ -15,7 +15,6 @@ import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
 
-import { inspect } from 'util';
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
@@ -165,12 +164,13 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
 
+  const emptyEntity = {
+    sharedId,
+    template: docTemplate._id,
+    metadata: {},
+  };
   const { newRelationships, removedRelationships } = await ignoreNewRelationshipsMetadata(
-    {
-      sharedId,
-      template: docTemplate._id,
-      metadata: {},
-    },
+    emptyEntity,
     doc,
     docTemplate
   );

@@ -1,7 +1,7 @@
 import { MatchQueryNode } from '../MatchQueryNode';
 import { TraversalQueryNode } from '../TraversalQueryNode';
 
-describe('when checkin if, given an entity, the query defines a relationship', () => {
+describe('when checking if, given an entity, the query defines a relationship', () => {
   it('should be true if it is a 1 hop, 1 relationship type query', () => {
     const query = new MatchQueryNode({}, [
       new TraversalQueryNode('out', { types: ['type1'] }, [new MatchQueryNode({})]),
