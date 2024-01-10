@@ -1,19 +1,18 @@
 /* eslint-disable max-lines */
 /* eslint-disable camelcase */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { RequestParams } from 'app/utils/RequestParams';
-import SettingsAPI from 'app/Settings/SettingsAPI';
-import TemplatesAPI from 'app/Templates/TemplatesAPI';
+
+import * as SettingsAPI from 'app/V2/api/settings';
+import * as TemplatesAPI from 'app/V2/api/templates';
 
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 
-import { Geolocation } from 'app/Forms';
-import { InputField, Select, MultiSelect } from 'app/V2/Components/Forms';
+import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate, t } from 'app/I18N';
@@ -22,12 +21,13 @@ import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
+import { set } from 'lodash';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const settings = await SettingsAPI.get(new RequestParams({}, headers));
-    const templates = await TemplatesAPI.get(new RequestParams({}, headers));
+    const settings = await SettingsAPI.get(headers);
+    const templates = await TemplatesAPI.get(headers);
     return { settings, templates };
   };
 
@@ -89,7 +89,7 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
-    await SettingsAPI.save(new RequestParams(data));
+    await SettingsAPI.save(data);
     await revalidator.revalidate();
     setNotifications({
       type: 'success',
@@ -117,6 +117,13 @@ const Collection = () => {
     selected: settings.allowedPublicTemplates?.includes(template._id),
   }));
 
+  const mapLayersOptions = [
+    { label: 'Dark', value: 'Dark' },
+    { label: 'Streets', value: 'Streets' },
+    { label: 'Satellite', value: 'Satellite' },
+    { label: 'Hybrid', value: 'Hybrid' },
+  ];
+
   return (
     <div
       className="tw-content"
@@ -140,7 +147,7 @@ const Collection = () => {
                 <div className="sm:col-span-1">
                   <InputField
                     id="favicon"
-                    type="file"
+                    type="text"
                     hasErrors={!!errors.site_name}
                     label={<Translate>Custom Favicon</Translate>}
                     {...register('favicon')}
@@ -309,12 +316,29 @@ const Collection = () => {
                     {...register('mapApiKey', { pattern: /^[a-zA-Z0-9._]+$/ })}
                   />
                 </div>
+                <div className="sm:col-span-2">
+                  <MultiSelect
+                    label={labelWithTip('Map Layers', tips.publicForm[2])}
+                    options={mapLayersOptions}
+                    onChange={newValues => {
+                      setValue(
+                        'mapLayers',
+                        newValues.map(({ value }) => value)
+                      );
+                    }}
+                  />
+                </div>
                 <div className="col-span-2">
                   <Geolocation
-                    value={watch('mapStartingPoint')}
-                    onChange={(values: ClientSettings['mapStartingPoint']) => {
-                      setValue('mapStartingPoint', values);
+                    value={watch('mapStartingPoint')?.[0] ?? {}}
+                    onChange={({ lat, lon }: { lat?: number; lon?: number }) => {
+                      if (lat && lon) {
+                        setValue('mapStartingPoint', [{ lat, lon }]);
+                        return;
+                      }
+                      setValue('mapStartingPoint', []);
                     }}
+                    name="mapStartingPoint"
                   />
                 </div>
               </div>

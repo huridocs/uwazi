@@ -12,7 +12,7 @@ interface InputFieldProps {
   placeholder?: string;
   hasErrors?: boolean;
   errorMessage?: string | React.ReactNode;
-  value?: string;
+  value?: string | number;
   className?: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file';
   autoComplete?: 'on' | 'off';

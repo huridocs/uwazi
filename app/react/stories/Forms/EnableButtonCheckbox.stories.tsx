@@ -21,7 +21,6 @@ const Container = (args: any) => {
     <div className="tw-content">
       <EnableButtonCheckbox
         onChange={() => {
-          console.log('changed');
           args.onChange();
           setChecked(!checked);
         }}

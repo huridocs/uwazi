@@ -106,7 +106,9 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy:
+            | 'OnlineRelationshipPropertyUpdateStrategy'
+            | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     [k: string]: unknown | undefined;
   };
@@ -115,6 +117,7 @@ export interface Settings {
     lat: number;
     lon: number;
   }[];
+  mapLayers?: string[];
   tilesProvider?: string;
 }
 

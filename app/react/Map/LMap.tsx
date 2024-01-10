@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet.markercluster';
@@ -16,8 +17,10 @@ import {
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
+type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
+
 type LMapProps = {
-  markers: MarkerInput[];
+  markers?: MarkerInput[];
   height: number;
   clickOnMarker?: (marker: DataMarker) => {};
   clickOnCluster?: (cluster: DataMarker[]) => {};
@@ -28,9 +31,17 @@ type LMapProps = {
   templatesInfo: TemplatesInfo;
   tilesProvider: string;
   mapApiKey: string;
+  zoom?: number;
+  layers?: Layer[];
 };
 
-const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMapProps) => {
+const LMap = ({
+  markers: pointMarkers = [],
+  showControls = true,
+  zoom = 6,
+  layers,
+  ...props
+}: LMapProps) => {
   let map: L.Map;
   let markerGroup: L.MarkerClusterGroup;
   const [currentMarkers, setCurrentMarkers] = useState<MarkerInput[]>();
@@ -59,17 +70,26 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
       props.clickOnMarker?.(marker.layer);
     });
     if (pointMarkers.length) {
-      map.fitBounds(markerGroup.getBounds(), { maxZoom: 6 });
+      map.fitBounds(markerGroup.getBounds(), { maxZoom: zoom });
     }
     markerGroup.addTo(map);
   };
 
   const initMap = () => {
-    const { layers, baseMaps } = getMapProvider(props.tilesProvider, props.mapApiKey);
+    const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
+    const mapLayers = { ...baseMaps };
+    if (layers) {
+      Object.keys(mapLayers).forEach(key => {
+        if (!layers.includes(key as Layer)) {
+          delete mapLayers[key];
+        }
+      });
+    }
+
     const shouldScroll: boolean = props.renderPopupInfo || props.onClick !== undefined;
     map = L.map(containerId, {
       center: [props.startingPoint[0].lat, props.startingPoint[0].lon],
-      zoom: 6,
+      zoom,
       maxZoom: 20,
       minZoom: 2,
       zoomControl: false,
@@ -82,10 +102,14 @@ const LMap = ({ markers: pointMarkers = [], showControls = true, ...props }: LMa
 
     if (showControls) {
       L.control.zoom({ position: 'bottomright' }).addTo(map);
-      L.control.layers(baseMaps, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
-    layers[0].options.zIndex = 0;
-    layers[0].addTo(map);
+    if (showControls && Object.values(mapLayers).length > 1) {
+      L.control.layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
+    }
+
+    const initialLayer = layers ? mapLayers[layers[0]] : Object.values(mapLayers)[0];
+    initialLayer.options.zIndex = 0;
+    initialLayer.addTo(map);
     initMarkers();
     map.on('click', clickHandler);
   };
