@@ -11,7 +11,13 @@ import { ViewerRoute } from './Viewer/ViewerRoute';
 
 const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
-  const searchQuery = query.substring(1).split('=')[1];
+  let searchQuery = '';
+  if (query.startsWith('?q=')) {
+    searchQuery = query.substring(1).split('=')[1];
+  } else {
+    searchQuery = '(' + query.substring(1) + ')';
+  }
+  // console.log('Search Query: ', searchQuery);
   let queryString = query ? searchQuery : '';
 
   if (customHomePage.includes('map')) {

@@ -193,6 +193,8 @@ const setReduxState = async (
       headers
     );
 
+    // console.log('Request params data: ', requestParams);
+
     if (requestParams.data && !isEmpty(requestParams.data)) {
       // @ts-ignore
       requestParams.data.q = decodeURI(requestParams.data.q);
@@ -211,6 +213,7 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
+        // console.log(e.json.errors);
         throw new ServerRenderingFetchError(
           `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
         );
