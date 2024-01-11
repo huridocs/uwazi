@@ -16,10 +16,14 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { PropertySchema } from 'shared/types/commonTypes';
 
-const deleteRelatedNewRelationships = async (sharedId: string) => {
+const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();
-  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
-    const datasource = DefaultRelationshipDataSource(transactionManager);
+  return DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed();
+};
+
+const deleteRelatedNewRelationships = async (sharedId: string) => {
+  if (await newRelationshipsEnabled()) {
+    const datasource = DefaultRelationshipDataSource(DefaultTransactionManager());
     await datasource.deleteByEntities([sharedId]);
   }
 };
@@ -31,8 +35,8 @@ const denormalizeAfterEntityCreation = async ({
   sharedId: string;
   language: string;
 }) => {
-  const transactionManager = DefaultTransactionManager();
-  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
+  if (await newRelationshipsEnabled()) {
+    const transactionManager = DefaultTransactionManager();
     const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
@@ -46,8 +50,8 @@ const denormalizeAfterEntityUpdate = async ({
   sharedId: string;
   language: string;
 }) => {
-  const transactionManager = DefaultTransactionManager();
-  if (await DefaultSettingsDataSource(transactionManager).readNewRelationshipsAllowed()) {
+  if (await newRelationshipsEnabled()) {
+    const transactionManager = DefaultTransactionManager();
     const denormalizationService = await DenormalizationService(transactionManager);
     await denormalizationService.denormalizeAfterUpdatingEntities([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
@@ -75,58 +79,74 @@ const calculateDiff = (currentDoc: EntitySchema, toSave: EntitySchema, name: str
 const isRelationshipProperty = (property: PropertySchema): property is RelationshipPropertyDBO =>
   property.type === propertyTypes.newRelationship;
 
+interface RelationshipDefinition {
+  type: string;
+  to: string;
+  from: string;
+}
+
+interface DefinitionsToUpdate {
+  newRelationships: RelationshipDefinition[];
+  removedRelationships: RelationshipDefinition[];
+}
+
 const ignoreNewRelationshipsMetadata = async (
   currentDoc: EntitySchema,
   toSave: EntitySchema,
   template: TemplateSchema
-) => {
-  const newRelationships: { sharedId: string; template: string }[] = [];
-  const removedRelationships: string[] = [];
+): Promise<DefinitionsToUpdate> => {
+  const newRelationships: RelationshipDefinition[] = [];
+  const removedRelationships: RelationshipDefinition[] = [];
   const entitiesDataSource = DefaultEntitiesDataSource(DefaultTransactionManager());
-  await Promise.all(
-    (template.properties || []).map(async property => {
-      if (isRelationshipProperty(property)) {
-        if (toSave.metadata && currentDoc.metadata) {
-          const { newValues, deletedValues } = calculateDiff(currentDoc, toSave, property.name);
-          const propertyModel = TemplateMappers.propertyToApp(
-            property,
-            new ObjectId(template._id!)
-          );
-          const query = new MatchQueryNode({ sharedId: currentDoc.sharedId }, propertyModel.query);
-          await entitiesDataSource
-            .getByIds(newValues as string[], currentDoc.language)
-            .forEach(async targetEntity => {
-              newRelationships.push(
-                query.determineRelationship(
-                  { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
-                  {
-                    sharedId: targetEntity.sharedId,
-                    template: targetEntity.template,
-                  }
-                )
-              );
-            });
+  if (await newRelationshipsEnabled()) {
+    await Promise.all(
+      (template.properties || []).map(async property => {
+        if (isRelationshipProperty(property)) {
+          if (toSave.metadata && currentDoc.metadata) {
+            const { newValues, deletedValues } = calculateDiff(currentDoc, toSave, property.name);
+            const propertyModel = TemplateMappers.propertyToApp(
+              property,
+              new ObjectId(template._id!)
+            );
+            const query = new MatchQueryNode(
+              { sharedId: currentDoc.sharedId },
+              propertyModel.query
+            );
+            await entitiesDataSource
+              .getByIds(newValues as string[], currentDoc.language)
+              .forEach(async targetEntity => {
+                newRelationships.push(
+                  query.determineRelationship(
+                    { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
+                    {
+                      sharedId: targetEntity.sharedId,
+                      template: targetEntity.template,
+                    }
+                  )
+                );
+              });
 
-          await entitiesDataSource
-            .getByIds(deletedValues as string[])
-            .forEach(async targetEntity => {
-              removedRelationships.push(
-                query.determineRelationship(
-                  { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
-                  {
-                    sharedId: targetEntity.sharedId,
-                    template: targetEntity.template,
-                  }
-                )
-              );
-            });
+            await entitiesDataSource
+              .getByIds(deletedValues as string[])
+              .forEach(async targetEntity => {
+                removedRelationships.push(
+                  query.determineRelationship(
+                    { sharedId: currentDoc.sharedId!, template: currentDoc.template!.toString() },
+                    {
+                      sharedId: targetEntity.sharedId,
+                      template: targetEntity.template,
+                    }
+                  )
+                );
+              });
 
-          // eslint-disable-next-line no-param-reassign
-          toSave.metadata[property.name] = currentDoc.metadata[property.name] || [];
+            // eslint-disable-next-line no-param-reassign
+            toSave.metadata[property.name] = currentDoc.metadata[property.name] || [];
+          }
         }
-      }
-    })
-  );
+      })
+    );
+  }
   return { newRelationships, removedRelationships };
 };
 
@@ -170,11 +190,17 @@ const deleteRemovedRelationships = async (
   await service.delete(toDelete);
 };
 
+const updateNewRelationships = async (updates: DefinitionsToUpdate) => {
+  if (await newRelationshipsEnabled()) {
+    await createNewRelationships(updates.newRelationships);
+    await deleteRemovedRelationships(updates.removedRelationships);
+  }
+};
+
 export {
   deleteRelatedNewRelationships,
   ignoreNewRelationshipsMetadata,
-  createNewRelationships,
-  deleteRemovedRelationships,
+  updateNewRelationships,
   denormalizeAfterEntityCreation,
   denormalizeAfterEntityUpdate,
 };

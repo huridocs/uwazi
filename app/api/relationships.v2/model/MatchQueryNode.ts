@@ -256,7 +256,14 @@ export class MatchQueryNode extends QueryNode {
     return false;
   }
 
-  determineRelationship(rootEntity: Entity, targetEntity: Entity): any {
+  determineRelationship(
+    rootEntity: Entity,
+    targetEntity: Entity
+  ): {
+    type: string;
+    to: string;
+    from: string;
+  } {
     const templatesInLeaves = this.getTemplatesInLeaves();
     const matchingBranch = templatesInLeaves.find(record =>
       record.templates.includes(targetEntity.template)
@@ -269,12 +276,10 @@ export class MatchQueryNode extends QueryNode {
     const matchingTraversal = this.traversals[matchingBranch.path[0]];
     const direction = matchingTraversal.getDirection();
 
-    const [first, second] = direction === 'out' ? ['from', 'to'] : ['to', 'from'];
-
     return {
       type: matchingTraversal.getFilters().types![0],
-      [first]: rootEntity.sharedId,
-      [second]: targetEntity.sharedId,
+      from: direction === 'out' ? rootEntity.sharedId : targetEntity.sharedId,
+      to: direction === 'out' ? targetEntity.sharedId : rootEntity.sharedId,
     };
   }
 

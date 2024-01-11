@@ -25,8 +25,7 @@ import {
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
-  createNewRelationships,
-  deleteRemovedRelationships,
+  updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -91,7 +90,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
-        const { newRelationships, removedRelationships } = await ignoreNewRelationshipsMetadata(
+        const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
           currentDoc,
           toSave,
           template
@@ -104,8 +103,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
         }
         const saveResult = await saveFunc(toSave);
 
-        await createNewRelationships(newRelationships);
-        await deleteRemovedRelationships(removedRelationships);
+        await updateNewRelationships(v2RelationshipsUpdates);
 
         return saveResult;
       }
@@ -166,7 +164,7 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     template: docTemplate._id,
     metadata: {},
   };
-  const { newRelationships, removedRelationships } = await ignoreNewRelationshipsMetadata(
+  const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
     emptyEntity,
     doc,
     docTemplate
@@ -199,8 +197,7 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     })
   );
 
-  await createNewRelationships(newRelationships);
-  await deleteRemovedRelationships(removedRelationships);
+  await updateNewRelationships(v2RelationshipsUpdates);
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;
