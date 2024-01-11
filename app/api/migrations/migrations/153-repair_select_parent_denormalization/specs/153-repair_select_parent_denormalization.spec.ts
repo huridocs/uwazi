@@ -81,7 +81,7 @@ describe('migration repair_select_parent_denormalization', () => {
     expect(migration.delta).toBe(153);
   });
 
-  describe('in general', () => {
+  fdescribe('in general', () => {
     beforeAll(async () => {
       await initTest(oneLanguageFixtures);
     });

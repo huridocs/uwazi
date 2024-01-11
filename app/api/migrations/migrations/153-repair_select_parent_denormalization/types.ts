@@ -37,7 +37,7 @@ type PropertyTypes =
   | 'generatedid'
   | 'newRelationship';
 
-interface PropertySchema {
+interface Property {
   _id?: ObjectId;
   label: string;
   name: string;
@@ -58,12 +58,12 @@ interface RelationType {
 interface Template {
   _id?: ObjectId;
   name: string;
-  properties?: PropertySchema[];
+  properties?: Property[];
 }
 
 type PropertyValueSchema = null | string | number | boolean;
 
-interface MetadataObjectSchema {
+interface MetadataObject {
   value: PropertyValueSchema;
   label?: string;
   [k: string]: unknown | undefined;
@@ -79,10 +79,10 @@ interface MetadataObjectSchema {
 }
 
 interface Metadata {
-  [k: string]: MetadataObjectSchema[] | undefined;
+  [k: string]: MetadataObject[] | undefined;
 }
 
-interface EntitySchema {
+interface Entity {
   _id?: ObjectId;
   sharedId?: string;
   language?: string;
@@ -111,7 +111,18 @@ interface Fixture {
   translationsV2?: Translation[];
   templates?: Template[];
   relationtypes?: RelationType[];
-  entities?: EntitySchema[];
+  entities?: Entity[];
 }
 
-export type { EntitySchema, Fixture, Thesaurus, ThesaurusValue, Template, Translation, Metadata };
+export type {
+  Entity,
+  Fixture,
+  Property,
+  Thesaurus,
+  ThesaurusValue,
+  ThesaurusValueBase,
+  Template,
+  Translation,
+  Metadata,
+  MetadataObject,
+};
