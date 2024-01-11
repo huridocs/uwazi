@@ -1,6 +1,7 @@
 /* eslint-disable no-redeclare */
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { propertyTypes } from 'shared/propertyTypes';
+import { PropertySchema } from 'shared/types/commonTypes';
 import { Property } from '../model/Property';
 import { RelationshipProperty } from '../model/RelationshipProperty';
 import { Template } from '../model/Template';
@@ -15,6 +16,7 @@ function propertyToApp(
   property: RelationshipPropertyDBO,
   _templateId: TemplateDBO['_id']
 ): RelationshipProperty;
+function propertyToApp(property: PropertySchema, _templateId: TemplateDBO['_id']): Property;
 function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): Property {
   const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
@@ -49,7 +51,7 @@ const TemplateMappers = {
     new Template(
       MongoIdHandler.mapToApp(tdbo._id),
       tdbo.name,
-      tdbo.properties.map(p => propertyToApp(p as any, tdbo._id))
+      tdbo.properties.map(p => propertyToApp(p, tdbo._id))
     ),
 };
 

@@ -104,11 +104,8 @@ async function updateEntity(entity, _template, unrestricted = false) {
         }
         const saveResult = await saveFunc(toSave);
 
-        await createNewRelationships(newRelationships, permissionsContext.getUserInContext());
-        await deleteRemovedRelationships(
-          removedRelationships,
-          permissionsContext.getUserInContext()
-        );
+        await createNewRelationships(newRelationships);
+        await deleteRemovedRelationships(removedRelationships);
 
         return saveResult;
       }
@@ -202,8 +199,8 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     })
   );
 
-  await createNewRelationships(newRelationships, permissionsContext.getUserInContext());
-  await deleteRemovedRelationships(removedRelationships, permissionsContext.getUserInContext());
+  await createNewRelationships(newRelationships);
+  await deleteRemovedRelationships(removedRelationships);
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;

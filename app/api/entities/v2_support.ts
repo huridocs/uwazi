@@ -131,10 +131,9 @@ const ignoreNewRelationshipsMetadata = async (
 };
 
 const createNewRelationships = async (
-  relationships: { type: string; to: string; from: string }[],
-  user: any
+  relationships: { type: string; to: string; from: string }[]
 ) => {
-  const service = await CreateRelationshipService({ user });
+  const service = await CreateRelationshipService();
   await service.create(
     relationships.map(r => ({
       type: r.type,
@@ -151,12 +150,11 @@ const createNewRelationships = async (
 };
 
 const deleteRemovedRelationships = async (
-  relationships: { type: string; to: string; from: string }[],
-  user: any
+  relationships: { type: string; to: string; from: string }[]
 ) => {
   const transactionManager = DefaultTransactionManager();
   const dataSource = DefaultRelationshipDataSource(transactionManager);
-  const service = await DeleteRelationshipService({ user });
+  const service = await DeleteRelationshipService();
   const toDelete: string[] = [];
 
   await relationships.reduce(async (prev, relationship) => {
