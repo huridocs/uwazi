@@ -2,7 +2,15 @@
 import _ from 'lodash';
 import { Db } from 'mongodb';
 
-import { Entity, Metadata, MetadataObject, Property, Template, Thesaurus, ThesaurusValueBase } from './types';
+import {
+  Entity,
+  Metadata,
+  MetadataObject,
+  Property,
+  Template,
+  Thesaurus,
+  ThesaurusValueBase,
+} from './types';
 
 let writesOccured = false;
 
@@ -73,17 +81,31 @@ const metadataIsSelect = (propName: string) => propName in thesauriByProperty;
 
 const valueIsInherited = (value: MetadataObject) => value.inheritedType && value.inheritedValue;
 
-const repairValue = (value: MetadataObject, propertyName: string) => {
+const repairValue = (
+  value: MetadataObject,
+  propertyName: string
+): {
+  value: MetadataObject;
+  repaired: boolean;
+} => {
   if (!valueIsInherited(value) && typeof value.value === 'string') {
     const expectedParent = getExpectedParent(value.value, propertyName);
     const currentParentId = value.parent?.value;
-    return expectedParent && currentParentId !== expectedParent.id
+    return expectedParent && expectedParent.id && currentParentId !== expectedParent.id
       ? {
           value: { ...value, parent: { value: expectedParent.id, label: expectedParent.label } },
           repaired: true,
         }
       : { value, repaired: false };
   }
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define -- for recursion
+  const { newValues, anyRepaired } = repairValues(value.inheritedValue || [], propertyName);
+  return anyRepaired
+    ? {
+        value: { ...value, inheritedValue: newValues },
+        repaired: true,
+      }
+    : { value, repaired: false };
 };
 
 const repairValues = (values: MetadataObject[], propertyName: string) => {
@@ -172,6 +194,8 @@ export default {
   reindex: false,
 
   async up(db: Db) {
+    writesOccured = false;
+
     process.stdout.write(`${this.name}...\r\n`);
 
     await getPropertyThesaurusMap(db);
