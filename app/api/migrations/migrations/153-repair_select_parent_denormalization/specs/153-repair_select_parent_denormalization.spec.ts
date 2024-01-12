@@ -23,7 +23,7 @@ const initTest = async (fixture: Fixture) => {
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
+  jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
 });
 
 afterAll(async () => {
@@ -41,6 +41,20 @@ const expectedSelect = (language?: string) => {
       parent: {
         value: 'B_id',
         label: `B${suffix}`,
+      },
+    },
+  ];
+};
+
+const expectedSelect2 = (language?: string) => {
+  const suffix = getSuffix(language);
+  return [
+    {
+      value: 'child_id',
+      label: 'child',
+      parent: {
+        value: 'group_id',
+        label: `group${suffix}`,
       },
     },
   ];
@@ -118,6 +132,7 @@ describe('migration repair_select_parent_denormalization', () => {
       expect(entity.metadata).toEqual({
         select: expectedSelect(),
         multiselect: expectedMultiSelect(),
+        select2: expectedSelect2(),
       });
     });
 
@@ -127,6 +142,7 @@ describe('migration repair_select_parent_denormalization', () => {
       expect(entity.metadata.inherited_multiselect?.[0].inheritedValue).toEqual(
         expectedMultiSelect()
       );
+      expect(entity.metadata.inherited_select2?.[0].inheritedValue).toEqual(expectedSelect2());
     });
   });
 
@@ -141,6 +157,7 @@ describe('migration repair_select_parent_denormalization', () => {
 
     it('should denormalize the correct label in repaired data', async () => {
       const expectedSelects = [expectedSelect(), expectedSelect('es'), expectedSelect('pt')];
+      const expectedSelect2s = [expectedSelect2(), expectedSelect2('es'), expectedSelect2('pt')];
 
       const expectedMultiselects = [
         expectedMultiSelect(),
@@ -151,6 +168,7 @@ describe('migration repair_select_parent_denormalization', () => {
       const plainEntities = entities.slice(0, 3);
       expect(plainEntities.map(e => e.metadata.select)).toEqual(expectedSelects);
       expect(plainEntities.map(e => e.metadata.multiselect)).toEqual(expectedMultiselects);
+      expect(plainEntities.map(e => e.metadata.select2)).toEqual(expectedSelect2s);
 
       const entitiesWithInheritance = entities.slice(3, 6);
       expect(
@@ -159,6 +177,9 @@ describe('migration repair_select_parent_denormalization', () => {
       expect(
         entitiesWithInheritance.map(e => e.metadata.inherited_multiselect?.[0].inheritedValue)
       ).toEqual(expectedMultiselects);
+      expect(
+        entitiesWithInheritance.map(e => e.metadata.inherited_select2?.[0].inheritedValue)
+      ).toEqual(expectedSelect2s);
     });
   });
 

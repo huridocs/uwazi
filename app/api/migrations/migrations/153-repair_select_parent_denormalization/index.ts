@@ -10,6 +10,7 @@ import {
   Template,
   Thesaurus,
   ThesaurusValueBase,
+  Translation,
 } from './types';
 
 let writesOccured = false;
@@ -72,9 +73,37 @@ const getParentInfo = async (db: Db): Promise<boolean> => {
   return parentsExist;
 };
 
-const getExpectedParent = (value: string, propertyName: string) => {
+const translations: Record<string, Record<string, Record<string, string>>> = {};
+
+const getThesauriTranslations = async (db: Db) => {
+  const translationsCollection = db.collection<Translation>('translationsV2');
+  const translationsCursor = translationsCollection.find({ 'context.type': 'Thesaurus' });
+  while (await translationsCursor.hasNext()) {
+    const translation = await translationsCursor.next();
+    // eslint-disable-next-line no-continue
+    if (!translation) continue;
+    if (!translations[translation.context.id]) {
+      translations[translation.context.id] = {};
+    }
+    if (!translations[translation.context.id][translation.language]) {
+      translations[translation.context.id][translation.language] = {};
+    }
+    translations[translation.context.id][translation.language][translation.key] = translation.value;
+  }
+};
+
+const translateLabel = (label: string, thesaurusId: string, language: string) => {
+  const translation = translations[thesaurusId]?.[language]?.[label];
+  return translation || label;
+};
+
+const getExpectedParent = (value: string, propertyName: string, language: string) => {
   const thesaurusId = thesauriByProperty[propertyName];
-  return parentInfo[thesaurusId]?.[value];
+  const parent = parentInfo[thesaurusId]?.[value];
+  return {
+    id: parent?.id,
+    label: translateLabel(parent?.label || value, thesaurusId, language),
+  };
 };
 
 const metadataIsSelect = (propName: string) => propName in thesauriByProperty;
@@ -83,13 +112,14 @@ const valueIsInherited = (value: MetadataObject) => value.inheritedType && value
 
 const repairValue = (
   value: MetadataObject,
-  propertyName: string
+  propertyName: string,
+  language: string
 ): {
   value: MetadataObject;
   repaired: boolean;
 } => {
   if (!valueIsInherited(value) && typeof value.value === 'string') {
-    const expectedParent = getExpectedParent(value.value, propertyName);
+    const expectedParent = getExpectedParent(value.value, propertyName, language);
     const currentParentId = value.parent?.value;
     return expectedParent && expectedParent.id && currentParentId !== expectedParent.id
       ? {
@@ -99,7 +129,11 @@ const repairValue = (
       : { value, repaired: false };
   }
   // eslint-disable-next-line @typescript-eslint/no-use-before-define -- for recursion
-  const { newValues, anyRepaired } = repairValues(value.inheritedValue || [], propertyName);
+  const { newValues, anyRepaired } = repairValues(
+    value.inheritedValue || [],
+    propertyName,
+    language
+  );
   return anyRepaired
     ? {
         value: { ...value, inheritedValue: newValues },
@@ -108,18 +142,18 @@ const repairValue = (
     : { value, repaired: false };
 };
 
-const repairValues = (values: MetadataObject[], propertyName: string) => {
-  const repairResult = values.map(value => repairValue(value, propertyName));
+const repairValues = (values: MetadataObject[], propertyName: string, language: string) => {
+  const repairResult = values.map(value => repairValue(value, propertyName, language));
   const anyRepaired = repairResult.some(r => r?.repaired);
   const newValues = repairResult.map(r => r?.value);
   return { newValues, anyRepaired };
 };
 
-const repairMetadata = (metadata: Metadata) => {
+const repairMetadata = (metadata: Metadata, language: string) => {
   const selects = Object.entries(metadata).filter(([propName]) => metadataIsSelect(propName));
   const newMetadata: [string, MetadataObject[]][] = [];
   selects.forEach(([propName, values]) => {
-    const { newValues, anyRepaired } = repairValues(values || [], propName);
+    const { newValues, anyRepaired } = repairValues(values || [], propName, language);
     if (anyRepaired) {
       newMetadata.push([propName, newValues]);
     }
@@ -128,7 +162,7 @@ const repairMetadata = (metadata: Metadata) => {
 };
 
 const modifySelectValues = (entity: Entity) => {
-  const newMetadata = repairMetadata(entity.metadata || {});
+  const newMetadata = repairMetadata(entity.metadata || {}, entity.language || 'en');
   const newEntity = {
     ...entity,
     metadata: {
@@ -201,6 +235,7 @@ export default {
     await getPropertyThesaurusMap(db);
     if (_.isEmpty(thesauriByProperty)) return;
     if (!(await getParentInfo(db))) return;
+    await getThesauriTranslations(db);
 
     await handleEntities(db);
 

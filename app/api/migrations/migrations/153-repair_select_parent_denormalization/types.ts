@@ -121,6 +121,7 @@ export type {
   Thesaurus,
   ThesaurusValue,
   ThesaurusValueBase,
+  TestedLanguages,
   Template,
   Translation,
   Metadata,

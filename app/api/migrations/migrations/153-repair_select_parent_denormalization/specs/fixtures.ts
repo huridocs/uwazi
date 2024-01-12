@@ -1,9 +1,11 @@
 import { ObjectId } from 'mongodb';
-import { Fixture, Metadata } from '../types';
+import { Fixture, Metadata, TestedLanguages, Translation } from '../types';
 
 const ids: { [key: string]: ObjectId } = {
   dict: new ObjectId(),
+  dict2: new ObjectId(),
   selectProp: new ObjectId(),
+  select2Prop: new ObjectId(),
   multiselectProp: new ObjectId(),
   textProp: new ObjectId(),
   reltype: new ObjectId(),
@@ -35,6 +37,13 @@ const templateWithSelects = {
       label: 'text',
       type: 'text' as 'text',
       name: 'text',
+    },
+    {
+      _id: ids.select2Prop,
+      content: ids.dict2.toString(),
+      label: 'Select2',
+      type: 'select' as 'select',
+      name: 'select2',
     },
   ],
 };
@@ -76,6 +85,17 @@ const templateWithInheritance = {
       relationType: ids.reltype.toString(),
       name: 'inherited_text',
     },
+    {
+      content: ids.dict2.toString(),
+      label: 'inherited_select2',
+      type: 'relationship' as 'relationship',
+      inherit: {
+        property: ids.select2Prop.toString(),
+        type: 'select' as 'select',
+      },
+      relationType: ids.reltype.toString(),
+      name: 'inherited_select2',
+    },
   ],
 };
 
@@ -104,6 +124,12 @@ const incorrectMetadata: Metadata = {
         value: 'C_id',
         label: 'C',
       },
+    },
+  ],
+  select2: [
+    {
+      value: 'child_id',
+      label: 'child',
     },
   ],
 };
@@ -211,6 +237,14 @@ const baseEntities = {
           label: 'multi_language_entity_with_selects',
           inheritedType: 'multiselect',
           inheritedValue: incorrectMetadata.multiselect,
+        },
+      ],
+      inherited_select2: [
+        {
+          value: 'multi_language_entity_with_selects',
+          label: 'multi_language_entity_with_selects',
+          inheritedType: 'select',
+          inheritedValue: incorrectMetadata.select2,
         },
       ],
     },
@@ -325,6 +359,26 @@ const oneLanguageFixtures: Fixture = {
         },
       ],
     },
+    {
+      _id: ids.dict2,
+      name: 'dict2',
+      values: [
+        {
+          label: 'root',
+          id: 'root_id',
+        },
+        {
+          label: 'group',
+          id: 'group_id',
+          values: [
+            {
+              label: 'child',
+              id: 'child_id',
+            },
+          ],
+        },
+      ],
+    },
   ],
   relationtypes,
   templates: [
@@ -383,104 +437,67 @@ const oneLanguageFixtures: Fixture = {
             inheritedValue: entities.incorrect.metadata.multiselect,
           },
         ],
+        inherited_select2: [
+          {
+            value: entities.incorrect.sharedId,
+            label: entities.incorrect.title,
+            inheritedType: 'select',
+            inheritedValue: entities.incorrect.metadata.select2,
+          },
+        ],
       },
     },
   ],
 };
 
-const multiLanguageDictionaryContext = {
+const dictContext = {
   type: 'Thesaurus' as 'Thesaurus',
   label: 'dict',
   id: ids.dict.toString(),
 };
 
+const dict2Context = {
+  type: 'Thesaurus' as 'Thesaurus',
+  label: 'dict2',
+  id: ids.dict2.toString(),
+};
+
+const createTranslations = (
+  key: string,
+  languages: TestedLanguages[],
+  context: Translation['context']
+) =>
+  languages.map(language => {
+    const suffix = language === 'en' ? '' : `_${language}`;
+    return {
+      _id: new ObjectId(),
+      language,
+      key,
+      value: `${key}${suffix}`,
+      context,
+    };
+  });
+
+const languages: TestedLanguages[] = ['en', 'es', 'pt'];
+
 const multiLanguageFixtures: Fixture = {
-  dictionaries: [
-    {
-      _id: ids.dict,
-      name: 'dict',
-      values: [
-        {
-          label: '1',
-          id: '1_id',
-        },
-        {
-          label: 'A',
-          id: 'A_id',
-          values: [
-            {
-              label: 'A1',
-              id: 'A1_id',
-            },
-          ],
-        },
-      ],
-    },
-  ],
+  dictionaries: oneLanguageFixtures.dictionaries,
   translationsV2: [
-    {
-      _id: new ObjectId(),
-      language: 'en',
-      key: '1',
-      value: '1',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'en',
-      key: 'A',
-      value: 'A',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'en',
-      key: 'A1',
-      value: 'A1',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'es',
-      key: '1',
-      value: '1_es',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'es',
-      key: 'A',
-      value: 'A_es',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'es',
-      key: 'A1',
-      value: 'A1_es',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'pt',
-      key: '1',
-      value: '1_pt',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'pt',
-      key: 'A',
-      value: 'A_pt',
-      context: multiLanguageDictionaryContext,
-    },
-    {
-      _id: new ObjectId(),
-      language: 'pt',
-      key: 'A1',
-      value: 'A1_pt',
-      context: multiLanguageDictionaryContext,
-    },
+    ...createTranslations('1', languages, dictContext),
+    ...createTranslations('2', languages, dictContext),
+    ...createTranslations('3', languages, dictContext),
+    ...createTranslations('A', languages, dictContext),
+    ...createTranslations('B', languages, dictContext),
+    ...createTranslations('C', languages, dictContext),
+    ...createTranslations('A1', languages, dictContext),
+    ...createTranslations('A2', languages, dictContext),
+    ...createTranslations('A3', languages, dictContext),
+    ...createTranslations('B1', languages, dictContext),
+    ...createTranslations('B2', languages, dictContext),
+    ...createTranslations('B3', languages, dictContext),
+    ...createTranslations('root', languages, dict2Context),
+    ...createTranslations('group', languages, dict2Context),
+    ...createTranslations('child', languages, dict2Context),
   ],
   relationtypes,
   templates: [templateWithSelects, templateWithInheritance],
