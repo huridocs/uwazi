@@ -46,17 +46,22 @@ module.exports = plop => {
     actions: [
       {
         type: 'add',
-        path: './migrations/{{nextMigrationDelta}}-{{name}}/index.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/index.ts',
         templateFile: './templates/migration.txt',
       },
       {
         type: 'add',
-        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/types.ts',
+        templateFile: './templates/types.txt',
+      },
+      {
+        type: 'add',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/{{nextMigrationDelta}}-{{name}}.spec.ts',
         templateFile: './templates/migration.spec.txt',
       },
       {
         type: 'add',
-        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/fixtures.js',
+        path: './migrations/{{nextMigrationDelta}}-{{name}}/specs/fixtures.ts',
         templateFile: './templates/fixtures.txt',
       },
     ],

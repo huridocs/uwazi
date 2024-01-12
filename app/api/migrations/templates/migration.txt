@@ -1,13 +1,15 @@
+import { Db } from 'mongodb';
+
 export default {
   delta: {{ nextMigrationDelta }},
 
-  name: '{{ name }}',
+  name: {{ name }},
 
-  description: '{{ description }}',
+  description: {{ description }},
 
   reindex: false,
 
-  async up() {
+  async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
     return Promise.reject(new Error('error! change this, recently created migration'));
   },
