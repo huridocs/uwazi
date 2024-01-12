@@ -189,29 +189,28 @@ const flushUpdates = async (db: Db) => {
   entitiesToUpdate = [];
 };
 
-const batchSize = 1000;
-const performUpdates = async (db: Db) => {
+const performUpdates = async (db: Db, batchSize: number) => {
   if (entitiesToUpdate.length >= batchSize) {
     await flushUpdates(db);
   }
 };
 
-const handleEntity = async (db: Db, entity: Entity | null) => {
+const handleEntity = async (db: Db, entity: Entity | null, batchsize: number) => {
   if (!entity) return;
   const { newEntity, repaired } = modifySelectValues(entity);
   if (repaired) {
     entitiesToUpdate.push(newEntity);
-    await performUpdates(db);
+    await performUpdates(db, batchsize);
   }
 };
 
-const handleEntities = async (db: Db) => {
+const handleEntities = async (db: Db, batchSize: number) => {
   const entitiesCollection = db.collection('entities');
   const entityCursor = entitiesCollection.find({});
 
   while (await entityCursor.hasNext()) {
     const entity = await entityCursor.next();
-    await handleEntity(db, entity);
+    await handleEntity(db, entity, batchSize);
   }
   if (entitiesToUpdate.length) {
     await flushUpdates(db);
@@ -227,6 +226,8 @@ export default {
 
   reindex: false,
 
+  batchSize: 1000,
+
   async up(db: Db) {
     writesOccured = false;
 
@@ -237,7 +238,7 @@ export default {
     if (!(await getParentInfo(db))) return;
     await getThesauriTranslations(db);
 
-    await handleEntities(db);
+    await handleEntities(db, this.batchSize);
 
     this.reindex = writesOccured;
   },

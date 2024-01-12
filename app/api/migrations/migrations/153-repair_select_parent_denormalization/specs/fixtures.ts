@@ -210,6 +210,13 @@ const baseEntities = {
     template: ids.selectsTemplate,
     metadata: incorrectMetadata,
   },
+  incorrect2: {
+    title: 'entity_with_incorrect_selects2',
+    language: 'en',
+    sharedId: 'entity_with_incorrect_selects2',
+    template: ids.selectsTemplate,
+    metadata: incorrectMetadata,
+  },
   multiLanguageSelects: {
     title: 'multi_language_entity_with_selects',
     language: 'en',
@@ -415,6 +422,7 @@ const oneLanguageFixtures: Fixture = {
     entities.correct2,
     entities.correctInheritance,
     entities.incorrect,
+    entities.incorrect2,
     {
       title: 'entity_with_incorrect_inherited_selects',
       language: 'en',
@@ -427,6 +435,12 @@ const oneLanguageFixtures: Fixture = {
             label: entities.incorrect.title,
             inheritedType: 'select',
             inheritedValue: entities.incorrect.metadata.select,
+          },
+          {
+            value: entities.incorrect2.sharedId,
+            label: entities.incorrect2.title,
+            inheritedType: 'select',
+            inheritedValue: entities.incorrect2.metadata.select,
           },
         ],
         inherited_multiselect: [

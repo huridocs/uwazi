@@ -13,6 +13,8 @@ import {
 let db: Db | null;
 let entities: any[] = [];
 
+migration.batchSize = 2;
+
 const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);
   db = testingDB.mongodb!;
@@ -137,8 +139,9 @@ describe('migration repair_select_parent_denormalization', () => {
     });
 
     it('should repair parent denormalization in inherited values', async () => {
-      const entity = entities[5];
+      const entity = entities[6];
       expect(entity.metadata.inherited_select?.[0].inheritedValue).toEqual(expectedSelect());
+      expect(entity.metadata.inherited_select?.[1].inheritedValue).toEqual(expectedSelect());
       expect(entity.metadata.inherited_multiselect?.[0].inheritedValue).toEqual(
         expectedMultiSelect()
       );
