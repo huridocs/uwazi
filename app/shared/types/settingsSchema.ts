@@ -47,6 +47,118 @@ ajv.addKeyword({
   },
 });
 
+ajv.addKeyword({
+  keyword: 'linkTypeLinksShouldHaveUrl',
+  errors: true,
+  type: 'object',
+  validate(schema: boolean, settings: Settings) {
+    const errors: ErrorObject[] = [];
+    const { links = [] } = settings;
+
+    links.forEach((link, index) => {
+      if (link.type === 'link' && !link.url) {
+        errors.push({
+          keyword: 'linkTypeLinksShouldHaveUrl',
+          schemaPath: '',
+          params: { keyword: 'linkTypeLinksShouldHaveUrl', schema },
+          message: 'Links of type link should have url',
+          instancePath: `/links/${index}`,
+        });
+      }
+    });
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
+
+ajv.addKeyword({
+  keyword: 'groupTypeLinksShouldNotHaveUrl',
+  errors: true,
+  type: 'object',
+  validate(schema: boolean, settings: Settings) {
+    const errors: ErrorObject[] = [];
+    const { links = [] } = settings;
+
+    links.forEach((link, index) => {
+      if (link.type === 'group' && link.url) {
+        errors.push({
+          keyword: 'groupTypeLinksShouldNotHaveUrl',
+          schemaPath: '',
+          params: { keyword: 'groupTypeLinksShouldNotHaveUrl', schema },
+          message: 'Links of type group should not have url',
+          instancePath: `/links/${index}`,
+        });
+      }
+    });
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
+
+ajv.addKeyword({
+  keyword: 'linkTypeLinksShouldNotHaveSublinks',
+  errors: true,
+  type: 'object',
+  validate(schema: boolean, settings: Settings) {
+    const errors: ErrorObject[] = [];
+    const { links = [] } = settings;
+
+    links.forEach((link, index) => {
+      if (link.type === 'link' && link.sublinks?.length) {
+        errors.push({
+          keyword: 'linkTypeLinksShouldNotHaveSublinks',
+          schemaPath: '',
+          params: { keyword: 'linkTypeLinksShouldNotHaveSublinks', schema },
+          message: 'Links of type link should not have sublinks',
+          instancePath: `/links/${index}`,
+        });
+      }
+    });
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
+
+ajv.addKeyword({
+  keyword: 'groupTypeLinksShouldHaveSublinks',
+  errors: true,
+  type: 'object',
+  validate(schema: boolean, settings: Settings) {
+    const errors: ErrorObject[] = [];
+    const { links = [] } = settings;
+
+    links.forEach((link, index) => {
+      if (link.type === 'group' && !link.sublinks) {
+        errors.push({
+          keyword: 'groupTypeLinksShouldHaveSublinks',
+          schemaPath: '',
+          params: { keyword: 'groupTypeLinksShouldHaveSublinks', schema },
+          message: 'Links of type group should have sublinks',
+          instancePath: `/links/${index}`,
+        });
+      }
+    });
+
+    if (errors.length) {
+      throw new Ajv.ValidationError(errors);
+    }
+
+    return true;
+  },
+});
+
 const itemSchema = {
   type: 'object',
   additionalProperties: false,
@@ -129,20 +241,34 @@ const settingsPreserveConfigSchema = {
   },
 };
 
+const settingsSublinkSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    title: { type: 'string' },
+    type: { type: 'string', enum: ['link'] },
+    url: { type: 'string' },
+    localId: { type: 'string' },
+  },
+  required: ['title', 'url', 'type'],
+};
+
 const settingsLinkSchema = {
   type: 'object',
   additionalProperties: false,
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, settingsSublinkSchema },
   properties: {
     _id: objectIdSchema,
     title: { type: 'string' },
     url: { type: 'string' },
+    localId: { type: 'string' },
     sublinks: {
       type: 'array',
-      items: { type: 'object', properties: { title: { type: 'string' } } },
+      items: settingsSublinkSchema,
     },
-    type: { type: 'string' },
+    type: { type: 'string', enum: ['link', 'group'] },
   },
+  required: ['title', 'type'],
 };
 
 const settingsSchema = {
@@ -160,6 +286,10 @@ const settingsSchema = {
   },
   additionalProperties: false,
   hasDefaultLanguage: true,
+  linkTypeLinksShouldHaveUrl: true,
+  groupTypeLinksShouldNotHaveUrl: true,
+  linkTypeLinksShouldNotHaveSublinks: true,
+  groupTypeLinksShouldHaveSublinks: true,
   properties: {
     _id: objectIdSchema,
     __v: { type: 'number' },
@@ -318,6 +448,7 @@ export {
   settingsSyncTemplateSchema,
   settingsSyncRelationtypesSchema,
   settingsSyncSchema,
+  settingsSublinkSchema,
   settingsLinkSchema,
   settingsSchema,
   settingsPreserveConfigSchema,

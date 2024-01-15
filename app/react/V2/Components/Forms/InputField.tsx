@@ -1,8 +1,8 @@
 import React, { ChangeEventHandler, Ref } from 'react';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
-import { isString } from 'lodash';
 import { InputError } from './InputError';
+import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
@@ -21,9 +21,6 @@ interface InputFieldProps {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
-
-const renderChild = (child: string | React.ReactNode) =>
-  isString(child) ? <Translate>{child}</Translate> : child;
 
 const InputField = React.forwardRef(
   (
@@ -48,13 +45,11 @@ const InputField = React.forwardRef(
   ) => {
     let fieldStyles = 'border-gray-300 border text-gray-900 focus:ring-primary-500 bg-gray-50';
     let clearFieldStyles = 'enabled:hover:text-primary-700 text-gray-900';
-    let labelStyles = 'block mb-2 text-sm font-medium text-gray-700';
 
     if (hasErrors || errorMessage) {
       fieldStyles =
         'border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700';
       clearFieldStyles = 'enabled:hover:text-error-700 text-error-900';
-      labelStyles = 'block mb-2 text-sm font-medium text-error-700';
     }
 
     if (clearFieldAction) {
@@ -63,9 +58,9 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <label htmlFor={id} className={hideLabel ? 'sr-only' : labelStyles}>
-          {renderChild(label)}
-        </label>
+        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+          {label}
+        </Label>
         <div className="relative w-full">
           <input
             type={type}

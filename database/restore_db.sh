@@ -22,6 +22,5 @@ cp $DB/uploaded_documents/* $OLDWD/uploaded_documents
 echo "Restored $DB.tar.gz."
 
 cd $OLDWD
-export DATABASE_NAME=$DB
-yarn migrate
-yarn reindex
+INDEX_NAME=$DB DATABASE_NAME=$DB yarn migrate
+INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex

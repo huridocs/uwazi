@@ -14,7 +14,7 @@ const DragSourceComponent = <T,>({ context, className = '' }: DragSourceComponen
     <ul className={className}>
       {context.availableItems.map((item: IDraggable<T>, index: number) => (
         <DraggableItem
-          key={item.id}
+          key={item.dndId}
           item={item}
           index={index}
           className="flex gap-5 p-3 w-50"
