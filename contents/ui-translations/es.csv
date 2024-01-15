@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
 An error occurred,Se ha producido un error
+Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity or document,Cualquier entidad o documento
 Apply,Apply
@@ -133,6 +134,7 @@ Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
 Collection name,Nombre de la colección
+Collection Name,Collection Name
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure suggestions,Configurar sugerencias
@@ -204,6 +206,7 @@ Currently connections only need a title.,Actualmente las conexiones sólo necesi
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
 Custom favicon,Definir favicon
+Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom starting location,Configurar ubicación inicial
@@ -215,11 +218,13 @@ Date format,Formato de fecha
 Date modified,Fecha de la modificación
 Day,Día
 Default,Predeterminado
+Default date format,Default date format
 Default filter,Filtro predeterminado
 Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
 Default view,Vista predeterminada
+Default View,Default View
 Delete,Eliminar
 DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
@@ -344,6 +349,7 @@ General,General
 General Information,General Information
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
@@ -448,7 +454,9 @@ Manage site settings and configuration,Administrar la configuración del sitio
 Map,Mapa
 Map api key,Clave del API de Mapas
 Map api key tooltip,Se requiere una clave API para usar Mapbox o Google Maps.
+Map layers description,Map layers description
 Map provider,Proveedor de mapas
+Map Provider,Map Provider
 Map view,Vista de mapa
 MapBox,MapBox
 Mapping conflict error,"Es necesaria una reindexación de su colección. El motivo puede variar
@@ -461,6 +469,7 @@ Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
 Matching,Coincidencia
+Matomo,Matomo
 Matomo Analytics,Analíticas de Matomo
 Members,Miembros
 Menu,Menú

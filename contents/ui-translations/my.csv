@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -135,6 +136,7 @@ Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
 Collection name,Collection name
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
 Configure suggestions,အကြံပြုချက်များကို ချိန်ညှိပါ
@@ -206,6 +208,7 @@ Currently connections only need a title.,လက်ရှိတွင် ချ�
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
 Custom favicon,Custom favicon
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom starting location,Custom starting location
@@ -217,11 +220,13 @@ Date format,ရက်စွဲ ဖော်မက်
 Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
 Day,နေ့
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,ပုံသေမူလ ဘာသာစကား ပြောင်းလဲမှု အောင်မြင်ပါသည်
 Default template,ပုံသေမူလ ပုံစံပြား
 Default view,Default view
+Default View,Default View
 Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
@@ -346,6 +351,7 @@ General,ယေဘုယျ
 General Information,General Information
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
@@ -450,7 +456,9 @@ Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်�
 Map,မြေပုံ
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map layers description,Map layers description
 Map provider,Map provider
+Map Provider,Map Provider
 Map view,မြေပုံ မြင်ကွင်း
 MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
@@ -463,6 +471,7 @@ Maps,မြေပုံများ
 Mark as Reviewed,သုံးသပ်ပြီးဟု မှတ်ရန်
 Markdown,အမှတ်အသား
 Matching,Matching
+Matomo,Matomo
 Matomo Analytics,Matomo Analytics
 Members,အဖွဲ့ဝင်များ
 Menu,မီနူး

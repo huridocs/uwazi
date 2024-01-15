@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -137,6 +138,7 @@ Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
 Collection name,Collection name
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Configure filters
 Configure suggestions,Configure suggestions
@@ -208,6 +210,7 @@ Currently connections only need a title.,Currently connections only need a title
 Custom component error,Custom component markup error: unsupported values! Please check your configuration
 Custom CSS,Custom CSS
 Custom favicon,Custom favicon
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom starting location,Custom starting location
@@ -219,11 +222,13 @@ Date format,Date format
 Date modified,Date modified
 Day,Day
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,Default language change success
 Default template,Default template
 Default view,Default view
+Default View,Default View
 Delete,Delete
 DELETE,DELETE
 Delete entities and documents,Delete entities and documents
@@ -348,6 +353,7 @@ General,General
 General Information,General Information
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
@@ -452,7 +458,9 @@ Manage site settings and configuration,Manage site settings and configuration
 Map,Map
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map layers description,Map layers description
 Map provider,Map provider
+Map Provider,Map Provider
 Map view,Map view
 MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
@@ -465,6 +473,7 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Markdown,Markdown
 Matching,Matching
+Matomo,Matomo
 Matomo Analytics,Matomo Analytics
 Members,Members
 Menu,Menu

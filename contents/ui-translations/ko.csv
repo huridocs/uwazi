@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -135,6 +136,7 @@ Collaborator,협업자
 Collapse all,Collapse all
 Collection,컬렉션
 Collection name,컬렉션 이름
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,필터 구성
 Configure suggestions,제안 구성
@@ -206,6 +208,7 @@ Currently connections only need a title.,커넥션에 제목이 필요합니다.
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
 Custom favicon,사용자 파비콘
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom starting location,사용자 지정 시작 위치
@@ -217,11 +220,13 @@ Date format,날짜 형식
 Date modified,수정한 날짜
 Day,일자
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,기본 언어 변경 완료
 Default template,기본 템플릿
 Default view,Default view
+Default View,Default View
 Delete,삭제
 DELETE,삭제
 Delete entities and documents,Delete entities and documents
@@ -346,6 +351,7 @@ General,일반
 General Information,General Information
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
@@ -450,7 +456,9 @@ Manage site settings and configuration,사이트 설정 및 구성 관리
 Map,지도
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map layers description,Map layers description
 Map provider,Map provider
+Map Provider,Map Provider
 Map view,지도 뷰
 MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
@@ -463,6 +471,7 @@ Maps,지도
 Mark as Reviewed,검토 완료로 표시
 Markdown,Markdown
 Matching,Matching
+Matomo,Matomo
 Matomo Analytics,Matomo 분석
 Members,멤버
 Menu,메뉴

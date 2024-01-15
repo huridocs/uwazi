@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -135,6 +136,7 @@ Collaborator,ผู้ประสานงาน
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
 Collection name,Collection name
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,กำหนดค่าตัวกรอง
 Configure suggestions,คำแนะนำการตั้งค่า
@@ -206,6 +208,7 @@ Currently connections only need a title.,การเชื่อมต่อจ
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
 Custom favicon,Custom favicon
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom starting location,Custom starting location
@@ -217,11 +220,13 @@ Date format,รูปแบบวันที่
 Date modified,แก้ไข ณ วันที่
 Day,วัน
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
 Default template,เทมเพลตเริ่มต้น
 Default view,Default view
+Default View,Default View
 Delete,ลบ
 DELETE,ลบ
 Delete entities and documents,Delete entities and documents
@@ -346,6 +351,7 @@ General,ข้อมูลทั่วไป
 General Information,General Information
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ไอดี Google Analytics
 Google Maps,Google Maps
@@ -450,7 +456,9 @@ Manage site settings and configuration,จัดการการตั้ง�
 Map,แผนที่
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
+Map layers description,Map layers description
 Map provider,Map provider
+Map Provider,Map Provider
 Map view,มุมมองแผนที่
 MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
@@ -463,6 +471,7 @@ Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
 Matching,Matching
+Matomo,Matomo
 Matomo Analytics,Matomo Analytics
 Members,สมาชิก
 Menu,เมนู
