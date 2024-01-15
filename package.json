@@ -263,7 +263,7 @@
     "@babel/plugin-transform-react-inline-elements": "^7.22.5",
     "@babel/preset-env": "^7.23.7",
     "@babel/preset-react": "^7.22.15",
-    "@babel/preset-typescript": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.3",
     "@babel/register": "^7.22.15",
     "@babel/traverse": "^7.23.2",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
