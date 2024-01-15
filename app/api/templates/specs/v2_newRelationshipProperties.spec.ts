@@ -7,8 +7,8 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import templates from '../templates';
 import translations from 'api/i18n';
+import templates from '../templates';
 
 jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
 
@@ -51,6 +51,7 @@ const fixtures: DBFixture = {
     fixtureFactory.template('template_with_existing_relationship', [
       fixtureFactory.property('existing_relationship', 'newRelationship', {
         query: oldQueryInDb,
+        targetTemplates: [fixtureFactory.id('unrelated_template').toString()],
       }),
     ]),
     fixtureFactory.template('unrelated_template', [
@@ -179,6 +180,7 @@ describe('template.save()', () => {
             match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
           },
         ],
+        targetTemplates: [fixtureFactory.id('existing_template').toString()],
       });
       expect(template.properties?.[1].label).toBe('Text1');
     });
@@ -243,6 +245,7 @@ describe('template.save()', () => {
                 match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
               },
             ],
+            targetTemplates: [fixtureFactory.id('existing_template').toString()],
           },
           {
             _id: expect.any(ObjectId),
@@ -347,6 +350,7 @@ describe('template.save()', () => {
             label: 'new name',
             name: 'new_name',
             query: oldQueryInDb,
+            targetTemplates: [fixtureFactory.id('unrelated_template').toString()],
           },
         ]);
 
@@ -362,7 +366,7 @@ describe('template.save()', () => {
         ]);
       });
 
-      it('on query change, uwazi should save the query properly, and mark the metadata obsolete', async () => {
+      it('on query change, uwazi should save the query properly, mark the metadata obsolete and recalculate the target templates', async () => {
         const [existingTemplate] = await templates.get({
           name: 'template_with_existing_relationship',
         });
@@ -384,6 +388,7 @@ describe('template.save()', () => {
             label: 'existing_relationship',
             name: 'existing_relationship',
             query: newQueryInDb,
+            targetTemplates: [fixtureFactory.id('unrelated_template2').toString()],
           },
         ]);
 

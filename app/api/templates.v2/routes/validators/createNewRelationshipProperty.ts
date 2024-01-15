@@ -14,6 +14,7 @@ const createNewRelationshipPropertySchema: ValidatorSchema<
   optionalProperties: {
     _id: { type: 'string' },
     denormalizedProperty: { type: 'string' },
+    targetTemplates: { elements: { type: 'string' } },
     noLabel: { type: 'boolean' },
     required: { type: 'boolean' },
     showInCard: { type: 'boolean' },

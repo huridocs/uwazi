@@ -434,5 +434,6 @@ export const propertySchema = {
       type: 'array',
     },
     denormalizedProperty: { type: 'string' },
+    targetTemplates: { type: 'array', items: { type: 'string' } },
   },
 };
