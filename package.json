@@ -150,7 +150,7 @@
     "graylog2": "^0.2.1",
     "helmet": "^7.1.0",
     "html-to-react": "^1.7.0",
-    "htmlparser2": "^9.0.0",
+    "htmlparser2": "^9.1.0",
     "immutability-helper": "^3.1.1",
     "immutable": "^3.7.6",
     "is-reachable": "^5.2.1",
