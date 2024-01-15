@@ -8,22 +8,45 @@ const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   entities: [
-    factory.entity('entity1', 'template1', {
-      relProp: [
-        {
-          value: 'entity2',
-          label: 'entity2',
-        },
-        {
-          value: 'entity3',
-          label: 'entity3',
-        },
-      ],
-    }),
-    factory.entity('entity2', 'template1', {
-      relProp: [{ value: 'entity3', label: 'entity3' }],
-    }),
-    factory.entity('entity3', 'template1'),
+    factory.entity(
+      'entity1',
+      'template1',
+      {
+        relProp: [
+          {
+            value: 'entity2',
+            label: 'entity2',
+          },
+          {
+            value: 'entity3',
+            label: 'entity3',
+          },
+        ],
+      },
+      {
+        obsoleteMetadata: [],
+      }
+    ),
+    factory.entity(
+      'entity2',
+      'template1',
+      {
+        relProp: [{ value: 'entity3', label: 'entity3' }],
+      },
+      {
+        obsoleteMetadata: [],
+      }
+    ),
+    factory.entity(
+      'entity3',
+      'template1',
+      {
+        relProp: [],
+      },
+      {
+        obsoleteMetadata: [],
+      }
+    ),
   ],
   templates: [
     factory.template('template1', [
