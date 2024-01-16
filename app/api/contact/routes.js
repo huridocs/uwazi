@@ -1,9 +1,11 @@
 import contact from './contact';
+import { captchaAuthorization } from '../auth';
 import { validation } from '../utils';
 
 export default app => {
   app.post(
     '/api/contact',
+    captchaAuthorization(),
     validation.validateRequest({
       type: 'object',
       properties: {
