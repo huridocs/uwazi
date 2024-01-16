@@ -63,10 +63,12 @@ export class DenormalizationService {
               });
             });
             relatedEntities.forEach(re => {
-              entities.push({
-                sharedId: re.sharedId,
-                property: property.name,
-              });
+              if (property.template === re.template) {
+                entities.push({
+                  sharedId: re.sharedId,
+                  property: property.name,
+                });
+              }
             });
           })
         )

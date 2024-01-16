@@ -357,6 +357,7 @@ describe('denormalizeAfterCreatingRelationships()', () => {
           ?.collection('entities')
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })
           .toArray();
+
         expect(entities?.length).toBe(4);
         expect(entities).toEqual(
           expect.arrayContaining([
