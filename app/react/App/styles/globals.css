@@ -648,6 +648,12 @@ select:not([size]) {
           print-color-adjust: exact;
 }
 
+:is([dir=rtl]) select:not([size]) {
+  background-position: left 0.75rem center;
+  padding-right: 0.75rem;
+  padding-left: 0;
+}
+
 [multiple] {
   background-image: initial;
   background-position: initial;
@@ -776,6 +782,11 @@ input[type=file]::file-selector-button {
 
 input[type=file]::file-selector-button:hover {
   background: #374151;
+}
+
+:is([dir=rtl]) input[type=file]::file-selector-button {
+  padding-right: 2rem;
+  padding-left: 1rem;
 }
 
 .dark input[type=file]::file-selector-button {
@@ -1776,6 +1787,10 @@ input:checked + .toggle-bg {
 
 .z-20 {
   z-index: 20;
+}
+
+.z-40 {
+  z-index: 40;
 }
 
 .z-50 {
@@ -2840,6 +2855,10 @@ input:checked + .toggle-bg {
 .rounded-s-md {
   border-start-start-radius: 0.375rem;
   border-end-start-radius: 0.375rem;
+
+.rounded-s-lg {
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
 }
 
 .rounded-t {
