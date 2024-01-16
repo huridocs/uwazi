@@ -16,9 +16,9 @@ class ContactForm extends Component {
     super(props, context);
     this.submit = this.submit.bind(this);
     this.validators = {
-      name: { required: val => val },
+      name: { required: val => val && val.length > 2 },
       email: { required: val => val },
-      message: { required: val => val },
+      message: { required: val => val && val.length > 4 },
       captcha: { required: val => val && val.text.length },
     };
     this.refreshFn = refresh => {
@@ -35,14 +35,25 @@ class ContactForm extends Component {
   }
 
   async submit(values) {
-    console.log(values);
     try {
-      await api.post('contact', new RequestParams(values));
+      await api.post(
+        'contact',
+        new RequestParams({
+          name: values.name,
+          email: values.email,
+          message: values.message,
+          captcha: JSON.stringify(values.captcha),
+        })
+      );
       this.props.notify(t('System', 'Message sent', null, false), 'success');
       this.resetForm();
     } catch (e) {
-      this.props.notify(t('System', 'An error occurred', null, false), 'danger');
-      this.resetForm();
+      if (e.status === 403) {
+        this.props.notify(e.json.error, 'danger');
+      } else {
+        this.props.notify(t('System', 'An error occurred', null, false), 'danger');
+        this.resetForm();
+      }
     }
 
     this.refreshCaptcha();
@@ -64,7 +75,7 @@ class ContactForm extends Component {
           </label>
 
           <Field model=".name">
-            <input type="text" required name="name" className="form-control" />
+            <input type="text" required minLength={3} name="name" className="form-control" />
           </Field>
         </div>
 
@@ -86,7 +97,7 @@ class ContactForm extends Component {
           </label>
 
           <Field model=".message">
-            <textarea required name="message" className="form-control" />
+            <textarea required minLength={5} name="message" className="form-control" />
           </Field>
         </div>
 
