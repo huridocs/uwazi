@@ -8,6 +8,7 @@ cd "$parent_path"
 DB=${1:-${DATABASE_NAME:-uwazi_development}}
 HOST=${2:-${DBHOST:-127.0.0.1}}
 FORCE_FLAG=${3:-false}
+FORCE_DB_STATE=${4}
 
 recreate_database() {
     mongosh --quiet -host $HOST $DB --eval "db.dropDatabase()"
@@ -22,9 +23,15 @@ recreate_database() {
 echo -e "\nDB IS $DB"
 echo -e "\nHOST IS $HOST"
 echo -e "\nFORCE FLAG IS $FORCE_FLAG"
+echo -e "\nFORCE DB STATE $FORCE_DB_STATE"
 
-mongo_indexof_db=$(mongosh --quiet -host $HOST --eval 'db.getMongo().getDBNames().indexOf("'$DB'")')
-# mongo_indexof_db="-1"
+if [ -z "$FORCE_DB_STATE" ]; then
+        echo -e "\nFORCE_DB_STATE is empty"
+        mongo_indexof_db=$(mongosh --quiet -host $HOST --eval 'db.getMongo().getDBNames().indexOf("'$DB'")')
+    else
+        echo -e "\nFORCE_DB_STATE is not empty"
+        mongo_indexof_db=$FORCE_DB_STATE
+fi
 
 echo -e "\nResult db: $mongo_indexof_db"
 
