@@ -75,7 +75,7 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
       ref={containerRef}
     >
       {mediaType === 'invalid' && (
-        <div className="flex absolute left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border touseV2Playerp-0">
+        <div className="flex absolute top-0 left-0 justify-center items-center p-4 w-full h-full bg-gray-50 rounded border">
           <p className="text-center">
             <Translate>This file type is not supported on media fields</Translate>
           </p>
