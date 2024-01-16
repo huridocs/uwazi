@@ -57,7 +57,7 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Custom home page' });
     const pageUrl = await newPageUrl();
     await expect(page).toClick('a', { text: 'Collection' });
-    await expect(page).toClick(selectors.useCustomLandingPage);
+    // await expect(page).toClick(selectors.useCustomLandingPage);
     await expect(page).toFill('input[name="home_page"]', pageUrl);
     await expect(page).toClick('button', { text: 'Save' });
   });

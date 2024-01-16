@@ -21,6 +21,7 @@ const EnableButtonCheckbox = React.forwardRef(
 
     return (
       <label
+        data-testid="enable-button-checkbox"
         className={`relative inline-flex items-center text-sm font-medium text-gray-900 cursor-pointer ${
           disabled ? '!text-gray-300' : ''
         } ${className} `}

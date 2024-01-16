@@ -17,7 +17,9 @@ import {
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
-type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
+type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
+
+const DEFAULT_MAP_LAYER = 'Streets';
 
 type LMapProps = {
   markers?: MarkerInput[];
@@ -108,7 +110,7 @@ const LMap = ({
     }
 
     const initialLayer =
-      layers && layers.length ? mapLayers[layers[0]] : Object.values(mapLayers)[0];
+      layers && layers.length ? mapLayers[layers[0]] : mapLayers[DEFAULT_MAP_LAYER];
     initialLayer.options.zIndex = 0;
     initialLayer.addTo(map);
     initMarkers();
