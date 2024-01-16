@@ -1,9 +1,11 @@
 import contact from './contact';
 import { validation } from '../utils';
+import { publicAPIMiddleware } from '../auth/publicAPIMiddleware';
 
 export default app => {
   app.post(
     '/api/contact',
+    publicAPIMiddleware,
     validation.validateRequest({
       type: 'object',
       properties: {
