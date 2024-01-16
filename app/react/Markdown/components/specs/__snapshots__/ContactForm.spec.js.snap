@@ -24,8 +24,8 @@ exports[`ContactForm should render the ContactForm 1`] = `
     }
   }
 >
-  <div
-    className="form-group"
+  <FormGroup
+    model=".name"
   >
     <label
       className="form-group-label"
@@ -45,15 +45,13 @@ exports[`ContactForm should render the ContactForm 1`] = `
     >
       <input
         className="form-control"
-        minLength={3}
         name="name"
-        required={true}
         type="text"
       />
     </Modeled(Connect(Field))>
-  </div>
-  <div
-    className="form-group"
+  </FormGroup>
+  <FormGroup
+    model=".email"
   >
     <label
       className="form-group-label"
@@ -74,13 +72,12 @@ exports[`ContactForm should render the ContactForm 1`] = `
       <input
         className="form-control"
         name="email"
-        required={true}
         type="email"
       />
     </Modeled(Connect(Field))>
-  </div>
-  <div
-    className="form-group"
+  </FormGroup>
+  <FormGroup
+    model=".message"
   >
     <label
       className="form-group-label"
@@ -100,12 +97,10 @@ exports[`ContactForm should render the ContactForm 1`] = `
     >
       <textarea
         className="form-control"
-        minLength={5}
         name="message"
-        required={true}
       />
     </Modeled(Connect(Field))>
-  </div>
+  </FormGroup>
   <Memo(CaptchaComponent)
     refresh={[Function]}
   />

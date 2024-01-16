@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { actions, Field } from 'react-redux-form';
+import { FormGroup } from 'app/ReactReduxForms';
 import { Translate, t } from 'app/I18N';
 import api from 'app/utils/api';
 import { Icon } from 'UI';
@@ -68,38 +69,38 @@ class ContactForm extends Component {
         getDispatch={dispatch => this.attachDispatch(dispatch)}
         onSubmit={this.submit}
       >
-        <div className="form-group">
+        <FormGroup model=".name">
           <label className="form-group-label" htmlFor="name">
             <Translate>Name</Translate>
             <span className="required">*</span>
           </label>
 
           <Field model=".name">
-            <input type="text" required minLength={3} name="name" className="form-control" />
+            <input type="text" name="name" className="form-control" />
           </Field>
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
+        <FormGroup model=".email">
           <label className="form-group-label" htmlFor="email">
             <Translate>Email</Translate>
             <span className="required">*</span>
           </label>
 
           <Field model=".email">
-            <input type="email" required name="email" className="form-control" />
+            <input type="email" name="email" className="form-control" />
           </Field>
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
+        <FormGroup model=".message">
           <label className="form-group-label" htmlFor="message">
             <Translate>Message</Translate>
             <span className="required">*</span>
           </label>
 
           <Field model=".message">
-            <textarea required minLength={5} name="message" className="form-control" />
+            <textarea name="message" className="form-control" />
           </Field>
-        </div>
+        </FormGroup>
 
         <FormCaptcha refresh={this.refreshFn} />
 
