@@ -6,8 +6,8 @@ import disableTransitions from '../helpers/disableTransitions';
 
 const selectors = {
   pageContentsInput: '.tab-content > textarea:nth-child(1)',
-  useCustomLandingPage:
-    '#collectionSettings > div:nth-child(5) > div > div.toggle-children-button > label',
+  newNameGeneration:
+    '#collection-form > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(9) > label',
 };
 
 describe('Custom home page and styles', () => {
@@ -57,8 +57,8 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Custom home page' });
     const pageUrl = await newPageUrl();
     await expect(page).toClick('a', { text: 'Collection' });
-    // await expect(page).toClick(selectors.useCustomLandingPage);
     await expect(page).toFill('input[name="home_page"]', pageUrl);
+    await expect(page).toClick(selectors.newNameGeneration);
     await expect(page).toClick('button', { text: 'Save' });
   });
 
@@ -100,7 +100,7 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toFill('input[name="home_page"]', '/entity/7ycel666l65vobt9');
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
 
   it('should check that the landing page is the defined entity', async () => {
@@ -121,7 +121,7 @@ describe('Custom home page and styles', () => {
       "/library/table/?types:!('58ada34c299e82674854504b')"
     );
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
 
   it('should check that the landing page is the defined library query', async () => {

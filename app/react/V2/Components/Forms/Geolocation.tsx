@@ -31,8 +31,6 @@ const Geolocation = ({
   value = {},
   layers,
 }: GeolocationProps) => {
-  let markers: Marker[] = [];
-
   const [currentLatitude, setCurrentLatitude] = useState(value?.lat);
   const [currentLongitude, setCurrentLongitude] = useState(value?.lon);
   const [currentMarkers, setCurrentMarkers] = useState<Marker[] | undefined>(undefined);
