@@ -443,7 +443,7 @@ describe('csvExporter', () => {
     });
   });
 
-  fdescribe('CSVExport class', () => {
+  describe('CSVExport class', () => {
     beforeEach(() => {
       jest
         .spyOn(templates, 'getById')

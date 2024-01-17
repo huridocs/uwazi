@@ -1,4 +1,6 @@
 import moment from 'moment-timezone';
+import { objectIndexToArrays } from 'shared/data_utils/objectIndex';
+import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
 
 const defaultDateFormat = 'YYYY-MM-DD';
@@ -22,11 +24,28 @@ export type FormatterFunction = (
   options: FormatterOptions
 ) => string;
 
+const multiSelectFormatter: FormatterFunction = field => {
+  const groupedByParents = objectIndexToArrays(
+    field,
+    s => s.parent?.label || '',
+    s => s.label
+  );
+  const rootElements = groupedByParents[''];
+  const entries = Object.entries(groupedByParents).filter(([parent]) => parent);
+  (rootElements || []).forEach(rootElement => entries.push([rootElement || '', []]));
+  sortByStrings(entries, [([parent]) => parent]);
+  return entries
+    .map(([parent, children]) =>
+      children.length ? `${parent}<${children.sort().join('|')}>` : parent
+    )
+    .join('|');
+};
+
 export const formatters: {
   [key: string]: FormatterFunction;
 } = {
-  select: field => (field[0] && field[0].value && field[0].label ? field[0].label : ''),
-  multiselect: (field, options) => field.map(item => formatters.select([item], options)).join('|'),
+  select: multiSelectFormatter,
+  multiselect: multiSelectFormatter,
   date: (field, options) =>
     field[0] && field[0].value ? formatDate(<number>field[0].value, options?.dateFormat) : '',
   daterange: (field, options) =>

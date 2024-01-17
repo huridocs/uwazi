@@ -231,30 +231,9 @@ export type GeolocationSchema = {
 }[];
 
 export interface InheritedValueSchema {
-  value:
-    | null
-    | string
-    | number
-    | boolean
-    | {
-        label?: string | null;
-        url?: string | null;
-      }
-    | {
-        from?: number | null;
-        to?: number | null;
-      }
-    | {
-        label?: string;
-        lat: number;
-        lon: number;
-      }
-    | {
-        label?: string;
-        lat: number;
-        lon: number;
-      }[];
+  value: PropertyValueSchema;
   label?: string;
+  parent?: SelectParentSchema;
   [k: string]: unknown | undefined;
 }
 
@@ -298,13 +277,10 @@ export interface MetadataObjectSchema {
   suggestion_confidence?: number;
   suggestion_model?: string;
   provenance?: '' | 'BULK_ACCEPT';
-  inheritedValue?: {
-    value: PropertyValueSchema;
-    label?: string;
-    [k: string]: unknown | undefined;
-  }[];
+  inheritedValue?: InheritedValueSchema[];
   inheritedType?: string;
   timeLinks?: string;
+  parent?: SelectParentSchema;
   [k: string]: unknown | undefined;
 }
 
@@ -386,6 +362,11 @@ export type PropertyValueSchema =
   | DateRangeSchema
   | LatLonSchema
   | LatLonSchema[];
+
+export interface SelectParentSchema {
+  label: string;
+  value: string;
+}
 
 export interface SelectionRectangleSchema {
   top?: number;

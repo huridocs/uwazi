@@ -84,10 +84,18 @@ export interface ConnectionSchema {
                     lon: number;
                   }[];
               label?: string;
+              parent?: {
+                label: string;
+                value: string;
+              };
               [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             timeLinks?: string;
+            parent?: {
+              label: string;
+              value: string;
+            };
             [k: string]: unknown | undefined;
           }[]
         | undefined;
@@ -149,10 +157,18 @@ export interface ConnectionSchema {
                     lon: number;
                   }[];
               label?: string;
+              parent?: {
+                label: string;
+                value: string;
+              };
               [k: string]: unknown | undefined;
             }[];
             inheritedType?: string;
             timeLinks?: string;
+            parent?: {
+              label: string;
+              value: string;
+            };
             [k: string]: unknown | undefined;
           }[]
         | undefined;
