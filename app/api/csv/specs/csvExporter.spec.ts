@@ -18,6 +18,7 @@ import CSVExporter, {
 import { csvExample, searchResults, templates as testTemplates } from './exportCsvFixtures';
 
 const hostname = 'cejil.uwazi.io';
+
 describe('csvExporter', () => {
   describe('getTypes', () => {
     it('should return the whitelist if provided', () => {
@@ -71,6 +72,10 @@ describe('csvExporter', () => {
       });
       expect(templates.getById).toHaveBeenCalledTimes(3);
       expect(models).toEqual(testTemplates);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
     });
   });
 
@@ -190,6 +195,8 @@ describe('csvExporter', () => {
       expect(translatedHeaders[1].label).toBe(`${headers[1].label}T`);
       expect(localeTranslationsMock).toHaveBeenCalledWith([], 'es');
       expect(translateMock).toHaveBeenCalledWith({}, headers[1].label, headers[1].label);
+
+      jest.restoreAllMocks();
     });
   });
 
@@ -438,7 +445,16 @@ describe('csvExporter', () => {
 
   fdescribe('CSVExport class', () => {
     beforeEach(() => {
-      jest.spyOn(translate, 'default').mockImplementation((_context, _key, text) => text);
+      jest
+        .spyOn(templates, 'getById')
+        .mockImplementation(async id =>
+          Promise.resolve(id === 'notValid' ? null : testTemplates[id.toString()])
+        );
+      jest.spyOn(translations, 'get').mockResolvedValue([]);
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
     });
 
     it('should export a correct csv content', async () => {
