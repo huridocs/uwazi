@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { store } from 'app/store';
 import { UserRole } from 'shared/types/userSchema';
-import { Settings as settingsType } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 
 const ProtectedRoute = ({
   children,
@@ -28,7 +28,7 @@ const adminsOnlyRoute = (element: ReactElement) => (
   <ProtectedRoute onlyAdmin>{element}</ProtectedRoute>
 );
 
-const privateRoute = (element: ReactElement, settings: settingsType | undefined) =>
+const privateRoute = (element: ReactElement, settings: ClientSettings | undefined) =>
   !settings?.private ? element : <ProtectedRoute>{element}</ProtectedRoute>;
 
 const loggedInUsersRoute = (element: ReactElement) => <ProtectedRoute>{element}</ProtectedRoute>;

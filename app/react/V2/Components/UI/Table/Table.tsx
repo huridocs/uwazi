@@ -4,14 +4,12 @@ import {
   getCoreRowModel,
   useReactTable,
   SortingState,
-  Row,
+  getExpandedRowModel,
 } from '@tanstack/react-table';
-import type { IDraggable } from 'app/V2/shared/types';
+import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
-import { TableRow } from './TableRow';
-import { useDnDTable } from './useDnDTable';
 
 const applyForSelection = (
   withSelection: any,
@@ -30,6 +28,7 @@ const Table = <T,>({
   sorting,
   setSorting,
   onSelection,
+  subRowsKey,
   draggableRows = false,
   onChange = () => {},
 }: TableProps<T>) => {
@@ -37,9 +36,16 @@ const Table = <T,>({
   const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
     initialState?.sorting || []
   );
-
   const [rowSelection, setRowSelection] = useState({});
-  const [rowData, setRowData] = useState<Row<T>[] | IDraggable<Row<T>>[]>();
+  const [internalData, setInternalData] = useState(data);
+  const [sortedChanged, setSortedChanged] = useState(false);
+  const isFirstRender = useIsFirstRender();
+
+  useEffect(() => {
+    setRowSelection({});
+    setInternalData(data);
+  }, [data]);
+
   const memoizedColumns = useMemo(
     () => [
       ...applyForSelection(
@@ -64,57 +70,52 @@ const Table = <T,>({
   const sortingState = manualSorting ? sorting : internalSorting;
   const sortingFunction = manualSorting ? setSorting : setInternalSortingSorting;
 
-  const preparedData = useMemo<T[]>(() => {
-    setRowSelection({});
-    return data;
-  }, [data]);
-
   const table = useReactTable({
     columns: memoizedColumns,
     manualSorting,
-    data: preparedData,
+    data: internalData,
     initialState,
     state: {
       sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
     enableRowSelection: enableSelection,
+    enableSubRowSelection: false,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: sortingFunction,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    getSubRows: (row: any) => {
+      if (subRowsKey) {
+        return row[subRowsKey];
+      }
+      return [];
+    },
   });
 
-  const { activeItems, dndContext, setReset } = useDnDTable<T>(
-    draggableRows,
-    (row: any) => row.getValue('id'),
-    table,
-    sortingState,
-    onChange
-  );
+  useEffect(() => {
+    if (isFirstRender) {
+      return;
+    }
+
+    const sorted = table.getRowModel().rows.map(row => row.original);
+    onChange(sorted);
+    setSortedChanged(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortingState]);
 
   useEffect(() => {
     const selectedRows = table.getSelectedRowModel().flatRows;
-
     if (onSelection) {
       onSelection(selectedRows);
     }
   }, [onSelection, rowSelection, table]);
 
-  useEffect(() => {
-    dndContext.updateActiveItems(table.getRowModel().rows);
-    setReset(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preparedData]);
-
-  useEffect(() => {
-    if (draggableRows) {
-      setRowData(activeItems);
-    } else {
-      setRowData(table.getRowModel().rows);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeItems, draggableRows]);
+  const handleOnChange = (changedItems: T[]) => {
+    setSortedChanged(true);
+    onChange(changedItems);
+  };
 
   return (
     <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
@@ -131,25 +132,21 @@ const Table = <T,>({
               key={headerGroup.id}
               headerGroup={headerGroup}
               draggableRows={draggableRows}
+              sortedChanged={sortedChanged}
             />
           ))}
         </thead>
-        <TableBody draggableRows>
-          {(rowData || table.getRowModel().rows).map(
-            (item: Row<T> | IDraggable<Row<T>>, index: number) => (
-              <TableRow
-                key={item.id}
-                item={item}
-                draggableRow={draggableRows === true}
-                index={index}
-                dndContext={dndContext}
-              />
-            )
-          )}
-        </TableBody>
+        <TableBody
+          draggableRows={draggableRows}
+          items={data}
+          table={table}
+          subRowsKey={subRowsKey}
+          onChange={handleOnChange}
+        />
       </table>
       {footer && <div className="p-4">{footer}</div>}
     </div>
   );
 };
+
 export { Table };

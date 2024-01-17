@@ -11,9 +11,11 @@ const { config } = require('../app/api/config');
 
 const file = process.argv[2];
 
+const clParameters = process.argv.slice(3);
+
 if (file) {
   const mongoUri = url.parse(config.DBHOST);
-  const bashProcess = spawn(file, [], {
+  const bashProcess = spawn(file, clParameters, {
     env: {
       ...process.env,
       DBHOST: process.env.DBHOST || mongoUri.hostname,

@@ -29,14 +29,14 @@ const Container = <T,>({
   const currentItems = parent ? parent.value.items || [] : context.activeItems;
   return (
     <div className="tw-content " data-testid="active_filters_root">
-      <div className={`${className}`} style={{ overflow: 'hidden', clear: 'both' }}>
+      <div className={`${className || ''}`} style={{ overflow: 'hidden', clear: 'both' }}>
         <ul>
           {currentItems
             .filter((item: IDraggable<T>) => item)
             .map((item: IDraggable<T>, index: number) => (
               <DraggableItem
                 item={item}
-                key={item.id}
+                key={item.dndId}
                 iconHandle={iconHandle}
                 index={index}
                 className="flex flex-row gap-3 p-1 align-middle"

@@ -3,17 +3,17 @@ import React, { MouseEventHandler } from 'react';
 interface ButtonProps {
   children: string | React.ReactNode;
   type?: 'submit' | 'button';
-  color?: 'orange' | 'green' | 'red' | 'indigo';
+  color?: 'orange' | 'green' | 'red' | 'indigo' | 'white';
   disabled?: boolean;
   form?: string;
   onClick?: MouseEventHandler;
   className?: string;
-  icon: React.ReactNode;
-  collapsed: boolean;
+  icon?: React.ReactNode;
+  collapsed?: boolean;
 }
 
 const EmbededButton = ({
-  color,
+  color = 'white',
   children,
   type = 'button',
   disabled,
@@ -31,14 +31,19 @@ const EmbededButton = ({
       buttonColor = 'text-orange-600 bg-orange-50';
       break;
     case 'green':
-      buttonColor = 'text-green-400 bg-green-100';
+      buttonColor =
+        'text-green-400 bg-green-100 border-green-200 disabled:text-green-200 disabled:bg-green-50 disabled:border-green-200';
       break;
     case 'red':
       buttonColor = 'bg-gray-50';
       childrenBaseStyle = 'text-gray-300';
       break;
     case 'indigo':
-      buttonColor = 'text-indigo-400 bg-indigo-50';
+      buttonColor =
+        'text-indigo-700 bg-indigo-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-indigo-50 disabled:border-indigo-200';
+      break;
+    case 'white':
+      buttonColor = 'bg-white border-gray-200 disabled:text-gray-300 disabled:bg-gray-50';
       break;
     default:
       buttonColor = '';
@@ -53,11 +58,14 @@ const EmbededButton = ({
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${buttonColor} shadow-sm text-xs px-1.5 py-0.5 disabled:cursor-not-allowed font-medium rounded-[4px]
-      focus:outline-none hover:border-none ${className}`}
+      className={`${buttonColor} 
+      ${collapsed || disabled ? '' : 'border'}
+      ${collapsed || disabled ? 'px-[7px] py-[3px]' : 'px-1.5 py-0.5'}
+      drop-shadow-md disabled:drop-shadow-none active:drop-shadow-none text-xs disabled:cursor-not-allowed font-medium rounded-[4px]
+      focus:outline-none ${className}`}
       form={form}
     >
-      <div className="flex flex-row gap-1 justify-center items-center">
+      <div className="flex flex-row items-center justify-center gap-1">
         <div className="w-3 h-3 text-sm">{icon}</div>
         <div className={childrenBaseStyle}>{children}</div>
       </div>
