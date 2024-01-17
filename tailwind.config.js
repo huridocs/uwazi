@@ -1,7 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-const colors = require('tailwindcss/colors');
+import colors from 'tailwindcss/colors';
+import flowbitePlugin from 'flowbite/plugin';
+import flowbiteTypography from 'flowbite-typography';
 
-module.exports = {
+export default {
   content: [
     './app/react/V2/**/*.{js,jsx,ts,tsx}',
     './app/react/stories/**/*.{js,jsx,ts,tsx}',
@@ -74,9 +76,7 @@ module.exports = {
     {
       preflight: false,
     },
-    // eslint-disable-next-line global-require
-    require('flowbite/plugin'),
-    // eslint-disable-next-line global-require
-    require('flowbite-typography'),
+    flowbitePlugin,
+    flowbiteTypography,
   ],
 };

@@ -7,31 +7,26 @@ import cors from 'cors';
 import _http, { request as _request } from 'http';
 // TEMP
 import { process as _process } from 'rtlcss';
-import webpackConfig, { output } from './webpack.config.hot.js';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackHotMiddleware from 'webpack-hot-middleware';
+import * as webpackConfig from './webpack.config.hot.mjs';
 
 const app = express();
 app.use(cors());
 
 const http = _http.Server(app);
 
-const compiler = webpack(webpackConfig);
+const compiler = webpack(webpackConfig.default);
 
-const webpackDevMiddleware = (async () => {
-  const { default: webpackDevMiddlewareModule } = await import('webpack-dev-middleware');
-  return webpackDevMiddlewareModule(compiler, {
-    publicPath: output.publicPath,
+app.use(
+  webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.output.publicPath,
     headers: { 'Access-Control-Allow-Origin': '*' },
     stats: 'errors-warnings',
-  });
-})();
+  })
+);
 
-const webpackHotMiddleware = (async () => {
-  const { default: webpackHotMiddlewareModule } = await import('webpack-hot-middleware');
-  return webpackHotMiddlewareModule(compiler);
-})();
-
-app.use(webpackHotMiddleware);
-app.use(webpackDevMiddleware);
+app.use(webpackHotMiddleware(compiler));
 
 app.get('/CSS/:file', (req, res) => {
   const request = _request(

@@ -1,13 +1,19 @@
-import { join } from 'path';
+import path, { join } from 'path';
 import webpack from 'webpack';
 import AssetsPlugin from 'assets-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
-import MiniCssExtractPlugin, { loader as _loader } from 'mini-css-extract-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import RtlCssPlugin from 'rtlcss-webpack-plugin';
 import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { fileURLToPath } from 'url';
+import nodeExternals from 'webpack-node-externals';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const { loader: _loader } = MiniCssExtractPlugin;
 const rootPath = join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
@@ -28,10 +34,10 @@ export default production => {
 
   return {
     context: rootPath,
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
     mode: 'development',
     entry: {
-      main: join(rootPath, 'app/react/entry-client'),
+      main: join(rootPath, 'app/react/entry-client.tsx'),
       nprogress: join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {
@@ -40,12 +46,36 @@ export default production => {
       filename: `[name]${jsChunkHashName}.js`,
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
+    target: 'node',
+    externalsPresets: { node: true },
+    externals: [nodeExternals()],
     resolve: {
-      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      alias: {
+        'api/*': path.resolve(rootPath, './app/api'),
+      },
+      extensions: ['', '.webpack.js', '.web.js', '.js', '.ts', '.tsx', '.jsx', '.mjs', '.cjs'],
+      extensionAlias: {
+        '.js': ['.ts', '.tsx', '.jsx', '.js'],
+        '.mjs': ['.mts', '.mjs'],
+        '.cjs': ['.cts', '.cjs'],
+      },
+      fallback: {
+        fs: false,
+        tls: false,
+        net: false,
+        path: false,
+        zlib: false,
+        http: false,
+        https: false,
+        stream: false,
+        crypto: false,
+        os: false,
+        timers: false,
+      },
     },
     resolveLoader: {
       modules: ['node_modules'],
-      extensions: ['.js', '.json', '.ts'],
+      // extensions: ['', '.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
     optimization: {
@@ -64,8 +94,8 @@ export default production => {
     module: {
       rules: [
         {
-          test: /\.(js|jsx|ts|tsx)$/,
-          include: join(rootPath, 'app'),
+          test: /\.(ts|tsx|js|jsx|mjs)$/,
+          include: [join(rootPath, 'app'), join(rootPath, 'database')],
           exclude: /node_modules/,
           use: [
             {
@@ -75,6 +105,9 @@ export default production => {
               },
             },
           ],
+          resolve: {
+            fullySpecified: false,
+          },
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
@@ -85,7 +118,7 @@ export default production => {
           ],
         },
         {
-          test: /(main\.css|globals\.css)$/,
+          test: /(main\.css)$/,
           use: ['postcss-loader'],
         },
         {
@@ -96,16 +129,10 @@ export default production => {
           test: /\.svg$/,
           loader: 'svg-inline-loader',
         },
-        {
-          test: /world-countries/,
-          loader: join(__dirname, '/webpackLoaders/country-loader.js'),
-        },
-        {
-          test: /\.m?js$/,
-          resolve: {
-            fullySpecified: false,
-          },
-        },
+        // {
+        //   test: /world-countries/,
+        //   loader: join(__dirname, '/webpackLoaders/country-loader.js'),
+        // },
       ],
     },
     plugins: [

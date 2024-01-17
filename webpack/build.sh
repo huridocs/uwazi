@@ -8,7 +8,7 @@ SCRIPTPATH="$(cd "$(dirname "$0")" >/dev/null 2>&1; pwd -P)"
 cd "$SCRIPTPATH"/../
 
 rm -rf ./prod/*
-yarn webpack --config ./webpack.production.config.js --progress=profile --color "$@"
+yarn webpack --config ./webpack.production.config.mjs --progress=profile --color "$@"
 yarn babel -D -d prod/app --extensions .js,.ts,.tsx --ignore ./**/specs/* app
 yarn babel -D -d prod/ message.js
 yarn babel -D -d prod/database --extensions .js,.ts,.tsx database

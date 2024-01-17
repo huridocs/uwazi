@@ -1,12 +1,17 @@
 /* eslint-disable */
-import { join } from 'path';
+import path, { join } from 'path';
 import webpack from 'webpack';
+import { fileURLToPath } from 'url';
 import RtlCssPlugin from 'rtlcss-webpack-plugin';
-import config from './config.js';
+import configFn from './config.mjs';
 
 const { HotModuleReplacementPlugin, DefinePlugin } = webpack;
 
-config();
+const config = configFn();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 const rootPath = `${__dirname}/../`;
 
@@ -24,10 +29,12 @@ config.plugins = config.plugins.concat([
 config.optimization.moduleIds = 'named';
 config.optimization.emitOnErrors = false;
 
-config.output = {
+const output = {
   publicPath: 'http://localhost:8080/',
   filename: '[name].js',
 };
+
+config.output = output;
 
 config.entry.main = [
   'webpack-hot-middleware/client?path=//localhost:8080/__webpack_hmr',
@@ -38,4 +45,5 @@ config.watchOptions = {
   ignored: '**/node_modules/*',
 };
 
+export { output }
 export default config;

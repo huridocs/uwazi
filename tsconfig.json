@@ -1,15 +1,25 @@
 {
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "require": ["tsconfig-paths/register"],
+      "compilerOptions": {
+        "paths": {
+          
+        },
+      }
   },
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
     "allowJs": true,
+    "sourceMap": true,
     "noEmit": true,
-    "module": "commonjs",
-    "target": "es2020",
-    "jsx": "react",
+    "lib": ["esnext"],
+    "types": [ "node" ],
     "moduleResolution": "node",
+    "module": "ESNext",
+    "target": "ESNext",
+    "jsx": "react-jsx",
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -24,11 +34,12 @@
       "shared/*": ["./app/shared/*"],
       "UI": ["./app/react/UI"],
       "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"]
+      "V2/*": ["./app/react/V2/*"],
+      "#app/*": ["app/*"],
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e"],
+  "include": ["app", "external_modules", "database", "e2e", "/**/*.ts"],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
 }

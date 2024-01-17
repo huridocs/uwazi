@@ -1,10 +1,17 @@
+import webpack from 'webpack';
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserWebpackPlugin from 'terser-webpack-plugin';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import configFunction from './webpack/config.mjs';
+
 process.env.NODE_ENV = 'production';
-const webpack = require('webpack');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserWebpackPlugin = require('terser-webpack-plugin');
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const production = true;
-const config = require('./webpack/config')(production);
+const config = configFunction(production);
 
 config.devtool = 'source-map';
 config.context = __dirname;
@@ -30,4 +37,4 @@ config.performance = {
   hints: 'warning',
 };
 
-module.exports = config;
+export default config;
