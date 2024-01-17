@@ -179,14 +179,14 @@ export const searchResults: SearchResults = {
             parent: { label: 'equipment', value: 'equipment_id' },
           },
           {
-            label: 'spaceship',
-            value: 'spaceship_id',
-            parent: { label: 'equipment', value: 'equipment_id' },
-          },
-          {
             label: 'fly',
             value: 'b3eac310-8e9e-4adf-bd4c-13ed9f5765cb',
             parent: { label: 'ability', value: 'ability_id' },
+          },
+          {
+            label: 'spaceship',
+            value: 'spaceship_id',
+            parent: { label: 'equipment', value: 'equipment_id' },
           },
         ],
         geolocation_geolocation: [
@@ -262,5 +262,5 @@ export const searchResults: SearchResults = {
 };
 
 export const csvExample = `Title,Date added,Template,company,Nemesis,Location,Country,Costume,Super powers,Allies,Geolocation,AutoId,Sidekick,Planets conquered,DOB,Documents,Attachments,Published
-Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,"0.01|37.02",ES,,"tricky weapons|spaceship|fly",,"45.974236866039696|2.154785156250431",FTF8988-8015,,,,/files/1483623310306rxeimbblc6u323xr.pdf,https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv,Published
-Scarecrow,2017-01-05,Super Villian,,,,,Black,"create chaos|tricky weapons",,,,Man-bat,39,1941-09-23,,https://cejil.uwazi.io/api/files/filename.pdf,Published`;
+Star Lord  Wikipedia,2017-01-05,Comic character,Marvel,Thanos,"0.01|37.02",ES,,"equipment<tricky weapons|spaceship>|ability<fly>",,"45.974236866039696|2.154785156250431",FTF8988-8015,,,,/files/1483623310306rxeimbblc6u323xr.pdf,https://cejil.uwazi.io/api/files/16636666131855z23xqq4fd8.csv,Published
+Scarecrow,2017-01-05,Super Villian,,,,,Black,"create chaos|equipment<tricky weapons>",,,,Man-bat,39,1941-09-23,,https://cejil.uwazi.io/api/files/filename.pdf,Published`;
