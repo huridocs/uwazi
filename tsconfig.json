@@ -1,15 +1,24 @@
 {
   "ts-node": {
-    "require": ["tsconfig-paths/register"]
+    "esm": true,
+    "require": [
+      "tsconfig-paths/register"
+    ],
   },
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
     "allowJs": true,
     "noEmit": true,
-    "module": "commonjs",
-    "target": "es2020",
-    "jsx": "react",
-    "moduleResolution": "node",
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "target": "ESNext",
+    "jsx": "react-jsx",
     "isolatedModules": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -19,16 +28,41 @@
     "baseUrl": ".",
     "paths": {
       // must match babel.config.json
-      "api/*": ["./app/api/*"],
-      "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"],
-      "UI": ["./app/react/UI"],
-      "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"]
+      "api/*": [
+        "./app/api/*"
+      ],
+      "app/*": [
+        "./app/react/*"
+      ],
+      "shared/*": [
+        "./app/shared/*"
+      ],
+      "UI": [
+        "./app/react/UI"
+      ],
+      "UI/*": [
+        "./app/react/UI/*"
+      ],
+      "V2/*": [
+        "./app/react/V2/*"
+      ],
+      "#app/*": [
+        "app/*"
+      ],
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e"],
-  "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
+  "include": [
+    "app",
+    "external_modules",
+    "database",
+    "e2e",
+  ],
+  "exclude": [
+    "fixtures",
+    "dist",
+    "prod",
+    "**/*.cy.tsx"
+  ]
 }

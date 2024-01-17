@@ -1,25 +1,31 @@
-const path = require('path');
-const webpack = require('webpack');
-const AssetsPlugin = require('assets-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const RtlCssPlugin = require('rtlcss-webpack-plugin');
-const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+import path, { join } from 'path';
+import webpack from 'webpack';
+import AssetsPlugin from 'assets-webpack-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import RtlCssPlugin from 'rtlcss-webpack-plugin';
+import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import { fileURLToPath } from 'url';
 
-const rootPath = path.join(__dirname, '/../');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const { loader: _loader } = MiniCssExtractPlugin;
+const rootPath = join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
+const { ProvidePlugin, HotModuleReplacementPlugin } = webpack;
 
-module.exports = production => {
+export default production => {
   let stylesName = '[name].css';
   let rtlStylesName = 'rtl-[name].css';
   let jsChunkHashName = '';
-  let outputPath = path.join(rootPath, 'dist');
+  let outputPath = join(rootPath, 'dist');
 
   if (production) {
-    outputPath = path.join(rootPath, 'prod/dist');
+    outputPath = join(rootPath, 'prod/dist');
     stylesName = '[name].[chunkhash].css';
     rtlStylesName = 'rtl-[name].[fullhash].css';
     jsChunkHashName = '.[chunkhash]';
@@ -27,11 +33,11 @@ module.exports = production => {
 
   return {
     context: rootPath,
-    devtool: 'eval-source-map',
+    devtool: 'inline-source-map',
     mode: 'development',
     entry: {
-      main: path.join(rootPath, 'app/react/entry-client'),
-      nprogress: path.join(rootPath, 'node_modules/nprogress/nprogress.js'),
+      main: join(rootPath, 'app/react/entry-client.tsx'),
+      nprogress: join(rootPath, 'node_modules/nprogress/nprogress.js'),
     },
     output: {
       path: outputPath,
@@ -40,11 +46,23 @@ module.exports = production => {
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
     resolve: {
-      extensions: ['.*', '.webpack.js', '.web.js', '.js', '.tsx', '.ts'],
+      extensions: ['', '.webpack.js', '.web.js', '.js', '.ts', '.tsx', '.jsx', '.mjs', '.cjs'],
+      fallback: {
+        fs: false,
+        tls: false,
+        net: false,
+        path: false,
+        zlib: false,
+        http: false,
+        https: false,
+        stream: false,
+        crypto: false,
+        os: false,
+        timers: false,
+      },
     },
     resolveLoader: {
       modules: ['node_modules'],
-      extensions: ['.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
     optimization: {
@@ -63,12 +81,12 @@ module.exports = production => {
     module: {
       rules: [
         {
-          test: /\.(js|jsx|ts|tsx)$/,
-          include: path.join(rootPath, 'app'),
+          test: /\.(ts|tsx|js|jsx|mjs)$/,
+          include: [join(rootPath, 'app'), join(rootPath, 'database')],
           exclude: /node_modules/,
           use: [
             {
-              loader: 'babel-loader?cacheDirectory',
+              loader: 'babel-loader',
               options: {
                 sourceMap: process.env.BABEL_ENV === 'debug',
               },
@@ -78,13 +96,13 @@ module.exports = production => {
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            _loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
             { loader: 'sass-loader', options: { sourceMap: true } },
           ],
         },
         {
-          test: /(main\.css|globals\.css)$/,
+          test: /(main\.css)$/,
           use: ['postcss-loader'],
         },
         {
@@ -95,20 +113,14 @@ module.exports = production => {
           test: /\.svg$/,
           loader: 'svg-inline-loader',
         },
-        {
-          test: /world-countries/,
-          loader: path.join(__dirname, '/webpackLoaders/country-loader.js'),
-        },
-        {
-          test: /\.m?js$/,
-          resolve: {
-            fullySpecified: false,
-          },
-        },
+        // {
+        //   test: /world-countries/,
+        //   loader: join(__dirname, '/webpackLoaders/country-loader.js'),
+        // },
       ],
     },
     plugins: [
-      new webpack.ProvidePlugin({
+      new ProvidePlugin({
         process: 'process/browser',
       }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
@@ -132,7 +144,7 @@ module.exports = production => {
         ],
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
-      new webpack.HotModuleReplacementPlugin(),
+      new HotModuleReplacementPlugin(),
     ],
   };
 };

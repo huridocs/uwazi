@@ -1,5 +1,5 @@
-const tailwindcss = require('tailwindcss');
-const prefixSelector = require('postcss-prefix-selector');
+import tailwindcss from 'tailwindcss';
+import prefixSelector from 'postcss-prefix-selector';
 
 module.exports = {
   plugins: [

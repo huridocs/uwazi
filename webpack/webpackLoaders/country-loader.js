@@ -1,4 +1,6 @@
-const countries = require('../../node_modules/world-countries/countries.json');
+import { readFileSync } from 'fs';
+
+const countries = JSON.parse(readFileSync('../../node_modules/world-countries/countries.json'));
 
 module.exports = () => {
   const processed = countries.map(country => ({

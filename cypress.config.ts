@@ -1,8 +1,9 @@
 import fs from 'fs';
 import { defineConfig } from 'cypress';
 
-const { initPlugin } = require('cypress-plugin-snapshots/plugin');
+import cypressPlugIn from 'cypress-plugin-snapshots/plugin';
 
+const { initPlugin } = cypressPlugIn;
 export default defineConfig({
   viewportWidth: 1280,
   viewportHeight: 768,

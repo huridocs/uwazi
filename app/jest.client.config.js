@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { defaults } = require('jest-config');
+import { defaults } from 'jest-config';
 
-module.exports = {
+export default {
   displayName: 'Client',
   testRunner: 'jest-jasmine2',
   testMatch: ['**/react/**/specs/*spec.(j|t)s?(x)'],
