@@ -1,22 +1,21 @@
 {
   "ts-node": {
     "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "require": ["tsconfig-paths/register"],
-      "compilerOptions": {
-        "paths": {
-          
-        },
-      }
+    "require": [
+      "tsconfig-paths/register"
+    ],
   },
   "compilerOptions": {
     "useUnknownInCatchVariables": false,
     "allowJs": true,
-    "sourceMap": true,
     "noEmit": true,
-    "lib": ["esnext"],
-    "types": [ "node" ],
-    "moduleResolution": "node",
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "node"
+    ],
+    "moduleResolution": "Bundler",
     "module": "ESNext",
     "target": "ESNext",
     "jsx": "react-jsx",
@@ -29,17 +28,41 @@
     "baseUrl": ".",
     "paths": {
       // must match babel.config.json
-      "api/*": ["./app/api/*"],
-      "app/*": ["./app/react/*"],
-      "shared/*": ["./app/shared/*"],
-      "UI": ["./app/react/UI"],
-      "UI/*": ["./app/react/UI/*"],
-      "V2/*": ["./app/react/V2/*"],
-      "#app/*": ["app/*"],
+      "api/*": [
+        "./app/api/*"
+      ],
+      "app/*": [
+        "./app/react/*"
+      ],
+      "shared/*": [
+        "./app/shared/*"
+      ],
+      "UI": [
+        "./app/react/UI"
+      ],
+      "UI/*": [
+        "./app/react/UI/*"
+      ],
+      "V2/*": [
+        "./app/react/V2/*"
+      ],
+      "#app/*": [
+        "app/*"
+      ],
     },
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e", "/**/*.ts"],
-  "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
+  "include": [
+    "app",
+    "external_modules",
+    "database",
+    "e2e",
+  ],
+  "exclude": [
+    "fixtures",
+    "dist",
+    "prod",
+    "**/*.cy.tsx"
+  ]
 }

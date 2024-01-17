@@ -1,13 +1,6 @@
 {
   "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "targets": {
-          "node": "current"
-        }
-      }
-    ],
+    "@babel/preset-env",
     "@babel/preset-react",
     "@babel/preset-typescript"
   ],
@@ -29,18 +22,6 @@
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-optional-chaining",
-    "@babel/plugin-proposal-nullish-coalescing-operator",
-    [
-      "module-resolver",
-      {
-        "alias": {
-          "api": "./app/api",
-          "app": "./app/react",
-          "shared": "./app/shared",
-          "UI": "./app/react/UI",
-          "V2": "./app/react/V2"
-        }
-      }
-    ]
+    "@babel/plugin-proposal-nullish-coalescing-operator"
   ]
 }

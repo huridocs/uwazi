@@ -8,7 +8,6 @@ import NodePolyfillPlugin from 'node-polyfill-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 import { fileURLToPath } from 'url';
-import nodeExternals from 'webpack-node-externals';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -46,19 +45,8 @@ export default production => {
       filename: `[name]${jsChunkHashName}.js`,
       chunkFilename: `[name]${jsChunkHashName}.bundle.js`,
     },
-    target: 'node',
-    externalsPresets: { node: true },
-    externals: [nodeExternals()],
     resolve: {
-      alias: {
-        'api/*': path.resolve(rootPath, './app/api'),
-      },
       extensions: ['', '.webpack.js', '.web.js', '.js', '.ts', '.tsx', '.jsx', '.mjs', '.cjs'],
-      extensionAlias: {
-        '.js': ['.ts', '.tsx', '.jsx', '.js'],
-        '.mjs': ['.mts', '.mjs'],
-        '.cjs': ['.cts', '.cjs'],
-      },
       fallback: {
         fs: false,
         tls: false,
@@ -75,7 +63,6 @@ export default production => {
     },
     resolveLoader: {
       modules: ['node_modules'],
-      // extensions: ['', '.js', '.json', '.ts'],
       mainFields: ['loader', 'main'],
     },
     optimization: {
@@ -99,15 +86,12 @@ export default production => {
           exclude: /node_modules/,
           use: [
             {
-              loader: 'babel-loader?cacheDirectory',
+              loader: 'babel-loader',
               options: {
                 sourceMap: process.env.BABEL_ENV === 'debug',
               },
             },
           ],
-          resolve: {
-            fullySpecified: false,
-          },
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,

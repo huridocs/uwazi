@@ -17,7 +17,7 @@
   "author": "huridocs.org",
   "main": "server.js",
   "type": "module",
-    "scripts": {
+  "scripts": {
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
     "check-types": "yarn check-cy-types && yarn check-app-types",
@@ -27,7 +27,7 @@
     "preproduction-build": "yarn run tailwind",
     "production-build": "./webpack/build.sh",
     "run-production": "NODE_ENV=production node --no-experimental-fetch server.js",
-    "dev-server": "./node_modules/.bin/nodemon   --loader esm-module-alias/loader --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared' --ext 'ts js tsx'",
+    "dev-server": "./node_modules/.bin/nodemon --no-experimental-fetch ./server.js --ignore 'app/dist/*' --watch 'app/api' --watch 'app/shared'",
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.mjs",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
@@ -36,7 +36,7 @@
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
     "tailwind-watch": "yarn run tailwind --watch",
     "tailwind": " npx tailwindcss -i ./app/react/App/styles/main.css -o ./app/react/App/styles/globals.css",
-    "hot": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn tailwind-watch & yarn run dev-server & yarn run webpack-server",
+    "hot": "export HOT=true; export BABEL_ENV=debug; yarn run webpack-server & yarn run watch-types & yarn tailwind-watch & yarn run dev-server",
     "hot-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true yarn hot",
     "run-e2e": "DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e EXTERNAL_SERVICES=true yarn run-production",
     "hot-inspect": "export HOT=true; export BABEL_ENV=debug; yarn run watch-types & yarn dev-server --inspect & yarn run webpack-server",
@@ -89,14 +89,9 @@
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9"
   },
-  "aliases": {
-    "api": "./app/api",
-    "app": "./app/react",
-    "shared": "./app/shared",
-    "UI": "./app/react/UI",
-    "V2": "./app/react/V2",
-    "#app": "app"
-},
+  "imports": {
+    "#api/*": "./app/api/*.ts"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "3.456.0",
     "@elastic/elasticsearch": "7.17",
@@ -291,6 +286,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.5.1",
+    "@types/babel__register": "^7.17.3",
     "@types/body-parser": "^1.19.2",
     "@types/cheerio": "^0.22.30",
     "@types/child-process-promise": "^2.2.1",
