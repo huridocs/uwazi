@@ -53,8 +53,17 @@ export class DenormalizationService {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
-      properties.map(async property =>
-        Promise.all(
+      properties.map(async property => {
+        relatedEntities.forEach(re => {
+          if (property.template === re.template) {
+            entities.push({
+              sharedId: re.sharedId,
+              property: property.name,
+            });
+          }
+        });
+
+        return Promise.all(
           invertQueryCallback(property).map(async query => {
             await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
@@ -62,18 +71,11 @@ export class DenormalizationService {
                 property: property.name,
               });
             });
-            relatedEntities.forEach(re => {
-              if (property.template === re.template) {
-                entities.push({
-                  sharedId: re.sharedId,
-                  property: property.name,
-                });
-              }
-            });
           })
-        )
-      )
+        );
+      })
     );
+
     return entities;
   }
 

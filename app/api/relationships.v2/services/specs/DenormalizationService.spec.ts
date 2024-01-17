@@ -154,6 +154,25 @@ const fixtures: DBFixture = {
   ],
   files: [factory.file('file4', 'entity4', 'document', 'file4.pdf', 'hu')],
   templates: [
+    factory.template('formerHubsTemplate', [
+      {
+        name: 'connectedEntitiesProp',
+        type: 'newRelationship',
+        label: 'connectedEntitiesProp',
+        query: [
+          {
+            types: [factory.id('nullType')],
+            direction: 'in',
+            match: [
+              {
+                templates: [],
+                traverse: [],
+              },
+            ],
+          },
+        ],
+      },
+    ]),
     factory.template('template1', [
       {
         name: 'relationshipProp1',
@@ -358,7 +377,6 @@ describe('denormalizeAfterCreatingRelationships()', () => {
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })
           .toArray();
 
-        expect(entities?.length).toBe(4);
         expect(entities).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -380,13 +398,18 @@ describe('denormalizeAfterCreatingRelationships()', () => {
               sharedId: 'entity9',
               obsoleteMetadata: ['relationshipProp2'],
             }),
+            expect.objectContaining({
+              sharedId: 'hub1',
+              obsoleteMetadata: ['connectedEntitiesProp'],
+            }),
           ])
         );
+        expect(entities?.length).toBe(5);
 
         await triggerCommit();
 
         expect(updateMock).toHaveBeenCalledWith(
-          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
+          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9', 'hub1'])
         );
         expect(indexMock).not.toHaveBeenCalled();
       }
@@ -404,7 +427,6 @@ describe('denormalizeBeforeDeletingFiles()', () => {
           ?.collection('entities')
           .find({ language, 'obsoleteMetadata.0': { $exists: true } })
           .toArray();
-        expect(entities?.length).toBe(4);
         expect(entities).toEqual(
           expect.arrayContaining([
             expect.objectContaining({
@@ -426,13 +448,18 @@ describe('denormalizeBeforeDeletingFiles()', () => {
               sharedId: 'entity9',
               obsoleteMetadata: ['relationshipProp2'],
             }),
+            expect.objectContaining({
+              sharedId: 'hub1',
+              obsoleteMetadata: ['connectedEntitiesProp'],
+            }),
           ])
         );
+        expect(entities?.length).toBe(5);
 
         await triggerCommit();
 
         expect(updateMock).toHaveBeenCalledWith(
-          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9'])
+          expect.arrayContaining(['entity1', 'entity4', 'entity7', 'entity9', 'hub1'])
         );
         expect(indexMock).not.toHaveBeenCalled();
       }
