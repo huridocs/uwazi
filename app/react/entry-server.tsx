@@ -15,7 +15,7 @@ import { matchRoutes, RouteObject } from 'react-router-dom';
 import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
 import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
@@ -104,7 +104,7 @@ const getAssets = async () => {
   });
 };
 
-const prepareStore = async (req: ExpressRequest, settings: Settings, language: string) => {
+const prepareStore = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
 
   const headers = {
@@ -222,7 +222,7 @@ const setReduxState = async (
 const getSSRProperties = async (
   req: ExpressRequest,
   routes: RouteObject[],
-  settings: Settings,
+  settings: ClientSettings,
   language: string
 ) => {
   const { reduxStore } = await prepareStore(req, settings, language);
@@ -245,7 +245,10 @@ const resetTranslations = () => {
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
   RouteHandler.renderedFromServer = true;
-  const [settings, assets] = await Promise.all([settingsApi.get(), getAssets()]);
+  const [settings, assets] = await Promise.all([
+    settingsApi.get() as Promise<ClientSettings>,
+    getAssets(),
+  ]);
   //https://github.com/trpc/trpc/issues/1811#issuecomment-1242222057
   //for Node18 we have to remove the connection header
   const { connection, ...headers } = req.headers;

@@ -1,7 +1,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable react/no-multi-comp */
 import React, { HTMLProps, useEffect, useRef, Dispatch, SetStateAction } from 'react';
-import { ColumnDef, TableState, Row, Table as TableDef, SortingState } from '@tanstack/react-table';
+import {
+  ColumnDef,
+  TableState,
+  Row,
+  Table as TableDef,
+  SortingState,
+  Header,
+} from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t } from 'app/I18N';
 
@@ -15,8 +22,9 @@ interface TableProps<T> {
   sorting?: SortingState;
   setSorting?: Dispatch<SetStateAction<SortingState>>;
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
+  subRowsKey?: string;
   draggableRows?: boolean;
-  onChange?: (rows: Row<T>[]) => void;
+  onChange?: (rows: T[]) => void;
 }
 
 const IndeterminateCheckbox = ({
@@ -52,15 +60,18 @@ const IndeterminateCheckbox = ({
   );
 };
 
-const getIcon = (sorting: false | 'asc' | 'desc') => {
+// eslint-disable-next-line comma-spacing
+const getIcon = <T,>(header: Header<T, any>, sortedChanged: boolean) => {
+  const sorting = !sortedChanged ? header.column.getIsSorted() : false;
+  const testId = `${header.id}_${sorting.toString()}`;
   switch (sorting) {
     case false:
-      return <ChevronUpDownIcon className="w-4" />;
+      return <ChevronUpDownIcon data-testid={testId} className="w-4" />;
     case 'asc':
-      return <ChevronUpIcon className="w-4" />;
+      return <ChevronUpIcon data-testid={testId} className="w-4" />;
     case 'desc':
     default:
-      return <ChevronDownIcon className="w-4" />;
+      return <ChevronDownIcon data-testid={testId} className="w-4" />;
   }
 };
 
@@ -80,10 +91,15 @@ const CheckBoxHeader = <T,>({ table }: { table: TableDef<T> }) => (
 const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
   <IndeterminateCheckbox
     {...{
-      checked: row.getIsSelected(),
+      checked: row.getCanExpand()
+        ? row.getIsAllSubRowsSelected() && row.getIsSelected()
+        : row.getIsSelected(),
       disabled: !row.getCanSelect(),
-      indeterminate: row.getIsSomeSelected(),
-      onChange: row.getToggleSelectedHandler(),
+      indeterminate: row.getIsSomeSelected() || row.getIsAllSubRowsSelected(),
+      onChange: e => {
+        row.getToggleSelectedHandler()(e);
+        row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
+      },
       id: row.id,
     }}
   />

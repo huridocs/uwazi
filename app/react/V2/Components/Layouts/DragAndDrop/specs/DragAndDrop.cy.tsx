@@ -189,7 +189,7 @@ describe('DragAndDrop', () => {
     it('should sort parents', () => {
       cy.get('[data-testid="root-draggable-item-0"]').drag(
         '[data-testid="root-draggable-item-2"]',
-        { target: { x: 1, y: 100 } }
+        { target: { x: 15, y: 135 } }
       );
       shouldContainListItems('div[data-testid="active-bin"]', [
         'Item 2\nDRAG ITEMS HERE',

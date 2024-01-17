@@ -10,6 +10,7 @@ interface ButtonProps {
   form?: string;
   onClick?: MouseEventHandler;
   className?: string;
+  'data-testid'?: string;
 }
 
 const Button = ({
@@ -22,6 +23,7 @@ const Button = ({
   form,
   onClick,
   className = '',
+  'data-testid': dataTestid,
 }: ButtonProps) => {
   let classNames;
   const textStyles = size === 'medium' ? 'text-sm px-5 py-2.5' : 'text-xs px-3 py-2';
@@ -94,6 +96,7 @@ const Button = ({
       className={`${className} ${classNames} ${textStyles} disabled:cursor-not-allowed font-medium rounded-lg
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
       form={form}
+      data-testid={dataTestid}
     >
       {children}
     </button>
