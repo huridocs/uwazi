@@ -4,10 +4,11 @@ import { RawEntity } from 'api/csv/entityRow';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
+import { csvConstants } from '../csvDefinitions';
 
 const relationship = async (entityToImport: RawEntity, property: PropertySchema) => {
   const values = entityToImport.propertiesFromColumns[ensure<string>(property.name)]
-    .split('|')
+    .split(csvConstants.multiValueSeparator)
     .filter(emptyString)
     .filter(unique);
 
