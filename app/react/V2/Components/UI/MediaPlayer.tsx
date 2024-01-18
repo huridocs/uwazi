@@ -82,7 +82,15 @@ const MediaPlayer = ({ url, width, height, thumbnail }: MediaPlayerProps) => {
         </div>
       )}
 
-      {mediaType !== 'invalid' && playerHeight ? (
+      {mediaType === 'internal' && (
+        <video controls className="absolute top-0 left-0" width="100%" height="100%">
+          <source src={url} />
+          Your browser does not support the video tag.
+          <track kind="captions" src="some" srcLang="somelang" />
+        </video>
+      )}
+
+      {mediaType === 'embedded' && playerHeight ? (
         <ReactPlayer
           className="absolute top-0 left-0"
           width="100%"

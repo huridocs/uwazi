@@ -199,7 +199,6 @@ export default (app: Application) => {
         'Content-Disposition',
         `filename*=UTF-8''${encodeURIComponent(headerFilename)}`
       );
-      res.setHeader('Content-Type', file?.mimetype || 'application/octet-stream');
 
       if (req.query.download === true) {
         res.setHeader(
@@ -212,16 +211,15 @@ export default (app: Application) => {
       const fileSize = file.size;
 
       if (range && fileSize) {
-        console.log('requesting range: ', range);
         const parts = range.replace(/bytes=/, '').split('-');
-        const defaultEnd = fileSize > 1048576 ? 1048576 - 1 : fileSize - 1;
         const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : defaultEnd;
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
         const chunkSize = end - start + 1;
 
         res.setHeader('Content-Range', `bytes ${start} - ${end}/${fileSize}`);
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Content-Length', chunkSize);
+        res.setHeader('Content-Type', 'video/webm');
         res.status(206);
 
         (await storage.readableFile(file.filename, file.type)).pipe(res);
