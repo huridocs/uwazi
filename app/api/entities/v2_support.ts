@@ -127,7 +127,7 @@ const ignoreNewRelationshipsMetadata = async (
               });
 
             await entitiesDataSource
-              .getByIds(deletedValues as string[])
+              .getByIds(deletedValues as string[], currentDoc.language)
               .forEach(async targetEntity => {
                 removedRelationships.push(
                   query.determineRelationship(

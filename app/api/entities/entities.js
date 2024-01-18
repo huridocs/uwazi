@@ -161,6 +161,7 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
 
   const emptyEntity = {
     sharedId,
+    language: languages[0].key,
     template: docTemplate._id,
     metadata: {},
   };
