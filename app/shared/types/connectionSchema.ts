@@ -4,7 +4,7 @@ import { entitySchema } from 'shared/types/entitySchema';
 export const emitSchemaTypes = true;
 
 export const connectionSchema = {
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, entitySchema },
   type: 'object',
   additionalProperties: false,
   properties: {

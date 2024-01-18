@@ -6,6 +6,7 @@ import { ensure } from 'shared/tsUtils';
 
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { normalizeThesaurusLabel } from './select';
+import { csvConstants } from '../csvDefinitions';
 
 function labelNotNull(label: string | null): label is string {
   return label !== null;
@@ -16,7 +17,7 @@ function splitMultiselectLabels(labelString: string): {
   normalizedLabelToLabel: Record<string, string>;
 } {
   const labels = labelString
-    .split('|')
+    .split(csvConstants.multiValueSeparator)
     .map(l => l.trim())
     .filter(l => l.length > 0);
   const normalizedLabelToLabel: { [k: string]: string } = {};
