@@ -2,7 +2,7 @@ import * as pdfJsDist from 'pdfjs-dist';
 import * as viewer from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
-let pdfjs;
+let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus } = viewer;
 const CMAP_URL = 'legacy_character_maps';
@@ -12,7 +12,6 @@ const pdfjsLoader = async () => {
     //@ts-ignore
     //this is to trigger pdfjs-dist fake worker instantiation in non production environments
     const fakeWorker = await import('pdfjs-dist/build/pdf.worker.min.mjs');
-    pdfjs = pdfJsDist;
     pdfjs.GlobalWorkerOptions.workerSrc = fakeWorker;
   } else {
     //@ts-ignore
@@ -23,6 +22,6 @@ const pdfjsLoader = async () => {
 
 await pdfjsLoader();
 
-const PDFJS: typeof pdfjs = pdfjs;
+const PDFJS = pdfjs;
 
 export { PDFJS, PDFJSViewer, EventBus, CMAP_URL };
