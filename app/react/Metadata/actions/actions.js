@@ -5,12 +5,12 @@ import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
 import { t } from 'app/I18N';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
 import { generateID } from 'shared/IDGenerator';
 import emptyTemplate from '../helpers/defaultTemplate';
-import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 
 function resetReduxForm(form) {
   return formActions.reset(form);
@@ -147,7 +147,7 @@ export function loadInReduxForm(form, _entity, templates) {
 }
 
 export function changeTemplate(form, templateId) {
-  return async (dispatch, getState) => {
+  return (dispatch, getState) => {
     const entity = { ...getModel(getState(), form) };
     const { templates } = getState();
     const template = templates.find(temp => temp.get('_id') === templateId);

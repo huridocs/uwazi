@@ -104,7 +104,6 @@ describe('Share Entities', () => {
 
   it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
-    // cy.get('aside.is-active').contains('button', 'Edit').click();
     clickOnEditEntity();
     cy.get('aside.is-active textarea').eq(0).clear();
     cy.get('aside.is-active textarea').eq(0).type('Edited title', { force: true });
