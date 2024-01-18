@@ -1,5 +1,6 @@
 import moment from 'moment-timezone';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { csvConstants } from './csvDefinitions';
 
 const defaultDateFormat = 'YYYY-MM-DD';
 
@@ -22,27 +23,36 @@ export type FormatterFunction = (
   options: FormatterOptions
 ) => string;
 
+const multiSelectFormatter: FormatterFunction = field =>
+  field
+    .map(entry =>
+      entry.parent
+        ? `${entry.parent.label}${csvConstants.dictionaryParentChildSeparator}${entry.label}`
+        : entry.label
+    )
+    .join(csvConstants.multiValueSeparator);
+
 export const formatters: {
   [key: string]: FormatterFunction;
 } = {
-  select: field => (field[0] && field[0].value && field[0].label ? field[0].label : ''),
-  multiselect: (field, options) => field.map(item => formatters.select([item], options)).join('|'),
+  select: multiSelectFormatter,
+  multiselect: multiSelectFormatter,
   date: (field, options) =>
     field[0] && field[0].value ? formatDate(<number>field[0].value, options?.dateFormat) : '',
   daterange: (field, options) =>
     field[0] && field[0].value
-      ? `${formatDate((<any>field[0].value).from, options?.dateFormat)}~${formatDate(
-          (<any>field[0].value).to,
-          options?.dateFormat
-        )}`
+      ? `${formatDate((<any>field[0].value).from, options?.dateFormat)}${
+          csvConstants.dateRangeExportSeparator
+        }${formatDate((<any>field[0].value).to, options?.dateFormat)}`
       : '',
   geolocation: field =>
     field[0] && field[0].value ? `${(<any>field[0].value).lat}|${(<any>field[0].value).lon}` : '',
   link: field =>
     field[0] && field[0].value ? `${(<any>field[0].value).label}|${(<any>field[0].value).url}` : '',
-  multidate: (field, options) => field.map(item => formatters.date([item], options)).join('|'),
+  multidate: (field, options) =>
+    field.map(item => formatters.date([item], options)).join(csvConstants.multiValueSeparator),
   multidaterange: (field, options) =>
-    field.map(item => formatters.daterange([item], options)).join('|'),
+    field.map(item => formatters.daterange([item], options)).join(csvConstants.multiValueSeparator),
   numeric: field =>
     field[0] && (field[0].value || field[0].value === 0) ? <string>field[0].value : '',
   relationship: (field: MetadataObjectSchema[]) =>
@@ -58,14 +68,18 @@ export const formatters: {
         }
         return relationship.label;
       })
-      .join('|'),
+      .join(csvConstants.multiValueSeparator),
   text: field => (field[0] && field[0].value ? <string>field[0].value : ''),
   default: field => formatters.text(field, {}),
 };
 
 export const formatDocuments = (row: any) =>
-  (row.documents || []).map((item: any) => formatFile(item.filename)).join('|');
+  (row.documents || [])
+    .map((item: any) => formatFile(item.filename))
+    .join(csvConstants.multiValueSeparator);
 export const formatAttachments = (row: any, hostname: string) =>
-  (row.attachments || []).map((item: any) => formatAttachment(item.filename, hostname)).join('|');
+  (row.attachments || [])
+    .map((item: any) => formatAttachment(item.filename, hostname))
+    .join(csvConstants.multiValueSeparator);
 export const formatCreationDate = (row: any, options: FormatterOptions) =>
   moment(row.creationDate).format(mapFormatToMoment(options.dateFormat || defaultDateFormat));

@@ -15,6 +15,7 @@ import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
+import { headerWithLanguage } from './csvDefinitions';
 
 class ArrangeThesauriError extends Error {
   source: Error;
@@ -186,7 +187,7 @@ const handleRow = (
     );
     const potentialTranslations = Array.from(languagesPerHeader[header])
       .map(lang => {
-        const fullHeader = `${header}__${lang}`;
+        const fullHeader = headerWithLanguage(header, lang);
         const translatedLabels = splitMultiselectLabels(safeNamedRow[fullHeader]).labels;
         return translatedLabels.map((trl, i) => [propNameToThesauriId[header], lang, keys[i], trl]);
       })
