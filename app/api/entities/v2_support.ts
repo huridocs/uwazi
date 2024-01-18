@@ -28,35 +28,28 @@ const deleteRelatedNewRelationships = async (sharedId: string) => {
   }
 };
 
-const denormalizeAfterEntityCreation = async ({
-  sharedId,
-  language,
-}: {
-  sharedId: string;
-  language: string;
-}) => {
+const denormalizeAfterEntityAction = async (
+  {
+    sharedId,
+    language,
+  }: {
+    sharedId: string;
+    language: string;
+  },
+  method: 'Creating' | 'Updating'
+) => {
   if (await newRelationshipsEnabled()) {
     const transactionManager = DefaultTransactionManager();
     const denormalizationService = await DenormalizationService(transactionManager);
-    await denormalizationService.denormalizeAfterCreatingEntities([sharedId], language);
+    await denormalizationService[`denormalizeAfter${method}Entities`]([sharedId], language);
     await transactionManager.executeOnCommitHandlers(undefined);
   }
 };
+const denormalizeAfterEntityCreation = async (data: { sharedId: string; language: string }) =>
+  denormalizeAfterEntityAction(data, 'Creating');
 
-const denormalizeAfterEntityUpdate = async ({
-  sharedId,
-  language,
-}: {
-  sharedId: string;
-  language: string;
-}) => {
-  if (await newRelationshipsEnabled()) {
-    const transactionManager = DefaultTransactionManager();
-    const denormalizationService = await DenormalizationService(transactionManager);
-    await denormalizationService.denormalizeAfterUpdatingEntities([sharedId], language);
-    await transactionManager.executeOnCommitHandlers(undefined);
-  }
-};
+const denormalizeAfterEntityUpdate = async (data: { sharedId: string; language: string }) =>
+  denormalizeAfterEntityAction(data, 'Updating');
 
 const calculateDiff = (currentDoc: EntitySchema, toSave: EntitySchema, name: string) => {
   const newValues = new Set();
