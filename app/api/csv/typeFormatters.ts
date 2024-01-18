@@ -1,7 +1,6 @@
 import moment from 'moment-timezone';
-import { objectIndexToArrays } from 'shared/data_utils/objectIndex';
-import { sortByStrings } from 'shared/data_utils/objectSorting';
 import { MetadataObjectSchema } from 'shared/types/commonTypes';
+import { csvConstants } from './csvConstants';
 
 const defaultDateFormat = 'YYYY-MM-DD';
 
@@ -24,22 +23,14 @@ export type FormatterFunction = (
   options: FormatterOptions
 ) => string;
 
-const multiSelectFormatter: FormatterFunction = field => {
-  const groupedByParents = objectIndexToArrays(
-    field,
-    s => s.parent?.label || '',
-    s => s.label
-  );
-  const rootElements = groupedByParents[''];
-  const entries = Object.entries(groupedByParents).filter(([parent]) => parent);
-  (rootElements || []).forEach(rootElement => entries.push([rootElement || '', []]));
-  sortByStrings(entries, [([parent]) => parent]);
-  return entries
-    .map(([parent, children]) =>
-      children.length ? `${parent}<${children.sort().join('|')}>` : parent
+const multiSelectFormatter: FormatterFunction = field =>
+  field
+    .map(entry =>
+      entry.parent
+        ? `${entry.parent.label}${csvConstants.dictionaryParentChildSeparator}${entry.label}`
+        : entry.label
     )
     .join('|');
-};
 
 export const formatters: {
   [key: string]: FormatterFunction;
