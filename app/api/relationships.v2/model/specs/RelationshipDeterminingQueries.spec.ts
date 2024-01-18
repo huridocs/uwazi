@@ -79,21 +79,8 @@ describe('when determining a relationship', () => {
   const entity = { sharedId: 'sharedId', template: 'template4' };
   const rootEntity = { sharedId: 'shared1', template: 'some template' };
 
-  it('should validate that the entity is matched by one of the match nodes', () => {
-    const query = new MatchQueryNode({}, [
-      new TraversalQueryNode('out', { types: ['type1'] }, [
-        new MatchQueryNode({ templates: ['template1', 'template2'] }),
-      ]),
-      new TraversalQueryNode('out', { types: ['type2'] }, [
-        new MatchQueryNode({ templates: ['template3'] }),
-      ]),
-    ]);
-
-    expect(() => query.determineRelationship(rootEntity, entity)).toThrow();
-  });
-
-  it('should return the correct relationship', () => {
-    const query = new MatchQueryNode({}, [
+  it('should validate that the query is rooted in an entity', () => {
+    const nonRootedQuery = new MatchQueryNode({}, [
       new TraversalQueryNode('out', { types: ['type1'] }, [
         new MatchQueryNode({ templates: ['template1', 'template2'] }),
       ]),
@@ -102,7 +89,43 @@ describe('when determining a relationship', () => {
       ]),
     ]);
 
-    expect(query.determineRelationship(rootEntity, entity)).toEqual({
+    const rootedQuery = new MatchQueryNode({ sharedId: 'someSharedId' }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['template1', 'template2'] }),
+      ]),
+      new TraversalQueryNode('in', { types: ['type2'] }, [
+        new MatchQueryNode({ templates: ['template3', 'template4'] }),
+      ]),
+    ]);
+
+    expect(() => nonRootedQuery.determineRelationship(entity)).toThrow();
+    expect(() => rootedQuery.determineRelationship(entity)).not.toThrow();
+  });
+
+  it('should validate that the entity is matched by one of the match nodes', () => {
+    const query = new MatchQueryNode({ sharedId: rootEntity.sharedId }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['template1', 'template2'] }),
+      ]),
+      new TraversalQueryNode('out', { types: ['type2'] }, [
+        new MatchQueryNode({ templates: ['template3'] }),
+      ]),
+    ]);
+
+    expect(() => query.determineRelationship(entity)).toThrow();
+  });
+
+  it('should return the correct relationship', () => {
+    const query = new MatchQueryNode({ sharedId: rootEntity.sharedId }, [
+      new TraversalQueryNode('out', { types: ['type1'] }, [
+        new MatchQueryNode({ templates: ['template1', 'template2'] }),
+      ]),
+      new TraversalQueryNode('in', { types: ['type2'] }, [
+        new MatchQueryNode({ templates: ['template3', 'template4'] }),
+      ]),
+    ]);
+
+    expect(query.determineRelationship(entity)).toEqual({
       type: 'type2',
       from: entity.sharedId,
       to: 'shared1',

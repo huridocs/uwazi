@@ -256,14 +256,17 @@ export class MatchQueryNode extends QueryNode {
     return false;
   }
 
-  determineRelationship(
-    rootEntity: Entity,
-    targetEntity: Entity
-  ): {
+  determineRelationship(targetEntity: Entity): {
     type: string;
     to: string;
     from: string;
   } {
+    if (!this.filters.sharedId) {
+      throw new Error(
+        'The query must be rooted in an entity to be able to determine a relationship.'
+      );
+    }
+
     const templatesInLeaves = this.getTemplatesInLeaves();
     const matchingBranch = templatesInLeaves.find(record =>
       record.templates.includes(targetEntity.template)
@@ -278,8 +281,8 @@ export class MatchQueryNode extends QueryNode {
 
     return {
       type: matchingTraversal.getFilters().types![0],
-      from: direction === 'out' ? rootEntity.sharedId : targetEntity.sharedId,
-      to: direction === 'out' ? targetEntity.sharedId : rootEntity.sharedId,
+      from: direction === 'out' ? this.filters.sharedId : targetEntity.sharedId,
+      to: direction === 'out' ? targetEntity.sharedId : this.filters.sharedId,
     };
   }
 
