@@ -61,7 +61,10 @@ const MultiSelect = ({
           {...attributes.popper}
           as="div"
         >
-          <ul className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow max-h-56 w-fit min-w-56">
+          <ul
+            className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow max-h-56 w-fit min-w-56"
+            data-testid="multiselect-popover"
+          >
             {optionsState.map((option: Option) => (
               <li key={option.label} className="flex gap-2 py-1 align-top">
                 <Checkbox

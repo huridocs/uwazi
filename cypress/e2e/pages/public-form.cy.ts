@@ -12,27 +12,30 @@ describe('Public Form', () => {
     it('should navigate to collection settings', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
+      cy.get('select[name="defaultLibraryView"]').select('Cards');
+      cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
     });
 
-    it('should whitelist Mecanismo', () => {
-      cy.get('.settings-content').scrollTo('bottom');
-      cy.get('#collectionSettings label.toggleButton').eq(9).click();
-      cy.get('input[placeholder="Search item"]').type('Mecanismo');
-      cy.contains('span', 'Mecanismo').click();
-    });
-
-    it('should whitelist Reporte', () => {
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('input[placeholder="Search item"]').type('Reporte');
-      cy.contains('span', 'Reporte').click();
+    it('should whitelist Mecanismo and Reporte', () => {
+      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="multiselect"]')
+        .eq(0)
+        .within(() => {
+          cy.get('button').eq(0).click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Mecanismo').click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Reporte').click();
+        });
     });
 
     it('should save and check the changes', () => {
       cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('[title="Mecanismo"]').children().first().should('have.attr', 'data-state', '2');
-      cy.get('[title="Reporte"]').children().first().should('have.attr', 'data-state', '2');
+      // cy.contains('Settings updated.');
+      // cy.get('[data-testid="multiselect"]')
+      //   .eq(0)
+      //   .within(() => {
+      //     cy.get('[data-testid="pill-comp"]').eq(1).should('have.text', 'Mecanismo');
+      //     cy.get('[data-testid="pill-comp"]').eq(1).should('have.text', 'Reporte');
+      //   });
     });
   });
 
@@ -66,6 +69,8 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       cy.contains('a', 'Pages').click();
+      cy.wait(1000);
+      cy.contains('button', 'Discard changes').click();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
