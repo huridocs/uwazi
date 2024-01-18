@@ -7,6 +7,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { peekHeaders } from './csv';
 import { notTranslated } from './entityRow';
 import { ImportFile } from './importFile';
+import { csvConstants } from './csvDefinitions';
 
 const PROPERTIES_WITH_LANGUAGE = new Set([
   propertyTypes.text,
@@ -44,7 +45,7 @@ const readColumns = async (
   );
   const languagesPerHeader: Record<string, Set<string>> = {};
   headersWithLanguage.forEach(h => {
-    const [name, l] = h.split('__');
+    const [name, l] = h.split(csvConstants.languageHeaderSeparator);
     languagesPerHeader[name] = languagesPerHeader[name] || new Set();
     languagesPerHeader[name].add(l);
   });

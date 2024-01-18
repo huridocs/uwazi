@@ -1,5 +1,6 @@
 import { templateUtils } from 'api/templates';
 import { CSVRow } from 'api/csv/csv';
+import { csvConstants, headerWithLanguage, languageCodeSuffix } from './csvDefinitions';
 
 type Languages = string[];
 
@@ -18,13 +19,16 @@ const toSafeName = (row: CSVRow, newNameGeneration: boolean = false): CSVRow =>
   );
 
 const notTranslated = (languages: Languages) => (key: string) =>
-  !key.match(new RegExp(`__(${languages.join('|')})$`));
+  !key.match(new RegExp(`${csvConstants.languageHeaderSeparator}(${languages.join('|')})$`));
+
+const languageCodeRegexp = (languageCode: string) =>
+  new RegExp(`${languageCodeSuffix(languageCode)}$`);
 
 const languagesTranslated = (row: CSVRow, availableLanguages: Languages, currentLanguage: string) =>
   availableLanguages
     .filter(languageCode =>
       Object.keys(row)
-        .filter(key => key.match(new RegExp(`__${languageCode}$`)))
+        .filter(key => key.match(languageCodeRegexp(languageCode)))
         .map(key => row[key])
         .join('')
         .trim()
@@ -51,12 +55,14 @@ const extractEntity = (
   const rawEntities = languagesTranslated(safeNamed, availableLanguages, currentLanguage).map(
     languageCode =>
       Object.keys(safeNamed)
-        .filter(key => key.match(new RegExp(`__${languageCode}$`)))
+        .filter(key => key.match(languageCodeRegexp(languageCode)))
         .reduce<RawEntity>(
           (entity, key) => {
-            const propName = key.split(`__${languageCode}`)[0];
+            const propName = key.split(languageCodeSuffix(languageCode))[0];
             const selectedKey =
-              propName in propNameToThesauriId ? `${propName}__${defaultLanguage}` : key;
+              propName in propNameToThesauriId
+                ? headerWithLanguage(propName, defaultLanguage)
+                : key;
             entity.propertiesFromColumns[propName] = safeNamed[selectedKey]; //eslint-disable-line no-param-reassign
             return entity;
           },
