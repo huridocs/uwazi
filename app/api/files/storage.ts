@@ -60,11 +60,13 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
 };
 
 export const storage = {
-  async readableFile(filename: string, type: FileTypes) {
+  //THIS NEEDS A TYPE
+  //THIS NEEDS TO CONSIDER S3
+  async readableFile(filename: string, type: FileTypes, options?: any) {
     if (tenants.current().featureFlags?.s3Storage) {
       return readFromS3(filename, type);
     }
-    return createReadStream(paths[type](filename));
+    return createReadStream(paths[type](filename), options);
   },
   async fileContents(filename: string, type: FileTypes) {
     return streamToBuffer(await this.readableFile(filename, type));

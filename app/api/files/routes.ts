@@ -216,13 +216,13 @@ export default (app: Application) => {
         const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
         const chunkSize = end - start + 1;
 
-        res.setHeader('Content-Range', `bytes ${start} - ${end}/${fileSize}`);
+        res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
         res.setHeader('Accept-Ranges', 'bytes');
         res.setHeader('Content-Length', chunkSize);
-        res.setHeader('Content-Type', 'video/webm');
+        res.setHeader('Content-Type', `${file.mimetype}`);
         res.status(206);
 
-        (await storage.readableFile(file.filename, file.type)).pipe(res);
+        (await storage.readableFile(file.filename, file.type, { start, end })).pipe(res);
       } else {
         (await storage.readableFile(file.filename, file.type)).pipe(res);
       }
