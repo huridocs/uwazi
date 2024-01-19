@@ -193,9 +193,8 @@ const setReduxState = async (
       headers
     );
 
-    // console.log('Request params data: ', requestParams);
-
-    if (requestParams.data && !isEmpty(requestParams.data)) {
+    // @ts-ignore
+    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
       // @ts-ignore
       requestParams.data.q = decodeURI(requestParams.data.q);
     }

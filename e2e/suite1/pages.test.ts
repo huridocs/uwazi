@@ -132,4 +132,37 @@ describe('Custom home page and styles', () => {
     const rowSelector = '.tableview-wrapper > table > tbody > tr.template-58ada34c299e82674854504b';
     expect((await page.$$(rowSelector)).length).toBe(2);
   });
+
+  it('should allow using a complicated library query as a landing page', async () => {
+    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toFill(
+      'input[name="home_page"]',
+      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
+    );
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert-success');
+  });
+  it('should check that the landing page is the defined library query', async () => {
+    await page.goto(`${host}`);
+    await page.reload();
+    await disableTransitions();
+    await page.waitForSelector('.item-group');
+    const rowSelector = '.item-document';
+    expect((await page.$$(rowSelector)).length).toBe(2);
+    expect(page).toMatchElement('.item-group .item-document:nth-child(1) .item-name', {
+      text: 'Corte Interamericana de Derechos Humanos',
+    });
+    expect(page).toMatchElement('.item-group .item-document:nth-child(2) .item-name', {
+      text: 'Comisión Interamericana de Derechos Humanos',
+    });
+  });
+
+  it('should allow using a default library url with language as a landing page', async () => {
+    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toFill('input[name="home_page"]', '/en/library/');
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toClick('div.alert-success');
+  });
 });

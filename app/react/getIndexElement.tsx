@@ -12,10 +12,12 @@ import { ViewerRoute } from './Viewer/ViewerRoute';
 const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
   let searchQuery = '';
-  if (query.startsWith('?q=')) {
-    searchQuery = query.substring(1).split('=')[1];
-  } else {
-    searchQuery = '(' + query.substring(1) + ')';
+  if (query) {
+    if (query.startsWith('?q=')) {
+      searchQuery = query.substring(1).split('=')[1];
+    } else {
+      searchQuery = '(' + query.substring(1) + ')';
+    }
   }
   // console.log('Search Query: ', searchQuery);
   let queryString = query ? searchQuery : '';
