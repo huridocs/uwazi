@@ -31,6 +31,7 @@ describe('multi edit', () => {
 
   const createEntity = async (title: string, type: string) => {
     await expect(page).toClick('button', { text: 'Create entity' });
+    await page.waitForTimeout(2000);
     await expect(page).toFill('#metadataForm textarea:first-child', title);
     await expect(page).toSelect('#metadataForm select:first-child', type);
     await expect(page).toClick('button', { text: 'Save' });

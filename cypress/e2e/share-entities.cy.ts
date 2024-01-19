@@ -1,4 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities } from './helpers';
+import { clickOnEditEntity } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
@@ -103,9 +104,9 @@ describe('Share Entities', () => {
 
   it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
-    cy.get('aside.is-active').contains('button', 'Edit').click();
+    clickOnEditEntity();
     cy.get('aside.is-active textarea').eq(0).clear();
-    cy.get('aside.is-active textarea').eq(0).type('Edited title');
+    cy.get('aside.is-active textarea').eq(0).type('Edited title', { force: true });
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
@@ -115,7 +116,7 @@ describe('Share Entities', () => {
   it('should be able to see only published entities', () => {
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
-    cy.get('.search-box input').type('"Resolución de la Corte IDH."');
+    cy.get('.search-box input').type('"Resolución de la Corte IDH."', { force: true });
     cy.get('[aria-label="Search button"]').click();
     cy.contains(
       '.item-name',
