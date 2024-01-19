@@ -74,6 +74,14 @@ const fixtures: DBFixture = {
     ),
     ...factory.entityInMultipleLanguages(
       languages,
+      'entity5',
+      'template1',
+      {},
+      { obsoleteMetadata: ['relProp'] },
+      { en: { title: 'entity5-en' }, es: { title: 'entity5-es' } }
+    ),
+    ...factory.entityInMultipleLanguages(
+      languages,
       'entity4',
       'template2',
       { relProp2: [{ value: 'existing_value' }] },
@@ -108,8 +116,18 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    factory.template('template1', [factory.property('relProp', 'newRelationship', { query })]),
-    factory.template('template2', [factory.property('relProp2', 'newRelationship', { query })]),
+    factory.template('template1', [
+      factory.property('relProp', 'newRelationship', {
+        query,
+        targetTemplates: [factory.id('template1').toString()],
+      }),
+    ]),
+    factory.template('template2', [
+      factory.property('relProp2', 'newRelationship', {
+        query,
+        targetTemplates: [factory.id('template1').toString()],
+      }),
+    ]),
   ],
   settings: [
     {
@@ -173,6 +191,16 @@ describe('entities.get()', () => {
       {
         _id: factory.id('entity3-es'),
         sharedId: 'entity3',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity5-en'),
+        sharedId: 'entity5',
+        obsoleteMetadata: ['relProp'],
+      },
+      {
+        _id: factory.id('entity5-es'),
+        sharedId: 'entity5',
         obsoleteMetadata: ['relProp'],
       },
     ]);
@@ -249,16 +277,38 @@ describe('entities.save()', () => {
     });
   });
 
-  it('should not overwrite newRelationship metadata', async () => {
-    const [entity] = await entities.get({ sharedId: 'entity4', language: 'en' });
+  it('should create and delete the relationships accordingly and update the metadata', async () => {
+    const [entity] = await entities.get({ sharedId: 'entity1', language: 'en' });
     const saved = await entities.save(
       {
         ...entity,
-        metadata: { relProp2: [{ value: 'overwriten_value' }] },
+        metadata: { relProp: [{ value: 'entity2' }, { value: 'entity5' }] },
       },
       { user: adminUser, language: 'en' }
     );
-    expect(saved.metadata).toEqual({ relProp2: [{ value: 'existing_value' }] });
+
+    const inDb = await db?.collection('relationships').find({}).toArray();
+
+    expect(inDb?.find(rel => rel._id.equals(factory.id('rel1-3')))).toBe(undefined);
+    expect(inDb).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          from: {
+            entity: 'entity1',
+          },
+          to: {
+            entity: 'entity5',
+          },
+        }),
+      ])
+    );
+
+    expect(saved.metadata).toEqual({
+      relProp: [
+        { value: 'entity2', label: 'entity2-en' },
+        { value: 'entity5', label: 'entity5-en' },
+      ],
+    });
   });
 });
 
