@@ -4,6 +4,7 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { Relationship } from 'api/relationships.v2/model/Relationship';
 import { MongoRelationshipsDataSource } from '../MongoRelationshipsDataSource';
 
 const factory = getFixturesFactory();
@@ -57,13 +58,13 @@ const fixtures = {
     },
     {
       _id: factory.id('rel8'),
-      to: { entity: 'hub3' },
+      to: { entity: 'hub3', file: factory.id('file1') },
       from: { entity: 'entity7' },
       type: factory.id('relType5'),
     },
     {
       _id: factory.id('rel9'),
-      from: { entity: 'entity7' },
+      from: { entity: 'entity7', file: factory.id('file1') },
       to: { entity: 'entity1' },
       type: factory.id('relType5'),
     },
@@ -257,5 +258,27 @@ describe('getAll()', () => {
   it('should return all relationships', async () => {
     const rels = await ds.getAll().all();
     expect(rels).toHaveLength(9);
+  });
+});
+
+describe('getByefinition()', () => {
+  it('should find the relationships from sourceEntity to targetEntity of the provided type', async () => {
+    const rels = await ds
+      .getByDefinition('entity1', factory.id('nullType').toString(), 'hub1')
+      .all();
+    expect(rels).toEqual([expect.objectContaining({ _id: factory.id('rel1').toString() })]);
+    rels.forEach(rel => {
+      expect(rel).toBeInstanceOf(Relationship);
+    });
+  });
+
+  it('should only find relationships that are not text references', async () => {
+    expect(
+      await ds.getByDefinition('entity7', factory.id('relType5').toString(), 'hub3').all()
+    ).toEqual([]);
+
+    expect(
+      await ds.getByDefinition('entity7', factory.id('relType5').toString(), 'entity1').all()
+    ).toEqual([]);
   });
 });
