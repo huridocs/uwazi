@@ -18,7 +18,6 @@ recreate_database() {
     INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex
 
     echo -e "\nExit code is 0"
-    # exit 0
 }
 
 operations_wrapper() {
@@ -26,7 +25,6 @@ operations_wrapper() {
         if [ $FORCE_FLAG == "false" ]; then
             echo -e "\n$DB already database exists. It will not be deleted."
             echo -e "\nExit code is 2"
-            # exit 2    
         else
             recreate_database
         fi
