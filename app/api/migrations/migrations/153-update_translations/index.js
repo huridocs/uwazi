@@ -7,6 +7,7 @@ const newKeys = [
   { key: 'Google' },
   { key: 'Matomo' },
   { key: 'Map Provider' },
+  { key: 'User updated' },
   {
     key: 'Map layers description',
     value: 'Here you can configure the map layers that will be available in the maps.',

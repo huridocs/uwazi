@@ -69,8 +69,6 @@ describe('Public Form', () => {
 
     it('should visit the page and do a submit for the first template', () => {
       cy.contains('a', 'Pages').click();
-      cy.wait(1000);
-      cy.contains('button', 'Discard changes').click();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
