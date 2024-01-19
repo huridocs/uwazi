@@ -30,12 +30,26 @@ const getMetadataLabels = (propertyName, entityList) =>
 const getMetadataValues = (propertyName, entityList) =>
   getMetadataProperties(propertyName, entityList, 'value');
 
+const readThesaurusValues = async thesaurisId => {
+  const thesaurus = await thesauri.getById(thesaurisId.toString());
+  return thesaurus.values.map(tv => [tv.label, (tv.values || []).map(v => v.label)]);
+};
+
+const thesaurusValuesAreTrimmed = thesaurusValues =>
+  thesaurusValues.every(([label, values]) => {
+    if (label !== label.trim()) {
+      return false;
+    }
+    if (values.some(v => v !== v.trim())) {
+      return false;
+    }
+    return true;
+  });
+
 describe('loader', () => {
   let actualEntities;
-  let selectThesaurus;
   let selectLabels;
   let selectLabelsSet;
-  let multiselectThesaurus;
   let multiselectLabels;
   let multiselectLabelsSet;
 
@@ -45,14 +59,10 @@ describe('loader', () => {
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
-    selectThesaurus = await thesauri.getById(fixtureFactory.id('Select Thesaurus').toString());
-    selectLabels = selectThesaurus.values.map(tv => tv.label);
-    selectLabelsSet = new Set(selectLabels);
-    multiselectThesaurus = await thesauri.getById(
-      fixtureFactory.id('multiselect_thesaurus').toString()
-    );
-    multiselectLabels = multiselectThesaurus.values.map(tv => tv.label);
-    multiselectLabelsSet = new Set(multiselectLabels);
+    selectLabels = await readThesaurusValues(fixtureFactory.id('Select Thesaurus'));
+    selectLabelsSet = new Set(selectLabels.map(([label]) => label));
+    multiselectLabels = await readThesaurusValues(fixtureFactory.id('multiselect_thesaurus'));
+    multiselectLabelsSet = new Set(multiselectLabels.map(([label]) => label));
   }, 10000);
 
   afterAll(async () => {
@@ -60,8 +70,20 @@ describe('loader', () => {
   });
 
   it('should create values in thesauri', async () => {
-    expect(selectLabels).toEqual(['A', 'B', 'C', 'd']);
-    expect(multiselectLabels).toEqual(['A', 'B', 'c', 'D', 'E', 'g']);
+    expect(selectLabels).toEqual([
+      ['A', []],
+      ['B', []],
+      ['C', []],
+      ['d', []],
+    ]);
+    expect(multiselectLabels).toEqual([
+      ['A', []],
+      ['B', []],
+      ['c', []],
+      ['D', []],
+      ['E', []],
+      ['g', []],
+    ]);
   });
 
   it('should not add new values where there is none', async () => {
@@ -79,12 +101,8 @@ describe('loader', () => {
   });
 
   it('should not add values with trimmable white space or blank values', async () => {
-    selectLabels.forEach(label => {
-      expect(label).toBe(label.trim());
-    });
-    multiselectLabels.forEach(label => {
-      expect(label).toBe(label.trim());
-    });
+    expect(thesaurusValuesAreTrimmed(selectLabels)).toBe(true);
+    expect(thesaurusValuesAreTrimmed(multiselectLabels)).toBe(true);
   });
 
   it('should not create repeated values', async () => {
