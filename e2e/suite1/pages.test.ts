@@ -149,11 +149,11 @@ describe('Custom home page and styles', () => {
     await disableTransitions();
     await page.waitForSelector('.item-group');
     const rowSelector = '.item-document';
-    expect((await page.$$(rowSelector)).length).toBe(2);
-    expect(page).toMatchElement('.item-group .item-document:nth-child(1) .item-name', {
+    await expect((await page.$$(rowSelector)).length).toBe(2);
+    await expect(page).toMatchElement('.item-group .item-document:nth-child(1) .item-name', {
       text: 'Corte Interamericana de Derechos Humanos',
     });
-    expect(page).toMatchElement('.item-group .item-document:nth-child(2) .item-name', {
+    await expect(page).toMatchElement('.item-group .item-document:nth-child(2) .item-name', {
       text: 'Comisión Interamericana de Derechos Humanos',
     });
   });
