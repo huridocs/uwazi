@@ -2,13 +2,26 @@ import db from 'api/utils/testing_db';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 
 const fixtureFactory = getFixturesFactory();
+const createContext = fixtureFactory.v2.database.nestedTranslationContextDBO;
 const createTranslationDBO = fixtureFactory.v2.database.translationDBO;
+
+const multiselectContext = createContext('multiselect_thesaurus');
+
+const selectContext = createContext('Select Thesaurus');
+
+const nestedContext = createContext('nested_thesaurus');
+
+const noNewValueContext = createContext('no_new_value_thesaurus');
 
 const fixtures = {
   dictionaries: [
     fixtureFactory.thesauri('no_new_value_thesaurus', ['1', '2', '3']),
-    fixtureFactory.thesauri('Select Thesaurus', ['A']),
-    fixtureFactory.thesauri('multiselect_thesaurus', ['A', 'B']),
+    fixtureFactory.nestedThesauri('Select Thesaurus', ['A', { 1: ['1A', '1B'] }]),
+    fixtureFactory.nestedThesauri('multiselect_thesaurus', [
+      'A',
+      'B',
+      { 1: ['1A'], 2: ['2A', '2B'] },
+    ]),
     fixtureFactory.nestedThesauri('nested_thesaurus', [
       { A: ['1', '2', '3'], C: ['X', 'Y', 'Z'] },
       'B',
@@ -76,126 +89,66 @@ const fixtures = {
     },
   ],
   translationsV2: [
-    createTranslationDBO('B', 'Bes', 'es', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('A', 'Aes', 'es', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('multiselect_thesaurus', 'multiselect_thesaurus', 'es', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('A', 'Aes', 'es', {
-      id: fixtureFactory.id('Select Thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'Select Thesaurus',
-    }),
-    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'es', {
-      id: fixtureFactory.id('Select Thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'Select Thesaurus',
-    }),
-    createTranslationDBO('A', 'A', 'es', {
-      id: fixtureFactory.id('nested_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'nested_thesaurus',
-    }),
-    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'es', {
-      id: fixtureFactory.id('nested_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'nested_thesaurus',
-    }),
-    createTranslationDBO('1', '1', 'es', {
-      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'no_new_value_thesaurus',
-    }),
-    createTranslationDBO('no_new_value_thesaurus', 'no_new_value_thesaurus', 'es', {
-      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'no_new_value_thesaurus',
-    }),
-    createTranslationDBO('original 3', 'original 3', 'es', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
-    createTranslationDBO('original 2', 'original 2', 'es', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
-    createTranslationDBO('original 1', 'original 1', 'es', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
-    createTranslationDBO('B', 'B', 'en', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('A', 'A', 'en', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('multiselect_thesaurus', 'multiselect_thesaurus', 'en', {
-      id: fixtureFactory.id('multiselect_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'multiselect_thesaurus',
-    }),
-    createTranslationDBO('A', 'A', 'en', {
-      id: fixtureFactory.id('Select Thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'Select Thesaurus',
-    }),
-    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'en', {
-      id: fixtureFactory.id('Select Thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'Select Thesaurus',
-    }),
-    createTranslationDBO('A', 'A', 'en', {
-      id: fixtureFactory.id('nested_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'nested_thesaurus',
-    }),
-    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'en', {
-      id: fixtureFactory.id('nested_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'nested_thesaurus',
-    }),
-    createTranslationDBO('1', '1', 'en', {
-      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'no_new_value_thesaurus',
-    }),
-    createTranslationDBO('no_new_value_thesaurus', 'no_new_value_thesaurus', 'en', {
-      id: fixtureFactory.id('no_new_value_thesaurus').toString(),
-      type: 'Thesaurus',
-      label: 'no_new_value_thesaurus',
-    }),
-    createTranslationDBO('original 3', 'original 3', 'en', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
-    createTranslationDBO('original 2', 'original 2', 'en', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
-    createTranslationDBO('original 1', 'original 1', 'en', {
-      id: 'System',
-      type: 'Uwazi UI',
-      label: 'System',
-    }),
+    createTranslationDBO('B', 'Bes', 'es', multiselectContext),
+    createTranslationDBO('A', 'Aes', 'es', multiselectContext),
+    createTranslationDBO('1', '1es', 'es', multiselectContext),
+    createTranslationDBO('1A', '1Aes', 'es', multiselectContext),
+    createTranslationDBO('2', '2es', 'es', multiselectContext),
+    createTranslationDBO('2A', '2Aes', 'es', multiselectContext),
+    createTranslationDBO('2B', '2Bes', 'es', multiselectContext),
+    createTranslationDBO(
+      'multiselect_thesaurus',
+      'multiselect_thesaurus',
+      'es',
+      multiselectContext
+    ),
+    createTranslationDBO('A', 'Aes', 'es', selectContext),
+    createTranslationDBO('1', '1es', 'es', selectContext),
+    createTranslationDBO('1A', '1Aes', 'es', selectContext),
+    createTranslationDBO('1B', '1Bes', 'es', selectContext),
+    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'es', selectContext),
+    createTranslationDBO('A', 'A', 'es', nestedContext),
+    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'es', nestedContext),
+    createTranslationDBO('1', '1', 'es', noNewValueContext),
+    createTranslationDBO(
+      'no_new_value_thesaurus',
+      'no_new_value_thesaurus',
+      'es',
+      noNewValueContext
+    ),
+    createTranslationDBO('original 3', 'original 3', 'es'),
+    createTranslationDBO('original 2', 'original 2', 'es'),
+    createTranslationDBO('original 1', 'original 1', 'es'),
+    createTranslationDBO('B', 'B', 'en', multiselectContext),
+    createTranslationDBO('A', 'A', 'en', multiselectContext),
+    createTranslationDBO('1', '1', 'en', multiselectContext),
+    createTranslationDBO('1A', '1A', 'en', multiselectContext),
+    createTranslationDBO('2', '2', 'en', multiselectContext),
+    createTranslationDBO('2A', '2A', 'en', multiselectContext),
+    createTranslationDBO('2B', '2B', 'en', multiselectContext),
+    createTranslationDBO(
+      'multiselect_thesaurus',
+      'multiselect_thesaurus',
+      'en',
+      multiselectContext
+    ),
+    createTranslationDBO('A', 'A', 'en', selectContext),
+    createTranslationDBO('1', '1', 'en', selectContext),
+    createTranslationDBO('1A', '1A', 'en', selectContext),
+    createTranslationDBO('1B', '1B', 'en', selectContext),
+    createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'en', selectContext),
+    createTranslationDBO('A', 'A', 'en', nestedContext),
+    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'en', nestedContext),
+    createTranslationDBO('1', '1', 'en', noNewValueContext),
+    createTranslationDBO(
+      'no_new_value_thesaurus',
+      'no_new_value_thesaurus',
+      'en',
+      noNewValueContext
+    ),
+    createTranslationDBO('original 3', 'original 3', 'en'),
+    createTranslationDBO('original 2', 'original 2', 'en'),
+    createTranslationDBO('original 1', 'original 1', 'en'),
   ],
 };
 

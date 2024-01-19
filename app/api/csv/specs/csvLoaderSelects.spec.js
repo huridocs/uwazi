@@ -72,6 +72,7 @@ describe('loader', () => {
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual([
       ['A', []],
+      ['1', ['1A', '1B']],
       ['B', []],
       ['C', []],
       ['d', []],
@@ -79,6 +80,8 @@ describe('loader', () => {
     expect(multiselectLabels).toEqual([
       ['A', []],
       ['B', []],
+      ['1', ['1A']],
+      ['2', ['2A', '2B']],
       ['c', []],
       ['D', []],
       ['E', []],
@@ -123,6 +126,9 @@ describe('loader', () => {
       c => c.label === 'multiselect_thesaurus'
     ).values;
     expect(englishSelectValues).toEqual({
+      1: '1',
+      '1A': '1A',
+      '1B': '1B',
       A: 'A',
       B: 'B',
       C: 'C',
@@ -130,6 +136,9 @@ describe('loader', () => {
       'Select Thesaurus': 'Select Thesaurus',
     });
     expect(spanishSelectValues).toEqual({
+      1: '1es',
+      '1A': '1Aes',
+      '1B': '1Bes',
       A: 'Aes',
       B: 'Bes',
       C: 'Ces',
@@ -139,6 +148,11 @@ describe('loader', () => {
     expect(englishMultiselectValues).toEqual({
       A: 'A',
       B: 'B',
+      1: '1',
+      '1A': '1A',
+      2: '2',
+      '2A': '2A',
+      '2B': '2B',
       D: 'D',
       E: 'E',
       c: 'c',
@@ -148,6 +162,11 @@ describe('loader', () => {
     expect(spanishMultiSelectValues).toEqual({
       A: 'Aes',
       B: 'Bes',
+      1: '1es',
+      '1A': '1Aes',
+      2: '2es',
+      '2A': '2Aes',
+      '2B': '2Bes',
       D: 'Des',
       E: 'Ees',
       c: 'ces',
