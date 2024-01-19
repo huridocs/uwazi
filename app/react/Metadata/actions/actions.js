@@ -5,6 +5,7 @@ import { api } from 'app/Entities';
 import { notificationActions } from 'app/Notifications';
 import { t } from 'app/I18N';
 import { removeDocuments, unselectAllDocuments } from 'app/Library/actions/libraryActions';
+import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { RequestParams } from 'app/utils/RequestParams';
 import searchAPI from 'app/Search/SearchAPI';
 import { actions } from 'app/BasicReducer';
@@ -140,6 +141,7 @@ export function loadInReduxForm(form, _entity, templates) {
         : attachments;
       const entity = { ...response, attachments: sortedAttachments };
       loadFetchedInReduxForm(form, entity, templates).forEach(action => dispatch(action));
+      dispatch(reloadThesauri());
     });
   };
 }
