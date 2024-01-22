@@ -17,7 +17,7 @@ const selectPublishedEntities = () => {
 };
 
 const selectRestrictedEntities = () => {
-  cy.get('aside.library-filters').should('be.visible').as('sidePanel');
+  cy.get('aside.library-filters').should('be.visible', { setTimeout: 100 }).as('sidePanel');
   cy.get('#publishedStatuspublished')
     .invoke('is', ':checked')
     .then(checked => {

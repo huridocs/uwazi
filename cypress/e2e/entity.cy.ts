@@ -63,7 +63,7 @@ describe('Entities', () => {
       clickOnCreateEntity();
       cy.get('[name="library.sidepanel.metadata.title"]').click();
       cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with HTML', { force: true });
-      cy.get('#metadataForm').find('select').select('Reporte', { force: true });
+      cy.get('#metadataForm').find('select').select('Reporte', { timeout: 100 });
 
       cy.get('#tabpanel-edit > textarea').type(textWithHtml);
       cy.contains('button', 'Save').click();
