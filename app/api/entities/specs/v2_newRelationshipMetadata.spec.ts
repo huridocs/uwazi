@@ -249,8 +249,16 @@ describe('entities.save()', () => {
         .find({ title: 'new_entity2' }, { sort: { language: 1 } })
         .toArray();
       expect(inDb).toMatchObject([
-        { title: 'new_entity2', language: 'en' },
-        { title: 'new_entity2', language: 'es' },
+        {
+          title: 'new_entity2',
+          metadata: { relProp: [{ value: 'entity2', label: 'entity2-en' }] },
+          language: 'en',
+        },
+        {
+          title: 'new_entity2',
+          metadata: { relProp: [{ value: 'entity2', label: 'entity2-es' }] },
+          language: 'es',
+        },
       ]);
       const rels = await db
         ?.collection('relationships')
