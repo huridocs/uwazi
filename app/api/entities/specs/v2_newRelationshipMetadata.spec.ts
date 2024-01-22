@@ -232,6 +232,38 @@ describe('entities.save()', () => {
 
       markSpy.mockRestore();
     });
+
+    it('should create relationships accordingly to the metadata', async () => {
+      await entities.save(
+        {
+          template: factory.id('template1'),
+          title: 'new_entity2',
+          metadata: {
+            relProp: [{ value: 'entity2' }],
+          },
+        },
+        { user: adminUser, language: 'en' }
+      );
+      const inDb = await db
+        ?.collection('entities')
+        .find({ title: 'new_entity2' }, { sort: { language: 1 } })
+        .toArray();
+      expect(inDb).toMatchObject([
+        { title: 'new_entity2', language: 'en' },
+        { title: 'new_entity2', language: 'es' },
+      ]);
+      const rels = await db
+        ?.collection('relationships')
+        .find({ 'from.entity': inDb![0].sharedId })
+        .toArray();
+      expect(rels).toMatchObject([
+        {
+          from: { entity: inDb![0].sharedId },
+          to: { entity: 'entity2' },
+          type: factory.id('rtype1'),
+        },
+      ]);
+    });
   });
 
   describe('when updating an entity', () => {
