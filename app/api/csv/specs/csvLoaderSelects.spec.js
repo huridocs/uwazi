@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import path from 'path';
 
 import translations from 'api/i18n/translations';
@@ -30,12 +31,12 @@ const getMetadataLabels = (propertyName, entityList) =>
 const getMetadataValues = (propertyName, entityList) =>
   getMetadataProperties(propertyName, entityList, 'value');
 
-const readThesaurusValues = async thesaurisId => {
+const readThesaurusLabels = async thesaurisId => {
   const thesaurus = await thesauri.getById(thesaurisId.toString());
   return thesaurus.values.map(tv => [tv.label, (tv.values || []).map(v => v.label)]);
 };
 
-const thesaurusValuesAreTrimmed = thesaurusValues =>
+const thesaurusLabelsAreTrimmed = thesaurusValues =>
   thesaurusValues.every(([label, values]) => {
     if (label !== label.trim()) {
       return false;
@@ -45,6 +46,14 @@ const thesaurusValuesAreTrimmed = thesaurusValues =>
     }
     return true;
   });
+
+const thesaurusLabelsAreUnique = thesaurusValues => {
+  const rootLabels = thesaurusValues.map(([label]) => label);
+  if (new Set(rootLabels).size !== rootLabels.length) {
+    return false;
+  }
+  return thesaurusValues.every(([, values]) => new Set(values).size === values.length);
+};
 
 describe('loader', () => {
   let actualEntities;
@@ -59,10 +68,10 @@ describe('loader', () => {
       path.join(__dirname, '/arrangeThesauriTest.csv'),
       fixtureFactory.id('template')
     );
-    selectLabels = await readThesaurusValues(fixtureFactory.id('Select Thesaurus'));
-    selectLabelsSet = new Set(selectLabels.map(([label]) => label));
-    multiselectLabels = await readThesaurusValues(fixtureFactory.id('multiselect_thesaurus'));
-    multiselectLabelsSet = new Set(multiselectLabels.map(([label]) => label));
+    selectLabels = await readThesaurusLabels(fixtureFactory.id('Select Thesaurus'));
+    selectLabelsSet = new Set(selectLabels.flat(2));
+    multiselectLabels = await readThesaurusLabels(fixtureFactory.id('multiselect_thesaurus'));
+    multiselectLabelsSet = new Set(multiselectLabels.flat(2));
   }, 10000);
 
   afterAll(async () => {
@@ -72,45 +81,53 @@ describe('loader', () => {
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual([
       ['A', []],
-      ['1', ['1A', '1B']],
+      ['1', ['1A', '1B', '1c']],
       ['B', []],
       ['C', []],
       ['d', []],
+      ['g2', ['2A', '2b']],
+      ['3', ['A']],
     ]);
     expect(multiselectLabels).toEqual([
       ['A', []],
       ['B', []],
-      ['1', ['1A']],
-      ['2', ['2A', '2B']],
+      ['1', ['1A', '1b']],
+      ['2', ['2A', '2B', '2C']],
       ['c', []],
       ['D', []],
       ['E', []],
       ['g', []],
+      ['3', ['3a', '3B']],
+      ['4', ['A']],
     ]);
   });
 
   it('should not add new values where there is none', async () => {
-    const unchangedLabels = (
-      await thesauri.getById(fixtureFactory.id('no_new_value_thesaurus'))
-    ).values.map(tv => tv.label);
-    expect(unchangedLabels).toEqual(['1', '2', '3']);
+    const unchangedLabels = await readThesaurusLabels(fixtureFactory.id('no_new_value_thesaurus'));
+    expect(unchangedLabels).toEqual([
+      ['1', []],
+      ['2', []],
+      ['3', []],
+    ]);
   });
 
   it('should not repeat case sensitive values', async () => {
-    ['a', 'b', 'c', 'D'].forEach(letter => expect(selectLabelsSet.has(letter)).toBe(false));
-    ['a', 'b', 'C', 'd', 'e', 'G'].forEach(letter =>
+    ['a', 'b', 'c', 'D', '1C', '2B'].forEach(letter =>
+      expect(selectLabelsSet.has(letter)).toBe(false)
+    );
+    ['a', 'b', 'C', 'd', 'e', 'G', '1B', '2c'].forEach(letter =>
       expect(multiselectLabelsSet.has(letter)).toBe(false)
     );
   });
 
   it('should not add values with trimmable white space or blank values', async () => {
-    expect(thesaurusValuesAreTrimmed(selectLabels)).toBe(true);
-    expect(thesaurusValuesAreTrimmed(multiselectLabels)).toBe(true);
+    expect(thesaurusLabelsAreTrimmed(selectLabels)).toBe(true);
+    expect(thesaurusLabelsAreTrimmed(multiselectLabels)).toBe(true);
   });
 
   it('should not create repeated values', async () => {
-    expect(selectLabels.length).toBe(selectLabelsSet.size);
-    expect(multiselectLabels.length).toBe(multiselectLabelsSet.size);
+    expect(thesaurusLabelsAreUnique(selectLabels)).toBe(true);
+    expect(thesaurusLabelsAreUnique(multiselectLabels)).toBe(true);
   });
 
   it('should save all translation contexts properly', async () => {
@@ -134,6 +151,11 @@ describe('loader', () => {
       C: 'C',
       d: 'd',
       'Select Thesaurus': 'Select Thesaurus',
+      '1c': '1c',
+      g2: 'g2',
+      '2A': '2A',
+      '2b': '2b',
+      3: '3',
     });
     expect(spanishSelectValues).toEqual({
       1: '1es',
@@ -144,6 +166,11 @@ describe('loader', () => {
       C: 'Ces',
       d: 'des',
       'Select Thesaurus': 'Select Thesaurus',
+      '1c': '1ces',
+      g2: 'g2es',
+      '2A': '2Aes',
+      '2b': '2bes',
+      3: '3es',
     });
     expect(englishMultiselectValues).toEqual({
       A: 'A',
@@ -158,6 +185,12 @@ describe('loader', () => {
       c: 'c',
       g: 'g',
       multiselect_thesaurus: 'multiselect_thesaurus',
+      '1b': '1b',
+      '2C': '2C',
+      3: '3',
+      '3a': '3a',
+      '3B': '3B',
+      4: '4',
     });
     expect(spanishMultiSelectValues).toEqual({
       A: 'Aes',
@@ -172,6 +205,12 @@ describe('loader', () => {
       c: 'ces',
       g: 'ges',
       multiselect_thesaurus: 'multiselect_thesaurus',
+      '1b': '1bes',
+      '2C': '2Ces',
+      3: '3es',
+      '3a': '3aes',
+      '3B': '3Bes',
+      4: '4es',
     });
   });
 
@@ -188,9 +227,10 @@ describe('loader', () => {
       select_6: 'd',
       select_7: 'B',
       multiselect_1: 'A',
+      select_nested_values_1:
     });
-    const spanishSelectValues = getMetadataLabels('select_property', spanish);
-    expect(spanishSelectValues).toMatchObject({
+    const spanishSelectLabels = getMetadataLabels('select_property', spanish);
+    expect(spanishSelectLabels).toMatchObject({
       select_1: 'Bes',
       select_2: 'Ces',
       select_3: 'Bes',
