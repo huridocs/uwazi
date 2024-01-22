@@ -8,6 +8,10 @@ jest.mock('../../utils/languageMiddleware.ts', () => (_req, _res, next) => {
   next();
 });
 
+jest.mock('../../auth/captchaMiddleware.ts', () => () => (_req, _res, next) => {
+  next();
+});
+
 describe('contact', () => {
   const app = setUpApp(contactRoutes);
 

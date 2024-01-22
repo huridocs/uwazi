@@ -10,6 +10,7 @@ import geolocation from './typeParsers/geolocation';
 import multiselect from './typeParsers/multiselect';
 import select from './typeParsers/select';
 import relationship from './typeParsers/relationship';
+import { csvConstants } from './csvDefinitions';
 
 const defaultParser = async (
   entityToImport: RawEntity,
@@ -36,7 +37,7 @@ const parseDate = (dateValue: string, dateFormat: string) => ({
 });
 
 const parseDateRange = (rangeValue: string, dateFormat: string) => {
-  const [from, to] = rangeValue.split(':');
+  const [from, to] = rangeValue.split(csvConstants.dateRangeImportSeparator);
 
   return {
     value: {
@@ -46,7 +47,8 @@ const parseDateRange = (rangeValue: string, dateFormat: string) => {
   };
 };
 
-const parseMultiValue = (values: string) => values.split('|').filter(value => value !== '');
+const parseMultiValue = (values: string) =>
+  values.split(csvConstants.multiValueSeparator).filter(value => value !== '');
 
 export default {
   nested: defaultParser,
@@ -114,8 +116,9 @@ export default {
     entityToImport: RawEntity,
     property: PropertySchema
   ): Promise<MetadataObjectSchema[] | null> {
-    let [label, linkUrl] =
-      entityToImport.propertiesFromColumns[ensure<string>(property.name)].split('|');
+    let [label, linkUrl] = entityToImport.propertiesFromColumns[
+      ensure<string>(property.name)
+    ].split(csvConstants.multiValueSeparator);
 
     if (!linkUrl) {
       linkUrl = entityToImport.propertiesFromColumns[ensure<string>(property.name)];
