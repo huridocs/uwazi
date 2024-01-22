@@ -14,7 +14,7 @@ const noNewValueContext = createContext('no_new_value_thesaurus');
 const fixtures = {
   dictionaries: [
     fixtureFactory.thesauri('no_new_value_thesaurus', ['1', '2', '3']),
-    fixtureFactory.nestedThesauri('Select Thesaurus', ['A', { 1: ['1A', '1B'] }]),
+    fixtureFactory.nestedThesauri('Select Thesaurus', ['A', { 1: ['1A', '1B', 'A'] }]),
     fixtureFactory.nestedThesauri('multiselect_thesaurus', [
       'A',
       'B',
@@ -42,22 +42,25 @@ const fixtures = {
     ]),
   ],
   entities: [
-    fixtureFactory.entity('existing_entity_id', 'template', {
+    fixtureFactory.entity('existing_entity', 'template', {
       unrelated_property: [fixtureFactory.metadataValue('unrelated_value')],
       no_new_value_select: [fixtureFactory.metadataValue('1')],
-      select_property: [fixtureFactory.metadataValue('A')],
-      multiselect_property: [fixtureFactory.metadataValue('A'), fixtureFactory.metadataValue('B')],
+      select_property: [fixtureFactory.metadataValue('A', 'A')],
+      multiselect_property: [
+        fixtureFactory.metadataValue('A', 'A'),
+        fixtureFactory.metadataValue('B', 'B'),
+      ],
     }),
     fixtureFactory.entity(
-      'existing_entity_id',
+      'existing_entity',
       'template',
       {
         unrelated_property: [fixtureFactory.metadataValue('unrelated_value')],
         no_new_value_select: [fixtureFactory.metadataValue('1')],
-        select_property: [{ label: 'Aes', value: 'A' }],
+        select_property: [fixtureFactory.metadataValue('A', 'Aes')],
         multiselect_property: [
-          { label: 'Aes', value: 'A' },
-          { label: 'Bes', value: 'B' },
+          fixtureFactory.metadataValue('A', 'Aes'),
+          fixtureFactory.metadataValue('B', 'Bes'),
         ],
       },
       { language: 'es' }

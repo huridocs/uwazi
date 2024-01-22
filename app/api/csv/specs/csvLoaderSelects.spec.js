@@ -19,8 +19,8 @@ const getMetadataProperties = (propertyName, entityList, prop) =>
       .map(e => [
         e.title,
         e.metadata[propertyName]?.length
-          ? e.metadata[propertyName].map(v => v[prop]).join('|')
-          : undefined,
+          ? e.metadata[propertyName].map(v => [v.parent?.[prop], v[prop]])
+          : [],
       ])
       .filter(e => e[1])
   );
@@ -80,7 +80,7 @@ describe('loader', () => {
   it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual([
       ['A', []],
-      ['1', ['1A', '1B', '1c']],
+      ['1', ['1A', '1B', 'A', '1c']],
       ['B', []],
       ['C', []],
       ['d', []],
@@ -218,46 +218,129 @@ describe('loader', () => {
     const spanish = await entities.get({ language: 'es' });
     const englishSelectLabels = getMetadataLabels('select_property', english);
     expect(englishSelectLabels).toMatchObject({
-      select_1: 'B',
-      select_2: 'C',
-      select_3: 'B',
-      select_4: 'B',
-      select_5: 'd',
-      select_6: 'd',
-      select_7: 'B',
-      multiselect_1: 'A',
+      existing_entity: [[undefined, 'A']],
+      select_1: [[undefined, 'B']],
+      select_2: [[undefined, 'C']],
+      select_3: [[undefined, 'B']],
+      select_4: [[undefined, 'B']],
+      select_5: [[undefined, 'd']],
+      select_6: [[undefined, 'd']],
+      select_7: [[undefined, 'B']],
+      select_8: [],
+      select_9: [],
+      multiselect_1: [[undefined, 'A']],
+      select_nested_values_1: [['1', '1A']],
+      select_nested_values_2: [['1', '1c']],
+      select_nested_values_3: [['1', '1c']],
+      select_nested_values_4: [['g2', '2A']],
+      select_nested_values_5: [['g2', '2b']],
+      select_nested_values_6: [['g2', '2b']],
+      select_nested_values_7: [['3', 'A']],
     });
     const spanishSelectLabels = getMetadataLabels('select_property', spanish);
     expect(spanishSelectLabels).toMatchObject({
-      select_1: 'Bes',
-      select_2: 'Ces',
-      select_3: 'Bes',
-      select_4: 'Bes',
-      select_5: 'des',
-      select_6: 'des',
-      select_7: 'Bes',
-      multiselect_1: 'Aes',
+      existing_entity: [[undefined, 'Aes']],
+      select_1: [[undefined, 'Bes']],
+      select_2: [[undefined, 'Ces']],
+      select_3: [[undefined, 'Bes']],
+      select_4: [[undefined, 'Bes']],
+      select_5: [[undefined, 'des']],
+      select_6: [[undefined, 'des']],
+      select_7: [[undefined, 'Bes']],
+      select_8: [],
+      select_9: [],
+      multiselect_1: [[undefined, 'Aes']],
+      select_nested_values_1: [['1es', '1Aes']],
+      select_nested_values_2: [['1es', '1ces']],
+      select_nested_values_3: [['1es', '1ces']],
+      select_nested_values_4: [['g2es', '2Aes']],
+      select_nested_values_5: [['g2es', '2bes']],
+      select_nested_values_6: [['g2es', '2bes']],
+      select_nested_values_7: [['3es', 'Aes']],
     });
     const englishMultiselectLabels = getMetadataLabels('multiselect_property', english);
     expect(englishMultiselectLabels).toMatchObject({
-      existing_entity_id: '|',
-      select_8: 'A',
-      multiselect_1: 'B',
-      multiselect_2: 'c',
-      multiselect_3: 'A|B',
-      multiselect_4: 'A|B|c',
-      multiselect_5: 'A|B',
-      multiselect_7: 'A|B|c|D|E|g',
+      existing_entity: [
+        [undefined, 'A'],
+        [undefined, 'B'],
+      ],
+      select_8: [[undefined, 'A']],
+      multiselect_1: [[undefined, 'B']],
+      multiselect_2: [[undefined, 'c']],
+      multiselect_3: [
+        [undefined, 'A'],
+        [undefined, 'B'],
+      ],
+      multiselect_4: [
+        [undefined, 'A'],
+        [undefined, 'B'],
+        [undefined, 'c'],
+      ],
+      multiselect_5: [
+        [undefined, 'A'],
+        [undefined, 'B'],
+      ],
+      multiselect_7: [
+        [undefined, 'A'],
+        [undefined, 'B'],
+        [undefined, 'c'],
+        [undefined, 'D'],
+        [undefined, 'E'],
+        [undefined, 'g'],
+      ],
+      multiselect_nested_values_1: [
+        ['1', '1b'],
+        ['2', '2C'],
+        ['3', '3a'],
+        ['3', '3B'],
+        ['4', 'A'],
+      ],
+      multi_select_nested_values_2: [
+        ['1', '1b'],
+        ['2', '2C'],
+      ],
     });
     const spanishMultiselectLabels = getMetadataLabels('multiselect_property', spanish);
     expect(spanishMultiselectLabels).toMatchObject({
-      select_8: 'Aes',
-      multiselect_1: 'Bes',
-      multiselect_2: 'ces',
-      multiselect_3: 'Aes|Bes',
-      multiselect_4: 'Aes|Bes|ces',
-      multiselect_5: 'Aes|Bes',
-      multiselect_7: 'Aes|Bes|ces|Des|Ees|ges',
+      existing_entity: [
+        [undefined, 'Aes'],
+        [undefined, 'Bes'],
+      ],
+      select_8: [[undefined, 'Aes']],
+      multiselect_1: [[undefined, 'Bes']],
+      multiselect_2: [[undefined, 'ces']],
+      multiselect_3: [
+        [undefined, 'Aes'],
+        [undefined, 'Bes'],
+      ],
+      multiselect_4: [
+        [undefined, 'Aes'],
+        [undefined, 'Bes'],
+        [undefined, 'ces'],
+      ],
+      multiselect_5: [
+        [undefined, 'Aes'],
+        [undefined, 'Bes'],
+      ],
+      multiselect_7: [
+        [undefined, 'Aes'],
+        [undefined, 'Bes'],
+        [undefined, 'ces'],
+        [undefined, 'Des'],
+        [undefined, 'Ees'],
+        [undefined, 'ges'],
+      ],
+      multiselect_nested_values_1: [
+        ['1es', '1bes'],
+        ['2es', '2Ces'],
+        ['3es', '3aes'],
+        ['3es', '3Bes'],
+        ['4es', '4es'],
+      ],
+      multi_select_nested_values_2: [
+        ['1es', '1bes'],
+        ['2es', '2Ces'],
+      ],
     });
   });
 
