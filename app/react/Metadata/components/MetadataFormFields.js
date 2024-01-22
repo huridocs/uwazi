@@ -414,6 +414,8 @@ class MetadataFormFields extends Component {
 }
 
 MetadataFormFields.defaultProps = {
+  saveThesaurus: () => {},
+  push: () => {},
   multipleEdition: false,
   dateFormat: null,
   version: undefined,

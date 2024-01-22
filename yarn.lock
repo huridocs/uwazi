@@ -17286,10 +17286,10 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-pdfjs-dist@^3.8.162:
-  version "3.8.162"
-  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-3.8.162.tgz#aff9026aa7fc0dffd62fba1111b64207f861343d"
-  integrity sha512-Do0Lpuk1ItcNnIPr9MM+/jnnMOb4i6asRX7gVnL6fFUW1QPC7ERfHQkbhF7jkAri1o6GxttX0Yn7ZhOmpFUeGA==
+pdfjs-dist@^4.0.379:
+  version "4.0.379"
+  resolved "https://registry.yarnpkg.com/pdfjs-dist/-/pdfjs-dist-4.0.379.tgz#e2e967255d63c9caf0b6fe944e99ec9a746649da"
+  integrity sha512-6H0Gv1nna+wmrr3CakaKlZ4rbrL8hvGIFAgg4YcoFuGC0HC4B2DVjXEGTFjJEjLlf8nYi3C3/MYRcM5bNx0elA==
   optionalDependencies:
     canvas "^2.11.2"
     path2d-polyfill "^2.0.1"
