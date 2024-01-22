@@ -56,7 +56,6 @@ const thesaurusLabelsAreUnique = thesaurusValues => {
 };
 
 describe('loader', () => {
-  let actualEntities;
   let selectLabels;
   let selectLabelsSet;
   let multiselectLabels;
@@ -227,7 +226,6 @@ describe('loader', () => {
       select_6: 'd',
       select_7: 'B',
       multiselect_1: 'A',
-      select_nested_values_1:
     });
     const spanishSelectLabels = getMetadataLabels('select_property', spanish);
     expect(spanishSelectLabels).toMatchObject({
@@ -274,147 +272,19 @@ describe('loader', () => {
     expect(englishMultiselectValues).toEqual(spanishMultiselectValues);
   });
 
-  describe('nested thesaurus', () => {
-    beforeAll(async () => {
-      actualEntities = await entities.get({
-        template: fixtureFactory.id('template'),
-        language: 'en',
-      });
-    });
-
-    it('should only add as new root values those which are not nested values', async () => {
-      const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
-      const rootLabels = nestedThesaurus.values.map(value => value.label);
-      expect(rootLabels).toEqual(['A', 'C', 'B', 'P', 'D', 'O', '4', 'E', '0']);
-    });
-
-    it('should not add unnecessary extra values to groups', async () => {
-      const nestedThesaurus = await thesauri.getById(fixtureFactory.id('nested_thesaurus'));
-      expect(nestedThesaurus).toMatchObject({
-        name: 'nested_thesaurus',
-        values: [
-          {
-            id: 'A',
-            label: 'A',
-            values: [
-              {
-                id: '1',
-                label: '1',
-              },
-              {
-                id: '2',
-                label: '2',
-              },
-              {
-                id: '3',
-                label: '3',
-              },
-            ],
-          },
-          {
-            id: 'C',
-            label: 'C',
-            values: [
-              {
-                id: 'X',
-                label: 'X',
-              },
-              {
-                id: 'Y',
-                label: 'Y',
-              },
-              {
-                id: 'Z',
-                label: 'Z',
-              },
-            ],
-          },
-          {
-            id: 'B',
-            label: 'B',
-          },
-          {
-            id: 'P',
-            label: 'P',
-            values: [
-              {
-                id: '|',
-                label: '|',
-              },
-              {
-                id: '2',
-                label: '2',
-              },
-              {
-                id: '|||',
-                label: '|||',
-              },
-            ],
-          },
-          {
-            label: 'D',
-            id: expect.any(String),
-          },
-          {
-            label: 'O',
-            id: expect.any(String),
-          },
-          {
-            label: '4',
-            id: expect.any(String),
-          },
-          {
-            label: 'E',
-            id: expect.any(String),
-          },
-          {
-            label: '0',
-            id: expect.any(String),
-          },
-        ],
-      });
-    });
-
-    it('should import a nested value for a select property', async () => {
-      const selectValues = getMetadataLabels('nested_select_property', actualEntities);
-      expect(selectValues).toEqual({
-        select_1: 'D',
-        select_2: '1',
-        select_3: 'X',
-        select_4: '2',
-        select_6: 'Y',
-        select_8: 'X',
-        multiselect_3: 'E',
-        multiselect_6: 'B',
-      });
-    });
-
-    it('should import nested values for a multiselect property', async () => {
-      const multiSelectValues = getMetadataLabels('nested_multiselect_property', actualEntities);
-      expect(multiSelectValues).toEqual({
-        select_1: '1|X',
-        select_2: 'Z|O',
-        select_5: '4',
-        select_7: '1',
-        multiselect_7: '0',
-      });
-    });
-
-    it('should not allow importing group labels', async () => {
-      try {
-        await loader.load(
-          path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
-          fixtureFactory.id('template')
-        );
-        expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
-      } catch (e) {
-        expect(e).toBeInstanceOf(ArrangeThesauriError);
-        expect(
-          e.message.startsWith(
-            'The label "P" at property "nested_select_property" is a group label in line:'
-          )
-        ).toBe(true);
-      }
-    });
+  it('should not allow importing existing group labels alone', async () => {
+    try {
+      await loader.load(
+        path.join(__dirname, '/arrangeThesauriGroupErrorCase.csv'),
+        fixtureFactory.id('template')
+      );
+      expect.fail(`Should have thrown an ${ArrangeThesauriError.name} error.}`);
+    } catch (e) {
+      expect(e).toBeInstanceOf(ArrangeThesauriError);
+      expect(e.message).toBe(
+        `The label "1" at property "select_property" is a group label in line:
+{"title":"group_error_select_wrong","Select Property":"1"}`
+      );
+    }
   });
 });

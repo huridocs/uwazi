@@ -9,8 +9,6 @@ const multiselectContext = createContext('multiselect_thesaurus');
 
 const selectContext = createContext('Select Thesaurus');
 
-const nestedContext = createContext('nested_thesaurus');
-
 const noNewValueContext = createContext('no_new_value_thesaurus');
 
 const fixtures = {
@@ -21,11 +19,6 @@ const fixtures = {
       'A',
       'B',
       { 1: ['1A'], 2: ['2A', '2B'] },
-    ]),
-    fixtureFactory.nestedThesauri('nested_thesaurus', [
-      { A: ['1', '2', '3'], C: ['X', 'Y', 'Z'] },
-      'B',
-      { P: ['|', '2', '|||'] },
     ]),
   ],
   templates: [
@@ -42,14 +35,6 @@ const fixtures = {
       fixtureFactory.property('multiselect_property', 'multiselect', {
         content: fixtureFactory.id('multiselect_thesaurus'),
         label: 'Multiselect Property',
-      }),
-      fixtureFactory.property('nested_select_property', 'select', {
-        content: fixtureFactory.id('nested_thesaurus'),
-        label: 'Nested Select Property',
-      }),
-      fixtureFactory.property('nested_multiselect_property', 'multiselect', {
-        content: fixtureFactory.id('nested_thesaurus'),
-        label: 'Nested MultiSelect Property',
       }),
     ]),
     fixtureFactory.template('no_selects_template', [
@@ -107,8 +92,6 @@ const fixtures = {
     createTranslationDBO('1A', '1Aes', 'es', selectContext),
     createTranslationDBO('1B', '1Bes', 'es', selectContext),
     createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'es', selectContext),
-    createTranslationDBO('A', 'A', 'es', nestedContext),
-    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'es', nestedContext),
     createTranslationDBO('1', '1', 'es', noNewValueContext),
     createTranslationDBO(
       'no_new_value_thesaurus',
@@ -137,8 +120,6 @@ const fixtures = {
     createTranslationDBO('1A', '1A', 'en', selectContext),
     createTranslationDBO('1B', '1B', 'en', selectContext),
     createTranslationDBO('Select Thesaurus', 'Select Thesaurus', 'en', selectContext),
-    createTranslationDBO('A', 'A', 'en', nestedContext),
-    createTranslationDBO('nested_thesaurus', 'nested_thesaurus', 'en', nestedContext),
     createTranslationDBO('1', '1', 'en', noNewValueContext),
     createTranslationDBO(
       'no_new_value_thesaurus',

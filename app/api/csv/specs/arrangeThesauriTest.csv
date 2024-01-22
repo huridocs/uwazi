@@ -1,26 +1,26 @@
-title,unrelated_property,select_property__en, Select Property__es,Multiselect Property__en, multiselect_property__es, no_new_value_select, Nested Select Property, nested_multiselect_property
-select_1,unrelated_text,B,Bes,A,Aes,1,D,1|X
-select_2,unrelated_text,C,Ces,A,Aes,2,1,Z|O
-select_3,unrelated_text,b,bes,A,Aes,3,X,
-select_4,unrelated_text,B,Bes,A,Aes,1,2,
-select_5,unrelated_text,d,des,A,Aes,2,,4
-select_6,unrelated_text,D,Des,A,Aes,3,Y,
-select_7,unrelated_text,  b,bes,A,Aes,1,,1
-select_8,unrelated_text, , ,A,Aes,2,B,
-select_8,unrelated_text,      ,     ,A,Aes,3,X,
-multiselect_1,unrelated_text,A,Aes,B,Bes,1,,
-multiselect_2,unrelated_text,A,Aes,c,ces,2,,
-multiselect_3,unrelated_text,A,Aes,A|b,Aes|bes,3,E,
-multiselect_4,unrelated_text,A,Aes,a|B|C,aes|Bes|Ces,1,,
-multiselect_5,unrelated_text,A,Aes,  a|   b | ,  aes|   bes | ,2,,
-multiselect_6,unrelated_text,A,Aes, |   | , |   | ,3,B,
-multiselect_7, unrelated_text,A,Aes,A|B|C|D|  |E| e| g  ,Aes|Bes|Ces|Des|  |Ees| ees| ges  ,1,,0
-select_nested_values_1,unrelated_text,1::1A,1es::1Aes,,,1,,
-select_nested_values_2,unrelated_text,1::1c,1es::1ces,,,2,,
-select_nested_values_3,unrelated_text,1::1C,1es::1Ces,,,3,,
-select_nested_values_4,unrelated_text,g2::2A,g2es::2Aes,,,1,,
-select_nested_values_5,unrelated_text,G2::2b,G2es::2Aes,,,2,,
-select_nested_values_6,unrelated_text,G2::2B,G2es::2Bes,,,3,,
-select_nested_values_7,unrelated_text,3::A,3es::Aes,,,1,,
-multiselect_nested_values_1,unrelated_text,1::1A,1es::1Aes,1::1b|2::2C | 3::3a |3::3B|4::A,1es::1Aes|2es::2Ces|3es::3aes|3es::3Bes|4es::Aes,1,,
-multiselect_nested_values_2,unrelated_text,1::1A,1es::1Aes,1::1B  |2::2c,1es::1Bes|2es::2ces,2,,
+title,unrelated_property,select_property__en, Select Property__es,Multiselect Property__en, multiselect_property__es, no_new_value_select
+select_1,unrelated_text,B,Bes,A,Aes,1
+select_2,unrelated_text,C,Ces,A,Aes,2
+select_3,unrelated_text,b,bes,A,Aes,3
+select_4,unrelated_text,B,Bes,A,Aes,1
+select_5,unrelated_text,d,des,A,Aes,2
+select_6,unrelated_text,D,Des,A,Aes,3
+select_7,unrelated_text,  b,bes,A,Aes,1
+select_8,unrelated_text, , ,A,Aes,2
+select_8,unrelated_text,      ,     ,A,Aes,3
+multiselect_1,unrelated_text,A,Aes,B,Bes,1
+multiselect_2,unrelated_text,A,Aes,c,ces,2
+multiselect_3,unrelated_text,A,Aes,A|b,Aes|bes,3
+multiselect_4,unrelated_text,A,Aes,a|B|C,aes|Bes|Ces,1
+multiselect_5,unrelated_text,A,Aes,  a|   b | ,  aes|   bes | ,2
+multiselect_6,unrelated_text,A,Aes, |   | , |   | ,3
+multiselect_7, unrelated_text,A,Aes,A|B|C|D|  |E| e| g  ,Aes|Bes|Ces|Des|  |Ees| ees| ges  ,1
+select_nested_values_1,unrelated_text,1::1A,1es::1Aes,,,1
+select_nested_values_2,unrelated_text,1::1c,1es::1ces,,,2
+select_nested_values_3,unrelated_text,1::1C,1es::1Ces,,,3
+select_nested_values_4,unrelated_text,g2::2A,g2es::2Aes,,,1
+select_nested_values_5,unrelated_text,G2::2b,G2es::2Aes,,,2
+select_nested_values_6,unrelated_text,G2::2B,G2es::2Bes,,,3
+select_nested_values_7,unrelated_text,3::A,3es::Aes,,,1
+multiselect_nested_values_1,unrelated_text,1::1A,1es::1Aes,1::1b|2::2C | 3::3a |3::3B|4::A,1es::1Aes|2es::2Ces|3es::3aes|3es::3Bes|4es::Aes,1
+multiselect_nested_values_2,unrelated_text,1::1A,1es::1Aes,1::1B  |2::2c,1es::1Bes|2es::2ces,2
