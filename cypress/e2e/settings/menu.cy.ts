@@ -91,6 +91,16 @@ describe('Menu configuration', () => {
     cy.wait('@fetchLinks');
   });
 
+  it('should update the navigation bar with the changes', () => {
+    cy.get('.menuItems > .menuNav-list > .menuNav-item')
+      .should('have.length', 3)
+      .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
+      .should('deep.equal', ['Link 2', 'Group 1  ', 'Group 2  ']);
+
+    cy.get('.menuItems > .menuNav-list > .menuNav-item').eq(2).click();
+    cy.get('.dropdown-menu.expanded').contains('Link 1 edited');
+  });
+
   it('tests delete', () => {
     cy.get('tbody tr:nth-of-type(1) input').click();
 
