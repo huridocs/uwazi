@@ -72,7 +72,7 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
   });
 
-  xit('should share other entities with the collaborator via the group', () => {
+  it('should share other entities with the collaborator via the group', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
     cy.get('[data-testid=modal] input').type('Ase');
@@ -81,7 +81,8 @@ describe('Share Entities', () => {
       .siblings()
       .find('select')
       .select('write');
-    cy.get('[data-testid=modal]').contains('button', 'Save changes', { timeout: 100 }).click();
+    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    cy.contains('Entity updated');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -98,13 +99,13 @@ describe('Share Entities', () => {
     clearCookiesAndLogin('colla', 'borator');
     cy.contains('Ordenes del presidente', { timeout: 100 });
     selectRestrictedEntities();
-    // cy.get('.item').should('have.length', 3);
-    // checkCanEdit(titleEntity1, false);
-    // checkCanEdit(titleEntity3);
-    // checkCanEdit(titleEntity4);
+    cy.get('.item').should('have.length', 3);
+    checkCanEdit(titleEntity1, false);
+    checkCanEdit(titleEntity3);
+    checkCanEdit(titleEntity4);
   });
 
-  xit('should be able to edit and save', () => {
+  it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
     clickOnEditEntity();
     cy.get('aside.is-active textarea').eq(0).clear();
@@ -115,7 +116,7 @@ describe('Share Entities', () => {
     cy.get('aside.is-active button[aria-label="Close side panel"]').click();
   });
 
-  xit('should be able to see only published entities', () => {
+  it('should be able to see only published entities', () => {
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
     cy.get('.search-box input').type('"Resolución de la Corte IDH."', { force: true });
