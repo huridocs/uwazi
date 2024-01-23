@@ -5,7 +5,7 @@ const clearCookiesAndLogin = (username?: string, password?: string) => {
   cy.get('input[name="password"').type(password || 'admin');
   cy.intercept('POST', '/api/login').as('login');
   cy.get('button[type="submit"').click();
-  cy.wait('@login');
+  cy.wait('@login').then(result => console.log(JSON.stringify(result)));
 };
 
 export { clearCookiesAndLogin };
