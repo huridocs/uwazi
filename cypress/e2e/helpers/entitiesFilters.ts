@@ -1,4 +1,5 @@
 const selectPublishedEntities = () => {
+  cy.contains('Published', { timeout: 100 });
   cy.get('aside.library-filters').should('be.visible').as('sidePanel');
   cy.get('#publishedStatuspublished')
     .invoke('is', ':checked')

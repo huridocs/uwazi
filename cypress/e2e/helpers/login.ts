@@ -1,4 +1,5 @@
 const clearCookiesAndLogin = (username?: string, password?: string) => {
+  cy.visit('http://localhost:3000/logout');
   cy.clearAllCookies();
   cy.visit('http://localhost:3000/login');
   cy.get('input[name="username"').type(username || 'admin');
