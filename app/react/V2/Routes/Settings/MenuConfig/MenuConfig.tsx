@@ -14,7 +14,7 @@ import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
-
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import uniqueID from 'shared/uniqueID';
@@ -38,6 +38,7 @@ const MenuConfig = () => {
   );
   const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const setSettings = useSetRecoilState(settingsAtom);
 
   useEffect(() => {
     const linksWIthid = links?.map(link => {
@@ -98,7 +99,8 @@ const MenuConfig = () => {
   };
 
   const save = async () => {
-    await SettingsAPI.saveLinks(linkChanges.map(sanitizeIds));
+    const settings = await SettingsAPI.saveLinks(linkChanges.map(sanitizeIds));
+    setSettings(settings);
     revalidator.revalidate();
     setNotifications({
       type: 'success',

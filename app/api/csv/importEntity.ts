@@ -15,6 +15,7 @@ import { files, storage } from 'api/files';
 import { generateID } from 'shared/IDGenerator';
 
 import typeParsers from './typeParsers';
+import { csvConstants } from './csvDefinitions';
 
 const parse = async (toImportEntity: RawEntity, prop: PropertySchema, dateFormat: string) =>
   typeParsers[prop.type]
@@ -96,16 +97,18 @@ const importEntity = async (
   }
 
   if (attachments && entity.sharedId) {
-    await attachments.split('|').reduce(async (promise: Promise<any>, attachment) => {
-      await promise;
-      const attachmentFile = await importFile.extractFile(attachment);
-      await storage.storeFile(
-        attachmentFile.filename,
-        createReadStream(attachmentFile.path),
-        'attachment'
-      );
-      return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
-    }, Promise.resolve());
+    await attachments
+      .split(csvConstants.multiValueSeparator)
+      .reduce(async (promise: Promise<any>, attachment) => {
+        await promise;
+        const attachmentFile = await importFile.extractFile(attachment);
+        await storage.storeFile(
+          attachmentFile.filename,
+          createReadStream(attachmentFile.path),
+          'attachment'
+        );
+        return files.save({ ...attachmentFile, entity: entity.sharedId, type: 'attachment' });
+      }, Promise.resolve());
   }
 
   await search.indexEntities({ sharedId: entity.sharedId }, '+fullText');
