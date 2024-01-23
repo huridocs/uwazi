@@ -95,6 +95,7 @@ describe('Share Entities', () => {
 
   it('should be able to see and edit entities as a collaborator', () => {
     clearCookiesAndLogin('colla', 'borator');
+    cy.contains('Ordenes del presidente', { timeout: 100 });
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
     checkCanEdit(titleEntity1, false);
