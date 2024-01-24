@@ -82,7 +82,7 @@ describe('Share Entities', () => {
       .find('select')
       .select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.contains('Entity updated');
+    cy.contains('Update success');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
