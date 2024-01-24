@@ -48,4 +48,5 @@ enum ItemTypes {
   ROW = 'row',
 }
 
-export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue, ItemTypes, Page };
+export { ItemTypes };
+export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue, Page };
