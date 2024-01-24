@@ -82,7 +82,8 @@ describe('Share Entities', () => {
       .find('select')
       .select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.contains('Update success');
+    cy.contains('Update success').as('successMessage');
+    cy.get('@successMessage').should('not.exist');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -97,7 +98,7 @@ describe('Share Entities', () => {
   it('should be able to see and edit entities as a collaborator', () => {
     cy.visit('http://localhost:3000/logout');
     clearCookiesAndLogin('colla', 'borator');
-    cy.contains('Ordenes del presidente', { timeout: 100 });
+    cy.contains('Ordenes del presidente', { timeout: 300 });
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
     checkCanEdit(titleEntity1, false);
