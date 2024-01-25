@@ -10,6 +10,7 @@ describe('Permisions system', () => {
   });
 
   it('should share an entity with the collaborator', () => {
+    cy.contains('Ordenes del presidente');
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
