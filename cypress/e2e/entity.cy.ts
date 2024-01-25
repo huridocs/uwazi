@@ -343,8 +343,9 @@ describe('Entities', () => {
         'add value'
       ).click();
       cy.get('input[name=value]#newThesauriValue').click();
+      cy.get('input[name=value]#newThesauriValue').clear();
       cy.get('input[name=value]#newThesauriValue').type('New Value', {
-        force: true,
+        timeout: 100,
       });
       cy.contains('button.confirm-button', 'Save').click();
       cy.contains(
