@@ -149,6 +149,9 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
     cy.contains('Reporte con contenido externo').parentsUntil('.item-document').as('entity');
+    cy.get('@entity').within(() => {
+      cy.contains('Video').scrollIntoView();
+    });
     checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
   });
 
@@ -175,10 +178,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Edit').should('be.visible');
     clickOnEditEntity();
     clickMediaAction('Video', 'Unlink');
-    cy.contains('button', 'Save').click();
-    cy.wait('@saveEntity');
-    cy.contains('Entity updated').as('successMessage');
-    cy.get('@successMessage').should('not.exist');
+    saveEntity('Entity updated');
   });
 
   describe('thumbnails', () => {
