@@ -79,7 +79,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const checkMediaSnapshots = (selector: string) => {
-    cy.get(selector).scrollIntoView();
+    cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
     cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
   };
 
@@ -194,7 +194,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
     it('should display the external player for external media', () => {
       cy.get('.item-group > :nth-child(2)').within(() => {
-        cy.contains('span', 'Reporte con contenido externo');
+        cy.contains('span', 'Reporte con contenido externo').click();
+        cy.get('.metadata-type-multimedia.metadata-name-video').scrollIntoView({
+          offset: { top: -30, left: 0 },
+        });
         checkExternalMedia();
       });
     });
@@ -203,6 +206,9 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       cy.get('.item-group > :nth-child(2) > .item-info').click();
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('h1', 'Reporte con contenido externo');
+        cy.get('.metadata-type-multimedia.metadata-name-video').scrollIntoView({
+          offset: { top: -30, left: 0 },
+        });
         checkExternalMedia();
       });
 
