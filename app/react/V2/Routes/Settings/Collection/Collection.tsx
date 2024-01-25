@@ -182,7 +182,7 @@ const Collection = () => {
                 <div className="sm:col-span-1">
                   <Select
                     label={<Translate>Default date format</Translate>}
-                    id="roles"
+                    id="date-format"
                     options={dateOptions()}
                     {...register('dateFormat')}
                   />
