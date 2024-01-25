@@ -8,7 +8,7 @@ const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) => {
     if (params.sharedId) {
-      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
+      const page = await pagesAPI.getBySharedId(params.sharedId, params.lang || 'en', headers);
 
       return page;
     }
