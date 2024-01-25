@@ -7,6 +7,7 @@ const RtlCssPlugin = require('rtlcss-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
@@ -133,6 +134,7 @@ module.exports = production => {
       }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
+      new MonacoWebpackPlugin(),
     ],
   };
 };

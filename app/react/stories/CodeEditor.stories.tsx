@@ -88,7 +88,7 @@ const Primary: Story = {
   ),
 };
 
-const JS: Story = {
+const JSEditor: Story = {
   ...Primary,
   args: {
     language: 'javascript',
@@ -96,7 +96,7 @@ const JS: Story = {
   },
 };
 
-const HTML: Story = {
+const HTMLEditor: Story = {
   ...Primary,
   args: {
     language: 'html',
@@ -104,5 +104,5 @@ const HTML: Story = {
   },
 };
 
-export { JS, HTML };
+export { JSEditor, HTMLEditor };
 export default meta;

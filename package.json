@@ -173,6 +173,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "0.5.43",
     "monaco-editor": "^0.45.0",
+    "monaco-editor-webpack-plugin": "^7.1.0",
     "mongodb": "5.8.1",
     "mongoose": "7.5.0",
     "multer": "^1.4.5-lts.1",
