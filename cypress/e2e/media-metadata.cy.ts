@@ -186,7 +186,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     };
 
     it('should mark media fields as visible on cards', () => {
-      cy.contains('span', 'Entity updated').click();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Reporte').click();
@@ -200,8 +199,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     it('should display the external player for external media', () => {
       cy.get('.item-group > :nth-child(2)').within(() => {
         cy.contains('span', 'Reporte con contenido externo').click();
-        cy.get('.metadata-type-multimedia.metadata-name-video').scrollIntoView({
-          offset: { top: -30, left: 0 },
+        cy.contains('Video').scrollIntoView({
+          offset: { top: -10, left: 0 },
         });
         checkExternalMedia();
       });
@@ -227,6 +226,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
     it('should render a generic thumbnail for internal media', () => {
       cy.contains('a', 'Library').click();
+      cy.contains('Video');
       cy.get('.item-group > :nth-child(3)').toMatchImageSnapshot();
     });
 
