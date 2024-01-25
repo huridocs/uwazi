@@ -148,10 +148,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.timeSeconds"]', '57');
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
-    cy.contains('Reporte con contenido externo').parentsUntil('.item-document').eq(0).as('entity');
-    cy.get('@entity').within(() => {
-      cy.contains('Video').scrollIntoView();
-    });
+    cy.contains('Reporte con contenido externo').parentsUntil('.is-active').eq(0).as('entity');
+    cy.get('@entity').contains('Video').scrollIntoView();
     checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
   });
 
