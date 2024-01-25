@@ -168,7 +168,12 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.contains('button', 'Edit').should('be.visible');
     clickOnEditEntity();
     clickMediaAction('Video', 'Unlink');
-    saveEntity('Entity updated');
+    cy.contains('button', 'Save').click();
+    cy.wait('@saveEntity');
+    cy.contains('Entity updated').as('successMessage');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
+    cy.get('@successMessage').should('not.exist');
   });
 
   describe('thumbnails', () => {
