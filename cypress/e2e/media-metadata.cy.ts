@@ -148,7 +148,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.timeSeconds"]', '57');
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
-    cy.contains('Reporte con contenido externo').parentsUntil('.item-document').as('entity');
+    cy.contains('Reporte con contenido externo').parentsUntil('.item-document').eq(0).as('entity');
     cy.get('@entity').within(() => {
       cy.contains('Video').scrollIntoView();
     });
