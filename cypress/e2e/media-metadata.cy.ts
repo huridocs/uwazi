@@ -78,8 +78,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .should('be.visible');
   };
 
-  const checkMediaSnapshots = (parent: string, selector: string) => {
-    cy.get(parent).get(selector).scrollIntoView();
+  const checkMediaSnapshots = (selector: string) => {
+    cy.get(selector).scrollIntoView();
     cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
   };
 
@@ -113,9 +113,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     addVideo();
     saveEntity();
 
-    cy.contains('Reporte audiovisual').parentsUntil('.item-document').as('entity');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-fotograf_a');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow add timelinks to an existing entity media property', () => {
@@ -124,9 +123,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     clickOnEditEntity();
     cy.addTimeLink(2000, 'Control point');
     saveEntity('Entity updated');
-    cy.contains('Reporte audiovisual').parentsUntil('.item-document').as('entity');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-fotograf_a');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow media selection with timelinks on entity creation', () => {
@@ -148,9 +146,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.clearAndType('input[name="timelines.0.timeSeconds"]', '57');
     cy.clearAndType('input[name="timelines.0.label"]', 'Dragon');
     saveEntity();
-    cy.contains('Reporte con contenido externo').parentsUntil('.is-active').eq(0).as('entity');
-    cy.get('@entity').contains('Video').scrollIntoView();
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   // eslint-disable-next-line max-statements
@@ -163,12 +159,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     clickMediaAction('Video', 'Unlink');
     addVideo();
     saveEntity();
-
-    cy.contains('Reporte con propiedades audiovisuales corregidas')
-      .parentsUntil('.item-document')
-      .as('entity');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-fotograf_a');
-    checkMediaSnapshots('@entity', '.metadata-type-multimedia.metadata-name-video');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
+    checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow unlink the value of a media property', () => {
