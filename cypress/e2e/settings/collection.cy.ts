@@ -44,6 +44,24 @@ describe('Collection', () => {
     cy.get('table').should('exist');
   });
 
+  it('Set map Layers', () => {
+    cy.intercept('GET', '/api/stats').as('fetchStats');
+    cy.get('.only-desktop a[aria-label="Settings"]').click();
+    cy.wait('@fetchStats');
+    cy.contains('span', 'Collection').click();
+    cy.get('[data-testid="multiselect"] button').eq(0).click();
+    cy.get('[data-testid="multiselect-popover"] li').its('length').should('eq', 4);
+    cy.get('[data-testid="multiselect-popover"] li').eq(3).click();
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.get('#roles').select('Map');
+    cy.contains('button', 'Save').click();
+    cy.wait('@fetchTemplates');
+
+    // Assert
+    cy.get('[aria-label="Library"]').click();
+    cy.get('.leaflet-control-layers-base label').its('length').should('eq', 1);
+  });
+
   it('Change default date format', () => {
     const frozen = new Date(2024, 0, 20).getTime();
     cy.clock(frozen);
