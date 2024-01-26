@@ -8,7 +8,7 @@ describe('Public Form', () => {
     clearCookiesAndLogin();
   });
 
-  xdescribe('whitelist templates', () => {
+  describe('whitelist templates', () => {
     it('should navigate to collection settings', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
