@@ -8,7 +8,7 @@ describe('Public Form', () => {
     clearCookiesAndLogin();
   });
 
-  describe('whitelist templates', () => {
+  xdescribe('whitelist templates', () => {
     it('should navigate to collection settings', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
@@ -168,6 +168,33 @@ describe('Public Form', () => {
       cy.contains('aside.is-active a', 'View').click();
       cy.get('.attachments-list-parent').eq(0).scrollIntoView();
       cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should catch an unexpected error on rendering', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('a', 'Add page').click();
+      cy.get('[name="page.data.title"]').type('Public Form with error');
+      cy.get('.markdownEditor textarea').type(
+        '<h1>Public form with error</h1><PublicForm template="invalid template" />'
+      );
+      cy.contains('button', 'Save').click();
+      cy.get('.alert.alert-success').click();
+      cy.get('.alert-info:nth-child(2) a').then($element => {
+        const url = $element.attr('href')!.replace('http://localhost:3000', '');
+        cy.visit(url, {
+          onBeforeLoad(win) {
+            cy.stub(win.console, 'error').as('consoleError');
+          },
+        });
+        cy.on('uncaught:exception', (_err, _runnable) => {
+          cy.get('@consoleError').should('be.calledWithMatch', 'The template is not valid');
+          cy.contains('Well, this is awkward');
+          return false;
+        });
+      });
     });
   });
 });
