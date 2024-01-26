@@ -82,6 +82,8 @@ describe('Share Entities', () => {
       .find('select')
       .select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    cy.contains('Update success').as('successMessage');
+    cy.get('@successMessage').should('not.exist');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -94,7 +96,9 @@ describe('Share Entities', () => {
   };
 
   it('should be able to see and edit entities as a collaborator', () => {
+    cy.visit('http://localhost:3000/logout');
     clearCookiesAndLogin('colla', 'borator');
+    cy.contains('Ordenes del presidente', { timeout: 300 });
     selectRestrictedEntities();
     cy.get('.item').should('have.length', 3);
     checkCanEdit(titleEntity1, false);
@@ -105,8 +109,9 @@ describe('Share Entities', () => {
   it('should be able to edit and save', () => {
     cy.contains('h2', titleEntity4).click();
     clickOnEditEntity();
+    cy.contains('Edit');
     cy.get('aside.is-active textarea').eq(0).clear();
-    cy.get('aside.is-active textarea').eq(0).type('Edited title', { force: true });
+    cy.get('aside.is-active textarea').eq(0).type('Edited title');
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
