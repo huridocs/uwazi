@@ -1,6 +1,7 @@
 import { createEntity } from '../helpers/createEntity';
 import { createTemplate } from '../helpers/createTemplate';
 import { adminLogin, logout } from '../helpers/login';
+import { scrollTo } from '../helpers/formActions';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
 
@@ -37,6 +38,8 @@ describe('Image is rendered when editing an entity in document view', () => {
     await expect(page).toClick('.metadata-sidepanel button.edit-metadata', {
       text: 'Edit',
     });
+    await page.waitForSelector('.attachments-list-parent');
+    await scrollTo('.attachments-list-parent');
     await page.waitForSelector('.form-group.image span');
     await expect(page).toClick('.form-group.image span', { text: 'Add file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
