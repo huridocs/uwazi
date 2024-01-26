@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
@@ -12,6 +12,7 @@ import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
+import loadingBar from 'app/App/LoadingProgressBar';
 import { NeedAuthorization } from 'app/Auth';
 import Script from './Script';
 
@@ -85,7 +86,9 @@ class PageViewer extends Component {
                 {this.state.customPageError && this.renderErrorWarning()}
                 <Context.Provider value={datasets}>
                   <ErrorBoundary>
-                    <MarkdownViewer html markdown={originalText} lists={lists} />
+                    <Suspense fallback={<loadingBar />}>
+                      <MarkdownViewer html markdown={originalText} lists={lists} />
+                    </Suspense>
                   </ErrorBoundary>
                 </Context.Provider>
                 <Footer />
