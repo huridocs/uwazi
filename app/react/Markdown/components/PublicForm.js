@@ -233,13 +233,19 @@ PublicFormComponent.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
 };
-export const mapStateToProps = (state, props) => ({
-  template: state.templates.find(template => template.get('_id') === props.template),
-  thesauris: state.thesauris,
-  file: props.file !== undefined,
-  remote: props.remote !== undefined,
-  attachments: props.attachments !== undefined,
-});
+export const mapStateToProps = (state, props) => {
+  const template = state.templates.find(tpl => tpl.get('_id') === props.template);
+  if (template === undefined) {
+    throw new Error('The template is not valid');
+  }
+  return {
+    template,
+    thesauris: state.thesauris,
+    file: props.file !== undefined,
+    remote: props.remote !== undefined,
+    attachments: props.attachments !== undefined,
+  };
+};
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
