@@ -228,7 +228,7 @@
     "serialize-javascript": "^6.0.1",
     "sift": "^17.0.1",
     "socket.io": "4.7.4",
-    "socket.io-client": "4.7.2",
+    "socket.io-client": "4.7.4",
     "socket.io-parser": "4.2.4",
     "stopword": "^2.0.8",
     "superagent": "8.0.9",
