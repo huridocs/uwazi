@@ -24,7 +24,6 @@ const setupTest = async () => {
 describe('Image is rendered when editing an entity in document view', () => {
   beforeAll(async () => {
     await setupPreFlights();
-    await setupTest();
   });
 
   afterAll(async () => {
@@ -32,6 +31,8 @@ describe('Image is rendered when editing an entity in document view', () => {
   });
 
   it('Should select image for image property from supporting files', async () => {
+    await setupTest();
+
     await expect(page).toClick('.metadata-sidepanel.is-active a', { text: 'View' });
 
     await expect(page).toMatchElement('h1.item-name', { text: 'With image' });
@@ -42,8 +43,8 @@ describe('Image is rendered when editing an entity in document view', () => {
     await page.waitForSelector('.attachments-list-parent');
     await scrollTo('.attachments-list-parent');
     await page.waitForTimeout(200);
-    await page.waitForSelector('.form-group.image span');
-    await expect(page).toClick('.form-group.image span', { text: 'Add file' });
+    await expect(page).toClick('.form-group.image button');
+    await page.waitForSelector('.upload-options');
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
   });
 });
