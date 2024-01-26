@@ -17,6 +17,7 @@ const setupTest = async () => {
     pdf: `${__dirname}/../test_files/valid.pdf`,
     supportingFile: `${__dirname}/../test_files/batman.jpg`,
   });
+  await page.waitForSelector('.alert-success', { hidden: true });
   await page.waitForNetworkIdle();
 };
 
@@ -40,6 +41,7 @@ describe('Image is rendered when editing an entity in document view', () => {
     });
     await page.waitForSelector('.attachments-list-parent');
     await scrollTo('.attachments-list-parent');
+    await page.waitForTimeout(200);
     await page.waitForSelector('.form-group.image span');
     await expect(page).toClick('.form-group.image span', { text: 'Add file' });
     await expect(page).toMatchElement('div.media-grid-card-header > h5', { text: 'batman.jpg' });
