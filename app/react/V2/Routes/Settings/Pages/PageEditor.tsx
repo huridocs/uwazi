@@ -5,7 +5,7 @@ import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Tabs } from 'V2/Components/UI';
+import { Button, Tabs, CodeEditor } from 'V2/Components/UI';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -20,9 +20,9 @@ const pageEditorLoader =
   };
 
 const PageEditor = () => {
-  const page = useLoaderData() as Page;
-  const [pageName, setPageName] = useState<string>(
-    page?.title || t('System', 'New page', null, false)
+  const loaderPage = useLoaderData() as Page;
+  const [page, setPage] = useState<Page>(
+    loaderPage._id ? loaderPage : { title: t('System', 'New page', null, false) }
   );
 
   return (
@@ -30,16 +30,26 @@ const PageEditor = () => {
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Translations', '/settings/translations']])}
-          title={pageName}
+          title={page.title}
         />
 
         <SettingsContent.Body>
-          <Tabs onTabSelected={tab => {}}>
-            <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}></Tabs.Tab>
+          <Tabs unmountTabs={false} onTabSelected={tab => {}}>
+            <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
+              <h1>Page form</h1>
+            </Tabs.Tab>
 
-            <Tabs.Tab id="Code" label={<Translate>Code</Translate>}></Tabs.Tab>
+            <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
+              <div className="overflow-y-auto w-full h-96">
+                <CodeEditor language="html" code={page.metadata?.content} />
+              </div>
+            </Tabs.Tab>
 
-            <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}></Tabs.Tab>
+            <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
+              <div className="overflow-y-auto w-full h-96">
+                <CodeEditor language="javascript" code={page.metadata?.script} />
+              </div>
+            </Tabs.Tab>
           </Tabs>
         </SettingsContent.Body>
 

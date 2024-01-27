@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/UI/CodeEditor';
+import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/UI';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
