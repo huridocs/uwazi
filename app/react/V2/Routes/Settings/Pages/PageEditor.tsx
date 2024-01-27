@@ -5,7 +5,8 @@ import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Tabs, CodeEditor } from 'V2/Components/UI';
+import { Button, Tabs } from 'V2/Components/UI';
+import { CodeEditor } from 'V2/Components/CodeEditor';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>

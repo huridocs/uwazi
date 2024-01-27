@@ -132,9 +132,9 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
+      new MonacoWebpackPlugin({ languages: ['javascript', 'html'] }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
-      new MonacoWebpackPlugin(),
     ],
   };
 };
