@@ -29,4 +29,22 @@ describe('Code editor', () => {
     mount(<JSEditor />);
     cy.get('.view-lines').children().should('have.length', 1);
   });
+
+  it('should get the updated code when clicking the save button', () => {
+    HTMLEditor.args.code = '<h1>Original HTML code</h1>';
+    mount(<HTMLEditor />);
+
+    cy.contains('button', 'Save').click();
+    cy.contains('pre', '<h1>Original HTML code</h1>').should('exist');
+
+    cy.contains('<h1>Original HTML code</h1>').then(element => {
+      cy.wrap(element).click();
+      cy.wrap(element).focused().type('{ctrl}a');
+      cy.wrap(element).focused().type('{del}');
+      cy.wrap(element).focused().type('<h1>My new code</h1>');
+    });
+
+    cy.contains('button', 'Save').click();
+    cy.contains('pre', '<h1>My new code</h1>').should('exist');
+  });
 });

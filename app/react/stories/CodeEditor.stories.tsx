@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { CodeEditor } from 'V2/Components/UI/CodeEditor';
+import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/UI/CodeEditor';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
@@ -78,14 +78,39 @@ const meta: Meta<typeof CodeEditor> = {
 
 type Story = StoryObj<typeof CodeEditor>;
 
-const Primary: Story = {
-  render: args => (
+const Component = ({ language, code }: CodeEditorProps) => {
+  const [currentEditor, setCurrentEditor] = useState<CodeEditorInstance>();
+  const [updatedCode, setUpdatedCode] = useState<string>();
+
+  const handleClick = () => {
+    setUpdatedCode(currentEditor?.getValue());
+  };
+
+  return (
     <div className="tw-content">
       <div className="overflow-y-auto w-full h-96">
-        <CodeEditor language={args.language} code={args.code} />
+        <CodeEditor
+          language={language}
+          code={code}
+          getEditor={editor => setCurrentEditor(editor)}
+        />
       </div>
+      <div className="w-full">
+        <button
+          type="button"
+          onClick={handleClick}
+          className="p-2 text-white rounded border bg-primary-700"
+        >
+          Save
+        </button>
+      </div>
+      <pre className="mt-2 w-full">{updatedCode}</pre>
     </div>
-  ),
+  );
+};
+
+const Primary: Story = {
+  render: args => <Component language={args.language} code={args.code} />,
 };
 
 const JSEditor: Story = {
