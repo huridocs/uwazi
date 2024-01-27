@@ -18,9 +18,10 @@ const Tab = ({
 interface TabsProps {
   children: React.ReactComponentElement<typeof Tab>[];
   onTabSelected: (activeTab: string) => void;
+  unmountTabs?: boolean;
 }
 
-const Tabs = ({ children, onTabSelected }: TabsProps) => {
+const Tabs = ({ children, onTabSelected, unmountTabs = true }: TabsProps) => {
   const [activeTab, setActiveTab] = useState(children[0].props.id);
 
   const handleClick = (
@@ -39,7 +40,7 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
   return (
     <>
       <div
-        className="flex border rounded-md shadow-sm md:w-1/2 border-gray-50"
+        className="flex rounded-md border border-gray-50 shadow-sm md:w-1/2"
         data-testid="tabs-comp"
       >
         {children.map((child, index: number) => (
@@ -57,9 +58,20 @@ const Tabs = ({ children, onTabSelected }: TabsProps) => {
       </div>
       <div className="py-4">
         {children.map(child => {
-          if (child.props.id === activeTab) {
-            return <div key={child.props.id}>{child.props.children}</div>;
+          if (unmountTabs) {
+            if (child.props.id === activeTab) {
+              return <div key={child.props.id}>{child.props.children}</div>;
+            }
           }
+
+          if (!unmountTabs) {
+            return (
+              <div key={child.props.id} className={child.props.id !== activeTab ? 'hidden' : ''}>
+                {child.props.children}
+              </div>
+            );
+          }
+
           return null;
         })}
       </div>
