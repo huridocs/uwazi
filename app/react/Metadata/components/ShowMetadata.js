@@ -69,7 +69,7 @@ ShowMetadata.defaultProps = {
 
 ShowMetadata.propTypes = {
   entity: PropTypes.object,
-  relationships: PropTypes.object,
+  relationships: PropTypes.any,
   templates: PropTypes.object,
   showTitle: PropTypes.bool,
   showType: PropTypes.bool,
