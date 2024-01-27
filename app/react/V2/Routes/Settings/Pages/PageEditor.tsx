@@ -34,7 +34,7 @@ const PageEditor = () => {
         />
 
         <SettingsContent.Body>
-          <Tabs unmountTabs={false} onTabSelected={tab => {}}>
+          <Tabs unmountTabs={false}>
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
               <h1>Page form</h1>
             </Tabs.Tab>

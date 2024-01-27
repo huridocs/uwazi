@@ -17,7 +17,7 @@ const Tab = ({
 
 interface TabsProps {
   children: React.ReactComponentElement<typeof Tab>[];
-  onTabSelected: (activeTab: string) => void;
+  onTabSelected?: (activeTab: string) => void;
   unmountTabs?: boolean;
 }
 
@@ -30,7 +30,10 @@ const Tabs = ({ children, onTabSelected, unmountTabs = true }: TabsProps) => {
   ) => {
     e.preventDefault();
     setActiveTab(newActiveTab);
-    onTabSelected(newActiveTab);
+
+    if (onTabSelected) {
+      onTabSelected(newActiveTab);
+    }
   };
 
   const buttonClass = 'text-sm flex-1 font-medium py-2 w-80 h-14';

@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
 import * as monaco from 'monaco-editor';
-import { editor as EditorType } from 'monaco-editor';
 import Editor, { loader } from '@monaco-editor/react';
 
 loader.config({ monaco });
 
-type CodeEditorInstance = EditorType.IStandaloneCodeEditor;
+type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
 type CodeEditorProps = {
   language: 'html' | 'javascript';
