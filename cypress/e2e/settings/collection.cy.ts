@@ -44,12 +44,27 @@ describe('Collection', () => {
     cy.get('table').should('exist');
   });
 
+  it('custom landing page', () => {
+    cy.intercept('GET', '/api/stats').as('fetchStats');
+    cy.get('.only-desktop a[aria-label="Settings"]').click();
+    cy.wait('@fetchStats');
+    cy.contains('span', 'Collection').click();
+    cy.get('#landing-page').type(
+      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
+    );
+    cy.visit('http://localhost:3000');
+  });
+
   it('Set map Layers', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.wait('@fetchStats');
     cy.contains('span', 'Collection').click();
-    cy.get('[data-testid="multiselect"] button').eq(0).click();
+    cy.get('[data-testid="multiselect"]')
+      .eq(1)
+      .within(() => {
+        cy.get('button').eq(0).click();
+      });
     cy.get('[data-testid="multiselect-popover"] li').its('length').should('eq', 4);
     cy.get('[data-testid="multiselect-popover"] li').eq(3).click();
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
@@ -59,7 +74,9 @@ describe('Collection', () => {
 
     // Assert
     cy.get('[aria-label="Library"]').click();
-    cy.get('.leaflet-control-layers-base label').its('length').should('eq', 1);
+    cy.get('.leaflet-control-layers-list .leaflet-control-layers-base label')
+      .its('length')
+      .should('eq', 2);
   });
 
   it('Change default date format', () => {
