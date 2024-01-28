@@ -13,9 +13,8 @@ const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) {
     return query.substring(1).split('=')[1];
-  } else {
-    return '(' + query.substring(1) + ')';
   }
+  return '(' + query.substring(1) + ')';
 };
 
 const getCustomLibraryPage = (customHomePage: string[]) => {
