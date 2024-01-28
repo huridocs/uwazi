@@ -19,7 +19,6 @@ const getCustomLibraryPage = (customHomePage: string[]) => {
       searchQuery = '(' + query.substring(1) + ')';
     }
   }
-  // console.log('Search Query: ', searchQuery);
   let queryString = query ? searchQuery : '';
 
   if (customHomePage.includes('map')) {

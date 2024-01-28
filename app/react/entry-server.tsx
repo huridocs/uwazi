@@ -212,7 +212,6 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
-        // console.log(e.json.errors);
         throw new ServerRenderingFetchError(
           `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
         );
