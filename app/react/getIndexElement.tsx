@@ -9,16 +9,18 @@ import { LibraryCards } from './Library/Library';
 import { Login } from './Users/Login';
 import { ViewerRoute } from './Viewer/ViewerRoute';
 
+const deconstructSearchQuery = (query?: string) => {
+  if (!query) return '';
+  if (query.startsWith('?q=')) {
+    return query.substring(1).split('=')[1];
+  } else {
+    return '(' + query.substring(1) + ')';
+  }
+};
+
 const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
-  let searchQuery = '';
-  if (query) {
-    if (query.startsWith('?q=')) {
-      searchQuery = query.substring(1).split('=')[1];
-    } else {
-      searchQuery = '(' + query.substring(1) + ')';
-    }
-  }
+  let searchQuery = deconstructSearchQuery(query);
   let queryString = query ? searchQuery : '';
 
   if (customHomePage.includes('map')) {

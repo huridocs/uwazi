@@ -188,14 +188,12 @@ const setReduxState = async (
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams(
+    const requestParams = new RequestParams<{ q?: string }>(
       { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
 
-    // @ts-ignore
     if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
-      // @ts-ignore
       requestParams.data.q = decodeURI(requestParams.data.q);
     }
 
