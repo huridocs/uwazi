@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.150.1",
+  "version": "1.51.0",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -180,7 +180,7 @@
     "otplib": "^11.0.1",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
-    "pdfjs-dist": "^3.8.162",
+    "pdfjs-dist": "^4.0.379",
     "postcss-loader": "^7.3.3",
     "postcss-prefix-selector": "^1.16.0",
     "prom-client": "^14.2.0",
@@ -261,9 +261,9 @@
     "@babel/plugin-transform-modules-commonjs": "^7.23.3",
     "@babel/plugin-transform-react-constant-elements": "^7.22.5",
     "@babel/plugin-transform-react-inline-elements": "^7.22.5",
-    "@babel/preset-env": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
     "@babel/preset-react": "^7.22.15",
-    "@babel/preset-typescript": "^7.22.15",
+    "@babel/preset-typescript": "^7.23.3",
     "@babel/register": "^7.22.15",
     "@babel/traverse": "^7.23.2",
     "@cfaester/enzyme-adapter-react-18": "^0.7.0",
@@ -374,7 +374,7 @@
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "^1.69.7",
     "sass-loader": "13.3.3",
-    "sharp": "^0.32.6",
+    "sharp": "^0.33.2",
     "storybook": "^7.6.7",
     "stream-mock": "^2.0.5",
     "supertest": "6.3.3",
