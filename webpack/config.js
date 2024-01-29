@@ -106,6 +106,10 @@ module.exports = production => {
             fullySpecified: false,
           },
         },
+        {
+          test: /\.ttf$/,
+          type: 'asset/resource',
+        },
       ],
     },
     plugins: [
@@ -132,7 +136,7 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
-      new MonacoWebpackPlugin({ languages: ['javascript', 'html'] }),
+      new MonacoWebpackPlugin({ publicPath: '/', languages: ['javascript', 'html'] }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],
