@@ -18776,10 +18776,10 @@ stdin-discarder@^0.1.0:
   dependencies:
     bl "^5.0.0"
 
-stopword@^2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/stopword/-/stopword-2.0.8.tgz#00239d66b34fded43b0d490684fbd770208abdd3"
-  integrity sha512-btlEC2vEuhCuvshz99hSGsY8GzaP5qzDPQm56j6rR/R38p8xdsOXgU5a6tIgvU/4hcCta1Vlo/2FVXA9m0f8XA==
+stopword@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/stopword/-/stopword-3.0.1.tgz#258e812334d3287c1647bce2ec73426d46a6747b"
+  integrity sha512-pz2XNVtoApA7eSX1viol5ybGGG2Re2bI7/+8TfeaMb09C9NEWgabr7HHf4DbqgrmEuI62sH2BcAEHVAlreCmrQ==
 
 store2@^2.14.2:
   version "2.14.2"
