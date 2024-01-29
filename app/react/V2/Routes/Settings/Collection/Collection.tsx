@@ -84,6 +84,7 @@ const Collection = () => {
     setValue,
     watch,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm<ClientSettings>({
     defaultValues: formData,
@@ -333,11 +334,20 @@ const Collection = () => {
                   <MultiSelect
                     label={labelWithTip('Map Layers', tips.mapLayers)}
                     options={mapLayersOptions}
+                    hasErrors={!!errors.mapLayers}
                     onChange={newValues => {
-                      setValue(
-                        'mapLayers',
-                        newValues.filter(({ selected }) => selected).map(({ value }) => value)
-                      );
+                      const values = newValues
+                        .filter(({ selected }) => selected)
+                        .map(({ value }) => value);
+                      if (values.length == 0) {
+                        setError(
+                          'mapLayers',
+                          { type: 'custom', message: 'custom message' },
+                          { shouldFocus: true }
+                        );
+                        return;
+                      }
+                      setValue('mapLayers', values);
                     }}
                   />
                 </div>

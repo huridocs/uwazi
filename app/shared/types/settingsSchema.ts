@@ -317,7 +317,7 @@ const settingsSchema = {
     customCSS: { type: 'string' },
     customJS: { type: 'string' },
     mapApiKey: { type: 'string', pattern: '^[a-zA-Z0-9._]*$' },
-    mapLayers: { type: 'array', items: { type: 'string' } },
+    mapLayers: { type: 'array', minItems: 1, items: { type: 'string' } },
     newNameGeneration: { type: 'boolean', enum: [true] },
     ocrServiceEnabled: { type: 'boolean' },
 

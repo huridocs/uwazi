@@ -5,6 +5,7 @@ import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
+import { Label } from './Label';
 import { Pill } from '../UI';
 
 type Option = { label: string; value: string; selected?: boolean };
@@ -13,6 +14,7 @@ interface MultiSelectProps {
   label: String | React.ReactNode;
   options: Option[];
   disabled?: boolean;
+  hasErrors?: boolean;
   onChange?: (options: Option[]) => any;
   placeholder?: String | React.ReactNode;
 }
@@ -24,6 +26,7 @@ const MultiSelect = ({
   label,
   options,
   disabled,
+  hasErrors,
   onChange = () => {},
   placeholder = 'No options',
 }: MultiSelectProps) => {
@@ -37,11 +40,16 @@ const MultiSelect = ({
 
   const selectedOptions = optionsState.filter(option => option.selected);
 
+  let fieldStyles = 'flex items-center justify-between p-2 border-b border-gray-50';
+  fieldStyles = hasErrors ? `${fieldStyles} bg-error-50` : `${fieldStyles} bg-gray-50`;
+
   return (
     <div data-testid="multiselect">
       <Popover className="border rounded-lg border-gray-50">
-        <div className="flex items-center justify-between p-2 border-b bg-gray-50 border-gray-50">
-          <div className="text-base text-indigo-700">{renderChild(label)}</div>
+        <div className={fieldStyles}>
+          <Label htmlFor="" hasErrors={Boolean(hasErrors)}>
+            {renderChild(label)}
+          </Label>
           <div className="flex items-center">
             <Popover.Button
               ref={setReferenceElement}

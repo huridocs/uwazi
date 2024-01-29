@@ -20,6 +20,7 @@ const Primary: Story = {
           <MultiSelect
             label={args.label}
             options={args.options}
+            hasErrors={args.hasErrors}
             onChange={args.onChange}
             disabled={args.disabled}
             placeholder={args.placeholder}
@@ -60,6 +61,14 @@ const Basic: Story = {
   },
 };
 
-export { Basic };
+const WithError: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    hasErrors: true,
+  },
+};
+
+export { Basic, WithError };
 
 export default meta;
