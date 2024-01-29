@@ -17,7 +17,7 @@ const newKeys = [
 const deletedKeys = [];
 
 export default {
-  delta: 153,
+  delta: 154,
 
   reindex: false,
 

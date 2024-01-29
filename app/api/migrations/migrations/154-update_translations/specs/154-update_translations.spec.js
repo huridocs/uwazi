@@ -14,7 +14,7 @@ describe('migration update translations of settings new Users/Groups UI', () => 
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(153);
+    expect(migration.delta).toBe(154);
   });
 
   it('should delete old translations', async () => {
