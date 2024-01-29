@@ -274,7 +274,7 @@
     "@storybook/addon-interactions": "^7.6.7",
     "@storybook/addon-links": "^7.6.7",
     "@storybook/addon-viewport": "^7.6.7",
-    "@storybook/react": "^7.6.7",
+    "@storybook/react": "^7.6.10",
     "@storybook/react-webpack5": "^7.6.7",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
