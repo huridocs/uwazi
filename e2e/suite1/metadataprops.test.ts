@@ -101,6 +101,7 @@ describe('Metadata Properties', () => {
   it('should create an entity filling all the props.', async () => {
     await goToRestrictedEntities();
     await expect(page).toClick('button', { text: 'Create entity' });
+    await page.waitForNetworkIdle();
     await expect(page).toFill(
       'textarea[name="library.sidepanel.metadata.title"]',
       'Entity with all props'

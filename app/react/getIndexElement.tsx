@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { validateHomePageRoute } from './utils/routeHelpers';
 import { PageView } from './Pages/PageView';
 import { LibraryTable } from './Library/LibraryTable';
@@ -51,7 +51,7 @@ const getLibraryDefault = (
 };
 
 // eslint-disable-next-line max-statements
-const getIndexElement = (settings: Settings | undefined, userId: string | undefined) => {
+const getIndexElement = (settings: ClientSettings | undefined, userId: string | undefined) => {
   const customHomePage = settings?.home_page ? settings?.home_page.split('/').filter(v => v) : [];
   const isValidHomePage = validateHomePageRoute(settings?.home_page || '');
   let element = <Navigate to={customHomePage.join('/')} />;

@@ -1,10 +1,18 @@
 import { atom } from 'recoil';
-import { Settings } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { store } from 'app/store';
 
 const settingsAtom = atom({
   key: 'settings',
-  default: {} as Settings,
+  default: {} as ClientSettings,
+  //sync deprecated redux store
+  effects: [
+    ({ onSet }) => {
+      onSet(newValue => {
+        store?.dispatch({ type: 'settings/collection/SET', value: newValue });
+      });
+    },
+  ],
 });
 
-export type { Settings };
 export { settingsAtom };

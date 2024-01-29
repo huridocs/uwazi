@@ -47,24 +47,33 @@ describe('Public Form', () => {
       cy.contains('button', 'Save').click();
       cy.get('.alert.alert-success').click();
 
+      let url;
       cy.get('.alert-info:nth-child(2) a').then($element => {
-        const url = $element.attr('href')!.replace('http://localhost:3000', '');
+        url = $element.attr('href')!.replace('http://localhost:3000', '');
         cy.contains('a', 'Menu').click();
+
         cy.contains('button', 'Add link').click();
-        cy.get('.input-group:nth-child(2) input').clear();
-        cy.get('.input-group:nth-child(2) input').type('Public Form Link');
-        cy.get('.input-group:nth-child(1) input').type(url);
-        cy.contains('button', 'Save').click();
-        cy.get('.alert.alert-success').click();
+        cy.get('#link-title').click();
+        cy.get('#link-title').type('Public Form Link');
+        cy.get('#link-url').type(url);
+        cy.getByTestId('menu-form-submit').click();
+        cy.intercept('GET', 'api/settings/links').as('fetchLinks');
+        cy.getByTestId('menu-save').click();
+        cy.contains('Dismiss').click();
+        cy.wait('@fetchLinks');
       });
     });
 
     it('should visit the page and do a submit for the first template', () => {
+      cy.contains('a', 'Pages').click();
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
-      cy.get('input[name="publicform.title"]').type('Test public submit entity');
-      cy.get('input[name="publicform.metadata.resumen"]').type('This was submited via public form');
+      cy.get('input[name="publicform.title"]').type('Test public submit entity', { force: true });
+      cy.get('input[name="publicform.metadata.resumen"]').type(
+        'This was submited via public form',
+        { force: true }
+      );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
@@ -90,7 +99,9 @@ describe('Public Form', () => {
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
-      cy.get('input[name="publicform.title"]').type('Entity with image and media fields');
+      cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
+        force: true,
+      });
       cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10');
       cy.get('textarea').type('A description for the report');

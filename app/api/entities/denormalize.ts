@@ -292,7 +292,7 @@ const denormalizeSelectProperty = async (
       denormalizedValue.label = translate(context, thesaurusValue.label, thesaurusValue.label);
     }
 
-    if (thesaurusValue && thesaurusValue.parent) {
+    if (thesaurusValue && thesaurusValue.parent && thesaurusValue.parent.id) {
       denormalizedValue.parent = {
         value: thesaurusValue.parent.id,
         label: translate(context, thesaurusValue.parent.label, thesaurusValue.parent.label),

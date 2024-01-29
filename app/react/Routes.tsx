@@ -19,7 +19,6 @@ import {
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  NavlinksSettings,
   RelationTypesList,
   Settings,
   ThesauriList,
@@ -35,7 +34,7 @@ import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { LibraryTable } from 'app/Library/LibraryTable';
 import ViewerRoute from 'app/Viewer/ViewerRoute';
-import { Settings as settingsType } from 'shared/types/settingsType';
+import { ClientSettings } from 'app/apiResponseTypes';
 import {
   TranslationsList,
   translationsListLoader,
@@ -45,6 +44,8 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+
+import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
@@ -59,7 +60,7 @@ import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
 const getRoutesLayout = (
-  settings: settingsType | undefined,
+  settings: ClientSettings | undefined,
   indexElement: React.ReactNode,
   headers?: IncomingHttpHeaders
 ) => (
@@ -84,7 +85,11 @@ const getRoutesLayout = (
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
       <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route path="collection" element={adminsOnlyRoute(<CollectionSettings />)} />
-      <Route path="navlinks" element={adminsOnlyRoute(<NavlinksSettings />)} />
+      <Route
+        path="navlinks"
+        element={adminsOnlyRoute(<MenuConfig />)}
+        loader={menuConfigloader(headers)}
+      />
       <Route
         path="users"
         element={adminsOnlyRoute(<Users />)}
@@ -156,7 +161,7 @@ const getRoutesLayout = (
 );
 
 const getRoutes = (
-  settings: settingsType | undefined,
+  settings: ClientSettings | undefined,
   userId: string | undefined,
   headers?: IncomingHttpHeaders
 ) => {
