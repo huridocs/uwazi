@@ -89,11 +89,7 @@ const Component = ({ language, code }: CodeEditorProps) => {
   return (
     <div className="tw-content">
       <div className="overflow-y-auto w-full h-96">
-        <CodeEditor
-          language={language}
-          code={code}
-          getEditor={editor => setCurrentEditor(editor)}
-        />
+        <CodeEditor language={language} code={code} onMount={editor => setCurrentEditor(editor)} />
       </div>
       <div className="w-full">
         <button

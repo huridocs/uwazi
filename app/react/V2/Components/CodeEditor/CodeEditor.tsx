@@ -8,18 +8,18 @@ type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
 type CodeEditorProps = {
   language: 'html' | 'javascript';
-  getEditor?: (editor: CodeEditorInstance) => any;
+  onMount?: (editor: CodeEditorInstance) => void;
   code?: string;
 };
 
-const CodeEditor = ({ language, getEditor, code }: CodeEditorProps) => {
+const CodeEditor = ({ language, onMount, code }: CodeEditorProps) => {
   const editorRef = useRef<CodeEditorInstance>();
 
   const handleEditorDidMount = (editor: CodeEditorInstance) => {
     editorRef.current = editor;
 
-    if (getEditor && editorRef.current) {
-      getEditor(editorRef.current);
+    if (onMount && editorRef.current) {
+      onMount(editorRef.current);
     }
   };
 
