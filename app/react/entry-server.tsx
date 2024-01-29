@@ -255,6 +255,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
+  const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, staticHandleContext, router } = await getSSRProperties(
     req,
@@ -298,7 +299,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
-  res.send(`<!DOCTYPE html>${html}`);
+  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };
