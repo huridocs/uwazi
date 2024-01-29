@@ -10,6 +10,7 @@ describe('Permisions system', () => {
   });
 
   it('should share an entity with the collaborator', () => {
+    cy.contains('Ordenes del presidente');
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
@@ -17,7 +18,8 @@ describe('Permisions system', () => {
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
     cy.contains('[data-testid=modal] td', 'colla').siblings().find('select').select('write');
     cy.contains('button', 'Save changes').click();
-    cy.get('[data-testid=modal]').should('not.exist');
+    cy.contains('Update success').as('successMessage');
+    cy.get('@successMessage').should('not.exist');
   });
 
   describe('make entities private', () => {
@@ -26,6 +28,8 @@ describe('Permisions system', () => {
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] select').eq(1).select('delete');
       cy.contains('button', 'Save changes').click();
+      cy.contains('Update success').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
@@ -43,6 +47,8 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] input').focus();
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.contains('button', 'Save changes').click();
+      cy.contains('Update success').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
@@ -106,6 +112,8 @@ describe('Permisions system', () => {
       cy.get('aside button.share-btn').eq(1).click();
       cy.get('[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
+      cy.contains('Update success').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.item-document').should('have.length', 9);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
