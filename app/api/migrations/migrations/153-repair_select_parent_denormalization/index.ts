@@ -55,7 +55,7 @@ const getParentInfo = async (db: Db): Promise<boolean> => {
   const thesauri = await thesaurusCollection.find({}).toArray();
   let parentsExist = false;
   parentInfo = Object.fromEntries(
-    Object.entries(_.keyBy(thesauri, '_id')).map(([id, thesaurus]) => {
+    thesauri.map(thesaurus => {
       const expectedParents: Record<string, ThesaurusValueBase> = {};
       (thesaurus.values || []).forEach(value => {
         if (value.values) {
@@ -67,7 +67,7 @@ const getParentInfo = async (db: Db): Promise<boolean> => {
           });
         }
       });
-      return [id, expectedParents];
+      return [thesaurus._id, expectedParents];
     })
   );
   return parentsExist;
