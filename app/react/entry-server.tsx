@@ -6,7 +6,7 @@ import fs from 'fs';
 import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { omit } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -188,10 +188,14 @@ const setReduxState = async (
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams(
+    const requestParams = new RequestParams<{ q?: string }>(
       { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
+
+    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
+      requestParams.data.q = decodeURI(requestParams.data.q);
+    }
 
     try {
       await Promise.all(
@@ -255,6 +259,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
+  const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, staticHandleContext, router } = await getSSRProperties(
     req,
@@ -298,7 +303,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
-  res.send(`<!DOCTYPE html>${html}`);
+  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };
