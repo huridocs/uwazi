@@ -343,7 +343,7 @@ const Collection = () => {
                       const values: [string, ...string[]] = newValues
                         .filter(({ selected }) => selected)
                         .map(({ value }) => value) as [string, ...string[]];
-                      if (!Boolean(values.length)) {
+                      if (!values.length) {
                         setError(
                           'mapLayers',
                           { type: 'custom', message: 'Map layers cannot be empty' },
