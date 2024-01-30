@@ -94,7 +94,7 @@ const expectedMultiSelect = (language?: string) => {
 
 describe('migration repair_select_parent_denormalization', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(153);
+    expect(migration.delta).toBe(154);
   });
 
   describe('in general', () => {

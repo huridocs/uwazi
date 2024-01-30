@@ -218,7 +218,7 @@ const handleEntities = async (db: Db, batchSize: number) => {
 };
 
 export default {
-  delta: 153,
+  delta: 154,
 
   name: 'repair_select_parent_denormalization',
 
