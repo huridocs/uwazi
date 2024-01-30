@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-as-default */
-import { CollectionSettings } from './components/CollectionSettings';
 import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
 import FiltersForm from './components/FiltersForm';
@@ -16,7 +15,6 @@ export {
   Settings,
   SettingsAPI,
   PreserveSettings,
-  CollectionSettings,
   EntityTypesList,
   RelationTypesList,
   ThesauriList,

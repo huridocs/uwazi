@@ -14,7 +14,6 @@ import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
-  CollectionSettings,
   Customisation,
   CustomUploads,
   EntityTypesList,
@@ -90,7 +89,6 @@ const getRoutesLayout = (
         element={adminsOnlyRoute(<MenuConfig />)}
         loader={menuConfigloader(headers)}
       />
-      <Route path="collection2" element={adminsOnlyRoute(<CollectionSettings />)} />
       <Route
         path="collection"
         element={adminsOnlyRoute(<Collection />)}

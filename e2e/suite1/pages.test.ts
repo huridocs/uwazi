@@ -114,8 +114,8 @@ describe('Custom home page and styles', () => {
   });
 
   it('should allow using a library query as a landing page', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
-    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toClick('.only-desktop [aria-label="Settings"]', { text: 'Settings' });
+    await expect(page).toClick('a > span', { text: 'Collection' });
     await expect(page).toFill(
       'input[name="home_page"]',
       "/library/table/?types:!('58ada34c299e82674854504b')"
