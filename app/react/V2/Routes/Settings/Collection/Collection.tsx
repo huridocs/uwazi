@@ -339,10 +339,10 @@ const Collection = () => {
                       const values = newValues
                         .filter(({ selected }) => selected)
                         .map(({ value }) => value);
-                      if (values.length === 0) {
+                      if (!Boolean(values.length)) {
                         setError(
                           'mapLayers',
-                          { type: 'custom', message: 'custom message' },
+                          { type: 'custom', message: 'Map layers cannot be empty' },
                           { shouldFocus: true }
                         );
                         return;
