@@ -352,11 +352,10 @@ export default function () {
       );
     },
 
-    aggregations(properties, dictionaries, includeReviewAggregations) {
+    aggregations(properties, includeReviewAggregations) {
       properties.forEach(property => {
         baseQuery.aggregations.all.aggregations[property.name] = propertyToAggregation(
           property,
-          dictionaries,
           baseQuery
         );
       });
@@ -365,7 +364,6 @@ export default function () {
         properties.forEach(property => {
           baseQuery.aggregations.all.aggregations[`__${property.name}`] = propertyToAggregation(
             property,
-            dictionaries,
             baseQuery,
             true
           );
