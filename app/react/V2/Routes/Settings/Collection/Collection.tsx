@@ -339,10 +339,10 @@ const Collection = () => {
                     label={labelWithTip('Map Layers', tips.mapLayers)}
                     options={mapLayersOptions}
                     hasErrors={!!errors.mapLayers}
-                    onChange={newValues => {
-                      const values = newValues
+                    onChange={(newValues: any[]) => {
+                      const values: [string, ...string[]] = newValues
                         .filter(({ selected }) => selected)
-                        .map(({ value }) => value);
+                        .map(({ value }) => value) as [string, ...string[]];
                       if (!Boolean(values.length)) {
                         setError(
                           'mapLayers',
