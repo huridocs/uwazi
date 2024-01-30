@@ -339,7 +339,7 @@ const Collection = () => {
                       const values = newValues
                         .filter(({ selected }) => selected)
                         .map(({ value }) => value);
-                      if (values.length == 0) {
+                      if (values.length === 0) {
                         setError(
                           'mapLayers',
                           { type: 'custom', message: 'custom message' },

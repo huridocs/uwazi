@@ -137,7 +137,7 @@ describe('Collection', () => {
     cy.wait('@fetchTemplates');
   });
 
-  it.only('Change default date format', () => {
+  it('Change default date format', () => {
     const frozen = new Date(2024, 0, 20).getTime();
     cy.clock(frozen);
     cy.get('.only-desktop a[aria-label="Settings"]').click();

@@ -1,4 +1,3 @@
-import { ObjectId } from 'mongodb';
 import { Fixture } from '../types';
 import db from 'api/utils/testing_db';
 
