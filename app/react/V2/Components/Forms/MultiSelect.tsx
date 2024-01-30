@@ -119,6 +119,7 @@ const MultiSelect = ({
                     onChange(selected);
                   }}
                 >
+                  <Translate className="sr-only">Remove</Translate>
                   <XMarkIcon className="w-6 text-lg" />
                 </button>
               </Pill>

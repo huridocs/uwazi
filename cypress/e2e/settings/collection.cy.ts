@@ -16,15 +16,15 @@ describe('Collection', () => {
     ///
   });
 
-  // it('should have no detectable accessibility violations on load', () => {
-  //   cy.checkA11y();
-  // });
+  it('should have no detectable accessibility violations on load', () => {
+    cy.checkA11y();
+  });
 
   // beforeEach(() => {
   //   cy.intercept('GET', 'api/settings/links').as('fetchLinks');
   // });
 
-  it('Change collection Name', () => {
+  it('should change collection Name', () => {
     const newName = 'New Collection Name';
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.get('#collection-name').clear();
@@ -35,7 +35,7 @@ describe('Collection', () => {
     cy.contains('header a', newName).should('exist');
   });
 
-  it('Change default library view', () => {
+  it('should change default library view', () => {
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.get('#roles').select('Table');
     cy.contains('button', 'Save').click();
@@ -44,10 +44,56 @@ describe('Collection', () => {
     cy.get('table').should('exist');
   });
 
-  it('custom landing page', () => {
-    cy.intercept('GET', '/api/stats').as('fetchStats');
+  it('should save Analytics google and matomo successfully', () => {
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.wait('@fetchStats');
+    cy.wait('@fetchTemplates');
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.contains('span', 'Collection').click();
+    cy.wait('@fetchTemplates');
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.contains('span', 'Forms and email configuration').scrollIntoView();
+    cy.get('#google-analytics').type('google-analytics-key');
+    cy.get('#matomo-analytics').type('matomo-analytics-key');
+    cy.contains('button', 'Save').click();
+    cy.wait('@fetchTemplates');
+
+    cy.get('#google-analytics').should('have.value', 'google-analytics-key');
+    cy.get('#matomo-analytics').should('have.value', 'matomo-analytics-key');
+  });
+
+  it('should save Forms and email configurations successfully', () => {
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.get('#sending-email').type('email@mailer.com');
+    cy.get('#receiving-email').type('reciever@mailer.com');
+    cy.get('#public-form-destination').type('/public/form/url');
+    cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
+    cy.contains('button', 'Save').click();
+    cy.wait('@fetchTemplates');
+
+    cy.get('#sending-email').should('have.value', 'email@mailer.com');
+    cy.get('#receiving-email').should('have.value', 'reciever@mailer.com');
+    cy.get('#public-form-destination').should('have.value', '/public/form/url');
+    cy.get('[name="openPublicEndpoint"]').should('be.checked');
+  });
+
+  it('should save Whitelisted templates successfully', () => {
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.get('[data-testid="multiselect"]')
+      .eq(0)
+      .within(() => {
+        cy.get('button').eq(0).click();
+        cy.contains('[data-testid="multiselect-popover"] label', 'Mecanismo').click();
+        cy.contains('[data-testid="multiselect-popover"] label', 'Causa').click();
+      });
+    cy.contains('button', 'Save').click();
+    cy.wait('@fetchTemplates');
+
+    cy.get('[data-testid="pill-comp"] > span.flex').eq(0).should('have.text', 'Causa');
+    cy.get('[data-testid="pill-comp"] > span.flex').eq(1).should('have.text', 'Mecanismo');
+  });
+
+  it('custom landing page', () => {
     cy.contains('span', 'Collection').click();
     cy.get('#landing-page').type(
       '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
@@ -55,7 +101,7 @@ describe('Collection', () => {
     cy.visit('http://localhost:3000');
   });
 
-  it('Set map Layers', () => {
+  it('should set map Layers', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.wait('@fetchStats');
@@ -79,12 +125,22 @@ describe('Collection', () => {
       .should('eq', 2);
   });
 
-  it('Change default date format', () => {
+  it('should enable public instance, show cookies policy and Global JS', () => {
+    cy.get('.only-desktop a[aria-label="Settings"]').click();
+    cy.contains('span', 'Collection').click();
+    cy.get('[data-testid="enable-button-checkbox"]').eq(0).click();
+    cy.get('[data-testid="enable-button-checkbox"]').eq(1).click();
+    cy.get('[data-testid="enable-button-checkbox"]').eq(2).click();
+
+    cy.intercept('GET', '/api/templates').as('fetchTemplates');
+    cy.contains('button', 'Save').click();
+    cy.wait('@fetchTemplates');
+  });
+
+  it.only('Change default date format', () => {
     const frozen = new Date(2024, 0, 20).getTime();
     cy.clock(frozen);
-    cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
-    cy.wait('@fetchStats');
     cy.contains('span', 'Collection').click();
     cy.get('#date-format').select('01/20/2024 (Month/Day/Year)');
     // cy.intercept('GET', '/api/templates').as('fetchTemplates');
