@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { TemplateSchema } from 'shared/types/templateType';
 import { IImmutable } from 'shared/types/Immutable';
-import comonProperties from 'shared/comonProperties';
+import comonProperties from 'shared/commonProperties';
 import { Icon } from 'UI';
 import { ClientEntitySchema } from 'app/istore';
 import { Translate } from 'app/I18N';
