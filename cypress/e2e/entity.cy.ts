@@ -51,11 +51,17 @@ describe('Entities', () => {
     clearCookiesAndLogin();
   });
 
+  const saveEntity = (message = 'Entity created') => {
+    cy.contains('button', 'Save').click();
+    cy.contains(message).as('successMessage');
+    cy.get('@successMessage').should('not.exist');
+  };
+
   it('Should create new entity', () => {
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
     cy.get('[name="library.sidepanel.metadata.title"]').type('Test title', { force: true });
-    cy.contains('button', 'Save').click();
+    saveEntity();
   });
 
   describe('Rich text fields', () => {
@@ -63,10 +69,10 @@ describe('Entities', () => {
       clickOnCreateEntity();
       cy.get('[name="library.sidepanel.metadata.title"]').click();
       cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with HTML', { force: true });
-      cy.get('#metadataForm').find('select').select('Reporte', { force: true });
+      cy.get('#metadataForm').find('select').select('Reporte', { timeout: 100 });
 
       cy.get('#tabpanel-edit > textarea').type(textWithHtml);
-      cy.contains('button', 'Save').click();
+      saveEntity();
     });
 
     it('should check that the HTML is show as expected', () => {
@@ -98,7 +104,7 @@ describe('Entities', () => {
       cy.get('input[aria-label=fileInput]').first().selectFile('./cypress/test_files/batman.jpg', {
         force: true,
       });
-      cy.contains('button', 'Save').click();
+      saveEntity();
     });
 
     it('should edit the entity to add a video on a metadata field', () => {
@@ -112,7 +118,7 @@ describe('Entities', () => {
         .selectFile('./cypress/test_files/short-video.webm', {
           force: true,
         });
-      cy.contains('button', 'Save').click();
+      saveEntity('Entity updated');
     });
 
     it('should check the entity', () => {
@@ -199,7 +205,6 @@ describe('Entities', () => {
         const expectedRenamedFiles = ['batman.jpg', 'My PDF.pdf', 'Resource from web'];
         cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
           const content = element.text();
-          console.log(content);
           cy.wrap(content).should('eq', expectedRenamedFiles[index]);
         });
       });
@@ -237,7 +242,7 @@ describe('Entities', () => {
           .selectFile('./cypress/test_files/valid.pdf', {
             force: true,
           });
-        cy.contains('button', 'Save').click();
+        saveEntity();
       });
 
       it('should edit the entity and the documents', () => {
@@ -255,7 +260,7 @@ describe('Entities', () => {
           .selectFile('./cypress/test_files/invalid.pdf', {
             force: true,
           });
-        cy.contains('button', 'Save').click();
+        saveEntity('Entity updated');
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
         cy.contains('.file-originalname', 'invalid.pdf').should('exist');
@@ -337,8 +342,9 @@ describe('Entities', () => {
         'add value'
       ).click();
       cy.get('input[name=value]#newThesauriValue').click();
+      cy.get('input[name=value]#newThesauriValue').clear();
       cy.get('input[name=value]#newThesauriValue').type('New Value', {
-        force: true,
+        timeout: 100,
       });
       cy.contains('button.confirm-button', 'Save').click();
       cy.contains(
@@ -360,7 +366,7 @@ describe('Entities', () => {
       });
     });
 
-    it('should add a thesauti value on a single select field and select it', () => {
+    it('should add a thesauri value on a single select field and select it', () => {
       cy.contains(
         '#metadataForm > div:nth-child(3) > .form-group.select > ul > .wide > div > div > button > span',
         'add value'
