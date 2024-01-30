@@ -220,7 +220,7 @@
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.0.1",
-    "reselect": "^5.1.0",
+    "reselect": "^4.1.8",
     "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
     "rtlcss": "^4.1.0",
