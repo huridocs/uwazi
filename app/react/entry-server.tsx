@@ -6,7 +6,7 @@ import fs from 'fs';
 import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { omit } from 'lodash';
+import { omit, isEmpty } from 'lodash';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
@@ -188,10 +188,14 @@ const setReduxState = async (
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams(
+    const requestParams = new RequestParams<{ q?: string }>(
       { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
+
+    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
+      requestParams.data.q = decodeURI(requestParams.data.q);
+    }
 
     try {
       await Promise.all(
