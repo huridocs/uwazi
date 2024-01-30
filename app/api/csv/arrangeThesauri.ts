@@ -1,10 +1,11 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import _ from 'lodash';
 
 import { ImportFile } from 'api/csv/importFile';
 import translations from 'api/i18n/translations';
 import { WithId } from 'api/odm';
 import thesauri from 'api/thesauri';
-import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { ensure } from 'shared/tsUtils';
 import { PropertySchema } from 'shared/types/commonTypes';
@@ -13,9 +14,10 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
-import { splitMultiselectLabels } from './typeParsers/multiselect';
+import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
 import { normalizeThesaurusLabel } from './typeParsers/select';
 import { headerWithLanguage } from './csvDefinitions';
+import { Sets } from 'shared/data_utils/sets';
 
 class ArrangeThesauriError extends Error {
   source: Error;
@@ -83,58 +85,88 @@ const setupProperties = async (
   };
 };
 
-const setupIdValueMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesauriValueData => {
-  const thesauriIdToExistingValues = new Map();
-  const thesauriIdToNewValues = new Map();
-  const thesauriIdToNormalizedNewValues = new Map();
-  const thesauriIdToGroups = new Map();
-  const thesauriIdToTranslations = new Map();
+type ThesaurusMap = {
+  normalizedLabelsPerParent: Sets<string>;
+  newLabelsPerParent: Sets<string>;
+  newNormalizedLabelsPerParent: Sets<string>;
+};
+
+type ThesaurusMaps = Record<string, ThesaurusMap>;
+
+const logTheasaurusMaps = (maps: ThesaurusMaps) => {
+  Object.entries(maps).forEach(([id, map]) => {
+    console.log('id', id);
+    console.log('normalizedLabelsPerParent', map.normalizedLabelsPerParent.sets);
+    console.log('newLabelsPerParent', map.newLabelsPerParent.sets);
+    console.log('newNormalizedLabelsPerParent', map.newNormalizedLabelsPerParent.sets);
+  });
+};
+
+const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): ThesaurusMaps => {
+  const maps: ThesaurusMaps = {};
 
   allRelatedThesauri.forEach(t => {
     const id = t._id.toString();
-    const a = flatThesaurusValues(t, true);
-    const thesaurusValues = a.map(v => normalizeThesaurusLabel(v.label));
-    const thesaurusGroups =
-      t.values?.filter(v => v.values).map(v => normalizeThesaurusLabel(v.label)) || [];
-    thesauriIdToExistingValues.set(id, new Set(thesaurusValues));
-    thesauriIdToNewValues.set(id, new Set());
-    thesauriIdToNormalizedNewValues.set(id, new Set());
-    thesauriIdToGroups.set(id, new Set(thesaurusGroups));
-    thesauriIdToTranslations.set(id, {});
+
+    const normalizedLabelsPerParent: Sets<string> = new Sets({ '': [] });
+    const newLabelsPerParent: Sets<string> = new Sets({ '': [] });
+    const newNormalizedLabelsPerParent: Sets<string> = new Sets({ '': [] });
+    (t.values || []).forEach(v => {
+      const normalizedLabel = normalizeThesaurusLabel(v.label);
+      if (!normalizedLabel) return;
+      const isParent = v.values;
+      if (isParent) {
+        (v.values || []).forEach(child => {
+          const childNormalizedLabel = normalizeThesaurusLabel(child.label);
+          if (childNormalizedLabel) {
+            normalizedLabelsPerParent.add(normalizedLabel, childNormalizedLabel);
+          }
+        });
+      } else {
+        normalizedLabelsPerParent.add('', normalizedLabel);
+      }
+    });
+    maps[id] = {
+      normalizedLabelsPerParent,
+      newLabelsPerParent,
+      newNormalizedLabelsPerParent,
+    };
   });
 
-  return {
-    thesauriIdToExistingValues,
-    thesauriIdToNewValues,
-    thesauriIdToNormalizedNewValues,
-    thesauriIdToGroups,
-    thesauriIdToTranslations,
-  };
+  // logTheasaurusMaps(maps);
+
+  return maps;
 };
 
+const isStandaloneGroup = (thesaurusMap: ThesaurusMap, labelInfo: LabelInfo): boolean =>
+  !labelInfo.child && labelInfo.normalizedLabel in thesaurusMap.normalizedLabelsPerParent;
+
 const tryAddingLabel = (
-  thesauriValueData: ThesauriValueData,
-  normalizedLabel: string,
-  originalLabel: string,
+  thesauriValueData: ThesaurusMaps,
+  labelInfo: LabelInfo,
   name: string,
   id: any,
   row: CSVRow
 ): Set<string> => {
-  if (thesauriValueData.thesauriIdToGroups.get(id)?.has(normalizedLabel)) {
+  const map = thesauriValueData[id];
+  if (isStandaloneGroup(map, labelInfo)) {
     throw new Error(
-      `The label "${originalLabel}" at property "${name}" is a group label in line:\n${JSON.stringify(
-        row
-      )}`
+      `The label "${
+        labelInfo.label
+      }" at property "${name}" is a group label in line:\n${JSON.stringify(row)}`
     );
   }
+  const childInfo = labelInfo.child ? labelInfo.child : labelInfo;
+  const parentInfo = labelInfo.child ? labelInfo : { label: '', normalizedLabel: '' };
   const newKeys: Set<string> = new Set();
   if (
-    !thesauriValueData.thesauriIdToExistingValues.get(id)?.has(normalizedLabel) &&
-    !thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.has(normalizedLabel)
+    !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&
+    !map.newNormalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel)
   ) {
-    thesauriValueData.thesauriIdToNewValues.get(id)?.add(originalLabel);
-    thesauriValueData.thesauriIdToNormalizedNewValues.get(id)?.add(normalizedLabel);
-    newKeys.add(originalLabel);
+    const addition = map.newLabelsPerParent.add(parentInfo.label, childInfo.label);
+    map.newNormalizedLabelsPerParent.add(parentInfo.normalizedLabel, childInfo.normalizedLabel);
+    if (addition.indexWasNew) newKeys.add(parentInfo.label);
+    if (addition.valueWasNew) newKeys.add(childInfo.label);
   }
   return newKeys;
 };
@@ -162,15 +194,16 @@ const handleRow = (
   row: CSVRow,
   propNameToThesauriId: Record<string, string | undefined>,
   newNameGeneration: boolean,
-  thesauriValueData: ThesauriValueData,
+  thesauriValueData: ThesaurusMaps,
   headersWithoutLanguage: string[],
   languagesPerHeader: Record<string, Set<string>>,
-  defaultLanguage?: string
+  defaultLanguage: string
 ): void => {
   const safeNamedRow = toSafeName(row, newNameGeneration);
   headersWithoutLanguage.forEach(header => {
-    const { normalizedLabelToLabel } = splitMultiselectLabels(safeNamedRow[header]);
-    Object.entries(normalizedLabelToLabel).forEach(([normalizedLabel, originalLabel]) => {
+    const { labelInfos } = splitMultiselectLabels(safeNamedRow[header]);
+    console.log('labelInfos', labelInfos);
+    Object.entries(labelInfos).forEach(labelInfo => {
       tryAddingLabel(
         thesauriValueData,
         normalizedLabel,
@@ -183,7 +216,7 @@ const handleRow = (
   });
   Object.keys(languagesPerHeader).forEach(header => {
     const { labels: keys, normalizedLabelToLabel } = splitMultiselectLabels(
-      safeNamedRow[`${header}__${defaultLanguage}`]
+      safeNamedRow[headerWithLanguage(header, defaultLanguage)]
     );
     const potentialTranslations = Array.from(languagesPerHeader[header])
       .map(lang => {
@@ -245,13 +278,13 @@ const arrangeThesauri = async (
   newNameGeneration: boolean,
   _headersWithoutLanguage: string[],
   _languagesPerHeader: Record<string, Set<string>>,
-  defaultLanguage?: string,
+  defaultLanguage: string,
   stopOnError: boolean = true
 ): Promise<Record<string, string>> => {
   const { propNameToThesauriId, headersWithoutLanguage, languagesPerHeader, allRelatedThesauri } =
     await setupProperties(template, _headersWithoutLanguage, _languagesPerHeader);
 
-  const thesauriValueData = setupIdValueMaps(allRelatedThesauri);
+  const thesaurusMaps = setupThesaurusMaps(allRelatedThesauri);
 
   await csv(await file.readStream(), stopOnError)
     .onRow(async (row: CSVRow) =>
@@ -259,7 +292,7 @@ const arrangeThesauri = async (
         row,
         propNameToThesauriId,
         newNameGeneration,
-        thesauriValueData,
+        thesaurusMaps,
         headersWithoutLanguage,
         languagesPerHeader,
         defaultLanguage
@@ -270,8 +303,8 @@ const arrangeThesauri = async (
     })
     .read();
 
-  await syncSaveThesauri(allRelatedThesauri, thesauriValueData.thesauriIdToNewValues);
-  await syncUpdateTranslations(thesauriValueData.thesauriIdToTranslations);
+  await syncSaveThesauri(allRelatedThesauri, thesaurusMaps.thesauriIdToNewValues);
+  await syncUpdateTranslations(thesaurusMaps.thesauriIdToTranslations);
 
   return propNameToThesauriId;
 };
