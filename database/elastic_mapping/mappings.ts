@@ -100,9 +100,16 @@ const linkType = () => ({
   },
 });
 
-const selectType = () => ({
+const selectTypeBase = () => ({
   label: text,
   value: id,
+});
+
+const selectType = () => ({
+  ...selectTypeBase(),
+  parent: {
+    properties: selectTypeBase(),
+  },
 });
 
 const numericType = () => ({

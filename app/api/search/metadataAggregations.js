@@ -1,27 +1,14 @@
 import { preloadOptionsSearch } from 'shared/config';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import commonProperties from 'shared/commonProperties';
 
-const aggregation = (key, should, filters) => ({
-  terms: {
-    field: key,
-    missing: 'missing',
-    size: preloadOptionsSearch(),
-  },
-  aggregations: {
-    filtered: {
-      filter: {
-        bool: {
-          should,
-          filter: filters,
-        },
-      },
-    },
-  },
-});
-
-const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
+const aggregation = (key, should, filters, nestedAggregationName, nestedAggregation) => {
   const agg = {
-    filters: { filters: {} },
+    terms: {
+      field: key,
+      missing: 'missing',
+      size: preloadOptionsSearch(),
+    },
     aggregations: {
       filtered: {
         filter: {
@@ -33,18 +20,10 @@ const aggregationWithGroupsOfOptions = (key, should, filters, dictionary) => {
       },
     },
   };
-  const addMatch = value => {
-    const match = { terms: {} };
-    match.terms[key] = value.values ? value.values.map(v => v.id) : [value.id];
-    agg.filters.filters[value.id.toString()] = match;
-    if (value.values) {
-      value.values.forEach(addMatch);
-    }
-  };
-  dictionary.values.forEach(addMatch);
 
-  const missingMatch = { bool: { must_not: { exists: { field: key } } } };
-  agg.filters.filters.missing = missingMatch;
+  if (nestedAggregationName && nestedAggregation) {
+    agg.aggregations[nestedAggregationName] = nestedAggregation;
+  }
 
   return agg;
 };
@@ -149,7 +128,26 @@ const extractFilters = (baseQuery, path) => {
 const getpath = (property, suggested) =>
   suggested ? `suggestedMetadata.${property.name}` : `metadata.${property.name}`;
 
-export const propertyToAggregation = (property, dictionaries, baseQuery, suggested = false) => {
+const getSelectParentPath = path => {
+  const parentPathSplit = path.split('.');
+  parentPathSplit[parentPathSplit.length - 1] = 'parent';
+  parentPathSplit.push('value');
+  const parentPath = parentPathSplit.join('.');
+  return parentPath;
+};
+
+const selectAggregation = (path, should, filters) => {
+  const parentPath = getSelectParentPath(path);
+  return {
+    filter: { match_all: {} },
+    aggregations: {
+      self: aggregation(path, should, filters),
+      parent: aggregation(parentPath, should, filters),
+    },
+  };
+};
+
+export const propertyToAggregation = (property, baseQuery, suggested = false) => {
   const path = getpath(property, suggested);
   const filters = extractFilters(baseQuery, path);
   const { should } = baseQuery.query.bool;
@@ -158,13 +156,8 @@ export const propertyToAggregation = (property, dictionaries, baseQuery, suggest
     return nestedAggregation(property, should, filters);
   }
 
-  const dictionary = property.content
-    ? dictionaries.find(d => property.content.toString() === d._id.toString())
-    : null;
-
-  const isADictionaryWithGroups = dictionary && dictionary.values.find(v => v.values);
-  if (isADictionaryWithGroups) {
-    return aggregationWithGroupsOfOptions(path, should, filters, dictionary);
+  if (commonProperties.isOrInheritsSelect(property)) {
+    return selectAggregation(path, should, filters);
   }
 
   return aggregation(path, should, filters);

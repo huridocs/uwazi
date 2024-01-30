@@ -49,6 +49,32 @@ Object {
       "term_vector": "with_positions_offsets",
       "type": "text",
     },
+    "parent": Object {
+      "properties": Object {
+        "label": Object {
+          "analyzer": "tokenizer",
+          "fields": Object {
+            "sort": Object {
+              "analyzer": "string_sorter",
+              "fielddata": true,
+              "type": "text",
+            },
+          },
+          "term_vector": "with_positions_offsets",
+          "type": "text",
+        },
+        "value": Object {
+          "fields": Object {
+            "sort": Object {
+              "analyzer": "string_sorter",
+              "fielddata": true,
+              "type": "text",
+            },
+          },
+          "type": "keyword",
+        },
+      },
+    },
     "value": Object {
       "fields": Object {
         "sort": Object {
