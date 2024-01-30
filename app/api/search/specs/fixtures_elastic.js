@@ -202,7 +202,11 @@ export const fixtures = {
             inheritedValue: [
               { value: 'EgyptID', label: 'Egypt' },
               { value: 'SpainID', label: 'Spain' },
-              { value: 'GermanyID', label: 'Germany' },
+              {
+                value: 'GermanyID',
+                label: 'Germany',
+                parent: { value: 'EuropeID', label: 'Europe' },
+              },
             ],
           },
         ],
@@ -292,9 +296,17 @@ export const fixtures = {
         multiselect1: [
           { value: 'EgyptID', label: 'Egypt' },
           { value: 'SpainID', label: 'Spain' },
-          { label: 'Germany', id: 'GermanyID' },
+          {
+            label: 'Germany',
+            value: 'GermanyID',
+            parent: { label: 'Europe', value: 'EuropeID' },
+          },
         ],
-        groupedDictionary: [{ value: 'GermanyID' }, { value: 'ItalyID' }, { value: 'PortugalID' }],
+        groupedDictionary: [
+          { value: 'GermanyID', parent: { value: 'EuropeID' } },
+          { value: 'ItalyID', parent: { value: 'EuropeID' } },
+          { value: 'PortugalID', parent: { value: 'EuropeID' } },
+        ],
         nestedField_nested: [{ value: { nested1: ['1', '2', '3'] } }],
         city_geolocation: [{ value: { lat: 1, lon: 2 } }],
         daterange: [{ value: { from: 1547997735, to: 1579533735 } }],
@@ -330,7 +342,11 @@ export const fixtures = {
         field2: [{ value: 'penguin' }],
         select1: [{ value: 'EgyptID', label: 'Awesome Egypt' }],
         multiselect1: [{ value: 'EgyptID', label: 'Egypt' }],
-        groupedDictionary: [{ value: 'GermanyID' }, { value: 'ChinaID' }, { value: 'JapanID' }],
+        groupedDictionary: [
+          { value: 'GermanyID', parent: { value: 'EuropeID' } },
+          { value: 'ChinaID', parent: { value: 'AsiaID' } },
+          { value: 'JapanID', parent: { value: 'AsiaID' } },
+        ],
         daterange: [{ value: { from: 1579620135, to: 1611242535 } }],
         date: [{ value: 20000 }],
       },
