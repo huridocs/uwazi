@@ -156,7 +156,7 @@ export const propertyToAggregation = (property, baseQuery, suggested = false) =>
     return nestedAggregation(property, should, filters);
   }
 
-  if (commonProperties.isSelect(property)) {
+  if (commonProperties.isOrInheritsSelect(property)) {
     return selectAggregation(path, should, filters);
   }
 

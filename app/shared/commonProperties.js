@@ -7,7 +7,7 @@ function sameProperty(prop1, prop2) {
   );
 }
 
-function isSelect(property) {
+function isOrInheritsSelect(property) {
   return (
     property.type === 'select' ||
     property.type === 'multiselect' ||
@@ -103,5 +103,5 @@ export default {
   defaultFilters,
   allUniqueProperties,
   textFields,
-  isSelect,
+  isOrInheritsSelect,
 };

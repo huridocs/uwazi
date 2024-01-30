@@ -893,7 +893,7 @@ const search = {
   },
 
   appendAutoCompleteFilters(property, searchTerm, aggregation) {
-    const aggregationObjectsToUpdate = propertiesHelper.isSelect(property)
+    const aggregationObjectsToUpdate = propertiesHelper.isOrInheritsSelect(property)
       ? [aggregation.aggregations.self, aggregation.aggregations.parent]
       : [aggregation];
     aggregationObjectsToUpdate.forEach(aggregationObject => {
