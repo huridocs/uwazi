@@ -113,10 +113,7 @@ class PublicFormComponent extends Component {
   async fileDropped(files) {
     const uploadedFiles = files;
     this.state.files.forEach(file => uploadedFiles.push(file));
-    this.setState(prevState => ({
-      ...prevState,
-      files: uploadedFiles,
-    }));
+    this.setState(prevState => ({ ...prevState, files: uploadedFiles }));
   }
 
   renderFileField(id, options) {
@@ -131,13 +128,7 @@ class PublicFormComponent extends Component {
               <Dropzone
                 onDrop={this.fileDropped}
                 className="dropzone"
-                accept={
-                  id === 'file'
-                    ? {
-                        'application/pdf': ['.pdf'],
-                      }
-                    : undefined
-                }
+                accept={id === 'file' ? { 'application/pdf': ['.pdf'] } : undefined}
               >
                 {({ getRootProps, getInputProps }) => (
                   // eslint-disable-next-line react/jsx-props-no-spreading
@@ -233,13 +224,19 @@ PublicFormComponent.propTypes = {
   thesauris: PropTypes.instanceOf(Immutable.List).isRequired,
   submit: PropTypes.func.isRequired,
 };
-export const mapStateToProps = (state, props) => ({
-  template: state.templates.find(template => template.get('_id') === props.template),
-  thesauris: state.thesauris,
-  file: props.file !== undefined,
-  remote: props.remote !== undefined,
-  attachments: props.attachments !== undefined,
-});
+export const mapStateToProps = (state, props) => {
+  const template = state.templates.find(tpl => tpl.get('_id') === props.template);
+  if (template === undefined) {
+    throw new Error('The template is not valid');
+  }
+  return {
+    template,
+    thesauris: state.thesauris,
+    file: props.file !== undefined,
+    remote: props.remote !== undefined,
+    attachments: props.attachments !== undefined,
+  };
+};
 export function mapDispatchToProps(dispatch) {
   return bindActionCreators({ submit: publicSubmit }, dispatch);
 }
