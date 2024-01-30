@@ -4,7 +4,7 @@ import { differenceBy, intersectionBy } from 'lodash';
 
 import settings from 'api/settings/settings';
 import { files } from 'api/files';
-import propertiesHelper from 'shared/comonProperties';
+import propertiesHelper from 'shared/commonProperties';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { safeName as sharedSafeName } from 'shared/propertyNames';
 import { ensure } from 'shared/tsUtils';
