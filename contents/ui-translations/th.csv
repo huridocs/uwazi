@@ -135,7 +135,6 @@ Close,ปิด
 Collaborator,ผู้ประสานงาน
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
-Collection name,Collection name
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,กำหนดค่าตัวกรอง
@@ -207,11 +206,9 @@ Current value:,Current value:
 Currently connections only need a title.,การเชื่อมต่อจำเป็นต้องกำหนดหัวข้อเรื่อง
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
-Custom favicon,Custom favicon
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Custom starting location
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
 Dashboard,Dashboard
 Data imported,ข้อมูลที่ถูกอิมพอร์ท
@@ -225,7 +222,6 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,เปลี่ยนภาษาเริ่มต้น สำเร็จ
 Default template,เทมเพลตเริ่มต้น
-Default view,Default view
 Default View,Default View
 Delete,ลบ
 DELETE,ลบ
@@ -401,7 +397,6 @@ Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,แบบฟอร์มไม่ถูกต้อง
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,มันอาจจะทำให้แอปใช้ไม่ได้ เขียนโค้ดที่นี่ในกรณีที่คุณเข้าใจสิ่งที่คุณทำเท่านั้น
 Item,Item
 Item name,Item name
@@ -457,10 +452,8 @@ Map,แผนที่
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
 Map layers description,Map layers description
-Map provider,Map provider
 Map Provider,Map Provider
 Map view,มุมมองแผนที่
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -472,7 +465,6 @@ Mark as Reviewed,ได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
 Matching,Matching
 Matomo,Matomo
-Matomo Analytics,Matomo Analytics
 Members,สมาชิก
 Menu,เมนู
 Message,ข้อความ
@@ -627,7 +619,6 @@ property select,Select
 property text,Text
 Protection,การป้องกัน
 ProTip!,โปรทิป!
-Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -900,7 +891,6 @@ Uploads,อัปโหลด
 URL,url
 Use,ใช้
 Use as filter,Use as filter
-Use custom landing page,Use custom landing page
 User,ผู้ใช้
 User Action,User Action
 User Role,User Role
@@ -935,10 +925,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,คำเตือนซ คุณกำลังแก้ไขหลายรายการ ช่องที่ถูกทำเครื่องหมายด้วย
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,เราขอแนะนำให้ทำการแยกประเภท
-Website analytics,การวิเคราะห์เว็บไซต์
 Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 "Well, this is awkward...",แย่หน่อยนะ...
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,จะถูกอัปเดทด้วยค่าเดียวกัน
 with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!

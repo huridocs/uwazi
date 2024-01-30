@@ -135,7 +135,6 @@ Close,Kapat
 Collaborator,Katkı Sunan
 Collapse all,Collapse all
 Collection,Koleksiyon
-Collection name,Collection name
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Filtreleri yapılandır
@@ -207,11 +206,9 @@ Current value:,Current value:
 Currently connections only need a title.,Şu anda bağlantıların yalnızca bir başlığa ihtiyacı var.
 Custom component error,Özel Yüklemeler
 Custom CSS,Özel CSS
-Custom favicon,Custom favicon
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Custom starting location
 Custom Uploads,Özel Yüklemeler
 Dashboard,Dashboard
 Data imported,İçe aktarılan veri
@@ -225,7 +222,6 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,Varsayılan dil değişikliği başarısı
 Default template,Varsayılan şablon
-Default view,Default view
 Default View,Default View
 Delete,Sil
 DELETE,Sil
@@ -401,7 +397,6 @@ Invalid captcha,Geçersiz güvenlik kodu
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,geçersiz form
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Ayrıca uygulamayı çok kolay bozabilir. Buraya sadece tam olarak ne yaptığınızı biliyorsanız kod yazın.
 Item,Item
 Item name,Item name
@@ -457,10 +452,8 @@ Map,Harita
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
 Map layers description,Map layers description
-Map provider,Map provider
 Map Provider,Map Provider
 Map view,Harita görünümü
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -472,7 +465,6 @@ Mark as Reviewed,İncelendi olarak işaretle
 Markdown,Not et
 Matching,Matching
 Matomo,Matomo
-Matomo Analytics,Matomo Analytics
 Members,Üyeler
 Menu,Menü
 Message,Mesaj
@@ -627,7 +619,6 @@ property select,Select
 property text,Text
 Protection,Koruma
 ProTip!,Uzman İpucu!
-Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -898,7 +889,6 @@ Uploads,Yüklemeler
 URL,URL
 Use,Kullan
 Use as filter,Use as filter
-Use custom landing page,Use custom landing page
 User,Kullanıcı
 User Action,User Action
 User Role,User Role
@@ -931,10 +921,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Uyarı: birden çok varlığı düzenliyorsunuz. Şu işaretlenmiş alanlar ile
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,Etiketleme öneririz
-Website analytics,Web sitesi analizi
 Welcome to Uwazi,Uwazi'ye hoş geldiniz
 "Well, this is awkward...","Peki, bu garip bir durum..."
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,aynı değerle güncellenecektir.
 with,ile
 With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!

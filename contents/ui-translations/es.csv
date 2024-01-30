@@ -133,7 +133,6 @@ Close,Cerrar
 Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
-Collection name,Nombre de la colección
 Collection Name,Collection Name
 Configuration,Configuración
 Configure filters,Configurar filtros
@@ -205,11 +204,9 @@ Current value:,Current value:
 Currently connections only need a title.,Actualmente las conexiones sólo necesitan un título.
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
-Custom favicon,Definir favicon
 Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
-Custom starting location,Configurar ubicación inicial
 Custom Uploads,Subidas personalizadas
 Dashboard,Tablero
 Data imported,Datos importados
@@ -223,7 +220,6 @@ Default filter,Filtro predeterminado
 Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
-Default view,Vista predeterminada
 Default View,Default View
 Delete,Eliminar
 DELETE,Eliminar
@@ -399,7 +395,6 @@ Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
 Invalid form,Formulario no válido
-Invalid home page url,URL  de página de inicio no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 Item,Elemento
 Item name,Nombre del elemento
@@ -455,10 +450,8 @@ Map,Mapa
 Map api key,Clave del API de Mapas
 Map api key tooltip,Se requiere una clave API para usar Mapbox o Google Maps.
 Map layers description,Map layers description
-Map provider,Proveedor de mapas
 Map Provider,Map Provider
 Map view,Vista de mapa
-MapBox,MapBox
 Mapping conflict error,"Es necesaria una reindexación de su colección. El motivo puede variar
          -- de ciertos cambios hechos a la propiedad de una plantilla a nuevos campos
          que deben completarse en todas las entidades.
@@ -470,7 +463,6 @@ Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
 Matching,Coincidencia
 Matomo,Matomo
-Matomo Analytics,Analíticas de Matomo
 Members,Miembros
 Menu,Menú
 Message,Mensaje
@@ -625,7 +617,6 @@ property select,Selección
 property text,Texto
 Protection,Protección
 ProTip!,¡Consejo avanzado!
-Public Endpoints,Destino final público
 Public entities description,AVISO: Las entidades seleccionadas serán **públicas**. Cualquier persona podrá visualizaras.
 Public form settings description,Aquí puedes configurar el destino del formulario público y la lista blanca de plantillas
 Public Form submit URL,URL de envío de formulario público
@@ -895,7 +886,6 @@ Uploads,Subir archivos
 URL,URL
 Use,Usar
 Use as filter,Usar como filtro
-Use custom landing page,Utilizar página de destino personalizada
 User,Usuario
 User Action,User Action
 User Role,User Role
@@ -928,10 +918,8 @@ WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
 We recommend labeling,Recomendamos etiquetar
-Website analytics,Estadísticas del sitio web
 Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
-Whitelisted Templates,Lista blanca de plantillas
 will be updated with the same value.,se actualizará con el mismo valor
 with,con
 With great power comes great responsibility!,"¡Con un gran poder, viene una gran responsabilidad!"

@@ -14,7 +14,20 @@ const newKeys = [
   },
 ];
 
-const deletedKeys = [];
+const deletedKeys = [
+  { key: 'Collection name' },
+  { key: 'Custom favicon' },
+  { key: 'Custom starting location' },
+  { key: 'Default view' },
+  { key: 'Invalid home page url' },
+  { key: 'Map provider' },
+  { key: 'MapBox' },
+  { key: 'Matomo Analytics' },
+  { key: 'Public Endpoints' },
+  { key: 'Use custom landing page' },
+  { key: 'Website analytics' },
+  { key: 'Whitelisted Templates' },
+];
 
 export default {
   delta: 154,

@@ -135,7 +135,6 @@ Close,닫기
 Collaborator,협업자
 Collapse all,Collapse all
 Collection,컬렉션
-Collection name,컬렉션 이름
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,필터 구성
@@ -207,11 +206,9 @@ Current value:,Current value:
 Currently connections only need a title.,커넥션에 제목이 필요합니다.
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
-Custom favicon,사용자 파비콘
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,사용자 지정 시작 위치
 Custom Uploads,사용자 맞춤 업로드
 Dashboard,Dashboard
 Data imported,데이터 업로드 완료
@@ -225,7 +222,6 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,기본 언어 변경 완료
 Default template,기본 템플릿
-Default view,Default view
 Default View,Default View
 Delete,삭제
 DELETE,삭제
@@ -401,7 +397,6 @@ Invalid captcha,잘못된 보안문자
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,잘못된 형식
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
 Item,Item
 Item name,Item name
@@ -457,10 +452,8 @@ Map,지도
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
 Map layers description,Map layers description
-Map provider,Map provider
 Map Provider,Map Provider
 Map view,지도 뷰
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -472,7 +465,6 @@ Mark as Reviewed,검토 완료로 표시
 Markdown,Markdown
 Matching,Matching
 Matomo,Matomo
-Matomo Analytics,Matomo 분석
 Members,멤버
 Menu,메뉴
 Message,메세지
@@ -627,7 +619,6 @@ property select,Select
 property text,Text
 Protection,보호
 ProTip!,프로 팁
-Public Endpoints,공개 엔드포인트
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -898,7 +889,6 @@ Uploads,업로드
 URL,URL
 Use,사용
 Use as filter,Use as filter
-Use custom landing page,사용자 지정 랜딩 페이지
 User,사용자
 User Action,User Action
 User Role,User Role
@@ -931,10 +921,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,라벨링을 추천합니다.
-Website analytics,웹사이트 분석
 Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 "Well, this is awkward...",알 수 없는 에러 발생
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,동일 값으로 업데이트됩니다.
 with,with
 With great power comes great responsibility!,큰 일에는 큰 책임이 따르는 법!

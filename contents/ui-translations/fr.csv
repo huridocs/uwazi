@@ -134,7 +134,6 @@ Close,Fermer
 Collaborator,Collaborateur
 Collapse all,Collapse all
 Collection,Collection
-Collection name,Nom de la collection
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Configurer les filtres
@@ -206,11 +205,9 @@ Current value:,Current value:
 Currently connections only need a title.,"Actuellement, les connexions ne nécessitent qu'un titre."
 Custom component error,Erreur de composant personnalisé
 Custom CSS,CSS personnalisé
-Custom favicon,Favicon personalisé
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Localisation initiale personalisée
 Custom Uploads,Téléchargements personnalisés
 Dashboard,Dashboard
 Data imported,Données importées
@@ -224,7 +221,6 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,Succès du changement de langue par défaut
 Default template,Modèle par défaut
-Default view,Default view
 Default View,Default View
 Delete,Effacer
 DELETE,Effacer
@@ -400,7 +396,6 @@ Invalid captcha,Captcha invalide
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Formulaire invalide
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Cela pourrait aussi très facilement casser l'application. N'écrivez du code ici que si vous savez exactement ce que vous faites.
 Item,Item
 Item name,Item name
@@ -456,10 +451,8 @@ Map,Map
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
 Map layers description,Map layers description
-Map provider,Map provider
 Map Provider,Map Provider
 Map view,Vue sur carte
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -471,7 +464,6 @@ Mark as Reviewed,Mark as Reviewed
 Markdown,Markdown
 Matching,Matching
 Matomo,Matomo
-Matomo Analytics,Matomo Analytics
 Members,Members
 Menu,Menu
 Message,Message
@@ -626,7 +618,6 @@ property select,Select
 property text,Text
 Protection,Protection
 ProTip!,ProTip !
-Public Endpoints,Points de terminaison publics
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -897,7 +888,6 @@ Uploads,Fichiers Mis en ligne
 URL,URL
 Use,Utilisez
 Use as filter,Use as filter
-Use custom landing page,Utiliser la page de destination personnalisée
 User,Utilisateur
 User Action,User Action
 User Role,User Role
@@ -930,10 +920,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,Nous recommandons d'étiqueter
-Website analytics,Analyse du site Web
 Welcome to Uwazi,Bienvenue à Uwazi
 "Well, this is awkward...","Eh bien, c'est gênant..."
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,sera mis à jour avec la même valeur.
 with,avec
 With great power comes great responsibility!,De grands pouvoirs impliquent de grandes responsabilités !

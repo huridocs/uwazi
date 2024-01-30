@@ -135,7 +135,6 @@ Close,ပိတ်ရန်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
-Collection name,Collection name
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
@@ -207,11 +206,9 @@ Current value:,Current value:
 Currently connections only need a title.,လက်ရှိတွင် ချိတ်ဆက်မှုအနည်းငယ်သာ လိုအပ်သည်။
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
-Custom favicon,Custom favicon
 Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Custom starting location
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Dashboard,Dashboard
 Data imported,ဒေတာ ထည့်သွင်းပြီး
@@ -225,7 +222,6 @@ Default filter,Default filter
 Default language,Default language
 Default language change success,ပုံသေမူလ ဘာသာစကား ပြောင်းလဲမှု အောင်မြင်ပါသည်
 Default template,ပုံသေမူလ ပုံစံပြား
-Default view,Default view
 Default View,Default View
 Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
@@ -401,7 +397,6 @@ Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,ပုံစံ မှားနေသည်
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
 Item,Item
 Item name,Item name
@@ -457,10 +452,8 @@ Map,မြေပုံ
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
 Map layers description,Map layers description
-Map provider,Map provider
 Map Provider,Map Provider
 Map view,မြေပုံ မြင်ကွင်း
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -472,7 +465,6 @@ Mark as Reviewed,သုံးသပ်ပြီးဟု မှတ်ရန်
 Markdown,အမှတ်အသား
 Matching,Matching
 Matomo,Matomo
-Matomo Analytics,Matomo Analytics
 Members,အဖွဲ့ဝင်များ
 Menu,မီနူး
 Message,မက်ဆေ့ချ်
@@ -627,7 +619,6 @@ property select,Select
 property text,Text
 Protection,ကာကွယ်မှု
 ProTip!,အထူးအကြံပြုချက်!
-Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -898,7 +889,6 @@ Uploads,အပ်လုဒ်များ
 URL,URL
 Use,အသုံးပြုရန်
 Use as filter,Use as filter
-Use custom landing page,Use custom landing page
 User,အသုံးပြုသူ
 User Action,User Action
 User Role,User Role
@@ -931,10 +921,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,တံဆိပ်အမှတ်အသားတပ်ရန် ကျွန်ုပ်တို့ အကြံပြုပါသည်
-Website analytics,ဝက်ဘ်ဆိုက် စာရင်းအင်းများ
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
 with,ဖြင့်
 With great power comes great responsibility!,လုပ်ပိုင်ခွင့်ကြီးလျှင် တာဝန်ပိုကြီးသည်!
