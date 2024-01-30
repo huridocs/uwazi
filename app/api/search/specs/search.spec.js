@@ -796,7 +796,7 @@ describe('search', () => {
     it('should limit the number of buckets', async () => {
       userFactory.mock(undefined);
       const defaultResult = await search.search({ types: [ids.templateMetadata1] }, 'en');
-      expect(defaultResult.aggregations.all.multiselect1.buckets.length).toBe(3);
+      expect(defaultResult.aggregations.all.multiselect1.buckets.length).toBe(4);
       mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(1);
       const limitedResult = await search.search({ types: [ids.templateMetadata1] }, 'en');
       expect(limitedResult.aggregations.all.multiselect1.buckets.map(b => b.key)).toEqual([
@@ -1200,7 +1200,7 @@ describe('search', () => {
         'p',
         editorUser
       );
-      expect(defaultResponse.options.map(o => o.label)).toEqual(['Egypt', 'Spain']);
+      expect(defaultResponse.options.map(o => o.label)).toEqual(['Egypt', 'Spain', 'Europe']);
       mocks.limitMock = jest.spyOn(searchLimitsConfig, 'preloadOptionsLimit').mockReturnValue(1);
       const limitedResponse = await search.autocompleteAggregations(
         query,
