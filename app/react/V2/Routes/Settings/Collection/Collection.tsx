@@ -23,6 +23,7 @@ import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
+import { isUndefined } from 'lodash';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -92,6 +93,9 @@ const Collection = () => {
   });
 
   const submit = async (data: ClientSettings) => {
+    if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
+      delete data.newNameGeneration;
+    }
     await SettingsAPI.save(data);
     await revalidator.revalidate();
     setSettings(data);
