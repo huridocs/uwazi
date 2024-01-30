@@ -1,12 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ContactForm should render the ContactForm 1`] = `
-<form
+<LocalForm
   className="contact-form"
+  getDispatch={[Function]}
+  initialState={Object {}}
+  model="contactform"
   onSubmit={[Function]}
+  validators={
+    Object {
+      "captcha": Object {
+        "required": [Function],
+      },
+      "email": Object {
+        "required": [Function],
+      },
+      "message": Object {
+        "required": [Function],
+      },
+      "name": Object {
+        "required": [Function],
+      },
+    }
+  }
 >
-  <div
-    className="form-group"
+  <FormGroup
+    model=".name"
   >
     <label
       className="form-group-label"
@@ -15,17 +34,24 @@ exports[`ContactForm should render the ContactForm 1`] = `
       <Connect(Translate)>
         Name
       </Connect(Translate)>
+      <span
+        className="required"
+      >
+        *
+      </span>
     </label>
-    <input
-      className="form-control"
-      name="name"
-      onChange={[Function]}
-      required={true}
-      value=""
-    />
-  </div>
-  <div
-    className="form-group"
+    <Modeled(Connect(Field))
+      model=".name"
+    >
+      <input
+        className="form-control"
+        name="name"
+        type="text"
+      />
+    </Modeled(Connect(Field))>
+  </FormGroup>
+  <FormGroup
+    model=".email"
   >
     <label
       className="form-group-label"
@@ -34,17 +60,24 @@ exports[`ContactForm should render the ContactForm 1`] = `
       <Connect(Translate)>
         Email
       </Connect(Translate)>
+      <span
+        className="required"
+      >
+        *
+      </span>
     </label>
-    <input
-      className="form-control"
-      name="email"
-      onChange={[Function]}
-      required={true}
-      value=""
-    />
-  </div>
-  <div
-    className="form-group"
+    <Modeled(Connect(Field))
+      model=".email"
+    >
+      <input
+        className="form-control"
+        name="email"
+        type="email"
+      />
+    </Modeled(Connect(Field))>
+  </FormGroup>
+  <FormGroup
+    model=".message"
   >
     <label
       className="form-group-label"
@@ -53,15 +86,24 @@ exports[`ContactForm should render the ContactForm 1`] = `
       <Connect(Translate)>
         Message
       </Connect(Translate)>
+      <span
+        className="required"
+      >
+        *
+      </span>
     </label>
-    <textarea
-      className="form-control"
-      name="message"
-      onChange={[Function]}
-      required={true}
-      value=""
-    />
-  </div>
+    <Modeled(Connect(Field))
+      model=".message"
+    >
+      <textarea
+        className="form-control"
+        name="message"
+      />
+    </Modeled(Connect(Field))>
+  </FormGroup>
+  <Memo(CaptchaComponent)
+    refresh={[Function]}
+  />
   <button
     className="btn btn-success"
     type="submit"
@@ -78,5 +120,5 @@ exports[`ContactForm should render the ContactForm 1`] = `
       </Connect(Translate)>
     </span>
   </button>
-</form>
+</LocalForm>
 `;

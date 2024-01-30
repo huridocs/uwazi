@@ -68,6 +68,7 @@ describe('PublicForm', () => {
       attachments: false,
       submit,
       remote: false,
+      reloadThesauri: jasmine.createSpy('reloadThesauri'),
     };
     const state = {
       entityView: {
