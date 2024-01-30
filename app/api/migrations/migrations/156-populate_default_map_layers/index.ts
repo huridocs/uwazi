@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 export default {
-  delta: 155,
+  delta: 156,
 
   name: 'populate default map layers',
 

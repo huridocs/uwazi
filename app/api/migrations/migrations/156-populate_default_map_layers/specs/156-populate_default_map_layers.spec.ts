@@ -28,7 +28,7 @@ describe('migration test', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(155);
+    expect(migration.delta).toBe(156);
   });
 
   it('should add default mapLayers', async () => {
