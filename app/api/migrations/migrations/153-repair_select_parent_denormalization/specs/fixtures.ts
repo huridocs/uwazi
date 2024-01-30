@@ -53,6 +53,7 @@ const templateWithInheritance = {
   name: 'with_inherited_selects',
   properties: [
     {
+      _id: new ObjectId(),
       content: ids.dict.toString(),
       label: 'inherited_select',
       type: 'relationship' as 'relationship',
@@ -64,6 +65,7 @@ const templateWithInheritance = {
       name: 'inherited_select',
     },
     {
+      _id: new ObjectId(),
       content: ids.dict.toString(),
       label: 'inherited_multiselect',
       type: 'relationship' as 'relationship',
@@ -75,6 +77,7 @@ const templateWithInheritance = {
       name: 'inherited_multiselect',
     },
     {
+      _id: new ObjectId(),
       content: ids.dict.toString(),
       label: 'inherited_text',
       type: 'relationship' as 'relationship',
@@ -86,6 +89,7 @@ const templateWithInheritance = {
       name: 'inherited_text',
     },
     {
+      _id: new ObjectId(),
       content: ids.dict2.toString(),
       label: 'inherited_select2',
       type: 'relationship' as 'relationship',
