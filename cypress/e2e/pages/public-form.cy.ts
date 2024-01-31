@@ -47,8 +47,9 @@ describe('Public Form', () => {
       cy.get('.markdownEditor textarea').type(
         '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
       );
+      cy.intercept('POST', 'api/pages').as('savePages');
       cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
+      cy.wait('@savePages');
 
       let url;
       cy.get('.alert-info:nth-child(2) a').then($element => {
