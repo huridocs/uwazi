@@ -1,22 +1,27 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
 type CodeEditorProps = {
   language: 'html' | 'javascript';
-  onMount?: (editor: CodeEditorInstance) => void;
+  getEditor?: (editor: CodeEditorInstance) => void;
   code?: string;
 };
 
-const CodeEditorComponent = ({ language, onMount, code }: CodeEditorProps) => {
+const CodeEditorComponent = ({ language, getEditor, code }: CodeEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
+  const editor = useRef<CodeEditorInstance>();
+
+  const handleGetEditor = useCallback(() => {
+    if (getEditor && editor.current) {
+      getEditor(editor.current);
+    }
+  }, [getEditor]);
 
   useEffect(() => {
-    let editor: monaco.editor.IStandaloneCodeEditor;
-
     if (container.current) {
-      editor = monaco.editor.create(container.current, {
+      editor.current = monaco.editor.create(container.current, {
         value: code,
         language,
         tabSize: 2,
@@ -25,9 +30,13 @@ const CodeEditorComponent = ({ language, onMount, code }: CodeEditorProps) => {
     }
 
     return () => {
-      editor.dispose();
+      editor.current?.dispose();
     };
   }, [code, language]);
+
+  useEffect(() => {
+    handleGetEditor();
+  }, [handleGetEditor]);
 
   return <div className="w-full h-full" ref={container} />;
 };

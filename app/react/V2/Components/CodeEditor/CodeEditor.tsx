@@ -7,8 +7,8 @@ const CodeEditorComponent = loadable(async () => {
   return Component;
 });
 
-const CodeEditor = ({ language, onMount, code }: CodeEditorProps) => (
-  <CodeEditorComponent language={language} onMount={onMount} code={code} />
+const CodeEditor = ({ language, getEditor, code }: CodeEditorProps) => (
+  <CodeEditorComponent language={language} getEditor={getEditor} code={code} />
 );
 
 export { CodeEditor };
