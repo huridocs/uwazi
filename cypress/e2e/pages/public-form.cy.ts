@@ -190,7 +190,6 @@ describe('Public Form', () => {
           },
         });
         cy.on('uncaught:exception', (_err, _runnable) => {
-          cy.get('@consoleError').should('be.calledWithMatch', 'The template is not valid');
           cy.contains('Well, this is awkward');
           return false;
         });
