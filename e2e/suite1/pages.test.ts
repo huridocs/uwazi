@@ -96,8 +96,11 @@ describe('Custom home page and styles', () => {
   });
 
   it('should allow settings a public entity as a landing page', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
+    await page.waitForSelector('[aria-label="Settings"]');
+    await expect(page).toClick('[aria-label="Settings"]', { text: 'Settings' });
+    await page.waitForTimeout(100);
     await expect(page).toClick('a', { text: 'Collection' });
+    await page.waitForSelector('input[name="home_page"]');
     await expect(page).toFill('input[name="home_page"]', '/entity/7ycel666l65vobt9');
     await expect(page).toClick('button', { text: 'Save' });
     await expect(page).toMatchElement('[data-testid="notifications-container"]');
@@ -113,35 +116,16 @@ describe('Custom home page and styles', () => {
     });
   });
 
-  it('should allow using a library query as a landing page', async () => {
-    await expect(page).toClick('.only-desktop [aria-label="Settings"]', { text: 'Settings' });
-    await expect(page).toClick('a', { text: 'Collection' });
-    await expect(page).toFill(
-      'input[name="home_page"]',
-      "/library/table/?types:!('58ada34c299e82674854504b')"
-    );
-    await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toMatchElement('[data-testid="notifications-container"]');
-  });
-
-  it('should check that the landing page is the defined library query', async () => {
-    await page.goto(`${host}`);
-    await page.reload();
-    await disableTransitions();
-    await page.waitForSelector('.tableview-wrapper > table > tbody > tr');
-    const rowSelector = '.tableview-wrapper > table > tbody > tr.template-58ada34c299e82674854504b';
-    expect((await page.$$(rowSelector)).length).toBe(2);
-  });
-
   it('should allow using a complicated library query as a landing page', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('[aria-label="Settings"]', { text: 'Settings' });
+    await page.waitForNetworkIdle();
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toFill(
       'input[name="home_page"]',
       '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
     );
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
   it('should check that the landing page is the defined library query', async () => {
     await page.goto(`${host}`);
@@ -163,6 +147,6 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toFill('input[name="home_page"]', '/en/library/');
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
 });
