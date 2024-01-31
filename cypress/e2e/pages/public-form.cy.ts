@@ -40,6 +40,7 @@ describe('Public Form', () => {
       cy.intercept('POST', 'api/pages').as('savePages');
       cy.contains('button', 'Save').click();
       cy.wait('@savePages');
+      cy.get('.alert.alert-success').click();
 
       let url;
       cy.get('.alert-info:nth-child(2) a').then($element => {
