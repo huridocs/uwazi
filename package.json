@@ -101,7 +101,6 @@
     "@heroicons/react": "^2.0.18",
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
-    "@monaco-editor/react": "^4.6.0",
     "@popperjs/core": "^2.11.8",
     "@remix-run/router": "^1.4.0",
     "@sentry/node": "^7.91.0",
