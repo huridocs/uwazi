@@ -205,7 +205,6 @@ describe('Entities', () => {
         const expectedRenamedFiles = ['batman.jpg', 'My PDF.pdf', 'Resource from web'];
         cy.get('.attachment-name span:not(.attachment-size)').each((element, index) => {
           const content = element.text();
-          console.log(content);
           cy.wrap(content).should('eq', expectedRenamedFiles[index]);
         });
       });
