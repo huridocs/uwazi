@@ -13,7 +13,6 @@ describe('Public Form', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.get('select[name="defaultLibraryView"]').select('Cards');
-      cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
     });
 
     it('should whitelist Mecanismo and Reporte', () => {
@@ -25,17 +24,8 @@ describe('Public Form', () => {
           cy.contains('[data-testid="multiselect-popover"] li', 'Mecanismo').click();
           cy.contains('[data-testid="multiselect-popover"] li', 'Reporte').click();
         });
-    });
 
-    it('should save and check the changes', () => {
       cy.contains('button', 'Save').click();
-      // cy.contains('Settings updated.');
-      // cy.get('[data-testid="multiselect"]')
-      //   .eq(0)
-      //   .within(() => {
-      //     cy.get('[data-testid="pill-comp"]').eq(1).should('have.text', 'Mecanismo');
-      //     cy.get('[data-testid="pill-comp"]').eq(1).should('have.text', 'Reporte');
-      //   });
     });
   });
 
@@ -194,7 +184,7 @@ describe('Public Form', () => {
           },
         });
         cy.on('uncaught:exception', (_err, _runnable) => {
-          cy.get('@consoleError').should('be.calledWithMatch', 'The template is not valid');
+          cy.get('@consoleError').should('have.been.calledWithMatch', 'The template is not valid');
           cy.contains('Well, this is awkward');
           return false;
         });
