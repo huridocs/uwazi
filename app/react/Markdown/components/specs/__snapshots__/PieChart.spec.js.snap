@@ -78,6 +78,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
         nameKey="label"
         outerRadius="105"
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={0}
         stroke="#fff"
       >
@@ -95,7 +96,6 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
         />
       </Pie>
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -207,6 +207,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
         nameKey="label"
         outerRadius="105"
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={0}
         stroke="#fff"
       >
@@ -220,7 +221,6 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
         />
       </Pie>
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -332,6 +332,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
         nameKey="label"
         outerRadius="105"
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={0}
         stroke="#fff"
       >
@@ -345,7 +346,6 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
         />
       </Pie>
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -463,6 +463,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
         nameKey="label"
         outerRadius="105"
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={0}
         stroke="#fff"
       >
@@ -480,7 +481,6 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
         />
       </Pie>
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -597,6 +597,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
         nameKey="label"
         outerRadius="105"
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={0}
         stroke="#fff"
       >
@@ -614,7 +615,6 @@ exports[`PieChart Markdown component when passing scatter should display nested 
         />
       </Pie>
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,

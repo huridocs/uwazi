@@ -189,18 +189,9 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -248,6 +239,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -384,18 +376,9 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -443,6 +426,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -559,18 +543,9 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -618,6 +593,7 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -734,18 +710,9 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -793,6 +760,7 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
