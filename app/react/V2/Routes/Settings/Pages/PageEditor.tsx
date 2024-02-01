@@ -10,7 +10,7 @@ import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
 import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
-import { InputField } from 'app/V2/Components/Forms';
+import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -61,6 +61,11 @@ const PageEditor = () => {
           <Tabs unmountTabs={false}>
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
               <div className="flex flex-col gap-4 max-w-2xl">
+                <EnableButtonCheckbox
+                  {...register('entityView')}
+                  toggleTexts={[<Translate>Enabled</Translate>, <Translate>Disabled</Translate>]}
+                />
+
                 <InputField
                   id="title"
                   label={<Translate>Title</Translate>}
@@ -74,7 +79,7 @@ const PageEditor = () => {
                   }
                   label={<Translate>URL</Translate>}
                   className="mb-4 w-full"
-                  id="authenticator-secret"
+                  id="page-url"
                 />
               </div>
             </Tabs.Tab>
