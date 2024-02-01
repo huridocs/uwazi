@@ -103,7 +103,7 @@
     "@loadable/component": "^5.13.1",
     "@popperjs/core": "^2.11.8",
     "@remix-run/router": "^1.4.0",
-    "@sentry/node": "^7.91.0",
+    "@sentry/node": "^7.99.0",
     "@sentry/react": "7.91.0",
     "@sentry/tracing": "^7.91.0",
     "@smithy/node-http-handler": "^2.2.2",
