@@ -14,8 +14,6 @@ recreate_database() {
 
     INDEX_NAME=$DB DATABASE_NAME=$DB yarn migrate
     INDEX_NAME=$DB DATABASE_NAME=$DB yarn reindex
-
-    exit 0
 }
 
 for arg in "${@}"; do
@@ -28,7 +26,7 @@ mongo_indexof_db=$(mongosh --quiet -host $HOST --eval 'db.getMongo().getDBNames(
 
 if [ $mongo_indexof_db -ne "-1" ]; then    
     if [ -z "$FORCE_FLAG" ]; then
-        echo -e "\n$DB already database exists. It will not be deleted."
+        echo -e "\n$DB database already exists. It will not be deleted, use --force flag to recreate it"
         exit 2    
     else
         recreate_database
