@@ -147,7 +147,7 @@ describe('template.save()', () => {
   });
 
   describe('on template creation', () => {
-    it('should validate the property and correctly map it to the database', async () => {
+    it('should validate the property and correctly map it to the database ignoring the targetTemplates', async () => {
       const newTemplate = {
         name: 'new template with new relationship',
         commonProperties,
@@ -163,6 +163,7 @@ describe('template.save()', () => {
                 match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
               },
             ],
+            targetTemplates: false as const,
           },
           { name: 'text1', label: 'Text1', type: 'text' as 'text' },
         ],
@@ -209,7 +210,7 @@ describe('template.save()', () => {
 
   describe('on template update', () => {
     describe('when the property is new', () => {
-      it('should validate the property and correctly map it to the database', async () => {
+      it('should validate the property and correctly map it to the database ignoring the targetTemplates', async () => {
         const existingTemplates = await templates.get({ name: 'existing_template' });
         expect(existingTemplates.length).toBe(1);
         const existingTemplate = existingTemplates[0];
@@ -227,6 +228,7 @@ describe('template.save()', () => {
                   match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
                 },
               ],
+              targetTemplates: false as const,
             },
             { name: 'text1', label: 'Text1', type: 'text' as 'text' },
           ],
