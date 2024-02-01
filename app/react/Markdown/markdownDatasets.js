@@ -1,6 +1,6 @@
 import { Parser as HTMLParser } from 'htmlparser2';
 import qs from 'qs';
-import rison from 'rison-node';
+import { risonDecodeOrIgnore } from 'app/utils';
 import Big from 'big.js';
 
 import searchApi from 'app/Search/SearchAPI';
@@ -18,7 +18,7 @@ const conformUrl = ({ url = '', geolocation = false }) => {
     return defaultValue;
   }
 
-  const params = rison.decode(q);
+  const params = risonDecodeOrIgnore(q);
   params.limit = 0;
 
   if (geolocation) {

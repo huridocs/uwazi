@@ -17,6 +17,7 @@ import { LibraryHeader } from 'app/Library/components/LibraryHeader';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';
+import { risonDecodeOrIgnore } from 'app/utils';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();
@@ -74,7 +75,7 @@ class DocumentsList extends Component {
 
   loadMoreButton(amount) {
     const query = { ...this.props.location.query };
-    const q = query.q ? rison.decode(query.q) : {};
+    const q = query.q ? risonDecodeOrIgnore(query.q) : {};
     const from = this.props.documents.get('rows').size;
     q.from = from;
     q.limit = amount;
@@ -178,7 +179,7 @@ class DocumentsList extends Component {
       <div className="row">
         {(() => {
           if (view !== 'graph') {
-            return <p className="col-sm-12 text-center documents-counter">{counter}</p>;
+            return <p className="text-center col-sm-12 documents-counter">{counter}</p>;
           }
           return null;
         })()}
@@ -188,7 +189,7 @@ class DocumentsList extends Component {
           }
           if (documents.get('rows').size < documents.get('totalRows') && !this.state.loading) {
             return (
-              <div className="col-sm-12 text-center">
+              <div className="text-center col-sm-12">
                 {this.loadMoreButton(30)} {this.loadMoreButton(300)}
               </div>
             );
@@ -199,7 +200,7 @@ class DocumentsList extends Component {
           return null;
         })()}
         <NeedAuthorization>
-          <div className="col-sm-12 force-ltr text-center protip">
+          <div className="text-center col-sm-12 force-ltr protip">
             <Icon icon="lightbulb" />{' '}
             <b>
               <Translate>ProTip!</Translate>
