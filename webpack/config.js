@@ -89,7 +89,7 @@ module.exports = production => {
         },
         {
           test: /.mdx?$/,
-          use: ['babel-loader', '@mdx-js/loader'],
+          use: ['babel-loader'],
         },
         {
           test: /\.svg$/,
