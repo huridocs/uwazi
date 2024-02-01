@@ -47,6 +47,7 @@ describe('Collection', () => {
   });
 
   it('should save Whitelisted templates successfully', () => {
+    cy.get('[data-testid="settings-collection"]').scrollTo('center');
     cy.get('[data-testid="multiselect"]')
       .eq(0)
       .within(() => {
@@ -90,8 +91,8 @@ describe('Collection', () => {
   });
 
   it('should whitelist templates successfully', () => {
-    cy.get('[data-testid="pill-comp"] > span.flex').eq(0).should('have.text', 'Causa');
-    cy.get('[data-testid="pill-comp"] > span.flex').eq(1).should('have.text', 'Mecanismo');
+    cy.get('[data-testid="pill-comp"] > span').eq(0).should('have.text', 'Causa');
+    cy.get('[data-testid="pill-comp"] > span').eq(1).should('have.text', 'Mecanismo');
   });
 
   it('should have enabled all the buttons', () => {
