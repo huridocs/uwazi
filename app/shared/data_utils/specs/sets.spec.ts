@@ -138,4 +138,45 @@ describe('Sets', () => {
       expect(setManager.has('notakey')).toBe(false);
     });
   });
+
+  describe('size', () => {
+    it('without arguments should return the sum size of the sets', () => {
+      const setManager = new Sets();
+
+      expect(setManager.size()).toBe(0);
+
+      setManager.add('key1', 'value1');
+      setManager.add('key1', 'value2');
+      setManager.add('key2', 'value3');
+
+      expect(setManager.size()).toBe(3);
+    });
+
+    it('with a key argument should return the size of the set indexed by the key', () => {
+      const setManager = new Sets();
+      setManager.add('key1', 'value1');
+      setManager.add('key1', 'value2');
+      setManager.add('key2', 'value3');
+      setManager.add('key3');
+
+      expect(setManager.size('key1')).toBe(2);
+      expect(setManager.size('key2')).toBe(1);
+      expect(setManager.size('key3')).toBe(0);
+      expect(setManager.size('notakey')).toBe(undefined);
+    });
+  });
+
+  describe('setCount', () => {
+    it('should return the number of sets', () => {
+      const setManager = new Sets();
+
+      expect(setManager.setCount()).toBe(0);
+
+      setManager.add('key1', 'value1');
+      setManager.add('key1', 'value2');
+      setManager.add('key2', 'value3');
+
+      expect(setManager.setCount()).toBe(2);
+    });
+  });
 });
