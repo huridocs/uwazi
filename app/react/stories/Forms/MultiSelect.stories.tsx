@@ -20,9 +20,11 @@ const Primary: Story = {
           <MultiSelect
             label={args.label}
             options={args.options}
+            hasErrors={args.hasErrors}
             onChange={args.onChange}
             disabled={args.disabled}
             placeholder={args.placeholder}
+            canBeEmpty={args.canBeEmpty}
           />
         </div>
       </div>
@@ -56,10 +58,19 @@ const Basic: Story = {
       { label: 'Item with extra extra extra extra extraextraextra long name', value: 'xlItem' },
     ],
     disabled: false,
-    placeholder: 'No groups',
+    placeholder: 'Nothing selected',
+    canBeEmpty: true,
   },
 };
 
-export { Basic };
+const WithError: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    hasErrors: true,
+  },
+};
+
+export { Basic, WithError };
 
 export default meta;
