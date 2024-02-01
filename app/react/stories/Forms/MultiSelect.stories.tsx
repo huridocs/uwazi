@@ -24,6 +24,7 @@ const Primary: Story = {
             onChange={args.onChange}
             disabled={args.disabled}
             placeholder={args.placeholder}
+            canBeEmpty={args.canBeEmpty}
           />
         </div>
       </div>
@@ -40,8 +41,8 @@ const Basic: Story = {
       { label: 'Another', value: 'another' },
       { label: 'Another name', value: 'another name' },
       { label: 'And another', value: 'and another' },
-      { label: 'Item A', value: 'item1' },
-      { label: 'Item B', value: 'item2' },
+      { label: 'Item A', value: 'item1', selected: true },
+      { label: 'Item B', value: 'item2', selected: true },
       { label: 'Item C', value: 'item3' },
       { label: 'Item F', value: 'item4' },
       { label: 'Item G', value: 'item5' },
@@ -57,7 +58,8 @@ const Basic: Story = {
       { label: 'Item with extra extra extra extra extraextraextra long name', value: 'xlItem' },
     ],
     disabled: false,
-    placeholder: 'No groups',
+    placeholder: 'Nothing selected',
+    canBeEmpty: false,
   },
 };
 

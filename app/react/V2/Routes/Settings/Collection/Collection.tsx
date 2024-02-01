@@ -86,6 +86,7 @@ const Collection = () => {
     watch,
     handleSubmit,
     setError,
+    clearErrors,
     formState: { errors },
   } = useForm<ClientSettings>({
     defaultValues: formData,
@@ -339,10 +340,12 @@ const Collection = () => {
                     label={labelWithTip('Map Layers', tips.mapLayers)}
                     options={mapLayersOptions}
                     hasErrors={!!errors.mapLayers}
+                    canBeEmpty={false}
                     onChange={(newValues: any[]) => {
                       const values: [string, ...string[]] = newValues
                         .filter(({ selected }) => selected)
                         .map(({ value }) => value) as [string, ...string[]];
+                      clearErrors('mapLayers');
                       if (!values.length) {
                         setError(
                           'mapLayers',
