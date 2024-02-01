@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
+import { Label } from '../Forms';
 
 interface CopyValueInputProps {
   value: string;
   className?: string;
   label: string | JSX.Element;
   hideLabel?: boolean;
-  id?: string;
+  id: string;
 }
 
 const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInputProps) => {
@@ -30,9 +31,9 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
 
   return (
     <div className={`${className}`}>
-      <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+      <Label htmlFor={id} hideLabel={hideLabel}>
         {label}
-      </label>
+      </Label>
       <div className="relative w-full">
         <input
           type="text"
