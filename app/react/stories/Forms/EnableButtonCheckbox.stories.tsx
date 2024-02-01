@@ -24,6 +24,7 @@ const Container = (args: any) => {
           args.onChange();
           setChecked(!checked);
         }}
+        toggleTexts={args.toggleTexts}
         disabled={args.disabled}
         name={args.name}
         checked={checked}
@@ -51,6 +52,11 @@ const Basic: Story = {
   },
 };
 
-export { Basic };
+const WithCustomText: Story = {
+  ...Primary,
+  args: { ...Basic.args, toggleTexts: ['My custom enabled', 'My custom disabled'] },
+};
+
+export { Basic, WithCustomText };
 
 export default meta;

@@ -3,16 +3,17 @@ import { Translate } from 'app/I18N';
 
 interface CheckboxProps {
   name: string;
-  onChange?: ReactEventHandler<HTMLInputElement>;
+  toggleTexts?: [React.ReactNode, React.ReactNode];
   checked?: boolean;
   defaultChecked?: boolean;
   className?: string;
   disabled?: boolean;
+  onChange?: ReactEventHandler<HTMLInputElement>;
 }
 
 const EnableButtonCheckbox = React.forwardRef(
   (
-    { name, onChange, className, disabled, checked, defaultChecked }: CheckboxProps,
+    { name, toggleTexts, checked, defaultChecked, className, disabled, onChange }: CheckboxProps,
     ref: Ref<any>
   ) => {
     const styles = disabled
@@ -24,7 +25,7 @@ const EnableButtonCheckbox = React.forwardRef(
         data-testid="enable-button-checkbox"
         className={`relative inline-flex items-center text-sm font-medium text-gray-900 cursor-pointer ${
           disabled ? '!text-gray-300' : ''
-        } ${className} `}
+        } ${className}`}
       >
         <input
           type="checkbox"
@@ -38,10 +39,13 @@ const EnableButtonCheckbox = React.forwardRef(
         />
 
         <div
-          className={`bg-white peer ${styles} peer-checked:text-white text-sm px-3 py-2 peer-disabled:cursor-not-allowed font-medium rounded-lg
-    border focus:outline-none`}
+          className={`px-3 py-2 text-sm font-medium bg-white rounded-lg border peer ${styles} peer-checked:text-white peer-disabled:cursor-not-allowed focus:outline-none`}
         >
-          <Translate>{checked ? 'Active' : 'Enable'}</Translate>
+          {toggleTexts && toggleTexts.length === 2 ? (
+            <>{checked ? toggleTexts[0] : toggleTexts[1]}</>
+          ) : (
+            <Translate>{checked ? 'Active' : 'Enable'}</Translate>
+          )}
         </div>
       </label>
     );
