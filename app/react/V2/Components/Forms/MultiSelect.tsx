@@ -42,8 +42,12 @@ const MultiSelect = ({
   const selectedOptions = optionsState.filter(option => option.selected);
 
   return (
-    <div data-testid="multiselect" className="overflow-hidden rounded-lg shadow-sm">
-      <div className={`flex items-center px-4 h-12 ${hasErrors ? 'bg-error-50' : 'bg-gray-50'}`}>
+    <div data-testid="multiselect" className="rounded-lg shadow-sm">
+      <div
+        className={`flex items-center px-4 h-12 rounded-t-lg ${
+          hasErrors ? 'bg-error-50' : 'bg-gray-50'
+        }`}
+      >
         <span
           className={`flex-1 font-semibold text-sm ${
             hasErrors ? 'text-pink-800' : 'text-gray-700'
@@ -51,7 +55,7 @@ const MultiSelect = ({
         >
           {renderChild(label)}
         </span>
-        <Popover className="z-10 border border-gray-50">
+        <Popover className="border border-gray-50">
           <Popover.Button
             ref={setReferenceElement}
             className=" text-primary-700 disabled:text-primary-300"
