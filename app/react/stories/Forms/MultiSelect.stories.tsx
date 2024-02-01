@@ -41,8 +41,8 @@ const Basic: Story = {
       { label: 'Another', value: 'another' },
       { label: 'Another name', value: 'another name' },
       { label: 'And another', value: 'and another' },
-      { label: 'Item A', value: 'item1', selected: true },
-      { label: 'Item B', value: 'item2', selected: true },
+      { label: 'Item A', value: 'item1' },
+      { label: 'Item B', value: 'item2' },
       { label: 'Item C', value: 'item3' },
       { label: 'Item F', value: 'item4' },
       { label: 'Item G', value: 'item5' },
@@ -59,7 +59,7 @@ const Basic: Story = {
     ],
     disabled: false,
     placeholder: 'Nothing selected',
-    canBeEmpty: false,
+    canBeEmpty: true,
   },
 };
 
