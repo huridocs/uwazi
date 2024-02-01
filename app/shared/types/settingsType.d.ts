@@ -65,6 +65,10 @@ export interface Settings {
   customCSS?: string;
   customJS?: string;
   mapApiKey?: string;
+  /**
+   * @minItems 1
+   */
+  mapLayers?: [string, ...string[]];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema[];

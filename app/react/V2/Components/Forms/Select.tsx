@@ -1,7 +1,7 @@
 import React, { ChangeEventHandler, Ref } from 'react';
 import { Label } from './Label';
 
-type OptionSchema = { key: string; value: string; label?: string | React.ReactNode };
+type OptionSchema = { key?: string; value: string; label?: string | React.ReactNode };
 interface SelectProps {
   id: string;
   label: string | React.ReactNode;
@@ -54,7 +54,7 @@ const Select = React.forwardRef(
             value={value}
           >
             {options.map(({ key, value: optionValue, label: optionLabel }) => (
-              <option key={key} value={optionValue}>
+              <option key={key || optionValue} value={optionValue}>
                 {optionLabel || optionValue}
               </option>
             ))}
