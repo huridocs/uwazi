@@ -294,18 +294,30 @@ export const propertyValueSchema = {
   ],
 };
 
+export const selectParentSchema = {
+  type: 'object',
+  required: ['label', 'value'],
+  additionalProperties: false,
+  properties: {
+    label: { type: 'string' },
+    value: { type: 'string' },
+  },
+};
+
 export const inheritedValueSchema = {
   type: 'object',
   required: ['value'],
+  definitions: { propertyValueSchema, selectParentSchema },
   properties: {
     value: propertyValueSchema,
     label: { type: 'string' },
+    parent: selectParentSchema,
   },
 };
 
 export const metadataObjectSchema = {
   type: 'object',
-  definitions: { propertyValueSchema },
+  definitions: { propertyValueSchema, inheritedValueSchema, selectParentSchema },
   required: ['value'],
   properties: {
     value: propertyValueSchema,
@@ -317,6 +329,7 @@ export const metadataObjectSchema = {
     inheritedValue: { type: 'array', items: inheritedValueSchema },
     inheritedType: { type: 'string' },
     timeLinks: { type: 'string' },
+    parent: selectParentSchema,
   },
 };
 

@@ -4,7 +4,7 @@ const rules = require('./uwazi-eslint-rules');
 module.exports = {
   extends: ['airbnb', 'plugin:cypress/recommended', 'plugin:storybook/recommended'],
   env: { browser: true, node: true, jest: true, jasmine: true, es6: true, 'cypress/globals': true },
-  parserOptions: { ecmaVersion: 2020 },
+  parserOptions: { ecmaVersion: 2022 },
   plugins: [
     'react',
     'jest',
