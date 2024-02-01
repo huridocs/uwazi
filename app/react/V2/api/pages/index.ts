@@ -10,7 +10,6 @@ const getBySharedId = async (
 ): Promise<Page> => {
   try {
     const requestParams = new RequestParams({ sharedId }, headers);
-    //NOT THE RIGHT APPROACH
     api.locale(language);
     const response = await api.get('page', requestParams);
     return response.json;

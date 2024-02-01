@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/CodeEditor';
 
@@ -79,17 +79,23 @@ const meta: Meta<typeof CodeEditor> = {
 type Story = StoryObj<typeof CodeEditor>;
 
 const Component = ({ language, code }: CodeEditorProps) => {
-  const [currentEditor, setCurrentEditor] = useState<CodeEditorInstance>();
+  const editorInstance = useRef<CodeEditorInstance>();
   const [updatedCode, setUpdatedCode] = useState<string>();
 
   const handleClick = () => {
-    setUpdatedCode(currentEditor?.getValue());
+    setUpdatedCode(editorInstance.current?.getValue());
   };
 
   return (
     <div className="tw-content">
       <div className="overflow-y-auto w-full h-96">
-        <CodeEditor language={language} code={code} onMount={editor => setCurrentEditor(editor)} />
+        <CodeEditor
+          language={language}
+          code={code}
+          getEditor={editor => {
+            editorInstance.current = editor;
+          }}
+        />
       </div>
       <div className="w-full">
         <button

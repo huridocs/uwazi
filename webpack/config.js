@@ -12,6 +12,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
+const MONACO_DIR = path.resolve(__dirname, './node_modules/monaco-editor');
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -108,7 +109,13 @@ module.exports = production => {
         },
         {
           test: /\.ttf$/,
-          type: 'asset/resource',
+          include: MONACO_DIR,
+          type: 'asset',
+        },
+        {
+          test: /\.css$/,
+          include: MONACO_DIR,
+          use: ['style-loader', 'css-loader'],
         },
       ],
     },
@@ -136,7 +143,7 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
-      new MonacoWebpackPlugin({ languages: ['javascript', 'html'] }),
+      new MonacoWebpackPlugin({ languages: ['typescript', 'html'] }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],

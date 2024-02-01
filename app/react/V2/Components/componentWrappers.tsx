@@ -42,4 +42,4 @@ const withDnDBackend = <T,>(Component: React.FC<T>) =>
       HTML5Backend: module.HTML5Backend,
     })
   );
-export { withDnD, withDnDBackend, withLazy };
+export { withDnD, withDnDBackend };
