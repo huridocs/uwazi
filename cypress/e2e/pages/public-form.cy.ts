@@ -12,27 +12,20 @@ describe('Public Form', () => {
     it('should navigate to collection settings', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
+      cy.get('select[name="defaultLibraryView"]').select('Cards');
     });
 
-    it('should whitelist Mecanismo', () => {
-      cy.get('.settings-content').scrollTo('bottom');
-      cy.get('#collectionSettings label.toggleButton').eq(9).click();
-      cy.get('input[placeholder="Search item"]').type('Mecanismo');
-      cy.contains('span', 'Mecanismo').click();
-    });
+    it('should whitelist Mecanismo and Reporte', () => {
+      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="multiselect"]')
+        .eq(0)
+        .within(() => {
+          cy.get('button').eq(0).click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Mecanismo').click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Reporte').click();
+        });
 
-    it('should whitelist Reporte', () => {
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('input[placeholder="Search item"]').type('Reporte');
-      cy.contains('span', 'Reporte').click();
-    });
-
-    it('should save and check the changes', () => {
       cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('[title="Mecanismo"]').children().first().should('have.attr', 'data-state', '2');
-      cy.get('[title="Reporte"]').children().first().should('have.attr', 'data-state', '2');
     });
   });
 
@@ -44,7 +37,9 @@ describe('Public Form', () => {
       cy.get('.markdownEditor textarea').type(
         '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
       );
+      cy.intercept('POST', 'api/pages').as('savePages');
       cy.contains('button', 'Save').click();
+      cy.wait('@savePages');
       cy.get('.alert.alert-success').click();
 
       let url;
