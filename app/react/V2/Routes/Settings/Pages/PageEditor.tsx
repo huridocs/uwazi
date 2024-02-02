@@ -3,7 +3,6 @@ import React, { useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { kebabCase } from 'lodash';
 import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
@@ -11,6 +10,7 @@ import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
 import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
 import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { getPageUrl } from './components/PageListTable';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -73,9 +73,7 @@ const PageEditor = () => {
                 />
                 <CopyValueInput
                   value={
-                    loaderPage.sharedId
-                      ? `/page/${loaderPage.sharedId}/${kebabCase(loaderPage.title)}`
-                      : ''
+                    loaderPage.sharedId ? getPageUrl(loaderPage.sharedId, loaderPage.title) : ''
                   }
                   label={<Translate>URL</Translate>}
                   className="mb-4 w-full"

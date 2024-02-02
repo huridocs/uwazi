@@ -1,39 +1,29 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
 import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
-import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
+import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
-import { Button, ConfirmationModal, Pill, Table } from 'app/V2/Components/UI';
+import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Page } from 'app/V2/shared/types';
 import { pagesAtom } from 'app/V2/atoms/pagesAtom';
+import {
+  EntityViewHeader,
+  YesNoPill,
+  TitleHeader,
+  UrlHeader,
+  ActionHeader,
+  EditButton,
+  UrlCell,
+} from './components/PageListTable';
 
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     pagesAPI.get(headers);
-
-const EntityViewHeader = () => <Translate>Entity Page</Translate>;
-const TitleHeader = () => <Translate>Language</Translate>;
-const UrlHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
-
-const EditButton = ({ cell }: CellContext<Page, string>) => (
-  <Link to={`/settings/pages/page/${cell.getValue()}`}>
-    <Button styling="outline" className="leading-4">
-      <Translate>Edit</Translate>
-    </Button>
-  </Link>
-);
-
-const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
-  const color = cell.getValue() ? 'primary' : 'gray';
-  const entityViewLabel = cell.getValue() ? <Translate>Yes</Translate> : <Translate>No</Translate>;
-  return <Pill color={color}>{entityViewLabel}</Pill>;
-};
 
 const PagesList = () => {
   const setPages = useSetRecoilState(pagesAtom);
@@ -62,6 +52,7 @@ const PagesList = () => {
     }),
     columnHelper.accessor('sharedId', {
       header: UrlHeader,
+      cell: UrlCell,
       enableSorting: true,
     }),
     columnHelper.accessor('sharedId', {
@@ -69,6 +60,7 @@ const PagesList = () => {
       cell: EditButton,
     }),
   ];
+
   return (
     <div
       className="tw-content"
@@ -76,7 +68,7 @@ const PagesList = () => {
       data-testid="settings-pages"
     >
       <SettingsContent>
-        <SettingsContent.Header title="Languages" />
+        <SettingsContent.Header title="Pages" />
         <SettingsContent.Body>
           <Table<Page>
             columns={columns}
@@ -87,7 +79,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}

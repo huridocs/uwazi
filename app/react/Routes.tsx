@@ -7,9 +7,6 @@ import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { EditPage } from 'app/Pages/EditPage';
-import NewPage from 'app/Pages/NewPage';
-import Pages from 'app/Pages/Pages';
 import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
@@ -105,8 +102,6 @@ const getRoutesLayout = (
       <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
         <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
-        <Route path="new" element={adminsOnlyRoute(<NewPage />)} />
-        <Route path="edit/:sharedId" element={adminsOnlyRoute(<EditPage />)} />
         <Route
           path="page/:sharedId?"
           element={adminsOnlyRoute(<PageEditor />)}
