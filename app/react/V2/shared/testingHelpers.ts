@@ -13,6 +13,8 @@ const defaultState = {
       contexts: [],
     },
   ]),
+  settings: fromJS({}),
+  templates: fromJS({}),
 };
 
 const middlewares = [thunk];

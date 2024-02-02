@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -133,7 +134,7 @@ Close,غلق
 Collaborator,متعاون/ مساهم
 Collapse all,Collapse all
 Collection,المجموعة
-Collection name,اسم المجموعة
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,ضبط قوائم تصفيه البيانات
 Configure suggestions,تكوين الاقتراحات
@@ -204,10 +205,9 @@ Current value:,Current value:
 Currently connections only need a title.,لا تحتاج الاتصالات حالياً إلا لعنوان
 Custom component error,خطأ في المكون المخصص
 Custom CSS,CSS تنسيق
-Custom favicon,خصص أيقونة المفضلة (Favicon)
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,تحديد موقع البدء
 Custom Uploads,تحميل مخصص
 Dashboard,Dashboard
 Data imported,البيانات المستوردة
@@ -216,11 +216,12 @@ Date format,صيغة التاريخ
 Date modified,تاريخ التعديل
 Day,يوم
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,نجاح تغيير اللغة الافتراضية
 Default template,القالب الافتراضي
-Default view,Default view
+Default View,Default View
 Delete,حذف
 DELETE,حذف
 Delete entities and documents,Delete entities and documents
@@ -345,6 +346,7 @@ General,عام
 General Information,General Information
 Global CSS,خاصية CSS العالمية
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,معرف Google Analytics
 Google Maps,خرائط جوجل
@@ -394,7 +396,6 @@ Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,المدخلات غير صحيحة او غير مكتمله. رجاء التصحيح واعادج المحاولة
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,من الممكن أيضاً كسر التطبيق بسهولة بالغة. اكتب فقط الرمز هنا إذا كنت على دراية تامة بما تفعله
 Item,Item
 Item name,Item name
@@ -449,9 +450,9 @@ Manage site settings and configuration,إدارة إعدادات الموقع
 Map,خريطة
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map provider,Map provider
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,عرض الخريطة
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -462,7 +463,7 @@ Maps,خرائط
 Mark as Reviewed,ضع علامة للإشارة إلى خضوعه للمراجعة
 Markdown,ماركداون
 Matching,Matching
-Matomo Analytics,Matomo Analytics
+Matomo,Matomo
 Members,أعضاء
 Menu,قائمة التحكم
 Message,رسالة
@@ -617,7 +618,6 @@ property select,Select
 property text,Text
 Protection,حماية
 ProTip!,نصيحة احترافية!
-Public Endpoints,نقاط النهاية العامة
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -888,10 +888,10 @@ Uploads,تحميلات
 URL,عنوان URL
 Use,استخدام
 Use as filter,Use as filter
-Use custom landing page,خصص صفحة رئيسية
 User,المستخدم
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,اسم المستخدم
 Username is required,اسم المستخدم مطلوب
 Username is too long,اسم المستخدم طويل جداً
@@ -920,10 +920,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,نوصي بالتسمية
-Website analytics,تحليلات الموقع
 Welcome to Uwazi,مرحباً بكم في أوازي
 "Well, this is awkward...",إنه لأمر محرج...
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,سيحدث بالقيمة نفسها
 with,مع
 With great power comes great responsibility!,كلما ازدادت القوة، ازدادت معها المسؤولية!
