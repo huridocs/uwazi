@@ -1,4 +1,5 @@
 import { Location } from 'react-router-dom';
+import rison from 'rison-node';
 import { risonDecodeOrIgnore } from 'app/utils';
 
 const validateHomePageRoute = (route: string) => {
@@ -13,8 +14,8 @@ const validateHomePageRoute = (route: string) => {
 
 const searchParamsFromLocationSearch = (location: Location, param: string = 'q') => {
   const urlSearchParams = new URLSearchParams(location.search);
-  console.log('Location: ', location.search);
-  return risonDecodeOrIgnore(decodeURIComponent(location.search.split('=')[1] || '()'));
+  const paramJSON = risonDecodeOrIgnore(decodeURIComponent(urlSearchParams.get(param) || '()'));
+  return paramJSON;
 };
 
 const searchParamsFromSearchParams = (searchParams: URLSearchParams) => {
