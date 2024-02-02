@@ -20,7 +20,7 @@ export function risonDecodeOrIgnore(query, defaultValue = {}) {
   try {
     return rison.decode(query);
   } catch (e) {
-    console.log('Error decoding: ', query);
+    console.log('Error decoding: ', query, e);
     return defaultValue;
   }
 }
