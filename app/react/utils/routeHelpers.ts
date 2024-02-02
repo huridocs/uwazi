@@ -1,5 +1,4 @@
 import { Location } from 'react-router-dom';
-import rison from 'rison-node';
 import { risonDecodeOrIgnore } from 'app/utils';
 
 const validateHomePageRoute = (route: string) => {
