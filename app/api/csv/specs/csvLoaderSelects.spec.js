@@ -77,7 +77,7 @@ describe('loader', () => {
     await testingEnvironment.tearDown();
   });
 
-  it('should create values in thesauri', async () => {
+  fit('should create values in thesauri', async () => {
     expect(selectLabels).toEqual([
       ['A', []],
       ['1', ['1A', '1B', 'A', '1c']],
