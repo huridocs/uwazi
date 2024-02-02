@@ -101,18 +101,9 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -156,6 +147,7 @@ exports[`BarChart Markdown component should render the data passed by mapStateTo
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -285,18 +277,9 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -340,6 +323,7 @@ exports[`BarChart Markdown component when excludeZero should render without zero
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -509,18 +493,9 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -564,6 +539,7 @@ exports[`BarChart Markdown component when passing maxCategories should only rend
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -679,18 +655,9 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -734,6 +701,7 @@ exports[`BarChart Markdown component when passing maxCategories should render ot
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -868,18 +836,9 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         yAxisId={0}
       />
       <CartesianGrid
-        fill="none"
-        horizontal={true}
-        horizontalFill={Array []}
-        horizontalPoints={Array []}
-        stroke="#ccc"
         strokeDasharray="2 4"
-        vertical={true}
-        verticalFill={Array []}
-        verticalPoints={Array []}
       />
       <Tooltip
-        active={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -923,6 +882,7 @@ exports[`BarChart Markdown component when passing scatter parameter should displ
         wrapperStyle={Object {}}
       />
       <Bar
+        activeBar={true}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
