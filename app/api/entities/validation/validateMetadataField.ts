@@ -138,8 +138,9 @@ const validateRelationshipV2 = async (
       { sharedId: 1, template: 1 }
     );
 
-    if (entitiesInValues.length !== valueIds.length) {
-      const validIds = new Set(entitiesInValues.map(e => e.sharedId!));
+    const validIds = new Set(entitiesInValues.map(e => e.sharedId!));
+
+    if (validIds.size !== valueIds.length) {
       const invalidIds = valueIds.flatMap(v => (validIds.has(v) ? [] : [{ value: v }]));
 
       return [

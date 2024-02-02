@@ -5,6 +5,7 @@ import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
 import * as v2Support from '../v2_support';
+import { inspect } from 'util';
 
 const factory = getFixturesFactory();
 
@@ -238,12 +239,14 @@ describe('entities.save()', () => {
         {
           template: factory.id('template1'),
           title: 'new_entity2',
+          language: 'en',
           metadata: {
             relProp: [{ value: 'entity2' }],
           },
         },
         { user: adminUser, language: 'en' }
       );
+
       const inDb = await db
         ?.collection('entities')
         .find({ title: 'new_entity2' }, { sort: { language: 1 } })

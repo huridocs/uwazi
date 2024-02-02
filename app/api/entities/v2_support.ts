@@ -14,6 +14,7 @@ import { MatchQueryNode } from 'api/relationships.v2/model/MatchQueryNode';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
+import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();
@@ -50,23 +51,19 @@ const denormalizeAfterEntityCreation = async (data: { sharedId: string; language
 const denormalizeAfterEntityUpdate = async (data: { sharedId: string; language: string }) =>
   denormalizeAfterEntityAction(data, 'Updating');
 
-const calculateDiff = (currentDoc: EntitySchema, toSave: EntitySchema, name: string) => {
-  const newValues = new Set<string>();
-  const deletedValues = new Set<string>();
+const diffMetadataValues = (
+  currentDoc: EntitySchema,
+  toSave: EntitySchema,
+  propertyName: string
+) => {
+  const diff = arrayBidirectionalDiff(
+    currentDoc?.metadata?.[propertyName] ?? [],
+    toSave?.metadata?.[propertyName] ?? [],
+    v => v.value as string,
+    v => v.value as string
+  );
 
-  toSave.metadata?.[name]?.forEach(item => {
-    newValues.add(item.value as string);
-  });
-
-  currentDoc.metadata?.[name]?.forEach(item => {
-    const value = item.value as string;
-    if (!newValues.has(value)) {
-      deletedValues.add(value);
-    }
-    newValues.delete(value);
-  });
-
-  return { newValues: [...newValues], deletedValues: [...deletedValues] };
+  return { newValues: diff.added, deletedValues: diff.removed };
 };
 
 interface RelationshipDefinition {
@@ -107,7 +104,11 @@ const ignoreNewRelationshipsMetadata = async (
       templateModel.properties.map(async property => {
         if (property instanceof RelationshipProperty) {
           if (toSave.metadata && currentDoc.metadata) {
-            const { newValues, deletedValues } = calculateDiff(currentDoc, toSave, property.name);
+            const { newValues, deletedValues } = diffMetadataValues(
+              currentDoc,
+              toSave,
+              property.name
+            );
 
             const query = property.buildQueryRootedInEntity(currentDoc.sharedId!);
             newRelationships.push(
