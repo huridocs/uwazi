@@ -581,6 +581,24 @@ describe('validateEntity', () => {
             }
           );
         });
+
+        it('should not allow to change values if it is read-only', async () => {
+          const entity = createEntity({
+            language: 'es',
+            metadata: {
+              newRelationship2: [{ value: 'entity1' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.read_only,
+            ".metadata['newRelationship2']",
+            {
+              data: [{ value: 'entity1' }],
+            }
+          );
+        });
       });
 
       describe('link property', () => {

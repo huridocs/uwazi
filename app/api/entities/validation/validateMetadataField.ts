@@ -11,6 +11,7 @@ import { TemplateSchema } from 'shared/types/templateType';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { validators, customErrorMessages } from './metadataValidators';
 import { ObjectId } from 'mongodb';
+import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
@@ -126,7 +127,27 @@ const validateRelationshipV2 = async (
     const { targetTemplates } = property;
 
     if (!targetTemplates) {
-      // TODO: return error if the value changed
+      const currentEntity = await entities.getById(entity.sharedId, entity.language);
+      const diff = arrayBidirectionalDiff(
+        currentEntity?.metadata?.[property.name] || [],
+        value,
+        v => v.value as string,
+        v => v
+      );
+
+      if (diff.added.length || diff.removed.length) {
+        return [
+          validationError(
+            {
+              message: customErrorMessages.read_only,
+              data: [...diff.added, ...diff.removed],
+            },
+            property,
+            entity
+          ),
+        ];
+      }
+
       return [];
     }
 
