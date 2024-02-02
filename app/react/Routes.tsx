@@ -51,6 +51,7 @@ import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader } from 'V2/Routes/Settings/Pages/PageEditor';
+import { PagesList, pagesListLoader } from './V2/Routes/Settings/Pages/PagesList';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -103,7 +104,7 @@ const getRoutesLayout = (
       />
       <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
-        <Route index element={adminsOnlyRoute(<Pages />)} />
+        <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
         <Route path="new" element={adminsOnlyRoute(<NewPage />)} />
         <Route path="edit/:sharedId" element={adminsOnlyRoute(<EditPage />)} />
         <Route
