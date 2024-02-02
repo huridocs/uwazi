@@ -1,8 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
@@ -31,7 +32,7 @@ const PageEditor = () => {
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
     getValues,
   } = useForm({
@@ -47,6 +48,10 @@ const PageEditor = () => {
     console.log(values, newHTML, newJS);
   };
 
+  const handleCancel = () => {};
+
+  const handleSaveAndPreview = () => {};
+
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
       <SettingsContent>
@@ -59,10 +64,15 @@ const PageEditor = () => {
           <Tabs unmountTabs={false}>
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
               <div className="flex flex-col gap-4 max-w-2xl">
-                <EnableButtonCheckbox
-                  {...register('entityView')}
-                  toggleTexts={[<Translate>Enabled</Translate>, <Translate>Disabled</Translate>]}
-                />
+                <div className="flex gap-4 items-center">
+                  <Translate className="font-bold">
+                    Enable this page to be used as an entity view page:
+                  </Translate>
+                  <EnableButtonCheckbox
+                    {...register('entityView')}
+                    toggleTexts={[<Translate>Enabled</Translate>, <Translate>Disabled</Translate>]}
+                  />
+                </div>
 
                 <InputField
                   id="title"
@@ -77,6 +87,15 @@ const PageEditor = () => {
                   className="mb-4 w-full"
                   id="page-url"
                 />
+
+                {loaderPage.sharedId && (
+                  <Link target="_blank" to={getPageUrl(loaderPage.sharedId, loaderPage.title)}>
+                    <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
+                      <ArrowTopRightOnSquareIcon className="w-4" />
+                      <Translate className="underline hover:text-primary-700">View page</Translate>
+                    </div>
+                  </Link>
+                )}
               </div>
             </Tabs.Tab>
 
@@ -89,6 +108,7 @@ const PageEditor = () => {
                     htmlEditor.current = editor;
                   }}
                 />
+                <textarea {...register('metadata.content')} className="hidden" />
               </div>
             </Tabs.Tab>
 
@@ -101,6 +121,7 @@ const PageEditor = () => {
                     JSEditor.current = editor;
                   }}
                 />
+                <textarea {...register('metadata.script')} className="hidden" />
               </div>
             </Tabs.Tab>
           </Tabs>

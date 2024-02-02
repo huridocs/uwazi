@@ -4724,6 +4724,10 @@ input:checked + .toggle-bg {
   cursor: not-allowed;
 }
 
+.hover\:cursor-pointer:hover {
+  cursor: pointer;
+}
+
 .hover\:border-error-800:hover {
   --tw-border-opacity: 1;
   border-color: rgb(157 23 77 / var(--tw-border-opacity));
@@ -4831,6 +4835,10 @@ input:checked + .toggle-bg {
 
 .hover\:bg-gradient-to-br:hover {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.hover\:font-bold:hover {
+  font-weight: 700;
 }
 
 .hover\:text-gray-600:hover {
