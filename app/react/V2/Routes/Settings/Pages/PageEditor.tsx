@@ -12,6 +12,7 @@ import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
 import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
 import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
 import { getPageUrl } from './components/PageListTable';
+import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
 
 const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -41,11 +42,17 @@ const PageEditor = () => {
   });
 
   const handleSave = () => {
-    const values = getValues('title');
+    const values = getValues();
     const newHTML = htmlEditor.current?.getValue();
     const newJS = JSEditor.current?.getValue();
 
-    console.log(values, newHTML, newJS);
+    const updatedPage: Page = {
+      ...loaderPage,
+      ...values,
+      metadata: { content: newHTML, script: newJS },
+    };
+
+    console.log(updatedPage);
   };
 
   const handleCancel = () => {};
@@ -100,7 +107,8 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
-              <div className="h-full">
+              <div className="flex flex-col gap-2 h-full">
+                <HTMLNotification />
                 <CodeEditor
                   language="html"
                   code={getValues('metadata.content')}
@@ -113,7 +121,8 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
-              <div className="h-full">
+              <div className="flex flex-col gap-2 h-full">
+                <JSNotification />
                 <CodeEditor
                   language="javascript"
                   code={getValues('metadata.script')}
