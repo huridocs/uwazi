@@ -10,6 +10,7 @@ import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { validators, customErrorMessages } from './metadataValidators';
+import { ObjectId } from 'mongodb';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
@@ -115,6 +116,50 @@ const validateRelationshipForeignIds = async (
   return [];
 };
 
+const validateRelationshipV2 = async (
+  property: PropertySchema,
+  entity: EntitySchema,
+  value: MetadataObjectSchema[] = []
+) => {
+  if (value && property.type === propertyTypes.newRelationship) {
+    const valueIds = value.map(v => v.value as string);
+    const { targetTemplates } = property;
+
+    if (!targetTemplates) {
+      // TODO: return error if the value changed
+      return [];
+    }
+
+    const entitiesInValues: EntityWithFilesSchema[] = await entities.getUnrestricted(
+      {
+        sharedId: { $in: valueIds },
+        template: { $in: targetTemplates.map(t => new ObjectId(t)) },
+      },
+      { sharedId: 1, template: 1 }
+    );
+
+    if (entitiesInValues.length !== valueIds.length) {
+      const validIds = new Set(entitiesInValues.map(e => e.sharedId!));
+      const invalidIds = valueIds.flatMap(v => (validIds.has(v) ? [] : [{ value: v }]));
+
+      return [
+        validationError(
+          {
+            message: customErrorMessages.relationship_wrong_foreign_id,
+            data: invalidIds,
+          },
+          property,
+          entity
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  return [];
+};
+
 const validateSameRelationshipsMatch = (
   property: PropertySchema,
   entity: EntitySchema,
@@ -181,6 +226,7 @@ export const validateMetadataField = async (
     ...validateSameRelationshipsMatch(property, entity, template, value),
     ...(await validateRelationshipForeignIds(property, entity, value)),
     ...(await validateDictionariesForeignIds(property, entity, value)),
+    ...(await validateRelationshipV2(property, entity, value)),
   ];
 
   if (errors.length) {

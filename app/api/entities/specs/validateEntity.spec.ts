@@ -531,6 +531,58 @@ describe('validateEntity', () => {
         });
       });
 
+      describe('relationship property V2', () => {
+        it('should fail if value is empty string', async () => {
+          const entity = createEntity({
+            metadata: { newRelationship: [{ value: '' }, { value: '' }] },
+          });
+          await expectError(
+            entity,
+            customErrorMessages[propertyTypes.newRelationship],
+            ".metadata['newRelationship']"
+          );
+        });
+
+        it('should not allow foreign ids that do not exists', async () => {
+          const entity = createEntity({
+            metadata: {
+              newRelationship: [
+                { value: 'entity1' },
+                { value: 'non_existent_entity' },
+                { value: 'non_existent_entity2' },
+              ],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.relationship_wrong_foreign_id,
+            ".metadata['newRelationship']",
+            {
+              data: [{ value: 'non_existent_entity' }, { value: 'non_existent_entity2' }],
+            }
+          );
+        });
+
+        it('should not allow foreign ids that belong to diferent template', async () => {
+          const entity = createEntity({
+            language: 'es',
+            metadata: {
+              newRelationship: [{ value: 'entity1' }, { value: 'entity2' }, { value: 'entity3' }],
+            },
+          });
+
+          await expectError(
+            entity,
+            customErrorMessages.relationship_wrong_foreign_id,
+            ".metadata['newRelationship']",
+            {
+              data: [{ value: 'entity2' }],
+            }
+          );
+        });
+      });
+
       describe('link property', () => {
         it('should fail if value is not an object', async () => {
           const entity = createEntity({ metadata: { link: [{ value: 'bad_link' }] } });
