@@ -13,7 +13,8 @@ const validateHomePageRoute = (route: string) => {
 
 const searchParamsFromLocationSearch = (location: Location, param: string = 'q') => {
   const urlSearchParams = new URLSearchParams(location.search);
-  return risonDecodeOrIgnore(decodeURIComponent(urlSearchParams.get(param) || '()'));
+  console.log('Location: ', location.search);
+  return risonDecodeOrIgnore(decodeURIComponent(location.search.split('=')[1] || '()'));
 };
 
 const searchParamsFromSearchParams = (searchParams: URLSearchParams) => {

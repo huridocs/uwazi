@@ -14,10 +14,10 @@ import { DocumentCounter } from 'app/Layout/DocumentCounter';
 import { Icon } from 'UI';
 import { withRouter } from 'app/componentWrappers';
 import { LibraryHeader } from 'app/Library/components/LibraryHeader';
+import { risonDecodeOrIgnore } from 'app/utils';
 import Welcome from './components/Welcome';
 import { TilesViewer } from './TilesViewer';
 import blankState from '../Library/helpers/blankState';
-import { risonDecodeOrIgnore } from 'app/utils';
 
 const selectAllEntities = command => {
   command.selectAllDocuments();

@@ -15,7 +15,6 @@ const decodeQuery = params => {
   try {
     return risonDecodeOrIgnore(params.q || '()');
   } catch (error) {
-    console.log('Found an error but will ignore');
     // if (error instanceof RangeError) {
     //   console.log()
     return {};
