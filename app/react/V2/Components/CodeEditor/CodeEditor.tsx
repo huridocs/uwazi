@@ -7,8 +7,7 @@ const CodeEditorComponent = loadable(async () => {
   return Component;
 });
 
-const CodeEditor = ({ language, getEditor, code }: CodeEditorProps) => (
-  <CodeEditorComponent language={language} getEditor={getEditor} code={code} />
-);
+// eslint-disable-next-line react/jsx-props-no-spreading
+const CodeEditor = (props: CodeEditorProps) => <CodeEditorComponent {...props} />;
 
 export { CodeEditor };

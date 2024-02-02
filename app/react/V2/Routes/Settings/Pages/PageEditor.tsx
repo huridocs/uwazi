@@ -24,8 +24,6 @@ const pageEditorLoader =
     return {};
   };
 
-const editorContainerStyles = 'lg:h-[630px] xl:h-[630px] 2xl:h-[630px] md:h-96 h-48 w-full';
-
 const PageEditor = () => {
   const loaderPage = useLoaderData() as Page;
   const htmlEditor = useRef<CodeEditorInstance>();
@@ -53,7 +51,7 @@ const PageEditor = () => {
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header
-          path={new Map([['Translations', '/settings/translations']])}
+          path={new Map([['Pages', '/settings/pages']])}
           title={watch('title')}
         />
 
@@ -83,7 +81,7 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
-              <div className={editorContainerStyles}>
+              <div className="h-full">
                 <CodeEditor
                   language="html"
                   code={getValues('metadata.content')}
@@ -95,7 +93,7 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
-              <div className={editorContainerStyles}>
+              <div className="h-full">
                 <CodeEditor
                   language="javascript"
                   code={getValues('metadata.script')}

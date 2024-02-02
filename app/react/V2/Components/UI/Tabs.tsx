@@ -41,7 +41,7 @@ const Tabs = ({ children, onTabSelected, unmountTabs = true }: TabsProps) => {
   const inactiveClass = 'text-gray-500';
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div
         className="flex rounded-md border border-gray-50 shadow-sm md:w-1/2"
         data-testid="tabs-comp"
@@ -59,17 +59,24 @@ const Tabs = ({ children, onTabSelected, unmountTabs = true }: TabsProps) => {
           </button>
         ))}
       </div>
-      <div className="py-4">
+      <div className="py-4 grow">
         {children.map(child => {
           if (unmountTabs) {
             if (child.props.id === activeTab) {
-              return <div key={child.props.id}>{child.props.children}</div>;
+              return (
+                <div className="w-full h-full" key={child.props.id}>
+                  {child.props.children}
+                </div>
+              );
             }
           }
 
           if (!unmountTabs) {
             return (
-              <div key={child.props.id} className={child.props.id !== activeTab ? 'hidden' : ''}>
+              <div
+                key={child.props.id}
+                className={`w-full h-full ${child.props.id !== activeTab ? 'hidden' : ''}`}
+              >
                 {child.props.children}
               </div>
             );
@@ -78,7 +85,7 @@ const Tabs = ({ children, onTabSelected, unmountTabs = true }: TabsProps) => {
           return null;
         })}
       </div>
-    </>
+    </div>
   );
 };
 
