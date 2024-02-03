@@ -41,13 +41,13 @@ const withDenormalizationService = async (
 };
 
 const denormalizeAfterEntityCreation = async (data: { sharedId: string; language: string }) => {
-  await withDenormalizationService(service =>
+  await withDenormalizationService(async service =>
     service.denormalizeAfterCreatingEntities([data.sharedId], data.language)
   );
 };
 
 const denormalizeAfterEntityUpdate = async (data: { sharedId: string; language: string }) => {
-  await withDenormalizationService(service =>
+  await withDenormalizationService(async service =>
     service.denormalizeAfterUpdatingEntities([data.sharedId], data.language)
   );
 };

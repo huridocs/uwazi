@@ -5,7 +5,6 @@ import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
 import * as v2Support from '../v2_support';
-import { inspect } from 'util';
 
 const factory = getFixturesFactory();
 
@@ -322,7 +321,7 @@ describe('entities.save()', () => {
 
   it('should create and delete the relationships accordingly and update the metadata', async () => {
     const [entity] = await entities.get({ sharedId: 'entity1', language: 'en' });
-    const saved = await entities.save(
+    await entities.save(
       {
         ...entity,
         metadata: { relProp: [{ value: 'entity2' }, { value: 'entity5' }] },

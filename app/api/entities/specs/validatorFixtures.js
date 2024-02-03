@@ -40,29 +40,34 @@ export default {
           ],
           targetTemplates: [simpleTemplateId],
         },
-        { name: 'newRelationship2', type: 'newRelationship', query: [
-          {
-            types: [db.id()],
-            direction: 'out',
-            match: [
-              {
-                templates: [],
-                traverse: [
-                  {
-                    types: [db.id()],
-                    direction: 'out',
-                    match: [
-                      {
-                        templates: [simpleTemplateId],
-                        traverse: [],
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ], targetTemplates: false },
+        {
+          name: 'newRelationship2',
+          type: 'newRelationship',
+          query: [
+            {
+              types: [db.id()],
+              direction: 'out',
+              match: [
+                {
+                  templates: [],
+                  traverse: [
+                    {
+                      types: [db.id()],
+                      direction: 'out',
+                      match: [
+                        {
+                          templates: [simpleTemplateId],
+                          traverse: [],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          targetTemplates: false,
+        },
         { name: 'media', type: 'media' },
         { name: 'image', type: 'image' },
         { name: 'link', type: 'link' },
