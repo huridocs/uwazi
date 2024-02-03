@@ -12,27 +12,20 @@ describe('Public Form', () => {
     it('should navigate to collection settings', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
+      cy.get('select[name="defaultLibraryView"]').select('Cards');
     });
 
-    it('should whitelist Mecanismo', () => {
-      cy.get('.settings-content').scrollTo('bottom');
-      cy.get('#collectionSettings label.toggleButton').eq(9).click();
-      cy.get('input[placeholder="Search item"]').type('Mecanismo');
-      cy.contains('span', 'Mecanismo').click();
-    });
+    it('should whitelist Mecanismo and Reporte', () => {
+      cy.get('[data-testid="settings-collection"]').scrollTo('center');
+      cy.get('[data-testid="multiselect"]')
+        .eq(0)
+        .within(() => {
+          cy.get('button').eq(0).click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Mecanismo').click();
+          cy.contains('[data-testid="multiselect-popover"] li', 'Reporte').click();
+        });
 
-    it('should whitelist Reporte', () => {
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('input[placeholder="Search item"]').type('Reporte');
-      cy.contains('span', 'Reporte').click();
-    });
-
-    it('should save and check the changes', () => {
       cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
-      cy.get('input[placeholder="Search item"]').clear();
-      cy.get('[title="Mecanismo"]').children().first().should('have.attr', 'data-state', '2');
-      cy.get('[title="Reporte"]').children().first().should('have.attr', 'data-state', '2');
     });
   });
 
@@ -44,7 +37,9 @@ describe('Public Form', () => {
       cy.get('.markdownEditor textarea').type(
         '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
       );
+      cy.intercept('POST', 'api/pages').as('savePages');
       cy.contains('button', 'Save').click();
+      cy.wait('@savePages');
       cy.get('.alert.alert-success').click();
 
       let url;
@@ -168,6 +163,32 @@ describe('Public Form', () => {
       cy.contains('aside.is-active a', 'View').click();
       cy.get('.attachments-list-parent').eq(0).scrollIntoView();
       cy.get('.attachments-list-parent').eq(0).toMatchImageSnapshot();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should catch an unexpected error on rendering', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('a', 'Add page').click();
+      cy.get('[name="page.data.title"]').type('Public Form with error');
+      cy.get('.markdownEditor textarea').type(
+        '<h1>Public form with error</h1><PublicForm template="invalid template" />'
+      );
+      cy.contains('button', 'Save').click();
+      cy.get('.alert.alert-success').click();
+      cy.get('.alert-info:nth-child(2) a').then($element => {
+        const url = $element.attr('href')!.replace('http://localhost:3000', '');
+        cy.visit(url, {
+          onBeforeLoad(win) {
+            cy.stub(win.console, 'error').as('consoleError');
+          },
+        });
+        cy.on('uncaught:exception', (_err, _runnable) => {
+          cy.contains('Well, this is awkward');
+          return false;
+        });
+      });
     });
   });
 });

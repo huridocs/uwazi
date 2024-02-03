@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import React from 'react';
 import { fireEvent, screen } from '@testing-library/react';
 import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';

@@ -6,8 +6,8 @@ import disableTransitions from '../helpers/disableTransitions';
 
 const selectors = {
   pageContentsInput: '.tab-content > textarea:nth-child(1)',
-  useCustomLandingPage:
-    '#collectionSettings > div:nth-child(5) > div > div.toggle-children-button > label',
+  newNameGeneration:
+    '#collection-form > div:nth-child(1) > div:nth-child(2) > div > div:nth-child(9) > label',
 };
 
 describe('Custom home page and styles', () => {
@@ -57,8 +57,8 @@ describe('Custom home page and styles', () => {
     await expect(page).toClick('a', { text: 'Custom home page' });
     const pageUrl = await newPageUrl();
     await expect(page).toClick('a', { text: 'Collection' });
-    await expect(page).toClick(selectors.useCustomLandingPage);
     await expect(page).toFill('input[name="home_page"]', pageUrl);
+    await expect(page).toClick(selectors.newNameGeneration);
     await expect(page).toClick('button', { text: 'Save' });
   });
 
@@ -96,11 +96,14 @@ describe('Custom home page and styles', () => {
   });
 
   it('should allow settings a public entity as a landing page', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
+    await page.waitForSelector('[aria-label="Settings"]');
+    await expect(page).toClick('[aria-label="Settings"]', { text: 'Settings' });
+    await page.waitForTimeout(100);
     await expect(page).toClick('a', { text: 'Collection' });
+    await page.waitForSelector('input[name="home_page"]');
     await expect(page).toFill('input[name="home_page"]', '/entity/7ycel666l65vobt9');
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
 
   it('should check that the landing page is the defined entity', async () => {
@@ -113,23 +116,37 @@ describe('Custom home page and styles', () => {
     });
   });
 
-  it('should allow using a library query as a landing page', async () => {
-    await expect(page).toClick('a', { text: 'Settings' });
+  it('should allow using a complicated library query as a landing page', async () => {
+    await expect(page).toClick('[aria-label="Settings"]', { text: 'Settings' });
+    await page.waitForNetworkIdle();
     await expect(page).toClick('a', { text: 'Collection' });
     await expect(page).toFill(
       'input[name="home_page"]',
-      "/library/table/?types:!('58ada34c299e82674854504b')"
+      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
     );
     await expect(page).toClick('button', { text: 'Save' });
-    await expect(page).toClick('div.alert-success');
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
-
   it('should check that the landing page is the defined library query', async () => {
     await page.goto(`${host}`);
     await page.reload();
     await disableTransitions();
-    await page.waitForSelector('.tableview-wrapper > table > tbody > tr');
-    const rowSelector = '.tableview-wrapper > table > tbody > tr.template-58ada34c299e82674854504b';
-    expect((await page.$$(rowSelector)).length).toBe(2);
+    await page.waitForSelector('.item-group');
+    const rowSelector = '.item-document';
+    await expect((await page.$$(rowSelector)).length).toBe(2);
+    await expect(page).toMatchElement('.item-group .item-document:nth-child(1) .item-name', {
+      text: 'Corte Interamericana de Derechos Humanos',
+    });
+    await expect(page).toMatchElement('.item-group .item-document:nth-child(2) .item-name', {
+      text: 'Comisión Interamericana de Derechos Humanos',
+    });
+  });
+
+  it('should allow using a default library url with language as a landing page', async () => {
+    await expect(page).toClick('a', { text: 'Settings' });
+    await expect(page).toClick('a', { text: 'Collection' });
+    await expect(page).toFill('input[name="home_page"]', '/en/library/');
+    await expect(page).toClick('button', { text: 'Save' });
+    await expect(page).toMatchElement('[data-testid="notifications-container"]');
   });
 });
