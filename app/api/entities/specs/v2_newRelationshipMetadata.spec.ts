@@ -330,10 +330,10 @@ describe('entities.save()', () => {
       { user: adminUser, language: 'en' }
     );
 
-    const inDb = await db?.collection('relationships').find({}).toArray();
+    const relsInDb = await db?.collection('relationships').find({}).toArray();
 
-    expect(inDb?.find(rel => rel._id.equals(factory.id('rel1-3')))).toBe(undefined);
-    expect(inDb).toEqual(
+    expect(relsInDb?.find(rel => rel._id.equals(factory.id('rel1-3')))).toBe(undefined);
+    expect(relsInDb).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           from: {
@@ -346,12 +346,28 @@ describe('entities.save()', () => {
       ])
     );
 
-    expect(saved.metadata).toEqual({
-      relProp: [
-        { value: 'entity2', label: 'entity2-en' },
-        { value: 'entity5', label: 'entity5-en' },
-      ],
-    });
+    const entitiesInDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
+
+    expect(entitiesInDb).toEqual([
+      expect.objectContaining({
+        language: 'en',
+        metadata: {
+          relProp: [
+            { value: 'entity2', label: 'entity2-en' },
+            { value: 'entity5', label: 'entity5-en' },
+          ],
+        },
+      }),
+      expect.objectContaining({
+        language: 'es',
+        metadata: {
+          relProp: [
+            { value: 'entity2', label: 'entity2-es' },
+            { value: 'entity5', label: 'entity5-es' },
+          ],
+        },
+      }),
+    ]);
   });
 });
 
