@@ -8,45 +8,22 @@ const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   entities: [
-    factory.entity(
-      'entity1',
-      'template1',
-      {
-        relProp: [
-          {
-            value: 'entity2',
-            label: 'entity2',
-          },
-          {
-            value: 'entity3',
-            label: 'entity3',
-          },
-        ],
-      },
-      {
-        obsoleteMetadata: [],
-      }
-    ),
-    factory.entity(
-      'entity2',
-      'template1',
-      {
-        relProp: [{ value: 'entity3', label: 'entity3' }],
-      },
-      {
-        obsoleteMetadata: [],
-      }
-    ),
-    factory.entity(
-      'entity3',
-      'template1',
-      {
-        relProp: [],
-      },
-      {
-        obsoleteMetadata: [],
-      }
-    ),
+    factory.entity('entity1', 'template1', {
+      relProp: [
+        {
+          value: 'entity2',
+          label: 'entity2',
+        },
+        {
+          value: 'entity3',
+          label: 'entity3',
+        },
+      ],
+    }),
+    factory.entity('entity2', 'template1', {
+      relProp: [{ value: 'entity3', label: 'entity3' }],
+    }),
+    factory.entity('entity3', 'template1'),
   ],
   templates: [
     factory.template('template1', [
@@ -165,8 +142,8 @@ describe('when deleting a file', () => {
     const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
     expect(entities).toEqual([
       { ...fixtures.entities?.[0], metadata: { relProp: [] }, obsoleteMetadata: [] },
-      { ...fixtures.entities?.[1] },
-      { ...fixtures.entities?.[2] },
+      { ...fixtures.entities?.[1], obsoleteMetadata: [] },
+      { ...fixtures.entities?.[2], metadata: { relProp: [] }, obsoleteMetadata: [] },
     ]);
   });
 
