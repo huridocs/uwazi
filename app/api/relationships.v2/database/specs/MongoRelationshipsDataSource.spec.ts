@@ -264,7 +264,7 @@ describe('getAll()', () => {
 describe('getByefinition()', () => {
   it('should find the relationships from sourceEntity to targetEntity of the provided type', async () => {
     const rels = await ds
-      .getByDefinition('entity1', factory.id('nullType').toString(), 'hub1')
+      .getByDefinition([{ from: 'entity1', type: factory.id('nullType').toString(), to: 'hub1' }])
       .all();
     expect(rels).toEqual([expect.objectContaining({ _id: factory.id('rel1').toString() })]);
     rels.forEach(rel => {
@@ -274,11 +274,17 @@ describe('getByefinition()', () => {
 
   it('should only find relationships that are not text references', async () => {
     expect(
-      await ds.getByDefinition('entity7', factory.id('relType5').toString(), 'hub3').all()
+      await ds
+        .getByDefinition([{ from: 'entity7', type: factory.id('relType5').toString(), to: 'hub3' }])
+        .all()
     ).toEqual([]);
 
     expect(
-      await ds.getByDefinition('entity7', factory.id('relType5').toString(), 'entity1').all()
+      await ds
+        .getByDefinition([
+          { from: 'entity7', type: factory.id('relType5').toString(), to: 'entity1' },
+        ])
+        .all()
     ).toEqual([]);
   });
 });

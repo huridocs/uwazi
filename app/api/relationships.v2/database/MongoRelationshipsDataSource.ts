@@ -44,13 +44,19 @@ export class MongoRelationshipsDataSource
     );
   }
 
-  getByDefinition(sourceEntity: string, type: string, targetEntity: string) {
+  getByDefinition(definitions: { from: string; type: string; to: string }[]) {
     const cursor = this.getCollection().find({
-      'from.entity': sourceEntity,
       'from.file': { $exists: false },
-      'to.entity': targetEntity,
       'to.file': { $exists: false },
-      type: MongoIdHandler.mapToDb(type),
+      $and: [
+        {
+          $or: definitions.map(({ from, type, to }) => ({
+            'from.entity': from,
+            'to.entity': to,
+            type: MongoIdHandler.mapToDb(type),
+          })),
+        },
+      ],
     });
     return new MongoResultSet(cursor, RelationshipMappers.toModel);
   }

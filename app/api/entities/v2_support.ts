@@ -155,22 +155,18 @@ const createNewRelationships = async (
 const deleteRemovedRelationships = async (
   relationships: { type: string; to: string; from: string }[]
 ) => {
-  const transactionManager = DefaultTransactionManager();
-  const dataSource = DefaultRelationshipDataSource(transactionManager);
-  const service = await DeleteRelationshipService();
-  const toDelete: string[] = [];
+  if (relationships.length) {
+    const transactionManager = DefaultTransactionManager();
+    const dataSource = DefaultRelationshipDataSource(transactionManager);
+    const service = await DeleteRelationshipService();
+    const toDelete: string[] = [];
 
-  await relationships.reduce(async (prev, relationship) => {
-    await prev;
-    const rels = await dataSource
-      .getByDefinition(relationship.from, relationship.type, relationship.to)
-      .all();
-    rels.forEach(rel => {
-      toDelete.push(rel._id);
+    await dataSource.getByDefinition(relationships).forEach(async relationship => {
+      toDelete.push(relationship._id);
     });
-  }, Promise.resolve());
 
-  await service.delete(toDelete);
+    await service.delete(toDelete);
+  }
 };
 
 const updateNewRelationships = async (updates: DefinitionsToUpdate) => {
