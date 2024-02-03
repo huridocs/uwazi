@@ -216,16 +216,10 @@ export class MatchQueryNode extends QueryNode {
     return this.traversals.map((t, index) => t.getTemplatesInLeaves([...path, index])).flat();
   }
 
-  // eslint-disable-next-line max-statements
-  determinesRelationships(): false | string[] {
-    const hasDepth2 = this.getDepth() === 2;
-    const hasSingleTypePerBranch = this.traversals.every(
-      traversal => traversal.getFilters().types?.length === 1
-    );
-
+  private countTemplateOccurrencesInLeaves() {
     let hasAllTemplates = false;
 
-    const templatesOccurences: Record<string, number> = {};
+    const occurences: Record<string, number> = {};
     const templatesInLeaves = this.getTemplatesInLeaves();
     templatesInLeaves.forEach(record => {
       if (record.templates.length === 0) {
@@ -233,24 +227,39 @@ export class MatchQueryNode extends QueryNode {
       }
 
       record.templates.forEach(template => {
-        if (!templatesOccurences[template]) {
-          templatesOccurences[template] = 0;
+        if (!occurences[template]) {
+          occurences[template] = 0;
         }
 
-        templatesOccurences[template] += 1;
+        occurences[template] += 1;
       });
     });
 
-    const hasOneLeaf = templatesInLeaves.length === 1;
+    return {
+      occurences,
+      hasAllTemplates,
+      leavesCount: templatesInLeaves.length,
+    };
+  }
 
-    const templatesAppearOnce = Object.values(templatesOccurences).every(count => count === 1);
+  determinesRelationships(): false | string[] {
+    const hasDepth2 = this.getDepth() === 2;
+    const hasSingleTypePerBranch = this.traversals.every(
+      traversal => traversal.getFilters().types?.length === 1
+    );
+
+    const { occurences, hasAllTemplates, leavesCount } = this.countTemplateOccurrencesInLeaves();
+
+    const hasOneLeaf = leavesCount === 1;
+
+    const templatesAppearOnce = Object.values(occurences).every(count => count === 1);
 
     if (hasAllTemplates && hasOneLeaf) {
       return [];
     }
 
     if (hasDepth2 && hasSingleTypePerBranch && templatesAppearOnce && !hasAllTemplates) {
-      return Object.keys(templatesOccurences);
+      return Object.keys(occurences);
     }
 
     return false;
