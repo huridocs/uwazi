@@ -1,7 +1,7 @@
 import {
   CreateRelationshipService,
   DeleteRelationshipService,
-  DenormalizationService,
+  DenormalizationService as CreateDenormalizationService,
 } from 'api/relationships.v2/services/service_factories';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { EntitySchema } from 'shared/types/entityType';
@@ -15,6 +15,7 @@ import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
+import { DenormalizationService } from 'api/relationships.v2/services/DenormalizationService';
 
 const newRelationshipsEnabled = async () => {
   const transactionManager = DefaultTransactionManager();
@@ -28,28 +29,28 @@ const deleteRelatedNewRelationships = async (sharedId: string) => {
   }
 };
 
-const denormalizeAfterEntityAction = async (
-  {
-    sharedId,
-    language,
-  }: {
-    sharedId: string;
-    language: string;
-  },
-  method: 'Creating' | 'Updating'
+const withDenormalizationService = async (
+  cb: (service: DenormalizationService) => Promise<void>
 ) => {
   if (await newRelationshipsEnabled()) {
     const transactionManager = DefaultTransactionManager();
-    const denormalizationService = await DenormalizationService(transactionManager);
-    await denormalizationService[`denormalizeAfter${method}Entities`]([sharedId], language);
+    const denormalizationService = await CreateDenormalizationService(transactionManager);
+    await cb(denormalizationService);
     await transactionManager.executeOnCommitHandlers(undefined);
   }
 };
-const denormalizeAfterEntityCreation = async (data: { sharedId: string; language: string }) =>
-  denormalizeAfterEntityAction(data, 'Creating');
 
-const denormalizeAfterEntityUpdate = async (data: { sharedId: string; language: string }) =>
-  denormalizeAfterEntityAction(data, 'Updating');
+const denormalizeAfterEntityCreation = async (data: { sharedId: string; language: string }) => {
+  await withDenormalizationService(service =>
+    service.denormalizeAfterCreatingEntities([data.sharedId], data.language)
+  );
+};
+
+const denormalizeAfterEntityUpdate = async (data: { sharedId: string; language: string }) => {
+  await withDenormalizationService(service =>
+    service.denormalizeAfterUpdatingEntities([data.sharedId], data.language)
+  );
+};
 
 const diffMetadataValues = (
   currentDoc: EntitySchema,
