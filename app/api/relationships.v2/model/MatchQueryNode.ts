@@ -219,7 +219,7 @@ export class MatchQueryNode extends QueryNode {
   // eslint-disable-next-line max-statements
   determinesRelationships(): false | string[] {
     const hasDepth2 = this.getDepth() === 2;
-    const hasSigleTypePerBranch = this.traversals.every(
+    const hasSingleTypePerBranch = this.traversals.every(
       traversal => traversal.getFilters().types?.length === 1
     );
 
@@ -241,15 +241,15 @@ export class MatchQueryNode extends QueryNode {
       });
     });
 
-    const hasOneLeave = templatesInLeaves.length === 1;
+    const hasOneLeaf = templatesInLeaves.length === 1;
 
     const templatesAppearOnce = Object.values(templatesOccurences).every(count => count === 1);
 
-    if (hasAllTemplates && hasOneLeave) {
+    if (hasAllTemplates && hasOneLeaf) {
       return [];
     }
 
-    if (hasDepth2 && hasSigleTypePerBranch && templatesAppearOnce && !hasAllTemplates) {
+    if (hasDepth2 && hasSingleTypePerBranch && templatesAppearOnce && !hasAllTemplates) {
       return Object.keys(templatesOccurences);
     }
 
