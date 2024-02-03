@@ -114,16 +114,6 @@ export const RelationshipMappers = {
     const { traversal, ...entityData } = entityTraversal;
     return EntityMappers.toModel(entityData);
   },
-
-  toRelationshipIds(entityTraversal: EntityTraversal): string[] {
-    const ids: string[] = entityTraversal.traversal?.traversal
-      ? this.toRelationshipIds(entityTraversal.traversal?.traversal)
-      : [];
-    if (entityTraversal.traversal) {
-      ids.push(MongoIdHandler.mapToApp(entityTraversal.traversal?._id));
-    }
-    return ids;
-  },
 };
 
 export type TraversalResult = EntityTraversal;
