@@ -122,7 +122,7 @@ const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thes
 };
 
 const isStandaloneGroup = (thesaurusMap: ThesaurusMap, labelInfo: LabelInfo): boolean =>
-  !labelInfo.child && labelInfo.normalizedLabel in thesaurusMap.normalizedLabelsPerParent;
+  !labelInfo.child && thesaurusMap.normalizedLabelsPerParent.has(labelInfo.normalizedLabel);
 
 const tryAddingLabel = (
   thesauriValueData: ThesaurusMaps,
@@ -143,9 +143,6 @@ const tryAddingLabel = (
   const parentInfo = labelInfo.child ? labelInfo : { label: '', normalizedLabel: '' };
   const newKeys: Set<string> = new Set();
 
-  console.log(parentInfo, childInfo)
-
-  // TODO fix it here --------------------------------------------------- !
   if (
     !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&
     !map.newNormalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel)
@@ -166,7 +163,6 @@ const tryAddingTranslation = (
   potentialTranslations: (string | undefined)[][],
   newKeys: Set<string>
 ): void => {
-  // const { thesauriIdToTranslations } = thesauriValueData;
   potentialTranslations
     .filter(([id, language, key, value]) => id && language && key && value && newKeys.has(key))
     .forEach(([id, language, key, value]) => {
