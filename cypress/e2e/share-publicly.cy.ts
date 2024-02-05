@@ -74,7 +74,8 @@ describe('Permisions system', () => {
       cy.contains('button', 'Create entity').click();
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
-      cy.contains('div.alert', 'Entity created').click();
+      cy.contains('Entity created').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
       cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
