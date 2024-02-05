@@ -83,6 +83,7 @@ export class QuickLabelPanelBase extends Component<QuickLabelPanelProps> {
 
   renderButtons(canBePublished: boolean) {
     return (
+      // @ts-expect-error
       <StateSelector isPristine={selectIsPristine}>
         {({ isPristine }: { isPristine: boolean }) => {
           const btnClass = isPristine ? 'btn btn-default btn-disabled' : 'btn btn-default';
