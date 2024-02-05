@@ -17,6 +17,7 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 import { saveEntityWithFiles } from './saveEntityWithFiles';
+import { isArray } from 'lodash';
 
 function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
@@ -176,9 +177,12 @@ function processFilters(readOnlySearch, filters, limit, from) {
 
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
-      search.filters[property.name] = readOnlySearch.filters[property.name]
-        ? encodeURIComponent(readOnlySearch.filters[property.name]).replace(/%20/g, ' ')
-        : undefined;
+      if (!isArray(readOnlySearch.filters[property.name])) {
+        search.filters[property.name] = encodeURIComponent(
+          readOnlySearch.filters[property.name]
+        ).replace(/%20/g, ' ');
+      }
+      search.filters[property.name] = readOnlySearch.filters[property.name];
     }
 
     if (property.filters) {

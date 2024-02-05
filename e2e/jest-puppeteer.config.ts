@@ -4,8 +4,8 @@ const config = require('./config.js');
 module.exports = {
   launch: {
     dumpio: false,
-    headless: true,
-    slowMo: 7,
+    headless: false,
+    slowMo: 70,
     defaultViewport: null,
     devtools: false,
     args: [
