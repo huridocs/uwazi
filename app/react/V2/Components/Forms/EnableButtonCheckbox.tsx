@@ -59,7 +59,8 @@ const EnableButtonCheckbox = React.forwardRef(
         break;
 
       default:
-        styles = 'text-primary-700 border-primary-700 bg-white hover:cursor-pointer';
+        styles =
+          'text-primary-700 border-primary-700 bg-white hover:cursor-pointer hover:bg-success-700 hover:border-success-700 hover:text-white';
         break;
     }
 

@@ -19,6 +19,7 @@ const Primary: Story = {
           disabled={args.disabled}
           name={args.name}
           defaultChecked={args.defaultChecked}
+          onChange={args.onChange}
         />
       </Provider>
     </div>
@@ -31,18 +32,10 @@ const Basic: Story = {
     name: 'option',
     disabled: false,
     defaultChecked: false,
-    className: '',
+    onChange: () => {},
   },
 };
 
-const DefaultChecked: Story = {
-  ...Primary,
-  args: {
-    ...Basic.args,
-    defaultChecked: true,
-  },
-};
-
-export { Basic, DefaultChecked };
+export { Basic };
 
 export default meta;
