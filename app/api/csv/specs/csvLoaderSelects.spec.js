@@ -77,27 +77,27 @@ describe('loader', () => {
     await testingEnvironment.tearDown();
   });
 
-  fit('should create values in thesauri', async () => {
+  it('should create values in thesauri', async () => {
     expect(selectLabels).toEqual([
       ['A', []],
       ['1', ['1A', '1B', 'A', '1c']],
+      ['3', ['A']],
       ['B', []],
       ['C', []],
       ['d', []],
       ['g2', ['2A', '2b']],
-      ['3', ['A']],
     ]);
     expect(multiselectLabels).toEqual([
       ['A', []],
       ['B', []],
       ['1', ['1A', '1b']],
       ['2', ['2A', '2B', '2C']],
+      ['3', ['3a', '3B']],
+      ['4', ['A']],
       ['c', []],
       ['D', []],
       ['E', []],
       ['g', []],
-      ['3', ['3a', '3B']],
-      ['4', ['A']],
     ]);
   });
 

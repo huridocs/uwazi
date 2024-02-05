@@ -45,6 +45,9 @@ const multiselect = async (
 
   const values = info.map(i => generateMetadataValue(currentThesaurus, i));
 
+  console.log('info', info);
+  console.log('values', values);
+
   return values;
 };
 

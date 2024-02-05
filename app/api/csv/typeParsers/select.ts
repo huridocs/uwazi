@@ -35,12 +35,9 @@ const determineParentChildRelationship = (label: string): LabelInfo | null => {
 };
 
 const generateMetadataValue = (currentThesaurus: ThesaurusSchema, labelInfo: LabelInfo) => {
-  // console.log('currentThesaurus', currentThesaurus.values)
-  // console.log('labelInfo', labelInfo)
   const parent = currentThesaurus.values?.find(
     v => normalizeThesaurusLabel(v.label) === labelInfo.normalizedLabel
   );
-  // console.log('parent', parent)
   if (labelInfo.child) {
     const child = parent?.values?.find(
       v => normalizeThesaurusLabel(v.label) === labelInfo.child?.normalizedLabel
