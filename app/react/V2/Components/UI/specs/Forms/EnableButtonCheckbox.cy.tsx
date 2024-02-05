@@ -8,8 +8,8 @@ const { Basic } = composeStories(stories);
 
 describe('EnableButtonCheckbox', () => {
   it('should be accessible', () => {
-    mount(<Basic />);
     cy.injectAxe();
+    mount(<Basic />);
     cy.checkA11y();
   });
 
