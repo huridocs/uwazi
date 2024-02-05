@@ -13,7 +13,7 @@ const TableHeader = <T,>({ headerGroup, draggableRows, sortedChanged }: RowProps
     {headerGroup.headers.map(header => {
       const isSortable = header.column.getCanSort();
       const isSelect = header.column.id === 'checkbox-select';
-      const headerClassName = `${draggableRows ? 'pl-7' : ''} ${isSelect ? 'p-4' : 'px-6 py-3'}  ${
+      const headerClassName = `${draggableRows ? 'pl-7' : ''} ${isSelect ? 'px-2 ' : 'px-6 py-3'}  ${
         header.column.columnDef.meta?.headerClassName || ''
       }`;
 
