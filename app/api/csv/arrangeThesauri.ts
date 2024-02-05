@@ -143,6 +143,8 @@ const tryAddingLabel = (
   const parentInfo = labelInfo.child ? labelInfo : { label: '', normalizedLabel: '' };
   const newKeys: Set<string> = new Set();
 
+  console.log(parentInfo, childInfo)
+
   // TODO fix it here --------------------------------------------------- !
   if (
     !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&

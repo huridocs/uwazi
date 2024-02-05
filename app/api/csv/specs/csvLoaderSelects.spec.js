@@ -295,7 +295,7 @@ describe('loader', () => {
         ['3', '3B'],
         ['4', 'A'],
       ],
-      multi_select_nested_values_2: [
+      multiselect_nested_values_2: [
         ['1', '1b'],
         ['2', '2C'],
       ],
@@ -335,9 +335,9 @@ describe('loader', () => {
         ['2es', '2Ces'],
         ['3es', '3aes'],
         ['3es', '3Bes'],
-        ['4es', '4es'],
+        ['4es', 'Aes'],
       ],
-      multi_select_nested_values_2: [
+      multiselect_nested_values_2: [
         ['1es', '1bes'],
         ['2es', '2Ces'],
       ],

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import thesauri from 'api/thesauri';
 import { RawEntity } from 'api/csv/entityRow';
 import { normalizeThesaurusLabel } from 'api/thesauri/thesauri';
@@ -39,14 +41,13 @@ const multiselect = async (
 ): Promise<MetadataObjectSchema[]> => {
   const currentThesaurus = (await thesauri.getById(property.content)) || ({} as ThesaurusSchema);
 
-  const info = splitMultiselectLabels(
-    entityToImport.propertiesFromColumns[ensure<string>(property.name)]
-  ).labelInfos;
+  const info = _.uniqBy(
+    splitMultiselectLabels(entityToImport.propertiesFromColumns[ensure<string>(property.name)])
+      .labelInfos,
+    i => i.child?.normalizedLabel || i.normalizedLabel
+  );
 
   const values = info.map(i => generateMetadataValue(currentThesaurus, i));
-
-  console.log('info', info);
-  console.log('values', values);
 
   return values;
 };
