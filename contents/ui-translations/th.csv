@@ -1,9 +1,9 @@
-Key,Thai
+key,value
+% of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 (view page),(ดูหน้า)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
-% of sentences above threshold,เปอร์เซ็นต์ของประโยคที่เกินเกณฑ์มาตรฐาน
 + click to select multiple cards.,+ click to select multiple cards.
+// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled

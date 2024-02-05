@@ -1,9 +1,9 @@
-Key,Spanish
+key,value
+% of sentences above threshold,% of sentences above threshold
 (view page),(ver página)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
-// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
-% of sentences above threshold,% of sentences above threshold
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
+// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
 2FA,2FA
 2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
 2FA Enabled,2FA Enabled
