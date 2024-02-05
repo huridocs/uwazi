@@ -92,7 +92,7 @@ const Account = () => {
                 </div>
               </div>
             </Card>
-            <Card className="mb-4" title={<Translate>Change Password</Translate>}>
+            <Card className="mb-4" title={<Translate>Change password</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <InputField
@@ -125,7 +125,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="default"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button color="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
@@ -142,7 +142,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="yellow"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button
                     styling="outline"
                     className="flex-none"
@@ -165,7 +165,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="px-3 py-2 text-xs font-medium bg-white border rounded-lg hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>
             </a>
