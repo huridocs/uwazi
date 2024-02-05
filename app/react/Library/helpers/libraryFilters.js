@@ -1,4 +1,4 @@
-import comonProperties from 'shared/comonProperties';
+import comonProperties from 'shared/commonProperties';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
 import { queryToFilter } from './publishedStatusFilter';
 

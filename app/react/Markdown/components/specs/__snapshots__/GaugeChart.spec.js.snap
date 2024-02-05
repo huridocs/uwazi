@@ -63,6 +63,7 @@ exports[`GaugeChart Markdown component should allow rendering value with prefix,
         nameKey="name"
         outerRadius={300}
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={180}
         stroke="#fff"
       >
@@ -173,6 +174,7 @@ exports[`GaugeChart Markdown component should render the data passed by mapState
         nameKey="name"
         outerRadius={110}
         paddingAngle={0}
+        rootTabIndex={0}
         startAngle={180}
         stroke="#fff"
       >

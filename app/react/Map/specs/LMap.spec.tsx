@@ -109,7 +109,8 @@ describe('Map', () => {
     });
 
     it('should allow to change between map styles', async () => {
-      expect((await screen.findAllByRole('radio')).length).toBe(3);
+      expect((await screen.findAllByRole('radio')).length).toBe(4);
+      expect(await screen.getByRole('radio', { name: 'Dark' })).not.toBeUndefined();
       expect(await screen.getByRole('radio', { name: 'Streets' })).not.toBeUndefined();
       expect(await screen.getByRole('radio', { name: 'Satellite' })).not.toBeUndefined();
       expect(await screen.getByRole('radio', { name: 'Hybrid' })).not.toBeUndefined();

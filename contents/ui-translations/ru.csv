@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -131,7 +132,7 @@ Close,Закрыть
 Collaborator,Соавтор
 Collapse all,Collapse all
 Collection,Коллекция
-Collection name,Название коллекции
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Настроить фильтры
 Configure suggestions,Настроить предлагаемые варианты
@@ -202,10 +203,9 @@ Current value:,Current value:
 Currently connections only need a title.,В настоящий момент для подключений только требуется заголовок
 Custom component error,Ошибка пользовательского компонента
 Custom CSS,Персональные CSS
-Custom favicon,Пользовательский значок для вебсайта
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Пользовательское стартовое положение
 Custom Uploads,Пользовательские загрузки
 Dashboard,Dashboard
 Data imported,Данные импортированы
@@ -214,11 +214,12 @@ Date format,Формат даты
 Date modified,Дата изменена
 Day,День
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,Изменение языка по умолчанию прошло успешно
 Default template,Шаблон по умолчанию
-Default view,Default view
+Default View,Default View
 Delete,Удалить
 DELETE,Удалить
 Delete entities and documents,Delete entities and documents
@@ -343,6 +344,7 @@ General,Общий
 General Information,General Information
 Global CSS,Глобальные CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
@@ -392,7 +394,6 @@ Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
 Item,Item
 Item name,Item name
@@ -447,9 +448,9 @@ Manage site settings and configuration,Управление сайтом и ко
 Map,Карта
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map provider,Map provider
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,Просмотр карты
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -460,7 +461,7 @@ Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
 Markdown,Markdown
 Matching,Matching
-Matomo Analytics,Matomo Analytics
+Matomo,Matomo
 Members,Участники
 Menu,Меню
 Message,Сообщение
@@ -615,7 +616,6 @@ property select,Select
 property text,Text
 Protection,Защита
 ProTip!,Профессиональная подсказка!
-Public Endpoints,Общедоступные конечные точки
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -886,10 +886,10 @@ Uploads,Загрузки
 URL,URL
 Use,Использовать
 Use as filter,Use as filter
-Use custom landing page,Использовать пользовательскую целевую страницу
 User,Пользователь
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,Имя пользователя
 Username is required,Требуется имя пользователя
 Username is too long,Имя пользователя слишком длинное
@@ -918,10 +918,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,Мы рекомендуем маркировку
-Website analytics,Аналитические характеристики веб-сайта
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,будет обновляться с тем же значением
 with,с
 With great power comes great responsibility!,С большой силой приходит большая ответственность!
