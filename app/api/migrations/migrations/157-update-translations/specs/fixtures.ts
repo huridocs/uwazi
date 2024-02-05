@@ -20,13 +20,6 @@ const fixtures: Fixture = {
     },
     {
       _id: db.id(),
-      language: 'en',
-      context: { id: 'System', label: 'User Interface', type: 'Uwazi UI' },
-      key: 'Enable',
-      value: 'Enable',
-    },
-    {
-      _id: db.id(),
       language: 'es',
       context: { id: 'System', label: 'User Interface', type: 'Uwazi UI' },
       key: 'Change Password',
@@ -38,13 +31,6 @@ const fixtures: Fixture = {
       context: { id: 'System', label: 'User Interface', type: 'Uwazi UI' },
       key: 'Current value:',
       value: 'Current value:',
-    },
-    {
-      _id: db.id(),
-      language: 'es',
-      context: { id: 'System', label: 'User Interface', type: 'Uwazi UI' },
-      key: 'Enable',
-      value: 'Enable',
     },
     {
       _id: db.id(),

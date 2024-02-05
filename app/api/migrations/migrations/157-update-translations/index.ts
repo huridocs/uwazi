@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 const newKeys = [{ key: 'Activate' }, { key: 'Disable' }];
-const deletedKeys = [{ key: 'Enable' }, { key: 'Change Password' }, { key: 'Current value:' }];
+const deletedKeys = [{ key: 'Change Password' }, { key: 'Current value:' }];
 
 export default {
   delta: 157,
