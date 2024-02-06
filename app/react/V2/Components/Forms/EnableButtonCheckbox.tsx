@@ -17,12 +17,12 @@ const EnableButtonCheckbox = React.forwardRef(
   ) => {
     const styles = disabled
       ? 'text-primary-300 border-primary-300 peer-checked:border-success-200 peer-checked:bg-success-200'
-      : 'text-primary-700 border-primary-700 peer-checked:border-success-400 peer-checked:bg-success-400';
+      : 'text-primary-700 border-primary-700 peer-checked:border-success-700 peer-checked:bg-success-700';
 
     return (
       <label
         data-testid="enable-button-checkbox"
-        className={`relative inline-flex items-center text-sm font-medium text-gray-900 cursor-pointer ${
+        className={`relative inline-flex items-center text-sm  text-gray-900 cursor-pointer ${
           disabled ? '!text-gray-300' : ''
         } ${className} `}
       >
@@ -38,7 +38,7 @@ const EnableButtonCheckbox = React.forwardRef(
         />
 
         <div
-          className={`bg-white peer ${styles} peer-checked:text-white text-sm px-3 py-2 peer-disabled:cursor-not-allowed font-medium rounded-lg
+          className={`bg-white peer ${styles} peer-checked:text-white text-sm px-3 py-2 peer-disabled:cursor-not-allowed font-semibold rounded-lg
     border focus:outline-none`}
         >
           <Translate>{checked ? 'Active' : 'Enable'}</Translate>

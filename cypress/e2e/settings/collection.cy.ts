@@ -95,11 +95,11 @@ describe('Collection', () => {
     cy.get('[data-testid="pill-comp"] > span').eq(1).should('have.text', 'Mecanismo');
   });
 
-  it('should have enabled all the buttons', () => {
+  it('should have changed all the buttons', () => {
     cy.get('[data-testid="enable-button-checkbox"]')
       .eq(0)
       .within(() => {
-        cy.get('input').should('be.checked');
+        cy.get('input').should('not.be.checked');
       });
     cy.get('[data-testid="enable-button-checkbox"]')
       .eq(1)
