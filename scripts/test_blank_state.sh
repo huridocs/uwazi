@@ -25,9 +25,6 @@ assert() {
   fi  
 } 
 
-# + añadir test case con --force
-# lo mismo que tenemos aqui pero con el default de blank_state
-
 mongosh --quiet new-db --eval "db.dropDatabase()"
 
 echo -e "\nTest blank state -> new_db"
@@ -38,19 +35,20 @@ echo -e "\nTest blank state -> Database existing should exit with error"
 yarn blank-state new-db > /dev/null 2>&1; result=$?
 assert "Creating new-db again should throw error" "$result == 2"
 
-echo -e "\nTest blank state -> Database existing should exit with error"
+echo -e "\nTest blank state -> Database existing with --force flag"
 yarn blank-state --force > /dev/null 2>&1; result=$?
-assert "Creating default db with force should be successfull" "$result == 0"
+assert "Creating default db with force should be successful" "$result == 0"
 
+mongosh --quiet uwazi_development --eval "db.dropDatabase()"
 
-# echo 'PEPINILLOS'
-# echo $result
+echo -e "\nTest blank state -> Default params"
+yarn blank-state > /dev/null 2>&1; result=$?
+assert "Creating default db should be successful" "$result == 0"
 
-#
-# echo -e "\nTest blank state -> Database existing with --force"
-# FORCE_FLAG="true"
-# operations_wrapper
-#
-# echo -e "\nTest blank state -> Database non-existing"
-# mongo_indexof_db="-1"
-# operations_wrapper
+echo -e "\nTest blank state -> Database deafult existing should exit with error"
+yarn blank-state > /dev/null 2>&1; result=$?
+assert "Creating default db again should throw error" "$result == 2"
+
+echo -e "\nTest blank state -> Database default existing with --force flag"
+yarn blank-state --force > /dev/null 2>&1; result=$?
+assert "Creating default db with force should be successful" "$result == 0"
