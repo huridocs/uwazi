@@ -68,6 +68,7 @@ const PagesList = () => {
       enableSorting: true,
     }),
     columnHelper.accessor('sharedId', {
+      id: 'action',
       header: ActionHeader,
       cell: EditButton,
     }),
