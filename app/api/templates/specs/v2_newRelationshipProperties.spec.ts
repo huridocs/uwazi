@@ -7,8 +7,8 @@ import db, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { EntityRelationshipsUpdateService } from 'api/entities.v2/services/EntityRelationshipsUpdateService';
-import templates from '../templates';
 import translations from 'api/i18n';
+import templates from '../templates';
 
 jest.mock('api/entities.v2/services/EntityRelationshipsUpdateService');
 
@@ -51,6 +51,7 @@ const fixtures: DBFixture = {
     fixtureFactory.template('template_with_existing_relationship', [
       fixtureFactory.property('existing_relationship', 'newRelationship', {
         query: oldQueryInDb,
+        targetTemplates: [fixtureFactory.id('unrelated_template').toString()],
       }),
     ]),
     fixtureFactory.template('unrelated_template', [
@@ -146,7 +147,7 @@ describe('template.save()', () => {
   });
 
   describe('on template creation', () => {
-    it('should validate the property and correctly map it to the database', async () => {
+    it('should validate the property and correctly map it to the database ignoring the targetTemplates', async () => {
       const newTemplate = {
         name: 'new template with new relationship',
         commonProperties,
@@ -162,6 +163,7 @@ describe('template.save()', () => {
                 match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
               },
             ],
+            targetTemplates: false as const,
           },
           { name: 'text1', label: 'Text1', type: 'text' as 'text' },
         ],
@@ -179,6 +181,7 @@ describe('template.save()', () => {
             match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
           },
         ],
+        targetTemplates: [fixtureFactory.id('existing_template').toString()],
       });
       expect(template.properties?.[1].label).toBe('Text1');
     });
@@ -207,7 +210,7 @@ describe('template.save()', () => {
 
   describe('on template update', () => {
     describe('when the property is new', () => {
-      it('should validate the property and correctly map it to the database', async () => {
+      it('should validate the property and correctly map it to the database ignoring the targetTemplates', async () => {
         const existingTemplates = await templates.get({ name: 'existing_template' });
         expect(existingTemplates.length).toBe(1);
         const existingTemplate = existingTemplates[0];
@@ -225,6 +228,7 @@ describe('template.save()', () => {
                   match: [{ templates: [fixtureFactory.id('existing_template').toString()] }],
                 },
               ],
+              targetTemplates: false as const,
             },
             { name: 'text1', label: 'Text1', type: 'text' as 'text' },
           ],
@@ -243,6 +247,7 @@ describe('template.save()', () => {
                 match: [{ templates: [fixtureFactory.id('existing_template')], traverse: [] }],
               },
             ],
+            targetTemplates: [fixtureFactory.id('existing_template').toString()],
           },
           {
             _id: expect.any(ObjectId),
@@ -347,6 +352,7 @@ describe('template.save()', () => {
             label: 'new name',
             name: 'new_name',
             query: oldQueryInDb,
+            targetTemplates: [fixtureFactory.id('unrelated_template').toString()],
           },
         ]);
 
@@ -362,7 +368,7 @@ describe('template.save()', () => {
         ]);
       });
 
-      it('on query change, uwazi should save the query properly, and mark the metadata obsolete', async () => {
+      it('on query change, uwazi should save the query properly, mark the metadata obsolete and recalculate the target templates', async () => {
         const [existingTemplate] = await templates.get({
           name: 'template_with_existing_relationship',
         });
@@ -384,6 +390,7 @@ describe('template.save()', () => {
             label: 'existing_relationship',
             name: 'existing_relationship',
             query: newQueryInDb,
+            targetTemplates: [fixtureFactory.id('unrelated_template2').toString()],
           },
         ]);
 
