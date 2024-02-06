@@ -176,7 +176,7 @@ function processFilters(readOnlySearch, filters, limit, from) {
 
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
-      search.filters[property.name] = readOnlySearch.filters[property.name];
+      search.filters[encodeURIComponent(property.name)] = readOnlySearch.filters[property.name];
     }
 
     if (property.filters) {

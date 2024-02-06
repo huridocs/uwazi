@@ -143,13 +143,15 @@ describe('Public Form', () => {
     it('should fill the captcha and save', () => {
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
-      cy.get('.alert.alert-success').click();
+      cy.get('.alert.alert-success').as('notification');
+      cy.get('@notification').should('not.exist');
     });
   });
 
   describe('check created entities', () => {
     before(() => {
       cy.get('a[aria-label="Library"]').click();
+      cy.contains('Published', { timeout: 100 });
       selectRestrictedEntities();
     });
 
