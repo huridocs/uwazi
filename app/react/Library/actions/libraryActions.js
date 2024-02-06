@@ -177,18 +177,7 @@ function processFilters(readOnlySearch, filters, limit, from) {
 
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
-      // if (
-      //   !isArray(readOnlySearch.filters[property.name]) ||
-      //   (property.type === 'relationship' && property.inherit?.type !== 'select')
-      // ) {
-      //   console.log('Property: ', property);
-      //   console.log('Filter: ', readOnlySearch.filters[property.name]);
-      //   search.filters[property.name] = encodeURIComponent(
-      //     readOnlySearch.filters[property.name]
-      //   ).replace(/%20/g, ' ');
-      // } else {
       search.filters[property.name] = readOnlySearch.filters[property.name];
-      // }
     }
 
     if (property.filters) {
