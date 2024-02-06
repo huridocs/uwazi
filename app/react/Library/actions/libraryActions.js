@@ -17,7 +17,6 @@ import { toUrlParams } from 'shared/JSONRequest';
 import { selectedDocumentsChanged, maybeSaveQuickLabels } from './quickLabelActions';
 import { filterToQuery } from '../helpers/publishedStatusFilter';
 import { saveEntityWithFiles } from './saveEntityWithFiles';
-import { isArray } from 'lodash';
 
 function enterLibrary() {
   return { type: types.ENTER_LIBRARY };
