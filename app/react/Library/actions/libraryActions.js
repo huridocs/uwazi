@@ -176,12 +176,13 @@ function processFilters(readOnlySearch, filters, limit, from) {
 
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
-      if (!readOnlySearch.filters[property.name]) {
-        return;
-      }
+      // if (!readOnlySearch.filters[property.name]) {
+      //   readOnlySearch.filters[property.name] = '';
+      // }
       if (
-        property.type === 'text' ||
-        (property.type === 'relationship' && property.inherit?.type === 'text')
+        readOnlySearch.filters[property.name] &&
+        (property.type === 'text' ||
+          (property.type === 'relationship' && property.inherit?.type === 'text'))
       ) {
         search.filters[encodeURIComponent(property.name)] = encodeURIComponent(
           readOnlySearch.filters[property.name]

@@ -273,6 +273,8 @@ describe('libraryActions', () => {
 
       it('should use customFilters from the current search on the store', () => {
         const limit = 60;
+
+        navigate.mockClear();
         actions.searchDocuments({ location, navigate }, limit)(dispatch, getState);
 
         expect(navigate).toHaveBeenCalledWith(
