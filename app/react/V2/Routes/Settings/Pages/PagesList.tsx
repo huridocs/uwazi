@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
@@ -9,7 +9,8 @@ import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Page } from 'app/V2/shared/types';
-import { pagesAtom } from 'app/V2/atoms/pagesAtom';
+import { notificationAtom } from 'app/V2/atoms';
+import { FetchResponseError } from 'shared/JSONRequest';
 import {
   EntityViewHeader,
   YesNoPill,
@@ -26,18 +27,29 @@ const pagesListLoader =
     pagesAPI.get(headers);
 
 const PagesList = () => {
-  const setPages = useSetRecoilState(pagesAtom);
-
   const [selectedPages, setSelectedPages] = useState<Row<Page>[]>([]);
   const [showModal, setShowModal] = useState(false);
   const pages = useLoaderData() as Page[];
+  const revalidator = useRevalidator();
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const columnHelper = createColumnHelper<Page>();
 
   const deleteSelected = async () => {
     const sharedIds = selectedPages.map(row => row.original.sharedId);
-    await Promise.all(sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!)));
-    setPages(prev => prev.filter(page => !sharedIds.includes(page.sharedId)));
+    const result = await Promise.all(
+      sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
+    );
+    const hasErrors = result.find(res => res instanceof FetchResponseError);
+    setNotifications({
+      type: !hasErrors ? 'success' : 'error',
+      text: !hasErrors ? (
+        <Translate>Deleted successfully</Translate>
+      ) : (
+        <Translate>An error occurred</Translate>
+      ),
+    });
+    revalidator.revalidate();
   };
 
   const columns = [
@@ -79,7 +91,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={deleteSelected}
