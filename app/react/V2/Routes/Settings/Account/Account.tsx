@@ -92,7 +92,7 @@ const Account = () => {
                 </div>
               </div>
             </Card>
-            <Card className="mb-4" title={<Translate>Change password</Translate>}>
+            <Card className="mb-4" title={<Translate>Change Password</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
                   <InputField

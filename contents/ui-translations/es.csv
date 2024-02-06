@@ -113,6 +113,7 @@ El formulario aún presentará el captcha a los usuarios finales, pero el endpoi
 Cards,Tarjetas
 Cards view,Vista de tarjetas
 Change password,Cambiar la contraseña
+Change Password,Change Password
 Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Los cambios no pueden deshacerse después de guardar. Cambiar campos de texto pueden invalidar las sugerencias.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
