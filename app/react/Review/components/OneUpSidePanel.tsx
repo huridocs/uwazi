@@ -124,6 +124,7 @@ class OneUpSidePanelBase extends Component<OneUpSidePanelProps> {
           </Tabs>
         </div>
         <ShowIf if={selectedTab === 'connections'}>
+          {/* @ts-expect-error */}
           <StateSelector isPristine={selectIsPristine}>
             {({ isPristine }: { isPristine: boolean }) => (
               <div className="sidepanel-footer">

@@ -1,6 +1,6 @@
 import loadable from '@loadable/component';
 import React from 'react';
-import { Map } from 'app/Map/MapContainer';
+import { Map, Layer } from 'app/Map/MapContainer';
 import * as helper from './helper';
 
 const LMap = loadable(async () => {
@@ -9,4 +9,4 @@ const LMap = loadable(async () => {
 });
 
 export { default as Markers } from './Markers.js';
-export { helper, LMap, Map };
+export { helper, LMap, Map, Layer };

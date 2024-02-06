@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -136,7 +137,7 @@ Close,Close
 Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
-Collection name,Collection name
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Configure filters
 Configure suggestions,Configure suggestions
@@ -207,10 +208,9 @@ Current value:,Current value:
 Currently connections only need a title.,Currently connections only need a title.
 Custom component error,Custom component markup error: unsupported values! Please check your configuration
 Custom CSS,Custom CSS
-Custom favicon,Custom favicon
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Custom starting location
 Custom Uploads,Custom Uploads
 Dashboard,Dashboard
 Data imported,Data imported
@@ -219,11 +219,12 @@ Date format,Date format
 Date modified,Date modified
 Day,Day
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,Default language change success
 Default template,Default template
-Default view,Default view
+Default View,Default View
 Delete,Delete
 DELETE,DELETE
 Delete entities and documents,Delete entities and documents
@@ -348,6 +349,7 @@ General,General
 General Information,General Information
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
@@ -397,7 +399,6 @@ Invalid captcha,Invalid captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,An entry is required or has an invalid value. Please correct and try again.
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,It could also very easily break the app. Only write code here if you know exactly what you are doing.
 Item,Item
 Item name,Item name
@@ -452,9 +453,9 @@ Manage site settings and configuration,Manage site settings and configuration
 Map,Map
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map provider,Map provider
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,Map view
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -465,7 +466,7 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Markdown,Markdown
 Matching,Matching
-Matomo Analytics,Matomo Analytics
+Matomo,Matomo
 Members,Members
 Menu,Menu
 Message,Message
@@ -620,7 +621,6 @@ property select,Select
 property text,Text
 Protection,Protection
 ProTip!,ProTip!
-Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -891,10 +891,10 @@ Uploads,Uploads
 URL,URL
 Use,Use
 Use as filter,Use as filter
-Use custom landing page,Use custom landing page
 User,User
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,Username
 Username is required,Username is required
 Username is too long,Username is too long
@@ -923,10 +923,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,We recommend labeling
-Website analytics,Website analytics
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,will be updated with the same value.
 with,with
 With great power comes great responsibility!,With great power comes great responsibility!

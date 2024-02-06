@@ -1,4 +1,5 @@
 /* eslint-disable max-lines */
+import { clickOnCreateEntity, clickOnEditEntity } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
@@ -18,14 +19,14 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const addEntity = (title: string) => {
-    cy.contains('button', 'Create entity').click();
-    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title);
+    clickOnCreateEntity();
     cy.get('#metadataForm')
       .contains('Type')
       .parentsUntil('.form-group')
       .find('select')
       .select('Reporte');
     cy.contains('Descriptor').parentsUntil('.form-group').find('select').select('Familia');
+    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { force: true });
   };
 
   const addVideo = (local: boolean = true) => {
@@ -78,13 +79,16 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   };
 
   const checkMediaSnapshots = (selector: string) => {
-    cy.get(selector).scrollIntoView();
+    cy.get(selector).scrollIntoView({ offset: { top: -30, left: 0 } });
     cy.get(selector).toMatchImageSnapshot({ disableTimersAndAnimations: true, threshold: 0.08 });
   };
 
-  const saveEntity = () => {
+  const saveEntity = (message = 'Entity created') => {
     cy.contains('button', 'Save').click();
     cy.wait('@saveEntity');
+    cy.contains(message).as('successMessage');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(2000);
 
     // waiting for video
     cy.get('aside video', { timeout: 5000 }).then(
@@ -98,14 +102,15 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
               resolve($video);
             }
           }, 10);
+          cy.get('@successMessage').should('not.exist');
         })
     );
   };
 
   it('should allow media selection on entity creation', () => {
     addEntity('Reporte audiovisual');
-    addVideo();
     addImage();
+    addVideo();
     saveEntity();
 
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
@@ -114,22 +119,26 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   it('should allow add timelinks to an existing entity media property', () => {
     cy.contains('h2', 'Reporte audiovisual').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
+    cy.contains('button', 'Edit').should('be.visible');
+    clickOnEditEntity();
     cy.addTimeLink(2000, 'Control point');
-    saveEntity();
+    saveEntity('Entity updated');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
   it('should allow media selection with timelinks on entity creation', () => {
     addEntity('Reporte audiovisual con lineas de tiempo');
+    addImage();
     addVideo();
     cy.addTimeLink(2000, 'Second one');
     saveEntity();
   });
 
+  // eslint-disable-next-line max-statements
   it('should allow set an external link from a media property', () => {
     addEntity('Reporte con contenido externo');
+    addImage();
     addVideo(false);
     cy.contains('button', 'Add timelink').scrollIntoView();
     cy.contains('button', 'Add timelink').should('be.visible').click();
@@ -140,14 +149,15 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
   });
 
+  // eslint-disable-next-line max-statements
   it('should show an error for an invalid property and allow to replace it for a valid one', () => {
     addEntity('Reporte con propiedades audiovisuales corregidas');
     addInvalidFile('Fotografía');
     addInvalidFile('Video');
-    clickMediaAction('Video', 'Unlink');
-    addVideo();
     clickMediaAction('Fotografía', 'Unlink');
     addImage();
+    clickMediaAction('Video', 'Unlink');
+    addVideo();
     saveEntity();
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-fotograf_a');
     checkMediaSnapshots('.metadata-type-multimedia.metadata-name-video');
@@ -155,11 +165,15 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
   it('should allow unlink the value of a media property', () => {
     cy.contains('h2', 'Reporte con propiedades audiovisuales corregidas').click();
-    cy.contains('button', 'Edit').should('be.visible').click();
+    cy.contains('button', 'Edit').should('be.visible');
+    clickOnEditEntity();
     clickMediaAction('Video', 'Unlink');
     cy.contains('button', 'Save').click();
     cy.wait('@saveEntity');
-    cy.contains('Entity updated').should('be.visible');
+    cy.contains('Entity updated').as('successMessage');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
+    cy.get('@successMessage').should('not.exist');
   });
 
   describe('thumbnails', () => {
@@ -172,7 +186,6 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     };
 
     it('should mark media fields as visible on cards', () => {
-      cy.contains('span', 'Entity updated').click();
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Reporte').click();
@@ -185,7 +198,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
     it('should display the external player for external media', () => {
       cy.get('.item-group > :nth-child(2)').within(() => {
-        cy.contains('span', 'Reporte con contenido externo');
+        cy.contains('span', 'Reporte con contenido externo').click();
+        cy.contains('Video').scrollIntoView({
+          offset: { top: -10, left: 0 },
+        });
         checkExternalMedia();
       });
     });
@@ -194,6 +210,9 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       cy.get('.item-group > :nth-child(2) > .item-info').click();
       cy.get('.side-panel.is-active').within(() => {
         cy.contains('h1', 'Reporte con contenido externo');
+        cy.get('.metadata-type-multimedia.metadata-name-video').scrollIntoView({
+          offset: { top: -30, left: 0 },
+        });
         checkExternalMedia();
       });
 
@@ -207,6 +226,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
 
     it('should render a generic thumbnail for internal media', () => {
       cy.contains('a', 'Library').click();
+      cy.contains('Video');
       cy.get('.item-group > :nth-child(3)').toMatchImageSnapshot();
     });
 
