@@ -364,7 +364,7 @@
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "nodemon": "^3.0.3",
-    "plop": "^4.0.0",
+    "plop": "^4.0.1",
     "postcss": "^8.4.31",
     "prettier": "3.0.3",
     "puppeteer": "^13.5.2",
