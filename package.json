@@ -237,7 +237,7 @@
     "typescript": "5.1.5",
     "underscore": "^1.13.6",
     "url-join": "^4.0.1",
-    "winston": "3.10.0",
+    "winston": "3.11.0",
     "world-countries": "5.0.0",
     "xml-js": "^1.6.11",
     "yargs": "^17.7.2",
