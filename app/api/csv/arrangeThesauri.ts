@@ -1,5 +1,3 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
 import _ from 'lodash';
 
 import { ImportFile } from 'api/csv/importFile';
