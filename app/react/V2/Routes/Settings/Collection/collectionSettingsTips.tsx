@@ -32,7 +32,7 @@ export const customFavIcon = (
 
 export const publicSharing = (
   <Translate>
-    Check to make this instance private (only logged-in users can access the data)
+    Check to make this instance public (any user can see public documents and entities)
   </Translate>
 );
 

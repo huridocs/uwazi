@@ -80,6 +80,7 @@ const Collection = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const setSettings = useSetRecoilState(settingsAtom);
   const revalidator = useRevalidator();
+  formData.private = !formData.private;
   const {
     register,
     setValue,
@@ -97,6 +98,7 @@ const Collection = () => {
     if (!isUndefined(data.newNameGeneration) && !data.newNameGeneration) {
       delete data.newNameGeneration;
     }
+    data.private = !data.private;
     await SettingsAPI.save(data);
     await revalidator.revalidate();
     setSettings(data);
@@ -178,8 +180,8 @@ const Collection = () => {
                     label={<Translate>Default View</Translate>}
                     id="roles"
                     options={[
-                      { label: 'Map', value: 'map' },
                       { label: 'Cards', value: 'cards' },
+                      { label: 'Map', value: 'map' },
                       { label: 'Table', value: 'table' },
                     ]}
                     {...register('defaultLibraryView')}
