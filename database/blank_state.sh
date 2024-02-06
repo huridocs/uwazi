@@ -30,10 +30,11 @@ recreate_database() {
 }
 
 mongo_indexof_db=$(mongosh --quiet -host "$HOST" --eval "db.getMongo().getDBNames().indexOf('$DB')")
-
+RED='\033[0;31m'
+NC='\033[0m'
 if [ "$mongo_indexof_db" -ne "-1" ]; then    
     if [ "$FORCE_FLAG" = false ]; then
-        echo -e "\n$DB already database exists. It will not be deleted."
+        echo -e "\nError!${RED} $DB ${NC}database already exists. It will not be deleted.\nPlease use --force flag if you want to override\n"
         exit 2    
     fi
 fi
