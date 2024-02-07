@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.153.0-rc1",
+  "version": "1.153.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -101,7 +101,7 @@
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
     "@popperjs/core": "^2.11.8",
-    "@remix-run/router": "^1.4.0",
+    "@remix-run/router": "^1.15.0",
     "@sentry/node": "^7.99.0",
     "@sentry/react": "7.99.0",
     "@sentry/tracing": "^7.99.0",
