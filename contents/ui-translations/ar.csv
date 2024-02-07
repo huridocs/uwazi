@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,عمل/ إجراء
+Activate,Activate
 Activate this feature for enhanced account security,فعل هذه الميزة لتأمين أفضل للحساب
 Activated,Activated
 Active languages,اللغات النشطة
@@ -201,7 +202,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,لا تحتاج الاتصالات حالياً إلا لعنوان
 Custom component error,خطأ في المكون المخصص
 Custom CSS,CSS تنسيق
@@ -244,6 +244,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
+Disable,Disable
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
