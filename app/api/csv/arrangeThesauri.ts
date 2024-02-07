@@ -17,6 +17,7 @@ import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import csv, { CSVRow } from './csv';
 import { toSafeName } from './entityRow';
 import { LabelInfo, splitMultiselectLabels } from './typeParsers/multiselect';
+import { LabelInfoBase } from './typeParsers/select';
 import { headerWithLanguage } from './csvDefinitions';
 
 class ArrangeThesauriError extends Error {
@@ -122,6 +123,36 @@ const setupThesaurusMaps = (allRelatedThesauri: WithId<ThesaurusSchema>[]): Thes
 const isStandaloneGroup = (thesaurusMap: ThesaurusMap, labelInfo: LabelInfo): boolean =>
   !labelInfo.child && thesaurusMap.normalizedLabelsPerParent.has(labelInfo.normalizedLabel);
 
+const pickParentChild = (labelInfo: LabelInfo) => {
+  const childInfo = labelInfo.child ? labelInfo.child : labelInfo;
+  const parentInfo = labelInfo.child ? labelInfo : { label: '', normalizedLabel: '' };
+  return { childInfo, parentInfo };
+};
+
+const isNewLabel = (
+  map: ThesaurusMap,
+  parentInfo: LabelInfoBase,
+  childInfo: LabelInfoBase
+): boolean =>
+  !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&
+  !map.newNormalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel);
+
+const pushNewLabel = (
+  map: ThesaurusMap,
+  labelInfo: LabelInfo,
+  parentInfo: LabelInfoBase,
+  childInfo: LabelInfoBase,
+  newKeys: Set<string>
+) => {
+  map.newInfos.push(labelInfo);
+  const addition = map.newNormalizedLabelsPerParent.add(
+    parentInfo.normalizedLabel,
+    childInfo.normalizedLabel
+  );
+  if (addition.indexWasNew) newKeys.add(parentInfo.label);
+  if (addition.valueWasNew) newKeys.add(childInfo.label);
+};
+
 const tryAddingLabel = (
   thesauriValueData: ThesaurusMaps,
   labelInfo: LabelInfo,
@@ -137,21 +168,11 @@ const tryAddingLabel = (
       }" at property "${name}" is a group label in line:\n${JSON.stringify(row)}`
     );
   }
-  const childInfo = labelInfo.child ? labelInfo.child : labelInfo;
-  const parentInfo = labelInfo.child ? labelInfo : { label: '', normalizedLabel: '' };
+  const { childInfo, parentInfo } = pickParentChild(labelInfo);
   const newKeys: Set<string> = new Set();
 
-  if (
-    !map.normalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel) &&
-    !map.newNormalizedLabelsPerParent.has(parentInfo.normalizedLabel, childInfo.normalizedLabel)
-  ) {
-    map.newInfos.push(labelInfo);
-    const addition = map.newNormalizedLabelsPerParent.add(
-      parentInfo.normalizedLabel,
-      childInfo.normalizedLabel
-    );
-    if (addition.indexWasNew) newKeys.add(parentInfo.label);
-    if (addition.valueWasNew) newKeys.add(childInfo.label);
+  if (isNewLabel(map, parentInfo, childInfo)) {
+    pushNewLabel(map, labelInfo, parentInfo, childInfo, newKeys);
   }
   return newKeys;
 };

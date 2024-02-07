@@ -16,7 +16,12 @@ type LabelInfo = LabelInfoBase & {
   child: LabelInfoBase | null;
 };
 
-const determineParentChildRelationship = (label: string): LabelInfo | null => {
+const splitLabel = (
+  label: string
+): {
+  split: string[];
+  normalizedSplit: string[];
+} | null => {
   const normalizedLabel = normalizeThesaurusLabel(label);
   if (!normalizedLabel) return null;
   const split = label.split(csvConstants.dictionaryParentChildSeparator);
@@ -24,9 +29,32 @@ const determineParentChildRelationship = (label: string): LabelInfo | null => {
   if (split.length > 2) {
     throw new TypeParserError(`Label "${label}" has too many parent-child separators.`);
   }
+  return { split, normalizedSplit };
+};
+
+const pickParentChild = (
+  split: string[],
+  normalizedSplit: string[]
+): {
+  parent: string;
+  child: string | null;
+  normalizedParent: string;
+  normalizedChild: string | null;
+} => {
   const [parent, child] = split.length === 2 ? split : [split[0], null];
   const [normalizedParent, normalizedChild] =
     normalizedSplit.length === 2 ? normalizedSplit : [normalizedSplit[0], null];
+  return { parent, child, normalizedParent, normalizedChild };
+};
+
+const determineParentChildRelationship = (label: string): LabelInfo | null => {
+  const splitLabelResult = splitLabel(label);
+  if (!splitLabelResult) return null;
+  const { split, normalizedSplit } = splitLabelResult;
+  const { parent, child, normalizedParent, normalizedChild } = pickParentChild(
+    split,
+    normalizedSplit
+  );
   return {
     label: parent,
     normalizedLabel: normalizedParent,
@@ -69,5 +97,5 @@ const select = async (
 };
 
 export default select;
-export type { LabelInfo };
+export type { LabelInfo, LabelInfoBase };
 export { determineParentChildRelationship, generateMetadataValue };
