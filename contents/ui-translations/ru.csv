@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,Действие
+Activate,Activate
 Activate this feature for enhanced account security,"Активируйте эту функцию, чтобы укрепить безопасность учетной записи"
 Activated,Activated
 Active languages,Active languages
@@ -199,7 +200,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,В настоящий момент для подключений только требуется заголовок
 Custom component error,Ошибка пользовательского компонента
 Custom CSS,Персональные CSS
@@ -242,6 +242,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
+Disable,Disable
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
