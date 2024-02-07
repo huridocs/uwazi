@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
-import { Field, actions as formActions } from 'react-redux-form';
+import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -52,12 +52,23 @@ const SearchBarComponent = ({
   const location = useLocation();
   const navigate = useNavigate();
   const search = processFilters(initSearch, initFilters.toJS());
+  const [searchTerm, setSearchTerm] = useState(search.searchTerm);
   const resetSearch = () => {
     change('library.search.searchTerm', '');
     const newSearch = { ...search };
     newSearch.searchTerm = '';
     searchDocuments({ search: newSearch, location, navigate });
+    setSearchTerm('');
   };
+
+  let debouncedSearch: string | number | NodeJS.Timeout | undefined;
+  useEffect(() => {
+    if (debouncedSearch) clearTimeout(debouncedSearch);
+    debouncedSearch = setTimeout(() => {
+      change('library.search.searchTerm', searchTerm);
+    }, 350);
+    return () => clearTimeout(debouncedSearch);
+  }, [searchTerm, change]);
 
   const submitSemanticSearch = () => {
     semanticSearch(search);
@@ -71,16 +82,17 @@ const SearchBarComponent = ({
     <div className="search-box">
       <Form model="library.search" onSubmit={doSearch}>
         <div className={`input-group${search.searchTerm ? ' is-active' : ''}`}>
-          <Field model=".searchTerm">
-            <input
-              type="text"
-              placeholder={t('System', 'Search', null, false)}
-              aria-label={t('System', 'Search text description', null, false)}
-              className="form-control"
-              autoComplete="off"
-            />
-            <Icon icon="times" onClick={resetSearch} aria-label="Reset Search input" />
-          </Field>
+          <input
+            type="text"
+            placeholder={t('System', 'Search', null, false)}
+            aria-label={t('System', 'Search text description', null, false)}
+            className="form-control"
+            autoComplete="off"
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+          />
+          <Icon icon="times" onClick={resetSearch} aria-label="Reset Search input" />
+
           <button type="submit" className="search-icon-wrapper">
             <Icon icon="search" aria-label="Search button" />
           </button>
