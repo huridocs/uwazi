@@ -1,8 +1,8 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
@@ -12,7 +12,7 @@ import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
 import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
-import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { ConfirmNavigationModal, EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { getPageUrl } from './components/PageListTable';
@@ -32,6 +32,7 @@ const pageEditorLoader =
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const revalidator = useRevalidator();
   const htmlEditor = useRef<CodeEditorInstance>();
   const JSEditor = useRef<CodeEditorInstance>();
@@ -40,7 +41,7 @@ const PageEditor = () => {
   const {
     register,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty, isSubmitting: formIsSubmitting },
     watch,
     getValues,
     handleSubmit,
@@ -48,6 +49,14 @@ const PageEditor = () => {
     defaultValues: { title: t('System', 'New page', null, false) },
     values: page,
   });
+
+  const blocker = useBlocker(isDirty && !formIsSubmitting);
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setShowConfirmationModal(true);
+    }
+  }, [blocker, setShowConfirmationModal]);
 
   const save = async (data: Page) => {
     const newHTML = htmlEditor.current?.getValue();
@@ -198,6 +207,13 @@ const PageEditor = () => {
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {showConfirmationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setShowConfirmationModal}
+          onConfirm={blocker.proceed}
+        />
+      )}
     </div>
   );
 };
