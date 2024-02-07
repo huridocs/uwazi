@@ -75,7 +75,8 @@ const SearchBarComponent = ({
   };
 
   const doSearch = (newSearch: any) => {
-    searchDocuments({ search: newSearch, location, navigate });
+    change('library.search.searchTerm', searchTerm);
+    searchDocuments({ search: { ...newSearch, searchTerm }, location, navigate });
   };
 
   return (
