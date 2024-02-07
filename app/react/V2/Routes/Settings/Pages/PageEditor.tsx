@@ -27,7 +27,7 @@ const pageEditorLoader =
   };
 
 const PageEditor = () => {
-  const loaderPage = useLoaderData() as Page;
+  const page = useLoaderData() as Page;
   const htmlEditor = useRef<CodeEditorInstance>();
   const JSEditor = useRef<CodeEditorInstance>();
 
@@ -38,7 +38,7 @@ const PageEditor = () => {
     getValues,
   } = useForm({
     defaultValues: { title: t('System', 'New page', null, false) },
-    values: loaderPage,
+    values: page,
   });
 
   const handleSave = () => {
@@ -47,7 +47,7 @@ const PageEditor = () => {
     const newJS = JSEditor.current?.getValue();
 
     const updatedPage: Page = {
-      ...loaderPage,
+      ...page,
       ...values,
       metadata: { content: newHTML, script: newJS },
     };
@@ -77,7 +77,7 @@ const PageEditor = () => {
                   </Translate>
                   <EnableButtonCheckbox
                     {...register('entityView')}
-                    toggleTexts={[<Translate>Enabled</Translate>, <Translate>Disabled</Translate>]}
+                    defaultChecked={page.entityView}
                   />
                 </div>
 
@@ -87,16 +87,14 @@ const PageEditor = () => {
                   {...register('title', { required: true })}
                 />
                 <CopyValueInput
-                  value={
-                    loaderPage.sharedId ? getPageUrl(loaderPage.sharedId, loaderPage.title) : ''
-                  }
+                  value={page.sharedId ? getPageUrl(page.sharedId, page.title) : ''}
                   label={<Translate>URL</Translate>}
                   className="mb-4 w-full"
                   id="page-url"
                 />
 
-                {loaderPage.sharedId && (
-                  <Link target="_blank" to={getPageUrl(loaderPage.sharedId, loaderPage.title)}>
+                {page.sharedId && (
+                  <Link target="_blank" to={getPageUrl(page.sharedId, page.title)}>
                     <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                       <ArrowTopRightOnSquareIcon className="w-4" />
                       <Translate className="underline hover:text-primary-700">View page</Translate>
