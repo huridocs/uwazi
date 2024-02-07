@@ -94,7 +94,7 @@ describe('Permisions system', () => {
   describe('mixed permissions', () => {
     it('should login as admin and perform a search', () => {
       clearCookiesAndLogin('admin', 'admin');
-      cy.get('input[name="library.search.searchTerm"]').type('test 2016');
+      cy.get('.search-box input"]').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 9);
     });
