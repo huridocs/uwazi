@@ -331,7 +331,7 @@
     "canvas": "^2.11.2",
     "clean-webpack-plugin": "4.0.0",
     "copy-webpack-plugin": "12.0.2",
-    "css-loader": "^6.8.1",
+    "css-loader": "^6.10.0",
     "css-minimizer-webpack-plugin": "^6.0.0",
     "cypress": "13.6.4",
     "cypress-axe": "^1.5.0",
