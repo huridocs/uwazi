@@ -5,7 +5,7 @@ import { clearCookiesAndLogin } from '../helpers/login';
 describe('Collection', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.intercept('GET', '/api/templates').as('fetchTemplates');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
