@@ -1,8 +1,10 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
@@ -11,6 +13,8 @@ import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
 import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
 import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { notificationAtom } from 'V2/atoms';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { getPageUrl } from './components/PageListTable';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
 
@@ -28,36 +32,67 @@ const pageEditorLoader =
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;
+  const revalidator = useRevalidator();
   const htmlEditor = useRef<CodeEditorInstance>();
   const JSEditor = useRef<CodeEditorInstance>();
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const {
     register,
+    reset,
     formState: { errors, isDirty },
     watch,
     getValues,
+    handleSubmit,
   } = useForm({
     defaultValues: { title: t('System', 'New page', null, false) },
     values: page,
   });
 
-  const handleSave = () => {
-    const values = getValues();
+  const save = async (data: Page) => {
     const newHTML = htmlEditor.current?.getValue();
     const newJS = JSEditor.current?.getValue();
+    const hasChangedHTML = newHTML !== data.metadata?.content;
+    const hasChangedJS = newJS !== data.metadata?.script;
 
     const updatedPage: Page = {
-      ...page,
-      ...values,
-      metadata: { content: newHTML, script: newJS },
+      ...data,
+      metadata: {
+        content: hasChangedHTML ? newHTML : data.metadata?.content,
+        script: hasChangedJS ? newJS : data.metadata?.script,
+      },
     };
 
-    console.log(updatedPage);
+    const response = await pagesAPI.save(updatedPage);
+
+    if (!(response instanceof FetchResponseError)) {
+      reset(response);
+    }
+
+    return response;
   };
 
-  const handleCancel = () => {};
+  const handleSave = async (data: Page) => {
+    const response = await save(data);
 
-  const handleSaveAndPreview = () => {};
+    const hasErrors = response instanceof FetchResponseError;
+
+    setNotifications({
+      type: !hasErrors ? 'success' : 'error',
+      text: !hasErrors ? (
+        <Translate>Saved successfully.</Translate>
+      ) : (
+        <Translate>An error occurred</Translate>
+      ),
+      ...(hasErrors && { details: response.message }),
+    });
+
+    revalidator.revalidate();
+  };
+
+  const handleSaveAndPreview = (data: Page) => {};
+
+  const handleCancel = () => {};
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -70,38 +105,51 @@ const PageEditor = () => {
         <SettingsContent.Body>
           <Tabs unmountTabs={false}>
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
-              <div className="flex flex-col gap-4 max-w-2xl">
-                <div className="flex gap-4 items-center">
-                  <Translate className="font-bold">
-                    Enable this page to be used as an entity view page:
-                  </Translate>
-                  <EnableButtonCheckbox
-                    {...register('entityView')}
-                    defaultChecked={page.entityView}
+              <form>
+                <input className="hidden" {...register('sharedId')} />
+                <div className="flex flex-col gap-4 max-w-2xl">
+                  <div className="flex gap-4 items-center">
+                    <Translate className="font-bold">
+                      Enable this page to be used as an entity view page:
+                    </Translate>
+                    <EnableButtonCheckbox
+                      {...register('entityView')}
+                      defaultChecked={page.entityView}
+                    />
+                  </div>
+
+                  <InputField
+                    id="title"
+                    label={<Translate>Title</Translate>}
+                    {...register('title', { required: true })}
                   />
+
+                  <CopyValueInput
+                    value={
+                      getValues('sharedId')
+                        ? getPageUrl(getValues('sharedId')!, getValues('title'))
+                        : ''
+                    }
+                    label={<Translate>URL</Translate>}
+                    className="mb-4 w-full"
+                    id="page-url"
+                  />
+
+                  {getValues('sharedId') && (
+                    <Link
+                      target="_blank"
+                      to={getPageUrl(getValues('sharedId')!, getValues('title'))}
+                    >
+                      <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
+                        <ArrowTopRightOnSquareIcon className="w-4" />
+                        <Translate className="underline hover:text-primary-700">
+                          View page
+                        </Translate>
+                      </div>
+                    </Link>
+                  )}
                 </div>
-
-                <InputField
-                  id="title"
-                  label={<Translate>Title</Translate>}
-                  {...register('title', { required: true })}
-                />
-                <CopyValueInput
-                  value={page.sharedId ? getPageUrl(page.sharedId, page.title) : ''}
-                  label={<Translate>URL</Translate>}
-                  className="mb-4 w-full"
-                  id="page-url"
-                />
-
-                {page.sharedId && (
-                  <Link target="_blank" to={getPageUrl(page.sharedId, page.title)}>
-                    <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
-                      <ArrowTopRightOnSquareIcon className="w-4" />
-                      <Translate className="underline hover:text-primary-700">View page</Translate>
-                    </div>
-                  </Link>
-                )}
-              </div>
+              </form>
             </Tabs.Tab>
 
             <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
@@ -140,11 +188,11 @@ const PageEditor = () => {
               <Translate>Cancel</Translate>
             </Button>
 
-            <Button styling="solid" color="primary" onClick={() => handleSave()}>
+            <Button styling="solid" color="primary" onClick={handleSubmit(handleSave)}>
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button styling="solid" color="success" onClick={() => handleSave()}>
+            <Button styling="solid" color="success" onClick={handleSubmit(handleSave)}>
               <Translate>Save</Translate>
             </Button>
           </div>

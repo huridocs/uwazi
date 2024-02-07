@@ -2,6 +2,16 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { Page } from 'V2/shared/types';
+import { FetchResponseError } from 'shared/JSONRequest';
+
+const get = async (headers?: IncomingHttpHeaders): Promise<Page> => {
+  try {
+    const response = await api.get('pages', new RequestParams({}, headers));
+    return response.json;
+  } catch (e) {
+    return e;
+  }
+};
 
 const getBySharedId = async (
   sharedId: string,
@@ -18,9 +28,12 @@ const getBySharedId = async (
   }
 };
 
-const get = async (headers?: IncomingHttpHeaders): Promise<Page> => {
+const save = async (
+  page: Page,
+  headers?: IncomingHttpHeaders
+): Promise<Page | FetchResponseError> => {
   try {
-    const response = await api.get('pages', new RequestParams({}, headers));
+    const response = await api.post('pages', new RequestParams(page, headers));
     return response.json;
   } catch (e) {
     return e;
@@ -36,4 +49,4 @@ const deleteBySharedId = async (sharedId: string, headers?: IncomingHttpHeaders)
   }
 };
 
-export { get, getBySharedId, deleteBySharedId };
+export { get, getBySharedId, deleteBySharedId, save };
