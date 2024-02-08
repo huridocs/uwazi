@@ -298,6 +298,12 @@ describe('session scoped collection', () => {
       await dataSource.drop();
       expect(await dataSource.exists()).toBe(false);
     });
+
+    it('should not fail if the collection does not exist', async () => {
+      const dataSource = new DataSource(getConnection(), DefaultTransactionManager());
+      dataSource.setCollectionName('non_existing_collection');
+      await dataSource.drop();
+    });
   });
 
   describe('createCollection', () => {
