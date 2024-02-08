@@ -25,13 +25,13 @@ describe('Code editor', () => {
   });
 
   it('should mount an empty editor if there is no code', () => {
-    JSEditor.args.code = undefined;
+    JSEditor.args.intialValue = undefined;
     mount(<JSEditor />);
     cy.get('.view-lines').children().should('have.length', 1);
   });
 
   it('should get the updated code when clicking the save button', () => {
-    HTMLEditor.args.code = '<h1>Original HTML code</h1>';
+    HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
     mount(<HTMLEditor />);
 
     cy.contains('button', 'Save').click();
