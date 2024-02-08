@@ -4405,12 +4405,24 @@
     notepack.io "~3.0.1"
     socket.io-parser "~4.2.1"
 
-"@storybook/addon-actions@7.6.12", "@storybook/addon-actions@^7.6.12":
+"@storybook/addon-actions@7.6.12":
   version "7.6.12"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-7.6.12.tgz#9f8ec7ea0b656699ea7b69caf29a7e0e8e482d31"
   integrity sha512-vK/H6K+AJ4ZSsCu/+MapYYI/xrynB6JoCOejt//flTigZOhwTWv7WXbmEeqGIIToXy0LA2IUZ1/kCjFXR0lEdQ==
   dependencies:
     "@storybook/core-events" "7.6.12"
+    "@storybook/global" "^5.0.0"
+    "@types/uuid" "^9.0.1"
+    dequal "^2.0.2"
+    polished "^4.2.2"
+    uuid "^9.0.0"
+
+"@storybook/addon-actions@^7.6.13":
+  version "7.6.13"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-7.6.13.tgz#a1675fe2535e76228fa121fa1b30eb274349c0a4"
+  integrity sha512-uxjBLzJNJfj8oS0orgLt7/Gs5tLoP2xhBESi5vjk+7BZjAgfoA6w5IwMwmh9sRB3+aUx3ks7fGjE/hRT/YcaxA==
+  dependencies:
+    "@storybook/core-events" "7.6.13"
     "@storybook/global" "^5.0.0"
     "@types/uuid" "^9.0.1"
     dequal "^2.0.2"
@@ -4772,6 +4784,13 @@
   version "7.6.12"
   resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-7.6.12.tgz#b622a51ee905ca1adb83163a912bb9dcfee3ba4a"
   integrity sha512-IO4cwk7bBCKH6lLnnIlHO9FwQXt/9CzLUAoZSY9msWsdPppCdKlw8ynJI5YarSNKDBUn8ArIfnRf0Mve0KQr9Q==
+  dependencies:
+    ts-dedent "^2.0.0"
+
+"@storybook/core-events@7.6.13":
+  version "7.6.13"
+  resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-7.6.13.tgz#772834ebf72f1fda339d7152566f051ac38394b9"
+  integrity sha512-hsL6JT273b1RcJBGHpNNLJ1ilzFMT4UCJwwtOpNNQVPBJt0Hn22vxC69/hpqSINrhHRLj3ak8CTtA0ynVjngaQ==
   dependencies:
     ts-dedent "^2.0.0"
 
