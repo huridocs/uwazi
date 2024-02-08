@@ -127,7 +127,6 @@ describe('Map', () => {
     it('should call clickOnCluster when clicking on a cluster', async () => {
       await waitFor(async () => {
         const cluster = await screen.getByText('3');
-        jest.spyOn(MapHelper, 'preventDefaultEvent').mockImplementation();
         fireEvent.click(cluster);
         expect(clickOnCluster).toHaveBeenCalled();
       });
