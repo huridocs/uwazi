@@ -33,8 +33,8 @@ const pageEditorLoader =
 
 const PageEditor = () => {
   const page = useLoaderData() as Page;
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const revalidator = useRevalidator();
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
@@ -61,6 +61,20 @@ const PageEditor = () => {
     }
   }, [blocker, setShowConfirmationModal]);
 
+  const notify = (response: Page | FetchResponseError) => {
+    const hasErrors = response instanceof FetchResponseError;
+
+    setNotifications({
+      type: !hasErrors ? 'success' : 'error',
+      text: !hasErrors ? (
+        <Translate>Saved successfully.</Translate>
+      ) : (
+        <Translate>An error occurred</Translate>
+      ),
+      ...(hasErrors && { details: response.message }),
+    });
+  };
+
   const save = async (data: Page) => {
     const response = await pagesAPI.save(data);
 
@@ -73,25 +87,27 @@ const PageEditor = () => {
 
   const handleSave = async (data: Page) => {
     const response = await save(data);
-
     const hasErrors = response instanceof FetchResponseError;
 
-    setNotifications({
-      type: !hasErrors ? 'success' : 'error',
-      text: !hasErrors ? (
-        <Translate>Saved successfully.</Translate>
-      ) : (
-        <Translate>An error occurred</Translate>
-      ),
-      ...(hasErrors && { details: response.message }),
-    });
+    notify(response);
 
-    revalidator.revalidate();
+    if (!hasErrors) {
+      revalidator.revalidate();
+    }
   };
 
-  const handleSaveAndPreview = (data: Page) => {};
+  const handleSaveAndPreview = async (data: Page) => {
+    const response = await save(data);
+    const hasErrors = response instanceof FetchResponseError;
 
-  const handleCancel = () => {};
+    notify(response);
+
+    if (!hasErrors) {
+      const pageUrl = getPageUrl(response.sharedId!, response.title);
+      window.open(`${window.location.origin}/${pageUrl}`);
+      revalidator.revalidate();
+    }
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -126,7 +142,7 @@ const PageEditor = () => {
                   <CopyValueInput
                     value={
                       getValues('sharedId')
-                        ? getPageUrl(getValues('sharedId')!, getValues('title'))
+                        ? `/${getPageUrl(getValues('sharedId')!, getValues('title'))}`
                         : ''
                     }
                     label={<Translate>URL</Translate>}
@@ -137,7 +153,7 @@ const PageEditor = () => {
                   {getValues('sharedId') && (
                     <Link
                       target="_blank"
-                      to={getPageUrl(getValues('sharedId')!, getValues('title'))}
+                      to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}
                     >
                       <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
                         <ArrowTopRightOnSquareIcon className="w-4" />
@@ -201,11 +217,13 @@ const PageEditor = () => {
 
         <SettingsContent.Footer>
           <div className="flex gap-2 justify-end">
-            <Button styling="light" onClick={() => {}}>
-              <Translate>Cancel</Translate>
-            </Button>
+            <Link to="/settings/pages">
+              <Button styling="light">
+                <Translate>Cancel</Translate>
+              </Button>
+            </Link>
 
-            <Button styling="solid" color="primary" onClick={handleSubmit(handleSave)}>
+            <Button styling="solid" color="primary" onClick={handleSubmit(handleSaveAndPreview)}>
               <Translate>Save & Preview</Translate>
             </Button>
 
