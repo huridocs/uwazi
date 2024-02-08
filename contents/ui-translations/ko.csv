@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,활동
+Activate,Activate
 Activate this feature for enhanced account security,계정 보안 강화가 필요한 경우 이 기능을 활성화하십시오.
 Activated,Activated
 Active languages,Active languages
@@ -121,7 +122,7 @@ Changing the type will erase all relationships to this entity.,Changing the type
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Check to make this instance private (only logged-in users can access the data),비공개 인스턴스로 전환하기 (로그인 사용자만 이용 가능)
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
@@ -202,7 +203,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,커넥션에 제목이 필요합니다.
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
@@ -245,6 +245,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
+Disable,Disable
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss

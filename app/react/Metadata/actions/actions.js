@@ -32,6 +32,7 @@ const defaultValueByType = (type, options) => {
       return !options.resetExisting ? generateID(3, 4, 4) : undefined;
     case 'multiselect':
     case 'relationship':
+    case 'newRelationship':
     case 'nested':
     case 'multidate':
     case 'multidaterange':
@@ -70,6 +71,7 @@ const getPropertyValue = (property, metadataProperty) => {
     case 'multidaterange':
     case 'nested':
     case 'relationship':
+    case 'newRelationship':
     case 'multidate':
     case 'geolocation':
       return metadataProperty.map(v => v.value);
@@ -110,7 +112,7 @@ export function loadFetchedInReduxForm(form, entity, templates) {
 
   const entitySelectedOptions = {};
   template.properties.forEach(property => {
-    if (property.type === 'relationship') {
+    if (property.type === 'relationship' || property.type === 'newRelationship') {
       entitySelectedOptions[property.name] = entity.metadata ? entity.metadata[property.name] : [];
     }
   });

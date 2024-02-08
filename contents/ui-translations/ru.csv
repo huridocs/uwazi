@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,Действие
+Activate,Activate
 Activate this feature for enhanced account security,"Активируйте эту функцию, чтобы укрепить безопасность учетной записи"
 Activated,Activated
 Active languages,Active languages
@@ -118,7 +119,7 @@ Changing the type will erase all relationships to this entity.,Changing the type
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Check to make this instance private (only logged-in users can access the data),"Пометьте для того, чтобы сделать эту базу данных приватной для просмотра (только зарегистрированные пользователи смогут получить доступ к данным)"
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
@@ -199,7 +200,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,В настоящий момент для подключений только требуется заголовок
 Custom component error,Ошибка пользовательского компонента
 Custom CSS,Персональные CSS
@@ -242,6 +242,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
+Disable,Disable
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss

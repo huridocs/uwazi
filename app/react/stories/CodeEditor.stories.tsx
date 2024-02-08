@@ -78,7 +78,7 @@ const meta: Meta<typeof CodeEditor> = {
 
 type Story = StoryObj<typeof CodeEditor>;
 
-const Component = ({ language, code }: CodeEditorProps) => {
+const Component = ({ language, intialValue }: CodeEditorProps) => {
   const editorInstance = useRef<CodeEditorInstance>();
   const [updatedCode, setUpdatedCode] = useState<string>();
 
@@ -91,8 +91,8 @@ const Component = ({ language, code }: CodeEditorProps) => {
       <div className="overflow-y-auto w-full h-96">
         <CodeEditor
           language={language}
-          code={code}
-          getEditor={editor => {
+          intialValue={intialValue}
+          onMount={editor => {
             editorInstance.current = editor;
           }}
         />
@@ -112,14 +112,14 @@ const Component = ({ language, code }: CodeEditorProps) => {
 };
 
 const Primary: Story = {
-  render: args => <Component language={args.language} code={args.code} />,
+  render: args => <Component language={args.language} intialValue={args.intialValue} />,
 };
 
 const JSEditor: Story = {
   ...Primary,
   args: {
     language: 'javascript',
-    code: sampleJS,
+    intialValue: sampleJS,
   },
 };
 
@@ -127,7 +127,7 @@ const HTMLEditor: Story = {
   ...Primary,
   args: {
     language: 'html',
-    code: sampleHTML,
+    intialValue: sampleHTML,
   },
 };
 

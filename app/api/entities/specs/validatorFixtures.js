@@ -23,6 +23,51 @@ export default {
         { name: 'multiselect', type: 'multiselect', content: dictionary2 },
         { name: 'relationship', type: 'relationship', content: simpleTemplateId },
         { name: 'relationship2', type: 'relationship', content: simpleTemplateId },
+        {
+          name: 'newRelationship',
+          type: 'newRelationship',
+          query: [
+            {
+              types: [db.id()],
+              direction: 'out',
+              match: [
+                {
+                  templates: [simpleTemplateId],
+                  traverse: [],
+                },
+              ],
+            },
+          ],
+          targetTemplates: [simpleTemplateId],
+        },
+        {
+          name: 'newRelationship2',
+          type: 'newRelationship',
+          query: [
+            {
+              types: [db.id()],
+              direction: 'out',
+              match: [
+                {
+                  templates: [],
+                  traverse: [
+                    {
+                      types: [db.id()],
+                      direction: 'out',
+                      match: [
+                        {
+                          templates: [simpleTemplateId],
+                          traverse: [],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+          targetTemplates: false,
+        },
         { name: 'media', type: 'media' },
         { name: 'image', type: 'image' },
         { name: 'link', type: 'link' },

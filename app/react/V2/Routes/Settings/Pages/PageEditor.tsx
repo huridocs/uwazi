@@ -1,16 +1,21 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil';
+import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
-import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
-import { EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { CodeEditor } from 'V2/Components/CodeEditor';
+import { ConfirmNavigationModal, EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
+import { notificationAtom } from 'V2/atoms';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { getPageUrl } from './components/PageListTable';
 import { HTMLNotification, JSNotification } from './components/PageEditorComponents';
 
@@ -27,37 +32,82 @@ const pageEditorLoader =
   };
 
 const PageEditor = () => {
-  const loaderPage = useLoaderData() as Page;
-  const htmlEditor = useRef<CodeEditorInstance>();
-  const JSEditor = useRef<CodeEditorInstance>();
+  const page = useLoaderData() as Page;
+  const revalidator = useRevalidator();
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const setNotifications = useSetRecoilState(notificationAtom);
+
+  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
 
   const {
     register,
-    formState: { errors, isDirty },
+    reset,
+    formState: { errors, isDirty, isSubmitting },
     watch,
     getValues,
+    resetField,
+    setValue,
+    handleSubmit,
   } = useForm({
     defaultValues: { title: t('System', 'New page', null, false) },
-    values: loaderPage,
+    values: page,
   });
 
-  const handleSave = () => {
-    const values = getValues();
-    const newHTML = htmlEditor.current?.getValue();
-    const newJS = JSEditor.current?.getValue();
+  const blocker = useBlocker(isDirty && !isSubmitting);
 
-    const updatedPage: Page = {
-      ...loaderPage,
-      ...values,
-      metadata: { content: newHTML, script: newJS },
-    };
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setShowConfirmationModal(true);
+    }
+  }, [blocker, setShowConfirmationModal]);
 
-    console.log(updatedPage);
+  const notify = (response: Page | FetchResponseError) => {
+    const hasErrors = response instanceof FetchResponseError;
+
+    setNotifications({
+      type: !hasErrors ? 'success' : 'error',
+      text: !hasErrors ? (
+        <Translate>Saved successfully.</Translate>
+      ) : (
+        <Translate>An error occurred</Translate>
+      ),
+      ...(hasErrors && { details: response.message }),
+    });
   };
 
-  const handleCancel = () => {};
+  const save = async (data: Page) => {
+    const response = await pagesAPI.save(data);
 
-  const handleSaveAndPreview = () => {};
+    if (!(response instanceof FetchResponseError)) {
+      reset(response);
+    }
+
+    return response;
+  };
+
+  const handleSave = async (data: Page) => {
+    const response = await save(data);
+    const hasErrors = response instanceof FetchResponseError;
+
+    notify(response);
+
+    if (!hasErrors) {
+      revalidator.revalidate();
+    }
+  };
+
+  const handleSaveAndPreview = async (data: Page) => {
+    const response = await save(data);
+    const hasErrors = response instanceof FetchResponseError;
+
+    notify(response);
+
+    if (!hasErrors) {
+      const pageUrl = getPageUrl(response.sharedId!, response.title);
+      window.open(`${window.location.origin}/${pageUrl}`);
+      revalidator.revalidate();
+    }
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -70,50 +120,70 @@ const PageEditor = () => {
         <SettingsContent.Body>
           <Tabs unmountTabs={false}>
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
-              <div className="flex flex-col gap-4 max-w-2xl">
-                <div className="flex gap-4 items-center">
-                  <Translate className="font-bold">
-                    Enable this page to be used as an entity view page:
-                  </Translate>
-                  <EnableButtonCheckbox
-                    {...register('entityView')}
-                    toggleTexts={[<Translate>Enabled</Translate>, <Translate>Disabled</Translate>]}
+              <form>
+                <input className="hidden" {...register('sharedId')} />
+                <div className="flex flex-col gap-4 max-w-2xl">
+                  <div className="flex gap-4 items-center">
+                    <Translate className="font-bold">
+                      Enable this page to be used as an entity view page:
+                    </Translate>
+                    <EnableButtonCheckbox
+                      {...register('entityView')}
+                      defaultChecked={page.entityView}
+                    />
+                  </div>
+
+                  <InputField
+                    id="title"
+                    label={<Translate>Title</Translate>}
+                    {...register('title', { required: true })}
                   />
+
+                  <CopyValueInput
+                    value={
+                      getValues('sharedId')
+                        ? `/${getPageUrl(getValues('sharedId')!, getValues('title'))}`
+                        : ''
+                    }
+                    label={<Translate>URL</Translate>}
+                    className="mb-4 w-full"
+                    id="page-url"
+                  />
+
+                  {getValues('sharedId') && (
+                    <Link
+                      target="_blank"
+                      to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}
+                    >
+                      <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
+                        <ArrowTopRightOnSquareIcon className="w-4" />
+                        <Translate className="underline hover:text-primary-700">
+                          View page
+                        </Translate>
+                      </div>
+                    </Link>
+                  )}
                 </div>
-
-                <InputField
-                  id="title"
-                  label={<Translate>Title</Translate>}
-                  {...register('title', { required: true })}
-                />
-                <CopyValueInput
-                  value={
-                    loaderPage.sharedId ? getPageUrl(loaderPage.sharedId, loaderPage.title) : ''
-                  }
-                  label={<Translate>URL</Translate>}
-                  className="mb-4 w-full"
-                  id="page-url"
-                />
-
-                {loaderPage.sharedId && (
-                  <Link target="_blank" to={getPageUrl(loaderPage.sharedId, loaderPage.title)}>
-                    <div className="flex gap-2 hover:font-bold hover:cursor-pointer">
-                      <ArrowTopRightOnSquareIcon className="w-4" />
-                      <Translate className="underline hover:text-primary-700">View page</Translate>
-                    </div>
-                  </Link>
-                )}
-              </div>
+              </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
+            <Tabs.Tab id="Code" key="html" label={<Translate>Code</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <HTMLNotification />
                 <CodeEditor
                   language="html"
-                  code={getValues('metadata.content')}
-                  getEditor={editor => {
-                    htmlEditor.current = editor;
+                  intialValue={page.metadata?.content}
+                  onMount={editor => {
+                    editor.getModel()?.onDidChangeContent(
+                      debouncedChangeHandler(() => {
+                        if (page.metadata?.content !== editor.getValue()) {
+                          setValue('metadata.content', editor.getValue(), { shouldDirty: true });
+                        }
+                        if (page.metadata?.content === editor.getValue()) {
+                          resetField('metadata.content', { keepDirty: false });
+                        }
+                      })
+                    );
                   }}
                 />
                 <textarea {...register('metadata.content')} className="hidden" />
@@ -125,9 +195,18 @@ const PageEditor = () => {
                 <JSNotification />
                 <CodeEditor
                   language="javascript"
-                  code={getValues('metadata.script')}
-                  getEditor={editor => {
-                    JSEditor.current = editor;
+                  intialValue={page.metadata?.script}
+                  onMount={editor => {
+                    editor.getModel()?.onDidChangeContent(
+                      debouncedChangeHandler(() => {
+                        if (page.metadata?.script !== editor.getValue()) {
+                          setValue('metadata.script', editor.getValue(), { shouldDirty: true });
+                        }
+                        if (page.metadata?.script === editor.getValue()) {
+                          resetField('metadata.script', { keepDirty: false });
+                        }
+                      })
+                    );
                   }}
                 />
                 <textarea {...register('metadata.script')} className="hidden" />
@@ -138,20 +217,29 @@ const PageEditor = () => {
 
         <SettingsContent.Footer>
           <div className="flex gap-2 justify-end">
-            <Button styling="light" onClick={() => {}}>
-              <Translate>Cancel</Translate>
-            </Button>
+            <Link to="/settings/pages">
+              <Button styling="light">
+                <Translate>Cancel</Translate>
+              </Button>
+            </Link>
 
-            <Button styling="solid" color="primary" onClick={() => handleSave()}>
+            <Button styling="solid" color="primary" onClick={handleSubmit(handleSaveAndPreview)}>
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button styling="solid" color="success" onClick={() => handleSave()}>
+            <Button styling="solid" color="success" onClick={handleSubmit(handleSave)}>
               <Translate>Save</Translate>
             </Button>
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {showConfirmationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setShowConfirmationModal}
+          onConfirm={blocker.proceed}
+        />
+      )}
     </div>
   );
 };

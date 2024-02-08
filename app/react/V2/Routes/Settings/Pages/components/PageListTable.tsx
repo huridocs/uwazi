@@ -7,7 +7,7 @@ import { Page } from 'app/V2/shared/types';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 
-const getPageUrl = (sharedId: string, title: string) => `/page/${sharedId}/${kebabCase(title)}`;
+const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
 
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
@@ -33,7 +33,7 @@ const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
 const UrlCell = ({ cell }: CellContext<Page, string>) => {
   const sharedId = cell.getValue();
   const { title } = cell.row.original;
-  const url = getPageUrl(sharedId, title);
+  const url = `/${getPageUrl(sharedId, title)}`;
   return url;
 };
 

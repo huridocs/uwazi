@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,عمل/ إجراء
+Activate,Activate
 Activate this feature for enhanced account security,فعل هذه الميزة لتأمين أفضل للحساب
 Activated,Activated
 Active languages,اللغات النشطة
@@ -120,7 +121,7 @@ Selecting this option will update all template properties automatically. The pro
 You will need to update them manually. After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Check to make this instance private (only logged-in users can access the data),التحقق لجعل قاعدة البيانات هذه خاصة (لا أحد يمكنه الوصول إلى البيانات سوى المستخدمين الذين تم تسجيل دخولهم)
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
@@ -201,7 +202,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,لا تحتاج الاتصالات حالياً إلا لعنوان
 Custom component error,خطأ في المكون المخصص
 Custom CSS,CSS تنسيق
@@ -244,6 +244,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
+Disable,Disable
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
