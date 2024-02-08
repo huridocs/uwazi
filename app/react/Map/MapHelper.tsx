@@ -151,16 +151,5 @@ const checkMapInitialization = (map: L.Map, containerId: string) => {
   }
 };
 
-const preventDefaultEvent = (event: LeafletEvent) => {
-  // @ts-ignore
-  event.preventDefault();
-};
-
-export {
-  DataMarker,
-  getClusterMarker,
-  parseMarkerPoint,
-  checkMapInitialization,
-  preventDefaultEvent,
-};
+export { DataMarker, getClusterMarker, parseMarkerPoint, checkMapInitialization };
 export type { LMarker, MarkerProperties, MarkerInput, TemplatesInfo };
