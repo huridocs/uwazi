@@ -1,4 +1,4 @@
-import L, { latLng, LeafletEvent } from 'leaflet';
+import L, { latLng } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
 import { t } from 'app/I18N';
 
