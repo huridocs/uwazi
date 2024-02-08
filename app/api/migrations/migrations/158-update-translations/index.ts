@@ -4,7 +4,7 @@ const newKeys = [{ key: 'Activate' }, { key: 'Disable' }];
 const deletedKeys = [{ key: 'Current value:' }];
 
 export default {
-  delta: 157,
+  delta: 158,
 
   reindex: false,
 

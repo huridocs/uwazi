@@ -5,7 +5,7 @@ describe('Permisions system', () => {
     'Artavia Murillo y otros. Resolución del Presidente de la Corte de 6 de agosto de 2012';
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -94,7 +94,7 @@ describe('Permisions system', () => {
   describe('mixed permissions', () => {
     it('should login as admin and perform a search', () => {
       clearCookiesAndLogin('admin', 'admin');
-      cy.get('input[name="library.search.searchTerm"]').type('test 2016');
+      cy.get('.search-box input').type('test 2016');
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 9);
     });
