@@ -1,17 +1,18 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
+import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Page } from 'V2/shared/types';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, CopyValueInput, Tabs } from 'V2/Components/UI';
-import { CodeEditor, CodeEditorInstance } from 'V2/Components/CodeEditor';
+import { CodeEditor } from 'V2/Components/CodeEditor';
 import { ConfirmNavigationModal, EnableButtonCheckbox, InputField } from 'app/V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -34,23 +35,25 @@ const PageEditor = () => {
   const page = useLoaderData() as Page;
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const revalidator = useRevalidator();
-  const htmlEditor = useRef<CodeEditorInstance>();
-  const JSEditor = useRef<CodeEditorInstance>();
   const setNotifications = useSetRecoilState(notificationAtom);
+
+  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
 
   const {
     register,
     reset,
-    formState: { errors, isDirty, isSubmitting: formIsSubmitting },
+    formState: { errors, isDirty, isSubmitting },
     watch,
     getValues,
+    resetField,
+    setValue,
     handleSubmit,
   } = useForm({
     defaultValues: { title: t('System', 'New page', null, false) },
     values: page,
   });
 
-  const blocker = useBlocker(isDirty && !formIsSubmitting);
+  const blocker = useBlocker(isDirty && !isSubmitting);
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -59,20 +62,7 @@ const PageEditor = () => {
   }, [blocker, setShowConfirmationModal]);
 
   const save = async (data: Page) => {
-    const newHTML = htmlEditor.current?.getValue();
-    const newJS = JSEditor.current?.getValue();
-    const hasChangedHTML = newHTML !== data.metadata?.content;
-    const hasChangedJS = newJS !== data.metadata?.script;
-
-    const updatedPage: Page = {
-      ...data,
-      metadata: {
-        content: hasChangedHTML ? newHTML : data.metadata?.content,
-        script: hasChangedJS ? newJS : data.metadata?.script,
-      },
-    };
-
-    const response = await pagesAPI.save(updatedPage);
+    const response = await pagesAPI.save(data);
 
     if (!(response instanceof FetchResponseError)) {
       reset(response);
@@ -161,14 +151,23 @@ const PageEditor = () => {
               </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Code" label={<Translate>Code</Translate>}>
+            <Tabs.Tab id="Code" key="html" label={<Translate>Code</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <HTMLNotification />
                 <CodeEditor
                   language="html"
-                  code={getValues('metadata.content')}
-                  getEditor={editor => {
-                    htmlEditor.current = editor;
+                  intialValue={page.metadata?.content}
+                  onMount={editor => {
+                    editor.getModel()?.onDidChangeContent(
+                      debouncedChangeHandler(() => {
+                        if (page.metadata?.content !== editor.getValue()) {
+                          setValue('metadata.content', editor.getValue(), { shouldDirty: true });
+                        }
+                        if (page.metadata?.content === editor.getValue()) {
+                          resetField('metadata.content', { keepDirty: false });
+                        }
+                      })
+                    );
                   }}
                 />
                 <textarea {...register('metadata.content')} className="hidden" />
@@ -180,9 +179,18 @@ const PageEditor = () => {
                 <JSNotification />
                 <CodeEditor
                   language="javascript"
-                  code={getValues('metadata.script')}
-                  getEditor={editor => {
-                    JSEditor.current = editor;
+                  intialValue={page.metadata?.script}
+                  onMount={editor => {
+                    editor.getModel()?.onDidChangeContent(
+                      debouncedChangeHandler(() => {
+                        if (page.metadata?.script !== editor.getValue()) {
+                          setValue('metadata.script', editor.getValue(), { shouldDirty: true });
+                        }
+                        if (page.metadata?.script === editor.getValue()) {
+                          resetField('metadata.script', { keepDirty: false });
+                        }
+                      })
+                    );
                   }}
                 />
                 <textarea {...register('metadata.script')} className="hidden" />
