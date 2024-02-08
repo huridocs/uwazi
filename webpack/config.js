@@ -12,7 +12,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
-const MONACO_DIR = path.resolve(__dirname, './node_modules/monaco-editor');
+const MONACO_DIR = path.resolve(__dirname, '../node_modules/monaco-editor/min/vs');
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -79,6 +79,7 @@ module.exports = production => {
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
+          exclude: [MONACO_DIR],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -104,14 +105,13 @@ module.exports = production => {
           },
         },
         {
-          test: /\.ttf$/,
-          include: MONACO_DIR,
-          type: 'asset',
+          test: /\.s(a|c)ss$/,
+          include: [MONACO_DIR],
+          use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader', 'sass-loader'],
         },
         {
-          test: /\.css$/,
-          include: MONACO_DIR,
-          use: ['style-loader', 'css-loader'],
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
+          type: 'asset/resource',
         },
       ],
     },
@@ -133,6 +133,10 @@ module.exports = production => {
       new CopyWebpackPlugin({
         patterns: [
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
+          {
+            from: 'node_modules/monaco-editor/min/vs/base/browser/ui/codicons/codicon/codicon.ttf',
+            to: 'codicon.ttf',
+          },
           { from: 'node_modules/flag-icon-css/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
