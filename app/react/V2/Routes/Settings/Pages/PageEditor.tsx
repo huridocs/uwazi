@@ -2,7 +2,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
+import {
+  Link,
+  LoaderFunction,
+  useBlocker,
+  useLoaderData,
+  useNavigate,
+  useRevalidator,
+} from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetRecoilState } from 'recoil';
 import { debounce } from 'lodash';
@@ -34,6 +41,7 @@ const pageEditorLoader =
 const PageEditor = () => {
   const page = useLoaderData() as Page;
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
 
@@ -75,6 +83,16 @@ const PageEditor = () => {
     });
   };
 
+  const handleRevalidate = (response: Page) => {
+    if (!page.sharedId) {
+      navigate(`/${response.language}/settings/pages/page/${response.sharedId}`, {
+        replace: true,
+      });
+    } else {
+      revalidator.revalidate();
+    }
+  };
+
   const save = async (data: Page) => {
     const response = await pagesAPI.save(data);
 
@@ -92,7 +110,7 @@ const PageEditor = () => {
     notify(response);
 
     if (!hasErrors) {
-      revalidator.revalidate();
+      handleRevalidate(page);
     }
   };
 
@@ -105,7 +123,7 @@ const PageEditor = () => {
     if (!hasErrors) {
       const pageUrl = getPageUrl(response.sharedId!, response.title);
       window.open(`${window.location.origin}/${pageUrl}`);
-      revalidator.revalidate();
+      handleRevalidate(page);
     }
   };
 
