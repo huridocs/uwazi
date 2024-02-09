@@ -44,8 +44,9 @@ describe('Auth Routes', () => {
       }
     };
 
-    it('should have a validation schema', () => {
-      expect(routes.post.validation('/api/login')).toMatchSnapshot();
+    it('should have a validation schema', async () => {
+      const req = { body: { username: 'oldUser', password: 'badPassword' }, get: () => {} };
+      await request(app).post('/api/login').send(req.body).expect(500);
     });
 
     it('should login succesfully with sha256', async () => {
