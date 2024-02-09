@@ -32,8 +32,8 @@ const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
 
 const UrlCell = ({ cell }: CellContext<Page, string>) => {
   const sharedId = cell.getValue();
-  const { title } = cell.row.original;
-  const url = `/${getPageUrl(sharedId, title)}`;
+  const { title, language } = cell.row.original;
+  const url = `/${language}/${getPageUrl(sharedId, title)}`;
   return url;
 };
 
