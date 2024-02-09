@@ -4,9 +4,11 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { Page } from 'V2/shared/types';
 import { FetchResponseError } from 'shared/JSONRequest';
 
-const get = async (headers?: IncomingHttpHeaders): Promise<Page> => {
+const get = async (language: string, headers?: IncomingHttpHeaders): Promise<Page> => {
   try {
-    const response = await api.get('pages', new RequestParams({}, headers));
+    const requestParams = new RequestParams({}, headers);
+    api.locale(language);
+    const response = await api.get('pages', requestParams);
     return response.json;
   } catch (e) {
     return e;
@@ -33,7 +35,8 @@ const save = async (
   headers?: IncomingHttpHeaders
 ): Promise<Page | FetchResponseError> => {
   try {
-    const response = await api.post('pages', new RequestParams(page, headers));
+    const requestParams = new RequestParams(page, headers);
+    const response = await api.post('pages', requestParams);
     return response.json;
   } catch (e) {
     return e;

@@ -23,8 +23,8 @@ import {
 
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    pagesAPI.get(headers);
+  async ({ params }) =>
+    pagesAPI.get(params.lang || 'en', headers);
 
 const PagesList = () => {
   const [selectedPages, setSelectedPages] = useState<Row<Page>[]>([]);
@@ -92,7 +92,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}

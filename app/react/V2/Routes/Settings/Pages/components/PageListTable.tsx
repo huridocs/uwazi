@@ -15,7 +15,7 @@ const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
 const EditButton = ({ cell }: CellContext<Page, string>) => (
-  <Link to={`/settings/pages/page/${cell.getValue()}`}>
+  <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
     <Button styling="outline" className="leading-4">
       <Translate>Edit</Translate>
     </Button>
