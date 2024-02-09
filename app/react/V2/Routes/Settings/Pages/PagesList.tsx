@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from 'react-router-dom';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
@@ -31,6 +31,7 @@ const PagesList = () => {
   const [showModal, setShowModal] = useState(false);
   const pages = useLoaderData() as Page[];
   const revalidator = useRevalidator();
+  const params = useParams();
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const columnHelper = createColumnHelper<Page>();
@@ -108,7 +109,7 @@ const PagesList = () => {
           {selectedPages.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Link to="/settings/pages/page">
+                <Link to={`/${params.lang || 'en'}/settings/pages/page`}>
                   <Button styling="solid" color="primary" type="button">
                     <Translate>Add page</Translate>
                   </Button>
