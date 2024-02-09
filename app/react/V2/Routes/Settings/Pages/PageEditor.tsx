@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useMemo, useState } from 'react';
@@ -237,16 +238,26 @@ const PageEditor = () => {
         <SettingsContent.Footer>
           <div className="flex gap-2 justify-end">
             <Link to="/settings/pages">
-              <Button styling="light">
+              <Button styling="light" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>
               </Button>
             </Link>
 
-            <Button styling="solid" color="primary" onClick={handleSubmit(handleSaveAndPreview)}>
+            <Button
+              styling="solid"
+              color="primary"
+              onClick={handleSubmit(handleSaveAndPreview)}
+              disabled={isSubmitting}
+            >
               <Translate>Save & Preview</Translate>
             </Button>
 
-            <Button styling="solid" color="success" onClick={handleSubmit(handleSave)}>
+            <Button
+              styling="solid"
+              color="success"
+              onClick={handleSubmit(handleSave)}
+              disabled={isSubmitting}
+            >
               <Translate>Save</Translate>
             </Button>
           </div>
