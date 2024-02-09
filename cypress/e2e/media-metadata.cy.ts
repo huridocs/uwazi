@@ -91,20 +91,20 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait(2000);
 
     // waiting for video
-    cy.get('aside video', { timeout: 5000 }).then(
-      async $video =>
-        new Promise(resolve => {
-          $video[0].removeAttribute('controls');
-          const interval = setInterval(() => {
-            const videoElement = $video[0] as HTMLVideoElement;
-            if (videoElement.readyState >= 3) {
-              clearInterval(interval);
-              resolve($video);
-            }
-          }, 10);
-          cy.get('@successMessage').should('not.exist');
-        })
-    );
+    cy.get('aside video', { timeout: 5000 }).then(async $video => {
+      const readyState = new Promise(resolve => {
+        $video[0].removeAttribute('controls');
+        const interval = setInterval(() => {
+          const videoElement = $video[0] as HTMLVideoElement;
+          if (videoElement.readyState >= 3) {
+            clearInterval(interval);
+            resolve($video);
+          }
+        }, 10);
+        cy.get('@successMessage').should('not.exist');
+      });
+      await readyState;
+    });
   };
 
   it('should allow media selection on entity creation', () => {
