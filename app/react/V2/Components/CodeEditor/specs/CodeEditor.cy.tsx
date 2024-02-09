@@ -7,9 +7,10 @@ import * as stories from 'app/stories/CodeEditor.stories';
 const { HTMLEditor, JSEditor } = composeStories(stories);
 
 describe('Code editor', () => {
-  it('should render the editor with existing HTML', () => {
+  it('should render the editor with existing HTML and the correct layout properties', () => {
     mount(<HTMLEditor />);
     cy.contains('<h1>Main Heading</h1>').should('exist');
+    cy.get('div[dir="ltr"]').should('exist');
     cy.get('.view-lines').children().should('have.length', 21);
   });
 
