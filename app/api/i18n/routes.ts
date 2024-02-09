@@ -1,4 +1,3 @@
-import Joi from 'joi';
 import { createError, validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
@@ -122,26 +121,33 @@ export default (app: Application) => {
   app.post(
     '/api/translations',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.string(),
-          __v: Joi.number(),
-          locale: Joi.string().required(),
-          contexts: Joi.array()
-            .required()
-            .items(
-              Joi.object().keys({
-                _id: Joi.string(),
-                id: Joi.string(),
-                label: Joi.string(),
-                type: Joi.string(),
-                values: Joi.object().pattern(Joi.string(), Joi.string()),
-              })
-            ),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            _id: { type: 'string' },
+            __v: { type: 'number' },
+            locale: { type: 'string' },
+            contexts: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  _id: { type: 'string' },
+                  id: { type: 'string' },
+                  label: { type: 'string' },
+                  type: { type: 'string' },
+                  values: { type: 'object', additionalProperties: { type: 'string' } },
+                },
+              },
+            },
+          },
+          required: ['locale', 'contexts'],
+        },
+      },
+    }),
 
     async (req, res) => {
       const { locale } = await translations.save(req.body);
@@ -154,13 +160,18 @@ export default (app: Application) => {
   app.post(
     '/api/translations/populate',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          locale: Joi.string(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            locale: { type: 'string' },
+          },
+          required: ['locale'],
+        },
+      },
+    }),
 
     async (req, res, next) => {
       const { locale } = req.body;
@@ -179,13 +190,18 @@ export default (app: Application) => {
   app.post(
     '/api/translations/setasdeafult',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          key: Joi.string(),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            key: LanguageISO6391Schema,
+          },
+          required: ['key'],
+        },
+      },
+    }),
 
     async (req, res) => {
       const response = await settings.setDefaultLanguage(req.body.key);
