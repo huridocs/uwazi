@@ -82,10 +82,6 @@ const Component = ({ language, intialValue }: CodeEditorProps) => {
   const editorInstance = useRef<CodeEditorInstance>();
   const [updatedCode, setUpdatedCode] = useState<string>();
 
-  const handleClick = () => {
-    setUpdatedCode(editorInstance.current?.getValue());
-  };
-
   return (
     <div className="tw-content">
       <div className="overflow-y-auto w-full h-96">
@@ -100,7 +96,7 @@ const Component = ({ language, intialValue }: CodeEditorProps) => {
       <div className="w-full">
         <button
           type="button"
-          onClick={handleClick}
+          onClick={() => setUpdatedCode(editorInstance.current?.getValue())}
           className="p-2 text-white rounded border bg-primary-700"
         >
           Save

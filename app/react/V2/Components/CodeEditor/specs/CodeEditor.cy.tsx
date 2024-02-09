@@ -30,12 +30,17 @@ describe('Code editor', () => {
     cy.get('.view-lines').children().should('have.length', 1);
   });
 
-  it('should get the updated code when clicking the save button', () => {
+  it('should return the code when clicking the save button', () => {
     HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
     mount(<HTMLEditor />);
 
     cy.contains('button', 'Save').click();
     cy.contains('pre', '<h1>Original HTML code</h1>').should('exist');
+  });
+
+  it('should get the updated code when clicking the save button', () => {
+    HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
+    mount(<HTMLEditor />);
 
     cy.contains('<h1>Original HTML code</h1>').then(element => {
       cy.wrap(element).click();
