@@ -110,7 +110,7 @@ const PageEditor = () => {
     notify(response);
 
     if (!hasErrors) {
-      handleRevalidate(page);
+      handleRevalidate(response);
     }
   };
 
@@ -123,7 +123,7 @@ const PageEditor = () => {
     if (!hasErrors) {
       const pageUrl = getPageUrl(response.sharedId!, response.title);
       window.open(`${window.location.origin}/${pageUrl}`);
-      handleRevalidate(page);
+      handleRevalidate(response);
     }
   };
 
