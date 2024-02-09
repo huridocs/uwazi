@@ -137,6 +137,7 @@ const PageEditor = () => {
                     id="title"
                     label={<Translate>Title</Translate>}
                     {...register('title', { required: true })}
+                    hasErrors={errors.title !== undefined}
                   />
 
                   <CopyValueInput
