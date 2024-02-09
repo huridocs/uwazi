@@ -30,23 +30,19 @@ describe('Code editor', () => {
     cy.get('.view-lines').children().should('have.length', 1);
   });
 
-  it('should return the code when clicking the save button', () => {
-    HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
-    mount(<HTMLEditor />);
-
-    cy.contains('button', 'Save').click();
-    cy.contains('pre', '<h1>Original HTML code</h1>').should('exist');
-  });
-
   it('should get the updated code when clicking the save button', () => {
     HTMLEditor.args.intialValue = '<h1>Original HTML code</h1>';
     mount(<HTMLEditor />);
 
-    cy.contains('<h1>Original HTML code</h1>').then(element => {
-      cy.wrap(element).click();
-      cy.wrap(element).focused().type('{ctrl}a');
-      cy.wrap(element).focused().type('{del}');
-      cy.wrap(element).focused().type('<h1>My new code</h1>');
+    cy.get('[role="code"]').then(() => {
+      cy.contains('button', 'Save').click();
+      cy.contains('pre', '<h1>Original HTML code</h1>').should('exist');
+      cy.contains('<h1>Original HTML code</h1>').then(element => {
+        cy.wrap(element).click();
+        cy.wrap(element).focused().type('{ctrl}a');
+        cy.wrap(element).focused().type('{del}');
+        cy.wrap(element).focused().type('<h1>My new code</h1>');
+      });
     });
 
     cy.contains('button', 'Save').click();
