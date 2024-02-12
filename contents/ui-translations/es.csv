@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,Se ha producido un error durante la exportación de datos.
 An error occurred,Se ha producido un error
+Analytics,Analytics
 Analytics description,"Si quieres dar seguimiento a las analíticas relacionadas con las visitas a tu colección, Uwazi soporta analíticas tanto de Google como de Matomo"
 Any entity or document,Cualquier entidad o documento
 Apply,Apply
@@ -118,7 +119,7 @@ Changing the type will erase all relationships to this entity.,Cambiar el tipo b
 Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
 Character support revert warning,"Después de seleccionar esta opción, no podrás volver a usar los nombres de propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
-Check to make this instance private (only logged-in users can access the data),Selecciona para que la instancia sea privada (sólo usuarios conectados pueden acceder a la información)
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Enlace de la tienda de extensiones de Chrome
 Clear,Limpiar
 Clear all,Clear all
@@ -132,7 +133,7 @@ Close,Cerrar
 Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
-Collection name,Nombre de la colección
+Collection Name,Collection Name
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure suggestions,Configurar sugerencias
@@ -203,10 +204,9 @@ Current value:,Current value:
 Currently connections only need a title.,Actualmente las conexiones sólo necesitan un título.
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
-Custom favicon,Definir favicon
+Custom Favicon,Custom Favicon
 Custom JS,JS Personalizado
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
-Custom starting location,Configurar ubicación inicial
 Custom Uploads,Subidas personalizadas
 Dashboard,Tablero
 Data imported,Datos importados
@@ -215,11 +215,12 @@ Date format,Formato de fecha
 Date modified,Fecha de la modificación
 Day,Día
 Default,Predeterminado
+Default date format,Default date format
 Default filter,Filtro predeterminado
 Default language,Idioma Predeterminado
 Default language change success,Cambio de idioma predeterminado exitoso
 Default template,Plantilla predeterminada
-Default view,Vista predeterminada
+Default View,Default View
 Delete,Eliminar
 DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
@@ -344,6 +345,7 @@ General,General
 General Information,General Information
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
@@ -393,7 +395,6 @@ Invalid captcha,Captcha no válido
 Invalid csv: all the values for a row must be either nested or non-nested,CSV no válido: o todos o ninguno de los valores para una fila deben estar anidados
 Invalid csv: nested value need to be under a non-nested value,CSV no válido: los valores anidados necesitan estar bajo un valor no anidado
 Invalid form,Formulario no válido
-Invalid home page url,URL  de página de inicio no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 Item,Elemento
 Item name,Nombre del elemento
@@ -448,9 +449,9 @@ Manage site settings and configuration,Administrar la configuración del sitio
 Map,Mapa
 Map api key,Clave del API de Mapas
 Map api key tooltip,Se requiere una clave API para usar Mapbox o Google Maps.
-Map provider,Proveedor de mapas
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,Vista de mapa
-MapBox,MapBox
 Mapping conflict error,"Es necesaria una reindexación de su colección. El motivo puede variar
          -- de ciertos cambios hechos a la propiedad de una plantilla a nuevos campos
          que deben completarse en todas las entidades.
@@ -461,7 +462,7 @@ Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
 Matching,Coincidencia
-Matomo Analytics,Analíticas de Matomo
+Matomo,Matomo
 Members,Miembros
 Menu,Menú
 Message,Mensaje
@@ -616,7 +617,6 @@ property select,Selección
 property text,Texto
 Protection,Protección
 ProTip!,¡Consejo avanzado!
-Public Endpoints,Destino final público
 Public entities description,AVISO: Las entidades seleccionadas serán **públicas**. Cualquier persona podrá visualizaras.
 Public form settings description,Aquí puedes configurar el destino del formulario público y la lista blanca de plantillas
 Public Form submit URL,URL de envío de formulario público
@@ -886,10 +886,10 @@ Uploads,Subir archivos
 URL,URL
 Use,Usar
 Use as filter,Usar como filtro
-Use custom landing page,Utilizar página de destino personalizada
 User,Usuario
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,Nombre de usuario
 Username is required,Se requiere nombre de usuario
 Username is too long,El nombre de usuario es demasiado largo
@@ -918,10 +918,8 @@ WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
 We recommend labeling,Recomendamos etiquetar
-Website analytics,Estadísticas del sitio web
 Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
-Whitelisted Templates,Lista blanca de plantillas
 will be updated with the same value.,se actualizará con el mismo valor
 with,con
 With great power comes great responsibility!,"¡Con un gran poder, viene una gran responsabilidad!"

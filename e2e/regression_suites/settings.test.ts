@@ -28,7 +28,7 @@ describe('Settings', () => {
   it('should display Collection', async () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.leafletmap');
-    await testSelectorShot('div.collection-settings');
+    await testSelectorShot('[data-testid="settings-collection"]');
   });
 
   describe('Pages', () => {

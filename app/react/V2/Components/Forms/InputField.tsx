@@ -12,10 +12,11 @@ interface InputFieldProps {
   placeholder?: string;
   hasErrors?: boolean;
   errorMessage?: string | React.ReactNode;
-  value?: string;
+  value?: string | number;
   className?: string;
-  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search';
+  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file';
   autoComplete?: 'on' | 'off';
+  preText?: string | React.ReactNode;
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -34,6 +35,7 @@ const InputField = React.forwardRef(
       errorMessage,
       value,
       className = '',
+      preText,
       type = 'text',
       autoComplete = 'on',
       name = '',
@@ -61,7 +63,12 @@ const InputField = React.forwardRef(
         <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
           {label}
         </Label>
-        <div className="relative w-full">
+        <div className="relative flex w-full">
+          {preText && (
+            <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-e-0 rounded-s-md">
+              {preText}
+            </span>
+          )}
           <input
             type={type}
             autoComplete={autoComplete}
@@ -72,7 +79,9 @@ const InputField = React.forwardRef(
             ref={ref}
             disabled={disabled}
             value={value}
-            className={`${fieldStyles} disabled:text-gray-500 rounded-lg block flex-1 w-full text-sm p-2.5`}
+            className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
+              type !== 'file' ? 'p-2.5' : ''
+            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (
@@ -88,8 +97,8 @@ const InputField = React.forwardRef(
               <Translate className="sr-only">Clear</Translate>
             </button>
           )}
-          {errorMessage && <InputError>{errorMessage}</InputError>}
         </div>
+        {errorMessage && <InputError>{errorMessage}</InputError>}
       </div>
     );
   }

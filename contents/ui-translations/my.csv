@@ -66,6 +66,7 @@ An error has occured while deleting a language:,An error has occured while delet
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -120,7 +121,7 @@ Changing the type will erase all relationships to this entity.,Changing the type
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Check to make this instance private (only logged-in users can access the data),ဤအကြောင်းအရာကို လျှို့ဝှက်အဖြစ် ပြုလုပ်ရန် အမှန်ခြစ်ပါ (လော့ဂ်အင်ဝင်ထားသော အသုံးပြုသူများကသာ ဒေတာ ဝင်ရောက်သုံးစွဲနိုင်သည်)
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
@@ -134,7 +135,7 @@ Close,ပိတ်ရန်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
-Collection name,Collection name
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
 Configure suggestions,အကြံပြုချက်များကို ချိန်ညှိပါ
@@ -205,10 +206,9 @@ Current value:,Current value:
 Currently connections only need a title.,လက်ရှိတွင် ချိတ်ဆက်မှုအနည်းငယ်သာ လိုအပ်သည်။
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
-Custom favicon,Custom favicon
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Custom starting location
 Custom Uploads,စိတ်ကြိုက် အပ်လုဒ်များ
 Dashboard,Dashboard
 Data imported,ဒေတာ ထည့်သွင်းပြီး
@@ -217,11 +217,12 @@ Date format,ရက်စွဲ ဖော်မက်
 Date modified,ရက်စွဲ ပြင်ဆင်ပြီး
 Day,နေ့
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,ပုံသေမူလ ဘာသာစကား ပြောင်းလဲမှု အောင်မြင်ပါသည်
 Default template,ပုံသေမူလ ပုံစံပြား
-Default view,Default view
+Default View,Default View
 Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
@@ -346,6 +347,7 @@ General,ယေဘုယျ
 General Information,General Information
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
@@ -395,7 +397,6 @@ Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,ပုံစံ မှားနေသည်
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
 Item,Item
 Item name,Item name
@@ -450,9 +451,9 @@ Manage site settings and configuration,ဝက်ဘ်ဆိုက် ဆက်�
 Map,မြေပုံ
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map provider,Map provider
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,မြေပုံ မြင်ကွင်း
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -463,7 +464,7 @@ Maps,မြေပုံများ
 Mark as Reviewed,သုံးသပ်ပြီးဟု မှတ်ရန်
 Markdown,အမှတ်အသား
 Matching,Matching
-Matomo Analytics,Matomo Analytics
+Matomo,Matomo
 Members,အဖွဲ့ဝင်များ
 Menu,မီနူး
 Message,မက်ဆေ့ချ်
@@ -618,7 +619,6 @@ property select,Select
 property text,Text
 Protection,ကာကွယ်မှု
 ProTip!,အထူးအကြံပြုချက်!
-Public Endpoints,Public Endpoints
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -889,10 +889,10 @@ Uploads,အပ်လုဒ်များ
 URL,URL
 Use,အသုံးပြုရန်
 Use as filter,Use as filter
-Use custom landing page,Use custom landing page
 User,အသုံးပြုသူ
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,အသုံးပြုသူ အမည်
 Username is required,အသုံးပြုသူ အမည် လိုအပ်သည်
 Username is too long,အသုံးပြုသူအမည် ရှည်လွန်းသည်
@@ -921,10 +921,8 @@ WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
 We can't find the page you're looking for.,We can't find the page you're looking for.
 We recommend labeling,တံဆိပ်အမှတ်အသားတပ်ရန် ကျွန်ုပ်တို့ အကြံပြုပါသည်
-Website analytics,ဝက်ဘ်ဆိုက် စာရင်းအင်းများ
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
 with,ဖြင့်
 With great power comes great responsibility!,လုပ်ပိုင်ခွင့်ကြီးလျှင် တာဝန်ပိုကြီးသည်!

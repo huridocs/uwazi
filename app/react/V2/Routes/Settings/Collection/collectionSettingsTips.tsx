@@ -32,7 +32,7 @@ export const customFavIcon = (
 
 export const publicSharing = (
   <Translate>
-    Check to make this instance private (only logged-in users can access the data)
+    Check to make this instance public (non-logged in users can see public documents and entities)
   </Translate>
 );
 
@@ -54,6 +54,7 @@ export const receivingEmail = (
       href="https://uwazi.readthedocs.io/en/latest/admin-docs/managing-settings.html#how-to-configure-a-contact-form-or-submission-form"
       target="_blank"
       rel="noreferrer"
+      className="underline text-primary-700 hover:text-primary-900 visited:text-primary-700"
     >
       <Translate>here</Translate>
     </a>
@@ -126,6 +127,12 @@ export const publicForm = [
     which Public Forms are expected.
   </Translate>,
 ];
+
+export const mapLayers = (
+  <Translate translationKey="Map layers description">
+    Here you can configure the map layers that will be available in the maps.
+  </Translate>
+);
 
 export const openPublicForm = (
   <Translate translationKey="Captcha bypass">

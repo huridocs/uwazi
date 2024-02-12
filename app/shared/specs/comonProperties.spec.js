@@ -1,4 +1,4 @@
-import propertiesHelper from '../comonProperties';
+import propertiesHelper from '../commonProperties';
 
 describe('comonProperties', () => {
   const templates = [
