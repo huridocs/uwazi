@@ -2,35 +2,39 @@
 
 exports[`thesauri routes DELETE should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "_id": Object {
-      "flags": Object {
-        "presence": "required",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "_id": Object {
+          "type": "string",
+        },
+        "_rev": Object {
+          "type": "string",
+        },
       },
-      "invalids": Array [
-        "",
+      "required": Array [
+        "_id",
       ],
-      "type": "string",
-    },
-    "_rev": Object {
-      "type": "any",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`thesauri routes GET dictionaries should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "_id": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
     },
   },
   "type": "object",
@@ -39,12 +43,14 @@ Object {
 
 exports[`thesauri routes GET should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "_id": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
     },
   },
   "type": "object",
@@ -53,111 +59,73 @@ Object {
 
 exports[`thesauri routes POST should have a validation schema 1`] = `
 Object {
-  "alternatives": Array [
-    Object {
-      "children": Object {
-        "__v": Object {
-          "invalids": Array [
-            Infinity,
-            -Infinity,
-          ],
-          "type": "number",
-        },
-        "_id": Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-        "enable_classification": Object {
-          "falsy": Array [
-            false,
-          ],
-          "flags": Object {
-            "insensitive": true,
-          },
-          "truthy": Array [
-            true,
-          ],
-          "type": "boolean",
-        },
-        "name": Object {
-          "flags": Object {
-            "presence": "required",
-          },
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
-        },
-        "values": Object {
-          "flags": Object {
-            "presence": "required",
-            "sparse": false,
-          },
-          "items": Array [
-            Object {
-              "children": Object {
-                "_id": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "id": Object {
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "label": Object {
-                  "flags": Object {
-                    "presence": "required",
-                  },
-                  "invalids": Array [
-                    "",
-                  ],
-                  "type": "string",
-                },
-                "values": Object {
-                  "flags": Object {
-                    "sparse": false,
-                  },
-                  "type": "array",
-                },
-              },
-              "type": "object",
+  "properties": Object {
+    "body": Object {
+      "anyOf": Array [
+        Object {
+          "properties": Object {
+            "__v": Object {
+              "type": "number",
             },
-          ],
-          "type": "array",
-        },
-      },
-      "flags": Object {
-        "presence": "required",
-      },
-      "type": "object",
-    },
-    Object {
-      "children": Object {
-        "thesauri": Object {
-          "flags": Object {
-            "presence": "required",
+            "_id": Object {
+              "type": "string",
+            },
+            "enable_classification": Object {
+              "type": "boolean",
+            },
+            "name": Object {
+              "type": "string",
+            },
+            "values": Object {
+              "items": Object {
+                "properties": Object {
+                  "_id": Object {
+                    "type": "string",
+                  },
+                  "id": Object {
+                    "type": "string",
+                  },
+                  "label": Object {
+                    "type": "string",
+                  },
+                  "values": Object {
+                    "items": Object {
+                      "type": "object",
+                    },
+                    "type": "array",
+                  },
+                },
+                "required": Array [
+                  "label",
+                ],
+                "type": "object",
+              },
+              "type": "array",
+            },
           },
-          "invalids": Array [
-            "",
+          "required": Array [
+            "name",
+            "values",
           ],
-          "type": "string",
+          "type": "object",
         },
-      },
-      "flags": Object {
-        "presence": "required",
-      },
-      "type": "object",
+        Object {
+          "properties": Object {
+            "thesauri": Object {
+              "type": "string",
+            },
+          },
+          "required": Array [
+            "thesauri",
+          ],
+          "type": "object",
+        },
+      ],
     },
-  ],
-  "flags": Object {
-    "presence": "required",
   },
-  "type": "alternatives",
+  "required": Array [
+    "body",
+  ],
+  "type": "object",
 }
 `;
