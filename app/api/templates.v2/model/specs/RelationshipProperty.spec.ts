@@ -16,6 +16,18 @@ describe('buildQueryRootedInTemplate()', () => {
   });
 });
 
+describe('buildQueryRootedInEntity()', () => {
+  it('should return query traversing from the entity with the provided sharedId to the configured pathes', () => {
+    const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
+      new TraversalQueryNode('out', {}, [new MatchQueryNode()]),
+    ]);
+
+    expect(property.buildQueryRootedInEntity('testSharedId')).toEqual(
+      new MatchQueryNode({ sharedId: 'testSharedId' }, property.query)
+    );
+  });
+});
+
 describe('queryUsesTemplate', () => {
   const property = fixtureFactory.v2.application.relationshipProperty('prop1', 'template1', [
     new TraversalQueryNode('out', {}, [

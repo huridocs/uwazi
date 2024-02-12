@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,လုပ်ဆောင်ချက်
+Activate,Activate
 Activate this feature for enhanced account security,အကောင့်လုံခြုံရေး ပိုမိုကောင်းမွန်ခိုင်မာစေရန် ဤအပြင်အဆင်ကို သက်ဝင်လုပ်ဆောင်ပါ
 Activated,Activated
 Active languages,Active languages
@@ -202,7 +203,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,လက်ရှိတွင် ချိတ်ဆက်မှုအနည်းငယ်သာ လိုအပ်သည်။
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
@@ -245,6 +245,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
+Disable,Disable
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,Discard changes?
 Dismiss,Dismiss
