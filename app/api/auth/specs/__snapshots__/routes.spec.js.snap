@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Auth Routes /login should have a validation schema 1`] = `
+Object {
+  "properties": Object {
+    "body": Object {
+      "properties": Object {
+        "password": Object {
+          "type": "string",
+        },
+        "token": Object {
+          "type": "string",
+        },
+        "username": Object {
+          "type": "string",
+        },
+      },
+      "required": Array [
+        "username",
+        "password",
+      ],
+      "type": "object",
+    },
+  },
+  "type": "object",
+}
+`;
