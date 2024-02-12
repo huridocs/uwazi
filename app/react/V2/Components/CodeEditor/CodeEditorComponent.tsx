@@ -34,7 +34,7 @@ const CodeEditorComponent = ({ language, intialValue, onMount }: CodeEditorProps
     }
   }, []);
 
-  return <div className="w-full h-full" dir="ltr" ref={container} />;
+  return <div className="w-full h-full border" dir="ltr" ref={container} />;
 };
 
 export type { CodeEditorProps, CodeEditorInstance };
