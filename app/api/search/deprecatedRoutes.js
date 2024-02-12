@@ -1,4 +1,3 @@
-import Joi from 'joi';
 import entities from 'api/entities';
 import { searchParamsSchema } from 'shared/types/searchParameterSchema';
 import { search } from './search';
@@ -7,14 +6,19 @@ import { validation, parseQuery } from '../utils';
 export default app => {
   app.get(
     '/api/search/count_by_template',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          templateId: Joi.string().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            templateId: { type: 'string' },
+          },
+          required: ['templateId'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) =>
       entities
         .countByTemplate(req.query.templateId)
