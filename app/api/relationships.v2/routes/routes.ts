@@ -43,21 +43,21 @@ const featureRequired = async (_req: Request, res: Response, next: NextFunction)
 export default (app: Application) => {
   app.get('/api/v2/relationships', featureRequired, async (req, res) => {
     const { sharedId } = validateGetRelationships(req.query);
-    const service = GetRelationshipService(req);
+    const service = GetRelationshipService();
     const relationshipsData = await service.getByEntity(sharedId);
     res.json(relationshipsData);
   });
 
   app.post('/api/v2/relationships', featureRequired, async (req, res) => {
     const relationships = validateCreateRelationship(req.body);
-    const service = await CreateRelationshipService(req);
+    const service = await CreateRelationshipService();
     const created = await service.create(relationships);
     res.json(created);
   });
 
   app.delete('/api/v2/relationships', featureRequired, parseQuery, async (req, res) => {
     const relationshipsIds = validateDeleteRelationships(req.query);
-    const service = await DeleteRelationshipService(req);
+    const service = await DeleteRelationshipService();
     await service.delete(relationshipsIds.ids);
     res.status(200).send();
   });

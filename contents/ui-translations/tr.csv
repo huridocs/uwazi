@@ -19,6 +19,7 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,Eylem
+Activate,Activate
 Activate this feature for enhanced account security,Gelişmiş hesap güvenliği için bu özelliği etkinleştirin
 Activated,Activated
 Active languages,Active languages
@@ -202,7 +203,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
 Currently connections only need a title.,Şu anda bağlantıların yalnızca bir başlığa ihtiyacı var.
 Custom component error,Özel Yüklemeler
 Custom CSS,Özel CSS
@@ -245,6 +245,7 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Tanım
+Disable,Disable
 Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss

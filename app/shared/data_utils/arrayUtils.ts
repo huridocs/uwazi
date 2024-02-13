@@ -20,4 +20,9 @@ function explicitOrdering(orderArray: string[], inputArray: string[], strict: bo
   return arrangedArray;
 }
 
-export { explicitOrdering };
+function isUnique(arr: (string | number)[]): boolean {
+  const uniqueSet = new Set(arr);
+  return uniqueSet.size === arr.length;
+}
+
+export { explicitOrdering, isUnique };

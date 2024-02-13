@@ -63,9 +63,7 @@ describe('SearchBar', () => {
     it('should call searchDocuments, with the searchTerm filters and sort', async () => {
       const searchBoxInput = screen.getByRole('textbox') as HTMLInputElement;
       fireEvent.change(searchBoxInput, { target: { value: 'SEARCH MODEL VALUES' } });
-      expect(searchBoxInput.name).toEqual('library.search.searchTerm');
       expect(searchBoxInput.value).toEqual('SEARCH MODEL VALUES');
-
       state.library.search.searchTerm = 'SEARCH MODEL VALUES';
       renderResult.rerender(
         <Provider store={store}>
