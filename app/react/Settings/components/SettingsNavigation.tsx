@@ -82,7 +82,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           </NeedAuthorization>
         </FeatureToggle>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/dictionaries" activeclassname="active" className="list-group-item">
+          <I18NLink to="settings/thesauri" activeclassname="active" className="list-group-item">
             <Translate>Thesauri</Translate>
           </I18NLink>
         </NeedAuthorization>

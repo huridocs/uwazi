@@ -16,14 +16,14 @@ import {
   FiltersForm,
   RelationTypesList,
   Settings,
-  ThesauriList,
+  ThesauriList as ThesauriListV1,
   Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import { EditThesauri } from 'app/Thesauri/EditThesauri';
-import NewThesauri from 'app/Thesauri/NewThesauri';
-import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
+import { EditThesauri as EditThesauriV1 } from 'app/Thesauri/EditThesauri';
+import NewThesauriV1 from 'app/Thesauri/NewThesauri';
+import ThesaurusCockpitV1 from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
@@ -40,6 +40,13 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+
+import {
+  EditThesauri,
+  NewThesauri,
+  theasauriListLoader,
+  ThesauriList,
+} from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
@@ -128,10 +135,21 @@ const getRoutesLayout = (
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
       </Route>
       <Route path="dictionaries">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} />
+        <Route index element={adminsOnlyRoute(<ThesauriListV1 />)} />
+        <Route path="new" element={adminsOnlyRoute(<NewThesauriV1 />)} />
+        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauriV1 />)} />
+        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpitV1 />)} />
+      </Route>
+
+      <Route path="thesauri">
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={theasauriListLoader(headers)}
+        />
         <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
-        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
+        {/* <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} /> */}
       </Route>
       <Route
         path="languages"
