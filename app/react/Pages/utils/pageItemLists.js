@@ -1,4 +1,4 @@
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 import markdownEscapedValues from 'app/utils/markdownEscapedValues';
 
 const listPlaceholder = '{---UWAZILIST---}';
@@ -13,7 +13,7 @@ const extractAdditionalOptions = (content, match) => {
   if (optionsMatch) {
     matchString = `(${optionsMatch})`;
     try {
-      options = risonDecodeOrIgnore(`(${optionsMatch})`);
+      options = rison.decode(`(${optionsMatch})`);
     } catch (err) {
       options = {};
     }

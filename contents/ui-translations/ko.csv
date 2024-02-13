@@ -19,7 +19,6 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,활동
-Activate,Activate
 Activate this feature for enhanced account security,계정 보안 강화가 필요한 경우 이 기능을 활성화하십시오.
 Activated,Activated
 Active languages,Active languages
@@ -203,6 +202,7 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
+Current value:,Current value:
 Currently connections only need a title.,커넥션에 제목이 필요합니다.
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
@@ -245,7 +245,6 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
-Disable,Disable
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss

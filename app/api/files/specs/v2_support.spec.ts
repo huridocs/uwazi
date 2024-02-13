@@ -142,8 +142,8 @@ describe('when deleting a file', () => {
     const entities = await testingDB.mongodb?.collection('entities').find({}).toArray();
     expect(entities).toEqual([
       { ...fixtures.entities?.[0], metadata: { relProp: [] }, obsoleteMetadata: [] },
-      { ...fixtures.entities?.[1], obsoleteMetadata: [] },
-      { ...fixtures.entities?.[2], metadata: { relProp: [] }, obsoleteMetadata: [] },
+      { ...fixtures.entities?.[1] },
+      { ...fixtures.entities?.[2] },
     ]);
   });
 

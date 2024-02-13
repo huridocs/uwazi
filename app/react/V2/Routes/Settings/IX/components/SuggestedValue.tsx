@@ -78,7 +78,7 @@ const SuggestedValue = ({
           <div className="px-[10px] py-3 rounded mb-3 overflow-y-auto text-xs font-normal text-gray-500 bg-white shadow-md max-h-56 max-w-xs">
             <div>
               <span className="font-bold">
-                <Translate>Current value</Translate>:
+                <Translate>Current value:</Translate>
               </span>{' '}
               {getCurrentValue()}
             </div>

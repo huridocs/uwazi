@@ -3,7 +3,6 @@ import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
-import { Entity } from 'api/entities.v2/model/Entity';
 import { RelationshipsDataSource } from '../contracts/RelationshipsDataSource';
 import { MatchQueryNode } from '../model/MatchQueryNode';
 import { RelationshipPropertyUpdateStrategy } from './propertyUpdateStrategies/RelationshipPropertyUpdateStrategy';
@@ -47,23 +46,13 @@ export class DenormalizationService {
 
   private async getCandidateEntities(
     invertQueryCallback: (property: RelationshipProperty) => MatchQueryNode[],
-    language: string,
-    relatedEntities: Entity[] = []
+    language: string
   ) {
     const properties = await this.templatesDS.getAllRelationshipProperties().all();
     const entities: { sharedId: string; property: string }[] = [];
     await Promise.all(
-      properties.map(async property => {
-        relatedEntities.forEach(re => {
-          if (property.template === re.template) {
-            entities.push({
-              sharedId: re.sharedId,
-              property: property.name,
-            });
-          }
-        });
-
-        return Promise.all(
+      properties.map(async property =>
+        Promise.all(
           invertQueryCallback(property).map(async query => {
             await this.relationshipsDS.getByQuery(query, language).forEach(async entity => {
               entities.push({
@@ -72,10 +61,9 @@ export class DenormalizationService {
               });
             });
           })
-        );
-      })
+        )
+      )
     );
-
     return entities;
   }
 
@@ -90,8 +78,7 @@ export class DenormalizationService {
 
     return this.getCandidateEntities(
       property => property.buildQueryInvertedFromRelationship(relationship, relatedEntities),
-      language,
-      relatedEntities
+      language
     );
   }
 

@@ -351,7 +351,6 @@ export interface PropertySchema {
   nestedProperties?: string[];
   query?: unknown[];
   denormalizedProperty?: string;
-  targetTemplates?: false | string[];
 }
 
 export type PropertyValueSchema =

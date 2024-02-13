@@ -14,8 +14,6 @@ import {
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntityPermissions, Entry } from 'api/authorization.v2/model/EntityPermissions';
 
-type idMapperFunction = (id: string) => ObjectId;
-
 const entityPointer = (entity: string): EntityPointer => new EntityPointer(entity);
 
 const entityPointerWithEntityData = (
@@ -24,15 +22,7 @@ const entityPointerWithEntityData = (
   entityTemplateName: string
 ): ReadableEntityPointer => new ReadableEntityPointer(entity, entityTitle, entityTemplateName);
 
-const nestedTranslationContextDBO =
-  (idMapper: idMapperFunction) =>
-  (label?: string, type?: TranslationDBO['context']['type']): TranslationDBO['context'] => ({
-    id: label ? idMapper(label).toString() : 'System',
-    type: label ? type || 'Thesaurus' : 'Uwazi UI',
-    label: label || 'User Interface',
-  });
-
-const getV2FixturesFactoryElements = (idMapper: idMapperFunction) => ({
+const getV2FixturesFactoryElements = (idMapper: (id: string) => ObjectId) => ({
   application: {
     property: (name: string, type: PropertyTypes, template: string): Property =>
       new Property(idMapper(name).toString(), type, name, name, idMapper(template).toString()),
@@ -104,13 +94,11 @@ const getV2FixturesFactoryElements = (idMapper: idMapperFunction) => ({
       type: idMapper(type),
     }),
 
-    nestedTranslationContextDBO: nestedTranslationContextDBO(idMapper),
-
     translationDBO: (
       key: string,
       value: string,
       language: LanguageISO6391,
-      context: TranslationDBO['context'] = nestedTranslationContextDBO(idMapper)()
+      context: TranslationDBO['context']
     ): TranslationDBO => ({
       _id: idMapper(`${key}-${language}-${context.id}`),
       key,

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 import { Translate } from 'app/I18N';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
 import CustomHookComponents from './CustomHooks';
@@ -27,7 +27,7 @@ class MarkdownViewer extends Component {
   }
 
   static customHook(config, index) {
-    const props = risonDecodeOrIgnore(config);
+    const props = rison.decode(config);
     if (!CustomHookComponents[props.component]) {
       throw new Error('Invalid  component');
     }
@@ -43,11 +43,11 @@ class MarkdownViewer extends Component {
     }
 
     if (type === 'link') {
-      result = <MarkdownLink {...risonDecodeOrIgnore(config)} key={index} />;
+      result = <MarkdownLink {...rison.decode(config)} key={index} />;
     }
 
     if (type === 'searchbox') {
-      result = <SearchBox {...risonDecodeOrIgnore(config)} key={index} />;
+      result = <SearchBox {...rison.decode(config)} key={index} />;
     }
 
     if (['vimeo', 'youtube', 'media'].includes(type)) {

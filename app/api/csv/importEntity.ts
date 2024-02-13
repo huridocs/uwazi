@@ -6,7 +6,7 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { processDocument } from 'api/files/processDocument';
 import { RawEntity } from 'api/csv/entityRow';
 import { TemplateSchema } from 'shared/types/templateType';
-import { MetadataObjectSchema, MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
+import { MetadataSchema, PropertySchema } from 'shared/types/commonTypes';
 import { propertyTypes } from 'shared/propertyTypes';
 import { ImportFile } from 'api/csv/importFile';
 import { EntitySchema } from 'shared/types/entityType';
@@ -117,34 +117,6 @@ const importEntity = async (
 
 type FullyIndexedTranslations = Record<string, Record<string, Record<string, string>>>;
 
-const lookupLabel = (
-  label: string | undefined,
-  translations: FullyIndexedTranslations,
-  language: string,
-  propNameToThesauriId: Record<string, string>,
-  key: string
-) => (label ? translations[language]?.[propNameToThesauriId[key]]?.[label] || label : label);
-
-const translateSelectLabel = (
-  value: MetadataObjectSchema,
-  translations: FullyIndexedTranslations,
-  language: string,
-  propNameToThesauriId: Record<string, string>,
-  key: string
-) => {
-  const rootValue = {
-    value: value.value,
-    label: lookupLabel(value.label, translations, language, propNameToThesauriId, key),
-  };
-  const parentValue = value.parent
-    ? {
-        value: value.parent.value,
-        label: lookupLabel(value.parent.label, translations, language, propNameToThesauriId, key),
-      }
-    : undefined;
-  return parentValue ? { ...rootValue, parent: parentValue } : rootValue;
-};
-
 const translateSelectLabels = (
   entity: EntitySchema,
   language: string,
@@ -156,9 +128,12 @@ const translateSelectLabels = (
       if (key in propNameToThesauriId) {
         return [
           key,
-          (values || []).map(value =>
-            translateSelectLabel(value, translations, language, propNameToThesauriId, key)
-          ),
+          (values || []).map(({ value, label }) => ({
+            value,
+            label: label
+              ? translations[language]?.[propNameToThesauriId[key]]?.[label] || label
+              : label,
+          })),
         ];
       }
       return [key, values];

@@ -25,7 +25,6 @@ import {
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
-  updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -90,22 +89,14 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
-        const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
-          currentDoc,
-          toSave,
-          template
-        );
+        ignoreNewRelationshipsMetadata(currentDoc, toSave, template);
 
         const fullEntity = { ...currentDoc, ...toSave };
 
         if (template._id) {
           await denormalizeRelated(fullEntity, template, currentDoc);
         }
-        const saveResult = await saveFunc(toSave);
-
-        await updateNewRelationships(v2RelationshipsUpdates);
-
-        return saveResult;
+        return saveFunc(toSave);
       }
 
       const toSave = { ...d };
@@ -158,19 +149,6 @@ async function updateEntity(entity, _template, unrestricted = false) {
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
-
-  const emptyEntity = {
-    sharedId,
-    language: languages[0].key,
-    template: docTemplate._id,
-    metadata: {},
-  };
-  const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
-    emptyEntity,
-    doc,
-    docTemplate
-  );
-
   const result = await Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
@@ -197,8 +175,6 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
       return model.save(langDoc);
     })
   );
-
-  await updateNewRelationships(v2RelationshipsUpdates);
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;

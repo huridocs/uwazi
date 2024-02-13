@@ -28,11 +28,6 @@ const autoincrementValuesId = thesauri => {
   return thesauri;
 };
 
-function normalizeThesaurusLabel(label) {
-  const trimmed = label.trim().toLowerCase();
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 function thesauriToTranslationContext(thesauri) {
   return thesauri.values.reduce((ctx, prop) => {
     ctx[prop.label] = prop.label;
@@ -154,14 +149,11 @@ const update = async thesauri => {
 
 function recursivelyAppendValues(originalValues, newValues) {
   const values = [...originalValues];
-  const valuesByLabel = Object.fromEntries(
-    values.map(value => [normalizeThesaurusLabel(value.label), value])
-  );
+  const valuesByLabel = Object.fromEntries(values.map(value => [value.label, value]));
   const existingLabels = new Set(Object.keys(valuesByLabel));
 
   newValues.forEach(newValue => {
-    const normalizedNewLabel = normalizeThesaurusLabel(newValue.label);
-    if (!existingLabels.has(normalizedNewLabel)) {
+    if (!existingLabels.has(newValue.label)) {
       values.push(newValue);
     } else if (newValue.values) {
       const originalValue = valuesByLabel[newValue.label];
@@ -279,4 +271,4 @@ const flatThesaurusValues = (thesaurus, includeRoots = false) =>
     : _.flatMapDeep(thesaurus?.values, tv => tv.values || tv);
 
 export default thesauri;
-export { thesauri, flatThesaurusValues, normalizeThesaurusLabel };
+export { thesauri, flatThesaurusValues };

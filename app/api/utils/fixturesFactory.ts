@@ -198,13 +198,9 @@ function getFixturesFactory() {
 
     commonProperties: () => _.cloneDeep(commonProperties),
 
-    metadataValue: (value: PropertyValueSchema, label?: string): MetadataObjectSchema => {
-      const mo: MetadataObjectSchema = { value };
-      if (label) {
-        mo.label = label;
-      }
-      return mo;
-    },
+    metadataValue: (value: PropertyValueSchema): MetadataObjectSchema => ({
+      value,
+    }),
 
     thesauri: (name: string, values: Array<string | [string, string]>) => ({
       name,

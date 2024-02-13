@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { Icon } from 'UI';
 import { I18NLink, t } from 'app/I18N';
@@ -25,7 +25,7 @@ interface SortDropdownOwnProps {
 }
 
 const getOptionUrl = (option: SortType, path: string, query: string | null) => {
-  const currentQuery = risonDecodeOrIgnore(decodeURIComponent(query || '()'));
+  const currentQuery = rison.decode(decodeURIComponent(query || '()'));
   const type = getPropertySortType(option);
   return `${path}${encodeSearch(
     { ...currentQuery, order: type === 'string' ? 'asc' : 'desc', sort: option.value, from: 0 },
@@ -59,7 +59,7 @@ const SortDropdownComponent = ({ templates, locale }: mappedProps) => {
   const menuRef = useRef(null);
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const currentQuery: SearchOptions = risonDecodeOrIgnore(
+  const currentQuery: SearchOptions = rison.decode(
     decodeURIComponent(searchParams.get('q') || '()')
   );
   const path = location.pathname.replace(new RegExp(`^/?${locale}/|^/?${locale}$`), '');

@@ -1,4 +1,4 @@
-import L, { latLng } from 'leaflet';
+import L, { latLng, LeafletEvent } from 'leaflet';
 import { svgPathData as faMapMarkerPath } from '@fortawesome/free-solid-svg-icons/faMapMarker';
 import { t } from 'app/I18N';
 
@@ -151,5 +151,16 @@ const checkMapInitialization = (map: L.Map, containerId: string) => {
   }
 };
 
-export { DataMarker, getClusterMarker, parseMarkerPoint, checkMapInitialization };
+const preventDefaultEvent = (event: LeafletEvent) => {
+  // @ts-ignore
+  event.preventDefault();
+};
+
+export {
+  DataMarker,
+  getClusterMarker,
+  parseMarkerPoint,
+  checkMapInitialization,
+  preventDefaultEvent,
+};
 export type { LMarker, MarkerProperties, MarkerInput, TemplatesInfo };

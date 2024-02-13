@@ -1,5 +1,5 @@
 import { Location } from 'react-router-dom';
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 
 const validateHomePageRoute = (route: string) => {
   const queryParams = '(\\?.*)?)';
@@ -13,8 +13,7 @@ const validateHomePageRoute = (route: string) => {
 
 const searchParamsFromLocationSearch = (location: Location, param: string = 'q') => {
   const urlSearchParams = new URLSearchParams(location.search);
-  const paramJSON = risonDecodeOrIgnore(decodeURIComponent(urlSearchParams.get(param) || '()'));
-  return paramJSON;
+  return rison.decode(decodeURIComponent(urlSearchParams.get(param) || '()'));
 };
 
 const searchParamsFromSearchParams = (searchParams: URLSearchParams) => {

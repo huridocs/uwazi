@@ -75,14 +75,6 @@ export class TraversalQueryNode extends QueryNode {
     return this.parent;
   }
 
-  getDepth(): number {
-    if (!this.matches.length) {
-      return 0;
-    }
-
-    return 1 + Math.max(...this.matches.map(match => match.getDepth()));
-  }
-
   isSame(other: TraversalQueryNode): boolean {
     return (
       this.direction === other.direction &&

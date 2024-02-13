@@ -4,7 +4,7 @@ import { clearCookiesAndLogin } from '../helpers/login';
 describe('Public Form', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-fixtures', { env });
+    cy.exec('yarn e2e-puppeteer-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -143,15 +143,13 @@ describe('Public Form', () => {
     it('should fill the captcha and save', () => {
       cy.get('.captcha input').type('42hf');
       cy.contains('button', 'Submit').click();
-      cy.get('.alert.alert-success').as('notification');
-      cy.get('@notification').should('not.exist');
+      cy.get('.alert.alert-success').click();
     });
   });
 
   describe('check created entities', () => {
     before(() => {
       cy.get('a[aria-label="Library"]').click();
-      cy.contains('Published', { timeout: 100 });
       selectRestrictedEntities();
     });
 

@@ -19,7 +19,6 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,เริ่มทำ
-Activate,Activate
 Activate this feature for enhanced account security,เปิดใช้งานคุณสมบัตินี้เพื่อความปลอดภัยของบัญชีขั้นสูง
 Activated,Activated
 Active languages,Active languages
@@ -203,6 +202,7 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
+Current value:,Current value:
 Currently connections only need a title.,การเชื่อมต่อจำเป็นต้องกำหนดหัวข้อเรื่อง
 Custom component error,เกิดข้อผิดพลาดในส่วนประกอบที่สร้างเอง
 Custom CSS,CSS ที่กำหนดเอง
@@ -245,7 +245,6 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,คำอธิบาย
-Disable,Disable
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
