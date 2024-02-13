@@ -19,7 +19,6 @@ Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Account updated,Account updated
 Accuracy,Precisión
 Action,Acción
-Activate,Activate
 Activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de tu cuenta
 Activated,Activated
 Active languages,Idiomas activos
@@ -201,6 +200,7 @@ Created thesaurus,Tesauro creado
 Created user group,Grupo de usuarios creado
 Current value,Valor actual
 Current Value/Suggestion,Current Value/Suggestion
+Current value:,Current value:
 Currently connections only need a title.,Actualmente las conexiones sólo necesitan un título.
 Custom component error,Error en el componente de marcado personalizado: valores no soportados! Por favor revisa tu configuración
 Custom CSS,CSS personalizado
@@ -243,7 +243,6 @@ Deleted user,Usuario eliminado
 Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
-Disable,Disable
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar

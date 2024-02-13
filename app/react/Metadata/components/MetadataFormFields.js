@@ -218,58 +218,6 @@ class MetadataFormFields extends Component {
             sort
           />
         );
-      case 'newRelationship':
-        if (!property.targetTemplates) {
-          return null;
-        }
-
-        if (property.targetTemplates.length > 0) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(opt => property.targetTemplates.includes(opt.get('_id').toString()))
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
-        if (property.targetTemplates.length === 0) {
-          thesauri = Array.prototype
-            .concat(
-              ...thesauris
-                .filter(filterThesauri => filterThesauri.get('type') === 'template')
-                .map(source => {
-                  totalPossibleOptions += source.get('optionsCount');
-                  return translateOptions(source);
-                })
-            )
-            .slice(0, preloadOptionsLimit());
-        }
-
-        if (entityThesauris.get(property.name)) {
-          entityThesauris
-            .get(property.name)
-            .toJS()
-            .forEach(o => {
-              thesauri.push({ id: o.value, label: o.label });
-            });
-        }
-
-        return (
-          <LookupMultiSelect
-            lookup={getSuggestions.bind(null, property.content ? [property.content] : [])}
-            model={_model}
-            optionsValue="id"
-            options={thesauri}
-            totalPossibleOptions={totalPossibleOptions}
-            prefix={_model}
-            onChange={this.relationshipChange.bind(this, property)}
-            sort
-          />
-        );
       case 'date':
         return <DatePicker model={_model} format={dateFormat} locale={locale} />;
       case 'daterange':

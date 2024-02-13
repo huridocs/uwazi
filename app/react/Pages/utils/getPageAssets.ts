@@ -1,4 +1,4 @@
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 import { get, has, uniq } from 'lodash';
 import api from 'app/Search/SearchAPI';
 import { markdownDatasets } from 'app/Markdown';
@@ -18,7 +18,7 @@ interface ListsData {
 const buildQuery = (sanitizedParams: string) => {
   const queryDefault = { filters: {}, types: [] };
   if (sanitizedParams) {
-    const query = risonDecodeOrIgnore(sanitizedParams.replace('?q=', '') || '()');
+    const query = rison.decode(sanitizedParams.replace('?q=', '') || '()');
     if (typeof query !== 'object') {
       return queryDefault;
     }

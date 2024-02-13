@@ -21,9 +21,7 @@ const processNewRelationshipProperties = async (template: TemplateSchema) => {
         return property;
       }
 
-      const { targetTemplates, ...sanitizedProperty } = property;
-
-      const relationshipProperty = validateCreateNewRelationshipProperty(sanitizedProperty);
+      const relationshipProperty = validateCreateNewRelationshipProperty(property);
       return createTemplateService.createRelationshipProperty(relationshipProperty);
     })
   );

@@ -147,7 +147,6 @@ export class CreateTemplateService {
     return {
       ...property,
       query: QueryMapper.toDBO(query.getTraversals()),
-      targetTemplates: query.determinesRelationships(),
     };
   }
 

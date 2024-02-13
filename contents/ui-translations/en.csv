@@ -19,7 +19,6 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,Action
-Activate,Activate
 Activate this feature for enhanced account security,Activate this feature for enhanced account security
 Activated,Activated
 Active languages,Active languages
@@ -205,6 +204,7 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
+Current value:,Current value:
 Currently connections only need a title.,Currently connections only need a title.
 Custom component error,Custom component markup error: unsupported values! Please check your configuration
 Custom CSS,Custom CSS
@@ -247,7 +247,6 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Description
-Disable,Disable
 Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss

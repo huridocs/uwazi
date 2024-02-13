@@ -6,7 +6,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import routes from '../routes';
 
 const URL = '/api/v2/relationships';
@@ -132,9 +131,7 @@ describe('POST relationships', () => {
     {
       user: {
         _id: factory.id('user1'),
-        username: 'user1',
-        email: '',
-        role: 'collaborator' as const,
+        role: 'collaborator',
         groups: [{ _id: factory.id('group1'), name: 'group1' }],
       },
       pass: true,
@@ -148,7 +145,6 @@ describe('POST relationships', () => {
         (req as any).user = user;
         next();
       });
-      jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(user);
 
       await request(app)
         .post(URL)
@@ -296,9 +292,7 @@ describe('DELETE relationships', () => {
     {
       user: {
         _id: factory.id('user1'),
-        username: 'user1',
-        email: '',
-        role: 'collaborator' as const,
+        role: 'collaborator',
         groups: [{ _id: factory.id('group1'), name: 'group1' }],
       },
       pass: true,
@@ -312,7 +306,6 @@ describe('DELETE relationships', () => {
         (req as any).user = user;
         next();
       });
-      jest.spyOn(permissionsContext, 'getUserInContext').mockReturnValue(user);
 
       await request(app)
         .delete(URL)

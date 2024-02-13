@@ -1,5 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
+import { action } from '@storybook/addon-actions';
 import { EnableButtonCheckbox } from 'app/V2/Components/Forms';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Provider } from 'react-redux';
@@ -7,22 +8,35 @@ import { Provider } from 'react-redux';
 const meta: Meta<typeof EnableButtonCheckbox> = {
   title: 'Forms/EnableButtonCheckbox',
   component: EnableButtonCheckbox,
+  argTypes: {
+    onChange: { action: 'changed' },
+  },
 };
 
 type Story = StoryObj<typeof EnableButtonCheckbox>;
 
+const Container = (args: any) => {
+  const [checked, setChecked] = React.useState(args.checked);
+  return (
+    <div className="tw-content">
+      <EnableButtonCheckbox
+        onChange={() => {
+          args.onChange();
+          setChecked(!checked);
+        }}
+        disabled={args.disabled}
+        name={args.name}
+        checked={checked}
+      />
+    </div>
+  );
+};
+
 const Primary: Story = {
   render: args => (
-    <div className="tw-content">
-      <Provider store={createStore()}>
-        <EnableButtonCheckbox
-          disabled={args.disabled}
-          name={args.name}
-          defaultChecked={args.defaultChecked}
-          onChange={args.onChange}
-        />
-      </Provider>
-    </div>
+    <Provider store={createStore()}>
+      <Container {...args} />
+    </Provider>
   ),
 };
 
@@ -31,8 +45,9 @@ const Basic: Story = {
   args: {
     name: 'option',
     disabled: false,
-    defaultChecked: false,
-    onChange: () => {},
+    checked: false,
+    className: '',
+    onChange: action('changed'),
   },
 };
 

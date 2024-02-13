@@ -14,6 +14,7 @@ import { search } from 'api/search';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { User } from 'api/users.v2/model/User';
+import { Request } from 'express';
 import { UserRole } from 'shared/types/userSchema';
 
 import { tenants } from 'api/tenants';
@@ -43,7 +44,6 @@ import { QueuedRelationshipPropertyUpdateStrategy } from './propertyUpdateStrate
 import { UpsertRelationshipMigrationFieldService as GenericUpsertRelationshipMigrationFieldService } from './UpsertRelationshipMigrationFieldService';
 import { UpdateRelationshipPropertiesJob as GenericUpdateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateRelationshipPropertiesJob';
 import { UpdateTemplateRelationshipPropertiesJob as GenericUpdateTemplateRelationshipPropertiesJob } from './propertyUpdateStrategies/UpdateTemplateRelationshipPropertiesJob';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
 const indexEntitiesCallback = async (sharedIds: string[]) => {
   if (sharedIds.length) {
@@ -51,14 +51,11 @@ const indexEntitiesCallback = async (sharedIds: string[]) => {
   }
 };
 
-const userFromRequest = () => {
-  const user = permissionsContext.getUserInContext();
+const userFromRequest = (request: Request) => {
+  const { user } = request as any;
   if (user) {
     const groups = user.groups?.map((g: any) => g._id.toHexString());
-    if (!user._id) {
-      throw new Error('Provided user does not have an _id');
-    }
-    return new User(user._id.toString(), user.role as UserRole, groups ?? []);
+    return new User(user._id.toHexString(), user.role as UserRole, groups ?? []);
   }
 
   return undefined;
@@ -114,7 +111,7 @@ const DenormalizationService = async (transactionManager: MongoTransactionManage
   return service;
 };
 
-const GetRelationshipService = () => {
+const GetRelationshipService = (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
@@ -122,7 +119,7 @@ const GetRelationshipService = () => {
   const templatesDS = DefaultTemplatesDataSource(transactionManager);
   const relationshipTypeDS = DefaultRelationshipTypesDataSource(transactionManager);
 
-  const authService = new AuthorizationService(permissionsDS, userFromRequest());
+  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
 
   const service = new GenericGetRelationshipService(
     relationshipsDS,
@@ -135,7 +132,7 @@ const GetRelationshipService = () => {
   return service;
 };
 
-const CreateRelationshipService = async () => {
+const CreateRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const relationshipTypesDS = DefaultRelationshipTypesDataSource(transactionManager);
@@ -144,7 +141,7 @@ const CreateRelationshipService = async () => {
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
   const filesDS = DefaultFilesDataSource(transactionManager);
 
-  const authService = new AuthorizationService(permissionsDS, userFromRequest());
+  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
   const denormalizationService = await DenormalizationService(transactionManager);
 
   const service = new GenericCreateRelationshipService(
@@ -161,12 +158,12 @@ const CreateRelationshipService = async () => {
   return service;
 };
 
-const DeleteRelationshipService = async () => {
+const DeleteRelationshipService = async (request: Request) => {
   const transactionManager = DefaultTransactionManager();
   const relationshipsDS = DefaultRelationshipDataSource(transactionManager);
   const permissionsDS = DefaultPermissionsDataSource(transactionManager);
 
-  const authService = new AuthorizationService(permissionsDS, userFromRequest());
+  const authService = new AuthorizationService(permissionsDS, userFromRequest(request));
   const denormService = await DenormalizationService(transactionManager);
 
   const service = new GenericDeleteRelationshipService(

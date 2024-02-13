@@ -2,7 +2,7 @@ import { actions } from 'app/BasicReducer';
 import libraryHelpers from 'app/Library/helpers/libraryFilters';
 import api from 'app/Search/SearchAPI';
 import prioritySortingCriteria from 'app/utils/prioritySortingCriteria';
-import { risonDecodeOrIgnore } from 'app/utils';
+import rison from 'rison-node';
 import { getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import { setTableViewColumns } from 'app/Library/actions/libraryActions';
 import { tocGenerationUtils } from 'app/ToggledFeatures/tocGeneration';
@@ -13,14 +13,10 @@ import setReduxState from './setReduxState.js';
 
 const decodeQuery = params => {
   try {
-    return risonDecodeOrIgnore(params.q || '()');
+    return rison.decode(params.q || '()');
   } catch (error) {
-    // if (error instanceof RangeError) {
-    //   console.log()
-    return {};
-    // }
-    // error.status = 404;
-    // throw error;
+    error.status = 404;
+    throw error;
   }
 };
 

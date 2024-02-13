@@ -87,7 +87,6 @@ const validateLuceneBytesLimit = value => {
 
 export const customErrorMessages = {
   required: 'property is required',
-  read_only: 'property is read-only',
   length_exceeded: 'maximum field length exceeded',
   property_not_allowed: 'property is not configured on the template, it is not allowed',
   relationship_wrong_foreign_id: 'related entities do not exist or belong to another template',
@@ -107,7 +106,6 @@ export const customErrorMessages = {
   [propertyTypes.select]: 'should be a "[ { value: string } ]" with a single object',
   [propertyTypes.multiselect]: 'should be an array of non empty strings',
   [propertyTypes.relationship]: 'should be an array of non empty strings',
-  [propertyTypes.newRelationship]: 'should be an array of non empty strings',
   [propertyTypes.numeric]: 'should be number',
   [propertyTypes.link]:
     'should be a "{ label: string, url: string }" object properties can not be blank',
@@ -128,7 +126,6 @@ export const validators = {
   [propertyTypes.numeric]: validateSingleWrappedValue(validateNumericProperty),
   [propertyTypes.multiselect]: validateMultiSelectProperty,
   [propertyTypes.relationship]: validateMultiSelectProperty,
-  [propertyTypes.newRelationship]: validateMultiSelectProperty,
   [propertyTypes.link]: validateSingleWrappedValue(isValidLinkField),
   [propertyTypes.geolocation]: validateGeolocationProperty,
   validateRequiredProperty,

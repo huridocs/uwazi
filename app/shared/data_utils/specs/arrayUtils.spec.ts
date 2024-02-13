@@ -1,4 +1,4 @@
-import { explicitOrdering, isUnique } from '../arrayUtils';
+import { explicitOrdering } from '../arrayUtils';
 
 describe('explicitOrdering()', () => {
   it('should arrange elements based on orderArray with strict', () => {
@@ -34,37 +34,5 @@ describe('explicitOrdering()', () => {
     expect(() => explicitOrdering(orderArray, inputArray, true)).toThrowError(
       'Invalid elements found in ordering - d'
     );
-  });
-});
-
-describe('isUnique', () => {
-  it.each([
-    {
-      description: 'should return true for an array with unique values',
-      input: ['a', 1, 'b', 3],
-      expected: true,
-    },
-    {
-      description: 'should return false for an array with duplicate values',
-      input: ['a', 1, 'b', 'a'],
-      expected: false,
-    },
-    {
-      description: 'should return true for an empty array',
-      input: [],
-      expected: true,
-    },
-    {
-      description: 'should return true for an array with a single value',
-      input: ['b'],
-      expected: true,
-    },
-    {
-      description: 'should return false for an array with duplicate values',
-      input: ['a', 1, 'b', 3, 'a', 1],
-      expected: false,
-    },
-  ])('$description', ({ input, expected }) => {
-    expect(isUnique(input)).toBe(expected);
   });
 });

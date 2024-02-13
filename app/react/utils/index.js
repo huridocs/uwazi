@@ -1,5 +1,4 @@
 import Jvent from 'jvent';
-import rison from 'rison-node';
 
 export function getPropsFromRoute({ routes }, componentProps) {
   const props = {};
@@ -14,15 +13,6 @@ export function getPropsFromRoute({ routes }, componentProps) {
   }, lastRoute);
 
   return props;
-}
-
-export function risonDecodeOrIgnore(query, defaultValue = {}) {
-  try {
-    return rison.decode(query);
-  } catch (e) {
-    console.log('Error decoding: ', query, e);
-    return defaultValue;
-  }
 }
 
 export const isClient = typeof document !== 'undefined';

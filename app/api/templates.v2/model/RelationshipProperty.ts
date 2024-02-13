@@ -25,10 +25,6 @@ class RelationshipProperty extends Property {
     return new MatchQueryNode({ templates: [this.template] }, this.query);
   }
 
-  buildQueryRootedInEntity(sharedId: Entity['sharedId']) {
-    return MatchQueryNode.forEntity(sharedId, this.query);
-  }
-
   buildQueryInvertedFromRelationship(relationship: Relationship, entities: Entity[]) {
     return this.buildQueryRootedInTemplate().invertFromRelationship(relationship, entities);
   }

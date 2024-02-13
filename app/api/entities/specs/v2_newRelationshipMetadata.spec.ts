@@ -74,14 +74,6 @@ const fixtures: DBFixture = {
     ),
     ...factory.entityInMultipleLanguages(
       languages,
-      'entity5',
-      'template1',
-      {},
-      { obsoleteMetadata: ['relProp'] },
-      { en: { title: 'entity5-en' }, es: { title: 'entity5-es' } }
-    ),
-    ...factory.entityInMultipleLanguages(
-      languages,
       'entity4',
       'template2',
       { relProp2: [{ value: 'existing_value' }] },
@@ -116,18 +108,8 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    factory.template('template1', [
-      factory.property('relProp', 'newRelationship', {
-        query,
-        targetTemplates: [factory.id('template1').toString()],
-      }),
-    ]),
-    factory.template('template2', [
-      factory.property('relProp2', 'newRelationship', {
-        query,
-        targetTemplates: [factory.id('template1').toString()],
-      }),
-    ]),
+    factory.template('template1', [factory.property('relProp', 'newRelationship', { query })]),
+    factory.template('template2', [factory.property('relProp2', 'newRelationship', { query })]),
   ],
   settings: [
     {
@@ -193,16 +175,6 @@ describe('entities.get()', () => {
         sharedId: 'entity3',
         obsoleteMetadata: ['relProp'],
       },
-      {
-        _id: factory.id('entity5-en'),
-        sharedId: 'entity5',
-        obsoleteMetadata: ['relProp'],
-      },
-      {
-        _id: factory.id('entity5-es'),
-        sharedId: 'entity5',
-        obsoleteMetadata: ['relProp'],
-      },
     ]);
   });
 });
@@ -231,48 +203,6 @@ describe('entities.save()', () => {
       expect(inDb).toMatchObject([expected, expected]);
 
       markSpy.mockRestore();
-    });
-
-    it('should create relationships accordingly to the metadata', async () => {
-      await entities.save(
-        {
-          template: factory.id('template1'),
-          title: 'new_entity2',
-          language: 'en',
-          metadata: {
-            relProp: [{ value: 'entity2' }],
-          },
-        },
-        { user: adminUser, language: 'en' }
-      );
-
-      const inDb = await db
-        ?.collection('entities')
-        .find({ title: 'new_entity2' }, { sort: { language: 1 } })
-        .toArray();
-      expect(inDb).toMatchObject([
-        {
-          title: 'new_entity2',
-          metadata: { relProp: [{ value: 'entity2', label: 'entity2-en' }] },
-          language: 'en',
-        },
-        {
-          title: 'new_entity2',
-          metadata: { relProp: [{ value: 'entity2', label: 'entity2-es' }] },
-          language: 'es',
-        },
-      ]);
-      const rels = await db
-        ?.collection('relationships')
-        .find({ 'from.entity': inDb![0].sharedId })
-        .toArray();
-      expect(rels).toMatchObject([
-        {
-          from: { entity: inDb![0].sharedId },
-          to: { entity: 'entity2' },
-          type: factory.id('rtype1'),
-        },
-      ]);
     });
   });
 
@@ -319,54 +249,16 @@ describe('entities.save()', () => {
     });
   });
 
-  it('should create and delete the relationships accordingly and update the metadata', async () => {
-    const [entity] = await entities.get({ sharedId: 'entity1', language: 'en' });
-    await entities.save(
+  it('should not overwrite newRelationship metadata', async () => {
+    const [entity] = await entities.get({ sharedId: 'entity4', language: 'en' });
+    const saved = await entities.save(
       {
         ...entity,
-        metadata: { relProp: [{ value: 'entity2' }, { value: 'entity5' }] },
+        metadata: { relProp2: [{ value: 'overwriten_value' }] },
       },
       { user: adminUser, language: 'en' }
     );
-
-    const relsInDb = await db?.collection('relationships').find({}).toArray();
-
-    expect(relsInDb?.find(rel => rel._id.equals(factory.id('rel1-3')))).toBe(undefined);
-    expect(relsInDb).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          from: {
-            entity: 'entity1',
-          },
-          to: {
-            entity: 'entity5',
-          },
-        }),
-      ])
-    );
-
-    const entitiesInDb = await db?.collection('entities').find({ sharedId: 'entity1' }).toArray();
-
-    expect(entitiesInDb).toEqual([
-      expect.objectContaining({
-        language: 'en',
-        metadata: {
-          relProp: [
-            { value: 'entity2', label: 'entity2-en' },
-            { value: 'entity5', label: 'entity5-en' },
-          ],
-        },
-      }),
-      expect.objectContaining({
-        language: 'es',
-        metadata: {
-          relProp: [
-            { value: 'entity2', label: 'entity2-es' },
-            { value: 'entity5', label: 'entity5-es' },
-          ],
-        },
-      }),
-    ]);
+    expect(saved.metadata).toEqual({ relProp2: [{ value: 'existing_value' }] });
   });
 });
 

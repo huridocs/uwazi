@@ -31,6 +31,8 @@ describe('peekHeaders()', () => {
       'Multiselect Property__en',
       ' multiselect_property__es',
       ' no_new_value_select',
+      ' Nested Select Property',
+      ' nested_multiselect_property',
     ]);
   });
 });
