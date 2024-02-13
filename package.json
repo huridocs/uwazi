@@ -97,7 +97,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@googlemaps/js-api-loader": "^1.16.2",
     "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
+    "@heroicons/react": "^2.1.1",
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
     "@popperjs/core": "^2.11.8",
