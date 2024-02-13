@@ -14,7 +14,8 @@ const idsToDb = (ids: string[]) => ids.map(id => MongoIdHandler.mapToDb(id));
 export class MongoRelationshipsDataSource
   extends MongoDataSource<RelationshipDBOType>
   implements RelationshipsDataSource
-{ //eslint-disable-line
+{
+  //eslint-disable-line
   protected collectionName = 'relationships';
 
   async insert(relationships: Relationship[]): Promise<Relationship[]> {
@@ -41,6 +42,23 @@ export class MongoRelationshipsDataSource
       cursor,
       RelationshipMappers.toModel
     );
+  }
+
+  getByDefinition(definitions: { from: string; type: string; to: string }[]) {
+    const cursor = this.getCollection().find({
+      'from.file': { $exists: false },
+      'to.file': { $exists: false },
+      $and: [
+        {
+          $or: definitions.map(({ from, type, to }) => ({
+            'from.entity': from,
+            'to.entity': to,
+            type: MongoIdHandler.mapToDb(type),
+          })),
+        },
+      ],
+    });
+    return new MongoResultSet(cursor, RelationshipMappers.toModel);
   }
 
   async delete(_ids: string[]) {

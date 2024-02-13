@@ -13,7 +13,6 @@ import {
   parseMarkerPoint,
   TemplatesInfo,
   checkMapInitialization,
-  preventDefaultEvent,
 } from './MapHelper';
 import { getMapProvider } from './TilesProviderFactory';
 
@@ -66,7 +65,6 @@ const LMap = ({
     markers.forEach(m => getClusterMarker(m).addTo(markerGroup));
     markerGroup.on('clusterclick', cluster => {
       props.clickOnCluster?.(cluster.layer.getAllChildMarkers());
-      preventDefaultEvent(cluster);
     });
     markerGroup.on('click', marker => {
       props.clickOnMarker?.(marker.layer);
