@@ -1,11 +1,11 @@
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { I18NLink, Translate } from 'app/I18N';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'app/V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
-import React from 'react';
+import React, { useState } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { EditButton, LabelHeader, ThesaurusLabel } from './components/TableComponents';
@@ -17,6 +17,7 @@ const theasauriListLoader =
 
 const ThesauriList = () => {
   const thesauri = useLoaderData() as ThesaurusSchema[];
+  const [selectedThesauri, setSelectedThesauri] = useState<Row<ThesaurusSchema>[]>([]);
 
   const columnHelper = createColumnHelper<any>();
   const columns = ({ edit }: { edit: Function }) => [
@@ -49,19 +50,26 @@ const ThesauriList = () => {
               data={thesauri}
               title={<Translate>Thesauri</Translate>}
               initialState={{ sorting: [{ id: 'name', desc: false }] }}
+              onSelection={setSelectedThesauri}
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer>
-          <div className="flex gap-2">
-            <Button
-              onClick={() => {
-                // setShowInstallModal(true);
-              }}
-            >
-              <Translate>Add Thesaurus</Translate>
-            </Button>
-          </div>
+        <SettingsContent.Footer className="bg-indigo-50">
+          {selectedThesauri.length ? (
+            <div className="flex items-center gap-2">
+              <Button type="button" onClick={() => {}} color="error" data-testid="menu-delete-link">
+                <Translate>Delete</Translate>
+              </Button>
+              <Translate>Selected</Translate> {selectedThesauri.length} <Translate>of</Translate>{' '}
+              {thesauri.length}
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <I18NLink to="/settings/thesauri/new" className="btn btn-default">
+                <Translate>Add Thesaurus</Translate>
+              </I18NLink>
+            </div>
+          )}
         </SettingsContent.Footer>
       </SettingsContent>
     </div>
