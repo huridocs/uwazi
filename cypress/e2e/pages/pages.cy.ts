@@ -16,6 +16,8 @@ describe('Pages', () => {
         { parseSpecialCharSequences: false }
       );
       cy.contains('button', 'Save').click();
+      cy.contains('Settings updated').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
     });
 
     it('should create a page to be used as home', () => {
