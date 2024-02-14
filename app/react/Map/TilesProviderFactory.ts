@@ -18,16 +18,18 @@ const GoogleMapStyles: { [k: string]: 'roadmap' | 'satellite' | 'hybrid' } = {
   Hybrid: 'hybrid',
 };
 
-const getGoogleLayers: () => { [p: string]: TileLayer } = () =>
+const getGoogleLayers: () => { [p: string]: { layer: TileLayer; key: string } } = () =>
   Object.keys(GoogleMapStyles).reduce(
     (layers: { [k: string]: any }, styleId: string) => ({
       ...layers,
-      [styleId]: getGoogleLayer(GoogleMapStyles[styleId]),
+      [styleId]: { layer: getGoogleLayer(GoogleMapStyles[styleId]), key: styleId },
     }),
     {}
   );
 
-const getMapboxLayers: (accessToken?: string) => { [p: string]: TileLayer } = accessToken => {
+const getMapboxLayers: (accessToken?: string) => {
+  [p: string]: { layer: TileLayer; key: string };
+} = accessToken => {
   const mapboxUrl =
     'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
@@ -35,19 +37,22 @@ const getMapboxLayers: (accessToken?: string) => { [p: string]: TileLayer } = ac
     const styleLabel = t('System', styleId, null, false);
     return {
       ...layers,
-      [styleLabel]: L.tileLayer(mapboxUrl, {
-        id: mapBoxStyles[styleId],
-        tileSize: 512,
-        zoomOffset: -1,
-        accessToken: accessToken || DEFAULT_MAPBOX_TOKEN,
-        zIndex: 0,
-      }),
+      [styleLabel]: {
+        layer: L.tileLayer(mapboxUrl, {
+          id: mapBoxStyles[styleId],
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: accessToken || DEFAULT_MAPBOX_TOKEN,
+          zIndex: 0,
+        }),
+        key: styleId,
+      },
     };
   }, {});
 };
 
 const mapFunction: {
-  [k: string]: (accessToken?: string) => { [p: string]: TileLayer };
+  [k: string]: (accessToken?: string) => { [p: string]: { layer: TileLayer; key: string } };
 } = {
   google: getGoogleLayers,
   mapbox: getMapboxLayers,

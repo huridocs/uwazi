@@ -77,14 +77,14 @@ const LMap = ({
 
   const initMap = () => {
     const baseMaps = getMapProvider(props.tilesProvider, props.mapApiKey);
-    const mapLayers = { ...baseMaps };
-    if (layers && layers.length) {
-      Object.keys(mapLayers).forEach(key => {
-        if (!layers.includes(key as Layer)) {
-          delete mapLayers[key];
-        }
-      });
-    }
+    const mapLayers: { [k: string]: L.TileLayer } = {};
+    Object.keys(baseMaps).forEach(key => {
+      const mapKey = baseMaps[key].key;
+      if (layers && layers.length && !layers.includes(mapKey as Layer)) {
+        return;
+      }
+      mapLayers[key] = baseMaps[key].layer;
+    });
 
     const shouldScroll: boolean = props.renderPopupInfo || props.onClick !== undefined;
     map = L.map(containerId, {
@@ -107,8 +107,7 @@ const LMap = ({
       L.control.layers(mapLayers, {}, { position: 'bottomright', autoZIndex: false }).addTo(map);
     }
 
-    const initialLayer =
-      layers && layers.length ? mapLayers[layers[0]] : mapLayers[DEFAULT_MAP_LAYER];
+    const initialLayer = Object.values(mapLayers)[0];
     initialLayer.options.zIndex = 0;
     initialLayer.addTo(map);
     initMarkers();
