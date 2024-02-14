@@ -24,13 +24,12 @@ const renderInfo = marker => (
 );
 
 export const MapComponent = props => {
-  const { data, classname, scrollZoom, showControls } = props;
+  const { data, classname, scrollZoom, showControls, zoom = 6 } = props;
   const clickOnMarker = marker => props.getAndSelectDocument(marker.properties.entity.sharedId);
   const clickOnCluster = cluster => {
     props.unselectAllDocuments();
     props.selectDocuments(cluster.map(m => m.properties.entity));
   };
-
   return (
     <div className={`Map ${classname}`}>
       {data ? (
@@ -38,7 +37,7 @@ export const MapComponent = props => {
           {markers => (
             <Map
               markers={markers}
-              zoom={1}
+              zoom={parseInt(zoom, 10)}
               clickOnMarker={clickOnMarker}
               clickOnCluster={clickOnCluster}
               renderPopupInfo={renderInfo}
@@ -66,6 +65,7 @@ MapComponent.propTypes = {
   classname: PropTypes.string,
   data: PropTypes.instanceOf(Immutable.List),
   scrollZoom: PropTypes.string,
+  zoom: PropTypes.number,
   showControls: PropTypes.string,
   getAndSelectDocument: PropTypes.func.isRequired,
   selectDocuments: PropTypes.func.isRequired,
