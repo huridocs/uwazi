@@ -1,5 +1,7 @@
-import Joi from 'joi';
 import Ajv from 'ajv';
+
+import { ObjectIdAsString } from 'api/utils/ajvSchemas';
+import { LanguageISO6391Schema } from 'shared/types/commonSchemas';
 import relationships from './relationships.js';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
@@ -30,24 +32,34 @@ export default app => {
   app.post(
     '/api/references',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId(),
-          __v: Joi.number(),
-          entity: Joi.string(),
-          hub: Joi.string().allow(''),
-          template: Joi.string(),
-          metadata: Joi.any(),
-          language: Joi.string(),
-          range: Joi.object().keys({
-            start: Joi.number(),
-            end: Joi.number(),
-            text: Joi.string(),
-          }),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            _id: ObjectIdAsString,
+            __v: { type: 'number' },
+            entity: { type: 'string' },
+            hub: { type: 'string' },
+            template: { type: 'string' },
+            metadata: {},
+            language: LanguageISO6391Schema,
+            range: {
+              type: 'object',
+              properties: {
+                start: { type: 'number' },
+                end: { type: 'number' },
+                text: { type: 'string' },
+              },
+            },
+            what: { type: 'string' },
+          },
+          required: ['what'],
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       relationships
         .save(req.body, req.language)
@@ -59,14 +71,19 @@ export default app => {
   app.delete(
     '/api/references',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: ObjectIdAsString,
+          },
+          required: ['_id'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       relationships
         .delete({ _id: req.query._id }, req.language)
@@ -77,16 +94,21 @@ export default app => {
 
   app.get(
     '/api/references/by_document/',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string().required(),
-          file: Joi.string(),
-          onlyTextReferences: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: { type: 'string' },
+            file: { type: 'string' },
+            onlyTextReferences: { type: 'string' },
+          },
+          required: ['sharedId'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       const unpublished = Boolean(
         req.user && ['admin', 'editor', 'collaborator'].includes(req.user.role)
@@ -121,18 +143,24 @@ export default app => {
 
   app.get(
     '/api/references/search/',
-    validation.validateRequest(
-      Joi.object().keys({
-        sharedId: Joi.string().allow(''),
-        filter: Joi.string().allow(''),
-        limit: Joi.string().allow(''),
-        sort: Joi.string().allow(''),
-        order: Joi.string(),
-        treatAs: Joi.string(),
-        searchTerm: Joi.string().allow(''),
-      }),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: { type: 'string' },
+            filter: { type: 'string' },
+            limit: { type: 'string' },
+            sort: { type: 'string' },
+            order: { type: 'string' },
+            treatAs: { type: 'string' },
+            searchTerm: { type: 'string' },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       req.query.filter = JSON.parse(req.query.filter || '{}');
       const { sharedId, ...query } = req.query;
@@ -145,14 +173,20 @@ export default app => {
 
   app.get(
     '/api/references/count_by_relationtype',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          relationtypeId: Joi.objectId().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            relationtypeId: ObjectIdAsString,
+            what: { type: 'string' },
+          },
+          required: ['relationtypeId', 'what'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       relationships
         .countByRelationType(req.query.relationtypeId)
