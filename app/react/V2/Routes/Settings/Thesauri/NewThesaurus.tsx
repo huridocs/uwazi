@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { ThesaurusLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
+import { Link } from 'react-router-dom';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
@@ -36,13 +37,15 @@ const NewThesauri = () => {
           title="untitled"
         />
         <SettingsContent.Body>
-          <div data-testid="thesauri">
-            <InputField
-              id="thesauri-name"
-              placeholder="untitled"
-              className="mb-2"
-              label={<Translate>untitled</Translate>}
-            />
+          <div data-testid="thesauri" className="mb-4 border rounded-md shadow-sm border-gray-50">
+            <div className="p-4">
+              <InputField
+                clearFieldAction={() => {}}
+                id="thesauri-name"
+                placeholder="untitled"
+                className="mb-2"
+              />
+            </div>
             <Table<ThesaurusSchema>
               enableSelection
               columns={columns}
@@ -52,35 +55,37 @@ const NewThesauri = () => {
           </div>
         </SettingsContent.Body>
         <SettingsContent.Footer className="bg-indigo-50">
-          <div className="flex gap-2">
-            <Button
-              onClick={() => {
-                // setShowInstallModal(true);
-              }}
-            >
-              <Translate>Add item</Translate>
-            </Button>
-            <Button
-              onClick={() => {
-                // setShowInstallModal(true);
-              }}
-            >
-              <Translate>Add group</Translate>
-            </Button>
-            <Button
-              onClick={() => {
-                // setShowInstallModal(true);
-              }}
-            >
-              <Translate>Sort</Translate>
-            </Button>
-            <Button
-              onClick={() => {
-                // setShowInstallModal(true);
-              }}
-            >
-              <Translate>Import</Translate>
-            </Button>
+          <div className="flex justify-between w-full">
+            <div className="flex gap-2">
+              <Button>
+                <Translate>Add item</Translate>
+              </Button>
+              <Button styling="outline">
+                <Translate>Add group</Translate>
+              </Button>
+              <Button styling="outline">
+                <Translate>Sort</Translate>
+              </Button>
+              <Button styling="outline">
+                <Translate>Import</Translate>
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Link to="/settings/translations">
+                <Button styling="light" type="button">
+                  <Translate>Cancel</Translate>
+                </Button>
+              </Link>
+              <Button
+                styling="solid"
+                color="success"
+                onClick={() => {
+                  console.log('Saving thesauri');
+                }}
+              >
+                <Translate>Save</Translate>
+              </Button>
+            </div>
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
