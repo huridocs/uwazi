@@ -224,9 +224,7 @@ describe('upload routes', () => {
         originalname: 'f2082bf51b6ef839690485d7153e847a.pdf',
       });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: file._id?.toString() });
+      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
       const [thumbnail]: FileType[] = await files.get({ filename: `${file._id}.jpg` });
       expect(thumbnail).not.toBeDefined();

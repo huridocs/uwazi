@@ -16,17 +16,16 @@ export function getThesaurusPropertyNames(
   templates: TemplateSchema[]
 ): string[] {
   const propNames: { [k: string]: boolean } = {};
-  templates.forEach(
-    t =>
-      t.properties?.forEach(p => {
-        if (
-          p.name &&
-          (p.type === propertyTypes.select || p.type === propertyTypes.multiselect) &&
-          p.content?.toString() === thesaurusId.toString()
-        ) {
-          propNames[p.name] = true;
-        }
-      })
+  templates.forEach(t =>
+    t.properties?.forEach(p => {
+      if (
+        p.name &&
+        (p.type === propertyTypes.select || p.type === propertyTypes.multiselect) &&
+        p.content?.toString() === thesaurusId.toString()
+      ) {
+        propNames[p.name] = true;
+      }
+    })
   );
   return Object.keys(propNames);
 }
