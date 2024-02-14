@@ -6,7 +6,7 @@ import { Button, Table } from 'app/V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { EditButton, LabelHeader, ThesaurusLabel } from './components/TableComponents';
 
@@ -16,9 +16,13 @@ const theasauriListLoader =
     ThesauriAPI.getThesauri(new RequestParams({}, headers));
 
 const ThesauriList = () => {
+  const navigate = useNavigate();
   const thesauri = useLoaderData() as ThesaurusSchema[];
   const [selectedThesauri, setSelectedThesauri] = useState<Row<ThesaurusSchema>[]>([]);
 
+  const navigateToEditThesaurus = (thesaurus: Row<ThesaurusSchema>) => {
+    navigate(`/settings/thesauri/edit/${thesaurus.original._id}`);
+  };
   const columnHelper = createColumnHelper<any>();
   const columns = ({ edit }: { edit: Function }) => [
     columnHelper.accessor('name', {
@@ -46,7 +50,7 @@ const ThesauriList = () => {
           <div data-testid="thesauri">
             <Table<ThesaurusSchema>
               enableSelection
-              columns={columns({ edit: () => {} })}
+              columns={columns({ edit: navigateToEditThesaurus })}
               data={thesauri}
               title={<Translate>Thesauri</Translate>}
               initialState={{ sorting: [{ id: 'name', desc: false }] }}
@@ -73,7 +77,7 @@ const ThesauriList = () => {
                 </Link>
               </div>
               <div className="flex gap-2">
-                <Link to="/settings/translations">
+                <Link to="/settings/thesauri">
                   <Button styling="light" type="button">
                     <Translate>Cancel</Translate>
                   </Button>
