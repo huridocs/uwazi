@@ -50,11 +50,9 @@ const PageEditor = () => {
 
   const {
     register,
-    reset,
-    formState: { errors, isDirty, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isDirty, isSubmitting },
     watch,
     getValues,
-    resetField,
     setValue,
     handleSubmit,
   } = useForm({
@@ -69,12 +67,6 @@ const PageEditor = () => {
       setShowConfirmationModal(true);
     }
   }, [blocker, setShowConfirmationModal]);
-
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset(page, { keepDirty: false });
-    }
-  }, [reset, isSubmitSuccessful, page]);
 
   const notify = (response: Page | FetchResponseError) => {
     const hasErrors = response instanceof FetchResponseError;
@@ -192,44 +184,44 @@ const PageEditor = () => {
             <Tabs.Tab id="Code" key="html" label={<Translate>Code</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <HTMLNotification />
-                <CodeEditor
-                  language="html"
-                  intialValue={page.metadata?.content}
-                  onMount={editor => {
-                    editor.getModel()?.onDidChangeContent(
-                      debouncedChangeHandler(() => {
-                        if (page.metadata?.content !== editor.getValue()) {
+                <div className="pt-2 h-full">
+                  <CodeEditor
+                    language="html"
+                    intialValue={page.metadata?.content}
+                    onMount={editor => {
+                      editor.getModel()?.onDidChangeContent(
+                        debouncedChangeHandler(() => {
                           setValue('metadata.content', editor.getValue(), { shouldDirty: true });
-                        }
-                        if (page.metadata?.content === editor.getValue()) {
-                          resetField('metadata.content', { keepDirty: false });
-                        }
-                      })
-                    );
-                  }}
-                />
+                        })
+                      );
+                    }}
+                    fallbackElement={
+                      <textarea {...register('metadata.content')} className="w-full h-full" />
+                    }
+                  />
+                </div>
               </div>
             </Tabs.Tab>
 
             <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <JSNotification />
-                <CodeEditor
-                  language="javascript"
-                  intialValue={page.metadata?.script}
-                  onMount={editor => {
-                    editor.getModel()?.onDidChangeContent(
-                      debouncedChangeHandler(() => {
-                        if (page.metadata?.script !== editor.getValue()) {
+                <div className="pt-2 h-full">
+                  <CodeEditor
+                    language="javascript"
+                    intialValue={page.metadata?.script}
+                    onMount={editor => {
+                      editor.getModel()?.onDidChangeContent(
+                        debouncedChangeHandler(() => {
                           setValue('metadata.script', editor.getValue(), { shouldDirty: true });
-                        }
-                        if (page.metadata?.script === editor.getValue()) {
-                          resetField('metadata.script', { keepDirty: false });
-                        }
-                      })
-                    );
-                  }}
-                />
+                        })
+                      );
+                    }}
+                    fallbackElement={
+                      <textarea {...register('metadata.script')} className="w-full h-full" />
+                    }
+                  />
+                </div>
               </div>
             </Tabs.Tab>
           </Tabs>

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor';
 
@@ -7,20 +8,38 @@ type CodeEditorProps = {
   language: 'html' | 'javascript';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
+  fallbackElement?: React.ReactDOM;
 };
 
-const CodeEditorComponent = ({ language, intialValue, onMount }: CodeEditorProps) => {
+const CodeEditorComponent = ({
+  language,
+  intialValue,
+  onMount,
+  fallbackElement = <div />,
+}: CodeEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
   const editor = useRef<CodeEditorInstance>();
 
   useEffect(() => {
     if (container.current && !editor.current) {
-      editor.current = monaco.editor.create(container.current, {
-        value: intialValue,
-        language,
-        tabSize: 2,
-        automaticLayout: true,
-      });
+      try {
+        editor.current = monaco.editor.create(container.current, {
+          value: intialValue,
+          language,
+          tabSize: 2,
+          automaticLayout: true,
+        });
+
+        editor.current.changeViewZones(accessor => {
+          accessor.addZone({
+            afterLineNumber: 0,
+            heightInPx: 5,
+            domNode: document.createElement('SPAN'),
+          });
+        });
+      } catch (_error) {
+        container.current.appendChild(fallbackElement);
+      }
     }
 
     return () => {

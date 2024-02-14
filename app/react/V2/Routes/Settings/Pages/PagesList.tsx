@@ -88,6 +88,7 @@ const PagesList = () => {
             columns={columns}
             data={pages}
             enableSelection
+            title={<Translate>Pages</Translate>}
             onSelection={setSelectedPages}
           />
         </SettingsContent.Body>
