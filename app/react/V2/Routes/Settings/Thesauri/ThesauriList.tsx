@@ -6,7 +6,7 @@ import { Button, Table } from 'app/V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import React, { useState } from 'react';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { EditButton, LabelHeader, ThesaurusLabel } from './components/TableComponents';
 
@@ -54,7 +54,7 @@ const ThesauriList = () => {
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-indigo-50">
+        <SettingsContent.Footer className="bg-indigo-50" highlighted>
           {selectedThesauri.length ? (
             <div className="flex items-center gap-2">
               <Button type="button" onClick={() => {}} color="error" data-testid="menu-delete-link">
@@ -64,10 +64,30 @@ const ThesauriList = () => {
               {thesauri.length}
             </div>
           ) : (
-            <div className="flex gap-2">
-              <I18NLink to="/settings/thesauri/new" className="btn btn-default">
-                <Translate>Add Thesaurus</Translate>
-              </I18NLink>
+            <div className="flex justify-between w-full">
+              <div className="flex gap-2">
+                <Link to="/settings/thesauri/new">
+                  <Button type="button">
+                    <Translate>Add Thesaurus</Translate>
+                  </Button>
+                </Link>
+              </div>
+              <div className="flex gap-2">
+                <Link to="/settings/translations">
+                  <Button styling="light" type="button">
+                    <Translate>Cancel</Translate>
+                  </Button>
+                </Link>
+                <Button
+                  styling="solid"
+                  color="success"
+                  onClick={() => {
+                    console.log('Saving thesauri');
+                  }}
+                >
+                  <Translate>Save</Translate>
+                </Button>
+              </div>
             </div>
           )}
         </SettingsContent.Footer>
