@@ -112,7 +112,7 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
     throw new Error('Method not implemented.');
   }
 
-  async dropIndexes(_options?: CommandOperationOptions | undefined): Promise<Document> {
+  async dropIndexes(_options?: CommandOperationOptions | undefined): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 
