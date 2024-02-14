@@ -56,22 +56,20 @@ const PagesList = () => {
   const columns = [
     columnHelper.accessor('entityView', {
       header: EntityViewHeader,
-      enableSorting: true,
       cell: YesNoPill,
     }),
     columnHelper.accessor('title', {
       header: TitleHeader,
-      enableSorting: true,
     }),
     columnHelper.accessor('sharedId', {
       header: UrlHeader,
       cell: UrlCell,
-      enableSorting: true,
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
       header: ActionHeader,
       cell: EditButton,
+      enableSorting: false,
     }),
   ];
 

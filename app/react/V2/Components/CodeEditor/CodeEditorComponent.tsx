@@ -33,7 +33,7 @@ const CodeEditorComponent = ({
         editor.current.changeViewZones(accessor => {
           accessor.addZone({
             afterLineNumber: 0,
-            heightInPx: 5,
+            heightInPx: 8,
             domNode: document.createElement('SPAN'),
           });
         });
