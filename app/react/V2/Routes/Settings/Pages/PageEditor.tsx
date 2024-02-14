@@ -51,7 +51,7 @@ const PageEditor = () => {
   const {
     register,
     reset,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { errors, isDirty, isSubmitting, isSubmitSuccessful },
     watch,
     getValues,
     resetField,
@@ -69,6 +69,12 @@ const PageEditor = () => {
       setShowConfirmationModal(true);
     }
   }, [blocker, setShowConfirmationModal]);
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset(page, { keepDirty: false });
+    }
+  }, [reset, isSubmitSuccessful, page]);
 
   const notify = (response: Page | FetchResponseError) => {
     const hasErrors = response instanceof FetchResponseError;
@@ -96,10 +102,6 @@ const PageEditor = () => {
 
   const save = async (data: Page) => {
     const response = await pagesAPI.save(data);
-
-    if (!(response instanceof FetchResponseError)) {
-      reset(response);
-    }
 
     return response;
   };
@@ -206,7 +208,6 @@ const PageEditor = () => {
                     );
                   }}
                 />
-                <textarea {...register('metadata.content')} className="hidden" />
               </div>
             </Tabs.Tab>
 
@@ -229,7 +230,6 @@ const PageEditor = () => {
                     );
                   }}
                 />
-                <textarea {...register('metadata.script')} className="hidden" />
               </div>
             </Tabs.Tab>
           </Tabs>
