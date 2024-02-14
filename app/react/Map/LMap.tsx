@@ -18,8 +18,6 @@ import { getMapProvider } from './TilesProviderFactory';
 
 type Layer = 'Dark' | 'Streets' | 'Satellite' | 'Hybrid';
 
-const DEFAULT_MAP_LAYER = 'Streets';
-
 type LMapProps = {
   markers?: MarkerInput[];
   height: number;
