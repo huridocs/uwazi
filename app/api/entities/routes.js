@@ -1,5 +1,3 @@
-import Joi from 'joi';
-import objectId from 'joi-objectid';
 import { search } from 'api/search';
 import { uploadMiddleware } from 'api/files';
 import { saveEntity } from 'api/entities/entitySavingManager';
@@ -9,8 +7,6 @@ import thesauri from '../thesauri/thesauri';
 import date from '../utils/date';
 import needsAuthorization from '../auth/authMiddleware';
 import { parseQuery, validation } from '../utils';
-
-Joi.objectId = objectId(Joi);
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -121,14 +117,19 @@ export default app => {
 
   app.get(
     '/api/entities/count_by_template',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          templateId: Joi.objectId().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            templateId: { type: 'string' },
+          },
+          required: ['templateId'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) =>
       entities
         .countByTemplate(req.query.templateId)
@@ -138,15 +139,21 @@ export default app => {
 
   app.get(
     '/api/entities/get_raw_page',
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string().required(),
-          pageNumber: Joi.number().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: { type: 'string' },
+            pageNumber: { type: 'number' },
+            what: { type: 'string' },
+          },
+          required: ['sharedId', 'pageNumber', 'what'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) =>
       entities
         .getRawPage(req.query.sharedId, req.language, req.query.pageNumber)
@@ -203,14 +210,19 @@ export default app => {
   app.delete(
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: { type: 'string' },
+          },
+          required: ['sharedId'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       entities
         .delete(req.query.sharedId)
@@ -222,14 +234,19 @@ export default app => {
   app.post(
     '/api/entities/bulkdelete',
     needsAuthorization(['admin', 'editor']),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedIds: Joi.array().items(Joi.string()).required(),
-        })
-        .required(),
-      'body'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            sharedIds: { type: 'array', items: { type: 'string' } },
+          },
+          required: ['sharedIds'],
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       entities
         .deleteMultiple(req.body.sharedIds)
