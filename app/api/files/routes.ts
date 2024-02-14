@@ -10,7 +10,6 @@ import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import Joi from 'joi';
 import { files } from './files';
 import { createError, handleError, validation } from '../utils';
 import { storage } from './storage';
@@ -144,13 +143,15 @@ export default (app: Application) => {
   app.get(
     '/api/attachments/download',
 
-    validation.validateRequest(
-      Joi.object({
-        _id: Joi.string(),
-        file: Joi.string().required(),
-      }).required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        _id: { type: 'string' },
+        file: { type: 'string' },
+        nonexisting: { type: 'string' },
+      },
+      required: ['file', 'nonexisting'],
+    }),
 
     async (req, res) => {
       res.redirect(301, `/api/files/${req.query.file}?download=true`);
