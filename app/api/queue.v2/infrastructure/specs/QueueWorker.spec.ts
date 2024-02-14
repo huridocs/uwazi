@@ -123,7 +123,7 @@ it('should finish the in-progress job before stopping', async () => {
       )
       .then(async () => {
         output.push('finished enqueueing jobs post worker.start');
-        await sleep(4 * 50 + 10);
+        await sleep(4 * 50 + 30);
         output.push('stopping worker');
         await worker.stop();
         output.push('worker stopped');
