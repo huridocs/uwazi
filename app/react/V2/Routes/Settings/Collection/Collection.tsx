@@ -77,6 +77,7 @@ const Collection = () => {
     templates: Template[];
   };
   const { links, custom, ...formData } = settings;
+
   const setNotifications = useSetRecoilState(notificationAtom);
   const setSettings = useSetRecoilState(settingsAtom);
   const revalidator = useRevalidator();
@@ -208,18 +209,21 @@ const Collection = () => {
                   label="Public instance"
                   tip={tips.publicSharing}
                   register={register}
+                  defaultChecked={formData.private}
                 />
                 <CollectionOptionToggle
                   valueKey="cookiepolicy"
                   label="Show cookie policy"
                   tip={tips.cookiePolicy}
                   register={register}
+                  defaultChecked={formData.cookiepolicy}
                 />
                 <CollectionOptionToggle
                   valueKey="allowcustomJS"
                   label="Global JS"
                   tip={tips.globalJS}
                   register={register}
+                  defaultChecked={formData.allowcustomJS}
                 />
                 {!settings.newNameGeneration && (
                   <CollectionOptionToggle
@@ -227,6 +231,7 @@ const Collection = () => {
                     label="Non-latin characters support"
                     tip={tips.characterSupport}
                     register={register}
+                    defaultChecked={formData.newNameGeneration}
                   />
                 )}
               </div>

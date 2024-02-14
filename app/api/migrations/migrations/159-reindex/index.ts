@@ -1,7 +1,7 @@
 import { Db } from 'mongodb';
 
 export default {
-  delta: 158,
+  delta: 159,
 
   name: 'reindex',
 

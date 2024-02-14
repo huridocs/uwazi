@@ -12,6 +12,7 @@ interface CollectionOptionToggleProps {
   label: string;
   valueKey: keyof ClientSettings;
   tip: React.ReactNode;
+  defaultChecked?: boolean;
 }
 
 const CollectionOptionToggle = ({
@@ -19,9 +20,10 @@ const CollectionOptionToggle = ({
   valueKey,
   label,
   tip,
+  defaultChecked,
 }: CollectionOptionToggleProps) => (
-  <div className="flex items-center col-span-2 gap-4">
-    <EnableButtonCheckbox {...register(valueKey)} />
+  <div className="flex col-span-2 gap-4 items-center">
+    <EnableButtonCheckbox {...register(valueKey)} defaultChecked={defaultChecked} />
     <Translate className="text-sm font-medium text-gray-900">{label}</Translate>
     <Tooltip
       // eslint-disable-next-line react/style-prop-object
