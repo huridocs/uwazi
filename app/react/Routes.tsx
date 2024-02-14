@@ -63,6 +63,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/EditThesaurus';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -148,7 +149,11 @@ const getRoutesLayout = (
           loader={theasauriListLoader(headers)}
         />
         <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
+        <Route
+          path="edit/:_id"
+          element={adminsOnlyRoute(<EditThesauri />)}
+          loader={editTheasaurusLoader(headers)}
+        />
         {/* <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} /> */}
       </Route>
       <Route
