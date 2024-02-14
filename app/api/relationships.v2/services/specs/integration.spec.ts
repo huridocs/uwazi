@@ -1,13 +1,31 @@
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
-import { CreateRelationshipService } from '../service_factories';
+import { CreateRelationshipService, DeleteRelationshipService } from '../service_factories';
 
 const factory = getFixturesFactory();
 
 const fixtures: DBFixture = {
   entities: [
-    ...factory.entityInMultipleLanguages(['en', 'hu'], 'entity1', 'template1'),
+    ...factory.entityInMultipleLanguages(
+      ['en', 'hu'],
+      'entity1',
+      'template1',
+      {},
+      {},
+      {
+        en: {
+          metadata: {
+            relProp1: [{ value: 'entity4', label: 'entity4-en' }],
+          },
+        },
+        hu: {
+          metadata: {
+            relProp1: [{ value: 'entity4', label: 'entity4-hu' }],
+          },
+        },
+      }
+    ),
     ...factory.entityInMultipleLanguages(['en', 'hu'], 'entity2', 'template2'),
     ...factory.entityInMultipleLanguages(
       ['en', 'hu'],
@@ -21,6 +39,21 @@ const fixtures: DBFixture = {
         },
         hu: {
           title: 'entity3-hu',
+        },
+      }
+    ),
+    ...factory.entityInMultipleLanguages(
+      ['en', 'hu'],
+      'entity4',
+      'template3',
+      {},
+      {},
+      {
+        en: {
+          title: 'entity4-en',
+        },
+        hu: {
+          title: 'entity4-hu',
         },
       }
     ),
@@ -62,6 +95,16 @@ const fixtures: DBFixture = {
       },
       to: {
         entity: 'entity2',
+      },
+      type: factory.id('relType1'),
+    },
+    {
+      _id: factory.id('rel2'),
+      from: {
+        entity: 'entity2',
+      },
+      to: {
+        entity: 'entity4',
       },
       type: factory.id('relType1'),
     },
@@ -127,13 +170,46 @@ describe('create relationships', () => {
       expect.objectContaining({
         language: 'en',
         metadata: expect.objectContaining({
-          relProp1: [{ value: 'entity3', label: 'entity3-en' }],
+          relProp1: [
+            { value: 'entity4', label: 'entity4-en' },
+            { value: 'entity3', label: 'entity3-en' },
+          ],
         }),
       }),
       expect.objectContaining({
         language: 'hu',
         metadata: expect.objectContaining({
-          relProp1: [{ value: 'entity3', label: 'entity3-hu' }],
+          relProp1: [
+            { value: 'entity4', label: 'entity4-hu' },
+            { value: 'entity3', label: 'entity3-hu' },
+          ],
+        }),
+      }),
+    ]);
+  });
+});
+
+describe('delete relationships', () => {
+  it('should transactionally delete relationships and denormalize the related entities', async () => {
+    const deleteRelationshipService = await DeleteRelationshipService();
+    await deleteRelationshipService.delete(factory.id('rel2').toString());
+
+    const entity1 = await testingDB.mongodb
+      ?.collection('entities')
+      .find({ sharedId: 'entity1' })
+      .toArray();
+
+    expect(entity1).toEqual([
+      expect.objectContaining({
+        language: 'en',
+        metadata: expect.objectContaining({
+          relProp1: [],
+        }),
+      }),
+      expect.objectContaining({
+        language: 'hu',
+        metadata: expect.objectContaining({
+          relProp1: [],
         }),
       }),
     ]);
