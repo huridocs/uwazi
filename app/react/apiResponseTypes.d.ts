@@ -73,3 +73,8 @@ export interface ClientSettings
     [k: string]: unknown | undefined;
   };
 }
+
+export interface ClientRelationshipType {
+  _id?: string;
+  name: string;
+}
