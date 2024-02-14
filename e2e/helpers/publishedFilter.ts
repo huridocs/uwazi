@@ -2,12 +2,12 @@ import { host } from '../config';
 import disableTransitions from './disableTransitions';
 
 const assessFilterStatus = async () => {
-  const publishedStatus = await page.evaluate(
-    () => document.querySelector('#publishedStatuspublished')?.getAttribute('data-state')
+  const publishedStatus = await page.evaluate(() =>
+    document.querySelector('#publishedStatuspublished')?.getAttribute('data-state')
   );
 
-  const restrictedStatus = await page.evaluate(
-    () => document.querySelector('#publishedStatusrestricted')?.getAttribute('data-state')
+  const restrictedStatus = await page.evaluate(() =>
+    document.querySelector('#publishedStatusrestricted')?.getAttribute('data-state')
   );
 
   return [publishedStatus === '2', restrictedStatus === '2'];
