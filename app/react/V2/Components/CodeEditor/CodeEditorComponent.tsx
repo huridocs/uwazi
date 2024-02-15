@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as monaco from 'monaco-editor';
 
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
@@ -8,17 +8,18 @@ type CodeEditorProps = {
   language: 'html' | 'javascript';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
-  fallbackElement?: React.ReactDOM;
+  fallbackElement?: React.ReactNode;
 };
 
 const CodeEditorComponent = ({
   language,
   intialValue,
   onMount,
-  fallbackElement = <div />,
+  fallbackElement,
 }: CodeEditorProps) => {
   const container = useRef<HTMLDivElement>(null);
   const editor = useRef<CodeEditorInstance>();
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     if (container.current && !editor.current) {
@@ -38,12 +39,14 @@ const CodeEditorComponent = ({
           });
         });
       } catch (_error) {
-        container.current.appendChild(fallbackElement);
+        setHasError(true);
       }
     }
 
     return () => {
-      editor.current?.dispose();
+      if (editor.current) {
+        editor.current.dispose();
+      }
     };
   }, [language]);
 
@@ -52,6 +55,10 @@ const CodeEditorComponent = ({
       onMount(editor.current);
     }
   }, []);
+
+  if (hasError) {
+    return fallbackElement;
+  }
 
   return <div className="w-full h-full border" dir="ltr" ref={container} />;
 };

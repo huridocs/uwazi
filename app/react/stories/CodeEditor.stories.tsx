@@ -78,7 +78,7 @@ const meta: Meta<typeof CodeEditor> = {
 
 type Story = StoryObj<typeof CodeEditor>;
 
-const Component = ({ language, intialValue }: CodeEditorProps) => {
+const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) => {
   const editorInstance = useRef<CodeEditorInstance>();
   const [updatedCode, setUpdatedCode] = useState<string>();
 
@@ -91,6 +91,7 @@ const Component = ({ language, intialValue }: CodeEditorProps) => {
           onMount={editor => {
             editorInstance.current = editor;
           }}
+          fallbackElement={fallbackElement}
         />
       </div>
       <div className="w-full">
@@ -108,7 +109,13 @@ const Component = ({ language, intialValue }: CodeEditorProps) => {
 };
 
 const Primary: Story = {
-  render: args => <Component language={args.language} intialValue={args.intialValue} />,
+  render: args => (
+    <Component
+      language={args.language}
+      intialValue={args.intialValue}
+      fallbackElement={args.fallbackElement}
+    />
+  ),
 };
 
 const JSEditor: Story = {

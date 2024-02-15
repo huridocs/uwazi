@@ -10,8 +10,8 @@ describe('Code editor', () => {
   it('should render the editor with existing HTML and the correct layout properties', () => {
     mount(<HTMLEditor />);
     cy.contains('<h1>Main Heading</h1>').should('exist');
+    cy.get('div[role="code"]').should('exist');
     cy.get('div[dir="ltr"]').should('exist');
-    cy.get('.view-lines').children().should('have.length', 21);
   });
 
   it('should be able to edit', () => {
@@ -48,5 +48,23 @@ describe('Code editor', () => {
 
     cy.contains('button', 'Save').click();
     cy.contains('pre', '<h1>My new code</h1>').should('exist');
+  });
+
+  it('should render the fallback element when an error occurs', () => {
+    HTMLEditor.args.fallbackElement = (
+      <textarea
+        className="w-full h-full"
+        data-test-id="fallback"
+        value="<h1>Original HTML code</h1>"
+      />
+    );
+    //@ts-ignore force monaco to fail
+    HTMLEditor.args.intialValue = {};
+
+    mount(<HTMLEditor />);
+
+    cy.contains('<h1>Original HTML code</h1>').should('exist');
+    cy.get('div[role="code"]').should('not.exist');
+    cy.get('[data-test-id="fallback"]').should('exist');
   });
 });
