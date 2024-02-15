@@ -78,12 +78,9 @@ const executeRoute = (
   });
 
   if (args) {
-    result.middlewares = args.slice(1, -1).filter(arg => !arg.isJoi && arg.type !== 'object');
-    const joiValidation = args.slice(1, -1).find(arg => arg.isJoi);
+    result.middlewares = args.slice(1, -1).filter(arg => arg.type !== 'object');
     const ajvValidation = args.slice(1, -1).find(arg => arg.type === 'object');
-    if (joiValidation) {
-      result.validation = joiValidation.describe();
-    } else if (ajvValidation) {
+    if (ajvValidation) {
       result.validation = ajvValidation;
     }
   }
