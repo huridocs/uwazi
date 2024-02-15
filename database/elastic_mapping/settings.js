@@ -1,5 +1,5 @@
 const settings = {
-  'index.mapping.total_fields.limit': 4000,
+  'index.mapping.total_fields.limit': 4500,
   'index.number_of_replicas': 0,
   'index.number_of_shards': 1,
   analysis: {
