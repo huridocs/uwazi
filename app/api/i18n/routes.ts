@@ -146,6 +146,7 @@ export default (app: Application) => {
           },
           required: ['locale', 'contexts'],
         },
+        required: ['body'],
       },
     }),
 
@@ -171,6 +172,7 @@ export default (app: Application) => {
           required: ['locale'],
         },
       },
+      required: ['body'],
     }),
 
     async (req, res, next) => {
@@ -201,6 +203,7 @@ export default (app: Application) => {
           required: ['key'],
         },
       },
+      required: ['body'],
     }),
 
     async (req, res) => {

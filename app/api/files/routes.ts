@@ -146,11 +146,15 @@ export default (app: Application) => {
     validation.validateRequest({
       type: 'object',
       properties: {
-        _id: { type: 'string' },
-        file: { type: 'string' },
-        nonexisting: { type: 'string' },
+        query: {
+          properties: {
+            _id: { type: 'string' },
+            file: { type: 'string' },
+          },
+          required: ['file'],
+        },
       },
-      required: ['file', 'nonexisting'],
+      required: ['query'],
     }),
 
     async (req, res) => {

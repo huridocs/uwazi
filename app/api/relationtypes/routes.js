@@ -62,6 +62,7 @@ export default app => {
           },
         },
       },
+      required: ['query'],
     }),
     (req, res, next) => {
       if (req.query._id) {

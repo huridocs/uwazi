@@ -53,6 +53,7 @@ export default app => {
           required: ['username', 'password'],
         },
       },
+      required: ['body'],
     }),
 
     (req, res, next) => {

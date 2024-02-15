@@ -147,9 +147,8 @@ export default app => {
           properties: {
             sharedId: { type: 'string' },
             pageNumber: { type: 'number' },
-            what: { type: 'string' },
           },
-          required: ['sharedId', 'pageNumber', 'what'],
+          required: ['sharedId', 'pageNumber'],
         },
       },
       required: ['query'],
