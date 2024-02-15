@@ -8,7 +8,7 @@ type CodeEditorProps = {
   language: 'html' | 'javascript';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
-  fallbackElement?: React.ReactNode;
+  fallbackElement?: React.ReactElement;
 };
 
 const CodeEditorComponent = ({
@@ -57,7 +57,7 @@ const CodeEditorComponent = ({
   }, []);
 
   if (hasError) {
-    return fallbackElement;
+    return fallbackElement || <div />;
   }
 
   return <div className="w-full h-full border" dir="ltr" ref={container} />;
