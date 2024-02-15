@@ -1,17 +1,17 @@
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'app/V2/Components/UI';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { EditButton, ThesaurusLabel } from './components/TableComponents';
+import { EditButton } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { FormValue } from 'app/Forms';
+import _ from 'lodash';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -27,21 +27,22 @@ const EditThesauri = () => {
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
     []
   );
+  const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>(
+    thesaurus.values || []
+  );
 
   const {
     register,
     handleSubmit,
-    setValue,
-    getFieldState,
-    reset,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    formState: { dirtyFields, isSubmitting: formIsSubmitting, isSubmitSuccessful },
+    watch,
+    formState: { errors },
   } = useForm<ThesaurusSchema>({
-    defaultValues: { formValues: thesaurus },
+    defaultValues: thesaurus,
     mode: 'onSubmit',
   });
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
+    data.values = thesaurusValues;
     console.log('Form values: ', data);
     // const formData = new FormData();
     // const values = prepareValuesToSave(data.formValues, translations);
@@ -59,12 +60,12 @@ const EditThesauri = () => {
       cell: ThesaurusValueLabel,
       meta: { headerClassName: 'w-9/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
-    columnHelper.accessor('_id', {
+    columnHelper.accessor('id', {
       header: 'Action',
       cell: EditButton,
       enableSorting: false,
       meta: { action: () => {}, headerClassName: 'text-center w-1/12' },
-    }) as ColumnDef<ThesaurusValueSchema, '_id'>,
+    }) as ColumnDef<ThesaurusValueSchema, 'id'>,
   ];
 
   return (
@@ -76,7 +77,7 @@ const EditThesauri = () => {
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Thesauri', '/settings/thesauri']])}
-          title={thesaurus.name}
+          title={watch('name')}
         />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
@@ -85,16 +86,17 @@ const EditThesauri = () => {
                 <InputField
                   clearFieldAction={() => {}}
                   id="thesauri-name"
-                  placeholder="untitled"
+                  placeholder="Thesauri name"
                   className="mb-2"
+                  hasErrors={!!errors.name}
                   {...register('name', { required: true })}
                 />
               </div>
               <Table<ThesaurusValueSchema>
                 enableSelection
                 columns={columns}
-                data={thesaurus.values ? thesaurus.values : []}
-                initialState={{ sorting: [{ id: 'name', desc: false }] }}
+                data={thesaurusValues}
+                initialState={{ sorting: [{ id: 'label', desc: false }] }}
                 onSelection={setSelectedThesaurusValue}
               />
             </div>
@@ -123,7 +125,13 @@ const EditThesauri = () => {
               </Button>
               <Button
                 type="button"
-                onClick={() => {}}
+                onClick={() => {
+                  const selectedValues = selectedThesaurusValue.map(value => value.original);
+                  const remainingValues = thesaurusValues.filter(
+                    value => !selectedValues.includes(value)
+                  );
+                  setThesaurusValues(remainingValues);
+                }}
                 color="error"
                 data-testid="thesauri-remove-button"
               >
