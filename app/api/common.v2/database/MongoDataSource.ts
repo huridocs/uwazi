@@ -33,9 +33,7 @@ export abstract class MongoDataSource<CollectionSchema extends Document = any> {
   }
 
   protected async dropCollection() {
-    if (await this.collectionExists()) {
-      await this.db.dropCollection(this.collectionName, { session: this.getSession() });
-    }
+    await this.db.dropCollection(this.collectionName, { session: this.getSession() });
   }
 
   protected async createCollection() {
