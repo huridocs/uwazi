@@ -7,7 +7,7 @@ describe('Pages', () => {
     clearCookiesAndLogin();
   });
 
-  xdescribe('Custom home page and styles', () => {
+  describe('Custom home page and styles', () => {
     it('should allow setting up a custom CSS', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Global CSS').click();
@@ -108,7 +108,7 @@ describe('Pages', () => {
     });
   });
 
-  xdescribe('Pages list', () => {
+  describe('Pages list', () => {
     it('should render a list with all pages names', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
@@ -134,7 +134,7 @@ describe('Pages', () => {
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
       cy.contains('Accept').click();
-      cy.waitForNotification('Deleted succesfully');
+      cy.waitForNotification('Deleted successfully');
     });
   });
 });
