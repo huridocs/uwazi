@@ -9,7 +9,7 @@ import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Page } from 'app/V2/shared/types';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
 import { FetchResponseError } from 'shared/JSONRequest';
 import {
   EntityViewHeader,
@@ -26,6 +26,14 @@ const pagesListLoader =
   async ({ params }) =>
     pagesAPI.get(params.lang || 'en', headers);
 
+const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
+  type: !hasErrors ? 'success' : 'error',
+  text: !hasErrors ? (
+    <Translate>Deleted successfully</Translate>
+  ) : (
+    <Translate>An error occurred</Translate>
+  ),
+});
 // eslint-disable-next-line max-statements
 const PagesList = () => {
   const [selectedPages, setSelectedPages] = useState<Row<Page>[]>([]);
@@ -43,15 +51,8 @@ const PagesList = () => {
     const result = await Promise.all(
       sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
     );
-    const hasErrors = result.find(res => res instanceof FetchResponseError);
-    setNotifications({
-      type: !hasErrors ? 'success' : 'error',
-      text: !hasErrors ? (
-        <Translate>Deleted successfully</Translate>
-      ) : (
-        <Translate>An error occurred</Translate>
-      ),
-    });
+    const hasErrors = result.find(res => res instanceof FetchResponseError) !== undefined;
+    setNotifications(deletionNotification(hasErrors));
     revalidator.revalidate();
   };
 

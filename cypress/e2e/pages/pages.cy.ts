@@ -8,6 +8,14 @@ describe('Pages', () => {
   });
 
   describe('Custom home page and styles', () => {
+    const setLandingPage = (pageURL: string) => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Collection').click();
+      cy.clearAndType('input[id="landing-page"]', pageURL);
+      cy.contains('button', 'Save').click();
+      cy.waitForNotification('Settings updated');
+    };
+
     it('should allow setting up a custom CSS', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Global CSS').click();
@@ -39,13 +47,8 @@ describe('Pages', () => {
     });
 
     it('should allow setting the page as custom home page', () => {
-      let pagePath: string;
       cy.get('input[id="page-url"]').then(path => {
-        pagePath = path.val() as string;
-        cy.contains('a', 'Collection').click();
-        cy.get('input[id="landing-page"]').type(pagePath);
-        cy.contains('button', 'Save').click();
-        cy.waitForNotification('Settings updated');
+        setLandingPage(path.val() as string);
       });
     });
 
@@ -59,11 +62,7 @@ describe('Pages', () => {
     });
 
     it('should allow settings a public entity as a landing page', () => {
-      cy.contains('a', 'Settings').click();
-      cy.contains('a', 'Collection').click();
-      cy.clearAndType('input[id="landing-page"]', '/entity/7ycel666l65vobt9');
-      cy.contains('button', 'Save').click();
-      cy.waitForNotification('Settings updated');
+      setLandingPage('/entity/7ycel666l65vobt9');
     });
 
     it('should check that the landing page is the defined entity', () => {
@@ -77,14 +76,9 @@ describe('Pages', () => {
     });
 
     it('should allow using a complex library query as a landing page', () => {
-      cy.contains('a', 'Settings').click();
-      cy.contains('a', 'Collection').click();
-      cy.clearAndType(
-        'input[id="landing-page"]',
+      setLandingPage(
         '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
       );
-      cy.contains('button', 'Save').click();
-      cy.waitForNotification('Settings updated');
     });
 
     it('should check that the landing page is the defined library query', () => {
@@ -96,11 +90,7 @@ describe('Pages', () => {
     });
 
     it('should allow using a default library url with language as a landing page', () => {
-      cy.contains('a', 'Settings').click();
-      cy.contains('a', 'Collection').click();
-      cy.clearAndType('input[id="landing-page"]', '/en/library/');
-      cy.contains('button', 'Save').click();
-      cy.waitForNotification('Settings updated');
+      setLandingPage('/en/library/');
       cy.visit('http://localhost:3000');
       cy.reload();
       cy.contains('30 shown of');
@@ -128,13 +118,32 @@ describe('Pages', () => {
   });
 
   describe('Page edition', () => {
-    it('should validate the title', () => {
+    const deletePage = (selector: string) => {
+      cy.get(selector).check();
+      cy.contains('Delete').click();
+      cy.contains('Accept').click();
+    };
+
+    it('should allow to cancel deletion', () => {
       cy.visit('localhost:3000/en/settings/pages');
       cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
-      cy.contains('Accept').click();
+      cy.contains('Cancel').click();
+      cy.contains('Deleted successfully').should('not.exist');
+      cy.contains('Page with error');
+    });
+
+    it('should delete a page with confirmation', () => {
+      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
       cy.waitForNotification('Deleted successfully');
+      cy.contains('Page with error').should('not.exist');
+    });
+
+    it('should not delete a page used as entity view', () => {
+      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      cy.waitForNotification('An error occurred');
+      cy.contains('Country page');
     });
   });
 });
