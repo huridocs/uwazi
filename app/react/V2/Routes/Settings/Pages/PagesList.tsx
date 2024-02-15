@@ -26,6 +26,7 @@ const pagesListLoader =
   async ({ params }) =>
     pagesAPI.get(params.lang || 'en', headers);
 
+// eslint-disable-next-line max-statements
 const PagesList = () => {
   const [selectedPages, setSelectedPages] = useState<Row<Page>[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -37,6 +38,7 @@ const PagesList = () => {
   const columnHelper = createColumnHelper<Page>();
 
   const deleteSelected = async () => {
+    setShowModal(false);
     const sharedIds = selectedPages.map(row => row.original.sharedId);
     const result = await Promise.all(
       sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
@@ -73,6 +75,10 @@ const PagesList = () => {
     }),
   ];
 
+  const confirmDeletion = () => {
+    setShowModal(true);
+  };
+
   return (
     <div
       className="tw-content"
@@ -92,10 +98,10 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
-                onClick={deleteSelected}
+                onClick={confirmDeletion}
                 color="error"
                 data-testid="delete-page-btn"
               >
@@ -122,6 +128,7 @@ const PagesList = () => {
         <div className="container w-10 h-10">
           <ConfirmationModal
             header="Are you sure?"
+            body="You are about to delete a page"
             onAcceptClick={deleteSelected}
             onCancelClick={() => setShowModal(false)}
             size="md"

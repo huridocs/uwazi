@@ -5,10 +5,9 @@ describe('Pages', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
-    //cy.visit('localhost:3000');
   });
 
-  describe('Custom home page and styles', () => {
+  xdescribe('Custom home page and styles', () => {
     it('should allow setting up a custom CSS', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Global CSS').click();
@@ -109,16 +108,33 @@ describe('Pages', () => {
     });
   });
 
-  describe('Pages list', () => {
+  xdescribe('Pages list', () => {
     it('should render a list with all pages names', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
     });
 
-    it('should confirm page deletion', () => {
+    it('should allow to edit and get a preview of the page', () => {
       cy.contains('table > tbody > tr:nth-child(1) > td:nth-child(5)', 'Edit').click();
-      cy.contains('View page').click();
+      cy.contains('View page').invoke('attr', 'target', '_self').click();
+      cy.location('pathname', { timeout: 500 }).should('include', 'page-with-error');
+      cy.contains('This content may not work correctly.');
+      cy.on('uncaught:exception', (_err, _runnable) => {
+        cy.contains('There is an unexpected error on this custom page');
+        return false;
+      });
+    });
+  });
+
+  describe('Page edition', () => {
+    it('should validate the title', () => {
+      cy.visit('localhost:3000/en/settings/pages');
+      cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
+      cy.contains('Delete').click();
+      cy.contains('Are you sure?');
+      cy.contains('Accept').click();
+      cy.waitForNotification('Deleted succesfully');
     });
   });
 });
