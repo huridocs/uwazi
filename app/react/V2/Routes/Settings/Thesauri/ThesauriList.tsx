@@ -6,9 +6,11 @@ import { Button, Table } from 'app/V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import { EditButton, LabelHeader, ThesaurusLabel } from './components/TableComponents';
+import { useSetRecoilState } from 'recoil';
+import { notificationAtom } from 'app/V2/atoms';
 
 const theasauriListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -17,12 +19,35 @@ const theasauriListLoader =
 
 const ThesauriList = () => {
   const navigate = useNavigate();
+  const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ThesaurusSchema[];
+  const setNotifications = useSetRecoilState(notificationAtom);
   const [selectedThesauri, setSelectedThesauri] = useState<Row<ThesaurusSchema>[]>([]);
 
   const navigateToEditThesaurus = (thesaurus: Row<ThesaurusSchema>) => {
     navigate(`/settings/thesauri/edit/${thesaurus.original._id}`);
   };
+
+  const deleteSelectedThesauri = async () => {
+    try {
+      const requests = selectedThesauri.map(thesauri => {
+        return ThesauriAPI.delete(new RequestParams({ _id: thesauri.original._id }));
+      });
+      await Promise.all(requests);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Thesauri deleted</Translate>,
+      });
+    } catch (e) {
+      setNotifications({
+        type: 'error',
+        text: e.message,
+      });
+    } finally {
+      revalidator.revalidate();
+    }
+  };
+
   const columnHelper = createColumnHelper<any>();
   const columns = ({ edit }: { edit: Function }) => [
     columnHelper.accessor('name', {
@@ -38,6 +63,7 @@ const ThesauriList = () => {
       meta: { action: edit, headerClassName: 'text-center w-1/12' },
     }) as ColumnDef<ThesaurusSchema, '_id'>,
   ];
+
   return (
     <div
       className="tw-content"
@@ -61,7 +87,12 @@ const ThesauriList = () => {
         <SettingsContent.Footer className="bg-indigo-50" highlighted>
           {selectedThesauri.length ? (
             <div className="flex items-center gap-2">
-              <Button type="button" onClick={() => {}} color="error" data-testid="menu-delete-link">
+              <Button
+                type="button"
+                onClick={deleteSelectedThesauri}
+                color="error"
+                data-testid="menu-delete-link"
+              >
                 <Translate>Delete</Translate>
               </Button>
               <Translate>Selected</Translate> {selectedThesauri.length} <Translate>of</Translate>{' '}
