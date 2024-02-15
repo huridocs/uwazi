@@ -22,6 +22,9 @@ Object {
       "type": "object",
     },
   },
+  "required": Array [
+    "body",
+  ],
   "type": "object",
 }
 `;
