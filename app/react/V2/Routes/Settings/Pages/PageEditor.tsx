@@ -50,7 +50,7 @@ const PageEditor = () => {
 
   const {
     register,
-    formState: { errors, isDirty, isSubmitting },
+    formState: { errors, dirtyFields, isSubmitting },
     watch,
     getValues,
     setValue,
@@ -60,6 +60,7 @@ const PageEditor = () => {
     values: page,
   });
 
+  const isDirty = !!Object.keys(dirtyFields).length;
   const blocker = useBlocker(isDirty && !isSubmitting);
 
   useEffect(() => {
