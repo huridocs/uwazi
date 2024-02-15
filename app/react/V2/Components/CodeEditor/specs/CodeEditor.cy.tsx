@@ -56,6 +56,7 @@ describe('Code editor', () => {
         className="w-full h-full"
         data-test-id="fallback"
         value="<h1>Original HTML code</h1>"
+        onChange={() => {}}
       />
     );
     //@ts-ignore force monaco to fail
