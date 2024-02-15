@@ -211,7 +211,11 @@ describe('collection with automatic log to updatelogs', () => {
           jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
           return ds
             .collection()
-            .findOneAndUpdate({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
+            .findOneAndUpdate(
+              { _id: id('collection id 1') },
+              { $set: { data: 'updated data' } },
+              { includeResultMetadata: true }
+            );
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: updatedTimestamp },
@@ -228,7 +232,7 @@ describe('collection with automatic log to updatelogs', () => {
             .findOneAndUpdate(
               { _id: id('non existent id') },
               { $set: { data: 'upserted data' } },
-              { upsert: true }
+              { upsert: true, includeResultMetadata: true }
             );
         },
         expectedDBState: [
@@ -247,7 +251,11 @@ describe('collection with automatic log to updatelogs', () => {
           await getConnection().collection('updatelogs').deleteMany();
           return ds
             .collection()
-            .findOneAndUpdate({ _id: id('collection id 1') }, { $set: { data: 'updated data' } });
+            .findOneAndUpdate(
+              { _id: id('collection id 1') },
+              { $set: { data: 'updated data' } },
+              { includeResultMetadata: true }
+            );
         },
         expectedDBStateOnTransactionError: [],
         expectedDBState: [
@@ -261,7 +269,11 @@ describe('collection with automatic log to updatelogs', () => {
           jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
           return ds
             .collection()
-            .findOneAndReplace({ _id: id('collection id 1') }, { data: 'updated data' });
+            .findOneAndReplace(
+              { _id: id('collection id 1') },
+              { data: 'updated data' },
+              { includeResultMetadata: true }
+            );
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], timestamp: updatedTimestamp },
@@ -278,7 +290,7 @@ describe('collection with automatic log to updatelogs', () => {
             .findOneAndReplace(
               { _id: id('non existent id') },
               { data: 'upserted data' },
-              { upsert: true }
+              { upsert: true, includeResultMetadata: true }
             );
         },
         expectedDBState: [
@@ -297,7 +309,11 @@ describe('collection with automatic log to updatelogs', () => {
           await getConnection().collection('updatelogs').deleteMany();
           return ds
             .collection()
-            .findOneAndReplace({ _id: id('collection id 1') }, { data: 'updated data' });
+            .findOneAndReplace(
+              { _id: id('collection id 1') },
+              { data: 'updated data' },
+              { includeResultMetadata: true }
+            );
         },
         expectedDBStateOnTransactionError: [],
         expectedDBState: [
@@ -436,7 +452,9 @@ describe('collection with automatic log to updatelogs', () => {
         description: 'findOneAndDelete',
         callback: async (ds: DataSource) => {
           jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
-          return ds.collection().findOneAndDelete({ _id: id('collection id 1') });
+          return ds
+            .collection()
+            .findOneAndDelete({ _id: id('collection id 1') }, { includeResultMetadata: true });
         },
         expectedDBState: [
           { ...updateLogsBlankState[0], deleted: true, timestamp: updatedTimestamp },
@@ -452,7 +470,9 @@ describe('collection with automatic log to updatelogs', () => {
         callback: async (ds: DataSource) => {
           await getConnection().collection('updatelogs').deleteMany();
           jest.spyOn(Date, 'now').mockReturnValue(updatedTimestamp);
-          return ds.collection().findOneAndDelete({ _id: id('collection id 1') });
+          return ds
+            .collection()
+            .findOneAndDelete({ _id: id('collection id 1') }, { includeResultMetadata: true });
         },
         expectedDBStateOnTransactionError: [],
         expectedDBState: [
