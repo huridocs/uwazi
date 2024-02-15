@@ -5,6 +5,7 @@ describe('Pages', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
+    //cy.visit('localhost:3000');
   });
 
   describe('Custom home page and styles', () => {
@@ -28,8 +29,9 @@ describe('Pages', () => {
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
         { parseSpecialCharSequences: false }
       );
-      cy.get('.monaco-editor', { timeout: 500 }).eq(0).click(0, 0);
-      cy.contains('button', 'Save').click();
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
       cy.get('input[id="page-url"]')
         .should('have.prop', 'value')
@@ -104,6 +106,19 @@ describe('Pages', () => {
       cy.reload();
       cy.contains('30 shown of');
       cy.contains('Artavia Murillo y otros.');
+    });
+  });
+
+  describe('Pages list', () => {
+    it('should render a list with all pages names', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
+    });
+
+    it('should confirm page deletion', () => {
+      cy.contains('table > tbody > tr:nth-child(1) > td:nth-child(5)', 'Edit').click();
+      cy.contains('View page').click();
     });
   });
 });
