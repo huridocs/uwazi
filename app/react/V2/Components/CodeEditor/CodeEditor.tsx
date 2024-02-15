@@ -3,7 +3,9 @@ import loadable from '@loadable/component';
 import { CodeEditorProps } from './CodeEditorComponent';
 
 const CodeEditorComponent = loadable(async () => {
-  const { CodeEditorComponent: Component } = await import('./CodeEditorComponent');
+  const { CodeEditorComponent: Component } = await import(
+    /* webpackChunkName: "LazyLoadMonacoEditor" */ './CodeEditorComponent'
+  );
   return Component;
 });
 
