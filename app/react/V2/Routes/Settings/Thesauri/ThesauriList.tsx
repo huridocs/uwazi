@@ -107,22 +107,6 @@ const ThesauriList = () => {
                   </Button>
                 </Link>
               </div>
-              <div className="flex gap-2">
-                <Link to="/settings/thesauri">
-                  <Button styling="light" type="button">
-                    <Translate>Cancel</Translate>
-                  </Button>
-                </Link>
-                <Button
-                  styling="solid"
-                  color="success"
-                  onClick={() => {
-                    console.log('Saving thesauri');
-                  }}
-                >
-                  <Translate>Save</Translate>
-                </Button>
-              </div>
             </div>
           )}
         </SettingsContent.Footer>
