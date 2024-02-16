@@ -146,8 +146,8 @@ export default (app: Application) => {
           },
           required: ['locale', 'contexts'],
         },
-        required: ['body'],
       },
+      required: ['body'],
     }),
 
     async (req, res) => {
