@@ -84,6 +84,7 @@ const routes = app => {
           },
         },
       },
+      required: ['query'],
     }),
     (req, res, next) => {
       let id;
@@ -111,6 +112,7 @@ const routes = app => {
           },
         },
       },
+      required: ['query'],
     }),
     (req, res, next) => {
       let id;

@@ -37,6 +37,9 @@ Object {
       "type": "object",
     },
   },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
@@ -53,6 +56,9 @@ Object {
       "type": "object",
     },
   },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
