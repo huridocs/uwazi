@@ -6,12 +6,14 @@ import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
-import { Link, LoaderFunction, useLoaderData } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import _ from 'lodash';
+import { notificationAtom } from 'app/V2/atoms';
+import { useSetRecoilState } from 'recoil';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -23,6 +25,7 @@ const ThesaurusValueLabel = ({ cell }: any) => {
 };
 
 const EditThesauri = () => {
+  const revalidator = useRevalidator();
   const thesaurus = (useLoaderData() as ThesaurusSchema[])[0];
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
     []
@@ -30,6 +33,7 @@ const EditThesauri = () => {
   const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>(
     thesaurus.values || []
   );
+  const setNotifications = useSetRecoilState(notificationAtom);
 
   const {
     register,
@@ -43,7 +47,20 @@ const EditThesauri = () => {
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
     data.values = thesaurusValues;
-    console.log('Form values: ', data);
+    try {
+      await ThesauriAPI.save(new RequestParams(data));
+      setNotifications({
+        type: 'success',
+        text: <Translate>Thesauri updated.</Translate>,
+      });
+    } catch (e) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>Error updating thesauri.</Translate>,
+      });
+    } finally {
+      revalidator.revalidate();
+    }
     // const formData = new FormData();
     // const values = prepareValuesToSave(data.formValues, translations);
     // formData.set('intent', 'form-submit');
