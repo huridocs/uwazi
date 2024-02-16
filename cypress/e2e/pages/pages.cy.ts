@@ -103,6 +103,7 @@ describe('Pages', () => {
     it('should render a list with all pages names', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
+      cy.contains('Country page');
       cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
     });
 
@@ -204,8 +205,8 @@ describe('Pages', () => {
       cy.get('.item-document:nth-child(2) > .item-info').click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
       cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
-      cy.contains('.EntityData-title', 'Acevedo Jaramillo');
-      cy.contains('#entity-datasets-value', 'Medida Provisional');
+      cy.get('#entity-datasets-value').scrollIntoView();
+      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
     });
   });
 });
