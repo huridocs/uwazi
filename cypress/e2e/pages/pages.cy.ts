@@ -1,4 +1,5 @@
 import { clearCookiesAndLogin } from '../helpers/login';
+import { contents, script } from '../helpers/entityViewPageFixtures';
 
 describe('Pages', () => {
   before(() => {
@@ -47,8 +48,8 @@ describe('Pages', () => {
     });
 
     it('should allow setting the page as custom home page', () => {
-      cy.get('input[id="page-url"]').then(path => {
-        setLandingPage(path.val() as string);
+      cy.get('input[id="page-url"]').then(url => {
+        setLandingPage(url.val() as string);
       });
     });
 
@@ -144,6 +145,35 @@ describe('Pages', () => {
       deletePage('table > tbody > tr:nth-child(1) > td > label > input');
       cy.waitForNotification('An error occurred');
       cy.contains('Country page');
+    });
+  });
+
+  describe('entity view', () => {
+    it('should load a page for the assigned template', () => {
+      cy.contains('Add page').click();
+      cy.clearAndType('input[name="title"]', 'My entity view page');
+      cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').type(contents, {
+        parseSpecialCharSequences: false,
+      });
+      cy.contains('Advanced').click();
+      cy.get('div[data-mode-id="javascript"]').type(script, {
+        parseSpecialCharSequences: false,
+      });
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      cy.contains('button.bg-success-700', 'Save').click();
+      cy.contains('Saved successfully');
+    });
+
+    it('should set the template as entity view', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Templates').click();
+      cy.contains('a', 'Medida Provisional').click();
+      cy.get('.slider').click();
+      cy.get('select.form-control').select('My entity view page');
+      cy.contains('Save').click();
+      cy.contains('Saved successfully.');
     });
   });
 });

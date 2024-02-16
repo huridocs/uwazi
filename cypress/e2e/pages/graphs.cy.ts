@@ -10,23 +10,23 @@ const graphs = {
 };
 
 const insertChart = (chart: string, chartName: string) => {
-  cy.get('input[name="page.data.title"]').type(chartName);
-  cy.get('.tab-content > textarea').type('<Dataset />');
-  cy.get('.tab-content > textarea').type(chart);
+  cy.clearAndType('input[name="title"]', chartName);
+  cy.contains('Code').click();
+  cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
+    parseSpecialCharSequences: false,
+  });
 };
 
 const savePage = () => {
-  cy.intercept('POST', '/api/pages').as('savePage');
-  cy.contains('button', 'Save').click();
-  cy.wait('@savePage');
-  cy.contains('Saved successfully.').click();
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(501);
+  cy.contains('Save').click();
+  cy.contains('Saved successfully');
 };
 
 const visitPage = () => {
-  cy.contains('a', '(view page)').then(a => {
-    const href = a.attr('href') || '';
-    cy.visit(href);
-  });
+  cy.contains('Basic').click();
+  cy.contains('View page').invoke('attr', 'target', '_self').click();
 };
 
 const newPage = () => {

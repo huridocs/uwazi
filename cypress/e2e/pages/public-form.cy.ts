@@ -33,24 +33,23 @@ describe('Public Form', () => {
     it('should create a page with a public form and add it to the navbar', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
-      cy.get('[name="page.data.title"]').type('Public Form Page');
-      cy.get('.markdownEditor textarea').type(
-        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />'
+      cy.clearAndType('input[name="title"]', 'Public Form Page');
+      cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').type(
+        '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
+        { parseSpecialCharSequences: false }
       );
-      cy.intercept('POST', 'api/pages').as('savePages');
-      cy.contains('button', 'Save').click();
-      cy.wait('@savePages');
-      cy.get('.alert.alert-success').click();
-
-      let url;
-      cy.get('.alert-info:nth-child(2) a').then($element => {
-        url = $element.attr('href')!.replace('http://localhost:3000', '');
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      cy.contains('button.bg-success-700', 'Save').click();
+      cy.contains('Saved successfully');
+      cy.contains('Basic').click();
+      cy.get('input[id="page-url"]').then(url => {
         cy.contains('a', 'Menu').click();
-
         cy.contains('button', 'Add link').click();
         cy.get('#link-title').click();
         cy.get('#link-title').type('Public Form Link');
-        cy.get('#link-url').type(url);
+        cy.get('#link-url').type(url.val() as string);
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
@@ -80,14 +79,17 @@ describe('Public Form', () => {
     it('should go back a use the other template for the form', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
-      cy.contains('a', 'Public Form Page').click();
-      cy.get('.markdownEditor textarea').invoke('val').should('not.be.empty');
-      cy.get('.markdownEditor textarea').clear();
-      cy.get('.markdownEditor textarea').type(
-        '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />'
+      cy.contains('table > tbody > tr:nth-child(3) > td:nth-child(5)', 'Edit').click();
+      cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
+      cy.get('div[data-mode-id="html"]').type(
+        '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
+        { parseSpecialCharSequences: false }
       );
-      cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      cy.contains('button.bg-success-700', 'Save').click();
+      cy.contains('Saved successfully');
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
@@ -169,23 +171,25 @@ describe('Public Form', () => {
   });
 
   describe('error handling', () => {
+    // eslint-disable-next-line max-statements
     it('should catch an unexpected error on rendering', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
-      cy.get('[name="page.data.title"]').type('Public Form with error');
-      cy.get('.markdownEditor textarea').type(
-        '<h1>Public form with error</h1><PublicForm template="invalid template" />'
+      cy.clearAndType('input[name="title"]', 'Public Form with error');
+      cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').clear();
+      cy.get('div[data-mode-id="html"]').type(
+        '<h1>Public form with error</h1><PublicForm template="invalid template" />',
+        { parseSpecialCharSequences: false }
       );
-      cy.contains('button', 'Save').click();
-      cy.get('.alert.alert-success').click();
-      cy.get('.alert-info:nth-child(2) a').then($element => {
-        const url = $element.attr('href')!.replace('http://localhost:3000', '');
-        cy.visit(url, {
-          onBeforeLoad(win) {
-            cy.stub(win.console, 'error').as('consoleError');
-          },
-        });
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      cy.contains('button.bg-success-700', 'Save').click();
+      cy.contains('Saved successfully');
+      cy.contains('Basic').click();
+      cy.get('input[id="page-url"]').then(url => {
+        cy.visit(url.val() as string);
         cy.on('uncaught:exception', (_err, _runnable) => {
           cy.contains('Well, this is awkward');
           return false;
