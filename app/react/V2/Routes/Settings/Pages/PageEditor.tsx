@@ -152,11 +152,12 @@ const PageEditor = () => {
                     label={<Translate>Title</Translate>}
                     {...register('title', { required: true })}
                     hasErrors={errors.title !== undefined}
+                    errorMessage={errors.title && <Translate>This field is required</Translate>}
                   />
 
                   <CopyValueInput
                     value={
-                      getValues('sharedId')
+                      !getValues('entityView') && getValues('sharedId')
                         ? `/${getPageUrl(getValues('sharedId')!, getValues('title'))}`
                         : ''
                     }
@@ -240,7 +241,7 @@ const PageEditor = () => {
               styling="solid"
               color="primary"
               onClick={handleSubmit(handleSaveAndPreview)}
-              disabled={isSubmitting}
+              disabled={getValues('entityView') || isSubmitting}
             >
               <Translate>Save & Preview</Translate>
             </Button>
