@@ -126,7 +126,8 @@ describe('Pages', () => {
     };
 
     it('should allow to cancel deletion', () => {
-      cy.visit('localhost:3000/en/settings/pages');
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
       cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
@@ -166,7 +167,7 @@ describe('Pages', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();
-      cy.contains('Saved successfully');
+      cy.waitForNotification('Saved successfully');
     });
 
     it('should set the template as entity view', () => {
