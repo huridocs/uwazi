@@ -15,11 +15,46 @@ const ajvPrettifier = error => {
   return errorMessage.join('\n');
 };
 
+const fallbackPrettifier = (error, req) => {
+  const url = req.originalUrl ? `\nurl: ${req.originalUrl}` : '';
+  const body =
+    req.body && Object.keys(req.body).length
+      ? `\nbody: ${JSON.stringify(req.body, null, ' ')}`
+      : '';
+  const query =
+    req.query && Object.keys(req.query).length
+      ? `\nquery: ${JSON.stringify(req.query, null, ' ')}`
+      : '';
+  const errorString = `\n${error.message || JSON.stringify(error.json)}`;
+
+  let errorMessage = `${url}${body}${query}${errorString}`;
+
+  //if the resulting message is empty, or meaningless combination of characters ('{}')
+  if (errorMessage.match(/^[{}\s]*$/g)) {
+    errorMessage = JSON.stringify(error, null, 2);
+  }
+
+  return errorMessage;
+};
+
 const appendOriginalError = (message, originalError) =>
   `${message}\noriginal error: ${JSON.stringify(originalError, null, ' ')}`;
 
+const obfuscateCredentials = req => {
+  const obfuscated = req;
+  if (req.body && req.body.password) {
+    obfuscated.body.password = '########';
+  }
+
+  if (req.body && req.body.username) {
+    obfuscated.body.username = '########';
+  }
+
+  return obfuscated;
+};
+
 // eslint-disable-next-line max-statements
-const prettifyError = (error, { uncaught = false } = {}) => {
+const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
@@ -58,7 +93,10 @@ const prettifyError = (error, { uncaught = false } = {}) => {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
   }
 
-  result.prettyMessage = ajvPrettifier(result);
+  const obfuscatedRequest = obfuscateCredentials(req);
+  result.prettyMessage = error.ajv
+    ? ajvPrettifier(result)
+    : fallbackPrettifier(result, obfuscatedRequest);
 
   return result;
 };
