@@ -14,7 +14,7 @@ describe('Pages', () => {
       cy.contains('a', 'Collection').click();
       cy.clearAndType('input[id="landing-page"]', pageURL);
       cy.contains('button', 'Save').click();
-      cy.waitForNotification('Settings updated');
+      cy.contains('Settings updated');
     };
 
     it('should allow setting up a custom CSS', () => {
@@ -22,10 +22,10 @@ describe('Pages', () => {
       cy.contains('a', 'Global CSS').click();
       cy.get('textarea[name="settings.settings.customCSS"]').type(
         '.myDiv { color: white; font-size: 20px; background-color: red; }',
-        { parseSpecialCharSequences: false }
+        { parseSpecialCharSequences: false, delay: 0 }
       );
       cy.contains('button', 'Save').click();
-      cy.waitForNotification('Settings updated');
+      cy.contains('Settings updated');
     });
 
     it('should create a page to be used as home', () => {
@@ -35,7 +35,7 @@ describe('Pages', () => {
       cy.contains('Code').click();
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
-        { parseSpecialCharSequences: false }
+        { parseSpecialCharSequences: false, delay: 0 }
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -137,43 +137,55 @@ describe('Pages', () => {
 
     it('should delete a page with confirmation', () => {
       deletePage('table > tbody > tr:nth-child(1) > td > label > input');
-      cy.waitForNotification('Deleted successfully');
+      cy.contains('Deleted successfully');
       cy.contains('Page with error').should('not.exist');
     });
 
     it('should not delete a page used as entity view', () => {
       deletePage('table > tbody > tr:nth-child(1) > td > label > input');
-      cy.waitForNotification('An error occurred');
+      cy.contains('An error occurred');
       cy.contains('Country page');
     });
   });
 
   describe('entity view', () => {
-    it('should load a page for the assigned template', () => {
+    it('should create a page as an entity view', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'My entity view page');
+      cy.contains('Activate').click();
       cy.contains('Code').click();
       cy.get('div[data-mode-id="html"]').type(contents, {
         parseSpecialCharSequences: false,
+        delay: 0,
       });
       cy.contains('Advanced').click();
       cy.get('div[data-mode-id="javascript"]').type(script, {
         parseSpecialCharSequences: false,
+        delay: 0,
       });
       // eslint-disable-next-line cypress/no-unnecessary-waiting
-      cy.wait(501);
+      cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();
       cy.contains('Saved successfully');
     });
 
     it('should set the template as entity view', () => {
-      cy.contains('a', 'Settings').click();
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Medida Provisional').click();
       cy.get('.slider').click();
+      cy.contains('Select...');
       cy.get('select.form-control').select('My entity view page');
       cy.contains('Save').click();
       cy.contains('Saved successfully.');
+    });
+
+    it('display the entity in custom page', () => {
+      cy.contains('a', 'Library').click();
+      cy.contains('.multiselectItem-name > span', 'Medida Provisional').click();
+      cy.contains('Acevedo Jaramillo');
+      cy.get('.item-document:nth-child(2) > .item-info').click();
+      cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
+      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
     });
   });
 });
