@@ -187,6 +187,8 @@ describe('Pages', () => {
       cy.get('.item-document:nth-child(2) > .item-info').click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
       cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+      cy.contains('.EntityData-title', 'Acevedo Jaramillo');
+      cy.contains('#entity-datasets-value', 'Medida Provisional');
     });
   });
 });
