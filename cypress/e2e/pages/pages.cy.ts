@@ -125,13 +125,30 @@ describe('Pages', () => {
       cy.contains('Accept').click();
     };
 
-    it('should allow to cancel deletion', () => {
+    it('should validate an empty title', () => {
       cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('a', 'Add page').click();
+      cy.get('input[name="title"]').clear();
+      cy.contains('button.bg-success-700', 'Save').click();
+      cy.get('label[for="title"].text-error-700').siblings().contains('This field is required');
+    });
+
+    it('should confirm exit if there are unsaved changes', () => {
+      cy.contains('button', 'Cancel').click();
+      cy.contains('Discard changes?');
+      cy.contains('div[role="dialog"] button', 'Cancel').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('Discard changes?');
+      cy.contains('button', 'Discard changes').click();
+    });
+
+    it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
       cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
-      cy.contains('Cancel').click();
+      cy.contains('div[role="dialog"] button', 'Cancel').click();
       cy.contains('Deleted successfully').should('not.exist');
       cy.contains('Page with error');
     });

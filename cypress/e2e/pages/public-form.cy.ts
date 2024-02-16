@@ -178,7 +178,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form with error');
       cy.contains('Code').click();
-      cy.get('div[data-mode-id="html"]').clear();
+      cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
         { parseSpecialCharSequences: false }
