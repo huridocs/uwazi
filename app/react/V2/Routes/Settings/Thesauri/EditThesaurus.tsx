@@ -1,7 +1,7 @@
-import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'app/V2/Components/UI';
+import { Button, EmbededButton, Table } from 'app/V2/Components/UI';
 import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton } from './components/TableComponents';
@@ -14,15 +14,32 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import _ from 'lodash';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { _id } }) =>
     ThesauriAPI.getThesauri(new RequestParams({ _id }, headers));
 
-const ThesaurusValueLabel = ({ cell }: any) => {
-  return <Translate>{`${cell.row.original.label}`}</Translate>;
-};
+const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema, string>) => (
+  <div className="flex items-center gap-2">
+    <Translate
+      context="Menu"
+      className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}
+    >
+      {getValue()}
+    </Translate>
+    {row.getCanExpand() && (
+      <EmbededButton
+        icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        onClick={() => row.toggleExpanded()}
+        color="indigo"
+      >
+        <Translate>Group</Translate>
+      </EmbededButton>
+    )}
+  </div>
+);
 
 const EditThesauri = () => {
   const revalidator = useRevalidator();
@@ -61,12 +78,6 @@ const EditThesauri = () => {
     } finally {
       revalidator.revalidate();
     }
-    // const formData = new FormData();
-    // const values = prepareValuesToSave(data.formValues, translations);
-    // formData.set('intent', 'form-submit');
-    // formData.set('data', JSON.stringify(values));
-    // fetcher.submit(formData, { method: 'post' });
-    // reset({}, { keepValues: true });
   };
 
   const columnHelper = createColumnHelper<any>();
@@ -84,6 +95,8 @@ const EditThesauri = () => {
       meta: { action: () => {}, headerClassName: 'text-center w-1/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'id'>,
   ];
+
+  console.log('ThesaurusValues: ', thesaurusValues);
 
   return (
     <div
@@ -111,6 +124,7 @@ const EditThesauri = () => {
               </div>
               <Table<ThesaurusValueSchema>
                 enableSelection
+                subRowsKey="values"
                 columns={columns}
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
@@ -174,7 +188,7 @@ const EditThesauri = () => {
                 </Button>
               </div>
               <div className="flex gap-2">
-                <Link to="/settings/translations">
+                <Link to="/settings/thesauri">
                   <Button styling="light" type="button">
                     <Translate>Cancel</Translate>
                   </Button>
