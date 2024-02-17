@@ -99,15 +99,21 @@ describe('Pages', () => {
     });
   });
 
-  describe('Pages list', () => {
-    it('should render a list with all pages names', () => {
+  describe('Page edition', () => {
+    it('should render the page content as formatted code', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
-      cy.contains('Country page');
-      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
+      cy.contains('table > tbody > tr:nth-child(2) > td:nth-child(5)', 'Edit').click();
+      cy.contains('Code').click();
+      cy.contains('<EntityData');
+      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
+      cy.contains('Advanced').click();
+      cy.contains('toISOString');
+      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
     });
 
     it('should allow to edit and get a preview of the page', () => {
+      cy.contains('a', 'Pages').click();
       cy.contains('table > tbody > tr:nth-child(1) > td:nth-child(5)', 'Edit').click();
       cy.contains('View page').invoke('attr', 'target', '_self').click();
       cy.location('pathname', { timeout: 500 }).should('include', 'page-with-error');
@@ -117,14 +123,6 @@ describe('Pages', () => {
         return false;
       });
     });
-  });
-
-  describe('Page edition', () => {
-    const deletePage = (selector: string) => {
-      cy.get(selector).check();
-      cy.contains('Delete').click();
-      cy.contains('Accept').click();
-    };
 
     it('should validate an empty title', () => {
       cy.contains('a', 'Settings').click();
@@ -142,28 +140,6 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('Discard changes?');
       cy.contains('button', 'Discard changes').click();
-    });
-
-    it('should allow to cancel deletion', () => {
-      cy.contains('a', 'Pages').click();
-      cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
-      cy.contains('Delete').click();
-      cy.contains('Are you sure?');
-      cy.contains('div[role="dialog"] button', 'Cancel').click();
-      cy.contains('Deleted successfully').should('not.exist');
-      cy.contains('Page with error');
-    });
-
-    it('should delete a page with confirmation', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
-      cy.contains('Deleted successfully');
-      cy.contains('Page with error').should('not.exist');
-    });
-
-    it('should not delete a page used as entity view', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
-      cy.contains('An error occurred');
-      cy.contains('Country page');
     });
   });
 
@@ -207,6 +183,49 @@ describe('Pages', () => {
       cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
       cy.get('#entity-datasets-value').scrollIntoView();
       cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+    });
+
+    it('should run the scripts of a page', () => {
+      cy.visit('localhost:3000');
+      cy.contains('.multiselectItem-name > span', 'País').click();
+      cy.get('.item-document:nth-child(2) > .item-info').click();
+      cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
+      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+    });
+  });
+
+  describe('Pages list', () => {
+    const deletePage = (selector: string) => {
+      cy.get(selector).check();
+      cy.contains('Delete').click();
+      cy.contains('Accept').click();
+    };
+    it('should render a list with all pages names', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('Country page');
+      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
+    });
+    it('should allow to cancel deletion', () => {
+      cy.contains('a', 'Pages').click();
+      cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
+      cy.contains('Delete').click();
+      cy.contains('Are you sure?');
+      cy.contains('div[role="dialog"] button', 'Cancel').click();
+      cy.contains('Deleted successfully').should('not.exist');
+      cy.contains('Page with error');
+    });
+
+    it('should delete a page with confirmation', () => {
+      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      cy.contains('Deleted successfully');
+      cy.contains('Page with error').should('not.exist');
+    });
+
+    it('should not delete a page used as entity view', () => {
+      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      cy.contains('An error occurred');
+      cy.contains('Country page');
     });
   });
 });
