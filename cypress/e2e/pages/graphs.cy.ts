@@ -25,8 +25,10 @@ const savePage = () => {
 };
 
 const visitPage = () => {
-  cy.contains('Basic').click();
-  cy.contains('View page').invoke('attr', 'target', '_self').click();
+  cy.contains('a', 'View page').then(a => {
+    const href = a.attr('href') || '';
+    cy.visit(href);
+  });
 };
 
 const newPage = () => {
