@@ -4,7 +4,7 @@ import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from '
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
-import { Translate } from 'app/I18N';
+import { Translate, t } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -29,7 +29,7 @@ const pagesListLoader =
 const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
   type: !hasErrors ? 'success' : 'error',
   text: !hasErrors ? (
-    <Translate>Deleted successfully</Translate>
+    <Translate>Deleted successfully.</Translate>
   ) : (
     <Translate>An error occurred</Translate>
   ),
@@ -128,8 +128,8 @@ const PagesList = () => {
       {showModal && (
         <div className="container w-10 h-10">
           <ConfirmationModal
-            header="Are you sure?"
-            body="You are about to delete a page"
+            header={t('System', 'Are you sure?', null, false)}
+            body={t('System', 'You are about to delete a page', null, false)}
             onAcceptClick={deleteSelected}
             onCancelClick={() => setShowModal(false)}
             size="md"

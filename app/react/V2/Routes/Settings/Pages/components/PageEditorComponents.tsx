@@ -5,7 +5,7 @@ import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react
 import { Translate } from 'app/I18N';
 
 const HTMLNotification = () => (
-  <div className="flex gap-4 items-center p-4 text-primary-700 border-primary-300 bg-primary-100 w-fit">
+  <div className="flex items-center gap-4 p-4 text-primary-700 border-primary-300 bg-primary-100 w-fit">
     <InformationCircleIcon className="w-7 h-7" />
     <div>
       <Translate>Use</Translate>&nbsp;
@@ -18,7 +18,7 @@ const HTMLNotification = () => (
         <Translate>Markdown</Translate>
       </Link>
       &nbsp;
-      <Translate>syntax to create page content.</Translate>&nbsp;
+      <Translate>syntax to create page content</Translate>.&nbsp;
       <Translate>
         You can also embed advanced components like maps, charts and entity lists in your page.
       </Translate>
@@ -38,7 +38,7 @@ const HTMLNotification = () => (
 );
 
 const JSNotification = () => (
-  <div className="flex gap-4 items-center p-4 text-warning-700 border-warning-300 bg-warning-100 w-fit">
+  <div className="flex items-center gap-4 p-4 text-warning-700 border-warning-300 bg-warning-100 w-fit">
     <ExclamationTriangleIcon className="w-7 h-7" />
     <div>
       <Translate>With great power comes great responsibility!</Translate>
