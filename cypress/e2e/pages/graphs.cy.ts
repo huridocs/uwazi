@@ -15,12 +15,12 @@ const insertChart = (chart: string, chartName: string) => {
   cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
     parseSpecialCharSequences: false,
   });
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(501);
 };
 
 const savePage = () => {
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(501);
-  cy.contains('Save').click();
+  cy.contains('button.bg-success-700', 'Save').click();
   cy.contains('Saved successfully');
 };
 
