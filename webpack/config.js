@@ -12,7 +12,6 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
 const analyzerMode = myArgs.indexOf('--analyze') !== -1 ? 'static' : 'disabled';
-const MONACO_DIR = path.resolve(__dirname, '../node_modules/monaco-editor/min/vs');
 
 module.exports = production => {
   let stylesName = '[name].css';
@@ -79,7 +78,7 @@ module.exports = production => {
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
-          exclude: [MONACO_DIR],
+          exclude: [path.resolve(__dirname, '../node_modules/monaco-editor/min/vs')],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -103,15 +102,6 @@ module.exports = production => {
           resolve: {
             fullySpecified: false,
           },
-        },
-        {
-          test: /\.s(a|c)ss$/,
-          include: [MONACO_DIR],
-          use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader', 'sass-loader'],
-        },
-        {
-          test: /\.(woff|woff2|eot|ttf|otf)$/i,
-          type: 'asset/resource',
         },
       ],
     },
