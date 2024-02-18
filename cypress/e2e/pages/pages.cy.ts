@@ -1,3 +1,4 @@
+import 'cypress-axe';
 import { clearCookiesAndLogin } from '../helpers/login';
 import { contents, script } from '../helpers/entityViewPageFixtures';
 
@@ -6,11 +7,21 @@ describe('Pages', () => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
     cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
+    cy.injectAxe();
+    cy.contains('a', 'Settings').click();
+  });
+
+  describe('accessibility', () => {
+    it('should check for accissibility violations', () => {
+      cy.contains('a', 'Pages').click();
+      cy.checkA11y();
+      cy.contains('a', 'Add page').click();
+      cy.checkA11y();
+    });
   });
 
   describe('Custom home page and styles', () => {
     const setLandingPage = (pageURL: string) => {
-      cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.clearAndType('input[id="landing-page"]', pageURL);
       cy.contains('button', 'Save').click();
@@ -18,7 +29,6 @@ describe('Pages', () => {
     };
 
     it('should allow setting up a custom CSS', () => {
-      cy.contains('a', 'Settings').click();
       cy.contains('a', 'Global CSS').click();
       cy.get('textarea[name="settings.settings.customCSS"]').type(
         '.myDiv { color: white; font-size: 20px; background-color: red; }',
@@ -164,7 +174,7 @@ describe('Pages', () => {
       cy.waitForNotification('Saved successfully');
     });
 
-    it('should set the template as entity view', () => {
+    it('should set the entity as entity view', () => {
       cy.contains('a', 'Templates').click();
       cy.contains('a', 'Medida Provisional').click();
       cy.get('.slider').click();
@@ -200,12 +210,14 @@ describe('Pages', () => {
       cy.contains('Delete').click();
       cy.contains('Accept').click();
     };
+
     it('should render a list with all pages names', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
       cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
     });
+
     it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
       cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
