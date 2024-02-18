@@ -22,6 +22,7 @@ describe('Pages', () => {
 
   describe('Custom home page and styles', () => {
     const setLandingPage = (pageURL: string) => {
+      cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
       cy.clearAndType('input[id="landing-page"]', pageURL);
       cy.contains('button', 'Save').click();
