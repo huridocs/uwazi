@@ -156,6 +156,11 @@ Cypress.Commands.add('clearAndType', (selector, value) => {
   cy.get(selector).type(value);
 });
 
+Cypress.Commands.add('waitForNotification', message => {
+  cy.contains(message).as('expectedMessage');
+  cy.get('@expectedMessage').should('not.exist');
+});
+
 // eslint-disable-next-line prefer-arrow-callback
 Cypress.Commands.addQuery('getByTestId', function getByTestId(id) {
   const getFn = cy.now('get', `[data-testid="${id}"]`);

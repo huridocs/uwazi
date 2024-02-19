@@ -7,6 +7,7 @@ const RtlCssPlugin = require('rtlcss-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const rootPath = path.join(__dirname, '/../');
 const myArgs = process.argv.slice(2);
@@ -77,6 +78,7 @@ module.exports = production => {
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
+          exclude: [path.resolve(__dirname, '../node_modules/monaco-editor/min/vs')],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -121,12 +123,17 @@ module.exports = production => {
       new CopyWebpackPlugin({
         patterns: [
           { from: 'node_modules/react-widgets/lib/fonts', to: 'fonts' },
+          {
+            from: 'node_modules/monaco-editor/min/vs/base/browser/ui/codicons/codicon/codicon.ttf',
+            to: 'codicon.ttf',
+          },
           { from: 'node_modules/flag-icon-css/flags/4x3/', to: 'flags/4x3/' },
           { from: 'node_modules/pdfjs-dist/cmaps/', to: 'legacy_character_maps' },
           { from: 'node_modules/leaflet/dist/images/', to: 'CSS/images' },
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
+      new MonacoWebpackPlugin({ languages: ['typescript', 'html'] }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],

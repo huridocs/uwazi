@@ -12,7 +12,7 @@ type Story = StoryObj<typeof Tabs>;
 const Primary: Story = {
   render: args => (
     <div className="tw-content">
-      <Tabs onTabSelected={args.onTabSelected}>
+      <Tabs unmountTabs={args.unmountTabs} onTabSelected={args.onTabSelected}>
         <Tabs.Tab id="tab1" label="Tab 1">
           <div className="py-4">
             <h2 className="mb-2 text-lg font-medium">Tab 1 Content</h2>
@@ -39,6 +39,7 @@ const Basic = {
   ...Primary,
   args: {
     onTabSelected: () => {},
+    unmountTabs: undefined,
   },
 };
 
