@@ -26,8 +26,24 @@ afterAll(async () => {
 class DataSource extends MongoDataSource<{ data: string }> {
   protected collectionName = 'collection';
 
+  setCollectionName(name: string) {
+    this.collectionName = name;
+  }
+
   collection() {
     return this.getCollection();
+  }
+
+  async exists() {
+    return this.collectionExists();
+  }
+
+  async drop() {
+    return this.dropCollection();
+  }
+
+  async create() {
+    return this.createCollection();
   }
 }
 
@@ -260,5 +276,37 @@ describe('session scoped collection', () => {
         expect(await callback(dataSource2)).toEqual(expectedNoTransaction);
       }
     );
+  });
+
+  describe('collectionExists', () => {
+    it('should return true if the collection exists', async () => {
+      const dataSource = new DataSource(getConnection(), DefaultTransactionManager());
+      expect(await dataSource.exists()).toBe(true);
+    });
+
+    it('should return false if the collection does not exist', async () => {
+      const dataSource = new DataSource(getConnection(), DefaultTransactionManager());
+      dataSource.setCollectionName('some_other_collection');
+      expect(await dataSource.exists()).toBe(false);
+    });
+  });
+
+  describe('dropCollection', () => {
+    it('should remove the collection from the DB', async () => {
+      const dataSource = new DataSource(getConnection(), DefaultTransactionManager());
+      expect(await dataSource.exists()).toBe(true);
+      await dataSource.drop();
+      expect(await dataSource.exists()).toBe(false);
+    });
+  });
+
+  describe('createCollection', () => {
+    it('should create the collection in the DB', async () => {
+      const dataSource = new DataSource(getConnection(), DefaultTransactionManager());
+      dataSource.setCollectionName('some_other_collection');
+      expect(await dataSource.exists()).toBe(false);
+      await dataSource.create();
+      expect(await dataSource.exists()).toBe(true);
+    });
   });
 });
