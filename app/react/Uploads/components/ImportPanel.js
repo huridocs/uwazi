@@ -11,7 +11,7 @@ import { LocalForm, Control } from 'react-redux-form';
 import { closeImportPanel, importData } from 'app/Uploads/actions/uploadsActions';
 import ImportProgress from './ImportProgress';
 
-export class ImportPanel extends Component {
+class ImportPanel extends Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -28,7 +28,7 @@ export class ImportPanel extends Component {
 
   renderForm() {
     const { templates } = this.props;
-    const template = templates.find(templ => templ.get('default')).get('_id');
+    const template = templates.find(templ => templ.get('default'))?.get('_id');
     return (
       <div>
         <div className="alert alert-info">
@@ -145,7 +145,7 @@ ImportPanel.propTypes = {
   importStart: PropTypes.bool,
 };
 
-export const mapStateToProps = state => ({
+const mapStateToProps = state => ({
   open: state.importEntities.showImportPanel,
   templates: state.templates,
   uploadProgress: state.importEntities.importUploadProgress,
@@ -156,5 +156,7 @@ export const mapStateToProps = state => ({
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ closeImportPanel, importData }, dispatch);
 }
+
+export { ImportPanel, mapDispatchToProps };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ImportPanel);

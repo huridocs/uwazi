@@ -104,7 +104,8 @@ function checkGeneratedTitle(entity, template) {
 
 export function loadFetchedInReduxForm(form, entity, templates) {
   const sortedTemplates = advancedSort(templates, { property: 'name' });
-  const defaultTemplate = sortedTemplates.find(sortedTemplate => sortedTemplate.default);
+  const defaultTemplate =
+    sortedTemplates.find(sortedTemplate => sortedTemplate.default) || sortedTemplates[0];
   const templateId = entity.template || defaultTemplate._id;
   const template =
     sortedTemplates.find(sortedTemplate => sortedTemplate._id === templateId) || emptyTemplate;
