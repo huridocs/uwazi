@@ -8,6 +8,10 @@ const ThesaurusLabel = ({ cell }: any) => (
   <Translate>{`${cell.row.original.name} (Default language)`}</Translate>
 );
 
+const ThesaurusValueLabel = ({ cell }: any) => (
+  <Translate>{`${cell.row.original.label}`}</Translate>
+);
+
 const LabelHeader = () => <Translate>Language (Default language)</Translate>;
 
 const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
@@ -20,4 +24,4 @@ const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   </Button>
 );
 
-export { ThesaurusLabel, LabelHeader, EditButton };
+export { ThesaurusLabel, LabelHeader, EditButton, ThesaurusValueLabel };

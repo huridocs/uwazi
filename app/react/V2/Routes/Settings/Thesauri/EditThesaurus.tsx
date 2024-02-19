@@ -25,7 +25,7 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
   <div className="flex items-center gap-2">
     <Translate
       context="Menu"
-      className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}
+      className={row.getIsExpanded() ? 'text-indigo-700' : 'text-indigo-700'}
     >
       {getValue()}
     </Translate>
@@ -34,6 +34,7 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
         icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
         onClick={() => row.toggleExpanded()}
         color="indigo"
+        className="bg-indigo-200 border-none drop-shadow-none"
       >
         <Translate>Group</Translate>
       </EmbededButton>
@@ -96,8 +97,6 @@ const EditThesauri = () => {
     }) as ColumnDef<ThesaurusValueSchema, 'id'>,
   ];
 
-  console.log('ThesaurusValues: ', thesaurusValues);
-
   return (
     <div
       className="tw-content"
@@ -136,24 +135,6 @@ const EditThesauri = () => {
         <SettingsContent.Footer className="bg-indigo-50">
           {selectedThesaurusValue.length ? (
             <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                onClick={() => {}}
-                color="primary"
-                styling="outline"
-                data-testid="thesauri-group-button"
-              >
-                <Translate>Group</Translate>
-              </Button>
-              <Button
-                type="button"
-                onClick={() => {}}
-                color="primary"
-                styling="outline"
-                data-testid="thesauri-ungroup-button"
-              >
-                <Translate>Ungroup</Translate>
-              </Button>
               <Button
                 type="button"
                 onClick={() => {
