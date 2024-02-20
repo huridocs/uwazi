@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.155.0-rc2",
+  "version": "1.155.0-rc3",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -155,7 +155,7 @@
     "is-reachable": "^5.2.1",
     "isomorphic-fetch": "3.0.0",
     "json-schema": "^0.4.0",
-    "json-schema-to-typescript": "^13.1.1",
+    "json-schema-to-typescript": "^13.1.2",
     "jvent": "1.0.2",
     "leaflet": "^1.7.1",
     "leaflet.gridlayer.googlemutant": "^0.14.0",

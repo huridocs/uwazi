@@ -86,7 +86,11 @@ export function exportDocuments(storeKey: string, captcha?: CaptchaValue) {
     const { search, filters } = state;
     const exportFilters = filters.toJS();
 
-    const finalSearchParams = processFilters(search, exportFilters, 10000);
+    const finalSearchParams = processFilters(search, exportFilters, {
+      limit: 10000,
+      encoding: false,
+    });
+
     finalSearchParams.searchTerm = state.search.searchTerm;
 
     if (state.ui.get('selectedDocuments').size) {
