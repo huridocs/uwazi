@@ -47,7 +47,7 @@ import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
-import { customizationLoader, Customization } from 'V2/Routes/Settings/Customization/Customization';
+import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -153,9 +153,9 @@ const getRoutesLayout = (
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
       <Route
-        path="customization"
-        element={adminsOnlyRoute(<Customization />)}
-        loader={customizationLoader(headers)}
+        path="customisation"
+        element={adminsOnlyRoute(<Customisation />)}
+        loader={customisationLoader(headers)}
       />
       <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
