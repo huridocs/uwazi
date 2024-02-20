@@ -1,4 +1,3 @@
-import Joi from 'joi';
 import cookieParser from 'cookie-parser';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
@@ -41,13 +40,21 @@ export default app => {
   app.post(
     '/api/login',
 
-    validation.validateRequest(
-      Joi.object({
-        username: Joi.string().required(),
-        password: Joi.string().required(),
-        token: Joi.string(),
-      }).required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            username: { type: 'string' },
+            password: { type: 'string' },
+            token: { type: 'string' },
+          },
+          required: ['username', 'password'],
+        },
+      },
+      required: ['body'],
+    }),
 
     (req, res, next) => {
       passport.authenticate('local', (err, user) => {

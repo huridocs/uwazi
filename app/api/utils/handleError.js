@@ -15,7 +15,7 @@ const ajvPrettifier = error => {
   return errorMessage.join('\n');
 };
 
-const joiPrettifier = (error, req) => {
+const fallbackPrettifier = (error, req) => {
   const url = req.originalUrl ? `\nurl: ${req.originalUrl}` : '';
   const body =
     req.body && Object.keys(req.body).length
@@ -96,7 +96,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   const obfuscatedRequest = obfuscateCredentials(req);
   result.prettyMessage = error.ajv
     ? ajvPrettifier(result)
-    : joiPrettifier(result, obfuscatedRequest);
+    : fallbackPrettifier(result, obfuscatedRequest);
 
   return result;
 };

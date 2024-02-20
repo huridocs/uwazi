@@ -2,198 +2,113 @@
 
 exports[`relationtypes routes DELETE should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "rules": Array [
-        Object {
-          "arg": Object {
-            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-          },
-          "name": "regex",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "_id": Object {
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "type": "string",
         },
-      ],
-      "type": "string",
+      },
+      "type": "object",
     },
   },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`relationtypes routes GET should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "rules": Array [
-        Object {
-          "arg": Object {
-            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-          },
-          "name": "regex",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "_id": Object {
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "type": "string",
         },
-      ],
-      "type": "string",
+      },
+      "type": "object",
     },
   },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`relationtypes routes POST should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "__v": Object {
-      "invalids": Array [
-        Infinity,
-        -Infinity,
-      ],
-      "type": "number",
-    },
-    "_id": Object {
-      "invalids": Array [
-        "",
-      ],
-      "rules": Array [
-        Object {
-          "arg": Object {
-            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-          },
-          "name": "regex",
+  "properties": Object {
+    "body": Object {
+      "properties": Object {
+        "__v": Object {
+          "type": "number",
         },
-      ],
-      "type": "string",
-    },
-    "name": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "properties": Object {
-      "flags": Object {
-        "sparse": false,
+        "_id": Object {
+          "pattern": "^[0-9a-fA-F]{24}$",
+          "type": "string",
+        },
+        "name": Object {
+          "type": "string",
+        },
+        "properties": Object {
+          "items": Object {
+            "properties": Object {
+              "__v": Object {
+                "type": "number",
+              },
+              "_id": Object {
+                "type": "string",
+              },
+              "content": Object {
+                "type": "string",
+              },
+              "filter": Object {
+                "type": "boolean",
+              },
+              "id": Object {
+                "type": "string",
+              },
+              "label": Object {
+                "type": "string",
+              },
+              "localID": Object {
+                "type": "string",
+              },
+              "name": Object {
+                "type": "string",
+              },
+              "nestedProperties": Object {
+                "type": "array",
+              },
+              "prioritySorting": Object {
+                "type": "boolean",
+              },
+              "showInCard": Object {
+                "type": "boolean",
+              },
+              "sortable": Object {
+                "type": "boolean",
+              },
+              "type": Object {
+                "type": "string",
+              },
+            },
+            "type": "object",
+          },
+          "type": "array",
+        },
       },
-      "items": Array [
-        Object {
-          "children": Object {
-            "__v": Object {
-              "invalids": Array [
-                Infinity,
-                -Infinity,
-              ],
-              "type": "number",
-            },
-            "_id": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "content": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "filter": Object {
-              "falsy": Array [
-                false,
-              ],
-              "flags": Object {
-                "insensitive": true,
-              },
-              "truthy": Array [
-                true,
-              ],
-              "type": "boolean",
-            },
-            "id": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "label": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "localID": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "name": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-            "nestedProperties": Object {
-              "flags": Object {
-                "sparse": false,
-              },
-              "type": "array",
-            },
-            "prioritySorting": Object {
-              "falsy": Array [
-                false,
-              ],
-              "flags": Object {
-                "insensitive": true,
-              },
-              "truthy": Array [
-                true,
-              ],
-              "type": "boolean",
-            },
-            "showInCard": Object {
-              "falsy": Array [
-                false,
-              ],
-              "flags": Object {
-                "insensitive": true,
-              },
-              "truthy": Array [
-                true,
-              ],
-              "type": "boolean",
-            },
-            "sortable": Object {
-              "falsy": Array [
-                false,
-              ],
-              "flags": Object {
-                "insensitive": true,
-              },
-              "truthy": Array [
-                true,
-              ],
-              "type": "boolean",
-            },
-            "type": Object {
-              "invalids": Array [
-                "",
-              ],
-              "type": "string",
-            },
-          },
-          "type": "object",
-        },
-      ],
-      "type": "array",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "body",
+  ],
   "type": "object",
 }
 `;
