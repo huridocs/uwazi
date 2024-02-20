@@ -18,7 +18,8 @@ import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
   const navigate = useNavigate();
-  const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
+  const [isAddItemSidepanelOpen, setIsAddItemSidepanelOpen] = useState(false);
+  const [isAddGroupSidepanelOpen, setIsAddGroupSidepanelOpen] = useState(false);
 
   const setNotifications = useSetRecoilState(notificationAtom);
 
@@ -33,16 +34,30 @@ const NewThesauri = () => {
     mode: 'onSubmit',
   });
 
-  const addItemSubmit = (value: ThesaurusValueSchema) => {
+  const addItemSubmit = (value: ThesaurusValueSchema & { groupId: string }) => {
     const id = uniqueID();
     const curatedValue = { label: value.label, id };
+    const values = getValues().values;
+    const groupValue = values?.find(group => group.id === value.groupId);
+    if (groupValue) {
+      groupValue.values?.push(curatedValue);
+    } else {
+      values?.push(curatedValue);
+    }
+    setValue('values', values);
+    setIsAddItemSidepanelOpen(false);
+  };
+
+  const addGroupSubmit = (value: ThesaurusValueSchema) => {
+    const id = uniqueID();
+    const curatedValue = { label: value.label, values: [], id };
     setValue(
       'values',
       getValues().values
         ? [...(getValues().values as ThesaurusValueSchema[]), curatedValue]
         : [curatedValue]
     );
-    setIsSidepanelOpen(false);
+    setIsAddGroupSidepanelOpen(false);
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
@@ -102,6 +117,7 @@ const NewThesauri = () => {
             <Table<ThesaurusValueSchema>
               enableSelection
               columns={columns}
+              subRowsKey="values"
               data={getValues().values || []}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
             />
@@ -110,10 +126,10 @@ const NewThesauri = () => {
         <SettingsContent.Footer className="bg-indigo-50">
           <div className="flex justify-between w-full">
             <div className="flex gap-2">
-              <Button onClick={() => setIsSidepanelOpen(true)}>
+              <Button onClick={() => setIsAddItemSidepanelOpen(true)}>
                 <Translate>Add item</Translate>
               </Button>
-              <Button styling="outline">
+              <Button styling="outline" onClick={() => setIsAddGroupSidepanelOpen(true)}>
                 <Translate>Add group</Translate>
               </Button>
               <Button styling="outline">
@@ -138,12 +154,25 @@ const NewThesauri = () => {
       </SettingsContent>
       <Sidepanel
         title={<Translate className="uppercase">Add item</Translate>}
-        isOpen={isSidepanelOpen}
-        closeSidepanelFunction={() => setIsSidepanelOpen(false)}
+        isOpen={isAddItemSidepanelOpen}
+        closeSidepanelFunction={() => setIsAddItemSidepanelOpen(false)}
         size="medium"
         withOverlay
       >
-        <AddItemForm submit={addItemSubmit} closePanel={() => setIsSidepanelOpen(false)} />
+        <AddItemForm
+          submit={addItemSubmit}
+          closePanel={() => setIsAddItemSidepanelOpen(false)}
+          groups={getValues().values?.filter((value: ThesaurusValueSchema) => !!value.values)}
+        />
+      </Sidepanel>
+      <Sidepanel
+        title={<Translate className="uppercase">Add Group</Translate>}
+        isOpen={isAddGroupSidepanelOpen}
+        closeSidepanelFunction={() => setIsAddGroupSidepanelOpen(false)}
+        size="medium"
+        withOverlay
+      >
+        <AddItemForm submit={addGroupSubmit} closePanel={() => setIsAddGroupSidepanelOpen(false)} />
       </Sidepanel>
     </div>
   );
