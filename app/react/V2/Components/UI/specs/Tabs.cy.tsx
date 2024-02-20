@@ -28,9 +28,20 @@ describe('Tabas', () => {
     cy.contains('h2', 'Tab 3 Content');
   });
 
-  it('should no render other tabs', () => {
-    cy.contains('button', 'Tab 2').click();
-    cy.contains('h2', 'Tab 3 Content').should('not.exist');
-    cy.contains('h2', 'Tab 1 Content').should('not.exist');
+  describe('unmounting', () => {
+    it('should not render other tabs by default', () => {
+      mount(<Basic />);
+      cy.contains('button', 'Tab 2').click();
+      cy.contains('h2', 'Tab 3 Content').should('not.exist');
+      cy.contains('h2', 'Tab 1 Content').should('not.exist');
+    });
+
+    it('should hide tabs if unmounting is disabled', () => {
+      Basic.args.unmountTabs = false;
+      mount(<Basic />);
+      cy.contains('button', 'Tab 2').click();
+      cy.contains('h2', 'Tab 3 Content').should('be.hidden');
+      cy.contains('h2', 'Tab 1 Content').should('be.hidden');
+    });
   });
 });

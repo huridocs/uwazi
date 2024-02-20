@@ -206,7 +206,7 @@ describe('Information Extraction', () => {
     it('should show title initial suggestion should be default', () => {
       cy.get('tbody tr').eq(5).should('be.visible');
       cy.contains('thead tr th:nth-child(2) div span', 'Document').click();
-      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.contains('Uwazi Heroes Investigation', { timeout: 100 });
     });
 
     it('should display suggestions and be accessible', () => {

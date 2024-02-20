@@ -1,9 +1,7 @@
 Key,Arabic
 % of sentences above threshold,% of sentences above threshold
-(view page),(عرض الصفحة)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
@@ -59,6 +57,7 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,ستتوافر الخصائص المجاورة لتحديد الموقع الجغرافي على الخريطة نفسها
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
+Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
@@ -77,9 +76,9 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this page?,Are you sure you want to delete this page?
 Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
 Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
@@ -96,6 +95,7 @@ Back to search,العودة إلى البحث
 Back to thesauri,العودة إلى قائمة المفردات
 Back to thesaurus,العودة إلى قائمة المفردات
 Bad Request,Bad Request
+Basic,Basic
 Body,يجب الاطلاع على السياق لتحديد الترجمة الأنسب
 Browse files to upload,تصفح الملفات المراد تحميلها
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -132,6 +132,7 @@ Click,Click
 Click here,انقر هنا
 Click to fill,انقر للتعبئة
 Close,غلق
+Code,Code
 Collaborator,متعاون/ مساهم
 Collapse all,Collapse all
 Collection,المجموعة
@@ -151,7 +152,6 @@ Confirm deletion,تأكيد الحذف
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of page:,Confirm deletion of page:
 Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
@@ -299,6 +299,7 @@ Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",يمكن عرض الكيانات (الإدخالات) في صفحة مخصصة، ومن ثم يجب إنشاء صفحة مخصصة في الصفحات، ثم اختيارها هنا.
 Entity,كيان
 Entity deleted,Entity deleted
+Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,أنواع الكيانات
 Entity updated,Entity updated
@@ -499,6 +500,7 @@ Navigation menu tool tip part 2,leaving only a relative URL starting with a slas
 New entity,كيان جديد
 New group,New group
 New language added,أضيفت لغة جديدة
+New page,New page
 New password,كلمة المرور الجديدة
 New relationship type,New relationship type
 New relationships group,مجموعة علاقات جديدة
@@ -530,6 +532,7 @@ No text match description,يمكنك كتابه نص مختلف للحصول ع�
 No type,لا نوع
 No value,لا قيمة
 No Value,لا قيمة
+"No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,معاينة عادية
 Not Found,Not Found
@@ -559,10 +562,9 @@ Or enter this secret key into your Authenticator app,أو أدخل هذا الم
 Order,ترتيب
 Other,آخر
 other,آخر
+Other users will be affected by this action!,Other users will be affected by this action!
 out of,خارج
 Page,صفحة
-Page Javascript,صفحة جافا سكريبت
-Page name,Page name
 Pages,الصفحات
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
@@ -669,6 +671,7 @@ Route,مسار
 Sample,عينة
 Satellite,Satellite
 Save,احفظ
+Save & Preview,Save & Preview
 Save and go to next,حفظ والانتقال إلى التالي
 Save changes,حفظ التغييرات
 Save document,حفظ المستند
@@ -916,6 +919,7 @@ View entities,View entities
 View in library,عرض في المكتبة
 View less,View less
 View more,View more
+View page,عرض الصفحة
 View suggestions,مراجعة الاقتراحات
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,تنبيه: أنت تحرر كيانات (إدخالات) متعددة. الحقول تحمل علامة
@@ -929,6 +933,8 @@ With great power comes great responsibility!,كلما ازدادت القوة، 
 x less,X أقل
 x more,X أكثر
 Year,سنة
+Yes,Yes
+You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,يمكنك أيضاً تحسين النموذج من خلال توفير المزيد من المستندات المسماه
