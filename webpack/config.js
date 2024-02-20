@@ -133,7 +133,7 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
-      new MonacoWebpackPlugin({ languages: ['typescript', 'html'] }),
+      new MonacoWebpackPlugin({ languages: ['typescript', 'html', 'css'] }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],

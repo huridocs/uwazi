@@ -5,7 +5,7 @@ import * as monaco from 'monaco-editor';
 type CodeEditorInstance = monaco.editor.IStandaloneCodeEditor;
 
 type CodeEditorProps = {
-  language: 'html' | 'javascript';
+  language: 'html' | 'javascript' | 'css';
   intialValue?: string;
   onMount?: (editor: CodeEditorInstance) => void;
   fallbackElement?: React.ReactElement;
