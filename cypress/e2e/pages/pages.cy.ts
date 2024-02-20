@@ -20,7 +20,7 @@ describe('Pages', () => {
     });
   });
 
-  describe('Custom home page and styles', () => {
+  describe('Custom home page', () => {
     const setLandingPage = (pageURL: string) => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
@@ -54,7 +54,7 @@ describe('Pages', () => {
       });
     });
 
-    it('should render the custom page as home page with the custom CSS styles', () => {
+    it('should render the custom page as home page', () => {
       cy.visit('http://localhost:3000');
       cy.reload();
       cy.get('h1').contains('Custom HomePage header');
