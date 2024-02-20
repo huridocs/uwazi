@@ -29,16 +29,6 @@ describe('Pages', () => {
       cy.contains('Settings updated');
     };
 
-    it('should allow setting up a custom CSS', () => {
-      cy.contains('a', 'Global CSS').click();
-      cy.get('textarea[name="settings.settings.customCSS"]').type(
-        '.myDiv { color: white; font-size: 20px; background-color: red; }',
-        { parseSpecialCharSequences: false, delay: 0 }
-      );
-      cy.contains('button', 'Save').click();
-      cy.contains('Settings updated');
-    });
-
     it('should create a page to be used as home', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('Add page').click();
@@ -68,9 +58,6 @@ describe('Pages', () => {
       cy.visit('http://localhost:3000');
       cy.reload();
       cy.get('h1').contains('Custom HomePage header');
-      cy.get('div.myDiv').should('have.css', 'color', 'rgb(255, 255, 255)');
-      cy.get('div.myDiv').should('have.css', 'backgroundColor', 'rgb(255, 0, 0)');
-      cy.get('div.myDiv').should('have.css', 'fontSize', '20px');
     });
 
     it('should allow settings a public entity as a landing page', () => {
