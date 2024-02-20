@@ -542,4 +542,60 @@ describe('libraryActions', () => {
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
+
+  describe('processFilters', () => {
+    const search = {
+      filters: {
+        institución_afectada: {
+          values: ['oxdabs9e55l'],
+        },
+      },
+      publishedStatus: {
+        values: ['restricted'],
+      },
+    };
+    const filters = {
+      properties: [
+        {
+          content: '',
+          _id: '65d4d8d83b2ebd680f2e133f',
+          label: 'Institución afectada',
+          type: 'relationship',
+          relationType: '65d4d8c63b2ebd680f2e12ba',
+          filter: true,
+          name: 'institución_afectada',
+        },
+      ],
+      documentTypes: ['65d4d8d83b2ebd680f2e133e'],
+    };
+
+    it('should encode the filters by default', () => {
+      const processedFilters = actions.processFilters(search, filters, {
+        limit: 10000,
+      });
+      expect(processedFilters).toMatchObject({
+        filters: { 'instituci%C3%B3n_afectada': { values: ['oxdabs9e55l'] } },
+        from: undefined,
+        includeUnpublished: false,
+        limit: 10000,
+        types: ['65d4d8d83b2ebd680f2e133e'],
+        unpublished: true,
+      });
+    });
+    it('should not encode the filters as an option', () => {
+      const processedFilters = actions.processFilters(search, filters, {
+        limit: 200,
+        from: 100,
+        encoding: false,
+      });
+      expect(processedFilters).toMatchObject({
+        filters: { institución_afectada: { values: ['oxdabs9e55l'] } },
+        from: 100,
+        includeUnpublished: false,
+        limit: 200,
+        types: ['65d4d8d83b2ebd680f2e133e'],
+        unpublished: true,
+      });
+    });
+  });
 });
