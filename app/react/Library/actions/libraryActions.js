@@ -162,18 +162,20 @@ function filterIsEmpty(value) {
   return false;
 }
 
-function processFilters(readOnlySearch, filters, limit, from) {
+function processFilters(readOnlySearch, filters, options = {}) {
   let search = {
     filters: {},
     ...readOnlySearch,
   };
 
+  const { limit, from, encoding = true } = options;
   if (search.publishedStatus) {
     search = filterToQuery(search);
   }
 
   search.filters = {};
 
+  const getValue = value => (encoding ? encodeURIComponent(value) : value);
   filters.properties.forEach(property => {
     if (!filterIsEmpty(readOnlySearch.filters[property.name]) && !property.filters) {
       if (
@@ -181,11 +183,11 @@ function processFilters(readOnlySearch, filters, limit, from) {
         (property.type === 'text' ||
           (property.type === 'relationship' && property.inherit?.type === 'text'))
       ) {
-        search.filters[encodeURIComponent(property.name)] = encodeURIComponent(
+        search.filters[getValue(property.name)] = getValue(
           readOnlySearch.filters[property.name]
         ).replace(/%20/g, ' ');
       } else {
-        search.filters[encodeURIComponent(property.name)] = readOnlySearch.filters[property.name];
+        search.filters[getValue(property.name)] = readOnlySearch.filters[property.name];
       }
     }
 
@@ -202,11 +204,7 @@ function processFilters(readOnlySearch, filters, limit, from) {
       }
     }
   });
-
-  search.types = filters.documentTypes;
-  search.limit = limit;
-  search.from = from;
-  return search;
+  return { ...search, types: filters.documentTypes, limit, from };
 }
 
 function encodeSearch(_search, appendQ = true) {
@@ -258,8 +256,10 @@ function searchDocuments(
       ...processFilters(
         currentSearch,
         currentFilters.toJS ? currentFilters.toJS() : currentFilters,
-        limit,
-        from
+        {
+          limit,
+          from,
+        }
       ),
       searchTerm: state.search.searchTerm,
       customFilters: currentSearch.customFilters,
@@ -404,7 +404,7 @@ function getAggregationSuggestions(storeKey, property, searchTerm) {
   const state = store.getState()[storeKey];
   const { search, filters } = state;
 
-  const query = processFilters(search, filters.toJS(), 0);
+  const query = processFilters(search, filters.toJS(), { limit: 0 });
   query.searchTerm = search.searchTerm;
   if (storeKey === 'uploads') {
     query.unpublished = true;
