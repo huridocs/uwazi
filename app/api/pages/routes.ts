@@ -1,4 +1,3 @@
-import Joi from 'joi';
 import { Application, Request } from 'express';
 
 import { validation } from 'api/utils';
@@ -15,16 +14,20 @@ export default (app: Application) => {
 
   app.get(
     '/api/pages',
-
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
-
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       pages
         .get({ ...req.query, language: req.language })
@@ -35,17 +38,23 @@ export default (app: Application) => {
 
   app.get(
     '/api/page',
-
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-          slug: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
-
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: {
+              type: 'string',
+            },
+            slug: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
       pages.getById(req.query.sharedId, req.language).then(res.json.bind(res)).catch(next);
     }
@@ -54,16 +63,20 @@ export default (app: Application) => {
   app.delete(
     '/api/pages',
     needsAuthorization(),
-
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          sharedId: Joi.string(),
-        })
-        .required(),
-      'query'
-    ),
-
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            sharedId: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req: Request<{}, {}, {}, { sharedId: string }>, res, next) => {
       pages
         .delete(req.query.sharedId)
