@@ -8,11 +8,10 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 
 interface AddItemFormProps {
   closePanel: () => void;
-  groups?: ThesaurusValueSchema[];
   submit: SubmitHandler<ThesaurusValueSchema & { groupId: string }>;
 }
 
-const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
+const AddGroupForm = ({ submit, closePanel }: AddItemFormProps) => {
   const {
     register,
     handleSubmit,
@@ -28,7 +27,7 @@ const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
           <div className="w-5 h-5 text-sm">
             <CheckCircleIcon />
           </div>
-          <Translate>Adding items to the thesauri</Translate>
+          <Translate>Adding a group and its items.</Translate>
         </div>
         <div className="force-ltr">
           <Translate>You can add one or many items in this form.</Translate>
@@ -45,26 +44,10 @@ const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
             <InputField
               id="item-name"
               data-testid="thesauri-form-item-name"
-              label={<Translate>Title</Translate>}
+              label={<Translate>Name</Translate>}
               {...register('label', { required: true })}
               hasErrors={!!errors.label}
             />
-            {groups && (
-              <Select
-                id="item-group"
-                data-testid="thesauri-form-item-group"
-                label={<Translate>Group</Translate>}
-                {...register('groupId')}
-                options={[
-                  { value: '', label: 'No label', key: '0' },
-                  ...groups.map(group => ({
-                    value: group.id as string,
-                    label: group.label as string,
-                    key: group.id as string,
-                  })),
-                ]}
-              />
-            )}
           </div>
         </Card>
       </form>
@@ -85,4 +68,4 @@ const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
   );
 };
 
-export { AddItemForm };
+export { AddGroupForm };

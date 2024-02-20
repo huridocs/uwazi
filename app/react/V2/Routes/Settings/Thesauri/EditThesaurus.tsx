@@ -4,7 +4,7 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, EmbededButton, Table } from 'app/V2/Components/UI';
 import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { EditButton } from './components/TableComponents';
+import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
@@ -14,33 +14,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import _ from 'lodash';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { _id } }) =>
     ThesauriAPI.getThesauri(new RequestParams({ _id }, headers));
-
-const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema, string>) => (
-  <div className="flex items-center gap-2">
-    <Translate
-      context="Menu"
-      className={row.getIsExpanded() ? 'text-indigo-700' : 'text-indigo-700'}
-    >
-      {getValue()}
-    </Translate>
-    {row.getCanExpand() && (
-      <EmbededButton
-        icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        onClick={() => row.toggleExpanded()}
-        color="indigo"
-        className="bg-indigo-200 border-none drop-shadow-none"
-      >
-        <Translate>Group</Translate>
-      </EmbededButton>
-    )}
-  </div>
-);
 
 const EditThesauri = () => {
   const revalidator = useRevalidator();
