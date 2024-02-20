@@ -2,6 +2,7 @@ import { IncomingHttpHeaders } from 'http';
 import { SettingsAPI } from 'app/Settings';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientSettings, ClientSettingsLinkSchema } from 'app/apiResponseTypes';
+import { FetchResponseError } from 'shared/JSONRequest';
 import api from 'app/utils/api';
 
 const get = async (headers?: IncomingHttpHeaders): Promise<ClientSettings> => {
@@ -12,7 +13,7 @@ const get = async (headers?: IncomingHttpHeaders): Promise<ClientSettings> => {
 const save = async (
   settings: ClientSettings,
   headers?: IncomingHttpHeaders
-): Promise<ClientSettings> => {
+): Promise<ClientSettings | FetchResponseError> => {
   const requestParams = new RequestParams(settings, headers);
   return SettingsAPI.save(requestParams);
 };

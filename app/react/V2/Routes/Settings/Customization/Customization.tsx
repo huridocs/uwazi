@@ -1,12 +1,16 @@
-import React, { useRef } from 'react';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
+import { useSetRecoilState } from 'recoil';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import * as settingsAPI from 'V2/api/settings';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, Tabs } from 'app/V2/Components/UI';
-import { CodeEditor, CodeEditorInstance } from 'app/V2/Components/CodeEditor';
+import { CodeEditor } from 'app/V2/Components/CodeEditor';
+import { ConfirmNavigationModal } from 'V2/Components/Forms';
+import { notificationAtom } from 'app/V2/atoms';
 
 type LoaderResponse = Pick<ClientSettings, 'allowcustomJS' | 'customCSS' | 'customJS'>;
 
@@ -19,8 +23,38 @@ const customisationLoader =
 
 const Customisation = () => {
   const { allowcustomJS, customCSS, customJS } = useLoaderData() as LoaderResponse;
-  const cssEditorRef = useRef<CodeEditorInstance>();
-  const jsEditorRef = useRef<CodeEditorInstance>();
+  const [newCSS, setNewCSS] = useState<string | undefined>(undefined);
+  const [newJS, setNewJS] = useState<string | undefined>(undefined);
+  const [showModal, setShowModal] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const blocker = useBlocker(hasChanges);
+  const setNotifications = useSetRecoilState(notificationAtom);
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setShowModal(true);
+    }
+  }, [blocker]);
+
+  const handleSave = async () => {
+    if (newCSS || newJS) {
+      const response = await settingsAPI.save({ customCSS: newCSS, customJS: newJS });
+
+      if (response instanceof FetchResponseError) {
+        setNotifications({
+          type: 'error',
+          text: <Translate>An error occurred</Translate>,
+          details: response.message,
+        });
+      } else {
+        setNotifications({
+          type: 'success',
+          text: <Translate>Saved successfully.</Translate>,
+        });
+        setHasChanges(false);
+      }
+    }
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -35,7 +69,10 @@ const Customisation = () => {
                   language="css"
                   intialValue={customCSS}
                   onMount={editor => {
-                    cssEditorRef.current = editor;
+                    editor.getModel()?.onDidChangeContent(() => {
+                      setHasChanges(true);
+                      setNewCSS(editor.getValue());
+                    });
                   }}
                 />
               </Tabs.Tab>
@@ -45,7 +82,10 @@ const Customisation = () => {
                   language="javascript"
                   intialValue={customJS}
                   onMount={editor => {
-                    jsEditorRef.current = editor;
+                    editor.getModel()?.onDidChangeContent(() => {
+                      setHasChanges(true);
+                      setNewJS(editor.getValue());
+                    });
                   }}
                 />
               </Tabs.Tab>
@@ -58,7 +98,10 @@ const Customisation = () => {
                   language="css"
                   intialValue={customCSS}
                   onMount={editor => {
-                    cssEditorRef.current = editor;
+                    editor.getModel()?.onDidChangeContent(() => {
+                      setHasChanges(true);
+                      setNewCSS(editor.getValue());
+                    });
                   }}
                 />
               </div>
@@ -66,17 +109,21 @@ const Customisation = () => {
           )}
         </SettingsContent.Body>
 
-        <SettingsContent.Footer>
-          <div className="flex gap-2 justify-end">
-            <Button styling="light">
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button styling="solid" color="success">
-              <Translate>Save</Translate>
-            </Button>
-          </div>
+        <SettingsContent.Footer className="text-end">
+          <Button
+            styling="solid"
+            color="success"
+            disabled={!hasChanges}
+            onClick={async () => handleSave()}
+          >
+            <Translate>Save</Translate>
+          </Button>
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {showModal && (
+        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };
