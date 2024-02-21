@@ -3935,6 +3935,10 @@ input:checked + .toggle-bg {
   text-align: justify;
 }
 
+.text-end {
+  text-align: end;
+}
+
 .align-top {
   vertical-align: top;
 }
