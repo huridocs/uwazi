@@ -55,10 +55,10 @@ const columns = (actions: { edit: Function }) => [
     meta: { headerClassName: 'w-6/12' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'default'>,
   columnHelper.accessor('key', {
-    header: '',
+    header: () => null,
     cell: EditButton,
     enableSorting: false,
-    meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
+    meta: { action: actions.edit, headerClassName: 'hidden' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'key'>,
 ];
 export { EditButton, TitleHeader, URLHeader, TitleCell, columns };
