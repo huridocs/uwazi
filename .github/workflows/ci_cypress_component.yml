@@ -26,4 +26,3 @@ jobs:
         with:
           browser: chrome
           component: true
-          auto-cancel-after-failures: 1
