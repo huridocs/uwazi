@@ -111,16 +111,16 @@ describe('Pages', () => {
   });
 
   describe('Page edition', () => {
-    it('should render the page content as formatted code', () => {
+    it('should display existing code in an editor', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('table > tbody > tr:nth-child(2) > td:nth-child(5)', 'Edit').click();
       cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').should('exist');
       cy.contains('<EntityData');
-      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
       cy.contains('Advanced').click();
       cy.contains('toISOString');
-      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
+      cy.get('div[data-mode-id="javascript"]').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {
