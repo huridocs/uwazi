@@ -12,7 +12,6 @@ const GroupNameHeader = () => <Translate>Name</Translate>;
 const ProtectionHeader = () => <Translate>Protection</Translate>;
 const RoleHeader = () => <Translate>Role</Translate>;
 const GroupsHeader = () => <Translate>Group</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 const MembersHeader = () => <Translate>Members</Translate>;
 
 const ProtectionPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['using2fa']>) => {
@@ -124,7 +123,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
     }),
     columnHelper.display({
       id: '1',
-      header: ActionHeader,
+      header: '',
       cell: EditUserButton,
       meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
       enableSorting: false,
@@ -147,7 +146,7 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
     }),
     columnHelper.display({
       id: '1',
-      header: ActionHeader,
+      header: '',
       cell: EditUserGroupButton,
       meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
       enableSorting: false,
