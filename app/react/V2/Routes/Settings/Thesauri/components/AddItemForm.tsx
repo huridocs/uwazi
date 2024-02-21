@@ -1,25 +1,25 @@
+import React from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
-import React from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
 interface AddItemFormProps {
   closePanel: () => void;
   groups?: ThesaurusValueSchema[];
-  submit: SubmitHandler<ThesaurusValueSchema & { groupId: string }>;
+  submit: SubmitHandler<ThesaurusValueSchema & { groupId?: string }[]>;
 }
 
 const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
   const {
     register,
     handleSubmit,
-
     formState: { errors },
-  } = useForm<ThesaurusValueSchema & { groupId: string }>({
+  } = useForm<ThesaurusValueSchema & { groupId?: string }>({
     mode: 'onSubmit',
+    defaultValues: { label: '' },
   });
   return (
     <div className="relative h-full">
@@ -39,7 +39,12 @@ const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
           </Translate>
         </div>
       </div>
-      <form onSubmit={handleSubmit(submit)} id="menu-form">
+      <form
+        onSubmit={handleSubmit((item: ThesaurusValueSchema & { groupId?: string }) =>
+          submit([item])
+        )}
+        id="menu-form"
+      >
         <Card title={<Translate>Item</Translate>}>
           <div className="flex flex-col gap-4">
             <InputField
