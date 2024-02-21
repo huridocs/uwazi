@@ -27,7 +27,7 @@ describe('customization', () => {
     cy.wait(501);
   });
 
-  it('should block users user if there is unsaved changes', () => {
+  it('should block navigation', () => {
     cy.contains('a', 'Account').click();
     cy.contains('Discard changes?');
     cy.contains('button', 'Cancel').click();
