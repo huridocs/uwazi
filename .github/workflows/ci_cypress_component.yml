@@ -6,7 +6,7 @@ on:
       - production
       - development
       - staging
-    
+
   pull_request:
 
 concurrency:
@@ -26,3 +26,4 @@ jobs:
         with:
           browser: chrome
           component: true
+          auto-cancel-after-failures: 1
