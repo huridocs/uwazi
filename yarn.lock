@@ -1722,7 +1722,7 @@
   resolved "https://registry.yarnpkg.com/@babel/regjsgen/-/regjsgen-0.8.0.tgz#f0ba69b075e1f05fb2825b7fad991e7adbb18310"
   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.20.7", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.1", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.7", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.12.5", "@babel/runtime@^7.13.10", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.20.7", "@babel/runtime@^7.23.1", "@babel/runtime@^7.6.3", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.7", "@babel/runtime@^7.8.4", "@babel/runtime@^7.9.2":
   version "7.23.9"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.9.tgz#47791a15e4603bb5f905bc0753801cf21d6345f7"
   integrity sha512-0CX6F+BI2s9dkUqr08KFrAIZgNFj75rdBU/DjCyYLIaV/quFjkk6T+EJ2LkZHyZTbEV4L5p97mNkUsHl2wLFAw==
@@ -8704,13 +8704,6 @@ data-urls@^3.0.2:
 date-arithmetic@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/date-arithmetic/-/date-arithmetic-3.1.0.tgz"
-
-date-fns@^2.30.0:
-  version "2.30.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.30.0.tgz#f367e644839ff57894ec6ac480de40cae4b0f4d0"
-  integrity sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==
-  dependencies:
-    "@babel/runtime" "^7.21.0"
 
 date-fns@^3.3.1:
   version "3.3.1"
@@ -16854,17 +16847,16 @@ react-component-managers@^3.1.0:
     prop-types "^15.6.1"
     spy-on-component "^1.1.0"
 
-react-datepicker@4.23.0:
-  version "4.23.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-4.23.0.tgz#0da50b3815b3350b7df6cf0dbc63e37c6c3079b4"
-  integrity sha512-w+msqlOZ14v6H1UknTKtZw/dw9naFMgAOspf59eY130gWpvy5dvKj/bgsFICDdvxB7PtKWxDcbGlAqCloY1d2A==
+react-datepicker@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-6.1.0.tgz#c227de6afce232b5737214eb4b71044e8e6b308a"
+  integrity sha512-8uz+hAOpvHqZGvD4Ky1hJ0/tLI4S9B0Gu9LV7LtLxRKXODs/xrxEay0aMVp7AW9iizTeImZh/6aA00fFaRZpJw==
   dependencies:
-    "@popperjs/core" "^2.11.8"
+    "@floating-ui/react" "^0.26.2"
     classnames "^2.2.6"
-    date-fns "^2.30.0"
+    date-fns "^3.3.1"
     prop-types "^15.7.2"
     react-onclickoutside "^6.13.0"
-    react-popper "^2.3.0"
 
 react-device-detect@^2.2.3:
   version "2.2.3"
