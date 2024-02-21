@@ -1,8 +1,8 @@
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import React, { useState } from 'react';
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
-import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
@@ -14,10 +14,13 @@ import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
+import { AddGroupForm } from './components/AddGroupForm';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
   const navigate = useNavigate();
+  const [valueChanges, setValueChanges] = useState<ThesaurusValueSchema[]>([]);
+  const [selectedValues, setSelectedValues] = useState<Row<ThesaurusValueSchema>[]>([]);
   const [isAddItemSidepanelOpen, setIsAddItemSidepanelOpen] = useState(false);
   const [isAddGroupSidepanelOpen, setIsAddGroupSidepanelOpen] = useState(false);
 
@@ -25,38 +28,44 @@ const NewThesauri = () => {
 
   const {
     watch,
-    setValue,
     register,
     getValues,
     handleSubmit,
     formState: { errors },
   } = useForm<ThesaurusSchema>({
     mode: 'onSubmit',
+    defaultValues: { id: uniqueID(), name: '', values: [] },
   });
 
-  const addItemSubmit = (value: ThesaurusValueSchema & { groupId: string }) => {
-    const id = uniqueID();
-    const curatedValue = { label: value.label, id };
-    const values = getValues().values;
-    const groupValue = values?.find(group => group.id === value.groupId);
-    if (groupValue) {
-      groupValue.values?.push(curatedValue);
-    } else {
-      values?.push(curatedValue);
-    }
-    setValue('values', values);
+  const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
+    console.log('Items: ', items);
+    let currentValues = [...valueChanges];
+    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
+    const itemsWithoutGroups = items.filter(item => !item.groupId || item.groupId === '');
+    currentValues = currentValues.map(value => {
+      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
+      if (groupItem) {
+        value.values?.push(groupItem as ThesaurusValueSchema);
+        return value;
+      }
+      return value;
+    });
+
+    currentValues = [...currentValues, ...itemsWithoutGroups];
+
+    console.log('Current values: ', currentValues);
+
+    setValueChanges(currentValues);
     setIsAddItemSidepanelOpen(false);
   };
 
-  const addGroupSubmit = (value: ThesaurusValueSchema) => {
-    const id = uniqueID();
-    const curatedValue = { label: value.label, values: [], id };
-    setValue(
-      'values',
-      getValues().values
-        ? [...(getValues().values as ThesaurusValueSchema[]), curatedValue]
-        : [curatedValue]
-    );
+  const addGroupSubmit = (items: ThesaurusValueSchema | ThesaurusValueSchema[]) => {
+    setValueChanges(old => {
+      if (Array.isArray(items)) {
+        return [...old, ...items];
+      }
+      return [...old, items];
+    });
     setIsAddGroupSidepanelOpen(false);
   };
 
@@ -74,6 +83,28 @@ const NewThesauri = () => {
         text: <Translate>Error adding thesauri.</Translate>,
       });
     }
+  };
+
+  const deleteSelected = () => {
+    console.log('Value changes: ', valueChanges);
+    let newValues: ThesaurusValueSchema[] = valueChanges.filter(
+      value => !selectedValues.find(selected => selected.original.id === value.id)
+    );
+
+    console.log('New values intermidiate: ', newValues);
+
+    newValues = newValues.map(value => {
+      if (value.values) {
+        value.values = value.values.filter(
+          values => !selectedValues.find(selected => selected.original.id === values.id)
+        );
+      }
+      return value;
+    });
+
+    console.log('New values: ', newValues);
+
+    setValueChanges(newValues);
   };
 
   const columns = [
@@ -118,27 +149,45 @@ const NewThesauri = () => {
               enableSelection
               columns={columns}
               subRowsKey="values"
-              data={getValues().values || []}
+              data={valueChanges}
+              // data={getValues().values || []}
+              // data={fields}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
+              onSelection={setSelectedValues}
             />
           </div>
         </SettingsContent.Body>
         <SettingsContent.Footer className="bg-indigo-50">
           <div className="flex justify-between w-full">
-            <div className="flex gap-2">
-              <Button onClick={() => setIsAddItemSidepanelOpen(true)}>
-                <Translate>Add item</Translate>
-              </Button>
-              <Button styling="outline" onClick={() => setIsAddGroupSidepanelOpen(true)}>
-                <Translate>Add group</Translate>
-              </Button>
-              <Button styling="outline">
-                <Translate>Sort</Translate>
-              </Button>
-              <Button styling="outline">
-                <Translate>Import</Translate>
-              </Button>
-            </div>
+            {selectedValues.length ? (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={deleteSelected}
+                  color="error"
+                  data-testid="menu-delete-link"
+                >
+                  <Translate>Delete</Translate>
+                </Button>
+                <Translate>Selected</Translate> {selectedValues.length} <Translate>of</Translate>{' '}
+                {getValues().values?.length}
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Button onClick={() => setIsAddItemSidepanelOpen(true)}>
+                  <Translate>Add item</Translate>
+                </Button>
+                <Button styling="outline" onClick={() => setIsAddGroupSidepanelOpen(true)}>
+                  <Translate>Add group</Translate>
+                </Button>
+                <Button styling="outline">
+                  <Translate>Sort</Translate>
+                </Button>
+                <Button styling="outline">
+                  <Translate>Import</Translate>
+                </Button>
+              </div>
+            )}
             <div className="flex gap-2">
               <Link to="/settings/translations">
                 <Button styling="light" type="button">
@@ -162,7 +211,7 @@ const NewThesauri = () => {
         <AddItemForm
           submit={addItemSubmit}
           closePanel={() => setIsAddItemSidepanelOpen(false)}
-          groups={getValues().values?.filter((value: ThesaurusValueSchema) => !!value.values)}
+          groups={valueChanges.filter((value: ThesaurusValueSchema) => Array.isArray(value.values))}
         />
       </Sidepanel>
       <Sidepanel
@@ -172,7 +221,10 @@ const NewThesauri = () => {
         size="medium"
         withOverlay
       >
-        <AddItemForm submit={addGroupSubmit} closePanel={() => setIsAddGroupSidepanelOpen(false)} />
+        <AddGroupForm
+          submit={addGroupSubmit}
+          closePanel={() => setIsAddGroupSidepanelOpen(false)}
+        />
       </Sidepanel>
     </div>
   );
