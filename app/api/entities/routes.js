@@ -7,6 +7,7 @@ import thesauri from '../thesauri/thesauri';
 import date from '../utils/date';
 import needsAuthorization from '../auth/authMiddleware';
 import { parseQuery, validation } from '../utils';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
@@ -76,6 +77,7 @@ export default app => {
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware.multiple(),
+    activitylogMiddleware,
     async (req, res, next) => {
       try {
         const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
