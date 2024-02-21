@@ -86,12 +86,18 @@ const reportUntraslated = translations => {
 async function updateTranslations(dbKeyValues, language) {
   // eslint-disable-next-line max-statements
   return new Promise(resolve => {
-    const { locale, repositoryTranslations, obsoleteTranslations, missingTranslations } = language;
+    const {
+      locale,
+      languageName,
+      repositoryTranslations,
+      obsoleteTranslations,
+      missingTranslations,
+    } = language;
     const fileName = path.resolve(TRANSLATIONS_DIR, `${locale}.csv`);
     const csvFile = fs.createWriteStream(fileName);
     const csvStream = csv.format({ headers: true });
     csvStream.pipe(csvFile).on('finish', csvFile.end);
-    csvStream.write(['key', 'value']);
+    csvStream.write(['Key', languageName]);
 
     const cleanedTranslations = repositoryTranslations.filter(
       t => !obsoleteTranslations.includes(t.key)
@@ -146,7 +152,7 @@ const reportByLanguage = language => {
 };
 
 // eslint-disable-next-line max-statements
-async function compareTranslations(locale, update, outdir) {
+async function compareTranslations(locale, update) {
   try {
     const dbTranslations = await getTranslationsFromDB();
     const keysFromDB = dbTranslations.en.keys;
@@ -166,10 +172,14 @@ async function compareTranslations(locale, update, outdir) {
         reportUntraslated(unTranslated);
       } else {
         const report = { obsolete: 0, missing: 0 };
+        const languageNames = new Intl.DisplayNames(['en'], {
+          type: 'language',
+        });
         await Promise.all(
           result.map(async language => {
             if (update) {
-              await updateTranslations(dbKeyValues, language, outdir);
+              const languageName = languageNames.of(language.locale) || 'value';
+              await updateTranslations(dbKeyValues, { ...language, languageName });
             }
             const { obsolete, missing } = reportByLanguage(language);
             report.obsolete += obsolete;
