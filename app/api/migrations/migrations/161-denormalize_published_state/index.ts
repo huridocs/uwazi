@@ -10,6 +10,8 @@ export default {
 
   reindex: false,
 
+  batchSize: 1000,
+
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
   },
