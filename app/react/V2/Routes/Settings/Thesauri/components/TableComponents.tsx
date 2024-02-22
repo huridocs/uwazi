@@ -7,7 +7,12 @@ import ChevronUpIcon from '@heroicons/react/20/solid/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 const ThesaurusLabel = ({ cell }: any) => (
-  <Translate>{`${cell.row.original.name} (Default language)`}</Translate>
+  <>
+    <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
+    {'('}
+    <Translate>Default language</Translate>
+    {')'}
+  </>
 );
 
 const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema, string>) => (
@@ -16,7 +21,7 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
       context="Menu"
       className={row.getIsExpanded() ? 'text-indigo-700' : 'text-indigo-700'}
     >
-      {getValue()}
+      <Translate context={row.original._id}>{getValue()}</Translate>
     </Translate>
     {row.getCanExpand() && (
       <EmbededButton

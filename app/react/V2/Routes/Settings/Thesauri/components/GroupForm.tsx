@@ -51,7 +51,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
         <div className="force-ltr">
           <Translate>You can add one or many items in this form.</Translate>
           <br />
-          <Translate translationKey="thesauri new item desc">
+          <Translate translationKey="thesauri new group desc">
             Each item created will live inside this group. Once you type the first item name, a new
             item form will appear underneath it, so you can keep on adding as many as you want.
           </Translate>
