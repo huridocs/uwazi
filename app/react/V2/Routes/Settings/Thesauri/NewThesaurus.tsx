@@ -7,14 +7,15 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, useNavigate } from 'react-router-dom';
-import { AddItemForm } from './components/AddItemForm';
+import { ValueForm } from './components/ValueForm';
 import { useForm } from 'react-hook-form';
 import uniqueID from 'shared/uniqueID';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
-import { AddGroupForm } from './components/AddGroupForm';
+import { GroupForm } from './components/GroupForm';
+import { mergeValues } from './helpers';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
@@ -38,24 +39,8 @@ const NewThesauri = () => {
   });
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
-    console.log('Items: ', items);
-    let currentValues = [...valueChanges];
-    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
-    const itemsWithoutGroups = items.filter(item => !item.groupId || item.groupId === '');
-    currentValues = currentValues.map(value => {
-      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
-      if (groupItem) {
-        value.values?.push(groupItem as ThesaurusValueSchema);
-        return value;
-      }
-      return value;
-    });
-
-    currentValues = [...currentValues, ...itemsWithoutGroups];
-
-    console.log('Current values: ', currentValues);
-
-    setValueChanges(currentValues);
+    const mergedValues = mergeValues(valueChanges, items);
+    setValueChanges(mergedValues);
     setIsAddItemSidepanelOpen(false);
   };
 
@@ -70,6 +55,7 @@ const NewThesauri = () => {
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
+    data.values = valueChanges;
     try {
       await ThesauriAPI.save(new RequestParams(data));
       setNotifications({
@@ -86,13 +72,9 @@ const NewThesauri = () => {
   };
 
   const deleteSelected = () => {
-    console.log('Value changes: ', valueChanges);
     let newValues: ThesaurusValueSchema[] = valueChanges.filter(
       value => !selectedValues.find(selected => selected.original.id === value.id)
     );
-
-    console.log('New values intermidiate: ', newValues);
-
     newValues = newValues.map(value => {
       if (value.values) {
         value.values = value.values.filter(
@@ -101,9 +83,6 @@ const NewThesauri = () => {
       }
       return value;
     });
-
-    console.log('New values: ', newValues);
-
     setValueChanges(newValues);
   };
 
@@ -150,8 +129,6 @@ const NewThesauri = () => {
               columns={columns}
               subRowsKey="values"
               data={valueChanges}
-              // data={getValues().values || []}
-              // data={fields}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
               onSelection={setSelectedValues}
             />
@@ -208,7 +185,7 @@ const NewThesauri = () => {
         size="medium"
         withOverlay
       >
-        <AddItemForm
+        <ValueForm
           submit={addItemSubmit}
           closePanel={() => setIsAddItemSidepanelOpen(false)}
           groups={valueChanges.filter((value: ThesaurusValueSchema) => Array.isArray(value.values))}
@@ -221,10 +198,7 @@ const NewThesauri = () => {
         size="medium"
         withOverlay
       >
-        <AddGroupForm
-          submit={addGroupSubmit}
-          closePanel={() => setIsAddGroupSidepanelOpen(false)}
-        />
+        <GroupForm submit={addGroupSubmit} closePanel={() => setIsAddGroupSidepanelOpen(false)} />
       </Sidepanel>
     </div>
   );
