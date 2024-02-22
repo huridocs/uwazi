@@ -6,41 +6,45 @@ import { Button, Card } from 'app/V2/Components/UI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 
-interface AddItemFormProps {
+interface ValueFormProps {
   closePanel: () => void;
+  value?: ThesaurusValueSchema;
   groups?: ThesaurusValueSchema[];
   submit: SubmitHandler<ThesaurusValueSchema & { groupId?: string }[]>;
 }
 
-const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
+const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ThesaurusValueSchema & { groupId?: string }>({
     mode: 'onSubmit',
-    defaultValues: { label: '' },
+    defaultValues: value || { label: '' },
   });
   return (
     <div className="relative h-full">
-      <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
-        <div className="flex items-center w-full gap-1 text-base font-semibold">
-          <div className="w-5 h-5 text-sm">
-            <CheckCircleIcon />
+      {!value && (
+        <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
+          <div className="flex items-center w-full gap-1 text-base font-semibold">
+            <div className="w-5 h-5 text-sm">
+              <CheckCircleIcon />
+            </div>
+            <Translate>Adding items to the thesauri</Translate>
           </div>
-          <Translate>Adding items to the thesauri</Translate>
+          <div className="force-ltr">
+            <Translate>You can add one or many items in this form.</Translate>
+            <br />
+            <Translate translationKey="thesauri new item desc">
+              Once you type the first item name, a new item form will appear underneath it, so you
+              can keep on adding as many as you want.
+            </Translate>
+          </div>
         </div>
-        <div className="force-ltr">
-          <Translate>You can add one or many items in this form.</Translate>
-          <br />
-          <Translate translationKey="thesauri new item desc">
-            Once you type the first item name, a new item form will appear underneath it, so you can
-            keep on adding as many as you want.
-          </Translate>
-        </div>
-      </div>
+      )}
       <form
         onSubmit={handleSubmit((item: ThesaurusValueSchema & { groupId?: string }) =>
+          // @ts-ignore
           submit([item])
         )}
         id="menu-form"
@@ -90,4 +94,4 @@ const AddItemForm = ({ submit, closePanel, groups }: AddItemFormProps) => {
   );
 };
 
-export { AddItemForm };
+export { ValueForm };
