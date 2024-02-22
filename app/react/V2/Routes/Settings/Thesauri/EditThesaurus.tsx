@@ -1,8 +1,8 @@
-import { CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import React, { useState } from 'react';
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, EmbededButton, Sidepanel, Table } from 'app/V2/Components/UI';
-import React, { useState } from 'react';
+import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
