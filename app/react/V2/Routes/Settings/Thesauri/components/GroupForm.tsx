@@ -28,15 +28,15 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
 
   const { fields } = useFieldArray({ control, name: 'values' });
 
-  const curateBeforeSubmit = (value: ThesaurusValueSchema) => {
-    delete value.id;
-    const values = value.values
-      ?.filter(value => value.label && value.label !== '')
-      .map(value => {
-        delete value.id;
-        return value;
+  const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
+    delete tValue.id;
+    const filteredValues = tValue.values
+      ?.filter(fValue => fValue.label && fValue.label !== '')
+      .map(mValue => {
+        delete mValue.id;
+        return mValue;
       });
-    submit({ label: value.label, id: value.id, values });
+    submit({ label: tValue.label, id: tValue.id, values: filteredValues });
   };
 
   return (
@@ -70,7 +70,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
             />
           </div>
         </Card>
-        {fields.map((value, index) => (
+        {fields.map((_, index) => (
           <Card title={<Translate>Item</Translate>}>
             <div className="flex flex-col gap-4">
               <InputField
