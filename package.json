@@ -101,7 +101,7 @@
     "@hookform/error-message": "^2.0.1",
     "@loadable/component": "^5.13.1",
     "@popperjs/core": "^2.11.8",
-    "@remix-run/router": "^1.15.0",
+    "@remix-run/router": "^1.15.1",
     "@sentry/node": "^7.101.1",
     "@sentry/react": "7.101.1",
     "@sentry/tracing": "^7.101.1",
