@@ -126,8 +126,8 @@ const fixtures: Fixture = {
     },
     {
       _id: new ObjectId(),
-      title: 'docWithPublishedRelationship',
-      sharedId: 'docWithPublishedRelationship',
+      title: 'docWithOneRelationship',
+      sharedId: 'docWithOneRelationship',
       language: 'en',
       template: templateWithRelationship._id,
       published: true,

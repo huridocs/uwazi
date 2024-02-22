@@ -36,7 +36,7 @@ describe('migration test', () => {
     expect(migration.delta).toBe(161);
   });
 
-  describe('if there is nothing to migrate', () => {
+  describe('if there is nothing to denormalize', () => {
     beforeAll(async () => {
       await initTest(unchangedFixtures);
     });
@@ -51,6 +51,49 @@ describe('migration test', () => {
 
     it('should not signal reindex', async () => {
       expect(migration.reindex).toBe(false);
+    });
+  });
+
+  describe('if there are entities to denormalize', () => {
+    it('should denormalize the published state as necessary', async () => {
+      expect(metadata).toEqual([
+        {
+          relationship_to_source: [
+            {
+              text_property: [{ value: 'A', label: 'A' }],
+            },
+            {
+              text_property: [{ value: 'B', label: 'B' }],
+            },
+            {
+              text_property: [{ value: 'C', label: 'C' }],
+            },
+            {
+              text_property: [{ value: 'D', label: 'D' }],
+            },
+            {
+              relationship_to_source: [
+                { value: 'publishedDoc1', label: 'publishedDoc1', published: true },
+                { value: 'unpublishedDoc1', label: 'unpublishedDoc1', published: false },
+              ],
+            },
+            {
+              relationship_to_source: [
+                { value: 'publishedDoc1', label: 'publishedDoc1', published: true },
+                { value: 'unpublishedDoc1', label: 'unpublishedDoc1', published: false },
+              ],
+              relationship_to_source2: [
+                { value: 'publishedDoc2', label: 'publishedDoc2', published: true },
+                { value: 'unpublishedDoc2', label: 'unpublishedDoc2', published: false },
+              ],
+            },
+          ],
+        },
+      ]);
+    });
+
+    it('should signal reindex', async () => {
+      expect(migration.reindex).toBe(true);
     });
   });
 });
