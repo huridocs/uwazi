@@ -8,7 +8,6 @@ const newKeys = [
   { key: 'Thesauri added.' },
   { key: 'Error adding thesauri.' },
   { key: 'Thesauri deleted' },
-  { key: 'Add Thesaurus' },
   { key: 'Adding a group and its items.' },
   { key: 'You can add one or many items in this form.' },
   { key: 'Adding items to the thesauri' },
