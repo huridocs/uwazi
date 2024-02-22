@@ -32,6 +32,7 @@ Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
 Add group,เพิ่มกลุ่ม
 add icon,เพิ่มไอคอน
+Add item,Add item
 Add language,เพิ่มภาษา
 Add link,เพิ่มลิงค์
 Add page,เพิ่มหน้า
@@ -54,6 +55,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,คุณสมบัติของตำแหน่งทางภูมิศาสตร์ที่อยู่ติดกันจะแสดงบนแผนที่เดียวกัน
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
@@ -280,6 +283,7 @@ Edit,แก้ไข
 Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,บรรณาธิการ
@@ -305,6 +309,8 @@ Entity saved,Entity saved
 Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,ค้นหา
 Export CSV,โหลดเป็น CSV
@@ -421,6 +427,7 @@ A document: */document/4y9i99fadjp833di*
       
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,ภาษา
+Language (Default language),Language (Default language)
 Language Code,Language Code
 Language deleted,ลบภาษาแล้ว
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
@@ -802,7 +809,12 @@ There are no pages enabled for entity view,ไม่มีหน้าที่�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,thesauri
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,กลุ่มคำอธิบายที่บันทึกแล้ว
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -940,6 +952,7 @@ x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,Yes
 You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,นอกจากนี้คุณยังสามารถพัฒนาโมเดลได้โดยใช้เอกสารที่ถูกจำแนกประเภทในจำนวนที่มากขึ้น
