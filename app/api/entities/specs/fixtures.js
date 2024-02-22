@@ -22,6 +22,8 @@ const templateChangingNamesProps = {
   prop2id: db.id(),
   prop3id: db.id(),
 };
+const templateForGetWithRelationships = db.id();
+
 const adminId = db.id();
 
 const dictionary = db.id();
@@ -35,6 +37,7 @@ const hub4 = db.id();
 const hub5 = db.id();
 const hub6 = db.id();
 const hub7 = db.id();
+const hub8 = db.id();
 
 const docId1 = db.id();
 const docId2 = db.id();
@@ -530,6 +533,29 @@ export default {
         ],
       },
     },
+    {
+      _id: db.id(),
+      sharedId: 'getWithRelRoot',
+      template: templateForGetWithRelationships,
+      language: 'en',
+      title: 'root entity',
+      published: true,
+    },
+    {
+      _id: db.id(),
+      sharedId: 'getWithRelPublic',
+      template: templateForGetWithRelationships,
+      language: 'en',
+      title: 'public entity',
+      published: true,
+    },
+    {
+      _id: db.id(),
+      sharedId: 'getWithRelPrivate',
+      template: templateForGetWithRelationships,
+      language: 'en',
+      title: 'private entity',
+    },
   ],
   settings: [
     {
@@ -652,6 +678,10 @@ export default {
         },
       ],
     },
+    {
+      _id: templateForGetWithRelationships,
+      name: 'templateForGetWithRelationships',
+    },
   ],
   connections: [
     { _id: referenceId, entity: 'shared', template: null, hub: hub1, entityData: {} },
@@ -668,6 +698,9 @@ export default {
     { _id: db.id(), entity: 'shared2', template: relationType1, hub: hub6 },
     { _id: db.id(), entity: 'relSaveTest', template: null, hub: hub7 },
     { _id: db.id(), entity: 'shared2', template: relationType4, hub: hub7 },
+    { _id: db.id(), entity: 'getWithRelRoot', template: null, hub: hub8 },
+    { _id: db.id(), entity: 'getWithRelPublic', template: relationType4, hub: hub8 },
+    { _id: db.id(), entity: 'getWithRelPrivate', template: relationType4, hub: hub8 },
   ],
   dictionaries: [
     {
