@@ -5,8 +5,6 @@ const newKeys = [
   { key: 'Error updating thesauri.' },
   { key: 'Add item' },
   { key: 'Edit item' },
-  { key: 'Edit Group' },
-  { key: 'Add Group' },
   { key: 'Thesauri added.' },
   { key: 'Error adding thesauri.' },
   { key: 'Thesauri deleted' },
