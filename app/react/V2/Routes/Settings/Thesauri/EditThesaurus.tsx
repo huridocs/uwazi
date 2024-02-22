@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
+import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
@@ -11,11 +11,11 @@ import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import _ from 'lodash';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
 import { ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
-import { mergeValues, sanitizeValues } from './helpers';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -47,9 +47,58 @@ const EditThesauri = () => {
     mode: 'onSubmit',
   });
 
+  const deleteSelected = () => {
+    let newValues: ThesaurusValueSchema[] = thesaurusValues.filter(
+      value => !selectedThesaurusValue.find(tSelected => tSelected.original.id === value.id)
+    );
+    newValues = newValues.map(value => {
+      if (value.values) {
+        value.values = value.values.filter(
+          values => !selectedThesaurusValue.find(ttSelected => ttSelected.original.id === values.id)
+        );
+      }
+      return value;
+    });
+    setThesaurusValues(newValues);
+  };
+
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
-    const mergedValues = mergeValues(thesaurusValues, items);
-    setThesaurusValues(mergedValues);
+    let currentValues: ThesaurusValueSchema[] = [...thesaurusValues];
+    if (editValue) {
+      currentValues = currentValues.map(value => {
+        if (value.id === (items[0] as ThesaurusValueSchema).id) {
+          delete items[0].groupId;
+          return items[0];
+        }
+        return value;
+      }) as ThesaurusValueSchema[];
+      setEditValue(undefined);
+      setThesaurusValues(currentValues);
+      setIsItemSidepanelOpen(false);
+      return;
+    }
+    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
+    const itemsWithoutGroups = items
+      .filter(item => !item.groupId || item.groupId === '')
+      .map(item => {
+        delete item.groupId;
+        return item;
+      });
+    currentValues = currentValues.map(value => {
+      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
+      if (groupItem) {
+        delete groupItem.groupId;
+        value.values?.push(groupItem as ThesaurusValueSchema);
+        return value;
+      }
+      return value;
+    });
+
+    currentValues = [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
+
+    console.log('Current values: ', currentValues);
+
+    setThesaurusValues(currentValues);
     setIsItemSidepanelOpen(false);
   };
 
@@ -70,23 +119,8 @@ const EditThesauri = () => {
     setIsGroupSidepanelOpen(false);
   };
 
-  const deleteSelected = () => {
-    let newValues: ThesaurusValueSchema[] = thesaurusValues.filter(
-      value => !selectedThesaurusValue.find(selected => selected.original.id === value.id)
-    );
-    newValues = newValues.map(value => {
-      if (value.values) {
-        value.values = value.values.filter(
-          values => !selectedThesaurusValue.find(selected => selected.original.id === values.id)
-        );
-      }
-      return value;
-    });
-    setThesaurusValues(newValues);
-  };
-
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
-    data.values = sanitizeValues(thesaurusValues);
+    data.values = thesaurusValues;
     try {
       await ThesauriAPI.save(new RequestParams(data));
       setNotifications({
