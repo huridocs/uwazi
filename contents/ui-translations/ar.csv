@@ -32,6 +32,7 @@ Add from URL,إضافة من عنوان URL
 Add from web,أضف من الويب
 Add group,إضافة مجموعة
 add icon,أضف أيقونة
+Add item,Add item
 Add language,إضافة لغة
 Add link,إضافة رابط
 Add page,إضافة صفحة
@@ -54,6 +55,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ستتوافر الخصائص المجاورة لتحديد الموقع الجغرافي على الخريطة نفسها
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
@@ -279,6 +282,7 @@ Edit,تحرير
 Edit all documents matching this criteria,حرر جميع المستندات المستوفية لهذه المعايير
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,محرر
@@ -304,6 +308,8 @@ Entity saved,Entity saved
 Entity types,أنواع الكيانات
 Entity updated,Entity updated
 Error,خطأ
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,استكشاف
 Export CSV,تصدير ملف القيم المفصولة بفواصل
@@ -420,6 +426,7 @@ A document: */document/4y9i99fadjp833di*
       
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,لغة
+Language (Default language),Language (Default language)
 Language Code,Language Code
 Language deleted,حذفت اللغة
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
@@ -799,7 +806,12 @@ There are no pages enabled for entity view,لا توجد صفحات ممكنة �
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,قائمة المفردات
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,تم حفظ قائمة المفردات
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -935,6 +947,7 @@ x more,X أكثر
 Year,سنة
 Yes,Yes
 You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,يمكنك أيضاً تحسين النموذج من خلال توفير المزيد من المستندات المسماه

@@ -32,6 +32,7 @@ Add from URL,Add from URL
 Add from web,Add from web
 Add group,Add group
 add icon,add icon
+Add item,Add item
 Add language,Add language
 Add link,Add link
 Add page,Add page
@@ -54,6 +55,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
@@ -282,6 +285,7 @@ Edit,Edit
 Edit all documents matching this criteria,Edit all documents matching this criteria
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editor
@@ -307,6 +311,8 @@ Entity saved,Entity saved
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Exploration
 Export CSV,Export CSV
@@ -423,6 +429,7 @@ A document: */document/4y9i99fadjp833di*
       
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,Language
+Language (Default language),Language (Default language)
 Language Code,Language Code
 Language deleted,Language deleted
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
@@ -802,7 +809,12 @@ There are no pages enabled for entity view,There are no pages enabled for entity
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus saved
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -938,6 +950,7 @@ x more,more
 Year,Year
 Yes,Yes
 You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.

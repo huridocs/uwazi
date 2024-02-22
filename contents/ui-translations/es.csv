@@ -32,6 +32,7 @@ Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
 Add group,Añadir grupo
 add icon,Añadir ícono
+Add item,Add item
 Add language,Añadir idioma
 Add link,Añadir enlace
 Add page,Añadir página
@@ -54,6 +55,8 @@ Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
 added to hub with the following errors:,añadido al nodo con los siguientes errores:
 added to hub.,añadido al nodo.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
@@ -278,6 +281,7 @@ Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
 Edit user,Edit user
 Editor,Editor
@@ -303,6 +307,8 @@ Entity saved,Entidad grabada
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
 Exploration,Exploración
 Export CSV,Exportar CSV
@@ -419,6 +425,7 @@ Un documento: */document/4y9i99fadjp833di*
       
 Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nombre del dominio. Por ejemplo: En la dirección *https://yoursite.com/landingpage*, el URL relativo es /landingpage"
 Language,Idioma
+Language (Default language),Language (Default language)
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
@@ -797,7 +804,12 @@ There are no pages enabled for entity view,No hay páginas habilitadas para la v
 There are no untranslated terms,No hay términos sin traducir
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,Hay cambios sin guardar. Estas seguro que quieres descartarlos y cambiar a un documento diferente?
 Thesauri,Tesauros
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Nombre del Tesauro
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Tesauro
 Thesaurus saved,Tesauro guardado
 This action may take some time while we add the extra language to the entire collection.,Esta acción puede tomar algún tiempo mientras añadimos el idioma a la colección.
@@ -933,6 +945,7 @@ x more,más
 Year,Año
 Yes,Sí
 You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,Puedes mejorar el modelo proporcionando más documentos con etiquetas.
