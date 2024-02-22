@@ -32,6 +32,7 @@ Add from URL,url မှ ထည့်ရန်
 Add from web,ဝက်ဘ်မှ ထည့်ရန်
 Add group,အုပ်စု ထည့်ရန်
 add icon,အိုင်ကွန် ထည့်ရန်
+Add item,Add item
 Add language,ဘာသာစကား ထည့်ရန်
 Add link,လင့်ခ် ထည့်ရန်
 Add page,စာမျက်နှာ ထည့်ရန်
@@ -54,6 +55,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
@@ -280,6 +283,7 @@ Edit,တည်းဖြတ်ရန်
 Edit all documents matching this criteria,ဤစံနှုန်းနှင့် ကိုက်ညီသော စာရွက်စာတမ်းအားလုံးကို တည်းဖြတ်ပါ
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,အယ်ဒီတာ
@@ -305,6 +309,8 @@ Entity saved,Entity saved
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,Entity updated
 Error,ချွတ်ယွင်းချက်
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,စူးစမ်းလေ့လာခြင်း
 Export CSV,CSV တင်ပို့ရန်
@@ -421,6 +427,7 @@ A document: */document/4y9i99fadjp833di*
       
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,ဘာသာစကား
+Language (Default language),Language (Default language)
 Language Code,Language Code
 Language deleted,ဘာသာစကား ဖျက်ပြီး
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
@@ -800,7 +807,12 @@ There are no pages enabled for entity view,ဖြည့်သွင်းချ�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,ဝေါဟာရပဒေသာကျမ်း သိမ်းပြီး
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -936,6 +948,7 @@ x more,x ပို
 Year,နှစ်
 Yes,Yes
 You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,သင်သည် နောက်ထပ် တံဆိပ်တပ်မှတ်သားထားသော စာရွက်စာတမ်းများ ပေးခြင်းဖြင့်လည်း မော်ဒယ်ကို ပိုကောင်းအောင်လုပ်နိုင်သည်။
