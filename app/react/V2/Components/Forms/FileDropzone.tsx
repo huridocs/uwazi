@@ -22,6 +22,10 @@ const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
     setTotalSize(result);
   }, [files]);
 
+  const removeFile = (index: number) => {
+    setFiles(files.filter((_file, i) => i !== index));
+  };
+
   return (
     <Dropzone
       onDrop={(acceptedFiles, fileRejections, event) => {
@@ -29,7 +33,7 @@ const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
           setFiles([...files, ...acceptedFiles]);
         }
         if (onDrop) {
-          onDrop(acceptedFiles, fileRejections, event);
+          onDrop(files, fileRejections, event);
         }
       }}
     >
@@ -52,12 +56,15 @@ const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 my-4">
-            {files.map(file => (
-              <div className="text-sm border border-gray-300 px-[2px] rounded flex flex-nowrap gap-1 align-middle">
+            {files.map((file, index) => (
+              <div
+                key={`${file.name}`}
+                className="text-sm border border-gray-300 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
+              >
                 <span>{file.name}</span>
                 <span>-</span>
                 <span className="whitespace-nowrap">{formatBytes(file.size)}</span>
-                <button type="button">
+                <button type="button" onClick={() => removeFile(index)}>
                   <XMarkIcon className="w-4" />
                 </button>
               </div>
