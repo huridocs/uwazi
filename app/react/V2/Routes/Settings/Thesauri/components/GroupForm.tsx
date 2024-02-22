@@ -29,13 +29,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
   const { fields } = useFieldArray({ control, name: 'values' });
 
   const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
-    delete tValue.id;
-    const filteredValues = tValue.values
-      ?.filter(fValue => fValue.label && fValue.label !== '')
-      .map(mValue => {
-        delete mValue.id;
-        return mValue;
-      });
+    const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
     submit({ label: tValue.label, id: tValue.id, values: filteredValues });
   };
 
