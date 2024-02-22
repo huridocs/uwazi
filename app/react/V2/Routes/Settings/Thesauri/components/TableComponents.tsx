@@ -21,7 +21,7 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
       context="Menu"
       className={row.getIsExpanded() ? 'text-indigo-700' : 'text-indigo-700'}
     >
-      <Translate context={row.original._id}>{getValue()}</Translate>
+      {getValue()}
     </Translate>
     {row.getCanExpand() && (
       <EmbededButton

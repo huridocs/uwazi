@@ -11,12 +11,11 @@ import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import _ from 'lodash';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
 import { ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
-import { mergeValues } from './helpers';
+import { mergeValues, sanitizeValues } from './helpers';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -87,7 +86,7 @@ const EditThesauri = () => {
   };
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
-    data.values = thesaurusValues;
+    data.values = sanitizeValues(thesaurusValues);
     try {
       await ThesauriAPI.save(new RequestParams(data));
       setNotifications({
