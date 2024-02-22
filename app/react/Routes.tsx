@@ -11,7 +11,7 @@ import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
-  CustomUploads,
+  // CustomUploads,
   EntityTypesList,
   FiltersForm,
   RelationTypesList,
@@ -48,6 +48,7 @@ import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard'
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
+import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -157,7 +158,11 @@ const getRoutesLayout = (
         element={adminsOnlyRoute(<Customisation />)}
         loader={customisationLoader(headers)}
       />
-      <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
+      <Route
+        path="custom-uploads"
+        element={adminsOnlyRoute(<CustomUploads />)}
+        loader={customUploadsLoader(headers)}
+      />
       <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
       <Route
         path="newrelmigration"
