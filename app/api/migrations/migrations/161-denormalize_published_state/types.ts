@@ -41,6 +41,8 @@ interface Template {
 interface MetadataObject {
   value: string;
   label?: string;
+  published?: boolean;
+  [k: string]: unknown | undefined;
 }
 
 interface Metadata {
@@ -55,6 +57,7 @@ interface Entity {
   template?: ObjectId;
   published?: boolean;
   metadata?: Metadata;
+  [k: string]: unknown | undefined;
 }
 
 interface Fixture {
@@ -62,4 +65,4 @@ interface Fixture {
   entities: Entity[];
 }
 
-export type { Entity, Fixture, Template };
+export type { Entity, Fixture, Metadata, Template };
