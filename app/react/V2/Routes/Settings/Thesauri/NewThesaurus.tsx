@@ -15,7 +15,6 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import { GroupForm } from './components/GroupForm';
-import { mergeValues, sanitizeValues } from './helpers';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
@@ -39,13 +38,37 @@ const NewThesauri = () => {
   });
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
-    const mergedValues = mergeValues(valueChanges, items);
-    console.log(mergedValues);
-    setValueChanges(mergedValues);
+    let currentValues = [...valueChanges];
+    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
+    console.log('items with groups: ', itemsWithGroups);
+    const itemsWithoutGroups = items
+      .filter(item => !item.groupId || item.groupId === '')
+      .map(item => {
+        // @ts-ignore
+        delete item.id;
+        delete item.groupId;
+        return item;
+      });
+    currentValues = currentValues.map(value => {
+      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
+      if (groupItem) {
+        delete groupItem.groupId;
+        // @ts-ignore
+        delete groupItem.id;
+        value.values?.push(groupItem as ThesaurusValueSchema);
+        return value;
+      }
+      return value;
+    });
+
+    currentValues = [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
+
+    setValueChanges(currentValues);
     setIsAddItemSidepanelOpen(false);
   };
 
   const addGroupSubmit = (items: ThesaurusValueSchema | ThesaurusValueSchema[]) => {
+    console.log('Submited group: ', items);
     setValueChanges(old => {
       if (Array.isArray(items)) {
         return [...old, ...items];
@@ -56,9 +79,16 @@ const NewThesauri = () => {
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
-    data.values = sanitizeValues(valueChanges);
+    const sanitizedValues = { ...data };
+    delete sanitizedValues.id;
+    sanitizedValues.values = sanitizedValues.values?.map(sValue => {
+      delete sValue.id;
+      // @ts-ignore
+      delete sValue.groupId;
+      return sValue;
+    });
     try {
-      await ThesauriAPI.save(new RequestParams(data));
+      await ThesauriAPI.save(new RequestParams(sanitizedValues));
       setNotifications({
         type: 'success',
         text: <Translate>Thesauri added.</Translate>,
@@ -73,6 +103,7 @@ const NewThesauri = () => {
   };
 
   const deleteSelected = () => {
+    console.log('Value changes: ', valueChanges);
     let newValues: ThesaurusValueSchema[] = valueChanges.filter(
       value => !selectedValues.find(selected => selected.original.id === value.id)
     );

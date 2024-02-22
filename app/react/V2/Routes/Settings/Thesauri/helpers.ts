@@ -10,6 +10,9 @@ const mergeValues = (
   currentValues = currentValues.map(value => {
     const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
     if (groupItem) {
+      delete groupItem.groupId;
+      // @ts-ignore
+      delete groupItem.id;
       value.values?.push(groupItem as ThesaurusValueSchema);
       return value;
     }
@@ -19,24 +22,4 @@ const mergeValues = (
   return [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
 };
 
-const sanitizeValues = (values: ThesaurusValueSchema & { groupId: string }[]) => {
-  const sanitizedValues = values.map(sValue => {
-    // @ts-ignore
-    delete sValue.id;
-    // @ts-ignore
-    delete sValue.groupId;
-    return sValue;
-  });
-  // @ts-ignore
-  const sanitizedGroupValues = sanitizedValues.values?.map((sgValue: ThesaurusValueSchema) => {
-    delete sgValue.id;
-    // @ts-ignore
-    delete sgValue.groupId;
-    return sgValue;
-  });
-  // @ts-ignore
-  sanitizeValues.values = sanitizedGroupValues;
-  return sanitizeValues;
-};
-
-export { mergeValues, sanitizeValues };
+export { mergeValues };
