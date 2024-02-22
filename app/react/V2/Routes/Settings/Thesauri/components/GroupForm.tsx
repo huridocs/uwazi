@@ -7,12 +7,13 @@ import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
 
-interface AddItemFormProps {
+interface GroupFormProps {
   closePanel: () => void;
+  value?: ThesaurusValueSchema;
   submit: SubmitHandler<ThesaurusValueSchema>;
 }
 
-const AddGroupForm = ({ submit, closePanel }: AddItemFormProps) => {
+const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
   const {
     watch,
     control,
@@ -22,13 +23,19 @@ const AddGroupForm = ({ submit, closePanel }: AddItemFormProps) => {
     formState: { errors },
   } = useForm<ThesaurusValueSchema & { groupId: string }>({
     mode: 'onSubmit',
-    defaultValues: { label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() },
+    defaultValues: value || { label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() },
   });
 
   const { fields } = useFieldArray({ control, name: 'values' });
 
   const curateBeforeSubmit = (value: ThesaurusValueSchema) => {
-    const values = value.values?.filter(value => value.label && value.label !== '');
+    delete value.id;
+    const values = value.values
+      ?.filter(value => value.label && value.label !== '')
+      .map(value => {
+        delete value.id;
+        return value;
+      });
     submit({ label: value.label, id: value.id, values });
   };
 
@@ -100,4 +107,4 @@ const AddGroupForm = ({ submit, closePanel }: AddItemFormProps) => {
   );
 };
 
-export { AddGroupForm };
+export { GroupForm };
