@@ -15,7 +15,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import { GroupForm } from './components/GroupForm';
-import { mergeValues } from './helpers';
+import { mergeValues, sanitizeValues } from './helpers';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
@@ -40,6 +40,7 @@ const NewThesauri = () => {
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
     const mergedValues = mergeValues(valueChanges, items);
+    console.log(mergedValues);
     setValueChanges(mergedValues);
     setIsAddItemSidepanelOpen(false);
   };
@@ -55,7 +56,7 @@ const NewThesauri = () => {
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
-    data.values = valueChanges;
+    data.values = sanitizeValues(valueChanges);
     try {
       await ThesauriAPI.save(new RequestParams(data));
       setNotifications({

@@ -30,8 +30,8 @@ const ThesauriList = () => {
 
   const deleteSelectedThesauri = async () => {
     try {
-      const requests = selectedThesauri.map(thesauri => {
-        return ThesauriAPI.delete(new RequestParams({ _id: thesauri.original._id }));
+      const requests = selectedThesauri.map(sThesauri => {
+        return ThesauriAPI.delete(new RequestParams({ _id: sThesauri.original._id }));
       });
       await Promise.all(requests);
       setNotifications({
