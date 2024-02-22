@@ -224,7 +224,7 @@ const NewThesauri = () => {
         />
       </Sidepanel>
       <Sidepanel
-        title={<Translate className="uppercase">Add Group</Translate>}
+        title={<Translate className="uppercase">Add group</Translate>}
         isOpen={isAddGroupSidepanelOpen}
         closeSidepanelFunction={() => setIsAddGroupSidepanelOpen(false)}
         size="medium"

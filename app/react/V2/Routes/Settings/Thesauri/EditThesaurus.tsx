@@ -270,7 +270,7 @@ const EditThesauri = () => {
       <Sidepanel
         title={
           editGroup ? (
-            <Translate className="uppercase">Edit Group</Translate>
+            <Translate className="uppercase">Edit group</Translate>
           ) : (
             <Translate className="uppercase">Add Group</Translate>
           )
