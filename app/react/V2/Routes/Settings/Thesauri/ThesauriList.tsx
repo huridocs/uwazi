@@ -103,7 +103,7 @@ const ThesauriList = () => {
               <div className="flex gap-2">
                 <Link to="/settings/thesauri/new">
                   <Button type="button">
-                    <Translate>Add Thesaurus</Translate>
+                    <Translate>Add thesaurus</Translate>
                   </Button>
                 </Link>
               </div>
