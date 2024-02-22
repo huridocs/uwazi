@@ -272,7 +272,7 @@ const EditThesauri = () => {
           editGroup ? (
             <Translate className="uppercase">Edit group</Translate>
           ) : (
-            <Translate className="uppercase">Add Group</Translate>
+            <Translate className="uppercase">Add group</Translate>
           )
         }
         isOpen={isGroupSidepanelOpen}
