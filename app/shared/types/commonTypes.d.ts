@@ -281,6 +281,7 @@ export interface MetadataObjectSchema {
   inheritedType?: string;
   timeLinks?: string;
   parent?: SelectParentSchema;
+  published?: boolean;
   [k: string]: unknown | undefined;
 }
 

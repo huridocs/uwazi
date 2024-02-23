@@ -13,7 +13,7 @@ const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);
   db = testingDB.mongodb!;
   migration.reindex = false;
-  migration.batchSize = 2;
+  migration.batchSize = 4;
   await migration.up(db);
   metadata = (await db.collection<Entity>('entities').find().toArray()).map(e => e.metadata || {});
 };
