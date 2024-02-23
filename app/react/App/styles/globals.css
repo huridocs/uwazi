@@ -6874,6 +6874,10 @@ input:checked + .toggle-bg {
     max-height: 70vh;
   }
 
+  .md\:min-h-48 {
+    min-height: 12rem;
+  }
+
   .md\:w-1\/2 {
     width: 50%;
   }
@@ -6904,6 +6908,10 @@ input:checked + .toggle-bg {
 
   .md\:w-auto {
     width: auto;
+  }
+
+  .md\:min-w-72 {
+    min-width: 18rem;
   }
 
   .md\:max-w-xl {

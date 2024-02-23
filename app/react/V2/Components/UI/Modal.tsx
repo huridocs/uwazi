@@ -66,13 +66,15 @@ Modal.Footer = ({ children }: ModalChildrenProps) => (
 Modal.CloseButton = ({
   className,
   onClick,
-}: ModalChildrenProps & { onClick?: MouseEventHandler }) => (
+  disabled,
+}: ModalChildrenProps & { onClick?: MouseEventHandler; disabled?: boolean }) => (
   <button
     onClick={onClick}
     aria-label="Close modal"
     className={`${className} ml-auto inline-flex items-center rounded-lg bg-transparent 
     p-1.5 text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 `}
     type="button"
+    disabled={disabled}
   >
     <XMarkIcon className="w-4" />
   </button>
