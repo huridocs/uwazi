@@ -7,10 +7,11 @@ import { formatBytes } from 'V2/shared/formatHelpers';
 
 type FileDropzoneProps = {
   onDrop?: DropzoneOptions['onDrop'];
+  onChange?: (files: File[]) => void;
   className?: string;
 };
 
-const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
+const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
   const [files, setFiles] = useState<File[]>([]);
   const [totalSize, setTotalSize] = useState<number>(0);
 
@@ -22,21 +23,27 @@ const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
     setTotalSize(result);
   }, [files]);
 
+  useEffect(() => {
+    if (onChange) {
+      onChange(files);
+    }
+  }, [files, onChange]);
+
   const removeFile = (index: number) => {
     setFiles(files.filter((_file, i) => i !== index));
   };
 
+  const handleOnDrop: DropzoneOptions['onDrop'] = (acceptedFiles, fileRejections, event) => {
+    if (acceptedFiles) {
+      setFiles([...files, ...acceptedFiles]);
+    }
+    if (onDrop) {
+      onDrop(files, fileRejections, event);
+    }
+  };
+
   return (
-    <Dropzone
-      onDrop={(acceptedFiles, fileRejections, event) => {
-        if (acceptedFiles) {
-          setFiles([...files, ...acceptedFiles]);
-        }
-        if (onDrop) {
-          onDrop(files, fileRejections, event);
-        }
-      }}
-    >
+    <Dropzone onDrop={handleOnDrop}>
       {({ getRootProps, getInputProps }) => (
         <section
           className={`p-4 bg-gray-50 rounded border border-gray-300 border-dashed ${className}`}
@@ -58,13 +65,14 @@ const FileDropzone = ({ className, onDrop }: FileDropzoneProps) => {
           <div className="flex flex-wrap gap-2 my-4">
             {files.map((file, index) => (
               <div
-                key={`${file.name}`}
-                className="text-sm border border-gray-300 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
+                key={file.name}
+                className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
               >
-                <span>{file.name}</span>
+                <span className="truncate max-w-32">{file.name}</span>
                 <span>-</span>
                 <span className="whitespace-nowrap">{formatBytes(file.size)}</span>
                 <button type="button" onClick={() => removeFile(index)}>
+                  <Translate className="sr-only">Delete</Translate>
                   <XMarkIcon className="w-4" />
                 </button>
               </div>

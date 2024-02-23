@@ -15,7 +15,7 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <FileDropzone className="w-1/2" onDrop={args.onDrop} />
+        <FileDropzone className="w-1/2" onDrop={args.onDrop} onChange={args.onChange} />
       </div>
     </Provider>
   ),
@@ -24,7 +24,8 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
-    onDrop: _file => {},
+    onDrop: _files => {},
+    onChange: _files => {},
   },
 };
 
