@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import uniqueID from 'shared/uniqueID';
 
 interface ValueFormProps {
   closePanel: () => void;
@@ -14,13 +15,23 @@ interface ValueFormProps {
 }
 
 const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
+  const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
+
+  useEffect(() => {
+    if (value && groups) {
+      const group = groups.find(singleGroup => {
+        return singleGroup.values?.includes(value);
+      });
+      setParentGroup(group);
+    }
+  }, [value, groups]);
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ThesaurusValueSchema & { groupId?: string }>({
     mode: 'onSubmit',
-    defaultValues: value || { label: '' },
+    defaultValues: value || { label: '', id: uniqueID() },
   });
   return (
     <div className="relative h-full">
@@ -64,6 +75,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
                 data-testid="thesauri-form-item-group"
                 label={<Translate>Group</Translate>}
                 {...register('groupId')}
+                value={parentGroup ? parentGroup.id : undefined}
                 options={[
                   { value: '', label: 'No label', key: '0' },
                   ...groups.map(group => ({
