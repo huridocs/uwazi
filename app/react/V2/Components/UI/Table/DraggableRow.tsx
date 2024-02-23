@@ -45,11 +45,19 @@ const RowWrapper =
   // eslint-disable-next-line comma-spacing
   <T,>({ children, dndContext, row, draggableRow, className, innerRef }: RowWrapperProps<T>) => {
     if (!draggableRow || !dndContext) {
-      return <tr key={`row_${row.id}`}>{children}</tr>;
+      return (
+        <tr key={`row_${row.id}`} className={className}>
+          {children}
+        </tr>
+      );
     }
     if (!row.parentId && row.getLeafRows().length === 0) {
       return (
-        <tr key={`row_${row.id}`} ref={innerRef! as RefObject<HTMLTableRowElement>}>
+        <tr
+          key={`row_${row.id}`}
+          className={className}
+          ref={innerRef! as RefObject<HTMLTableRowElement>}
+        >
           {children}
         </tr>
       );
