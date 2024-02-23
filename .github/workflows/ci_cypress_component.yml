@@ -6,7 +6,7 @@ on:
       - production
       - development
       - staging
-
+    
   pull_request:
 
 concurrency:
