@@ -1,4 +1,4 @@
-import { CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
@@ -15,6 +15,7 @@ import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
 import { ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
+import { mergeValues, sanitizeThesaurusValues } from './helpers';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -96,24 +97,7 @@ const EditThesauri = () => {
       setIsItemSidepanelOpen(false);
       return;
     }
-    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
-    const itemsWithoutGroups = items
-      .filter(item => !item.groupId || item.groupId === '')
-      .map(item => {
-        delete item.groupId;
-        return item;
-      });
-    currentValues = currentValues.map(value => {
-      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
-      if (groupItem) {
-        delete groupItem.groupId;
-        value.values?.push(groupItem as ThesaurusValueSchema);
-        return value;
-      }
-      return value;
-    });
-
-    currentValues = [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
+    currentValues = mergeValues(currentValues, items);
 
     setThesaurusValues(currentValues);
     setIsItemSidepanelOpen(false);
@@ -137,9 +121,9 @@ const EditThesauri = () => {
   };
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
-    data.values = thesaurusValues;
+    const sanitizedThesaurus = sanitizeThesaurusValues(data, thesaurusValues);
     try {
-      await ThesauriAPI.save(new RequestParams(data));
+      await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
       setNotifications({
         type: 'success',
         text: <Translate>Thesauri updated.</Translate>,

@@ -14,6 +14,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import { GroupForm } from './components/GroupForm';
+import { mergeValues, sanitizeThesaurusValues } from './helpers';
 
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
@@ -38,19 +39,7 @@ const NewThesauri = () => {
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
     let currentValues = [...valueChanges];
-    const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
-    const itemsWithoutGroups = items.filter(item => !item.groupId || item.groupId === '');
-    currentValues = currentValues.map(value => {
-      const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
-      if (groupItem) {
-        delete groupItem.groupId;
-        value.values?.push(groupItem as ThesaurusValueSchema);
-        return value;
-      }
-      return value;
-    });
-
-    currentValues = [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
+    currentValues = mergeValues(currentValues, items);
 
     setValueChanges(currentValues);
     setIsAddItemSidepanelOpen(false);
@@ -67,15 +56,10 @@ const NewThesauri = () => {
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
-    const sanitizedValues = { ...data, values: valueChanges };
-    sanitizedValues.values = sanitizedValues.values?.map(sValue => {
-      delete sValue.id;
-      // @ts-ignore
-      delete sValue.groupId;
-      return sValue;
-    });
+    const sanitizedThesaurus = sanitizeThesaurusValues(data, valueChanges);
+    console.log('Already sanitized thesaurus: ', sanitizedThesaurus);
     try {
-      await ThesauriAPI.save(new RequestParams(sanitizedValues));
+      await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
       setNotifications({
         type: 'success',
         text: <Translate>Thesauri added.</Translate>,
