@@ -27,7 +27,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
     if (onChange) {
       onChange(files);
     }
-  }, [files, onChange]);
+  }, [files]);
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_file, i) => i !== index));
@@ -65,7 +65,7 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
           <div className="flex flex-wrap gap-2 my-4">
             {files.map((file, index) => (
               <div
-                key={file.name}
+                key={`${file.name}`}
                 className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
               >
                 <span className="truncate max-w-32">{file.name}</span>
