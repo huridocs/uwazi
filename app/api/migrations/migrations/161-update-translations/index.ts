@@ -14,12 +14,12 @@ const newKeys = [
   {
     key: 'thesauri new group desc',
     value:
-      ' Each item created will live inside this group. Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.',
+      'Each item created will live inside this group. Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.',
   },
   {
     key: 'thesauri new item desc',
     value:
-      ' Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.',
+      'Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.',
   },
   {
     key: 'Language (Default language)',
