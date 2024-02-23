@@ -9,7 +9,6 @@ import { InputField } from 'app/V2/Components/Forms';
 import { Link, useNavigate } from 'react-router-dom';
 import { ValueForm } from './components/ValueForm';
 import { useForm } from 'react-hook-form';
-import uniqueID from 'shared/uniqueID';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
@@ -34,27 +33,17 @@ const NewThesauri = () => {
     formState: { errors },
   } = useForm<ThesaurusSchema>({
     mode: 'onSubmit',
-    defaultValues: { id: uniqueID(), name: '', values: [] },
+    defaultValues: { name: '', values: [] },
   });
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
     let currentValues = [...valueChanges];
     const itemsWithGroups = items.filter(item => item.groupId && item.groupId !== '');
-    console.log('items with groups: ', itemsWithGroups);
-    const itemsWithoutGroups = items
-      .filter(item => !item.groupId || item.groupId === '')
-      .map(item => {
-        // @ts-ignore
-        delete item.id;
-        delete item.groupId;
-        return item;
-      });
+    const itemsWithoutGroups = items.filter(item => !item.groupId || item.groupId === '');
     currentValues = currentValues.map(value => {
       const groupItem = itemsWithGroups.find(item => value.id === item.groupId);
       if (groupItem) {
         delete groupItem.groupId;
-        // @ts-ignore
-        delete groupItem.id;
         value.values?.push(groupItem as ThesaurusValueSchema);
         return value;
       }
@@ -68,7 +57,6 @@ const NewThesauri = () => {
   };
 
   const addGroupSubmit = (items: ThesaurusValueSchema | ThesaurusValueSchema[]) => {
-    console.log('Submited group: ', items);
     setValueChanges(old => {
       if (Array.isArray(items)) {
         return [...old, ...items];
@@ -79,8 +67,7 @@ const NewThesauri = () => {
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
-    const sanitizedValues = { ...data };
-    delete sanitizedValues.id;
+    const sanitizedValues = { ...data, values: valueChanges };
     sanitizedValues.values = sanitizedValues.values?.map(sValue => {
       delete sValue.id;
       // @ts-ignore
@@ -103,7 +90,6 @@ const NewThesauri = () => {
   };
 
   const deleteSelected = () => {
-    console.log('Value changes: ', valueChanges);
     let newValues: ThesaurusValueSchema[] = valueChanges.filter(
       value => !selectedValues.find(selected => selected.original.id === value.id)
     );
@@ -176,7 +162,7 @@ const NewThesauri = () => {
                   color="error"
                   data-testid="menu-delete-link"
                 >
-                  <Translate>Delete</Translate>
+                  <Translate>Remove</Translate>
                 </Button>
                 <Translate>Selected</Translate> {selectedValues.length} <Translate>of</Translate>{' '}
                 {getValues().values?.length}

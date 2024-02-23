@@ -11,7 +11,6 @@ import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import _ from 'lodash';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
 import { ValueForm } from './components/ValueForm';
@@ -65,13 +64,33 @@ const EditThesauri = () => {
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
     let currentValues: ThesaurusValueSchema[] = [...thesaurusValues];
     if (editValue) {
-      currentValues = currentValues.map(value => {
-        if (value.id === (items[0] as ThesaurusValueSchema).id) {
-          delete items[0].groupId;
-          return items[0];
-        }
-        return value;
-      }) as ThesaurusValueSchema[];
+      // @ts-ignore
+      const editItem: ThesaurusValueSchema & { groupId?: string } = items[0];
+      if (editItem.groupId && editItem.groupId !== '') {
+        currentValues = currentValues.map(value => {
+          if (value.id === editItem.groupId) {
+            // Check the item does not exist
+            const existingItem = value.values?.find(eValue => eValue.id === editItem.id);
+            if (existingItem) {
+              value.values = value.values?.map(aValue =>
+                aValue.id === existingItem.id ? editItem : aValue
+              );
+            } else {
+              value.values?.push(editItem);
+            }
+          }
+          return value;
+        });
+        currentValues = currentValues.filter(cValue => cValue.id !== editItem.id);
+      } else {
+        currentValues = currentValues.map(value => {
+          if (value.id === (editItem as ThesaurusValueSchema).id) {
+            delete editItem.groupId;
+            return editItem;
+          }
+          return value;
+        }) as ThesaurusValueSchema[];
+      }
       setEditValue(undefined);
       setThesaurusValues(currentValues);
       setIsItemSidepanelOpen(false);
@@ -95,8 +114,6 @@ const EditThesauri = () => {
     });
 
     currentValues = [...currentValues, ...itemsWithoutGroups] as ThesaurusValueSchema[];
-
-    console.log('Current values: ', currentValues);
 
     setThesaurusValues(currentValues);
     setIsItemSidepanelOpen(false);
