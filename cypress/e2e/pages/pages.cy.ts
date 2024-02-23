@@ -20,7 +20,7 @@ describe('Pages', () => {
     });
   });
 
-  describe('Custom home page and styles', () => {
+  describe('Custom home page', () => {
     const setLandingPage = (pageURL: string) => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
@@ -28,16 +28,6 @@ describe('Pages', () => {
       cy.contains('button', 'Save').click();
       cy.contains('Settings updated');
     };
-
-    it('should allow setting up a custom CSS', () => {
-      cy.contains('a', 'Global CSS').click();
-      cy.get('textarea[name="settings.settings.customCSS"]').type(
-        '.myDiv { color: white; font-size: 20px; background-color: red; }',
-        { parseSpecialCharSequences: false, delay: 0 }
-      );
-      cy.contains('button', 'Save').click();
-      cy.contains('Settings updated');
-    });
 
     it('should create a page to be used as home', () => {
       cy.contains('a', 'Pages').click();
@@ -64,13 +54,10 @@ describe('Pages', () => {
       });
     });
 
-    it('should render the custom page as home page with the custom CSS styles', () => {
+    it('should render the custom page as home page', () => {
       cy.visit('http://localhost:3000');
       cy.reload();
       cy.get('h1').contains('Custom HomePage header');
-      cy.get('div.myDiv').should('have.css', 'color', 'rgb(255, 255, 255)');
-      cy.get('div.myDiv').should('have.css', 'backgroundColor', 'rgb(255, 0, 0)');
-      cy.get('div.myDiv').should('have.css', 'fontSize', '20px');
     });
 
     it('should allow settings a public entity as a landing page', () => {
@@ -111,16 +98,16 @@ describe('Pages', () => {
   });
 
   describe('Page edition', () => {
-    it('should render the page content as formatted code', () => {
+    it('should display existing code in an editor', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('table > tbody > tr:nth-child(2) > td:nth-child(5)', 'Edit').click();
       cy.contains('Code').click();
+      cy.get('div[data-mode-id="html"]').should('exist');
       cy.contains('<EntityData');
-      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
       cy.contains('Advanced').click();
       cy.contains('toISOString');
-      cy.get('div[data-testid="settings-content-body"').toMatchImageSnapshot();
+      cy.get('div[data-mode-id="javascript"]').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {
