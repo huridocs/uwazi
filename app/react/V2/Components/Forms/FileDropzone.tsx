@@ -65,7 +65,8 @@ const FileDropzone = ({ className, onDrop, onChange }: FileDropzoneProps) => {
           <div className="flex flex-wrap gap-2 my-4">
             {files.map((file, index) => (
               <div
-                key={`${file.name}`}
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${file.name}-${index}`}
                 className="text-sm border border-gray-300 bg-gray-100 px-[2px] rounded flex flex-nowrap gap-1 align-middle"
               >
                 <span className="truncate max-w-32">{file.name}</span>
