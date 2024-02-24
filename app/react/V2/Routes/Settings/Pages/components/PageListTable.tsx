@@ -12,7 +12,6 @@ const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${keba
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
 const UrlHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 
 const EditButton = ({ cell }: CellContext<Page, string>) => (
   <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
@@ -37,13 +36,4 @@ const UrlCell = ({ cell }: CellContext<Page, string>) => {
   return url;
 };
 
-export {
-  YesNoPill,
-  EditButton,
-  EntityViewHeader,
-  TitleHeader,
-  UrlHeader,
-  ActionHeader,
-  UrlCell,
-  getPageUrl,
-};
+export { YesNoPill, EditButton, EntityViewHeader, TitleHeader, UrlHeader, UrlCell, getPageUrl };
