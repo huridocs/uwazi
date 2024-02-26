@@ -34,8 +34,8 @@ const Users = () => {
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationModalProps, setConfirmationModalProps] = useState({
-    header: 'Delete',
-    body: 'Do you want to delete?',
+    header: <Translate>Delete</Translate>,
+    body: <Translate>Do you want to delete the following items?</Translate>,
   });
   const [bulkActionIntent, setBulkActionIntent] = useState<FormIntent>('delete-users');
 
@@ -112,8 +112,12 @@ const Users = () => {
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
-                      header: 'Reset passwords',
-                      body: 'Do you want reset the password for the following users?',
+                      header: <Translate>Reset passwords</Translate>,
+                      body: (
+                        <Translate>
+                          Do you want reset the password for the following users?
+                        </Translate>
+                      ),
                     });
                     setBulkActionIntent('bulk-reset-password');
                     setShowConfirmationModal(true);
@@ -126,8 +130,8 @@ const Users = () => {
                   styling="light"
                   onClick={() => {
                     setConfirmationModalProps({
-                      header: 'Reset 2FA',
-                      body: 'Do you want disable 2FA for the following users?',
+                      header: <Translate>Reset 2FA</Translate>,
+                      body: <Translate>Do you want disable 2FA for the following users?</Translate>,
                     });
                     setBulkActionIntent('bulk-reset-2fa');
                     setShowConfirmationModal(true);
@@ -143,8 +147,8 @@ const Users = () => {
                 color="error"
                 onClick={() => {
                   setConfirmationModalProps({
-                    header: 'Delete',
-                    body: 'Do you want to delete the following items?',
+                    header: <Translate>Delete</Translate>,
+                    body: <Translate>Do you want to delete the following items?</Translate>,
                   });
                   setBulkActionIntent(activeTab === 'Users' ? 'delete-users' : 'delete-groups');
                   setShowConfirmationModal(true);
