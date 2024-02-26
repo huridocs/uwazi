@@ -54,13 +54,13 @@ const ThesauriList = () => {
       id: 'name',
       header: LabelHeader,
       cell: ThesaurusLabel,
-      meta: { headerClassName: 'w-9/12' },
+      meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusSchema, 'name'>,
     columnHelper.accessor('_id', {
-      header: '',
+      header: () => <Translate>Action</Translate>,
       cell: EditButton,
       enableSorting: false,
-      meta: { action: edit, headerClassName: 'text-center w-1/12' },
+      meta: { action: edit, headerClassName: 'w-0 text-center' },
     }) as ColumnDef<ThesaurusSchema, '_id'>,
   ];
 

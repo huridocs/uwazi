@@ -19,16 +19,19 @@ import { mergeValues, sanitizeThesaurusValues } from './helpers';
 const NewThesauri = () => {
   const columnHelper = createColumnHelper<any>();
   const navigate = useNavigate();
+  const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
+  const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
   const [valueChanges, setValueChanges] = useState<ThesaurusValueSchema[]>([]);
   const [selectedValues, setSelectedValues] = useState<Row<ThesaurusValueSchema>[]>([]);
-  const [isAddItemSidepanelOpen, setIsAddItemSidepanelOpen] = useState(false);
-  const [isAddGroupSidepanelOpen, setIsAddGroupSidepanelOpen] = useState(false);
+  const [isValueSidepanelOpen, setIsValueSidepanelOpen] = useState(false);
+  const [isGroupSidepanelOpen, setIsGroupSidepanelOpen] = useState(false);
 
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const {
     watch,
     register,
+    setValue,
     getValues,
     handleSubmit,
     formState: { errors },
@@ -38,21 +41,62 @@ const NewThesauri = () => {
   });
 
   const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
-    let currentValues = [...valueChanges];
+    let currentValues: ThesaurusValueSchema[] = [...valueChanges];
+    if (editValue) {
+      // @ts-ignore
+      const editItem: ThesaurusValueSchema & { groupId?: string } = items[0];
+      if (editItem.groupId && editItem.groupId !== '') {
+        currentValues = currentValues.map(value => {
+          if (value.id === editItem.groupId) {
+            // Check the item does not exist
+            const existingItem = value.values?.find(eValue => eValue.id === editItem.id);
+            if (existingItem) {
+              value.values = value.values?.map(aValue =>
+                aValue.id === existingItem.id ? editItem : aValue
+              );
+            } else {
+              value.values?.push(editItem);
+            }
+          }
+          return value;
+        });
+        currentValues = currentValues.filter(cValue => cValue.id !== editItem.id);
+      } else {
+        currentValues = currentValues.map(value => {
+          if (value.id === (editItem as ThesaurusValueSchema).id) {
+            delete editItem.groupId;
+            return editItem;
+          }
+          return value;
+        }) as ThesaurusValueSchema[];
+      }
+      setEditValue(undefined);
+      setValueChanges(currentValues);
+      setIsValueSidepanelOpen(false);
+      return;
+    }
     currentValues = mergeValues(currentValues, items);
 
     setValueChanges(currentValues);
-    setIsAddItemSidepanelOpen(false);
+    setIsValueSidepanelOpen(false);
   };
 
-  const addGroupSubmit = (items: ThesaurusValueSchema | ThesaurusValueSchema[]) => {
-    setValueChanges(old => {
-      if (Array.isArray(items)) {
-        return [...old, ...items];
-      }
-      return [...old, items];
-    });
-    setIsAddGroupSidepanelOpen(false);
+  const addGroupSubmit = (group: ThesaurusValueSchema) => {
+    if (editGroup) {
+      const updatedValues = valueChanges.map(item => {
+        if (item.id === group.id) {
+          return group;
+        }
+        return item;
+      });
+      setValueChanges(updatedValues);
+      setEditGroup(undefined);
+      setIsGroupSidepanelOpen(false);
+      return;
+    }
+    setValueChanges(old => [...old, group]);
+    setIsGroupSidepanelOpen(false);
+    setIsGroupSidepanelOpen(false);
   };
 
   const submitThesauri = async (data: ThesaurusSchema) => {
@@ -93,13 +137,24 @@ const NewThesauri = () => {
       id: 'label',
       header: 'Label',
       cell: ThesaurusValueLabel,
-      meta: { headerClassName: 'w-9/12' },
+      meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
     columnHelper.accessor('id', {
-      header: 'Action',
+      header: () => <Translate>Action</Translate>,
       cell: EditButton,
       enableSorting: false,
-      meta: { action: () => {}, headerClassName: 'text-center w-1/12' },
+      meta: {
+        action: (row: Row<ThesaurusValueSchema>) => {
+          if (row.original.values && Array.isArray(row.original.values)) {
+            setEditGroup(row.original as ThesaurusValueSchema);
+            setIsGroupSidepanelOpen(true);
+          } else {
+            setEditValue(row.original as ThesaurusValueSchema);
+            setIsValueSidepanelOpen(true);
+          }
+        },
+        headerClassName: 'text-center w-0',
+      },
     }) as ColumnDef<ThesaurusValueSchema, 'id'>,
   ];
 
@@ -118,7 +173,9 @@ const NewThesauri = () => {
           <div data-testid="thesauri" className="mb-4 border rounded-md shadow-sm border-gray-50">
             <div className="p-4">
               <InputField
-                clearFieldAction={() => {}}
+                clearFieldAction={() => {
+                  setValue('name', '');
+                }}
                 id="thesauri-name"
                 placeholder="untitled"
                 className="mb-2"
@@ -127,6 +184,7 @@ const NewThesauri = () => {
               />
             </div>
             <Table<ThesaurusValueSchema>
+              draggableRows
               enableSelection
               columns={columns}
               subRowsKey="values"
@@ -153,10 +211,10 @@ const NewThesauri = () => {
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button onClick={() => setIsAddItemSidepanelOpen(true)}>
+                <Button onClick={() => setIsValueSidepanelOpen(true)}>
                   <Translate>Add item</Translate>
                 </Button>
-                <Button styling="outline" onClick={() => setIsAddGroupSidepanelOpen(true)}>
+                <Button styling="outline" onClick={() => setIsGroupSidepanelOpen(true)}>
                   <Translate>Add group</Translate>
                 </Button>
                 <Button styling="outline">
@@ -181,26 +239,43 @@ const NewThesauri = () => {
         </SettingsContent.Footer>
       </SettingsContent>
       <Sidepanel
-        title={<Translate className="uppercase">Add item</Translate>}
-        isOpen={isAddItemSidepanelOpen}
-        closeSidepanelFunction={() => setIsAddItemSidepanelOpen(false)}
+        title={
+          editValue ? (
+            <Translate className="uppercase">Edit item</Translate>
+          ) : (
+            <Translate className="uppercase">Add item</Translate>
+          )
+        }
+        isOpen={isValueSidepanelOpen}
+        closeSidepanelFunction={() => setIsValueSidepanelOpen(false)}
         size="medium"
         withOverlay
       >
         <ValueForm
           submit={addItemSubmit}
-          closePanel={() => setIsAddItemSidepanelOpen(false)}
+          value={editValue}
+          closePanel={() => setIsValueSidepanelOpen(false)}
           groups={valueChanges.filter((value: ThesaurusValueSchema) => Array.isArray(value.values))}
         />
       </Sidepanel>
       <Sidepanel
-        title={<Translate className="uppercase">Add group</Translate>}
-        isOpen={isAddGroupSidepanelOpen}
-        closeSidepanelFunction={() => setIsAddGroupSidepanelOpen(false)}
+        title={
+          editGroup ? (
+            <Translate className="uppercase">Edit group</Translate>
+          ) : (
+            <Translate className="uppercase">Add group</Translate>
+          )
+        }
+        isOpen={isGroupSidepanelOpen}
+        closeSidepanelFunction={() => setIsGroupSidepanelOpen(false)}
         size="medium"
         withOverlay
       >
-        <GroupForm submit={addGroupSubmit} closePanel={() => setIsAddGroupSidepanelOpen(false)} />
+        <GroupForm
+          submit={addGroupSubmit}
+          value={editGroup}
+          closePanel={() => setIsGroupSidepanelOpen(false)}
+        />
       </Sidepanel>
     </div>
   );
