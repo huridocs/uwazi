@@ -52,7 +52,6 @@ const diffEntities = (newEntity: EntitySchema, oldEntity: EntitySchema) =>
     {
       ...(newEntity.title !== oldEntity.title ? { title: oldEntity.title } : {}),
       ...(newEntity.icon?._id !== oldEntity.icon?._id ? { icon: oldEntity.icon } : {}),
-      ...(newEntity.published !== oldEntity.published ? { published: oldEntity.published } : {}),
     }
   );
 
@@ -68,9 +67,6 @@ function getPropertiesThatChanged(entityDiff: EntitySchema, template: TemplateSc
   }
   if (entityDiff.icon) {
     metadataPropsThatChanged.push('icon');
-  }
-  if (entityDiff.published) {
-    metadataPropsThatChanged.push('published');
   }
   return metadataPropsThatChanged;
 }
@@ -154,11 +150,10 @@ const twoJumpUpdates = async (contentId: string) =>
 async function denormalizationUpdates(contentId: string, templatePropertiesThatChanged: string[]) {
   const entityPropChanged =
     templatePropertiesThatChanged.includes('label') ||
-    templatePropertiesThatChanged.includes('icon') ||
-    templatePropertiesThatChanged.includes('published');
+    templatePropertiesThatChanged.includes('icon');
 
   const metadataPropsThatChanged = templatePropertiesThatChanged.filter(
-    v => !['icon', 'label', 'published'].includes(v)
+    v => !['icon', 'label'].includes(v)
   );
 
   return uniqueByNameAndInheritProperty([
@@ -215,7 +210,6 @@ const denormalizeRelated = async (
           $set: {
             [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
-            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published,
             ...(inheritProperty
               ? {
                   [`${update.valuePath}.$[valueIndex].inheritedValue`]:
