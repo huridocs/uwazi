@@ -9,7 +9,7 @@ interface RowProps<T> {
 }
 /* eslint-disable comma-spacing */
 const TableHeader = <T,>({ headerGroup, draggableRows, sortedChanged }: RowProps<T>) => (
-  <tr>
+  <tr className="border-b">
     {headerGroup.headers.map(header => {
       const isSortable = header.column.getCanSort();
       const isSelect = header.column.id === 'checkbox-select';
