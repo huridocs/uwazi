@@ -19,26 +19,26 @@ import Value from './Value';
 import SearchBox from './SearchBox';
 import EntityInfo from './EntityInfo';
 
-const BarChart = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js')
+const BarChart = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadBarChart" */ './BarChart.js')
 );
-const FreeBarChart = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx')
-);
-
-const Slideshow = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js')
+const FreeBarChart = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadFreeBarChart" */ './FreeBarChart.tsx')
 );
 
-const PieChart = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js')
+const Slideshow = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadSlideshow" */ './Slideshow.js')
 );
 
-const ListChart = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js')
+const PieChart = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadPieChart" */ './PieChart.js')
 );
-const GaugeChart = loadable(async () =>
-  import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js')
+
+const ListChart = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadListChart" */ './ListChart.js')
+);
+const GaugeChart = loadable(
+  async () => import(/* webpackChunkName: "LazyLoadGaugeChart" */ './GaugeChart.js')
 );
 
 export {

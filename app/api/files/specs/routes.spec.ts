@@ -217,9 +217,7 @@ describe('files routes', () => {
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
-      await request(app)
-        .delete('/api/files')
-        .query({ _id: file._id?.toString() });
+      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
       expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
     });
