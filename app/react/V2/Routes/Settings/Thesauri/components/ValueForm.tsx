@@ -76,6 +76,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
                 label={<Translate>Group</Translate>}
                 {...register('groupId')}
                 value={parentGroup ? parentGroup.id : undefined}
+                disabled={!!parentGroup}
                 options={[
                   { value: '', label: 'No label', key: '0' },
                   ...groups.map(group => ({

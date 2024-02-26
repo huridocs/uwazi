@@ -142,27 +142,25 @@ const EditThesauri = () => {
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
-      header: 'Label',
+      header: () => <Translate>Label</Translate>,
       cell: ThesaurusValueLabel,
-      meta: { headerClassName: 'w-9/12' },
+      meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
     columnHelper.accessor('id', {
-      header: 'Action',
+      header: () => <Translate>Action</Translate>,
       cell: EditButton,
       enableSorting: false,
       meta: {
         action: (row: Row<ThesaurusValueSchema>) => {
           if (row.original.values && Array.isArray(row.original.values)) {
-            console.log('Is group');
             setEditGroup(row.original as ThesaurusValueSchema);
             setIsGroupSidepanelOpen(true);
           } else {
-            console.log('Is value');
             setEditValue(row.original as ThesaurusValueSchema);
             setIsItemSidepanelOpen(true);
           }
         },
-        headerClassName: 'text-center w-1/12',
+        headerClassName: 'text-center w-0',
       },
     }) as ColumnDef<ThesaurusValueSchema, 'id'>,
   ];
@@ -192,6 +190,7 @@ const EditThesauri = () => {
                 />
               </div>
               <Table<ThesaurusValueSchema>
+                draggableRows
                 enableSelection
                 subRowsKey="values"
                 columns={columns}
