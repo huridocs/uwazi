@@ -13,8 +13,8 @@ const textWithHtml = `<h1>The title</h1>
     I am a link to an external site
   </a>
   <br />
-  <a href="/entity/4yl59bcq71ra4i">
-    I am a link to the internal Ecuador entity
+  <a href="/entity/6z2x77oi2yyqr529">
+    I am a link to the Tracy Robinson entity
   <a/>
   <ol class="someClass">
     <li>List item 1</li>
@@ -83,8 +83,8 @@ describe('Entities', () => {
     });
 
     it('should navigate to an entity via the rich text field link', () => {
-      cy.contains('a', 'I am a link to the internal Ecuador entity').click();
-      cy.contains('.content-header-title > h1:nth-child(1)', 'Ecuador').should('exist');
+      cy.contains('a', 'I am a link to the Tracy Robinson entity').click();
+      cy.contains('.content-header-title > h1:nth-child(1)', 'Tracy Robinson').should('exist');
     });
   });
 

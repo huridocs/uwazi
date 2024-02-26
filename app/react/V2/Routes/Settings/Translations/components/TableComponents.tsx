@@ -29,7 +29,6 @@ type TranslationsTableType = {
 const LanguageHeader = () => <Translate>Language</Translate>;
 const StatusHeader = () => <Translate className="sr-only">Language Code</Translate>;
 const FieldKeyHeader = () => <Translate>Value</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
 
@@ -110,4 +109,4 @@ const TranslationsTables = ({
   );
 };
 
-export { RenderButton, ContextPill, TranslationsTables, ActionHeader, LabelHeader, TypeHeader };
+export { RenderButton, ContextPill, TranslationsTables, LabelHeader, TypeHeader };

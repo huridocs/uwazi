@@ -39,7 +39,6 @@ const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
 
 const TitleHeader = () => <Translate>Label</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 
 const columnHelper = createColumnHelper<any>();
 const columns = (actions: { edit: Function }) => [
@@ -56,10 +55,10 @@ const columns = (actions: { edit: Function }) => [
     meta: { headerClassName: 'w-6/12' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'default'>,
   columnHelper.accessor('key', {
-    header: ActionHeader,
+    header: () => null,
     cell: EditButton,
     enableSorting: false,
-    meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
+    meta: { action: actions.edit, headerClassName: 'hidden' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'key'>,
 ];
-export { EditButton, TitleHeader, URLHeader, ActionHeader, TitleCell, columns };
+export { EditButton, TitleHeader, URLHeader, TitleCell, columns };

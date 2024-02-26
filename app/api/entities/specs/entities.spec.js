@@ -799,6 +799,28 @@ describe('entities', () => {
     );
   });
 
+  describe('getWithRelationships', () => {
+    it('should return the entities with its permitted relationships when no user', async () => {
+      userFactory.mock(undefined);
+      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
+      expect(result.relations).toEqual([
+        expect.objectContaining({ entity: 'getWithRelRoot' }),
+        expect.objectContaining({ entity: 'getWithRelPublic' }),
+      ]);
+      userFactory.mockEditorUser();
+    });
+
+    it('should return the entities with its permitted relationships when the user has permissions', async () => {
+      userFactory.mockEditorUser();
+      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
+      expect(result.relations).toEqual([
+        expect.objectContaining({ entity: 'getWithRelRoot' }),
+        expect.objectContaining({ entity: 'getWithRelPublic' }),
+        expect.objectContaining({ entity: 'getWithRelPrivate' }),
+      ]);
+    });
+  });
+
   describe('denormalize', () => {
     it('should denormalize entity with missing metadata labels', async () => {
       userFactory.mock({
@@ -1367,7 +1389,7 @@ describe('entities', () => {
 
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(12);
+      expect(newEntities.length).toBe(15);
 
       const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
       const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');

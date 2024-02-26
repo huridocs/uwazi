@@ -31,14 +31,6 @@ describe('Settings', () => {
     await testSelectorShot('[data-testid="settings-collection"]');
   });
 
-  describe('Pages', () => {
-    it('should display create Pages page', async () => {
-      await selectSettingsPage('Pages');
-      await expect(page).toClick('.settings-footer > a');
-      await testSettingsContent();
-    });
-  });
-
   describe('Filters', () => {
     it('should display filters page with filters', async () => {
       await selectSettingsPage('Filters');

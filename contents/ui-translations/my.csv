@@ -1,9 +1,7 @@
 Key,Burmese
 % of sentences above threshold,အနိမ့်ဆုံး သတ်မှတ်ချက် အထက်ရှိ ဝါကျ % (ရာခိုင်နှုန်း)
-(view page),(စာမျက်နှာ ကြည့်ရန်)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
@@ -59,6 +57,7 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
+Advanced,Advanced
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -77,9 +76,9 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this page?,Are you sure you want to delete this page?
 Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
 Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
@@ -96,6 +95,7 @@ Back to search,ရှာဖွေမှုသို့ ပြန်သွား�
 Back to thesauri,ဝေါဟာရပဒေသာကျမ်းများသို့ ပြန်သွားရန်
 Back to thesaurus,ဝေါဟာရပဒေသာကျမ်းသို့ ပြန်သွားရန်
 Bad Request,Bad Request
+Basic,Basic
 Body,စာကိုယ်
 Browse files to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်များကို ရှာဖွေပါ
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -133,6 +133,7 @@ Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
+Code,Code
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
@@ -152,7 +153,6 @@ Confirm deletion,ဖျက်ရန် အတည်ပြုပါ
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of page:,Confirm deletion of page:
 Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
@@ -300,6 +300,7 @@ Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.",ဖြည့်သွင်းချက်များကို စိတ်ကြိုက် စာမျက်နှာတွင် ပြသနိုင်သည်။ ထိုသို့ပြုလုပ်ရန် စာမျက်နှာများတွင် စိတ်ကြိုက်စာမျက်နှာတစ်ခုကို ဖန်တီး၍ ဤနေရာတွင် ရွေးချယ်ထားရန် လိုအပ်သည်။
 Entity,ဖြည့်သွင်းချက်
 Entity deleted,Entity deleted
+Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,Entity updated
@@ -500,6 +501,7 @@ Navigation menu tool tip part 2,leaving only a relative URL starting with a slas
 New entity,ထည့်သွင်းချက်အသစ်
 New group,New group
 New language added,ဘာသာစကားအသစ် ထည့်ပြီး
+New page,New page
 New password,စကားဝှက်အသစ်
 New relationship type,New relationship type
 New relationships group,ဆက်နွှယ်မှုအသစ်များ အုပ်စု
@@ -531,6 +533,7 @@ No text match description,You can type something different in the search box to 
 No type,အမျိုးအစား မရှိပါ
 No value,တန်ဖိုးမရှိပါ
 No Value,တန်ဖိုးမရှိပါ
+"No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,ပုံမှန် မြင်ကွင်း
 Not Found,Not Found
@@ -560,10 +563,9 @@ Or enter this secret key into your Authenticator app,သို့မဟုတ်
 Order,အစဉ်
 Other,အခြား
 other,အခြား
+Other users will be affected by this action!,Other users will be affected by this action!
 out of,မှ
 Page,စာမျက်နှာ
-Page Javascript,စာမျက်နှာ Javascript
-Page name,Page name
 Pages,စာမျက်နှာများ
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
@@ -670,6 +672,7 @@ Route,လမ်းကြောင်း
 Sample,နမူနာ
 Satellite,Satellite
 Save,သိမ်းဆည်းရန်
+Save & Preview,Save & Preview
 Save and go to next,သိမ်းဆည်းပြီး နောက်တစ်ခုသို့ သွားပါ
 Save changes,အပြောင်းအလဲများကို သိမ်းဆည်းရန်
 Save document,စာရွက်စာတမ်း သိမ်းဆည်းရန်
@@ -917,6 +920,7 @@ View entities,View entities
 View in library,စာကြည့်တိုက်တွင် ကြည့်ရန်
 View less,View less
 View more,View more
+View page,စာမျက်နှာ ကြည့်ရန်
 View suggestions,အကြံပြုချက်များ ကြည့်ရန်
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
@@ -930,6 +934,8 @@ With great power comes great responsibility!,လုပ်ပိုင်ခွ�
 x less,x လျော့
 x more,x ပို
 Year,နှစ်
+Yes,Yes
+You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,သင်သည် နောက်ထပ် တံဆိပ်တပ်မှတ်သားထားသော စာရွက်စာတမ်းများ ပေးခြင်းဖြင့်လည်း မော်ဒယ်ကို ပိုကောင်းအောင်လုပ်နိုင်သည်။
