@@ -39,31 +39,7 @@ const CustomUploads = () => {
     setUploads([]);
   };
 
-  const handleSave = async () => {
-    setIsSaving(true);
-
-    const responses = await Promise.all(
-      uploads.map(async file => {
-        console.log(file.name);
-        setUploadingFile(file.name);
-        return upload(file, 'custom', setProgress);
-      })
-    );
-
-    const hasErrors = responses.filter(response => response instanceof FetchResponseError);
-
-    setIsSaving(false);
-    setProgress(0);
-  };
-
-  const handleDelete = async (_id: FileType['_id']) => {
-    const response = remove(_id);
-  };
-
-  const deleteMultiple = async () => {
-    const filesToDelete = selectedRows.map(row => row.original._id);
-    const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
-
+  const notify = (responses: FileType[] | FetchResponseError[]) => {
     const hasErrors = responses.find(response => response instanceof FetchResponseError);
 
     setNotifications({
@@ -74,6 +50,34 @@ const CustomUploads = () => {
         <Translate>Deleted custom file</Translate>
       ),
     });
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+
+    const responses = await Promise.all(
+      uploads.map(async file => {
+        setUploadingFile(file.name);
+        return upload(file, 'custom', setProgress);
+      })
+    );
+
+    notify(responses);
+
+    setIsSaving(false);
+    setProgress(0);
+    revalidator.revalidate();
+  };
+
+  const handleDelete = async (_id: FileType['_id']) => {
+    const response = remove(_id);
+  };
+
+  const deleteMultiple = async () => {
+    const filesToDelete = selectedRows.map(row => row.original._id);
+    const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
+
+    notify(responses);
 
     revalidator.revalidate();
   };
