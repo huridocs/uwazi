@@ -5,6 +5,7 @@ import { search } from 'api/search';
 import templates from 'api/templates';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { EntitySchema } from 'shared/types/entityType';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
@@ -210,6 +211,7 @@ const denormalizeRelated = async (
           $set: {
             [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
+            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published,
             ...(inheritProperty
               ? {
                   [`${update.valuePath}.$[valueIndex].inheritedValue`]:
@@ -225,6 +227,8 @@ const denormalizeRelated = async (
 
   return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
 };
+
+const denormalizeOnPermissionChange = async (permissionsData: PermissionsDataSchema) => {};
 
 const denormalizeThesauriLabelInMetadata = async (
   valueId: string,
@@ -446,4 +450,9 @@ async function denormalizeMetadata(
   return denormalizedMetadata;
 }
 
-export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
+export {
+  denormalizeMetadata,
+  denormalizeRelated,
+  denormalizeThesauriLabelInMetadata,
+  denormalizeOnPermissionChange,
+};
