@@ -20358,10 +20358,10 @@ wildcard@^2.0.0:
   resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.0.tgz#a77d20e5200c6faaac979e4b3aadc7b3dd7f8fec"
   integrity sha512-JcKqAHLPxcdb9KM49dufGXn2x3ssnfjbcaQdLlfZsL9rH9wgDQjUtDxbo8NE0F6SFvydeu1VhZe7hZuHsB2/pw==
 
-winston-transport@^4.5.0, winston-transport@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.6.0.tgz#f1c1a665ad1b366df72199e27892721832a19e1b"
-  integrity sha512-wbBA9PbPAHxKiygo7ub7BYRiKxms0tpfU2ljtWzb3SjRjv5yl6Ozuy/TkXf00HTAt+Uylo3gSkNwzc4ME0wiIg==
+winston-transport@^4.5.0, winston-transport@^4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/winston-transport/-/winston-transport-4.7.0.tgz#e302e6889e6ccb7f383b926df6936a5b781bd1f0"
+  integrity sha512-ajBj65K5I7denzer2IYW6+2bNIVqLGDHqDw3Ow8Ohh+vdW+rv4MZ6eiDvHoKhfJFZ2auyN8byXieDDJ96ViONg==
   dependencies:
     logform "^2.3.2"
     readable-stream "^3.6.0"
