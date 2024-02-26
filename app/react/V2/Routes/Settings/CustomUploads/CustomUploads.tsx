@@ -27,58 +27,46 @@ const CustomUploads = () => {
   const [uploads, setUploads] = useState<File[]>([]);
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [uploadingFile, setUploadingFile] = useState<string>();
   const [showModal, setShowModal] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
+
+  const notify = (responses: FileType[] | FetchResponseError[], message: React.ReactNode) => {
+    const hasErrors = responses.find(response => response instanceof FetchResponseError);
+
+    setNotifications({
+      type: hasErrors ? 'error' : 'success',
+      text: hasErrors ? <Translate>An error occurred</Translate> : message,
+    });
+  };
 
   const handleCancel = () => {
     setShowModal(false);
     setUploads([]);
   };
 
-  const notify = (responses: FileType[] | FetchResponseError[]) => {
-    const hasErrors = responses.find(response => response instanceof FetchResponseError);
-
-    setNotifications({
-      type: hasErrors ? 'error' : 'success',
-      text: hasErrors ? (
-        <Translate>An error occurred</Translate>
-      ) : (
-        <Translate>Deleted custom file</Translate>
-      ),
-    });
-  };
-
   const handleSave = async () => {
+    setShowModal(false);
     setIsSaving(true);
-
-    const responses = await Promise.all(
-      uploads.map(async file => {
-        setUploadingFile(file.name);
-        return upload(file, 'custom', setProgress);
-      })
-    );
-
-    notify(responses);
-
+    const responses = await Promise.all(uploads.map(async file => upload(file, 'custom')));
+    notify(responses, <Translate>Uploaded custom file</Translate>);
     setIsSaving(false);
-    setProgress(0);
     revalidator.revalidate();
   };
 
   const handleDelete = async (_id: FileType['_id']) => {
-    const response = remove(_id);
+    const response = await remove(_id);
+    notify([response], <Translate>Deleted custom file</Translate>);
+    revalidator.revalidate();
   };
 
   const deleteMultiple = async () => {
     const filesToDelete = selectedRows.map(row => row.original._id);
+    setConfirmationModal(false);
+    setSelectedRows([]);
     const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
-
-    notify(responses);
-
+    notify(responses, <Translate>Deleted custom file</Translate>);
     revalidator.revalidate();
   };
 
@@ -133,21 +121,12 @@ const CustomUploads = () => {
             />
           </Modal.Header>
           <Modal.Body>
-            {isSaving ? (
-              <div className="flex flex-col gap-4 justify-center items-center p-4 w-auto bg-gray-50 rounded border border-gray-300 border-dashed md:min-w-72 md:min-h-48">
-                <Translate>Uploading</Translate>
-                <span>
-                  {uploadingFile} - {progress} %
-                </span>
-              </div>
-            ) : (
-              <FileDropzone
-                className="w-auto md:min-w-72"
-                onChange={newFiles => {
-                  setUploads(newFiles);
-                }}
-              />
-            )}
+            <FileDropzone
+              className="w-auto md:min-w-72"
+              onChange={newFiles => {
+                setUploads(newFiles);
+              }}
+            />
           </Modal.Body>
           <Modal.Footer>
             <div className="flex gap-4 justify-around w-full">
@@ -174,11 +153,7 @@ const CustomUploads = () => {
           header={<Translate>Delete</Translate>}
           warningText={<Translate>Do you want to delete?</Translate>}
           body={<FileList items={selectedRows} />}
-          onAcceptClick={async () => {
-            setConfirmationModal(false);
-            setSelectedRows([]);
-            await deleteMultiple();
-          }}
+          onAcceptClick={async () => deleteMultiple()}
           onCancelClick={() => setConfirmationModal(false)}
           dangerStyle
         />
