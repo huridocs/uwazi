@@ -90,7 +90,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.456.0",
     "@elastic/elasticsearch": "7.17",
-    "@fast-csv/format": "^4.3.5",
+    "@fast-csv/format": "^5.0.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.30",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
