@@ -16,7 +16,6 @@ import {
   YesNoPill,
   TitleHeader,
   UrlHeader,
-  ActionHeader,
   EditButton,
   UrlCell,
 } from './components/PageListTable';
@@ -70,9 +69,10 @@ const PagesList = () => {
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
-      header: ActionHeader,
+      header: () => null,
       cell: EditButton,
       enableSorting: false,
+      meta: { headerClassName: 'hidden' },
     }),
   ];
 
