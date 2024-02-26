@@ -250,6 +250,9 @@ Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Sayfadan varlık görünümünü görüntüle
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,Belge
 Document and entity types,Belge ve varlık türü
 Document contents,Belge içeriği
@@ -661,6 +664,7 @@ Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
 Reset Password,Parolayı sıfırla
+Reset passwords,Reset passwords
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
 Return to the thesaurus page when you finished labeling to start learning.,Öğrenmeye başlamak için etiketlemeyi bitirdiğinizde Thesaurus sayfasına dönün.

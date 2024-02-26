@@ -250,6 +250,9 @@ Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,페이지에서 엔티티 뷰 표시
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,문서
 Document and entity types,문서 및 엔티티 유형
 Document contents,문서 내용
@@ -661,6 +664,7 @@ Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
 Reset Password,암호 재설정
+Reset passwords,Reset passwords
 Restricted,비공개 게시물
 Return to login,로그인으로 돌아가기
 Return to the thesaurus page when you finished labeling to start learning.,라벨링을 마치면 학습 시작을 위해 시소러스 페이지로 돌아가십시오.

@@ -249,6 +249,9 @@ Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Afficher la vue de l'entité depuis la page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Types de documents et d'entités
 Document contents,Contenu du document
@@ -660,6 +663,7 @@ Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
 Reset Password,Réinitialiser le mot de passe
+Reset passwords,Reset passwords
 Restricted,Limité
 Return to login,Retourner à la connexion
 Return to the thesaurus page when you finished labeling to start learning.,Revenez à la page du thésaurus lorsque vous avez terminé l'étiquetage pour commencer à apprendre.

@@ -250,6 +250,9 @@ Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,แสดงมุมมองรายการจากหน้า
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
 Document contents,เนื้อหาของเอกสาร
@@ -661,6 +664,7 @@ Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
 Reset Password,สร้าง รหัสผ่าน ใหม่
+Reset passwords,Reset passwords
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Return to the thesaurus page when you finished labeling to start learning.,กลับไปที่หน้าคำอธิบายกลุ่มคำเมื่อคุณแยกประเภทเสร็จสิ้นเพื่อเริ่มการเรียนรู้
