@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { applicationEventsBus } from 'api/eventsbus';
@@ -45,7 +44,6 @@ const FIELD_TYPES_TO_SYNC = [
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
-
   if (
     docLanguages[0].template &&
     entity.template &&

@@ -52,6 +52,7 @@ const diffEntities = (newEntity: EntitySchema, oldEntity: EntitySchema) =>
     {
       ...(newEntity.title !== oldEntity.title ? { title: oldEntity.title } : {}),
       ...(newEntity.icon?._id !== oldEntity.icon?._id ? { icon: oldEntity.icon } : {}),
+      ...(newEntity.published !== oldEntity.published ? { published: oldEntity.published } : {}),
     }
   );
 
@@ -67,6 +68,9 @@ function getPropertiesThatChanged(entityDiff: EntitySchema, template: TemplateSc
   }
   if (entityDiff.icon) {
     metadataPropsThatChanged.push('icon');
+  }
+  if (entityDiff.published) {
+    metadataPropsThatChanged.push('published');
   }
   return metadataPropsThatChanged;
 }
@@ -103,7 +107,7 @@ const oneJumpRelatedProps = async (contentId: string) => {
 const oneJumpUpdates = async (
   contentId: string,
   metadataPropsThatChanged: string[],
-  titleOrIconChanged: boolean
+  entityPropChanged: boolean
 ) => {
   let updates = (await oneJumpRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
     propertyName: p.name,
@@ -113,7 +117,7 @@ const oneJumpUpdates = async (
     valuePath: `metadata.${p.name}`,
   }));
 
-  if (metadataPropsThatChanged?.length && !titleOrIconChanged) {
+  if (metadataPropsThatChanged?.length && !entityPropChanged) {
     updates = updates.filter(u => metadataPropsThatChanged.includes(u.inheritProperty || ''));
   }
   return updates;
@@ -148,17 +152,18 @@ const twoJumpUpdates = async (contentId: string) =>
   }));
 
 async function denormalizationUpdates(contentId: string, templatePropertiesThatChanged: string[]) {
-  const titleOrIconChanged =
+  const entityPropChanged =
     templatePropertiesThatChanged.includes('label') ||
-    templatePropertiesThatChanged.includes('icon');
+    templatePropertiesThatChanged.includes('icon') ||
+    templatePropertiesThatChanged.includes('published');
 
   const metadataPropsThatChanged = templatePropertiesThatChanged.filter(
-    v => !['icon', 'label'].includes(v)
+    v => !['icon', 'label', 'published'].includes(v)
   );
 
   return uniqueByNameAndInheritProperty([
-    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, titleOrIconChanged)),
-    ...(titleOrIconChanged ? await twoJumpUpdates(contentId) : []),
+    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, entityPropChanged)),
+    ...(entityPropChanged ? await twoJumpUpdates(contentId) : []),
   ]);
 }
 
@@ -210,6 +215,7 @@ const denormalizeRelated = async (
           $set: {
             [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
+            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published,
             ...(inheritProperty
               ? {
                   [`${update.valuePath}.$[valueIndex].inheritedValue`]:
@@ -348,6 +354,7 @@ const denormalizeRelationshipProperty = async (
       denormalizedValue.label = partner.title;
       denormalizedValue.icon = partner.icon;
       denormalizedValue.type = partner.file ? 'document' : 'entity';
+      denormalizedValue.published = partner.published;
     }
 
     if (property.inherit && property.inherit.property && partner) {
