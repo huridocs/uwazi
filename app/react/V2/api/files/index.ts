@@ -39,7 +39,15 @@ const update = async (file: FileType): Promise<FileType | FetchResponseError> =>
   }
 };
 
-const remove = async (fileId: string) => {};
+const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseError> => {
+  try {
+    const requestParams = new RequestParams({ _id });
+    const { json: response } = await api.delete('files', requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
 
 const upload = async (
   file: File,

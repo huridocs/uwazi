@@ -1,16 +1,19 @@
 /* eslint-disable max-statements */
 import React, { useState } from 'react';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Row } from '@tanstack/react-table';
+import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
-import { getByType, upload } from 'V2/api/files';
-import { Button, Modal, Table } from 'V2/Components/UI';
+import { getByType, upload, remove } from 'V2/api/files';
+import { Button, ConfirmationModal, Modal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { FileDropzone } from 'V2/Components/Forms';
+import { notificationAtom } from 'V2/atoms';
 import { createColumns } from './components/UploadsTable';
+import { FileList } from './components/FileList';
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<FileType[]> =>
@@ -27,6 +30,9 @@ const CustomUploads = () => {
   const [progress, setProgress] = useState(0);
   const [uploadingFile, setUploadingFile] = useState<string>();
   const [showModal, setShowModal] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const setNotifications = useSetRecoilState(notificationAtom);
+  const revalidator = useRevalidator();
 
   const handleCancel = () => {
     setShowModal(false);
@@ -50,7 +56,27 @@ const CustomUploads = () => {
     setProgress(0);
   };
 
-  const handleDelete = async () => {};
+  const handleDelete = async (_id: FileType['_id']) => {
+    const response = remove(_id);
+  };
+
+  const deleteMultiple = async () => {
+    const filesToDelete = selectedRows.map(row => row.original._id);
+    const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
+
+    const hasErrors = responses.find(response => response instanceof FetchResponseError);
+
+    setNotifications({
+      type: hasErrors ? 'error' : 'success',
+      text: hasErrors ? (
+        <Translate>An error occurred</Translate>
+      ) : (
+        <Translate>Deleted custom file</Translate>
+      ),
+    });
+
+    revalidator.revalidate();
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -69,7 +95,17 @@ const CustomUploads = () => {
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="text-end">
+        <SettingsContent.Footer className="flex gap-2 justify-end">
+          {selectedRows.length > 0 && (
+            <Button
+              styling="solid"
+              color="error"
+              disabled={isSaving}
+              onClick={() => setConfirmationModal(true)}
+            >
+              <Translate>Delete</Translate>
+            </Button>
+          )}
           <Button
             styling="solid"
             color="primary"
@@ -127,6 +163,21 @@ const CustomUploads = () => {
             </div>
           </Modal.Footer>
         </Modal>
+      )}
+
+      {confirmationModal && (
+        <ConfirmationModal
+          header={<Translate>Delete</Translate>}
+          warningText={<Translate>Do you want to delete?</Translate>}
+          body={<FileList items={selectedRows} />}
+          onAcceptClick={async () => {
+            setConfirmationModal(false);
+            setSelectedRows([]);
+            await deleteMultiple();
+          }}
+          onCancelClick={() => setConfirmationModal(false)}
+          dangerStyle
+        />
       )}
     </div>
   );

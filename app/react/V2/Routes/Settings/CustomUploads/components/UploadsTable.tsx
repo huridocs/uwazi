@@ -10,7 +10,6 @@ const columnHelper = createColumnHelper<FileType>();
 const TitleHeader = () => <Translate>Name</Translate>;
 const PreviewHeader = () => <Translate>Preview</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 
 const TitleCell = ({ getValue }: CellContext<FileType, string>) => <div>{getValue()}</div>;
 const PreviewCell = () => <div>here goes the preview</div>;
@@ -48,7 +47,7 @@ const createColumns = () => [
   }),
   columnHelper.accessor('_id', {
     id: 'action',
-    header: ActionHeader,
+    header: () => null,
     cell: ActionCell,
     enableSorting: false,
   }),
