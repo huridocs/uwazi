@@ -8,10 +8,6 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
-import { RequestParams } from 'app/utils/RequestParams';
-import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
 import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
