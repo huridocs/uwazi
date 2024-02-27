@@ -106,9 +106,10 @@ module.exports = production => {
       ],
     },
     plugins: [
-      // new webpack.ProvidePlugin({
-      //   process: 'process/browser',
-      // }),
+      process.env.CYPRESS &&
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+        }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
