@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
 

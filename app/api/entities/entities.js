@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-param-reassign,max-statements */
 
 import { applicationEventsBus } from 'api/eventsbus';
