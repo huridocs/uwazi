@@ -20,7 +20,6 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   const [typing, setTyping] = useState('');
 
   const {
-    watch,
     control,
     register,
     getValues,
@@ -146,63 +145,72 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
     );
   };
   return (
-    <div className="relative h-full">
-      {!value && (
-        <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
-          <div className="flex items-center w-full gap-1 text-base font-semibold">
-            <div className="w-5 h-5 text-sm">
-              <CheckCircleIcon />
+    <>
+      <div className="relative h-full">
+        <div className="row">
+          {!value && (
+            <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
+              <div className="flex items-center w-full gap-1 text-base font-semibold">
+                <div className="w-5 h-5 text-sm">
+                  <CheckCircleIcon />
+                </div>
+                <Translate>Adding items to the thesauri</Translate>
+              </div>
+              <div className="force-ltr">
+                <Translate>You can add one or many items in this form.</Translate>
+                <br />
+                <Translate translationKey="thesauri new item desc">
+                  Once you type the first item name, a new item form will appear underneath it, so
+                  you can keep on adding as many as you want.
+                </Translate>
+              </div>
             </div>
-            <Translate>Adding items to the thesauri</Translate>
-          </div>
-          <div className="force-ltr">
-            <Translate>You can add one or many items in this form.</Translate>
-            <br />
-            <Translate translationKey="thesauri new item desc">
-              Once you type the first item name, a new item form will appear underneath it, so you
-              can keep on adding as many as you want.
-            </Translate>
-          </div>
+          )}
         </div>
-      )}
-      <form
-        style={{ scroll }}
-        onSubmit={handleSubmit(
-          (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
-            if (!value) {
-              // New Items
-              const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues.filter(
-                newValue => newValue.label !== ''
-              ) as unknown as LocalThesaurusValueSchema[];
-              console.log('Submitting new items: ', items);
-              submit(items);
-              return;
-            }
-            if (parentGroup) {
-              (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
-            }
-            // @ts-ignore
-            submit([item]);
-          }
-        )}
-        id="menu-form"
-      >
-        {renderInputs()}
-      </form>
-      <div className="absolute bottom-0 flex w-full gap-2">
-        <Button
-          styling="light"
-          onClick={closePanel}
-          className="grow"
-          data-testid="menu-form-cancel"
-        >
-          <Translate>Cancel</Translate>
-        </Button>
-        <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
-          <Translate>Add</Translate>
-        </Button>
+        <div className="row">
+          <form
+            onSubmit={handleSubmit(
+              (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
+                if (!value) {
+                  // New Items
+                  const items = (
+                    item as { newValues: LocalThesaurusValueSchema[] }
+                  ).newValues.filter(
+                    newValue => newValue.label !== ''
+                  ) as unknown as LocalThesaurusValueSchema[];
+                  console.log('Submitting new items: ', items);
+                  submit(items);
+                  return;
+                }
+                if (parentGroup) {
+                  (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
+                }
+                // @ts-ignore
+                submit([item]);
+              }
+            )}
+            id="menu-form"
+          >
+            {renderInputs()}
+          </form>
+        </div>
       </div>
-    </div>
+      <div className="absolute w-full row">
+        <div className="flex w-full gap-2">
+          <Button
+            styling="light"
+            onClick={closePanel}
+            className="grow"
+            data-testid="menu-form-cancel"
+          >
+            <Translate>Cancel</Translate>
+          </Button>
+          <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
+            <Translate>Add</Translate>
+          </Button>
+        </div>
+      </div>
+    </>
   );
 };
 
