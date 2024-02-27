@@ -59,7 +59,7 @@ const ThesauriList = () => {
       id: 'name',
       header: LabelHeader,
       cell: ThesaurusLabel,
-      meta: { headerClassName: 'w-11/12' },
+      meta: { headerClassName: 'w-11/12 font-medium' },
     }) as ColumnDef<ThesaurusSchema, 'name'>,
     columnHelper.accessor('_id', {
       header: ActionHeader,

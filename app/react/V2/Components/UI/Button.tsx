@@ -100,6 +100,7 @@ const Button = ({
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
       form={form}
       data-testid={dataTestid}
+      style={styling === 'action' ? { borderColor: '#E5EDFF' } : {}}
     >
       {children}
     </button>

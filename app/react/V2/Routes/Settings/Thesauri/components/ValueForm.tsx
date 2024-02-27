@@ -5,7 +5,6 @@ import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import uniqueID from 'shared/uniqueID';
 
 type LocalThesaurusValueSchema = ThesaurusValueSchema & { groupId?: string };
 interface ValueFormProps {
@@ -18,6 +17,7 @@ interface ValueFormProps {
 const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
   const [editing, setEditing] = useState(false);
+  const [typing, setTyping] = useState('');
 
   const {
     watch,
@@ -48,18 +48,30 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
     }
   }, [value, groups]);
 
-  const determineIfNeedToAddNewItem = () => {
-    // check if there is an empty value
+  useEffect(() => {
+    const newValues = (getValues() as { newValues: ThesaurusValueSchema[] }).newValues;
     if (!editing) {
-      const newValues = watch('newValues');
-      console.log('Fields: ', newValues);
-      const hasEmpty = newValues.find(v => v.label === '');
+      console.log('Typing...');
+      const hasEmpty = newValues.find(nv => nv.label === '');
       console.log('hasEmpty: ', hasEmpty);
-
-      if (hasEmpty) return;
-      append({ label: '' });
+      if (!hasEmpty) {
+        append({ label: '' });
+      }
     }
-  };
+  }, [typing]);
+
+  // const determineIfNeedToAddNewItem = () => {
+  //   // check if there is an empty value
+  //   if (!editing) {
+  //     const newValues = watch('newValues');
+  //     // console.log('Fields: ', newValues);
+  //     const hasEmpty = newValues.find(v => v.label === '');
+  //     // console.log('hasEmpty: ', hasEmpty);
+
+  //     if (hasEmpty) return;
+  //     append({ label: '' });
+  //   }
+  // };
 
   const renderInputs = () => {
     if (!editing) {
@@ -72,7 +84,8 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
               label={<Translate>Title</Translate>}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...register(`newValues.${index}.label`)}
-              onBlur={determineIfNeedToAddNewItem}
+              onBlur={e => setTyping(e.target.value)}
+              // onBlur={determineIfNeedToAddNewItem}
               // hasErrors={!!errors.label}
             />
             {groups && (
@@ -153,6 +166,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
         </div>
       )}
       <form
+        style={{ scroll }}
         onSubmit={handleSubmit(
           (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
             if (!value) {

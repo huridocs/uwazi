@@ -22,7 +22,7 @@ const newKeys = [
       'Once you type the first item name, a new item form will appear underneath it, so you can keep on adding as many as you want.',
   },
   {
-    key: 'Language (Default language)',
+    key: 'Language',
   },
 ];
 const deletedKeys: any[] = [];

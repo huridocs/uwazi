@@ -8,9 +8,10 @@ import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 const ThesaurusLabel = ({ cell }: any) => (
   <>
-    <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
+    <span className="text-indigo-700">{cell.row.original.name}</span>
+    &nbsp;
     {'('}
-    <Translate>Default language</Translate>
+    <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
     {')'}
   </>
 );
@@ -30,7 +31,7 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
         icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
         onClick={() => row.toggleExpanded()}
         color="indigo"
-        className="bg-indigo-200 border-none drop-shadow-none"
+        className="bg-indigo-200 border-none rounded-md drop-shadow-none"
       >
         <Translate>Group</Translate>
       </EmbededButton>
@@ -38,13 +39,12 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
   </div>
 );
 
-const LabelHeader = () => <Translate>Language (Default language)</Translate>;
+const LabelHeader = () => <Translate>Language</Translate>;
 
 const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   <Button
     styling="action"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
-    color="indigo"
     className="leading-4"
   >
     <Translate>Edit</Translate>
