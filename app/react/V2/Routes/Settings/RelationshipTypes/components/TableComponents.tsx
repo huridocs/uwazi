@@ -2,12 +2,10 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { LinkSchema } from 'shared/types/commonTypes';
-import { EmbededButton, Button } from 'app/V2/Components/UI';
+import { Button } from 'app/V2/Components/UI';
 import { ClientRelationshipType } from 'app/apiResponseTypes';
 
-const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
+const EditButton = ({ cell, column }: CellContext<ClientRelationshipType, string>) => (
   <Button
     styling="outline"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
@@ -17,44 +15,27 @@ const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
   </Button>
 );
 
-const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
+const TitleCell = ({ cell, getValue }: CellContext<ClientRelationshipType, string>) => (
   <div className="flex items-center gap-2">
-    <Translate
-      context="Menu"
-      className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}
-    >
+    <Translate className="text-indigo-800" context={cell.row.original._id}>
       {getValue()}
     </Translate>
-    {row.getCanExpand() && (
-      <EmbededButton
-        icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        onClick={() => row.toggleExpanded()}
-        color="indigo"
-      >
-        <Translate>Group</Translate>
-      </EmbededButton>
-    )}
+    ({getValue()})
   </div>
 );
 
 const TitleHeader = () => <Translate>Label</Translate>;
-const URLHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
 const columnHelper = createColumnHelper<any>();
 const columns = (actions: { edit: Function }) => [
-  columnHelper.accessor('title', {
-    id: 'title',
+  columnHelper.accessor('name', {
+    id: 'name',
     header: TitleHeader,
     cell: TitleCell,
     enableSorting: false,
     meta: { headerClassName: 'w-6/12' },
-  }) as ColumnDef<ClientRelationshipType, 'title'>,
-  columnHelper.accessor('url', {
-    header: URLHeader,
-    enableSorting: false,
-    meta: { headerClassName: 'w-6/12' },
-  }) as ColumnDef<ClientRelationshipType, 'default'>,
+  }) as ColumnDef<ClientRelationshipType, 'name'>,
   columnHelper.accessor('key', {
     header: ActionHeader,
     cell: EditButton,
@@ -62,4 +43,4 @@ const columns = (actions: { edit: Function }) => [
     meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
   }) as ColumnDef<ClientRelationshipType, 'key'>,
 ];
-export { EditButton, TitleHeader, URLHeader, ActionHeader, TitleCell, columns };
+export { EditButton, TitleHeader, ActionHeader, TitleCell, columns };

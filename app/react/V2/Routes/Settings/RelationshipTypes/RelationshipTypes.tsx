@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 
@@ -18,6 +18,8 @@ import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 
 import { columns } from './components/TableComponents';
+import uniqueID from 'shared/uniqueID';
+import { Form } from './components/Form';
 import { ClientRelationshipType } from 'app/apiResponseTypes';
 
 const relationshipTypesLoader =
@@ -35,8 +37,16 @@ const RelationshipTypes = () => {
   const [changes, setChanges] = useState<ClientRelationshipType[]>([]);
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetRecoilState(settingsAtom);
+  const [formValues, setFormValues] = useState<ClientRelationshipType>(
+    {} as ClientRelationshipType
+  );
 
   const blocker = useBlocker(!isEqual(relationshipTypes, changes));
+
+  useEffect(() => {
+    setChanges(relationshipTypes);
+    setSettings(prev => ({ ...prev, relationshipTypes }));
+  }, [relationshipTypes]);
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -45,16 +55,26 @@ const RelationshipTypes = () => {
   }, [blocker, setShowModal]);
 
   const edit = (row: Row<ClientRelationshipType>) => {
-    //const data = row.original;
+    setFormValues(row.original);
     setIsSidepanelOpen(true);
   };
 
   const add = () => {
+    setFormValues({ _id: `temp_${uniqueID()}`, name: '' });
     setIsSidepanelOpen(true);
   };
 
+  const submit = (submitedData: ClientRelationshipType) => {
+    const newChanges = changes.map(c => (c._id === submitedData._id ? submitedData : c));
+    if (newChanges.find(c => c._id === submitedData._id) === undefined) {
+      newChanges.push(submitedData);
+    }
+    setChanges(newChanges);
+    setIsSidepanelOpen(false);
+  };
+
   const save = async () => {
-    await relationshipTypesAPI.save(changes);
+    await relationshipTypesAPI.save(toSave);
     revalidator.revalidate();
     setNotifications({
       type: 'success',
@@ -63,7 +83,7 @@ const RelationshipTypes = () => {
   };
 
   const deleteSelected = async () => {
-    setChanges();
+    setChanges(changes.filter(c => !selectedItems.map(s => s.original).includes(c)));
   };
 
   return (
@@ -73,15 +93,14 @@ const RelationshipTypes = () => {
       data-testid="settings-account"
     >
       <SettingsContent>
-        <SettingsContent.Header title="Menu" />
+        <SettingsContent.Header title="Relationship types" />
         <SettingsContent.Body>
           <Table<ClientRelationshipType>
             enableSelection
-            draggableRows
             columns={columns({ edit })}
             data={changes}
             onChange={setChanges}
-            title={<Translate>Menu</Translate>}
+            title={<Translate>Relationship types</Translate>}
             onSelection={setSelectedItems}
           />
         </SettingsContent.Body>
@@ -92,17 +111,18 @@ const RelationshipTypes = () => {
                 type="button"
                 onClick={deleteSelected}
                 color="error"
-                data-testid="menu-delete-link"
+                data-testid="relationship-types-delete-link"
               >
                 <Translate>Delete</Translate>
               </Button>
-              <Translate>Selected</Translate> {selectedItems.length} <Translate>of</Translate>{' '}
+              <Translate>Selected</Translate> {selectedItems.length} <Translate>of</Translate>
+              {changes.length}
             </div>
           )}
           {selectedItems.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Button type="button" onClick={add} data-testid="menu-add-link">
+                <Button type="button" onClick={add} data-testid="relationship-types-add-link">
                   <Translate>Add relationship type</Translate>
                 </Button>
               </div>
@@ -112,7 +132,7 @@ const RelationshipTypes = () => {
                   onClick={save}
                   color="success"
                   disabled={relationshipTypes === changes}
-                  data-testid="menu-save"
+                  data-testid="relationship-types-save"
                 >
                   <Translate>Save</Translate>
                 </Button>
@@ -129,10 +149,14 @@ const RelationshipTypes = () => {
         }
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
-        size="large"
+        size="medium"
         withOverlay
       >
-        Some content
+        <Form
+          relationtype={formValues}
+          closePanel={() => setIsSidepanelOpen(false)}
+          submit={submit}
+        />
       </Sidepanel>
       {showModal && (
         <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />

@@ -42,6 +42,10 @@ import {
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+import {
+  RelationshipTypes,
+  relationshipTypesLoader,
+} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
@@ -126,6 +130,13 @@ const getRoutesLayout = (
         <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
         <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
+      </Route>
+      <Route path="relationship-types">
+        <Route
+          index
+          element={adminsOnlyRoute(<RelationshipTypes />)}
+          loader={relationshipTypesLoader(headers)}
+        />
       </Route>
       <Route path="dictionaries">
         <Route index element={adminsOnlyRoute(<ThesauriList />)} />
