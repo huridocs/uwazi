@@ -17,21 +17,29 @@ interface ValueFormProps {
 
 const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
+  const [editing, setEditing] = useState(false);
 
   const {
-    register,
+    watch,
     control,
+    register,
+    getValues,
     handleSubmit,
     // formState: { errors },
   } = useForm<{ newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema>({
     mode: 'onSubmit',
-    defaultValues: value || { newValues: [{ label: '', id: uniqueID() }] },
+    defaultValues: value || { newValues: [{ label: '' }] },
   });
 
   const { append, fields } = useFieldArray({ control, name: 'newValues' });
 
   useEffect(() => {
-    console.log('Use effect: ', value);
+    if (!value) {
+      setEditing(false);
+    } else {
+      setEditing(true);
+    }
+
     if (value && groups) {
       const group = groups.find(singleGroup => {
         return singleGroup.values?.includes(value);
@@ -42,26 +50,63 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
 
   const determineIfNeedToAddNewItem = () => {
     // check if there is an empty value
-    if (!value) {
-      console.log('Determining whether to add a new item');
-      const hasEmpty = fields.find(v => v.label === '');
-      console.log('Has empty: ', hasEmpty);
-      if (hasEmpty.length === 2) return;
-      append({ label: '', id: uniqueID() });
+    if (!editing) {
+      const newValues = watch('newValues');
+      console.log('Fields: ', newValues);
+      const hasEmpty = newValues.find(v => v.label === '');
+      console.log('hasEmpty: ', hasEmpty);
+
+      if (hasEmpty) return;
+      append({ label: '' });
     }
   };
 
   const renderInputs = () => {
-    if (!value) {
+    if (!editing) {
       return fields.map((localValue, index) => (
-        <div className="flex flex-col gap-4" key={localValue.id}>
+        <Card title={<Translate>Item</Translate>} key={localValue.id}>
+          <div className="flex flex-col gap-4">
+            <InputField
+              id="item-name"
+              data-testid="thesauri-form-item-name"
+              label={<Translate>Title</Translate>}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...register(`newValues.${index}.label`)}
+              onBlur={determineIfNeedToAddNewItem}
+              // hasErrors={!!errors.label}
+            />
+            {groups && (
+              <Select
+                id="item-group"
+                data-testid="thesauri-form-item-group"
+                label={<Translate>Group</Translate>}
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                {...register(`newValues.${index}.groupId`)}
+                value={parentGroup ? parentGroup.id : undefined}
+                disabled={!!parentGroup}
+                options={[
+                  { value: '', label: 'No label', key: '0' },
+                  ...groups.map(group => ({
+                    value: group.id as string,
+                    label: group.label as string,
+                    key: group.id as string,
+                  })),
+                ]}
+              />
+            )}
+          </div>
+        </Card>
+      ));
+    }
+    return (
+      <Card title={<Translate>Item</Translate>}>
+        <div className="flex flex-col gap-4">
           <InputField
             id="item-name"
             data-testid="thesauri-form-item-name"
             label={<Translate>Title</Translate>}
             // eslint-disable-next-line react/jsx-props-no-spreading
-            {...register(`newValues.${index}.label`, { required: true })}
-            onChange={determineIfNeedToAddNewItem}
+            {...register('label', { required: true })}
             // hasErrors={!!errors.label}
           />
           {groups && (
@@ -70,9 +115,9 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
               data-testid="thesauri-form-item-group"
               label={<Translate>Group</Translate>}
               // eslint-disable-next-line react/jsx-props-no-spreading
-              {...register(`newValues.${index}.groupId`)}
+              {...register('groupId')}
               value={parentGroup ? parentGroup.id : undefined}
-              disabled={!!parentGroup}
+              disabled
               options={[
                 { value: '', label: 'No label', key: '0' },
                 ...groups.map(group => ({
@@ -84,38 +129,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
             />
           )}
         </div>
-      ));
-    }
-    return (
-      <div className="flex flex-col gap-4">
-        <InputField
-          id="item-name"
-          data-testid="thesauri-form-item-name"
-          label={<Translate>Title</Translate>}
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...register('label', { required: true })}
-          // hasErrors={!!errors.label}
-        />
-        {groups && (
-          <Select
-            id="item-group"
-            data-testid="thesauri-form-item-group"
-            label={<Translate>Group</Translate>}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...register('groupId')}
-            value={parentGroup ? parentGroup.id : undefined}
-            disabled
-            options={[
-              { value: '', label: 'No label', key: '0' },
-              ...groups.map(group => ({
-                value: group.id as string,
-                label: group.label as string,
-                key: group.id as string,
-              })),
-            ]}
-          />
-        )}
-      </div>
+      </Card>
     );
   };
   return (
@@ -159,7 +173,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
         )}
         id="menu-form"
       >
-        <Card title={<Translate>Item</Translate>}>{renderInputs()}</Card>
+        {renderInputs()}
       </form>
       <div className="absolute bottom-0 flex w-full gap-2">
         <Button

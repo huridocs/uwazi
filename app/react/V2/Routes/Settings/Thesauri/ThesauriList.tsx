@@ -8,7 +8,12 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { EditButton, LabelHeader, ThesaurusLabel } from './components/TableComponents';
+import {
+  ActionHeader,
+  EditButton,
+  LabelHeader,
+  ThesaurusLabel,
+} from './components/TableComponents';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms';
 
@@ -57,7 +62,7 @@ const ThesauriList = () => {
       meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusSchema, 'name'>,
     columnHelper.accessor('_id', {
-      header: () => <Translate>Action</Translate>,
+      header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: { action: edit, headerClassName: 'w-0 text-center' },

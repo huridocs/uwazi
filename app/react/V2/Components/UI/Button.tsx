@@ -2,7 +2,7 @@ import React, { MouseEventHandler } from 'react';
 
 interface ButtonProps {
   children: string | React.ReactNode;
-  styling?: 'solid' | 'outline' | 'light';
+  styling?: 'solid' | 'outline' | 'light' | 'action';
   color?: 'primary' | 'error' | 'success';
   type?: 'submit' | 'button';
   size?: 'small' | 'medium';
@@ -80,9 +80,12 @@ const Button = ({
       classNames = `bg-white enabled:hover:text-white ${text} ${border} ${textDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
       break;
     case 'light':
-      classNames = `text-gray-700 disabled:text-gray-300 bg-white border-gray-200 ${textHover}`;
+      classNames = `bg-white text-gray-700 disabled:text-gray-300 bg-white border-gray-200 ${textHover}`;
       break;
-
+    case 'action':
+      classNames =
+        'bg-white text-xs font-medium text-indigo-800 disabled:text-indigo-300 bg-white ring-indigo-100';
+      break;
     default:
       classNames = `text-white ${bgColor} ${border} ${bgDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
       break;

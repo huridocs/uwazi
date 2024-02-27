@@ -42,8 +42,9 @@ const LabelHeader = () => <Translate>Language (Default language)</Translate>;
 
 const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   <Button
-    styling="outline"
+    styling="action"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
+    color="indigo"
     className="leading-4"
   >
     <Translate>Edit</Translate>
