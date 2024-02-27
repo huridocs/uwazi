@@ -2,74 +2,69 @@
 
 exports[`entities /api/entities/count_by_template should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "templateId": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "rules": Array [
-        Object {
-          "arg": Object {
-            "pattern": /\\^\\[0-9a-fA-F\\]\\{24\\}\\$/,
-          },
-          "name": "regex",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "templateId": Object {
+          "type": "string",
         },
+      },
+      "required": Array [
+        "templateId",
       ],
-      "type": "string",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`entities DELETE /api/entities should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "sharedId": Object {
-      "flags": Object {
-        "presence": "required",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "sharedId": Object {
+          "type": "string",
+        },
       },
-      "invalids": Array [
-        "",
+      "required": Array [
+        "sharedId",
       ],
-      "type": "string",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`entities POST /api/entities/bulkdelete should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "sharedIds": Object {
-      "flags": Object {
-        "presence": "required",
-        "sparse": false,
-      },
-      "items": Array [
-        Object {
-          "invalids": Array [
-            "",
-          ],
-          "type": "string",
+  "properties": Object {
+    "body": Object {
+      "properties": Object {
+        "sharedIds": Object {
+          "items": Object {
+            "type": "string",
+          },
+          "type": "array",
         },
+      },
+      "required": Array [
+        "sharedIds",
       ],
-      "type": "array",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "body",
+  ],
   "type": "object",
 }
 `;

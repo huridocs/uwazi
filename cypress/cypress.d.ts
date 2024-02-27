@@ -24,6 +24,7 @@ declare global {
         }
       ): Chainable<Element>;
       checkAccessibility(components: React.ReactNode[]);
+      waitForNotification(message: string): Chainable;
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
