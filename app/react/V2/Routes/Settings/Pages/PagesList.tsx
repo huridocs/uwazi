@@ -56,23 +56,25 @@ const PagesList = () => {
   };
 
   const columns = [
-    columnHelper.accessor('entityView', {
-      header: EntityViewHeader,
-      cell: YesNoPill,
-    }),
     columnHelper.accessor('title', {
       header: TitleHeader,
+      meta: { headerClassName: 'w-2/6' },
     }),
     columnHelper.accessor('sharedId', {
       header: UrlHeader,
       cell: UrlCell,
+      meta: { headerClassName: 'w-2/6' },
+    }),
+    columnHelper.accessor('entityView', {
+      header: EntityViewHeader,
+      cell: YesNoPill,
+      meta: { headerClassName: 'w-1/6' },
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
       header: () => null,
       cell: EditButton,
       enableSorting: false,
-      meta: { headerClassName: 'hidden' },
     }),
   ];
 
