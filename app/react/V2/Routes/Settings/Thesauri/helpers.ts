@@ -1,8 +1,9 @@
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { LocalThesaurusValueSchema } from './components/ValueForm';
 
 const mergeValues = (
   oldItems: ThesaurusValueSchema[],
-  newItems: ThesaurusValueSchema & { groupId?: string }[]
+  newItems: LocalThesaurusValueSchema[]
 ): ThesaurusValueSchema[] => {
   const itemsWithGroups = newItems.filter(item => item.groupId && item.groupId !== '');
   const itemsWithoutGroups = newItems

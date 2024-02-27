@@ -1,19 +1,19 @@
+import React, { useState } from 'react';
+import { IncomingHttpHeaders } from 'http';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
-import React, { useState } from 'react';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
-import { IncomingHttpHeaders } from 'http';
 import { RequestParams } from 'app/utils/RequestParams';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { notificationAtom } from 'app/V2/atoms';
 import { useSetRecoilState } from 'recoil';
-import { ValueForm } from './components/ValueForm';
+import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
 import { mergeValues, sanitizeThesaurusValues } from './helpers';
 
@@ -62,7 +62,7 @@ const EditThesauri = () => {
     setThesaurusValues(newValues);
   };
 
-  const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
+  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
     let currentValues: ThesaurusValueSchema[] = [...thesaurusValues];
     if (editValue) {
       // @ts-ignore

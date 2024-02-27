@@ -7,7 +7,7 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, useNavigate } from 'react-router-dom';
-import { ValueForm } from './components/ValueForm';
+import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
 import { useForm } from 'react-hook-form';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -40,11 +40,11 @@ const NewThesauri = () => {
     defaultValues: { name: '', values: [] },
   });
 
-  const addItemSubmit = (items: ThesaurusValueSchema & { groupId?: string }[]) => {
+  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
     let currentValues: ThesaurusValueSchema[] = [...valueChanges];
     if (editValue) {
       // @ts-ignore
-      const editItem: ThesaurusValueSchema & { groupId?: string } = items[0];
+      const editItem: LocalThesaurusValueSchema = items[0];
       if (editItem.groupId && editItem.groupId !== '') {
         currentValues = currentValues.map(value => {
           if (value.id === editItem.groupId) {
