@@ -33,7 +33,7 @@ describe('Pages', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'Custom home page');
-      cy.contains('Code').click();
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
         { parseSpecialCharSequences: false, delay: 0 }
@@ -101,18 +101,26 @@ describe('Pages', () => {
     it('should display existing code in an editor', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
-      cy.contains('table > tbody > tr:nth-child(2) > td:nth-child(5)', 'Edit').click();
-      cy.contains('Code').click();
+      cy.contains('Country page')
+        .parent()
+        .within(() => {
+          cy.contains('button', 'Edit').click();
+        });
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').should('exist');
       cy.contains('<EntityData');
-      cy.contains('Advanced').click();
+      cy.contains('Javascript').click();
       cy.contains('toISOString');
       cy.get('div[data-mode-id="javascript"]').should('exist');
     });
 
     it('should allow to edit and get a preview of the page', () => {
       cy.contains('a', 'Pages').click();
-      cy.contains('table > tbody > tr:nth-child(1) > td:nth-child(5)', 'Edit').click();
+      cy.contains('Page with error')
+        .parent()
+        .within(() => {
+          cy.contains('button', 'Edit').click();
+        });
       cy.contains('View page').invoke('attr', 'target', '_self').click();
       cy.location('pathname', { timeout: 500 }).should('include', 'page-with-error');
       cy.contains('This content may not work correctly.');
@@ -146,12 +154,12 @@ describe('Pages', () => {
       cy.contains('Add page').click();
       cy.clearAndType('input[name="title"]', 'My entity view page');
       cy.contains('Activate').click();
-      cy.contains('Code').click();
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type(contents, {
         parseSpecialCharSequences: false,
         delay: 0,
       });
-      cy.contains('Advanced').click();
+      cy.contains('Javascript').click();
       cy.get('div[data-mode-id="javascript"]').type(script, {
         parseSpecialCharSequences: false,
         delay: 0,
@@ -208,7 +216,7 @@ describe('Pages', () => {
 
     it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
-      cy.get('table > tbody > tr:nth-child(1) > td > label > input').check();
+      cy.get('table > tbody > tr:nth-child(4) > td > label > input').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
       cy.contains('div[role="dialog"] button', 'Cancel').click();
@@ -217,7 +225,7 @@ describe('Pages', () => {
     });
 
     it('should delete a page with confirmation', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      deletePage('table > tbody > tr:nth-child(4) > td > label > input');
       cy.contains('Deleted successfully');
       cy.contains('Page with error').should('not.exist');
     });
