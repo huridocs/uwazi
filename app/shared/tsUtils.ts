@@ -18,7 +18,7 @@ export function ensure<T>(argument: T | undefined | null | any, message?: string
 export function wrapValidator(validator: any) {
   return async (value: any) => {
     try {
-      return await validator(value);
+      return validator(value);
     } catch (error) {
       if (error as ValidationError) {
         const e = new ValidationError(error.errors);

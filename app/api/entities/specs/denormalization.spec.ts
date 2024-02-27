@@ -24,7 +24,6 @@ const load = async (data: DBFixture, index?: string) =>
     index
   );
 
-// eslint-disable-next-line max-statements
 describe('Denormalize relationships', () => {
   const factory = getFixturesFactory();
   const createTranslationDBO = factory.v2.database.translationDBO;
