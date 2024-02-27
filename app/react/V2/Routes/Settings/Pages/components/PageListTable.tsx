@@ -19,7 +19,7 @@ const ActionCell = ({ cell }: CellContext<Page, string>) => {
   const isEntityView = cell.row.original.entityView;
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 justify-end">
       <Link
         to={`/${cell.row.original.language}/${pageUrl}`}
         target="_blank"

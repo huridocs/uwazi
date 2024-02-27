@@ -76,7 +76,7 @@ const PagesList = () => {
       header: ActionHeader,
       cell: ActionCell,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only w-1/6' },
+      meta: { headerClassName: 'sr-only w-0' },
     }),
   ];
 
