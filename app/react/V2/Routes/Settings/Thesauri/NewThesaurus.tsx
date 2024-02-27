@@ -4,7 +4,7 @@ import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
+import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, useNavigate } from 'react-router-dom';
 import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
@@ -101,7 +101,6 @@ const NewThesauri = () => {
 
   const submitThesauri = async (data: ThesaurusSchema) => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, valueChanges);
-    console.log('Already sanitized thesaurus: ', sanitizedThesaurus);
     try {
       await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
       setNotifications({
@@ -140,7 +139,7 @@ const NewThesauri = () => {
       meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
     columnHelper.accessor('id', {
-      header: () => <Translate>Action</Translate>,
+      header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: {

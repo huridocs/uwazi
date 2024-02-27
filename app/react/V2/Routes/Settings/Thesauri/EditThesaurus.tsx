@@ -5,13 +5,19 @@ import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { EditButton, ThesaurusValueLabel } from './components/TableComponents';
+import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
 import { GroupForm } from './components/GroupForm';
 import { mergeValues, sanitizeThesaurusValues } from './helpers';
+import { notificationAtom } from 'app/V2/atoms/notificationAtom';
+import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { RequestParams } from 'app/utils/RequestParams';
+
+const LabelHeader = () => <Translate>Label</Translate>;
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -138,12 +144,12 @@ const EditThesauri = () => {
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
-      header: () => <Translate>Label</Translate>,
+      header: LabelHeader,
       cell: ThesaurusValueLabel,
       meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
     columnHelper.accessor('id', {
-      header: () => <Translate>Action</Translate>,
+      header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: {

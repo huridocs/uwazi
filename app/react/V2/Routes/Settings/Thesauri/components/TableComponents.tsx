@@ -15,6 +15,8 @@ const ThesaurusLabel = ({ cell }: any) => (
   </>
 );
 
+const ActionHeader = () => <Translate>Action</Translate>;
+
 const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema, string>) => (
   <div className="flex items-center gap-2">
     <Translate
@@ -48,4 +50,4 @@ const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   </Button>
 );
 
-export { ThesaurusLabel, LabelHeader, EditButton, ThesaurusValueLabel };
+export { ThesaurusLabel, LabelHeader, EditButton, ThesaurusValueLabel, ActionHeader };
