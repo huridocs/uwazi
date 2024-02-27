@@ -18,6 +18,7 @@ import {
   UrlHeader,
   EditButton,
   UrlCell,
+  ActionHeader,
 } from './components/PageListTable';
 
 const pagesListLoader =
@@ -72,9 +73,10 @@ const PagesList = () => {
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
-      header: () => null,
+      header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
+      meta: { headerClassName: 'sr-only' },
     }),
   ];
 
