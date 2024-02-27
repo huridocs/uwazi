@@ -18,8 +18,10 @@ export function ensure<T>(argument: T | undefined | null | any, message?: string
 export function wrapValidator(validator: any) {
   return async (value: any) => {
     try {
-      return validator(value);
+      const validationresult = await validator(value);
+      return validationresult
     } catch (error) {
+      console.log('error', error)
       if (error as ValidationError) {
         const e = new ValidationError(error.errors);
         e.message = util.inspect(error, false, null);

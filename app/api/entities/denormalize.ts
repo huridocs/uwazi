@@ -212,7 +212,7 @@ const denormalizeRelated = async (
           $set: {
             [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
-            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published,
+            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published || false,
             ...(inheritProperty
               ? {
                   [`${update.valuePath}.$[valueIndex].inheritedValue`]:
@@ -386,7 +386,7 @@ const denormalizeRelationshipProperty = async (
       denormalizedValue.label = partner.title;
       denormalizedValue.icon = partner.icon;
       denormalizedValue.type = partner.file ? 'document' : 'entity';
-      denormalizedValue.published = partner.published;
+      denormalizedValue.published = partner.published || false;
     }
 
     if (property.inherit && property.inherit.property && partner) {

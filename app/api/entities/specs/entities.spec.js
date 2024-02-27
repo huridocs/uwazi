@@ -85,11 +85,11 @@ describe('entities', () => {
 
       const createdEntity = await entities.save(entity, { user, language: 'es' });
 
-      expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toEqual([
+      expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toMatchObject([
         { value: 'country_one', label: 'Pais1' },
         { value: 'country_two', label: 'Pais2' },
       ]);
-      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toEqual([
+      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toMatchObject([
         { value: 'id1', label: 'entity one', type: 'entity' },
         { value: 'id2', label: 'entity two', type: 'entity' },
         { value: 'id3', label: 'entity three', type: 'entity' },
@@ -443,9 +443,9 @@ describe('entities', () => {
       });
     });
 
-    it('should not circle back to updateMetdataFromRelationships', async () => {
+    it('should not circle back to updateMetadataFromRelationships', async () => {
       jest.spyOn(date, 'currentUTC').mockReturnValue(1);
-      jest.spyOn(entities, 'updateMetdataFromRelationships');
+      jest.spyOn(entities, 'updateMetadataFromRelationships');
       const doc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
@@ -470,7 +470,7 @@ describe('entities', () => {
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' }, false);
-      expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
+      expect(entities.updateMetadataFromRelationships).not.toHaveBeenCalled();
     });
 
     describe('when document have _id', () => {
@@ -525,11 +525,11 @@ describe('entities', () => {
     });
   });
 
-  describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', async () => {
-      await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
+  describe('updateMetadataFromRelationships', () => {
+    it('should update the metadata based on the entity relationships', async () => {
+      await entities.updateMetadataFromRelationships(['shared', 'missingEntity'], 'en');
       const updatedEntity = await entities.getById('shared', 'en');
-      expect(updatedEntity.metadata.friends).toEqual([
+      expect(updatedEntity.metadata.friends).toMatchObject([
         { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
       ]);
     });
@@ -539,7 +539,7 @@ describe('entities', () => {
       const user = { _id: db.id() };
       const newEntity = await entities.save(doc, { user, language: 'es' });
 
-      await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
+      await entities.updateMetadataFromRelationships([newEntity.sharedId], 'es');
       const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
       expect(updatedEntity.metadata).toEqual({
         date: [],
@@ -564,9 +564,9 @@ describe('entities', () => {
           email: 'col@test.com',
         });
 
-        await entities.updateMetdataFromRelationships(['shared'], 'en');
+        await entities.updateMetadataFromRelationships(['shared'], 'en');
         const updatedEntity = await entities.getById('shared', 'en');
-        expect(updatedEntity.metadata.friends).toEqual([
+        expect(updatedEntity.metadata.friends).toMatchObject([
           { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
         ]);
         userFactory.mockEditorUser();
@@ -904,7 +904,9 @@ describe('entities', () => {
       const metadata = {
         property1: [{ value: 'new text' }],
         description: [{ value: 'yeah!' }],
-        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        friends: [
+          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2', published: false },
+        ],
       };
 
       const updatedEntities = await entities.multipleUpdate(
