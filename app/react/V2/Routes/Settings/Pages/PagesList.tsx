@@ -95,11 +95,12 @@ const PagesList = () => {
             enableSelection
             title={<Translate>Pages</Translate>}
             onSelection={setSelectedPages}
+            initialState={{ sorting: [{ id: 'title', desc: false }] }}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={confirmDeletion}
