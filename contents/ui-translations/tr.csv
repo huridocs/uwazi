@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -133,7 +132,6 @@ Click,Click
 Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
-Code,Code
 Collaborator,Katkı Sunan
 Collapse all,Collapse all
 Collection,Koleksiyon
@@ -403,6 +401,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,Öğeler:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Turkish
 Label,Etiket

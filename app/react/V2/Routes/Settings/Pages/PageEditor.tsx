@@ -183,7 +183,7 @@ const PageEditor = () => {
               </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Code" key="html" label={<Translate>Code</Translate>}>
+            <Tabs.Tab id="Code" key="html" label={<Translate>Markdown</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <HTMLNotification />
                 <div className="pt-2 h-full">
@@ -205,7 +205,7 @@ const PageEditor = () => {
               </div>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
+            <Tabs.Tab id="Advanced" label={<Translate>Javascript</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <JSNotification />
                 <div className="pt-2 h-full">

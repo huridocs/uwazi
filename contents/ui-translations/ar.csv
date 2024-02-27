@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,ستتوافر الخصائص المجاورة لتحديد الموقع الجغرافي على الخريطة نفسها
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
@@ -132,7 +131,6 @@ Click,Click
 Click here,انقر هنا
 Click to fill,انقر للتعبئة
 Close,غلق
-Code,Code
 Collaborator,متعاون/ مساهم
 Collapse all,Collapse all
 Collection,المجموعة
@@ -402,6 +400,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,العناصر:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Arabic
 Label,التسمية
