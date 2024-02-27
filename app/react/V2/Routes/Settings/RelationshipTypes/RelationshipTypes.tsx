@@ -1,24 +1,21 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
 
 import { Translate } from 'app/I18N';
-import { isEqual } from 'lodash';
 import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
-import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 
 import { notificationAtom } from 'app/V2/atoms';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
+import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 
 import { columns } from './components/TableComponents';
-import uniqueID from 'shared/uniqueID';
 import { Form } from './components/Form';
 import { ClientRelationshipType } from 'app/apiResponseTypes';
 
@@ -34,25 +31,13 @@ const RelationshipTypes = () => {
   const revalidator = useRevalidator();
 
   const [selectedItems, setSelectedItems] = useState<Row<ClientRelationshipType>[]>([]);
-  const [changes, setChanges] = useState<ClientRelationshipType[]>([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const setSettings = useSetRecoilState(settingsAtom);
-  const [formValues, setFormValues] = useState<ClientRelationshipType>(
-    {} as ClientRelationshipType
-  );
 
-  const blocker = useBlocker(!isEqual(relationshipTypes, changes));
-
-  useEffect(() => {
-    setChanges(relationshipTypes);
-    setSettings(prev => ({ ...prev, relationshipTypes }));
-  }, [relationshipTypes]);
-
-  useMemo(() => {
-    if (blocker.state === 'blocked') {
-      setShowModal(true);
-    }
-  }, [blocker, setShowModal]);
+  interface formType extends Omit<ClientRelationshipType, '_id'> {
+    _id?: string;
+  }
+  const [formValues, setFormValues] = useState<formType>({} as ClientRelationshipType);
 
   const edit = (row: Row<ClientRelationshipType>) => {
     setFormValues(row.original);
@@ -60,30 +45,46 @@ const RelationshipTypes = () => {
   };
 
   const add = () => {
-    setFormValues({ _id: `temp_${uniqueID()}`, name: '' });
+    setFormValues({ name: '' });
     setIsSidepanelOpen(true);
   };
 
-  const submit = (submitedData: ClientRelationshipType) => {
-    const newChanges = changes.map(c => (c._id === submitedData._id ? submitedData : c));
-    if (newChanges.find(c => c._id === submitedData._id) === undefined) {
-      newChanges.push(submitedData);
+  const submit = async (submitedData: ClientRelationshipType) => {
+    try {
+      await relationshipTypesAPI.save(submitedData);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Updated</Translate>,
+      });
+      setIsSidepanelOpen(false);
+    } catch (error) {
+      console.log('error', error); // eslint-disable-line no-console
+      setNotifications({
+        type: 'error',
+        text: <Translate>Failed to save</Translate>,
+      });
+      setIsSidepanelOpen(false);
     }
-    setChanges(newChanges);
-    setIsSidepanelOpen(false);
-  };
-
-  const save = async () => {
-    await relationshipTypesAPI.save(toSave);
     revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Updated</Translate>,
-    });
   };
 
   const deleteSelected = async () => {
-    setChanges(changes.filter(c => !selectedItems.map(s => s.original).includes(c)));
+    try {
+      await relationshipTypesAPI.deleteRelationtypes(selectedItems.map(item => item.original._id));
+      setNotifications({
+        type: 'success',
+        text: <Translate>Updated</Translate>,
+      });
+      setShowConfirmationModal(false);
+    } catch (error) {
+      console.log('error', error); // eslint-disable-line no-console
+      setNotifications({
+        type: 'error',
+        text: <Translate>Failed to save</Translate>,
+      });
+      setShowConfirmationModal(false);
+    }
+    revalidator.revalidate();
   };
 
   return (
@@ -98,8 +99,7 @@ const RelationshipTypes = () => {
           <Table<ClientRelationshipType>
             enableSelection
             columns={columns({ edit })}
-            data={changes}
-            onChange={setChanges}
+            data={relationshipTypes}
             title={<Translate>Relationship types</Translate>}
             onSelection={setSelectedItems}
           />
@@ -109,14 +109,14 @@ const RelationshipTypes = () => {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                onClick={deleteSelected}
+                onClick={() => setShowConfirmationModal(true)}
                 color="error"
                 data-testid="relationship-types-delete-link"
               >
                 <Translate>Delete</Translate>
               </Button>
               <Translate>Selected</Translate> {selectedItems.length} <Translate>of</Translate>
-              {changes.length}
+              {relationshipTypes.length}
             </div>
           )}
           {selectedItems.length === 0 && (
@@ -124,17 +124,6 @@ const RelationshipTypes = () => {
               <div className="flex gap-2">
                 <Button type="button" onClick={add} data-testid="relationship-types-add-link">
                   <Translate>Add relationship type</Translate>
-                </Button>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={save}
-                  color="success"
-                  disabled={relationshipTypes === changes}
-                  data-testid="relationship-types-save"
-                >
-                  <Translate>Save</Translate>
                 </Button>
               </div>
             </div>
@@ -153,13 +142,28 @@ const RelationshipTypes = () => {
         withOverlay
       >
         <Form
-          relationtype={formValues}
+          relationtype={formValues as ClientRelationshipType}
           closePanel={() => setIsSidepanelOpen(false)}
+          currentTypes={relationshipTypes}
           submit={submit}
         />
       </Sidepanel>
-      {showModal && (
-        <ConfirmNavigationModal setShowModal={setShowModal} onConfirm={blocker.proceed} />
+      {showConfirmationModal && (
+        <ConfirmationModal
+          size="lg"
+          header={<Translate>Delete</Translate>}
+          warningText={<Translate>Do you want to delete?</Translate>}
+          body={
+            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+              {selectedItems.map(item => (
+                <li key={item.original.name}>{item.original.name}</li>
+              ))}
+            </ul>
+          }
+          onAcceptClick={deleteSelected}
+          onCancelClick={() => setShowConfirmationModal(false)}
+          dangerStyle
+        />
       )}
     </div>
   );

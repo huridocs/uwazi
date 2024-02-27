@@ -25,7 +25,6 @@ const TitleCell = ({ cell, getValue }: CellContext<ClientRelationshipType, strin
 );
 
 const TitleHeader = () => <Translate>Label</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 
 const columnHelper = createColumnHelper<any>();
 const columns = (actions: { edit: Function }) => [
@@ -37,10 +36,10 @@ const columns = (actions: { edit: Function }) => [
     meta: { headerClassName: 'w-6/12' },
   }) as ColumnDef<ClientRelationshipType, 'name'>,
   columnHelper.accessor('key', {
-    header: ActionHeader,
+    header: '',
     cell: EditButton,
     enableSorting: false,
     meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
   }) as ColumnDef<ClientRelationshipType, 'key'>,
 ];
-export { EditButton, TitleHeader, ActionHeader, TitleCell, columns };
+export { EditButton, TitleHeader, TitleCell, columns };

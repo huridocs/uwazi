@@ -11,9 +11,10 @@ interface FormProps {
   closePanel: () => void;
   relationtype?: ClientRelationshipType;
   submit: (formValues: ClientRelationshipType) => void;
+  currentTypes: ClientRelationshipType[];
 }
 
-const Form = ({ closePanel, submit, relationtype }: FormProps) => {
+const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => {
   const {
     register,
     handleSubmit,
@@ -32,8 +33,18 @@ const Form = ({ closePanel, submit, relationtype }: FormProps) => {
               id="link-title"
               data-testid="relationship-type-form-name"
               label={<Translate>Name</Translate>}
-              {...register('name', { required: true })}
+              {...register('name', {
+                required: true,
+                validate: {
+                  alreadyExists: value => !currentTypes.some(type => type.name === value),
+                },
+              })}
               hasErrors={!!errors.name}
+              errorMessage={
+                errors.name?.type === 'alreadyExists' ? (
+                  <Translate>This name already exists</Translate>
+                ) : null
+              }
             />
           </div>
         </Card>
@@ -53,7 +64,7 @@ const Form = ({ closePanel, submit, relationtype }: FormProps) => {
           form="relationship-type-form"
           data-testid="relationship-type-form-submit"
         >
-          {relationtype?.name ? <Translate>Update</Translate> : <Translate>Add</Translate>}
+          <Translate>Save</Translate>
         </Button>
       </div>
     </div>

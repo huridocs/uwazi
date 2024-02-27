@@ -8,15 +8,18 @@ const get = async (headers?: IncomingHttpHeaders): Promise<ClientRelationshipTyp
   return api.get('relationtypes', requestParams).then((response: any) => response.json.rows);
 };
 
-const save = async (
-  relationshipTypes: ClientRelationshipType[]
-): Promise<ClientRelationshipType[]> => {
-  const allSaved = relationshipTypes.map(async relationshipType => {
-    const requestParams = new RequestParams(relationshipType);
-    return api.post('relationtypes', requestParams).then((response: any) => response.json);
-  });
-
-  return Promise.all(allSaved);
+const save = async (relationshipType: ClientRelationshipType): Promise<ClientRelationshipType> => {
+  const requestParams = new RequestParams(relationshipType);
+  return api.post('relationtypes', requestParams).then((response: any) => response.json);
 };
 
-export { get, save };
+const deleteRelationtypes = async (ids: string[]) => {
+  const allDeleted = ids.map(async id => {
+    const requestParams = new RequestParams({ _id: id });
+    return api.delete('relationtypes', requestParams).then((response: any) => response.json);
+  });
+
+  return Promise.all(allDeleted);
+};
+
+export { get, save, deleteRelationtypes };

@@ -75,6 +75,6 @@ export interface ClientSettings
 }
 
 export interface ClientRelationshipType {
-  _id?: string;
+  _id: string;
   name: string;
 }
