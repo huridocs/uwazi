@@ -5,7 +5,6 @@ import { search } from 'api/search';
 import templates from 'api/templates';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { EntitySchema } from 'shared/types/entityType';
-import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { TemplateSchema } from 'shared/types/templateType';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import translate, { getContext } from 'shared/translate';
@@ -18,6 +17,8 @@ import {
 import { isString } from 'util';
 
 import model from './entitiesModel';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { PermissionType } from 'shared/types/permissionSchema';
 
 interface DenormalizationUpdate {
   propertyName: string;
@@ -228,7 +229,40 @@ const denormalizeRelated = async (
   return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
 };
 
-const denormalizeOnPermissionChange = async (permissionsData: PermissionsDataSchema) => {};
+const denormalizePublishedStateInRelated = async (
+  entities: EntitySchema[],
+  permissions: PermissionsDataSchema['permissions']
+) => {
+  const publishedState = permissions.some(p => p.type === PermissionType.PUBLIC);
+  const sharedIds = Array.from(new Set(entities.map(e => e.sharedId)));
+  const templateIdsOfUpdatedEntities = new Set(
+    entities.map(e => e.template?.toString()).filter(e => e) as string[]
+  );
+  const allTemplates = (await templates.get({})) as WithId<TemplateSchema>[];
+  const relationshipProperties = allTemplates
+    .map(t => t.properties || [])
+    .flat()
+    .filter(p => p.type === 'relationship')
+    .filter(p => p.content);
+  const relatedRelationshipProperites = relationshipProperties.filter(
+    p => p.content && templateIdsOfUpdatedEntities.has(p.content)
+  );
+  await Promise.all(
+    relatedRelationshipProperites.map(async p =>
+      model.updateMany(
+        {
+          [`metadata.${p.name}.value`]: { $in: sharedIds },
+        },
+        {
+          $set: {
+            [`metadata.${p.name}.$[valueIndex].published`]: publishedState,
+          },
+        },
+        { arrayFilters: [{ 'valueIndex.value': { $in: sharedIds } }] }
+      )
+    )
+  );
+};
 
 const denormalizeThesauriLabelInMetadata = async (
   valueId: string,
@@ -454,5 +488,5 @@ export {
   denormalizeMetadata,
   denormalizeRelated,
   denormalizeThesauriLabelInMetadata,
-  denormalizeOnPermissionChange,
+  denormalizePublishedStateInRelated,
 };

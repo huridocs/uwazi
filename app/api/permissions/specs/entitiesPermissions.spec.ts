@@ -133,7 +133,7 @@ describe('permissions', () => {
       expect(storedEntities[2].published).toBe(false);
     });
 
-    fit.each<{
+    it.each<{
       case: string;
       permissionInput: PermissionsDataSchema;
       expectedMetadata: Record<string, { value: string; published: boolean }[]>[];
@@ -169,6 +169,12 @@ describe('permissions', () => {
                 published: false,
               },
             ],
+            unrelated_relationship: [
+              {
+                value: 'unrelated_entity',
+                published: true,
+              },
+            ],
           },
           {
             relationship_11: [
@@ -191,6 +197,7 @@ describe('permissions', () => {
                 published: true,
               },
             ],
+            unrelated_relationship: [],
           },
           {
             relationship_21: [
@@ -266,6 +273,12 @@ describe('permissions', () => {
                 published: false,
               },
             ],
+            unrelated_relationship: [
+              {
+                value: 'unrelated_entity',
+                published: true,
+              },
+            ],
           },
           {
             relationship_11: [
@@ -288,6 +301,7 @@ describe('permissions', () => {
                 published: false,
               },
             ],
+            unrelated_relationship: [],
           },
           {
             relationship_21: [
@@ -351,9 +365,11 @@ describe('permissions', () => {
           templates: [
             factory.template('sourceTemplate1', [factory.property('text1')]),
             factory.template('sourceTemplate2', [factory.property('text2')]),
+            factory.template('unrelatedTemplate', [factory.property('unrelated_text_prop')]),
             factory.template('relationshipTemplate1', [
               factory.relationshipProp('relationship_11', 'sourceTemplate1'),
               factory.inherit('relationship_12', 'sourceTemplate2', 'text2'),
+              factory.relationshipProp('unrelated_relationship', 'unrelatedTemplate'),
             ]),
             factory.template('relationshipTemplate2', [
               factory.inherit('relationship_21', 'sourceTemplate1', 'text1'),
@@ -397,6 +413,7 @@ describe('permissions', () => {
               { text2: [factory.metadataValue('F')] },
               { published: false }
             ),
+            factory.entity('unrelated_entity', 'unrelatedTemplate', {}, { published: true }),
             factory.entity('relationship11', 'relationshipTemplate1', {
               relationship_11: [
                 { value: 'source11', label: 'source11', published: true },
@@ -415,6 +432,9 @@ describe('permissions', () => {
                   published: false,
                   inheritedValue: [{ value: 'D' }],
                 },
+              ],
+              unrelated_relationship: [
+                { value: 'unrelated_entity', label: 'unrelated_entity', published: true },
               ],
             }),
             factory.entity('relationship12', 'relationshipTemplate1', {
@@ -436,6 +456,7 @@ describe('permissions', () => {
                   inheritedValue: [{ value: 'F' }],
                 },
               ],
+              unrelated_relationship: [],
             }),
             factory.entity('relationship21', 'relationshipTemplate2', {
               relationship_21: [
@@ -471,8 +492,8 @@ describe('permissions', () => {
         };
         await db.setupFixturesAndContext(publishedStateTestFixtures);
         await entitiesPermissions.set(permissionInput);
-        const relTemplateId1 = publishedStateTestFixtures.templates[2]._id;
-        const relTemplateId2 = publishedStateTestFixtures.templates[3]._id;
+        const relTemplateId1 = publishedStateTestFixtures.templates[3]._id;
+        const relTemplateId2 = publishedStateTestFixtures.templates[4]._id;
         const entites = await entities.get(
           { template: { $in: [relTemplateId1, relTemplateId2] } },
           {},
