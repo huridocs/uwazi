@@ -49,10 +49,10 @@ const TranslationsList = () => {
       meta: { headerClassName: 'w-2/3' },
     }) as ColumnDef<ClientTranslationContextSchema, 'type'>,
     columnHelper.accessor('id', {
-      header: () => null,
+      header: () => '',
       cell: RenderButton,
       enableSorting: false,
-      meta: { headerClassName: 'hidden' },
+      meta: { headerClassName: 'sr-only' },
     }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
   ];
 

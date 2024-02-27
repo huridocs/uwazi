@@ -69,10 +69,10 @@ const PagesList = () => {
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
-      header: () => null,
+      header: () => '',
       cell: EditButton,
       enableSorting: false,
-      meta: { headerClassName: 'hidden' },
+      meta: { headerClassName: 'sr-only' },
     }),
   ];
 

@@ -172,10 +172,10 @@ const extractorsTableColumns = [
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('_id', {
-    header: () => null,
+    header: () => '',
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'hidden' },
+    meta: { headerClassName: 'sr-only' },
   }),
 ];
 
@@ -216,7 +216,7 @@ const suggestionsTableColumnsBuilder: Function = (
     }),
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
-      header: () => null,
+      header: () => '',
       cell: OpenPDFButton,
       meta: {
         headerClassName: 'hidden',
