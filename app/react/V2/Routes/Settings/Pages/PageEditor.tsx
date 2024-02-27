@@ -166,7 +166,7 @@ const PageEditor = () => {
                     id="page-url"
                   />
 
-                  {getValues('sharedId') && (
+                  {getValues('sharedId') && !getValues('entityView') && (
                     <Link
                       target="_blank"
                       to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}
