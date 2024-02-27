@@ -16,7 +16,7 @@ import {
   YesNoPill,
   TitleHeader,
   UrlHeader,
-  EditButton,
+  ActionCell,
   UrlCell,
   ActionHeader,
 } from './components/PageListTable';
@@ -74,9 +74,9 @@ const PagesList = () => {
     columnHelper.accessor('sharedId', {
       id: 'action',
       header: ActionHeader,
-      cell: EditButton,
+      cell: ActionCell,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only' },
+      meta: { headerClassName: 'sr-only w-1/6' },
     }),
   ];
 

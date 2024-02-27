@@ -14,13 +14,29 @@ const TitleHeader = () => <Translate>Title</Translate>;
 const UrlHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
-const EditButton = ({ cell }: CellContext<Page, string>) => (
-  <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
-    <Button styling="outline" className="leading-4">
-      <Translate>Edit</Translate>
-    </Button>
-  </Link>
-);
+const ActionCell = ({ cell }: CellContext<Page, string>) => {
+  const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title);
+  const isEntityView = cell.row.original.entityView;
+
+  return (
+    <div className="flex gap-2">
+      <Link
+        to={`/${cell.row.original.language}/${pageUrl}`}
+        target="_blank"
+        aria-disabled={isEntityView}
+      >
+        <Button styling="outline" disabled={isEntityView}>
+          <Translate>View</Translate>
+        </Button>
+      </Link>
+      <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
+        <Button styling="outline">
+          <Translate>Edit</Translate>
+        </Button>
+      </Link>
+    </div>
+  );
+};
 
 const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
   const { color, label }: { color: 'primary' | 'gray'; label: React.ReactElement } = cell.getValue()
@@ -39,7 +55,7 @@ const UrlCell = ({ cell }: CellContext<Page, string>) => {
 
 export {
   YesNoPill,
-  EditButton,
+  ActionCell,
   EntityViewHeader,
   TitleHeader,
   UrlHeader,
