@@ -425,7 +425,6 @@ Un documento: */document/4y9i99fadjp833di*
       
 Importante: Debes usar URLs relativos. Estos empiezan con / y no incluyen el nombre del dominio. Por ejemplo: En la dirección *https://yoursite.com/landingpage*, el URL relativo es /landingpage"
 Language,Idioma
-Language (Default language),Language (Default language)
 Language Code,Código de Idioma
 Language deleted,Idioma eliminado
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.

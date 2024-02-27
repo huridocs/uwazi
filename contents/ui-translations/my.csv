@@ -427,7 +427,6 @@ A document: */document/4y9i99fadjp833di*
       
 Important: You must use relative URLs. These start with a forward slash and do not include the domain name. For example: In the address *https://yoursite.com/landingpage*, the relative URL is /landingpage"
 Language,ဘာသာစကား
-Language (Default language),Language (Default language)
 Language Code,Language Code
 Language deleted,ဘာသာစကား ဖျက်ပြီး
 Language Install Start Message,Language installation process initiated. It may take several minutes to complete depending on the size of the collection. Please wait until the installation process is finished.
