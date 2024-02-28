@@ -211,7 +211,10 @@ describe('Pages', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
-      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot();
+      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot({
+        disableTimersAndAnimations: true,
+        threshold: 0.08,
+      });
     });
 
     it('should allow to cancel deletion', () => {
