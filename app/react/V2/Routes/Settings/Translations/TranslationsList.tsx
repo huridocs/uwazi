@@ -52,7 +52,7 @@ const TranslationsList = () => {
       header: () => '',
       cell: RenderButton,
       enableSorting: false,
-      meta: { headerClassName: 'invisible bg-gray-50' },
+      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
   ];
 

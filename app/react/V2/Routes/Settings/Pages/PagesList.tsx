@@ -72,7 +72,7 @@ const PagesList = () => {
       header: () => '',
       cell: EditButton,
       enableSorting: false,
-      meta: { headerClassName: 'invisible bg-gray-50' },
+      meta: { headerClassName: 'sr-only' },
     }),
   ];
 

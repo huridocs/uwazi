@@ -80,7 +80,7 @@ const TranslationsTables = ({
       header: StatusHeader,
       cell: LanguagePill,
       enableSorting: false,
-      meta: { headerClassName: 'invisible bg-gray-50' },
+      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }),
     columnHelper.accessor('fieldKey', {
       header: FieldKeyHeader,

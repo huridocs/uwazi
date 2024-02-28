@@ -125,7 +125,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
       id: '1',
       header: () => '',
       cell: EditUserButton,
-      meta: { action: editButtonAction, headerClassName: 'invisible bg-gray-50' },
+      meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,
     }),
   ];
@@ -148,7 +148,7 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
       id: '1',
       header: () => '',
       cell: EditUserGroupButton,
-      meta: { action: editButtonAction, headerClassName: 'invisible bg-gray-50' },
+      meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,
     }),
   ];
