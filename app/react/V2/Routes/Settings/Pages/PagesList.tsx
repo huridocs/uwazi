@@ -76,7 +76,7 @@ const PagesList = () => {
       header: ActionHeader,
       cell: ActionCell,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only w-0' },
+      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }),
   ];
 
@@ -104,7 +104,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={confirmDeletion}
