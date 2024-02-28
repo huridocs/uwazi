@@ -1,4 +1,5 @@
 import { Db } from 'mongodb';
+import { Template } from './types';
 
 export default {
   delta: 161,
@@ -12,6 +13,19 @@ export default {
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return Promise.reject(new Error('error! change this, recently created migration'));
+
+    const defaultTemplateId = (
+      await db.collection<Template>('templates').findOne({ default: true })
+    )?._id;
+    if (!defaultTemplateId) return;
+
+    const updateResult = await db
+      .collection('entities')
+      .updateMany(
+        { $or: [{ template: { $exists: false } }, { template: { $in: [null, undefined] } }] },
+        { $set: { template: defaultTemplateId } }
+      );
+
+    if (updateResult.modifiedCount) this.reindex = true;
   },
 };
