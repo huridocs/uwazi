@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
-Advanced,Advanced
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
@@ -133,7 +132,6 @@ Click,Click
 Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
-Code,Code
 Collaborator,협업자
 Collapse all,Collapse all
 Collection,컬렉션
@@ -403,6 +401,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,아이템
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Korean
 Label,라벨
