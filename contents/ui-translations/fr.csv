@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -132,7 +131,6 @@ Click,Click
 Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
-Code,Code
 Collaborator,Collaborateur
 Collapse all,Collapse all
 Collection,Collection
@@ -402,6 +400,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,Articles :
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,French
 Label,Étiquette

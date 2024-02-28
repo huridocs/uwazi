@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
-Advanced,Advanced
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -133,7 +132,6 @@ Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
-Code,Code
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
@@ -403,6 +401,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,ပါဝင်သည့်အရာများ-
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Burmese
 Label,တံဆိပ် အမှတ်အသား
