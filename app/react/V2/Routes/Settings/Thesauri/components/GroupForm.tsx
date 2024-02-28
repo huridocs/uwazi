@@ -64,7 +64,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
             />
           </div>
         </Card>
-        {fields.map((fieldValue, index) => (
+        {/* {fields.map((fieldValue, index) => (
           <Card title={<Translate>Item</Translate>} key={fieldValue.id}>
             <div className="flex flex-col gap-4">
               <InputField
@@ -82,7 +82,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
               />
             </div>
           </Card>
-        ))}
+        ))} */}
       </form>
       <div className="absolute bottom-0 flex w-full gap-2">
         <Button

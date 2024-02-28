@@ -7,13 +7,13 @@ import ChevronUpIcon from '@heroicons/react/20/solid/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 
 const ThesaurusLabel = ({ cell }: any) => (
-  <>
+  <div className="flex items-center ">
     <span className="text-indigo-700">{cell.row.original.name}</span>
     &nbsp;
     {'('}
     <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
     {')'}
-  </>
+  </div>
 );
 
 const ActionHeader = () => <Translate>Action</Translate>;

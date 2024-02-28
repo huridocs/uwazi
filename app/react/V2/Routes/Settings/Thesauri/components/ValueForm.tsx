@@ -5,6 +5,7 @@ import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import uniqueID from 'shared/uniqueID';
 
 type LocalThesaurusValueSchema = ThesaurusValueSchema & { groupId?: string };
 interface ValueFormProps {
@@ -50,27 +51,12 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   useEffect(() => {
     const newValues = (getValues() as { newValues: ThesaurusValueSchema[] }).newValues;
     if (!editing) {
-      console.log('Typing...');
       const hasEmpty = newValues.find(nv => nv.label === '');
-      console.log('hasEmpty: ', hasEmpty);
       if (!hasEmpty) {
         append({ label: '' });
       }
     }
   }, [typing]);
-
-  // const determineIfNeedToAddNewItem = () => {
-  //   // check if there is an empty value
-  //   if (!editing) {
-  //     const newValues = watch('newValues');
-  //     // console.log('Fields: ', newValues);
-  //     const hasEmpty = newValues.find(v => v.label === '');
-  //     // console.log('hasEmpty: ', hasEmpty);
-
-  //     if (hasEmpty) return;
-  //     append({ label: '' });
-  //   }
-  // };
 
   const renderInputs = () => {
     if (!editing) {
@@ -97,7 +83,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
                 value={parentGroup ? parentGroup.id : undefined}
                 disabled={!!parentGroup}
                 options={[
-                  { value: '', label: 'No label', key: '0' },
+                  { value: '', label: 'No Group', key: '0' },
                   ...groups.map(group => ({
                     value: group.id as string,
                     label: group.label as string,
@@ -173,11 +159,9 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
               (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
                 if (!value) {
                   // New Items
-                  const items = (
-                    item as { newValues: LocalThesaurusValueSchema[] }
-                  ).newValues.filter(
-                    newValue => newValue.label !== ''
-                  ) as unknown as LocalThesaurusValueSchema[];
+                  const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
+                    .filter(newValue => newValue.label !== '')
+                    .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
                   console.log('Submitting new items: ', items);
                   submit(items);
                   return;
@@ -194,20 +178,20 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
             {renderInputs()}
           </form>
         </div>
-      </div>
-      <div className="absolute w-full row">
-        <div className="flex w-full gap-2">
-          <Button
-            styling="light"
-            onClick={closePanel}
-            className="grow"
-            data-testid="menu-form-cancel"
-          >
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
-            <Translate>Add</Translate>
-          </Button>
+        <div className="absolute w-full row">
+          <div className="flex w-full gap-2">
+            <Button
+              styling="light"
+              onClick={closePanel}
+              className="grow"
+              data-testid="menu-form-cancel"
+            >
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
+              <Translate>Add</Translate>
+            </Button>
+          </div>
         </div>
       </div>
     </>

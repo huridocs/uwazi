@@ -744,7 +744,7 @@ select:not([size]) {
 }
 
 [type='checkbox']:indeterminate {
-  background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3e %3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M1 5.917 5.724 10.5 15 1.5'/%3e %3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg aria-hidden='true' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 16 12'%3e %3cpath stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M0.5 6h14'/%3e %3c/svg%3e");
   background-color: currentColor;
   border-color: transparent;
   background-position: center;
@@ -2208,6 +2208,10 @@ input:checked + .toggle-bg {
   width: 2.75rem;
 }
 
+.w-11\/12 {
+  width: 91.666667%;
+}
+
 .w-12 {
   width: 3rem;
 }
@@ -2222,10 +2226,6 @@ input:checked + .toggle-bg {
 
 .w-2 {
   width: 0.5rem;
-}
-
-.w-2\/12 {
-  width: 16.666667%;
 }
 
 .w-2\/3 {
@@ -4472,6 +4472,11 @@ input:checked + .toggle-bg {
   --tw-ring-color: rgb(14 159 110 / var(--tw-ring-opacity));
 }
 
+.ring-indigo-100 {
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(229 237 255 / var(--tw-ring-opacity));
+}
+
 .ring-pink-500 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(231 70 148 / var(--tw-ring-opacity));
@@ -5479,6 +5484,11 @@ input:checked + .toggle-bg {
 .disabled\:text-indigo-200:disabled {
   --tw-text-opacity: 1;
   color: rgb(205 219 254 / var(--tw-text-opacity));
+}
+
+.disabled\:text-indigo-300:disabled {
+  --tw-text-opacity: 1;
+  color: rgb(180 198 252 / var(--tw-text-opacity));
 }
 
 .disabled\:text-primary-300:disabled {

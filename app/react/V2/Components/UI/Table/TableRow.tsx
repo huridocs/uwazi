@@ -31,7 +31,7 @@ const TableRow = <T,>({
 
   return (
     <RowWrapper
-      className={`${bg} border-b`}
+      className={`${bg} border-b h-100`}
       draggableRow={draggableRow}
       row={row}
       dndContext={dndContext}
@@ -41,9 +41,7 @@ const TableRow = <T,>({
       {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
         const firstColumnClass =
-          cell.column.id === 'checkbox-select' || (draggableRow && columnIndex === 0)
-            ? 'flex items-center gap-3'
-            : '';
+          isSelect || (draggableRow && columnIndex === 0) ? 'flex items-center gap-3' : '';
 
         let border = '';
         if (

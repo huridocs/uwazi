@@ -4,7 +4,12 @@ import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/TableComponents';
+import {
+  ActionHeader,
+  EditButton,
+  LabelHeader,
+  ThesaurusValueLabel,
+} from './components/TableComponents';
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, useNavigate } from 'react-router-dom';
 import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
@@ -134,7 +139,7 @@ const NewThesauri = () => {
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
-      header: 'Label',
+      header: LabelHeader,
       cell: ThesaurusValueLabel,
       meta: { headerClassName: 'w-11/12' },
     }) as ColumnDef<ThesaurusValueSchema, 'label'>,
@@ -187,6 +192,7 @@ const NewThesauri = () => {
               enableSelection
               columns={columns}
               subRowsKey="values"
+              onChange={setValueChanges}
               data={valueChanges}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
               onSelection={setSelectedValues}
@@ -253,7 +259,10 @@ const NewThesauri = () => {
         <ValueForm
           submit={addItemSubmit}
           value={editValue}
-          closePanel={() => setIsValueSidepanelOpen(false)}
+          closePanel={() => {
+            setEditValue(undefined);
+            setIsValueSidepanelOpen(false);
+          }}
           groups={valueChanges.filter((value: ThesaurusValueSchema) => Array.isArray(value.values))}
         />
       </Sidepanel>
@@ -273,7 +282,10 @@ const NewThesauri = () => {
         <GroupForm
           submit={addGroupSubmit}
           value={editGroup}
-          closePanel={() => setIsGroupSidepanelOpen(false)}
+          closePanel={() => {
+            setEditGroup(undefined);
+            setIsGroupSidepanelOpen(false);
+          }}
         />
       </Sidepanel>
     </div>

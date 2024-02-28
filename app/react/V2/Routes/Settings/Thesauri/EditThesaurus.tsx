@@ -195,6 +195,7 @@ const EditThesauri = () => {
                 draggableRows
                 enableSelection
                 subRowsKey="values"
+                onChange={setThesaurusValues}
                 columns={columns}
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
@@ -263,7 +264,10 @@ const EditThesauri = () => {
         <ValueForm
           submit={addItemSubmit}
           value={editValue}
-          closePanel={() => setIsItemSidepanelOpen(false)}
+          closePanel={() => {
+            setEditValue(undefined);
+            setIsItemSidepanelOpen(false);
+          }}
           groups={thesaurusValues.filter((value: ThesaurusValueSchema) =>
             Array.isArray(value.values)
           )}
@@ -285,7 +289,10 @@ const EditThesauri = () => {
         <GroupForm
           submit={addGroupSubmit}
           value={editGroup}
-          closePanel={() => setIsGroupSidepanelOpen(false)}
+          closePanel={() => {
+            setEditGroup(undefined);
+            setIsGroupSidepanelOpen(false);
+          }}
         />
       </Sidepanel>
     </div>
