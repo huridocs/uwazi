@@ -210,6 +210,7 @@ describe('Information Extraction', () => {
     });
 
     it('should display suggestions and be accessible', () => {
+      cy.contains('Batman v Superman: Dawn of Justice');
       cy.getByTestId('settings-content').toMatchImageSnapshot();
       cy.checkA11y();
     });
