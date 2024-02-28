@@ -34,7 +34,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form Page');
-      cy.contains('Code').click();
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form submition</h1><PublicForm template="58ada34c299e82674854504b" />',
         { parseSpecialCharSequences: false }
@@ -79,8 +79,12 @@ describe('Public Form', () => {
     it('should go back a use the other template for the form', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
-      cy.contains('table > tbody > tr:nth-child(3) > td:nth-child(5)', 'Edit').click();
-      cy.contains('Code').click();
+      cy.contains('Public Form Page')
+        .parent()
+        .within(() => {
+          cy.contains('button', 'Edit').click();
+        });
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
@@ -177,7 +181,7 @@ describe('Public Form', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('a', 'Add page').click();
       cy.clearAndType('input[name="title"]', 'Public Form with error');
-      cy.contains('Code').click();
+      cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form with error</h1><PublicForm template="invalid template" />',
