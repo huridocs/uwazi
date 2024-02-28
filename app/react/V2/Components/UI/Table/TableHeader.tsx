@@ -17,7 +17,7 @@ const TableHeader = <T,>({ headerGroup, draggableRows, sortedChanged }: RowProps
         isSelect ? 'px-2 py-3' : 'px-6 py-3'
       }`;
 
-      const headerClassName = `${header.column.columnDef.header !== '' ? commonHeaderClassName : ''} ${header.column.columnDef.meta?.headerClassName || ''}`;
+      const headerClassName = `${!header.column.columnDef.meta?.headerClassName?.includes('invisible') ? commonHeaderClassName : ''} ${header.column.columnDef.meta?.headerClassName || ''}`;
 
       return (
         <th key={header.id} scope="col" className={headerClassName}>

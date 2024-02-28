@@ -31,6 +31,7 @@ const StatusHeader = () => <Translate>Language Code</Translate>;
 const FieldKeyHeader = () => <Translate>Value</Translate>;
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const RenderButton = ({ cell }: CellContext<ClientTranslationContextSchema, any>) => (
   <Link to={`edit/${cell.row.original.id}`}>
@@ -110,4 +111,4 @@ const TranslationsTables = ({
   );
 };
 
-export { RenderButton, ContextPill, TranslationsTables, LabelHeader, TypeHeader };
+export { RenderButton, ContextPill, TranslationsTables, LabelHeader, TypeHeader, ActionHeader };

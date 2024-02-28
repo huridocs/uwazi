@@ -7,7 +7,13 @@ import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/ist
 import { Table } from 'V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import * as translationsAPI from 'V2/api/translations/index';
-import { ContextPill, RenderButton, LabelHeader, TypeHeader } from './components/TableComponents';
+import {
+  ContextPill,
+  RenderButton,
+  LabelHeader,
+  TypeHeader,
+  ActionHeader,
+} from './components/TableComponents';
 
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -49,7 +55,7 @@ const TranslationsList = () => {
       meta: { headerClassName: 'w-2/3' },
     }) as ColumnDef<ClientTranslationContextSchema, 'type'>,
     columnHelper.accessor('id', {
-      header: '',
+      header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
       meta: { headerClassName: 'sr-only invisible bg-gray-50' },
