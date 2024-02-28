@@ -123,7 +123,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
     }),
     columnHelper.display({
       id: '1',
-      header: () => '',
+      header: '',
       cell: EditUserButton,
       meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,
@@ -146,7 +146,7 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
     }),
     columnHelper.display({
       id: '1',
-      header: () => '',
+      header: '',
       cell: EditUserGroupButton,
       meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,

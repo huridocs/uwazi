@@ -172,7 +172,7 @@ const extractorsTableColumns = [
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('_id', {
-    header: () => '',
+    header: '',
     enableSorting: false,
     cell: LinkButton,
     meta: { headerClassName: 'sr-only invisible bg-gray-50' },
@@ -216,7 +216,7 @@ const suggestionsTableColumnsBuilder: Function = (
     }),
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
-      header: () => '',
+      header: '',
       cell: OpenPDFButton,
       meta: {
         headerClassName: 'sr-only invisible bg-gray-50',
