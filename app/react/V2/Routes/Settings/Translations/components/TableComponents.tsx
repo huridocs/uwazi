@@ -27,7 +27,7 @@ type TranslationsTableType = {
 };
 
 const LanguageHeader = () => <Translate>Language</Translate>;
-const StatusHeader = () => <Translate className="sr-only">Language Code</Translate>;
+const StatusHeader = () => <Translate>Language Code</Translate>;
 const FieldKeyHeader = () => <Translate>Value</Translate>;
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
@@ -80,6 +80,7 @@ const TranslationsTables = ({
       header: StatusHeader,
       cell: LanguagePill,
       enableSorting: false,
+      meta: { headerClassName: 'invisible bg-gray-50' },
     }),
     columnHelper.accessor('fieldKey', {
       header: FieldKeyHeader,

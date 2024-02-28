@@ -175,7 +175,7 @@ const extractorsTableColumns = [
     header: () => '',
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'sr-only' },
+    meta: { headerClassName: 'invisible bg-gray-50' },
   }),
 ];
 
@@ -219,7 +219,7 @@ const suggestionsTableColumnsBuilder: Function = (
       header: () => '',
       cell: OpenPDFButton,
       meta: {
-        headerClassName: 'hidden',
+        headerClassName: 'invisible bg-gray-50',
         contentClassName: 'text-center',
         action: openPdfSidepanel,
       },
