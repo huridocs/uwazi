@@ -24,13 +24,20 @@ const customUploadsLoader =
 
 const CustomUploads = () => {
   const files = useLoaderData() as FileType[];
+  const setNotifications = useSetRecoilState(notificationAtom);
+  const revalidator = useRevalidator();
   const [uploads, setUploads] = useState<File[]>([]);
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [uploadsModal, setUploadsModal] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const revalidator = useRevalidator();
+  const [modalProps, setModalProps] = useState<{
+    action: () => void;
+    items: Row<FileType>[] | FileType[];
+  }>({
+    action: () => {},
+    items: [],
+  });
 
   const notify = (responses: FileType[] | FetchResponseError[], message: React.ReactNode) => {
     const hasErrors = responses.find(response => response instanceof FetchResponseError);
@@ -42,12 +49,12 @@ const CustomUploads = () => {
   };
 
   const handleCancel = () => {
-    setShowModal(false);
+    setUploadsModal(false);
     setUploads([]);
   };
 
   const handleSave = async () => {
-    setShowModal(false);
+    setUploadsModal(false);
     setIsSaving(true);
     const responses = await Promise.all(uploads.map(async file => upload(file, 'custom')));
     notify(responses, <Translate>Uploaded custom file</Translate>);
@@ -55,10 +62,17 @@ const CustomUploads = () => {
     revalidator.revalidate();
   };
 
-  const handleDelete = async (_id: FileType['_id']) => {
-    const response = await remove(_id);
-    notify([response], <Translate>Deleted custom file</Translate>);
-    revalidator.revalidate();
+  const handleDelete = async (file: FileType) => {
+    setConfirmationModal(true);
+    setModalProps({
+      items: [file],
+      action: async () => {
+        setConfirmationModal(false);
+        const response = await remove(file._id);
+        notify([response], <Translate>Deleted custom file</Translate>);
+        revalidator.revalidate();
+      },
+    });
   };
 
   const deleteMultiple = async () => {
@@ -81,7 +95,7 @@ const CustomUploads = () => {
             onSelection={selected => {
               setSelectedRows(selected);
             }}
-            columns={createColumns()}
+            columns={createColumns(handleDelete)}
             data={files}
             title={<Translate>Custom Uploads</Translate>}
           />
@@ -93,7 +107,10 @@ const CustomUploads = () => {
               styling="solid"
               color="error"
               disabled={isSaving}
-              onClick={() => setConfirmationModal(true)}
+              onClick={() => {
+                setConfirmationModal(true);
+                setModalProps({ items: selectedRows, action: deleteMultiple });
+              }}
             >
               <Translate>Delete</Translate>
             </Button>
@@ -102,14 +119,14 @@ const CustomUploads = () => {
             styling="solid"
             color="primary"
             disabled={isSaving}
-            onClick={async () => setShowModal(true)}
+            onClick={async () => setUploadsModal(true)}
           >
             <Translate>Import asset</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>
 
-      {showModal && (
+      {uploadsModal && (
         <Modal size="xl">
           <Modal.Header>
             <Translate>Import asset</Translate>
@@ -151,9 +168,9 @@ const CustomUploads = () => {
       {confirmationModal && (
         <ConfirmationModal
           header={<Translate>Delete</Translate>}
-          warningText={<Translate>Do you want to delete?</Translate>}
-          body={<FileList items={selectedRows} />}
-          onAcceptClick={async () => deleteMultiple()}
+          warningText={<Translate>Do you want to delete the following files?</Translate>}
+          body={<FileList items={modalProps.items} />}
+          onAcceptClick={async () => modalProps.action()}
           onCancelClick={() => setConfirmationModal(false)}
           dangerStyle
         />

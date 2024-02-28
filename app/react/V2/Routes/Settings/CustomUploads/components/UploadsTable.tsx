@@ -10,25 +10,23 @@ const columnHelper = createColumnHelper<FileType>();
 const TitleHeader = () => <Translate>Name</Translate>;
 const PreviewHeader = () => <Translate>Preview</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>URL</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const TitleCell = ({ getValue }: CellContext<FileType, string>) => <div>{getValue()}</div>;
 const PreviewCell = () => <div>here goes the preview</div>;
 const URLCell = ({ getValue }: CellContext<FileType, string>) => `/assets/${getValue()}`;
-const ActionCell = ({ getValue }: CellContext<FileType, string>) => (
+const ActionCell = ({ cell }: CellContext<FileType, any>) => (
   <Button
     styling="outline"
     color="error"
     className="leading-3"
-    onClick={() => {
-      console.log(getValue());
-    }}
+    onClick={() => cell.column.columnDef.meta?.action?.(cell.row.original)}
   >
     <Translate>Delete</Translate>
   </Button>
 );
 
-const createColumns = () => [
+const createColumns = (action: (file: FileType) => void) => [
   columnHelper.display({
     id: 'preview',
     header: PreviewHeader,
@@ -46,12 +44,12 @@ const createColumns = () => [
     enableSorting: false,
     meta: { headerClassName: 'w-2/4' },
   }),
-  columnHelper.accessor('_id', {
+  columnHelper.display({
     id: 'action',
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-0 sr-only' },
+    meta: { action, headerClassName: 'w-0 sr-only' },
   }),
 ];
 
