@@ -22,4 +22,11 @@ const deleteRelationtypes = async (ids: string[]) => {
   return Promise.all(allDeleted);
 };
 
-export { get, save, deleteRelationtypes };
+const relationshipTypeBeingUsed = async (relationtypeId: string) => {
+  const requestParams = new RequestParams({ relationtypeId });
+  return api
+    .get('references/count_by_relationtype', requestParams)
+    .then((response: any) => response.json > 0);
+};
+
+export { get, save, deleteRelationtypes, relationshipTypeBeingUsed };

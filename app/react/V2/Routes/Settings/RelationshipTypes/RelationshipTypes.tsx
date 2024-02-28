@@ -11,7 +11,7 @@ import { Translate } from 'app/I18N';
 import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
 
 import { notificationAtom } from 'app/V2/atoms';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
 import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 
@@ -28,11 +28,11 @@ const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as ClientRelationshipType[];
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
+  const setRelationshipTypes = useSetRecoilState(relationshipTypesAtom);
   const revalidator = useRevalidator();
 
   const [selectedItems, setSelectedItems] = useState<Row<ClientRelationshipType>[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setSettings = useSetRecoilState(settingsAtom);
 
   interface formType extends Omit<ClientRelationshipType, '_id'> {
     _id?: string;
@@ -58,14 +58,15 @@ const RelationshipTypes = () => {
       });
       setIsSidepanelOpen(false);
     } catch (error) {
-      console.log('error', error); // eslint-disable-line no-console
       setNotifications({
         type: 'error',
         text: <Translate>Failed to save</Translate>,
+        details: error.error,
       });
       setIsSidepanelOpen(false);
     }
     revalidator.revalidate();
+    setRelationshipTypes(relationshipTypes);
   };
 
   const deleteSelected = async () => {
@@ -77,14 +78,16 @@ const RelationshipTypes = () => {
       });
       setShowConfirmationModal(false);
     } catch (error) {
-      console.log('error', error); // eslint-disable-line no-console
+      console.log(error);
       setNotifications({
         type: 'error',
         text: <Translate>Failed to save</Translate>,
+        details: error.error,
       });
       setShowConfirmationModal(false);
     }
     revalidator.revalidate();
+    setRelationshipTypes(relationshipTypes);
   };
 
   return (
