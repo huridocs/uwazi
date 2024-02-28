@@ -16,8 +16,9 @@ import {
   YesNoPill,
   TitleHeader,
   UrlHeader,
-  EditButton,
+  ActionCell,
   UrlCell,
+  ActionHeader,
 } from './components/PageListTable';
 
 const pagesListLoader =
@@ -56,23 +57,26 @@ const PagesList = () => {
   };
 
   const columns = [
-    columnHelper.accessor('entityView', {
-      header: EntityViewHeader,
-      cell: YesNoPill,
-    }),
     columnHelper.accessor('title', {
       header: TitleHeader,
+      meta: { headerClassName: 'w-2/6' },
     }),
     columnHelper.accessor('sharedId', {
       header: UrlHeader,
       cell: UrlCell,
+      meta: { headerClassName: 'w-2/6' },
+    }),
+    columnHelper.accessor('entityView', {
+      header: EntityViewHeader,
+      cell: YesNoPill,
+      meta: { headerClassName: 'w-1/6' },
     }),
     columnHelper.accessor('sharedId', {
       id: 'action',
-      header: '',
-      cell: EditButton,
+      header: ActionHeader,
+      cell: ActionCell,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only' },
+      meta: { headerClassName: 'sr-only w-0' },
     }),
   ];
 
@@ -95,6 +99,7 @@ const PagesList = () => {
             enableSelection
             title={<Translate>Pages</Translate>}
             onSelection={setSelectedPages}
+            initialState={{ sorting: [{ id: 'title', desc: false }] }}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>

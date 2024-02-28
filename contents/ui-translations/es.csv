@@ -57,7 +57,6 @@ added to hub.,añadido al nodo.
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
-Advanced,Avanzado
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
@@ -131,7 +130,6 @@ Click,Click
 Click here,Haz click aquí
 Click to fill,Click para completar
 Close,Cerrar
-Code,Código
 Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
@@ -401,6 +399,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Elemento
 Item name,Nombre del elemento
 Items:,Elementos:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
 key,clave
 Label,Etiqueta

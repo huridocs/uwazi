@@ -57,7 +57,6 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -135,7 +134,6 @@ Click,Click
 Click here,Click here
 Click to fill,Click to fill
 Close,Close
-Code,Code
 Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
@@ -405,6 +403,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,Items:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,key
 Label,Label
