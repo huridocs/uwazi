@@ -58,7 +58,7 @@ const columns = (actions: { edit: Function }) => [
     header: () => '',
     cell: EditButton,
     enableSorting: false,
-    meta: { action: actions.edit, headerClassName: 'sr-only' },
+    meta: { action: actions.edit, headerClassName: 'sr-only invisible bg-gray-50' },
   }) as ColumnDef<ClientSettingsLinkSchema, 'key'>,
 ];
 export { EditButton, TitleHeader, URLHeader, TitleCell, columns };
