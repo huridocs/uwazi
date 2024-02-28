@@ -262,6 +262,13 @@ const denormalizePublishedStateInRelated = async (
       )
     )
   );
+  if (relatedRelationshipProperites.length) {
+    await search.indexEntities({
+      $or: relatedRelationshipProperites.map(p => ({
+        [`metadata.${p.name}.value`]: { $in: sharedIds },
+      })),
+    });
+  }
 };
 
 const denormalizeThesauriLabelInMetadata = async (

@@ -9,6 +9,7 @@ import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
+import { elasticTesting } from 'api/utils/elastic_testing';
 
 const publicPermission = {
   ...PUBLIC_PERMISSION,
@@ -350,7 +351,7 @@ describe('permissions', () => {
         ],
       },
     ])(
-      'should denormalize published state when $case',
+      'should denormalize published state when $case, and reindex touched entities',
       async ({ permissionInput, expectedMetadata }) => {
         const publishedStateTestFixtures: DBFixture = {
           settings: [
@@ -490,10 +491,15 @@ describe('permissions', () => {
             }),
           ],
         };
-        await db.setupFixturesAndContext(publishedStateTestFixtures);
+        await db.setupFixturesAndContext(
+          publishedStateTestFixtures,
+          'published_denormalization_index'
+        );
         await entitiesPermissions.set(permissionInput);
-        const relTemplateId1 = publishedStateTestFixtures.templates[3]._id;
-        const relTemplateId2 = publishedStateTestFixtures.templates[4]._id;
+
+        const relTemplateId1 = factory.id('relationshipTemplate1');
+        const relTemplateId2 = factory.id('relationshipTemplate2');
+
         const entites = await entities.get(
           { template: { $in: [relTemplateId1, relTemplateId2] } },
           {},
@@ -501,6 +507,13 @@ describe('permissions', () => {
         );
         const metadata = entites.map((e: EntitySchema) => e.metadata);
         expect(metadata).toMatchObject(expectedMetadata);
+
+        await elasticTesting.refresh();
+        const indexed = (await elasticTesting.getIndexedEntities()).filter(
+          e => e.template === relTemplateId1.toString() || e.template === relTemplateId2.toString()
+        );
+        const metadataInIndex = indexed.map((e: EntitySchema) => e.metadata);
+        expect(metadataInIndex).toMatchObject(expectedMetadata);
       }
     );
 
