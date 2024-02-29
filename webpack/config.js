@@ -106,9 +106,10 @@ module.exports = production => {
       ],
     },
     plugins: [
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      }),
+      process.env.CYPRESS &&
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+        }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
@@ -133,7 +134,9 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
-      new MonacoWebpackPlugin({ languages: ['typescript', 'html', 'css'] }),
+      new MonacoWebpackPlugin({
+        languages: ['typescript', 'html', 'css'],
+      }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],

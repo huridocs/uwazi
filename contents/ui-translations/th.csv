@@ -60,7 +60,6 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,คุณสมบัติของตำแหน่งทางภูมิศาสตร์ที่อยู่ติดกันจะแสดงบนแผนที่เดียวกัน
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
@@ -136,7 +135,6 @@ Click,Click
 Click here,คลิกที่นี่
 Click to fill,คลิกเพื่อใส่ค่า
 Close,ปิด
-Code,Code
 Collaborator,ผู้ประสานงาน
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
@@ -409,6 +407,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,รายการ:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Thai
 Label,ประเภท
