@@ -26,6 +26,7 @@ const ThesauriList = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ThesaurusSchema[];
+  console.log('Thesauri: ', thesauri);
   const setNotifications = useSetRecoilState(notificationAtom);
   const [selectedThesauri, setSelectedThesauri] = useState<Row<ThesaurusSchema>[]>([]);
 

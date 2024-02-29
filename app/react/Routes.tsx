@@ -16,14 +16,10 @@ import {
   FiltersForm,
   RelationTypesList,
   Settings,
-  ThesauriList as ThesauriListV1,
   Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import { EditThesauri as EditThesauriV1 } from 'app/Thesauri/EditThesauri';
-import NewThesauriV1 from 'app/Thesauri/NewThesauri';
-import ThesaurusCockpitV1 from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
@@ -134,12 +130,6 @@ const getRoutesLayout = (
         <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
         <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
         <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
-      </Route>
-      <Route path="dictionaries">
-        <Route index element={adminsOnlyRoute(<ThesauriListV1 />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewThesauriV1 />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauriV1 />)} />
-        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpitV1 />)} />
       </Route>
 
       <Route path="thesauri">

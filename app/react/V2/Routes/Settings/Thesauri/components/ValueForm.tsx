@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
-import { Button, Card } from 'app/V2/Components/UI';
+import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
@@ -131,12 +131,32 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
     );
   };
   return (
-    <>
-      <div className="relative h-full">
-        <div className="row">
+    <div className="relative h-full">
+      <Sidepanel.Body className="h-full">
+        <form
+          onSubmit={handleSubmit(
+            (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
+              if (!value) {
+                // New Items
+                const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
+                  .filter(newValue => newValue.label !== '')
+                  .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
+                console.log('Submitting new items: ', items);
+                submit(items);
+                return;
+              }
+              if (parentGroup) {
+                (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
+              }
+              // @ts-ignore
+              submit([item]);
+            }
+          )}
+          id="menu-form"
+        >
           {!value && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
-              <div className="flex items-center w-full gap-1 text-base font-semibold">
+              <div className="flex items-center gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
                   <CheckCircleIcon />
                 </div>
@@ -152,49 +172,25 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
               </div>
             </div>
           )}
-        </div>
-        <div className="row">
-          <form
-            onSubmit={handleSubmit(
-              (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
-                if (!value) {
-                  // New Items
-                  const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
-                    .filter(newValue => newValue.label !== '')
-                    .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
-                  console.log('Submitting new items: ', items);
-                  submit(items);
-                  return;
-                }
-                if (parentGroup) {
-                  (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
-                }
-                // @ts-ignore
-                submit([item]);
-              }
-            )}
-            id="menu-form"
+          {renderInputs()}
+        </form>
+      </Sidepanel.Body>
+      <Sidepanel.Footer className="bottom-0">
+        <div className="flex gap-2">
+          <Button
+            styling="light"
+            onClick={closePanel}
+            className="grow"
+            data-testid="menu-form-cancel"
           >
-            {renderInputs()}
-          </form>
+            <Translate>Cancel</Translate>
+          </Button>
+          <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
+            <Translate>Add</Translate>
+          </Button>
         </div>
-        <div className="absolute w-full row">
-          <div className="flex w-full gap-2">
-            <Button
-              styling="light"
-              onClick={closePanel}
-              className="grow"
-              data-testid="menu-form-cancel"
-            >
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
-              <Translate>Add</Translate>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
+      </Sidepanel.Footer>
+    </div>
   );
 };
 

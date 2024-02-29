@@ -47,4 +47,19 @@ const sanitizeThesaurusValues = (
   return sanitizedThesaurus;
 };
 
-export { mergeValues, sanitizeThesaurusValues };
+function sanitizeThesauri(thesaurus: ThesaurusSchema) {
+  const sanitizedThesauri = { ...thesaurus };
+  sanitizedThesauri.values = sanitizedThesauri
+    .values!.filter((value: ThesaurusValueSchema) => value.label)
+    .filter((value: ThesaurusValueSchema) => !value.values || value.values.length)
+    .map((value: ThesaurusValueSchema) => {
+      const _value = { ...value };
+      if (_value.values) {
+        _value.values = _value.values.filter(_v => _v.label);
+      }
+      return _value;
+    });
+  return sanitizedThesauri;
+}
+
+export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri };
