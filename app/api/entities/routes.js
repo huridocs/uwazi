@@ -1,13 +1,13 @@
 import { search } from 'api/search';
 import { uploadMiddleware } from 'api/files';
 import { saveEntity } from 'api/entities/entitySavingManager';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
 import date from '../utils/date';
 import needsAuthorization from '../auth/authMiddleware';
 import { parseQuery, validation } from '../utils';
-import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 
 async function updateThesauriWithEntity(entity, req) {
   const template = await templates.getById(entity.template);
