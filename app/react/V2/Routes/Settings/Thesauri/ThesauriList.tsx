@@ -74,7 +74,7 @@ const ThesauriList = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-languages"
+      data-testid="settings-thesauri"
     >
       <SettingsContent>
         <SettingsContent.Header title="Thesauri" />

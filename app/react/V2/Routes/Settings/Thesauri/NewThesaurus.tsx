@@ -166,15 +166,18 @@ const NewThesauri = () => {
     <div
       className="tw-content"
       style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-languages"
+      data-testid="settings-thesauri"
     >
       <SettingsContent>
         <SettingsContent.Header
           path={new Map([['Thesauri', '/settings/thesauri']])}
           title={watch('name')}
         />
-        <SettingsContent.Body>
-          <div data-testid="thesauri" className="mb-4 border rounded-md shadow-sm border-gray-50">
+        <SettingsContent.Body className="h-full">
+          <div
+            data-testid="settings-new-thesauri"
+            className="h-full mb-4 border rounded-md shadow-sm border-gray-50"
+          >
             <div className="p-4">
               <InputField
                 clearFieldAction={() => {

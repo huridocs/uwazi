@@ -15,8 +15,6 @@ interface GroupFormProps {
 
 const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
   const {
-    watch,
-    control,
     setValue,
     register,
     handleSubmit,
@@ -25,8 +23,6 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
     mode: 'onSubmit',
     defaultValues: value || { label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() },
   });
-
-  const { fields } = useFieldArray({ control, name: 'values' });
 
   const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
@@ -64,25 +60,6 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
             />
           </div>
         </Card>
-        {/* {fields.map((fieldValue, index) => (
-          <Card title={<Translate>Item</Translate>} key={fieldValue.id}>
-            <div className="flex flex-col gap-4">
-              <InputField
-                id="item-name"
-                data-testid="thesauri-form-item-name"
-                label={<Translate>Name</Translate>}
-                {...register(`values.${index}.label`)}
-              />
-              <InputField
-                id="item-group"
-                data-testid="thesauri-form-item-group"
-                label={<Translate>Group</Translate>}
-                value={watch('label')}
-                disabled
-              />
-            </div>
-          </Card>
-        ))} */}
       </form>
       <div className="absolute bottom-0 flex w-full gap-2">
         <Button
