@@ -173,10 +173,10 @@ const NewThesauri = () => {
           path={new Map([['Thesauri', '/settings/thesauri']])}
           title={watch('name')}
         />
-        <SettingsContent.Body className="h-full">
+        <SettingsContent.Body>
           <div
             data-testid="settings-new-thesauri"
-            className="h-full mb-4 border rounded-md shadow-sm border-gray-50"
+            className="h-full border rounded-md shadow-sm border-gray-50"
           >
             <div className="p-4">
               <InputField
@@ -184,8 +184,7 @@ const NewThesauri = () => {
                   setValue('name', '');
                 }}
                 id="thesauri-name"
-                placeholder="untitled"
-                className="mb-2"
+                placeholder="Thesaurus name"
                 {...register('name', { required: true })}
                 hasErrors={!!errors.name}
               />
@@ -199,6 +198,7 @@ const NewThesauri = () => {
               data={valueChanges}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
               onSelection={setSelectedValues}
+              blankLabel={<Translate>No values</Translate>}
             />
           </div>
         </SettingsContent.Body>

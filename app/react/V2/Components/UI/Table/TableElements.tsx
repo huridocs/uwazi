@@ -24,6 +24,7 @@ interface TableProps<T> {
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
   subRowsKey?: string;
   draggableRows?: boolean;
+  blankLabel?: string | React.ReactNode;
   onChange?: (rows: T[]) => void;
 }
 
