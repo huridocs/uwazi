@@ -7,7 +7,7 @@ const newKeys = [
   { key: 'Do you want reset the password for the following users?' },
 ];
 
-const deletedKeys: { key: string }[] = [];
+const deletedKeys: { key: string }[] = [{ key: 'You are about to delete a page' }];
 
 export default {
   delta: 161,

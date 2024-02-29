@@ -168,7 +168,7 @@ const CustomUploads = () => {
       {confirmationModal && (
         <ConfirmationModal
           header={<Translate>Delete</Translate>}
-          warningText={<Translate>Do you want to delete the following files?</Translate>}
+          warningText={<Translate>Do you want to delete the following items?</Translate>}
           body={<FileList items={modalProps.items} />}
           onAcceptClick={async () => modalProps.action()}
           onCancelClick={() => setConfirmationModal(false)}
