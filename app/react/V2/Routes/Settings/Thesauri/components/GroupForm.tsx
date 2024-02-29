@@ -3,7 +3,7 @@ import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
 
