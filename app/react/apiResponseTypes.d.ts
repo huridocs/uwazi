@@ -8,6 +8,7 @@ import {
   TemplateSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -72,4 +73,10 @@ export interface ClientSettings
     };
     [k: string]: unknown | undefined;
   };
+}
+
+export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id'> {
+  _id: string;
+  templates: Template[];
+  disableRowSelection: boolean;
 }

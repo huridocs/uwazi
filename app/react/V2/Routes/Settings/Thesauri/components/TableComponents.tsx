@@ -1,10 +1,12 @@
 import React from 'react';
 import { CellContext } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
-import { Button, EmbededButton } from 'app/V2/Components/UI';
+import { Button, EmbededButton, Pill } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import ChevronUpIcon from '@heroicons/react/20/solid/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
+
+const TemplateHeader = () => <Translate>Templates</Translate>;
 
 const ThesaurusLabel = ({ cell }: any) => (
   <div className="flex items-center ">
@@ -39,6 +41,18 @@ const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema
   </div>
 );
 
+const templatesCells = ({ cell }: CellContext<any, any>) => (
+  <div className="flex flex-wrap gap-2">
+    {cell.getValue()?.map((template: any) => (
+      <div key={cell.id + template._id}>
+        <Pill color="gray" className="whitespace-nowrap">
+          <Translate context={template._id}>{template.name}</Translate>
+        </Pill>
+      </div>
+    ))}
+  </div>
+);
+
 const LabelHeader = () => <Translate>Language</Translate>;
 
 const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
@@ -51,4 +65,12 @@ const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   </Button>
 );
 
-export { ThesaurusLabel, LabelHeader, EditButton, ThesaurusValueLabel, ActionHeader };
+export {
+  ThesaurusLabel,
+  LabelHeader,
+  EditButton,
+  ThesaurusValueLabel,
+  ActionHeader,
+  templatesCells,
+  TemplateHeader,
+};

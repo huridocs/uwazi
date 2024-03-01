@@ -64,6 +64,12 @@ const EditThesauri = () => {
     setThesaurusValues(newValues);
   };
 
+  const sortValues = () => {
+    const valuesCopy = [...thesaurusValues];
+    valuesCopy.sort((first, second) => (first.label > second.label ? 1 : -1));
+    setThesaurusValues(valuesCopy);
+  };
+
   const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
     let currentValues: ThesaurusValueSchema[] = [...thesaurusValues];
     if (editValue) {
@@ -227,7 +233,7 @@ const EditThesauri = () => {
                 <Button styling="outline" onClick={() => setIsGroupSidepanelOpen(true)}>
                   <Translate>Add group</Translate>
                 </Button>
-                <Button styling="outline">
+                <Button styling="outline" onClick={sortValues}>
                   <Translate>Sort</Translate>
                 </Button>
                 <Button styling="outline">

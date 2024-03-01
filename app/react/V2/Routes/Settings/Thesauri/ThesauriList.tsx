@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'app/V2/Components/UI';
+import { Button, Table, ConfirmationModal } from 'app/V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
@@ -12,10 +12,13 @@ import {
   ActionHeader,
   EditButton,
   LabelHeader,
+  TemplateHeader,
   ThesaurusLabel,
+  templatesCells,
 } from './components/TableComponents';
-import { useSetRecoilState } from 'recoil';
-import { notificationAtom } from 'app/V2/atoms';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { notificationAtom, templatesAtom } from 'app/V2/atoms';
+import { ClientThesaurus, Template } from 'app/apiResponseTypes';
 
 const theasauriListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -25,10 +28,33 @@ const theasauriListLoader =
 const ThesauriList = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
-  const thesauri = useLoaderData() as ThesaurusSchema[];
-  console.log('Thesauri: ', thesauri);
+  const thesauri = useLoaderData() as ClientThesaurus[];
   const setNotifications = useSetRecoilState(notificationAtom);
-  const [selectedThesauri, setSelectedThesauri] = useState<Row<ThesaurusSchema>[]>([]);
+  const templates = useRecoilValue(templatesAtom);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [tableThesauri, setTableThesauri] = useState<ClientThesaurus[]>([]);
+  const [selectedThesauri, setSelectedThesauri] = useState<Row<ClientThesaurus>[]>([]);
+
+  useEffect(() => {
+    setTableThesauri(
+      thesauri.map(thesaurus => {
+        const templatesUsingIt = templates
+          .map(t => {
+            const usingIt = t.properties?.some(
+              (property: any) => property.content === thesaurus._id
+            );
+            return usingIt ? t : null;
+          })
+          .filter(t => t) as Template[];
+
+        return {
+          ...thesaurus,
+          templates: templatesUsingIt,
+          disableRowSelection: Boolean(templatesUsingIt.length),
+        };
+      })
+    );
+  }, [thesauri, templates]);
 
   const navigateToEditThesaurus = (thesaurus: Row<ThesaurusSchema>) => {
     navigate(`/settings/thesauri/edit/${thesaurus.original._id}`);
@@ -51,6 +77,7 @@ const ThesauriList = () => {
       });
     } finally {
       revalidator.revalidate();
+      setShowConfirmationModal(false);
     }
   };
 
@@ -60,14 +87,20 @@ const ThesauriList = () => {
       id: 'name',
       header: LabelHeader,
       cell: ThesaurusLabel,
-      meta: { headerClassName: 'w-11/12 font-medium' },
-    }) as ColumnDef<ThesaurusSchema, 'name'>,
+      meta: { headerClassName: 'w-6/12 font-medium' },
+    }) as ColumnDef<ClientThesaurus, 'name'>,
+    columnHelper.accessor('templates', {
+      header: TemplateHeader,
+      cell: templatesCells,
+      enableSorting: false,
+      meta: { headerClassName: 'w-6/12' },
+    }) as ColumnDef<ClientThesaurus, 'templates'>,
     columnHelper.accessor('_id', {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: { action: edit, headerClassName: 'w-0 text-center' },
-    }) as ColumnDef<ThesaurusSchema, '_id'>,
+    }) as ColumnDef<ClientThesaurus, '_id'>,
   ];
 
   return (
@@ -80,10 +113,10 @@ const ThesauriList = () => {
         <SettingsContent.Header title="Thesauri" />
         <SettingsContent.Body>
           <div data-testid="thesauri">
-            <Table<ThesaurusSchema>
+            <Table<ClientThesaurus>
               enableSelection
               columns={columns({ edit: navigateToEditThesaurus })}
-              data={thesauri}
+              data={tableThesauri}
               title={<Translate>Thesauri</Translate>}
               initialState={{ sorting: [{ id: 'name', desc: false }] }}
               onSelection={setSelectedThesauri}
@@ -95,7 +128,7 @@ const ThesauriList = () => {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                onClick={deleteSelectedThesauri}
+                onClick={() => setShowConfirmationModal(true)}
                 color="error"
                 data-testid="menu-delete-link"
               >
@@ -117,6 +150,23 @@ const ThesauriList = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+      {showConfirmationModal && (
+        <ConfirmationModal
+          size="lg"
+          header={<Translate>Delete</Translate>}
+          warningText={<Translate>Do you want to delete?</Translate>}
+          body={
+            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+              {selectedThesauri.map(item => (
+                <li key={item.original.name}>{item.original.name}</li>
+              ))}
+            </ul>
+          }
+          onAcceptClick={deleteSelectedThesauri}
+          onCancelClick={() => setShowConfirmationModal(false)}
+          dangerStyle
+        />
+      )}
     </div>
   );
 };
