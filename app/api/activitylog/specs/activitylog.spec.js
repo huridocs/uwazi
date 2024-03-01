@@ -4,6 +4,14 @@ import activitylog from '../activitylog';
 import * as activityLogParser from '../activitylogParser';
 import fixtures from './fixtures';
 
+const assessResults = (results, expected) => {
+  expect(results.rows.length).toBe(expected.size);
+  expect(results.remainingRows).toBe(expected.remainingRows);
+  expect(results.limit).toBe(expected.limit);
+  expect(results.rows.map(r => r.time)).toEqual(expected.times);
+  expect(results.query).toBe(expected.query);
+};
+
 describe('activitylog', () => {
   beforeEach(async () => {
     await testingEnvironment.setUp(fixtures);
@@ -108,19 +116,65 @@ describe('activitylog', () => {
     });
 
     describe('Load More functionality', () => {
-      const assessResults = (results, expected) => {
-        expect(results.rows.length).toBe(expected.size);
-        expect(results.remainingRows).toBe(expected.remainingRows);
-        expect(results.limit).toBe(expected.limit);
-        expect(results.rows[0].time).toBe(expected.initialTime);
-      };
-
       it('should allow to load more via "before" param', async () => {
         const initialResults = await activitylog.get({ limit: 2 });
-        assessResults(initialResults, { size: 2, remainingRows: 3, limit: 2, initialTime: 8000 });
+        assessResults(initialResults, { size: 2, remainingRows: 3, limit: 2, times: [8000, 6000] });
 
         const nextResults = await activitylog.get({ before: 6000, limit: 2 });
-        assessResults(nextResults, { size: 2, remainingRows: 1, limit: 2, initialTime: 5000 });
+        assessResults(nextResults, { size: 2, remainingRows: 1, limit: 2, times: [5000, 2000] });
+      });
+    });
+
+    describe('pagination via the "page" and "limit" keywords', () => {
+      it('should paginate the results', async () => {
+        let results = await activitylog.get({ limit: 2 });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 3,
+          limit: 2,
+          page: undefined,
+          times: [8000, 6000],
+        });
+
+        results = await activitylog.get({ page: 1, limit: 2 });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 3,
+          limit: 2,
+          page: 1,
+          times: [8000, 6000],
+        });
+
+        results = await activitylog.get({ page: 2, limit: 2 });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 1,
+          limit: 2,
+          page: 2,
+          times: [5000, 2000],
+        });
+
+        results = await activitylog.get({ page: 3, limit: 2 });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 3, times: [1000] });
+      });
+
+      it('should return an empty array if the page is out of range', async () => {
+        const results = await activitylog.get({ page: 4, limit: 2 });
+        assessResults(results, { size: 0, remainingRows: 0, limit: 2, page: 4, times: [] });
+      });
+
+      it('should still filter the results', async () => {
+        let results = await activitylog.get({ page: 1, limit: 2, method: ['PUT'] });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 1,
+          limit: 2,
+          page: 1,
+          times: [8000, 6000],
+        });
+
+        results = await activitylog.get({ page: 2, limit: 2, method: ['PUT'] });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
       });
     });
   });

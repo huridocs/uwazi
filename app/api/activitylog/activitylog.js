@@ -63,9 +63,14 @@ const timeQuery = ({ time = {}, before = null }) => {
   return result;
 };
 
-const getLimit = query => {
+const getPagination = query => {
+  const { page } = query;
   const limit = parseInt(query.limit || 15, 10);
-  return { limit, sort: { time: -1 } };
+  const paginationOptions = { limit, sort: { time: -1 } };
+  if (page) {
+    paginationOptions.skip = (page - 1) * limit;
+  }
+  return paginationOptions;
 };
 
 export default {
@@ -85,7 +90,7 @@ export default {
         query.username !== 'anonymous' ? query.username : { $in: [null, query.username] };
     }
 
-    const limitQuery = getLimit(query);
+    const limitQuery = getPagination(query);
 
     const totalRows = await model.count(mongoQuery);
     const dbResults = await model.get(mongoQuery, null, limitQuery);
@@ -98,8 +103,9 @@ export default {
 
     return {
       rows: semanticResults,
-      remainingRows: totalRows - dbResults.length,
+      remainingRows: Math.max(0, totalRows - dbResults.length - (limitQuery.skip || 0)),
       limit: limitQuery.limit,
+      page: query.page,
     };
   },
 };
