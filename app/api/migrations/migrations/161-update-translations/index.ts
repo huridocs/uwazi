@@ -104,6 +104,18 @@ const deletedKeys: any[] = [
   {
     key: 'topic suggestions tip',
   },
+  {
+    key: 'Add Thesaurus',
+  },
+  {
+    key: 'Advanced',
+  },
+  {
+    key: 'Code',
+  },
+  {
+    key: 'Edit Group',
+  },
 ];
 
 export default {

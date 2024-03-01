@@ -42,7 +42,6 @@ Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,ပုံစံပြား ထည့်ရန်
 Add thesaurus,ဝေါဟာရပဒေသာကျမ်း ထည့်ရန်
-Add Thesaurus,Add Thesaurus
 Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
 Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
@@ -61,7 +60,6 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
-Advanced,Advanced
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -135,7 +133,6 @@ Click,Click
 Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
-Code,Code
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
 Collapse all,Collapse all
 Collection,စုစည်းမှု
@@ -274,7 +271,6 @@ Edit,တည်းဖြတ်ရန်
 Edit all documents matching this criteria,ဤစံနှုန်းနှင့် ကိုက်ညီသော စာရွက်စာတမ်းအားလုံးကို တည်းဖြတ်ပါ
 Edit Extractor,Edit Extractor
 Edit group,Edit group
-Edit Group,Edit Group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
@@ -399,6 +395,7 @@ Invalid form,ပုံစံ မှားနေသည်
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
 Item,Item
 Items:,ပါဝင်သည့်အရာများ-
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Burmese
 Label,တံဆိပ် အမှတ်အသား

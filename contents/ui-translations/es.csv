@@ -42,7 +42,6 @@ Add relationship,Añadir relación
 Add relationship type,Añadir tipo de relación
 Add template,Añadir plantilla
 Add thesaurus,Añadir tesauro
-Add Thesaurus,Add Thesaurus
 Add thesaurus modal description,"Después de la creación, puedes ir a Configuración → Tesauri para añadir elementos"
 Add thesaurus value,Añadir valor del tesauro
 Add timelink,Añadir línea de tiempo
@@ -61,7 +60,6 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
-Advanced,Advanced
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
@@ -133,7 +131,6 @@ Click,Click
 Click here,Haz click aquí
 Click to fill,Click para completar
 Close,Cerrar
-Code,Code
 Collaborator,Colaboradora
 Collapse all,Colapsar todo
 Collection,Colección
@@ -272,7 +269,6 @@ Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
 Edit group,Edit group
-Edit Group,Edit Group
 Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
 Edit user,Edit user
@@ -397,6 +393,7 @@ Invalid form,Formulario no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 Item,Elemento
 Items:,Elementos:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
 key,clave
 Label,Etiqueta

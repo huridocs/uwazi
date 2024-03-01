@@ -42,7 +42,6 @@ Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,템플릿 추가
 Add thesaurus,시소러스 추가
-Add Thesaurus,Add Thesaurus
 Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
 Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
@@ -61,7 +60,6 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
-Advanced,Advanced
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
@@ -135,7 +133,6 @@ Click,Click
 Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
-Code,Code
 Collaborator,협업자
 Collapse all,Collapse all
 Collection,컬렉션
@@ -274,7 +271,6 @@ Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
 Edit group,Edit group
-Edit Group,Edit Group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
@@ -399,6 +395,7 @@ Invalid form,잘못된 형식
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
 Item,Item
 Items:,아이템
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Korean
 Label,라벨

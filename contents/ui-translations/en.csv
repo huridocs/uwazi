@@ -42,7 +42,6 @@ Add relationship,Add relationship
 Add relationship type,Add relationship type
 Add template,Add template
 Add thesaurus,Add thesaurus
-Add Thesaurus,Add Thesaurus
 Add thesaurus modal description,After creation you can go into Settings -> Thesauri to add items
 Add thesaurus value,Add thesaurus value
 Add timelink,Add timelink
@@ -61,7 +60,6 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
-Advanced,Advanced
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -137,7 +135,6 @@ Click,Click
 Click here,Click here
 Click to fill,Click to fill
 Close,Close
-Code,Code
 Collaborator,Collaborator
 Collapse all,Collapse all
 Collection,Collection
@@ -276,7 +273,6 @@ Edit,Edit
 Edit all documents matching this criteria,Edit all documents matching this criteria
 Edit Extractor,Edit Extractor
 Edit group,Edit group
-Edit Group,Edit Group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
@@ -401,6 +397,7 @@ Invalid form,An entry is required or has an invalid value. Please correct and tr
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,It could also very easily break the app. Only write code here if you know exactly what you are doing.
 Item,Item
 Items:,Items:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,key
 Label,Label
