@@ -218,16 +218,23 @@ const NewThesauri = () => {
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button onClick={() => setIsValueSidepanelOpen(true)}>
+                <Button
+                  onClick={() => setIsValueSidepanelOpen(true)}
+                  data-testid="thesaurus-add-item"
+                >
                   <Translate>Add item</Translate>
                 </Button>
-                <Button styling="outline" onClick={() => setIsGroupSidepanelOpen(true)}>
+                <Button
+                  styling="outline"
+                  onClick={() => setIsGroupSidepanelOpen(true)}
+                  data-testid="thesaurus-add-group"
+                >
                   <Translate>Add group</Translate>
                 </Button>
-                <Button styling="outline">
+                <Button styling="outline" data-testid="thesaurus-sort-items">
                   <Translate>Sort</Translate>
                 </Button>
-                <Button styling="outline">
+                <Button styling="outline" data-testid="thesaurus-import-items">
                   <Translate>Import</Translate>
                 </Button>
               </div>

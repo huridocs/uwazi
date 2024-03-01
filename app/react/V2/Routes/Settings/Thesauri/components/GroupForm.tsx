@@ -51,7 +51,7 @@ const GroupForm = ({ submit, closePanel, value }: GroupFormProps) => {
         <Card title={<Translate>Group</Translate>}>
           <div className="flex flex-col gap-4">
             <InputField
-              id="item-name"
+              id="group-name"
               data-testid="thesauri-form-item-name"
               label={<Translate>Name</Translate>}
               {...register('label', { required: true })}

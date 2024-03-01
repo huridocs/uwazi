@@ -35,7 +35,7 @@ const EditThesauri = () => {
     []
   );
   const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>(
-    thesaurus.values || []
+    thesaurus?.values || []
   );
   const setNotifications = useSetRecoilState(notificationAtom);
 
