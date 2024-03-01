@@ -27,7 +27,7 @@ export default app => {
             },
             before: { type: 'number' },
             limit: { type: 'number' },
-            // page: { type: 'number', minimum: 1 },
+            page: { type: 'number', minimum: 1 },
             method: { type: 'array', items: { type: 'string' } },
             search: { type: 'string' },
           },
