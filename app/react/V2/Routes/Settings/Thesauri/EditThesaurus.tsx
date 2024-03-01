@@ -14,11 +14,12 @@ import {
   ThesauriValueFormSidepanel,
 } from './components/ThesauriValueFormSidepanel';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
-import { mergeValues, sanitizeThesaurusValues } from './helpers';
+import { importThesaurus, mergeValues, sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RequestParams } from 'app/utils/RequestParams';
+import { ImportButton } from './components/ImportButton';
 
 const LabelHeader = () => <Translate>Label</Translate>;
 
@@ -45,6 +46,7 @@ const EditThesauri = () => {
   const {
     watch,
     register,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm<ThesaurusSchema>({
@@ -130,6 +132,22 @@ const EditThesauri = () => {
     }
     setThesaurusValues(old => [...old, group]);
     setShowThesauriGroupFormSidepanel(false);
+  };
+
+  const importThesauriAndNotify = async (file: File) => {
+    const thesaurus = sanitizeThesaurusValues(getValues(), thesaurusValues);
+    try {
+      await importThesaurus(thesaurus, file);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Data imported</Translate>,
+      });
+    } catch (e) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>Error adding thesauri.</Translate>,
+      });
+    }
   };
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
@@ -241,9 +259,13 @@ const EditThesauri = () => {
                 <Button styling="outline" onClick={sortValues}>
                   <Translate>Sort</Translate>
                 </Button>
-                <Button styling="outline">
-                  <Translate>Import</Translate>
-                </Button>
+                <ImportButton
+                  onChange={async e => {
+                    if (e.target.files && e.target.files[0]) {
+                      await importThesauriAndNotify(e.target.files[0]);
+                    }
+                  }}
+                ></ImportButton>
               </div>
               <div className="flex gap-2">
                 <Link to="/settings/thesauri">

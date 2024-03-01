@@ -1,5 +1,6 @@
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { LocalThesaurusValueSchema } from './components/ThesauriValueFormSidepanel';
+import { httpRequest } from 'shared/superagent';
 
 const mergeValues = (
   oldItems: ThesaurusValueSchema[],
@@ -62,4 +63,16 @@ function sanitizeThesauri(thesaurus: ThesaurusSchema) {
   return sanitizedThesauri;
 }
 
-export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri };
+const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
+  const headers = {
+    Accept: 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+  };
+  const fields = {
+    thesauri: JSON.stringify(thesaurus),
+  };
+
+  await httpRequest('thesauris', fields, headers, file);
+};
+
+export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };

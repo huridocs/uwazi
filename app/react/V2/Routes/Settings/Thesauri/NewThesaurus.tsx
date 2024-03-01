@@ -22,7 +22,8 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { useSetRecoilState } from 'recoil';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
-import { mergeValues, sanitizeThesaurusValues } from './helpers';
+import { importThesaurus, mergeValues, sanitizeThesaurusValues } from './helpers';
+import { ImportButton } from './components/ImportButton';
 
 const NewThesauri = () => {
   const navigate = useNavigate();
@@ -144,6 +145,22 @@ const NewThesauri = () => {
     setValueChanges(newValues);
   };
 
+  const importThesauriAndNotify = async (file: File) => {
+    const thesaurus = sanitizeThesaurusValues(getValues(), valueChanges);
+    try {
+      await importThesaurus(thesaurus, file);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Data imported</Translate>,
+      });
+    } catch (e) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>Error adding thesauri.</Translate>,
+      });
+    }
+  };
+
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
@@ -242,9 +259,13 @@ const NewThesauri = () => {
                 <Button styling="outline" data-testid="thesaurus-sort-items" onClick={sortValues}>
                   <Translate>Sort</Translate>
                 </Button>
-                <Button styling="outline" data-testid="thesaurus-import-items">
-                  <Translate>Import</Translate>
-                </Button>
+                <ImportButton
+                  onChange={async e => {
+                    if (e.target.files && e.target.files[0]) {
+                      await importThesauriAndNotify(e.target.files[0]);
+                    }
+                  }}
+                ></ImportButton>
               </div>
             )}
             <div className="flex gap-2">
