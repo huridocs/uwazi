@@ -8,38 +8,39 @@ import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
 
 type LocalThesaurusValueSchema = ThesaurusValueSchema & { groupId?: string };
-interface ValueFormProps {
+interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
   value?: ThesaurusValueSchema;
   groups?: ThesaurusValueSchema[];
+  showSidepanel: boolean;
+  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   submit: SubmitHandler<LocalThesaurusValueSchema[]>;
 }
 
-const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
+const ThesauriValueFormSidepanel = ({
+  submit,
+  closePanel,
+  groups,
+  value,
+  showSidepanel,
+  setShowSidepanel,
+}: ThesauriValueFormSidepanelProps) => {
   const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
-  const [editing, setEditing] = useState(false);
   const [typing, setTyping] = useState('');
 
-  const {
-    control,
-    register,
-    getValues,
-    handleSubmit,
-    // formState: { errors },
-  } = useForm<{ newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema>({
+  const { reset, control, register, getValues, handleSubmit } = useForm<
+    { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
+  >({
     mode: 'onSubmit',
-    defaultValues: value || { newValues: [{ label: '' }] },
   });
 
   const { append, fields } = useFieldArray({ control, name: 'newValues' });
 
   useEffect(() => {
-    if (!value) {
-      setEditing(false);
-    } else {
-      setEditing(true);
-    }
+    reset(value || { newValues: [{ label: '' }] });
+  }, [value]);
 
+  useEffect(() => {
     if (value && groups) {
       const group = groups.find(singleGroup => {
         return singleGroup.values?.includes(value);
@@ -50,7 +51,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
 
   useEffect(() => {
     const newValues = (getValues() as { newValues: ThesaurusValueSchema[] }).newValues;
-    if (!editing) {
+    if (!value) {
       const hasEmpty = newValues.find(nv => nv.label === '');
       if (!hasEmpty) {
         append({ label: '' });
@@ -59,7 +60,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
   }, [typing]);
 
   const renderInputs = () => {
-    if (!editing) {
+    if (!value) {
       return fields.map((localValue, index) => (
         <Card title={<Translate>Item</Translate>} key={localValue.id}>
           <div className="flex flex-col gap-4">
@@ -117,7 +118,7 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
               value={parentGroup ? parentGroup.id : undefined}
               disabled
               options={[
-                { value: '', label: 'No label', key: '0' },
+                { value: '', label: 'No Group', key: '0' },
                 ...groups.map(group => ({
                   value: group.id as string,
                   label: group.label as string,
@@ -130,30 +131,44 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
       </Card>
     );
   };
+
+  const closeSidepanel = () => {
+    reset({ newValues: [{ label: '' }] });
+    setShowSidepanel(false);
+  };
+
+  const addIdsBeforeSubmit = (
+    item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
+  ) => {
+    if (!value) {
+      const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
+        .filter(newValue => newValue.label !== '')
+        .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
+      submit(items);
+      reset({ newValues: [{ label: '' }] });
+      return;
+    }
+    if (parentGroup) {
+      (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
+    }
+    // @ts-ignore
+    submit([item]);
+    reset({ newValues: [{ label: '' }] });
+  };
+
   return (
-    <div className="relative h-full">
-      <Sidepanel.Body className="h-full">
-        <form
-          onSubmit={handleSubmit(
-            (item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema) => {
-              if (!value) {
-                // New Items
-                const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
-                  .filter(newValue => newValue.label !== '')
-                  .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
-                console.log('Submitting new items: ', items);
-                submit(items);
-                return;
-              }
-              if (parentGroup) {
-                (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
-              }
-              // @ts-ignore
-              submit([item]);
-            }
-          )}
-          id="menu-form"
-        >
+    <Sidepanel
+      isOpen={showSidepanel}
+      withOverlay
+      closeSidepanelFunction={closeSidepanel}
+      title={value ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
+    >
+      <form
+        onSubmit={handleSubmit(addIdsBeforeSubmit)}
+        className="flex flex-col h-full"
+        id="value-thesauri-form"
+      >
+        <Sidepanel.Body>
           {!value && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
               <div className="flex items-center gap-1 text-base font-semibold">
@@ -173,26 +188,26 @@ const ValueForm = ({ submit, closePanel, groups, value }: ValueFormProps) => {
             </div>
           )}
           {renderInputs()}
-        </form>
-      </Sidepanel.Body>
-      <Sidepanel.Footer className="bottom-0">
-        <div className="flex gap-2">
-          <Button
-            styling="light"
-            onClick={closePanel}
-            className="grow"
-            data-testid="menu-form-cancel"
-          >
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
-            <Translate>Add</Translate>
-          </Button>
-        </div>
-      </Sidepanel.Footer>
-    </div>
+        </Sidepanel.Body>
+        <Sidepanel.Footer className="bottom-0">
+          <div className="flex gap-2">
+            <Button
+              styling="light"
+              onClick={closePanel}
+              className="grow"
+              data-testid="menu-form-cancel"
+            >
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button className="grow" type="submit" data-testid="menu-form-submit">
+              <Translate>Add</Translate>
+            </Button>
+          </div>
+        </Sidepanel.Footer>
+      </form>
+    </Sidepanel>
   );
 };
 
-export { ValueForm };
+export { ThesauriValueFormSidepanel };
 export type { LocalThesaurusValueSchema };

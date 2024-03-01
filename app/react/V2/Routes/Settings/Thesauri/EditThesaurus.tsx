@@ -9,8 +9,11 @@ import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/Tabl
 import { InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import { LocalThesaurusValueSchema, ValueForm } from './components/ValueForm';
-import { GroupForm } from './components/GroupForm';
+import {
+  LocalThesaurusValueSchema,
+  ThesauriValueFormSidepanel,
+} from './components/ThesauriValueFormSidepanel';
+import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
 import { mergeValues, sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
@@ -29,8 +32,8 @@ const EditThesauri = () => {
   const thesaurus = (useLoaderData() as ThesaurusSchema[])[0];
   const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
-  const [isItemSidepanelOpen, setIsItemSidepanelOpen] = useState(false);
-  const [isGroupSidepanelOpen, setIsGroupSidepanelOpen] = useState(false);
+  const [showThesauriValueFormSidepanel, setShowThesauriValueFormSidepanel] = useState(false);
+  const [showThesauriGroupFormSidepanel, setShowThesauriGroupFormSidepanel] = useState(false);
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
     []
   );
@@ -53,6 +56,7 @@ const EditThesauri = () => {
     let newValues: ThesaurusValueSchema[] = thesaurusValues.filter(
       value => !selectedThesaurusValue.find(tSelected => tSelected.original.id === value.id)
     );
+
     newValues = newValues.map(value => {
       if (value.values) {
         value.values = value.values.filter(
@@ -102,13 +106,13 @@ const EditThesauri = () => {
       }
       setEditValue(undefined);
       setThesaurusValues(currentValues);
-      setIsItemSidepanelOpen(false);
+      setShowThesauriValueFormSidepanel(false);
       return;
     }
     currentValues = mergeValues(currentValues, items);
 
     setThesaurusValues(currentValues);
-    setIsItemSidepanelOpen(false);
+    setShowThesauriValueFormSidepanel(false);
   };
 
   const addGroupSubmit = (group: ThesaurusValueSchema) => {
@@ -121,11 +125,11 @@ const EditThesauri = () => {
       });
       setThesaurusValues(updatedValues);
       setEditGroup(undefined);
-      setIsGroupSidepanelOpen(false);
+      setShowThesauriGroupFormSidepanel(false);
       return;
     }
     setThesaurusValues(old => [...old, group]);
-    setIsGroupSidepanelOpen(false);
+    setShowThesauriGroupFormSidepanel(false);
   };
 
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
@@ -159,13 +163,14 @@ const EditThesauri = () => {
       cell: EditButton,
       enableSorting: false,
       meta: {
-        action: (row: Row<ThesaurusValueSchema>) => {
+        action: async (row: Row<ThesaurusValueSchema>) => {
           if (row.original.values && Array.isArray(row.original.values)) {
             setEditGroup(row.original as ThesaurusValueSchema);
-            setIsGroupSidepanelOpen(true);
+            setShowThesauriGroupFormSidepanel(true);
           } else {
-            setEditValue(row.original as ThesaurusValueSchema);
-            setIsItemSidepanelOpen(true);
+            // setEditValueAndShowItemSidepanel({ value: row.original, showSidepanel: true });
+            await setEditValue(row.original as ThesaurusValueSchema);
+            setShowThesauriValueFormSidepanel(true);
           }
         },
         headerClassName: 'text-center w-0',
@@ -227,10 +232,10 @@ const EditThesauri = () => {
           ) : (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Button onClick={() => setIsItemSidepanelOpen(true)}>
+                <Button onClick={() => setShowThesauriValueFormSidepanel(true)}>
                   <Translate>Add item</Translate>
                 </Button>
-                <Button styling="outline" onClick={() => setIsGroupSidepanelOpen(true)}>
+                <Button styling="outline" onClick={() => setShowThesauriGroupFormSidepanel(true)}>
                   <Translate>Add group</Translate>
                 </Button>
                 <Button styling="outline" onClick={sortValues}>
@@ -254,53 +259,29 @@ const EditThesauri = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-      <Sidepanel
-        title={
-          editValue ? (
-            <Translate className="uppercase">Edit item</Translate>
-          ) : (
-            <Translate className="uppercase">Add item</Translate>
-          )
-        }
-        isOpen={isItemSidepanelOpen}
-        closeSidepanelFunction={() => setIsItemSidepanelOpen(false)}
-        size="medium"
-        withOverlay
-      >
-        <ValueForm
-          submit={addItemSubmit}
-          value={editValue}
-          closePanel={() => {
-            setEditValue(undefined);
-            setIsItemSidepanelOpen(false);
-          }}
-          groups={thesaurusValues.filter((value: ThesaurusValueSchema) =>
-            Array.isArray(value.values)
-          )}
-        />
-      </Sidepanel>
-      <Sidepanel
-        title={
-          editGroup ? (
-            <Translate className="uppercase">Edit group</Translate>
-          ) : (
-            <Translate className="uppercase">Add group</Translate>
-          )
-        }
-        isOpen={isGroupSidepanelOpen}
-        closeSidepanelFunction={() => setIsGroupSidepanelOpen(false)}
-        size="medium"
-        withOverlay
-      >
-        <GroupForm
-          submit={addGroupSubmit}
-          value={editGroup}
-          closePanel={() => {
-            setEditGroup(undefined);
-            setIsGroupSidepanelOpen(false);
-          }}
-        />
-      </Sidepanel>
+      <ThesauriValueFormSidepanel
+        showSidepanel={showThesauriValueFormSidepanel}
+        setShowSidepanel={setShowThesauriValueFormSidepanel}
+        submit={addItemSubmit}
+        value={editValue}
+        closePanel={() => {
+          setEditValue(undefined);
+          setShowThesauriValueFormSidepanel(false);
+        }}
+        groups={thesaurusValues.filter((value: ThesaurusValueSchema) =>
+          Array.isArray(value.values)
+        )}
+      />
+      <ThesauriGroupFormSidepanel
+        showSidepanel={showThesauriGroupFormSidepanel}
+        setShowSidepanel={setShowThesauriGroupFormSidepanel}
+        submit={addGroupSubmit}
+        value={editGroup}
+        closePanel={() => {
+          setEditGroup(undefined);
+          setShowThesauriGroupFormSidepanel(false);
+        }}
+      />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { LocalThesaurusValueSchema } from './components/ValueForm';
+import { LocalThesaurusValueSchema } from './components/ThesauriValueFormSidepanel';
 
 const mergeValues = (
   oldItems: ThesaurusValueSchema[],
