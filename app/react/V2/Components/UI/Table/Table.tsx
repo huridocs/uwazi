@@ -79,7 +79,8 @@ const Table = <T,>({
       sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
-    enableRowSelection: enableSelection,
+    enableRowSelection: (row: any) =>
+      Boolean(enableSelection && !row.original?.disableRowSelection),
     enableSubRowSelection: false,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: sortingFunction,
