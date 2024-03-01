@@ -5,9 +5,9 @@ import {
   Settings,
   SettingsFilterSchema,
   SettingsLinkSchema,
-  TemplateSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -50,7 +50,7 @@ export interface ClientLanguageSchema extends Omit<LanguageSchema, '_id'> {
   _id?: string;
 }
 
-export interface Template extends Omit<TemplateSchema, '_id'> {
+export interface Template extends TemplateSchema, Omit<TemplateSchema, '_id'> {
   _id: string;
 }
 
