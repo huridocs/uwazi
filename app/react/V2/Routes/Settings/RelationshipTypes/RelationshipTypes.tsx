@@ -14,6 +14,7 @@ import { notificationAtom } from 'app/V2/atoms';
 import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
 import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { Modal } from 'app/V2/Components/UI/Modal';
 
 import { columns } from './components/TableComponents';
 import { Form } from './components/Form';
@@ -26,13 +27,16 @@ const relationshipTypesLoader =
 
 const RelationshipTypes = () => {
   const relationshipTypes = useLoaderData() as ClientRelationshipType[];
+
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetRecoilState(notificationAtom);
   const setRelationshipTypes = useSetRecoilState(relationshipTypesAtom);
   const revalidator = useRevalidator();
+  const [relationshipTypesBeingUsed, setRelationshipTypesBeingUsed] = useState<string[]>([]);
 
   const [selectedItems, setSelectedItems] = useState<Row<ClientRelationshipType>[]>([]);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [showCantDeleteModal, setShowCantDeleteModal] = useState(false);
 
   interface formType extends Omit<ClientRelationshipType, '_id'> {
     _id?: string;
@@ -78,7 +82,6 @@ const RelationshipTypes = () => {
       });
       setShowConfirmationModal(false);
     } catch (error) {
-      console.log(error);
       setNotifications({
         type: 'error',
         text: <Translate>Failed to save</Translate>,
@@ -88,6 +91,27 @@ const RelationshipTypes = () => {
     }
     revalidator.revalidate();
     setRelationshipTypes(relationshipTypes);
+  };
+
+  const checkDelete = async () => {
+    const checks = await Promise.all(
+      selectedItems.map(async relationshipType => {
+        const uses = await relationshipTypesAPI.relationshipTypeBeingUsed(
+          relationshipType.original._id
+        );
+
+        return { ...relationshipType.original, beingUsed: uses > 0 };
+      })
+    );
+
+    setRelationshipTypesBeingUsed(checks.filter(r => r.beingUsed).map(r => r.name));
+
+    if (checks.some(r => r.beingUsed)) {
+      setShowCantDeleteModal(true);
+      return;
+    }
+
+    setShowConfirmationModal(true);
   };
 
   return (
@@ -112,7 +136,7 @@ const RelationshipTypes = () => {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                onClick={() => setShowConfirmationModal(true)}
+                onClick={checkDelete}
                 color="error"
                 data-testid="relationship-types-delete-link"
               >
@@ -167,6 +191,35 @@ const RelationshipTypes = () => {
           onCancelClick={() => setShowConfirmationModal(false)}
           dangerStyle
         />
+      )}
+      {showCantDeleteModal && (
+        <Modal size="lg" data-testid="cant-delete-modal">
+          <Modal.Header className="border-b-0">
+            <>
+              <h2 className="text-xl font-medium text-gray-900">
+                <Translate>This relationship type is being used and cannot be deleted.</Translate>
+              </h2>
+              <Modal.CloseButton onClick={() => setShowCantDeleteModal(false)} />
+            </>
+          </Modal.Header>
+          <Modal.Body>
+            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+              {relationshipTypesBeingUsed.map(name => (
+                <li key={name}>{name}</li>
+              ))}
+            </ul>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              onClick={() => setShowCantDeleteModal(false)}
+              color="error"
+              className="grow"
+              data-testid="accept-button"
+            >
+              <Translate>Accept</Translate>
+            </Button>
+          </Modal.Footer>
+        </Modal>
       )}
     </div>
   );
