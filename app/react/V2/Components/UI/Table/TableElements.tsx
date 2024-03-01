@@ -32,6 +32,7 @@ const IndeterminateCheckbox = ({
   indeterminate,
   className = '',
   id,
+  disabled,
   ...rest
 }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) => {
   const ref = useRef<HTMLInputElement>(null!);
@@ -54,7 +55,8 @@ const IndeterminateCheckbox = ({
       <input
         type="checkbox"
         ref={ref}
-        className={`rounded cursor-pointer ${className}`}
+        className={`rounded cursor-pointer ${className} ${disabled ? 'opacity-50' : ''}`}
+        disabled={disabled}
         {...rest}
       />
     </label>
