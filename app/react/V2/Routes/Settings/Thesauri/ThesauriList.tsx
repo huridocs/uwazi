@@ -154,7 +154,7 @@ const ThesauriList = () => {
         <ConfirmationModal
           size="lg"
           header={<Translate>Delete</Translate>}
-          warningText={<Translate>Do you want to delete?</Translate>}
+          warningText={<Translate>Are you sure you want to delete this item?</Translate>}
           body={
             <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
               {selectedThesauri.map(item => (
