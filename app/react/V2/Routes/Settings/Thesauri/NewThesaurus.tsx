@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, Sidepanel, Table } from 'app/V2/Components/UI';
+import { Button, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import {
   EditButton,
