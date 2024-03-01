@@ -179,11 +179,8 @@ const EditThesauri = () => {
           title={watch('name')}
         />
         <SettingsContent.Body>
-          <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus" className="h-full">
-            <div
-              data-testid="thesauri"
-              className="h-full border rounded-md shadow-sm border-gray-50"
-            >
+          <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
+            <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
               <div className="p-4">
                 <InputField
                   clearFieldAction={() => {}}
@@ -203,7 +200,6 @@ const EditThesauri = () => {
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
                 onSelection={setSelectedThesaurusValue}
-                blankLabel={<Translate>No values</Translate>}
               />
             </div>
           </form>

@@ -176,7 +176,7 @@ const NewThesauri = () => {
         <SettingsContent.Body>
           <div
             data-testid="settings-new-thesauri"
-            className="h-full border rounded-md shadow-sm border-gray-50"
+            className="border rounded-md shadow-sm border-gray-50"
           >
             <div className="p-4">
               <InputField
@@ -198,7 +198,6 @@ const NewThesauri = () => {
               data={valueChanges}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
               onSelection={setSelectedValues}
-              blankLabel={<Translate>No values</Translate>}
             />
           </div>
         </SettingsContent.Body>

@@ -78,8 +78,8 @@ const ThesauriList = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Thesauri" />
-        <SettingsContent.Body className="h-full">
-          <div data-testid="thesauri" className="h-full">
+        <SettingsContent.Body>
+          <div data-testid="thesauri">
             <Table<ThesaurusSchema>
               enableSelection
               columns={columns({ edit: navigateToEditThesaurus })}
@@ -87,7 +87,6 @@ const ThesauriList = () => {
               title={<Translate>Thesauri</Translate>}
               initialState={{ sorting: [{ id: 'name', desc: false }] }}
               onSelection={setSelectedThesauri}
-              blankLabel={<Translate>No thesauri</Translate>}
             />
           </div>
         </SettingsContent.Body>

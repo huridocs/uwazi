@@ -10,8 +10,6 @@ import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
-import { Translate } from 'app/I18N';
-import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 const applyForSelection = (
   withSelection: any,
@@ -31,7 +29,6 @@ const Table = <T,>({
   setSorting,
   onSelection,
   subRowsKey,
-  blankLabel,
   draggableRows = false,
   onChange = () => {},
 }: TableProps<T>) => {
@@ -120,20 +117,9 @@ const Table = <T,>({
     onChange(changedItems);
   };
 
-  const getBlankLabel = () => (
-    <div className="h-2 text-lg font-bold text-gray-500">
-      <div>{blankLabel || <Translate>No items</Translate>}</div>
-      <div className="">
-        <InformationCircleIcon className="w-5 p-1 font-bold bg-gray-200 rounded-full" />
-      </div>
-    </div>
-  );
-
-  const blankCssClasses = internalData.length < 1 ? 'h-full' : '';
-
   return (
-    <div className={`relative h-full overflow-x-auto border rounded-md shadow-sm border-gray-50`}>
-      <table className={`w-full ${blankCssClasses} text-sm text-left`} data-testid="table">
+    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
+      <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
             {title}
@@ -150,23 +136,13 @@ const Table = <T,>({
             />
           ))}
         </thead>
-        {internalData.length ? (
-          <TableBody
-            draggableRows={draggableRows}
-            items={data}
-            table={table}
-            subRowsKey={subRowsKey}
-            onChange={handleOnChange}
-          />
-        ) : (
-          <tbody>
-            <tr className="border-dashed">
-              <td align="center" colSpan={columns.length + 1}>
-                {getBlankLabel()}
-              </td>
-            </tr>
-          </tbody>
-        )}
+        <TableBody
+          draggableRows={draggableRows}
+          items={data}
+          table={table}
+          subRowsKey={subRowsKey}
+          onChange={handleOnChange}
+        />
       </table>
       {footer && <div className="p-4">{footer}</div>}
     </div>
