@@ -1,6 +1,7 @@
 import { search } from 'api/search';
 import { uploadMiddleware } from 'api/files';
 import { saveEntity } from 'api/entities/entitySavingManager';
+import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import entities from './entities';
 import templates from '../templates/templates';
 import thesauri from '../thesauri/thesauri';
@@ -76,6 +77,7 @@ export default app => {
     '/api/entities',
     needsAuthorization(['admin', 'editor', 'collaborator']),
     uploadMiddleware.multiple(),
+    activitylogMiddleware,
     async (req, res, next) => {
       try {
         const entityToSave = req.body.entity ? JSON.parse(req.body.entity) : req.body;
