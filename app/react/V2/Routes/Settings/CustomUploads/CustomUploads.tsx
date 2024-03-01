@@ -28,7 +28,6 @@ const CustomUploads = () => {
   const revalidator = useRevalidator();
   const [uploads, setUploads] = useState<File[]>([]);
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
   const [uploadsModal, setUploadsModal] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [modalProps, setModalProps] = useState<{
@@ -55,10 +54,10 @@ const CustomUploads = () => {
 
   const handleSave = async () => {
     setUploadsModal(false);
-    setIsSaving(true);
-    const responses = await Promise.all(uploads.map(async file => upload(file, 'custom')));
+    const responses = await Promise.all(
+      uploads.map(async file => upload(file, 'custom', progress => {}))
+    );
     notify(responses, <Translate>Uploaded custom file</Translate>);
-    setIsSaving(false);
     revalidator.revalidate();
   };
 
@@ -106,7 +105,6 @@ const CustomUploads = () => {
             <Button
               styling="solid"
               color="error"
-              disabled={isSaving}
               onClick={() => {
                 setConfirmationModal(true);
                 setModalProps({ items: selectedRows, action: deleteMultiple });
@@ -115,12 +113,7 @@ const CustomUploads = () => {
               <Translate>Delete</Translate>
             </Button>
           )}
-          <Button
-            styling="solid"
-            color="primary"
-            disabled={isSaving}
-            onClick={async () => setUploadsModal(true)}
-          >
+          <Button styling="solid" color="primary" onClick={async () => setUploadsModal(true)}>
             <Translate>Import asset</Translate>
           </Button>
         </SettingsContent.Footer>
@@ -134,7 +127,6 @@ const CustomUploads = () => {
               onClick={() => {
                 handleCancel();
               }}
-              disabled={isSaving}
             />
           </Modal.Header>
           <Modal.Body>
@@ -150,14 +142,13 @@ const CustomUploads = () => {
               <Button
                 className="w-1/2"
                 styling="outline"
-                disabled={isSaving}
                 onClick={() => {
                   handleCancel();
                 }}
               >
                 <Translate>Cancel</Translate>
               </Button>
-              <Button className="w-1/2" disabled={isSaving} onClick={async () => handleSave()}>
+              <Button className="w-1/2" onClick={async () => handleSave()}>
                 <Translate>Add</Translate>
               </Button>
             </div>
