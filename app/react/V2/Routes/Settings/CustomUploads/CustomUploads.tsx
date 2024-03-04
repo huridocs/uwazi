@@ -97,6 +97,7 @@ const CustomUploads = () => {
             columns={createColumns(handleDelete)}
             data={files}
             title={<Translate>Custom Uploads</Translate>}
+            initialState={{ sorting: [{ id: 'originalname', desc: false }] }}
           />
         </SettingsContent.Body>
 
