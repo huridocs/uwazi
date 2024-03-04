@@ -103,38 +103,4 @@ describe('Metadata', () => {
       await expect(page).not.toMatch('My edited template');
     });
   });
-
-  describe('Relationship types tests', () => {
-    it('should create a new connection', async () => {
-      await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toClick('a', { text: 'Add relationship' });
-      await expect(page).toFill('input[placeholder="Template name"]', 'test connection');
-      await expect(page).toClick('button', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
-      await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toMatch('test connection');
-    });
-
-    it('should go back to Connections then edit the created connection', async () => {
-      await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toClick('a', { text: 'test connection' });
-      await expect(page).toFill('input[value="test connection"]', 'test connection edited');
-      await expect(page).toClick('button', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
-      await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toMatch('test connection edited');
-    });
-
-    it('should go back to connections then delete the created connection', async () => {
-      await expect(page).toClick('a', { text: 'Relationship types' });
-      await expect(page).toClick(
-        // types not up to date pr here https://github.com/DefinitelyTyped/DefinitelyTyped/pull/60579
-        // @ts-ignore
-        { type: 'xpath', value: '//*[text() = "test connection edited"]/parent::li//a' },
-        { text: 'Delete' }
-      );
-      await expect(page).toClick('button', { text: 'Accept' });
-      await expect(page).not.toMatch('test connection edited');
-    });
-  });
 });

@@ -5,10 +5,10 @@ import {
   Settings,
   SettingsFilterSchema,
   SettingsLinkSchema,
-  TemplateSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -51,7 +51,7 @@ export interface ClientLanguageSchema extends Omit<LanguageSchema, '_id'> {
   _id?: string;
 }
 
-export interface Template extends Omit<TemplateSchema, '_id'> {
+export interface Template extends TemplateSchema, Omit<TemplateSchema, '_id'> {
   _id: string;
 }
 
@@ -79,4 +79,8 @@ export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, 
   _id: string;
   templates: Template[];
   disableRowSelection: boolean;
+}
+export interface ClientRelationshipType {
+  _id: string;
+  name: string;
 }

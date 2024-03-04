@@ -7,14 +7,11 @@ import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { EditRelationType } from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  RelationTypesList,
   Settings,
   Dashboard,
 } from 'app/Settings';
@@ -45,6 +42,10 @@ import {
 } from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+import {
+  RelationshipTypes,
+  relationshipTypesLoader,
+} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
@@ -126,10 +127,12 @@ const getRoutesLayout = (
         loader={IXSuggestionsLoader(headers)}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
-      <Route path="connections">
-        <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
+      <Route path="relationship-types">
+        <Route
+          index
+          element={adminsOnlyRoute(<RelationshipTypes />)}
+          loader={relationshipTypesLoader(headers)}
+        />
       </Route>
 
       <Route path="thesauri">

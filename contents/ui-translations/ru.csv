@@ -64,6 +64,7 @@ ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
 Allow captcha bypass,Allow captcha bypass
+Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -79,6 +80,7 @@ Are you sure you want to delete this entity?,Are you sure you want to delete thi
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
 Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
+Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -105,7 +107,6 @@ Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
 Canceling...,Canceling...
-Cannot delete relationship type:,Cannot delete relationship type:
 Cannot delete template:,Cannot delete template:
 Captcha,Captcha
 Captcha bypass,Обход Captcha
@@ -148,7 +149,6 @@ Confirm deletion,Подтвердить удаление
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,Подтвердите новый пароль
@@ -196,7 +196,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Currently connections only need a title.,В настоящий момент для подключений только требуется заголовок
 Custom component error,Ошибка пользовательского компонента
 Custom CSS,Персональные CSS
 Custom Favicon,Custom Favicon
@@ -242,6 +241,7 @@ Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
 Document contents,Содержание документа
@@ -806,7 +806,6 @@ This property will appear in the library cards as part of the basic info.,Это
 This property will be inherited from the related entities and shown as metadata of this type of entities.,Это свойство будет приобретено от взаимосвязанных объектов и отображаться как метаданные для этого типа объектов.
 This property will be shown using all the width available.,Это свойство будет отображаться с использованием всей доступной ширины.
 This property will be shown without the label.,Это свойство будет отображаться без метки.
-This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,Этот шаблон будет использоваться по умолчанию для новых объектов.
