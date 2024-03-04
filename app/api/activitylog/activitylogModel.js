@@ -13,4 +13,8 @@ const pagesSchema = new mongoose.Schema({
   expireAt: Date,
 });
 
+pagesSchema.index({ method: 1 });
+pagesSchema.index({ time: 1 });
+pagesSchema.index({ username: 1 }, { collation: { locale: 'en', strength: 2 } });
+
 export default instanceModel('activitylog', pagesSchema);

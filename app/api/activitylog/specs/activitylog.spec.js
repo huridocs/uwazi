@@ -177,5 +177,82 @@ describe('activitylog', () => {
         assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
       });
     });
+
+    describe('sorting through the "sort" keyword', () => {
+      it('without the "sort" keyword, it should sort by time, descending as default', async () => {
+        const results = await activitylog.get();
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+      });
+
+      it('should sort by method', async () => {
+        let results = await activitylog.get({ sort: { prop: 'method', asc: true } });
+        expect(results.rows.map(r => r.time)).toEqual([2000, 5000, 8000, 6000, 1000]);
+
+        results = await activitylog.get({ sort: { prop: 'method', asc: false } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000, 5000, 2000]);
+      });
+
+      it('should sort by user', async () => {
+        let results = await activitylog.get({ sort: { prop: 'username', asc: true } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+
+        results = await activitylog.get({ sort: { prop: 'username', asc: false } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 8000, 6000]);
+      });
+
+      it('should sort by time', async () => {
+        let results = await activitylog.get({ sort: { prop: 'time', asc: true } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000]);
+
+        results = await activitylog.get({ sort: { prop: 'time', asc: false } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+      });
+
+      it('should respect filters', async () => {
+        let results = await activitylog.get({
+          sort: { prop: 'username', asc: true },
+          method: ['PUT'],
+        });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000]);
+
+        results = await activitylog.get({
+          sort: { prop: 'username', asc: false },
+          method: ['PUT'],
+        });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 8000, 6000]);
+      });
+
+      it('should respect pagination', async () => {
+        let results = await activitylog.get({
+          sort: { prop: 'username', asc: true },
+          page: 1,
+          limit: 2,
+          method: ['PUT'],
+        });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 1,
+          limit: 2,
+          page: 1,
+          times: [8000, 6000],
+        });
+
+        results = await activitylog.get({
+          sort: { prop: 'username', asc: true },
+          page: 2,
+          limit: 2,
+          method: ['PUT'],
+        });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
+
+        results = await activitylog.get({
+          sort: { prop: 'username', asc: true },
+          page: 3,
+          limit: 2,
+          method: ['PUT'],
+        });
+        assessResults(results, { size: 0, remainingRows: 0, limit: 2, page: 3, times: [] });
+      });
+    });
   });
 });
