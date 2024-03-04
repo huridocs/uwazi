@@ -61,6 +61,7 @@ ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
 Allow captcha bypass,Allow captcha bypass
+Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -245,6 +246,7 @@ Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
 Document contents,Содержание документа

@@ -41,9 +41,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
               })}
               hasErrors={!!errors.name}
               errorMessage={
-                errors.name?.type === 'alreadyExists' ? (
-                  <Translate>This name already exists</Translate>
-                ) : null
+                errors.name?.type === 'alreadyExists' ? <Translate>Already exists</Translate> : null
               }
             />
           </div>
