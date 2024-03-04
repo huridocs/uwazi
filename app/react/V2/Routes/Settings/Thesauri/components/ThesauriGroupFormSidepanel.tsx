@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
@@ -30,8 +30,15 @@ const ThesauriGroupFormSidepanel = ({
     formState: { errors },
   } = useForm<ThesaurusValueSchema & { groupId: string }>({
     mode: 'onSubmit',
-    defaultValues: value || { label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() },
   });
+
+  useEffect(() => {
+    if (value) {
+      reset(value);
+    } else {
+      reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
+    }
+  }, [value]);
 
   const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');

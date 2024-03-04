@@ -283,7 +283,7 @@ describe('Table', () => {
         target: { x: 5, y: 0 },
       });
       cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
-      cy.contains('children').click();
+      cy.contains('button', 'children').click();
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
       checkRowContent(2, ['Entity a', data[1].children![0].description, '4']);
       checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
