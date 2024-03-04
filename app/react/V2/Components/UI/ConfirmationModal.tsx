@@ -35,6 +35,7 @@ const ConfirmationModal = ({
     isString(child) ? <Translate>{child}</Translate> : child;
 
   const wordForConfirmation = t('System', confirmWord, null, false);
+
   return (
     <Modal size={size}>
       <Modal.Header className="border-b-0">

@@ -205,7 +205,7 @@ const MenuConfig = () => {
         }
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
-        size="large"
+        size="medium"
         withOverlay
       >
         <MenuForm
