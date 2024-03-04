@@ -7,14 +7,10 @@ import Activitylog from 'app/Activitylog/Activitylog';
 import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { EditPage } from 'app/Pages/EditPage';
-import NewPage from 'app/Pages/NewPage';
-import Pages from 'app/Pages/Pages';
 import { EditRelationType } from 'app/RelationTypes/EditRelationType';
 import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
-  Customisation,
   CustomUploads,
   EntityTypesList,
   FiltersForm,
@@ -49,13 +45,15 @@ import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/Menu
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
+import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
+import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
+import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
-import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
 
@@ -102,9 +100,12 @@ const getRoutesLayout = (
       />
       <Route path="preserve" element={adminsOnlyRoute(<PreserveSettings />)} />
       <Route path="pages">
-        <Route index element={adminsOnlyRoute(<Pages />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewPage />)} />
-        <Route path="edit/:sharedId" element={adminsOnlyRoute(<EditPage />)} />
+        <Route index element={adminsOnlyRoute(<PagesList />)} loader={pagesListLoader(headers)} />
+        <Route
+          path="page/:sharedId?"
+          element={adminsOnlyRoute(<PageEditor />)}
+          loader={pageEditorLoader(headers)}
+        />
       </Route>
       <Route path="templates">
         <Route index element={adminsOnlyRoute(<EntityTypesList />)} />
@@ -151,7 +152,11 @@ const getRoutesLayout = (
         />
       </Route>
       <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
-      <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
+      <Route
+        path="customisation"
+        element={adminsOnlyRoute(<Customisation />)}
+        loader={customisationLoader(headers)}
+      />
       <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
       <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
       <Route

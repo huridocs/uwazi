@@ -1,4 +1,3 @@
-import Joi from 'joi';
 import { CSVLoader } from 'api/csv';
 import { uploadMiddleware } from 'api/files';
 
@@ -13,34 +12,46 @@ const routes = app => {
 
     uploadMiddleware(),
 
-    validation.validateRequest(
-      Joi.alternatives(
-        Joi.object()
-          .keys({
-            _id: Joi.string(),
-            __v: Joi.number(),
-            name: Joi.string().required(),
-            enable_classification: Joi.boolean(),
-            values: Joi.array()
-              .items(
-                Joi.object().keys({
-                  id: Joi.string(),
-                  label: Joi.string().required(),
-                  _id: Joi.string(),
-                  values: Joi.array(),
-                })
-              )
-              .required(),
-          })
-          .required(),
-        Joi.object()
-          .keys({
-            thesauri: Joi.string().required(),
-          })
-          .required()
-      ).required()
-    ),
-
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          anyOf: [
+            {
+              type: 'object',
+              properties: {
+                _id: { type: 'string' },
+                __v: { type: 'number' },
+                name: { type: 'string' },
+                enable_classification: { type: 'boolean' },
+                values: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      _id: { type: 'string' },
+                      label: { type: 'string' },
+                      values: { type: 'array', items: { type: 'object' } },
+                    },
+                    required: ['label'],
+                  },
+                },
+              },
+              required: ['name', 'values'],
+            },
+            {
+              type: 'object',
+              properties: {
+                thesauri: { type: 'string' },
+              },
+              required: ['thesauri'],
+            },
+          ],
+        },
+      },
+      required: ['body'],
+    }),
     async (req, res, next) => {
       try {
         const data = req.file ? JSON.parse(req.body.thesauri) : req.body;
@@ -61,12 +72,20 @@ const routes = app => {
 
   app.get(
     '/api/thesauris',
-    validation.validateRequest(
-      Joi.object().keys({
-        _id: Joi.string(),
-      }),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       let id;
       if (req.query) {
@@ -81,12 +100,20 @@ const routes = app => {
 
   app.get(
     '/api/dictionaries',
-    validation.validateRequest(
-      Joi.object().keys({
-        _id: Joi.string(),
-      }),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       let id;
       if (req.query && req.query._id) {
@@ -102,15 +129,24 @@ const routes = app => {
   app.delete(
     '/api/thesauris',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.string().required(),
-          _rev: Joi.any(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: {
+              type: 'string',
+            },
+            _rev: {
+              type: 'string',
+            },
+          },
+          required: ['_id'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       thesauri
         .delete(req.query._id, req.query._rev)

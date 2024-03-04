@@ -5,7 +5,7 @@ import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
-import { Translate, I18NApi } from 'app/I18N';
+import { Translate, I18NApi, t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
@@ -70,12 +70,12 @@ const LanguagesList = () => {
     handleAcceptedAction: () => void
   ) => {
     setModalProps({
-      header: 'Are you sure?',
+      header: t('System', 'Are you sure?', null, false),
       body: message,
       acceptButton: acceptLabel,
-      cancelButton: 'No, cancel',
-      warningText: 'Other users will be affected by this action!',
-      confirmWord: 'CONFIRM',
+      cancelButton: t('System', 'No, cancel', null, false),
+      warningText: t('System', 'Other users will be affected by this action!', null, false),
+      confirmWord: t('System', 'CONFIRM', null, false),
       onAcceptClick: handleAcceptedAction,
       onCancelClick: () => setShowModal(false),
       size: 'md',

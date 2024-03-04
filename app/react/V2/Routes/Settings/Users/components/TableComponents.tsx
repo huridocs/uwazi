@@ -12,8 +12,8 @@ const GroupNameHeader = () => <Translate>Name</Translate>;
 const ProtectionHeader = () => <Translate>Protection</Translate>;
 const RoleHeader = () => <Translate>Role</Translate>;
 const GroupsHeader = () => <Translate>Group</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 const MembersHeader = () => <Translate>Members</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const ProtectionPill = ({ cell }: CellContext<ClientUserSchema, ClientUserSchema['using2fa']>) => {
   if (cell.getValue()) {
@@ -126,7 +126,7 @@ const getUsersColumns = (editButtonAction: (user: ClientUserSchema) => void) => 
       id: '1',
       header: ActionHeader,
       cell: EditUserButton,
-      meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
+      meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,
     }),
   ];
@@ -149,7 +149,7 @@ const getGroupsColumns = (editButtonAction: (group: ClientUserGroupSchema) => vo
       id: '1',
       header: ActionHeader,
       cell: EditUserGroupButton,
-      meta: { action: editButtonAction, headerClassName: 'w-0 text-center' },
+      meta: { action: editButtonAction, headerClassName: 'sr-only invisible bg-gray-50' },
       enableSorting: false,
     }),
   ];

@@ -1,9 +1,7 @@
 Key,Spanish
 % of sentences above threshold,% of sentences above threshold
-(view page),(ver página)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ para seleccionar múltiples tarjetas
-// Javascript - With great power comes great responsibility!,// Javascript - ¡Un gran poder conlleva una gran responsabilidad!
 2FA,2FA
 2fa add account tip,"Abre la aplicación y selecciona ""Añadir Cuenta"" (generalmente tiene un símbolo + )"
 2FA Enabled,2FA Enabled
@@ -77,9 +75,9 @@ Are you sure you want to delete this connection?,Estás seguro que quieres elimi
 Are you sure you want to delete this entity?,Estás seguro que quieres eliminar esta entidad?
 Are you sure you want to delete this file?,Estás seguro que quieres eliminar este archivo?
 Are you sure you want to delete this item?,Estás seguro que quieres eliminar este elemento?
-Are you sure you want to delete this page?,Estás seguro que quieres eliminar esta página?
 Are you sure you want to delete this relationship type?,Estás seguro que quieres eliminar este tipo de relación?
 Are you sure you want to delete this thesaurus?,Estás seguro que quieres eliminar este tesauro?
+Are you sure?,Estás seguro?
 Attachment deleted,Archivo adjunto eliminado
 Attachment renamed,Archivo adjunto renombrado
 Attachment uploaded,Archivo adjunto subido
@@ -96,6 +94,7 @@ Back to search,Volver a la búsqueda
 Back to thesauri,Volver al Thesauri
 Back to thesaurus,Volver al Tesauro
 Bad Request,Petición incorrecta
+Basic,Básico
 Body,Cuerpo
 Browse files to upload,Explorar archivos para subir
 "by ids, methods, keywords, etc.","por ids, métodos, palabras clave, etc."
@@ -150,7 +149,6 @@ Confirm deletion,Confirmar la eliminación
 Confirm deletion of,Confirmar la eliminación de
 Confirm deletion of entity,Confirmar eliminación de entidad
 Confirm deletion of file,Confirmar eliminación de archivo
-Confirm deletion of page:,Confirmar eliminación de página:
 Confirm deletion of relationship type:,Confirmar eliminación de tipo de relación:
 Confirm deletion of template:,Confirmar eliminación de plantilla:
 Confirm deletion of thesaurus:,Confirmar eliminación de tesauro:
@@ -298,6 +296,7 @@ Entities across all languages,Entidades en todos los idiomas
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Las entidades se pueden mostrar en una página personalizada. Para eso, una página personalizada debe crearse en Páginas y luego seleccionarse aquí."
 Entity,Entidad
 Entity deleted,Entidad eliminada
+Entity Page,Página entidad
 Entity saved,Entidad grabada
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
@@ -400,6 +399,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Elemento
 Item name,Nombre del elemento
 Items:,Elementos:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
 key,clave
 Label,Etiqueta
@@ -498,6 +498,7 @@ Navigation menu tool tip part 2,dejando solo una URL relativa que comienza con u
 New entity,Nueva entidad
 New group,Grupo nuevo
 New language added,Nuevo idioma añadido
+New page,Nueva página
 New password,Nueva contraseña
 New relationship type,Nuevo tipo de relación
 New relationships group,Nuevo grupo de relaciones
@@ -529,6 +530,7 @@ No text match description,Puedes escribir algo diferente en la barra de búsqued
 No type,Sin tipo
 No value,Sin valor
 No Value,Sin valor
+"No, cancel","No, cancelar"
 Non-labeled,Non-labeled
 Normal view,Vista normal
 Not Found,No encontrado
@@ -558,10 +560,9 @@ Or enter this secret key into your Authenticator app,O ingresa este contraseña 
 Order,Orden
 Other,Otro
 other,Otro
+Other users will be affected by this action!,Otros usuarios pueden resultar afectados por ésta acción!
 out of,fuera de
 Page,Página
-Page Javascript,Página JavaScript
-Page name,Nombre de la página
 Pages,Páginas
 Password,Contraseña
 Password + 2fa,Password + 2fa
@@ -668,6 +669,7 @@ Route,Ruta
 Sample,Ejemplo
 Satellite,Satélite
 Save,Guardar
+Save & Preview,Guardar & Previsualizar
 Save and go to next,Guardar e Ir al siguiente
 Save changes,Guardar cambios
 Save document,Guardar documento
@@ -914,6 +916,7 @@ View entities,Ver entidades
 View in library,Ver en la colección
 View less,Ver menos
 View more,Ver más
+View page,Ver página
 View suggestions,Ver sugerencias
 WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
@@ -927,6 +930,8 @@ With great power comes great responsibility!,"¡Con un gran poder, viene una gra
 x less,menos
 x more,más
 Year,Año
+Yes,Sí
+You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,Puedes mejorar el modelo proporcionando más documentos con etiquetas.

@@ -2,34 +2,38 @@
 
 exports[`Pages Routes (to be updated) DELETE should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "sharedId": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "sharedId": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;
 
 exports[`Pages Routes (to be updated) GET /api/pages should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "sharedId": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
+  "properties": Object {
+    "query": Object {
+      "properties": Object {
+        "sharedId": Object {
+          "type": "string",
+        },
+      },
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "query",
+  ],
   "type": "object",
 }
 `;

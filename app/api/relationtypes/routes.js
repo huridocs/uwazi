@@ -1,5 +1,5 @@
-import Joi from 'joi';
 import relationtypes from 'api/relationtypes/relationtypes';
+import { ObjectIdAsString } from 'api/utils/ajvSchemas';
 import { validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 
@@ -7,32 +7,41 @@ export default app => {
   app.post(
     '/api/relationtypes',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId(),
-          __v: Joi.number(),
-          name: Joi.string(),
-          properties: Joi.array().items(
-            Joi.object().keys({
-              _id: Joi.string(),
-              __v: Joi.number(),
-              localID: Joi.string(),
-              id: Joi.string(),
-              label: Joi.string(),
-              type: Joi.string(),
-              content: Joi.string(),
-              name: Joi.string(),
-              filter: Joi.boolean(),
-              sortable: Joi.boolean(),
-              showInCard: Joi.boolean(),
-              prioritySorting: Joi.boolean(),
-              nestedProperties: Joi.array(),
-            })
-          ),
-        })
-        .required()
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'object',
+          properties: {
+            _id: ObjectIdAsString,
+            __v: { type: 'number' },
+            name: { type: 'string' },
+            properties: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  _id: { type: 'string' },
+                  __v: { type: 'number' },
+                  localID: { type: 'string' },
+                  id: { type: 'string' },
+                  label: { type: 'string' },
+                  type: { type: 'string' },
+                  content: { type: 'string' },
+                  name: { type: 'string' },
+                  filter: { type: 'boolean' },
+                  sortable: { type: 'boolean' },
+                  showInCard: { type: 'boolean' },
+                  prioritySorting: { type: 'boolean' },
+                  nestedProperties: { type: 'array' },
+                },
+              },
+            },
+          },
+        },
+      },
+      required: ['body'],
+    }),
     (req, res, next) => {
       relationtypes
         .save(req.body)
@@ -43,12 +52,18 @@ export default app => {
 
   app.get(
     '/api/relationtypes',
-    validation.validateRequest(
-      Joi.object().keys({
-        _id: Joi.objectId(),
-      }),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: ObjectIdAsString,
+          },
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       if (req.query._id) {
         return relationtypes
@@ -66,14 +81,19 @@ export default app => {
   app.delete(
     '/api/relationtypes',
     needsAuthorization(),
-    validation.validateRequest(
-      Joi.object()
-        .keys({
-          _id: Joi.objectId().required(),
-        })
-        .required(),
-      'query'
-    ),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        query: {
+          type: 'object',
+          properties: {
+            _id: ObjectIdAsString,
+          },
+          required: ['_id'],
+        },
+      },
+      required: ['query'],
+    }),
     (req, res, next) => {
       relationtypes
         .delete(req.query._id)

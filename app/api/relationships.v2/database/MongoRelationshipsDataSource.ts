@@ -92,7 +92,7 @@ export class MongoRelationshipsDataSource
 
   getByQuery(query: MatchQueryNode, language: string) {
     const pipeline = compileQuery(query, language);
-    const cursor = this.db.collection('entities').aggregate<TraversalResult>(pipeline);
+    const cursor = this.getCollection('entities').aggregate<TraversalResult>(pipeline);
     return new MongoResultSet(cursor, RelationshipMappers.toGraphQueryResult);
   }
 

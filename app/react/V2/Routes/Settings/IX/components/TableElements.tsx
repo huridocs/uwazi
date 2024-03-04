@@ -54,11 +54,11 @@ const getIcon = (color: Color) => {
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 const TitleHeader = () => <Translate>Document</Translate>;
 const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
 const AcceptHeader = () => <Translate>Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
@@ -90,7 +90,7 @@ const AcceptButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   return (
-    <div className="flex gap-1 justify-center items-center">
+    <div className="flex items-center justify-center gap-1">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
@@ -176,7 +176,7 @@ const extractorsTableColumns = [
     header: ActionHeader,
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'w-0 text-center' },
+    meta: { headerClassName: 'sr-only invisible bg-gray-50' },
   }),
 ];
 
@@ -220,7 +220,7 @@ const suggestionsTableColumnsBuilder: Function = (
       header: ActionHeader,
       cell: OpenPDFButton,
       meta: {
-        headerClassName: 'w-2/12 text-center',
+        headerClassName: 'sr-only invisible bg-gray-50',
         contentClassName: 'text-center',
         action: openPdfSidepanel,
       },

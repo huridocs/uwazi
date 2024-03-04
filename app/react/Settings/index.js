@@ -1,5 +1,4 @@
 /* eslint-disable import/no-named-as-default */
-import Customisation from './components/Customisation';
 import EntityTypesList from './components/EntityTypesList';
 import FiltersForm from './components/FiltersForm';
 import { RelationTypesList } from './components/RelationTypesList';
@@ -19,6 +18,5 @@ export {
   RelationTypesList,
   ThesauriList,
   FiltersForm,
-  Customisation,
   Dashboard,
 };

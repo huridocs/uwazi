@@ -27,9 +27,26 @@ type ILink = Omit<SettingsLinkSchema, 'sublinks'> & {
   title: string;
   sublinks: [ISublink];
 };
-export enum ItemTypes {
+
+type Page = {
+  _id?: string;
+  title: string;
+  language?: string;
+  sharedId?: string;
+  creationDate?: number;
+  metadata?: {
+    _id?: string;
+    content?: string;
+    script?: string;
+  };
+  user?: string;
+  entityView?: boolean;
+};
+
+enum ItemTypes {
   BOX = 'box',
   ROW = 'row',
 }
 
-export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue };
+export { ItemTypes };
+export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue, Page };

@@ -1,9 +1,7 @@
 Key,English
 % of sentences above threshold,% of sentences above threshold
-(view page),(view page)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
 2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
@@ -77,9 +75,9 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this page?,Are you sure you want to delete this page?
 Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
 Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
@@ -96,6 +94,7 @@ Back to search,Back to search
 Back to thesauri,Back to thesauri
 Back to thesaurus,Back to thesaurus
 Bad Request,Bad Request
+Basic,Basic
 Body,Body
 Browse files to upload,Browse files to upload
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -154,7 +153,6 @@ Confirm deletion,Confirm deletion
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of page:,Confirm deletion of page:
 Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
@@ -302,6 +300,7 @@ Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here."
 Entity,Entity
 Entity deleted,Entity deleted
+Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,Entity types
 Entity updated,Entity updated
@@ -404,6 +403,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,Items:
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,key
 Label,Label
@@ -502,6 +502,7 @@ Navigation menu tool tip part 2,leaving only a relative URL starting with a slas
 New entity,New entity
 New group,New group
 New language added,New language added
+New page,New page
 New password,New password
 New relationship type,New relationship type
 New relationships group,New relationships group
@@ -533,6 +534,7 @@ No text match description,You can type something different in the search box to 
 No type,No type
 No value,No value
 No Value,No Value
+"No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,Normal view
 Not Found,Not Found
@@ -562,10 +564,9 @@ Or enter this secret key into your Authenticator app,Or enter this secret key in
 Order,Order
 Other,Other
 other,other
+Other users will be affected by this action!,Other users will be affected by this action!
 out of,out of
 Page,Page
-Page Javascript,Page Javascript
-Page name,Page name
 Pages,Pages
 Password,Password
 Password + 2fa,Password + 2fa
@@ -672,6 +673,7 @@ Route,Route
 Sample,Sample
 Satellite,Satellite
 Save,Save
+Save & Preview,Save & Preview
 Save and go to next,Save and go to next
 Save changes,Save changes
 Save document,Save document
@@ -919,6 +921,7 @@ View entities,View entities
 View in library,View in library
 View less,View less
 View more,View more
+View page,View page
 View suggestions,View suggestions
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
@@ -932,6 +935,8 @@ With great power comes great responsibility!,With great power comes great respon
 x less,less
 x more,more
 Year,Year
+Yes,Yes
+You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.
