@@ -76,7 +76,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
 Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
@@ -104,7 +103,6 @@ Can see,မြင်နိုင်သည်
 Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
 Canceling...,Canceling...
-Cannot delete relationship type:,Cannot delete relationship type:
 Cannot delete template:,Cannot delete template:
 Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,ကက်ပ်ချာ
@@ -152,7 +150,6 @@ Confirm deletion,ဖျက်ရန် အတည်ပြုပါ
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
@@ -202,7 +199,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Currently connections only need a title.,လက်ရှိတွင် ချိတ်ဆက်မှုအနည်းငယ်သာ လိုအပ်သည်။
 Custom component error,စိတ်ကြိုက် အစိတ်အပိုင်း ချွတ်ယွင်းချက်
 Custom CSS,စိတ်ကြိုက် CSS
 Custom Favicon,Custom Favicon
@@ -819,7 +815,6 @@ This property will appear in the library cards as part of the basic info.,ဤထ
 This property will be inherited from the related entities and shown as metadata of this type of entities.,ဤထူးခြားချက်ကို သက်ဆိုင်ရာ ဖြည့်သွင်းချက်များမှ လက်ခံရယူပြီး ဤဖြည့်သွင်းချက် အမျိုးအစား၏ မီတာဒေတာအဖြစ် ပြသပါမည်။
 This property will be shown using all the width available.,ဤထူးခြားချက်ကို ရရှိနိုင်သော အကျယ်အားလုံးသုံးပြီး ပြသပါမည်။
 This property will be shown without the label.,ဤထူးခြားချက်ကို တံဆိပ်မှတ်သားမှုမပါဘဲ ပြသပါမည်။
-This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,ဤပုံစံပြားကို ဖြည့်သွင်းချက်အသစ်များအတွက် နဂိုမူလအဖြစ် သုံးပါမည်။

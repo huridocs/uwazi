@@ -10,7 +10,13 @@ const newKeys: Translation[] = [
   { key: 'Already exists' },
 ];
 
-const deletedKeys: Translation[] = [];
+const deletedKeys: Translation[] = [
+  { key: 'Are you sure you want to delete this relationship type?' },
+  { key: 'Cannot delete relationship type:' },
+  { key: 'Confirm deletion of relationship type:' },
+  { key: 'Currently connections only need a title.' },
+  { key: 'This relationship type is being used and cannot be deleted.' },
+];
 
 export default {
   delta: 161,
