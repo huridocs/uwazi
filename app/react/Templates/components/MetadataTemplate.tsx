@@ -52,6 +52,7 @@ interface MetadataTemplateProps {
   syncedTemplate?: boolean;
   _id?: string;
   mainContext: { confirm: Function };
+  updateTemplatesAtom: Function;
 }
 
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
@@ -70,6 +71,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     defaultColor: null,
     properties: [],
     mainContext: { confirm: (_props: {}) => {} },
+    updateTemplatesAtom: (_templates: any) => {},
   };
 
   confirmation = {
