@@ -30,7 +30,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
         <Card title={<Translate>Relationship Type</Translate>}>
           <div className="flex flex-col gap-4">
             <InputField
-              id="link-title"
+              id="relationship-type-name"
               data-testid="relationship-type-form-name"
               label={<Translate>Name</Translate>}
               {...register('name', {

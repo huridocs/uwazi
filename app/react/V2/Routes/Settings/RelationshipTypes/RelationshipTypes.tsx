@@ -84,7 +84,7 @@ const RelationshipTypes = () => {
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>Failed to save</Translate>,
+        text: <Translate>An error occurred</Translate>,
         details: error.error,
       });
       setIsSidepanelOpen(false);
@@ -104,7 +104,7 @@ const RelationshipTypes = () => {
     } catch (error) {
       setNotifications({
         type: 'error',
-        text: <Translate>Failed to save</Translate>,
+        text: <Translate>An error occurred</Translate>,
         details: error.error,
       });
       setShowConfirmationModal(false);
@@ -135,9 +135,9 @@ const RelationshipTypes = () => {
             <div className="flex items-center gap-2">
               <Button
                 type="button"
-                onClick={deleteSelected}
+                onClick={() => setShowConfirmationModal(true)}
                 color="error"
-                data-testid="relationship-types-delete-link"
+                data-testid="relationship-types-delete"
               >
                 <Translate>Delete</Translate>
               </Button>
@@ -148,7 +148,7 @@ const RelationshipTypes = () => {
           {selectedItems.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Button type="button" onClick={add} data-testid="relationship-types-add-link">
+                <Button type="button" onClick={add} data-testid="relationship-types-add">
                   <Translate>Add relationship type</Translate>
                 </Button>
               </div>
@@ -178,7 +178,7 @@ const RelationshipTypes = () => {
         <ConfirmationModal
           size="lg"
           header={<Translate>Delete</Translate>}
-          warningText={<Translate>Do you want to delete?</Translate>}
+          warningText={<Translate>Do you want to delete the following items?</Translate>}
           body={
             <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
               {selectedItems.map(item => (
