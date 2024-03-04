@@ -75,7 +75,7 @@ const importThesaurus = async (
     thesauri: JSON.stringify(thesaurus),
   };
 
-  return await httpRequest('thesauris', fields, headers, file);
+  return (await httpRequest('thesauris', fields, headers, file)) as ThesaurusSchema;
 };
 
 export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };
