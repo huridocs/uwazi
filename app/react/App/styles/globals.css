@@ -2359,6 +2359,26 @@ input:checked + .toggle-bg {
   min-width: 20px;
 }
 
+.min-w-\[24rem\] {
+  min-width: 24rem;
+}
+
+.min-w-\[28rem\] {
+  min-width: 28rem;
+}
+
+.min-w-\[32rem\] {
+  min-width: 32rem;
+}
+
+.min-w-\[36rem\] {
+  min-width: 36rem;
+}
+
+.min-w-\[40rem\] {
+  min-width: 40rem;
+}
+
 .min-w-full {
   min-width: 100%;
 }
