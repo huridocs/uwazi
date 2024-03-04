@@ -8,6 +8,7 @@ import {
   Table as TableDef,
   SortingState,
   Header,
+  PaginationState,
 } from '@tanstack/react-table';
 import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { t } from 'app/I18N';
@@ -25,6 +26,11 @@ interface TableProps<T> {
   subRowsKey?: string;
   draggableRows?: boolean;
   onChange?: (rows: T[]) => void;
+  pagination?: {
+    state: PaginationState;
+    setState: Dispatch<SetStateAction<PaginationState>>;
+    autoResetPageIndex?: boolean;
+  };
 }
 
 const IndeterminateCheckbox = ({

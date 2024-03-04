@@ -5,8 +5,9 @@ import {
   useReactTable,
   SortingState,
   getExpandedRowModel,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
-import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
+import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -31,6 +32,7 @@ const Table = <T,>({
   subRowsKey,
   draggableRows = false,
   onChange = () => {},
+  pagination,
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
   const [internalSorting, setInternalSortingSorting] = useState<SortingState>(
@@ -78,6 +80,7 @@ const Table = <T,>({
     state: {
       sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
+      ...(pagination?.state && { pagination: pagination?.state }),
     },
     enableRowSelection: (row: any) =>
       Boolean(enableSelection && !row.original?.disableRowSelection),
@@ -93,6 +96,11 @@ const Table = <T,>({
       }
       return [];
     },
+    ...(pagination?.setState && {
+      getPaginationRowModel: getPaginationRowModel(),
+      onPaginationChange: pagination?.setState,
+    }),
+    autoResetPageIndex: pagination?.autoResetPageIndex,
   });
 
   useEffect(() => {
@@ -119,7 +127,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
+    <div className="overflow-x-auto relative rounded-md border border-gray-50 shadow-sm">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
@@ -146,6 +154,68 @@ const Table = <T,>({
         />
       </table>
       {footer && <div className="p-4">{footer}</div>}
+      {pagination && (
+        <div className="flex gap-2 items-center">
+          <button
+            className="p-1 rounded border"
+            onClick={() => table.firstPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            {'<<'}
+          </button>
+          <button
+            className="p-1 rounded border"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            {'<'}
+          </button>
+          <button
+            className="p-1 rounded border"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            {'>'}
+          </button>
+          <button
+            className="p-1 rounded border"
+            onClick={() => table.lastPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            {'>>'}
+          </button>
+          <span className="flex gap-1 items-center">
+            <div>Page</div>
+            <strong>
+              {table.getState().pagination.pageIndex + 1} of {table.getPageCount().toLocaleString()}
+            </strong>
+          </span>
+          <span className="flex gap-1 items-center">
+            | Go to page:
+            <input
+              type="number"
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                table.setPageIndex(page);
+              }}
+              className="p-1 w-16 rounded border"
+            />
+          </span>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={e => {
+              table.setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 };
