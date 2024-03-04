@@ -137,9 +137,9 @@ const EditThesauri = () => {
   };
 
   const importThesauriAndNotify = async (file: File) => {
-    const thesaurus = sanitizeThesaurusValues(getValues(), thesaurusValues);
+    const sanitizedThesaurus = sanitizeThesaurusValues(getValues(), thesaurusValues);
     try {
-      await importThesaurus(thesaurus, file);
+      await importThesaurus(sanitizedThesaurus, file);
       setNotifications({
         type: 'success',
         text: <Translate>Data imported</Translate>,
