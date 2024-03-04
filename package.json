@@ -171,7 +171,7 @@
     "monaco-editor": "^0.46.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "mongodb": "5.8.1",
-    "mongoose": "7.5.0",
+    "mongoose": "8.0.4",
     "multer": "^1.4.5-lts.1",
     "node-uuid": "^1.4.7",
     "nodemailer": "^6.9.9",
