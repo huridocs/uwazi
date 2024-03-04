@@ -39,6 +39,7 @@ const NewThesauri = () => {
 
   const {
     watch,
+    setError,
     register,
     setValue,
     getValues,
@@ -147,8 +148,13 @@ const NewThesauri = () => {
 
   const importThesauriAndNotify = async (file: File) => {
     const thesaurus = sanitizeThesaurusValues(getValues(), valueChanges);
+    if (!thesaurus.name || thesaurus.name === '') {
+      setError('name', { type: 'required' });
+      return;
+    }
     try {
-      await importThesaurus(thesaurus, file);
+      const importedThesauri: ThesaurusSchema = await importThesaurus(thesaurus, file);
+      navigate(`/settings/thesauri/edit/${importedThesauri._id}`);
       setNotifications({
         type: 'success',
         text: <Translate>Data imported</Translate>,

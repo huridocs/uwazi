@@ -63,7 +63,10 @@ function sanitizeThesauri(thesaurus: ThesaurusSchema) {
   return sanitizedThesauri;
 }
 
-const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
+const importThesaurus = async (
+  thesaurus: ThesaurusSchema,
+  file: File
+): Promise<ThesaurusSchema> => {
   const headers = {
     Accept: 'application/json',
     'X-Requested-With': 'XMLHttpRequest',
@@ -72,7 +75,7 @@ const importThesaurus = async (thesaurus: ThesaurusSchema, file: File) => {
     thesauri: JSON.stringify(thesaurus),
   };
 
-  await httpRequest('thesauris', fields, headers, file);
+  return await httpRequest('thesauris', fields, headers, file);
 };
 
 export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };

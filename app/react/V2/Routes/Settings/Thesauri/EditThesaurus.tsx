@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
@@ -38,10 +38,12 @@ const EditThesauri = () => {
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
     []
   );
-  const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>(
-    thesaurus?.values || []
-  );
+  const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>([]);
   const setNotifications = useSetRecoilState(notificationAtom);
+
+  useEffect(() => {
+    setThesaurusValues(thesaurus?.values || []);
+  }, [thesaurus]);
 
   const {
     watch,
@@ -147,6 +149,8 @@ const EditThesauri = () => {
         type: 'error',
         text: <Translate>Error adding thesauri.</Translate>,
       });
+    } finally {
+      revalidator.revalidate();
     }
   };
 
