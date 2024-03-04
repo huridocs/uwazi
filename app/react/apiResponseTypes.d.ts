@@ -80,6 +80,7 @@ export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, 
   templates: Template[];
   disableRowSelection: boolean;
 }
+
 export interface ClientRelationshipType {
   _id: string;
   name: string;
