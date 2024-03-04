@@ -30,7 +30,7 @@ const PreviewCell = ({ cell }: CellContext<FileType, any>) => {
     <div className="flex justify-center items-center">
       <FileIcon
         mimetype={mimetype}
-        filename={filename}
+        filename={filename!}
         altText={originalname}
         className={/^image\//.test(mimetype) ? 'w-14 h-14' : 'w-10 h-10'}
       />
