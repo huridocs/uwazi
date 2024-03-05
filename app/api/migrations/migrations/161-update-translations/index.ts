@@ -1,30 +1,25 @@
+/* eslint-disable import/no-default-export */
 import { Db } from 'mongodb';
 
-const newKeys = [
-  { key: 'New page' },
-  { key: 'Basic' },
-  { key: 'View page' },
-  { key: 'Javascript' },
-  { key: 'Save & Preview' },
-  { key: 'Entity Page' },
-  { key: 'Yes' },
-  { key: 'Are you sure?' },
-  { key: 'No, cancel' },
-  { key: 'Other users will be affected by this action!' },
-  { key: 'You are about to delete a page' },
+interface Translation {
+  key: string;
+}
+
+const newKeys: Translation[] = [
+  { key: 'Do you want to delete the following items?' },
+  { key: 'Already exists' },
 ];
 
-const deletedKeys = [
-  { key: 'Confirm deletion of page:' },
-  { key: 'Page Javascript' },
-  { key: 'Page name' },
-  { key: 'Are you sure you want to delete this page?' },
-  { key: '(view page)' },
-  { key: '// Javascript - With great power comes great responsibility!' },
+const deletedKeys: Translation[] = [
+  { key: 'Are you sure you want to delete this relationship type?' },
+  { key: 'Cannot delete relationship type:' },
+  { key: 'Confirm deletion of relationship type:' },
+  { key: 'Currently connections only need a title.' },
+  { key: 'This relationship type is being used and cannot be deleted.' },
 ];
 
 export default {
-  delta: 160,
+  delta: 161,
 
   reindex: false,
 

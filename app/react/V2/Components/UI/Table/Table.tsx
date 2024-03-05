@@ -56,7 +56,7 @@ const Table = <T,>({
               header: CheckBoxHeader,
               cell: CheckBoxCell,
             },
-            className: 'w-0',
+            meta: { headerClassName: 'w-0' },
           },
         ],
         [],
@@ -79,7 +79,8 @@ const Table = <T,>({
       sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
-    enableRowSelection: enableSelection,
+    enableRowSelection: (row: any) =>
+      Boolean(enableSelection && !row.original?.disableRowSelection),
     enableSubRowSelection: false,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: sortingFunction,

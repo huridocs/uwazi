@@ -23,7 +23,7 @@ describe('migration update translations of settings', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(160);
+    expect(migration.delta).toBe(161);
   });
 
   it('should delete old translations', async () => {
@@ -50,7 +50,7 @@ describe('migration update translations of settings', () => {
       .find({ key: { $in: newKeys.map(k => k.key) } })
       .toArray();
 
-    expect(translations.length).toBe(22);
+    expect(translations.length).toBe(4);
   });
 
   it('should be idempotent (do not throw an error on multiple runs)', async () => {

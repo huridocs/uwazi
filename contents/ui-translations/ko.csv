@@ -57,11 +57,11 @@ added to hub.,added to hub.
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
-Advanced,Advanced
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
 Allow captcha bypass,Allow captcha bypass
+Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
@@ -76,7 +76,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
 Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
@@ -104,7 +103,6 @@ Can see,열람 가능
 Can view,열람 가능
 Cancel,취소
 Canceling...,Canceling...
-Cannot delete relationship type:,Cannot delete relationship type:
 Cannot delete template:,Cannot delete template:
 Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,보안 문자
@@ -133,7 +131,6 @@ Click,Click
 Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
-Code,Code
 Collaborator,협업자
 Collapse all,Collapse all
 Collection,컬렉션
@@ -153,7 +150,6 @@ Confirm deletion,삭제 확인
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
 Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
@@ -203,7 +199,6 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Currently connections only need a title.,커넥션에 제목이 필요합니다.
 Custom component error,사용자 맞춤 구성 오류
 Custom CSS,사용자 맞춤 CSS
 Custom Favicon,Custom Favicon
@@ -250,6 +245,7 @@ Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,페이지에서 엔티티 뷰 표시
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,문서
 Document and entity types,문서 및 엔티티 유형
 Document contents,문서 내용
@@ -403,6 +399,7 @@ It could also very easily break the app. Only write code here if you know exactl
 Item,Item
 Item name,Item name
 Items:,아이템
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Korean
 Label,라벨
@@ -818,7 +815,6 @@ This property will appear in the library cards as part of the basic info.,이 �
 This property will be inherited from the related entities and shown as metadata of this type of entities.,관련 엔티티에서 속성을 이어받아 현재 엔티티의 메타데이터에 포함시킵니다.
 This property will be shown using all the width available.,디스플레이 가능한 너비 내에서 이 속성을 표시합니다.
 This property will be shown without the label.,이 속성은 라벨 없이 표시됩니다.
-This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,이 템플릿을 새 엔티티의 기본값으로 사용합니다.
