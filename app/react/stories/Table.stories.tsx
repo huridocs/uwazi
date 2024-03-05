@@ -5,9 +5,11 @@ import {
   StoryComponent,
   type SampleSchema,
   CheckboxesTableComponent,
+  PaginationTableComponent,
   basicColumns,
   withActionsColumns,
 } from './table/TableComponents';
+import { BasicData, LongData } from './table/fixtures';
 
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
@@ -23,41 +25,22 @@ const Primary: Story = {
 const Checkboxes: Story = {
   render: CheckboxesTableComponent,
 };
+
+const Pagination: Story = {
+  render: args => <PaginationTableComponent {...args} />,
+};
+
 const Basic: Story = {
   ...Primary,
   args: {
     title: 'Table name',
     footer: <span className="text-sm italic text-gray-500">* Table footer</span>,
     columns: basicColumns,
-    data: [
-      { title: 'Entity 2', created: 2, description: 'Short text' },
-      {
-        title: 'Entity 1',
-        created: 1,
-        description:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel efficitur quam. Donec feugiat at libero at rutrum.',
-        children: [
-          {
-            title: 'Entity a',
-            created: 4,
-            description: 'Donec feugiat at libero at rutrum.',
-          },
-          {
-            title: 'Entity b',
-            created: 5,
-            description: 'Phasellus vel efficitur quam.',
-          },
-        ],
-      },
-      {
-        title: 'Entity 3',
-        created: 3,
-        description: 'Morbi congue et justo vitae congue. Vivamus porttitor et leo vitae efficitur',
-      },
-    ],
     setSorting: undefined,
+    data: BasicData,
   },
 };
+
 const WithInitialState: Story = {
   ...Primary,
   args: {
@@ -65,6 +48,7 @@ const WithInitialState: Story = {
     initialState: { sorting: [{ id: 'description', desc: true }] },
   },
 };
+
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -89,6 +73,7 @@ const WithDnD: Story = {
     showUpdates: true,
   },
 };
+
 const NestedDnD: Story = {
   ...Primary,
   args: {
@@ -99,6 +84,14 @@ const NestedDnD: Story = {
   },
 };
 
-export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD, NestedDnD };
+const WithPagination: Story = {
+  ...Pagination,
+  args: {
+    ...Basic.args,
+    data: LongData,
+  },
+};
+
+export { Basic, WithActions, WithCheckboxes, WithInitialState, WithDnD, NestedDnD, WithPagination };
 
 export default meta;

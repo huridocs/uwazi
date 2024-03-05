@@ -11,6 +11,7 @@ import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
+import { TablePagination } from './TablePagination';
 
 const applyForSelection = (
   withSelection: any,
@@ -153,69 +154,10 @@ const Table = <T,>({
           onChange={handleOnChange}
         />
       </table>
-      {footer && <div className="p-4">{footer}</div>}
-      {pagination && (
-        <div className="flex gap-2 items-center">
-          <button
-            className="p-1 rounded border"
-            onClick={() => table.firstPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<<'}
-          </button>
-          <button
-            className="p-1 rounded border"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            {'<'}
-          </button>
-          <button
-            className="p-1 rounded border"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>'}
-          </button>
-          <button
-            className="p-1 rounded border"
-            onClick={() => table.lastPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            {'>>'}
-          </button>
-          <span className="flex gap-1 items-center">
-            <div>Page</div>
-            <strong>
-              {table.getState().pagination.pageIndex + 1} of {table.getPageCount().toLocaleString()}
-            </strong>
-          </span>
-          <span className="flex gap-1 items-center">
-            | Go to page:
-            <input
-              type="number"
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={e => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                table.setPageIndex(page);
-              }}
-              className="p-1 w-16 rounded border"
-            />
-          </span>
-          <select
-            value={table.getState().pagination.pageSize}
-            onChange={e => {
-              table.setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map(pageSize => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+
+      <div className="flex gap-4 items-center p-4">
+        <TablePagination pagination={pagination} table={table} /> {footer}
+      </div>
     </div>
   );
 };
