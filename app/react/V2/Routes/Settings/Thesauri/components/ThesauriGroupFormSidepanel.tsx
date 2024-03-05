@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
 
@@ -22,15 +22,31 @@ const ThesauriGroupFormSidepanel = ({
   showSidepanel,
   setShowSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
+  const [typing, setTyping] = useState('');
+
   const {
     reset,
+    control,
     setValue,
     register,
+    getValues,
     handleSubmit,
     formState: { errors },
   } = useForm<ThesaurusValueSchema & { groupId: string }>({
     mode: 'onSubmit',
   });
+
+  const { append, fields } = useFieldArray({ control, name: 'values' });
+
+  useEffect(() => {
+    const values = getValues().values;
+    if (!value) {
+      const hasEmpty = values?.find(nv => nv.label === '');
+      if (!hasEmpty) {
+        append({ label: '' });
+      }
+    }
+  }, [typing]);
 
   useEffect(() => {
     if (value) {
@@ -43,12 +59,36 @@ const ThesauriGroupFormSidepanel = ({
   const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
     submit({ label: tValue.label, id: tValue.id, values: filteredValues });
+    setTyping('');
+    reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
   };
 
   const closeSidepanel = () => {
+    setTyping('');
     reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
     setShowSidepanel(false);
+    closePanel();
   };
+
+  const renderItem = () =>
+    fields.map((localValue, index) => (
+      <div className="mt-2">
+        <Card title={<Translate>Item</Translate>} key={localValue.id}>
+          <div className="flex flex-col gap-4">
+            <InputField
+              id="item-name"
+              data-testid="thesauri-form-item-name"
+              label={<Translate>Title</Translate>}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...register(`values.${index}.label`)}
+              onBlur={e => setTyping(e.target.value)}
+              // onBlur={determineIfNeedToAddNewItem}
+              // hasErrors={!!errors.label}
+            />
+          </div>
+        </Card>
+      </div>
+    ));
 
   return (
     <Sidepanel
@@ -96,6 +136,7 @@ const ThesauriGroupFormSidepanel = ({
                 />
               </div>
             </Card>
+            {!value && renderItem()}
           </form>
         </Sidepanel.Body>
         <Sidepanel.Footer className="bottom-0">
