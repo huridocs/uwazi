@@ -25,15 +25,6 @@ const fixtures: Fixture = {
   ],
 };
 
-const noDefaultTemplate = {
-  entities,
-  templates: [
-    { _id: template1, name: 't1' },
-    { _id: template2, name: 't2' },
-    { _id: template3, name: 't3' },
-  ],
-};
-
 const correctFixture = {
   entities: [
     { sharedId: 's1', title: 'entity1', template: template1 },
@@ -47,4 +38,4 @@ const correctFixture = {
   ],
 };
 
-export { fixtures, noDefaultTemplate, correctFixture, template1, template2, template3 };
+export { fixtures, correctFixture, template1, template2, template3 };

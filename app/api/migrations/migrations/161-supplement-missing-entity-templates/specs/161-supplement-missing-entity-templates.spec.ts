@@ -2,18 +2,13 @@ import { Db, ObjectId } from 'mongodb';
 
 import testingDB from 'api/utils/testing_db';
 import migration from '../index';
-import { Entity, Fixture } from '../types';
-import {
-  fixtures,
-  noDefaultTemplate,
-  correctFixture,
-  template1,
-  template2,
-  template3,
-} from './fixtures';
+import { Entity, Fixture, Template } from '../types';
+import { fixtures, correctFixture, template1, template2, template3 } from './fixtures';
 
 let db: Db | null;
 let entityTemplatesInDB: (ObjectId | undefined)[] = [];
+let newTemplate: Template | null;
+let newTemplateId: ObjectId | null;
 
 const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);
@@ -23,6 +18,10 @@ const initTest = async (fixture: Fixture) => {
   entityTemplatesInDB = (await db.collection<Entity>('entities').find({}).toArray()).map(
     e => e.template
   );
+  newTemplate = await db!
+    .collection<Template>('templates')
+    .findOne({ name: '__recovered_entities__' });
+  newTemplateId = newTemplate?._id || null;
 };
 
 beforeAll(async () => {
@@ -35,43 +34,17 @@ afterAll(async () => {
 });
 
 describe('migration test', () => {
-  beforeAll(async () => {
-    await initTest(fixtures);
-  });
-
   it('should have a delta number', () => {
     expect(migration.delta).toBe(161);
-  });
-
-  describe('on collections without a default template', () => {
-    beforeAll(async () => {
-      await initTest(noDefaultTemplate);
-    });
-
-    it('should not fail', async () => {
-      await expect(migration.up(db!)).resolves.not.toThrow();
-    });
-
-    it('should not change the entities', async () => {
-      expect(entityTemplatesInDB).toEqual([
-        template1,
-        template2,
-        undefined,
-        template2,
-        null,
-        template3,
-        null,
-      ]);
-    });
-
-    it('should not signal reindex', () => {
-      expect(migration.reindex).toBe(false);
-    });
   });
 
   describe('on collections where no entity template is missing', () => {
     beforeAll(async () => {
       await initTest(correctFixture);
+    });
+
+    it('should not add the new template', async () => {
+      expect(newTemplate).toBe(null);
     });
 
     it('should not change the entities', async () => {
@@ -88,15 +61,50 @@ describe('migration test', () => {
       await initTest(fixtures);
     });
 
-    it('should add the default template to the missing entities', async () => {
+    it('should add the new template', async () => {
+      expect(newTemplate).toEqual({
+        _id: newTemplateId,
+        name: '__recovered_entities__',
+        commonProperties: [
+          {
+            _id: expect.any(ObjectId),
+            label: 'Title',
+            name: 'title',
+            isCommonProperty: true,
+            type: 'text',
+            prioritySorting: false,
+          },
+          {
+            _id: expect.any(ObjectId),
+            label: 'Date added',
+            name: 'creationDate',
+            isCommonProperty: true,
+            type: 'date',
+            prioritySorting: false,
+          },
+          {
+            _id: expect.any(ObjectId),
+            label: 'Date modified',
+            name: 'editDate',
+            isCommonProperty: true,
+            type: 'date',
+            prioritySorting: false,
+          },
+        ],
+        properties: [],
+        color: '##ff0000',
+      });
+    });
+
+    it('should add the new template to the missing entities', async () => {
       expect(entityTemplatesInDB).toEqual([
         template1,
         template2,
+        newTemplateId,
         template2,
-        template2,
-        template2,
+        newTemplateId,
         template3,
-        template2,
+        newTemplateId,
       ]);
     });
 
