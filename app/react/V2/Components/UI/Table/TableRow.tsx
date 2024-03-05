@@ -31,7 +31,7 @@ const TableRow = <T,>({
 
   return (
     <RowWrapper
-      className={`${bg} border-b h-100`}
+      className={`${bg} border-b`}
       draggableRow={draggableRow}
       row={row}
       dndContext={dndContext}
