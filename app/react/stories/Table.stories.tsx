@@ -1,6 +1,8 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import { Meta, StoryObj } from '@storybook/react';
 import { Table } from 'V2/Components/UI';
+import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import {
   StoryComponent,
   type SampleSchema,
@@ -27,7 +29,11 @@ const Checkboxes: Story = {
 };
 
 const Pagination: Story = {
-  render: args => <PaginationTableComponent {...args} />,
+  render: args => (
+    <Provider store={createStore()}>
+      <PaginationTableComponent {...args} />
+    </Provider>
+  ),
 };
 
 const Basic: Story = {
