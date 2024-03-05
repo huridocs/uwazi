@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 import React, { Dispatch, SetStateAction } from 'react';
 import { PaginationState, Table } from '@tanstack/react-table';
 
@@ -11,12 +12,13 @@ type TablePaginationProps = {
 };
 
 const TablePagination = ({ pagination, table }: TablePaginationProps) => {
-  const a = '';
+  const lastPage = table.getPageCount() - 1;
+
   return pagination ? (
     <div className="flex gap-2 items-center">
       <button
         className="p-1 rounded border"
-        onClick={() => table.firstPage()}
+        onClick={() => table.setPageIndex(0)}
         disabled={!table.getCanPreviousPage()}
       >
         {'<<'}
@@ -37,7 +39,7 @@ const TablePagination = ({ pagination, table }: TablePaginationProps) => {
       </button>
       <button
         className="p-1 rounded border"
-        onClick={() => table.lastPage()}
+        onClick={() => table.setPageIndex(lastPage)}
         disabled={!table.getCanNextPage()}
       >
         {'>>'}
