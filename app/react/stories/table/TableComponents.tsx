@@ -138,7 +138,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 const PaginationTableComponent = (args: TableProps<SampleSchema>) => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 2,
   });
 
   return (
