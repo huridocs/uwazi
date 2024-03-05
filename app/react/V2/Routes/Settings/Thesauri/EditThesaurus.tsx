@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
@@ -6,8 +6,8 @@ import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/TableComponents';
-import { InputField } from 'app/V2/Components/Forms';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
+import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import {
   LocalThesaurusValueSchema,
@@ -20,6 +20,7 @@ import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ImportButton } from './components/ImportButton';
+import { isEqual } from 'lodash';
 
 const LabelHeader = () => <Translate>Label</Translate>;
 
@@ -33,6 +34,7 @@ const EditThesauri = () => {
   const thesaurus = (useLoaderData() as ThesaurusSchema[])[0];
   const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
+  const [showConfirmNavigationModal, setShowConfirmNavigationModal] = useState(false);
   const [showThesauriValueFormSidepanel, setShowThesauriValueFormSidepanel] = useState(false);
   const [showThesauriGroupFormSidepanel, setShowThesauriGroupFormSidepanel] = useState(false);
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
@@ -55,6 +57,16 @@ const EditThesauri = () => {
     defaultValues: thesaurus,
     mode: 'onSubmit',
   });
+
+  const blocker = useBlocker(() => {
+    return !isEqual(thesaurus.values, thesaurusValues) || getValues().name !== thesaurus.name;
+  });
+
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      setShowConfirmNavigationModal(true);
+    }
+  }, [blocker, setShowConfirmNavigationModal]);
 
   const deleteSelected = () => {
     let newValues: ThesaurusValueSchema[] = thesaurusValues.filter(
@@ -206,7 +218,7 @@ const EditThesauri = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-languages"
     >
-      <SettingsContent>
+      <SettingsContent className="flex flex-col h-full">
         <SettingsContent.Header
           path={new Map([['Thesauri', '/settings/thesauri']])}
           title={watch('name')}
@@ -237,7 +249,7 @@ const EditThesauri = () => {
             </div>
           </form>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-indigo-50">
+        <SettingsContent.Footer className="bottom-0 bg-indigo-50">
           {selectedThesaurusValue.length ? (
             <div className="flex items-center gap-2">
               <Button
@@ -308,6 +320,12 @@ const EditThesauri = () => {
           setShowThesauriGroupFormSidepanel(false);
         }}
       />
+      {showConfirmNavigationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setShowConfirmNavigationModal}
+          onConfirm={blocker.proceed}
+        />
+      )}
     </div>
   );
 };

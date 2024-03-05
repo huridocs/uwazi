@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -10,8 +10,8 @@ import {
   ActionHeader,
   ThesaurusValueLabel,
 } from './components/TableComponents';
-import { InputField } from 'app/V2/Components/Forms';
-import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
+import { Link, useBlocker, useNavigate } from 'react-router-dom';
 import {
   LocalThesaurusValueSchema,
   ThesauriValueFormSidepanel,
@@ -31,6 +31,7 @@ const NewThesauri = () => {
   const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
   const [valueChanges, setValueChanges] = useState<ThesaurusValueSchema[]>([]);
+  const [showConfirmNavigationModal, setShowConfirmNavigationModal] = useState(false);
   const [selectedValues, setSelectedValues] = useState<Row<ThesaurusValueSchema>[]>([]);
   const [showThesauriGroupFormSidepanel, setShowThesauriGroupFormSidepanel] = useState(false);
   const [showThesauriValueFormSidepanel, setShowThesauriValueFormSidepanel] = useState(false);
@@ -49,6 +50,20 @@ const NewThesauri = () => {
     mode: 'onSubmit',
     defaultValues: { name: '', values: [] },
   });
+
+  const blocker = useBlocker(details => {
+    return (
+      (Boolean(getValues().values?.length) || getValues().name !== '') &&
+      !details.nextLocation.pathname.includes('edit')
+    );
+  });
+
+  useMemo(() => {
+    if (blocker.state === 'blocked') {
+      console.log('blocker state: ', blocker.state);
+      setShowConfirmNavigationModal(true);
+    }
+  }, [blocker, setShowConfirmNavigationModal]);
 
   const sortValues = () => {
     const valuesCopy = [...valueChanges];
@@ -117,12 +132,13 @@ const NewThesauri = () => {
   const submitThesauri = async (data: ThesaurusSchema) => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, valueChanges);
     try {
-      await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
+      const savedThesaurus = await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
       setNotifications({
         type: 'success',
         text: <Translate>Thesauri added.</Translate>,
       });
-      navigate('/settings/thesauri');
+      setValue('name', ''); // Reset to make blocker happy
+      navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
     } catch (e) {
       setNotifications({
         type: 'error',
@@ -154,6 +170,7 @@ const NewThesauri = () => {
     }
     try {
       const importedThesauri: ThesaurusSchema = await importThesaurus(thesaurus, file);
+      setValue('name', ''); // Reset to make blocker happy
       navigate(`/settings/thesauri/edit/${importedThesauri._id}`);
       setNotifications({
         type: 'success',
@@ -164,6 +181,25 @@ const NewThesauri = () => {
         type: 'error',
         text: <Translate>Error adding thesauri.</Translate>,
       });
+    }
+  };
+
+  const checkDnDBeforeChanges = (tableValues: ThesaurusValueSchema[]) => {
+    const groups = valueChanges.filter(
+      currentValue => currentValue.values && Array.isArray(currentValue.values)
+    );
+    let groupsHaveChanged = false;
+    for (let i = 0; i < groups.length; i++) {
+      const group = groups[i];
+      const tableGroup = tableValues.find((tg: ThesaurusValueSchema) => tg.id === group.id);
+      if (tableGroup && tableGroup.values?.length !== group.values?.length) {
+        groupsHaveChanged = true;
+        break;
+      }
+    }
+
+    if (!groupsHaveChanged) {
+      setValueChanges(tableValues);
     }
   };
 
@@ -199,7 +235,7 @@ const NewThesauri = () => {
       style={{ width: '100%', overflowY: 'auto' }}
       data-testid="settings-thesauri"
     >
-      <SettingsContent>
+      <SettingsContent className="flex flex-col h-full">
         <SettingsContent.Header
           path={new Map([['Thesauri', '/settings/thesauri']])}
           title={watch('name')}
@@ -207,7 +243,7 @@ const NewThesauri = () => {
         <SettingsContent.Body>
           <div
             data-testid="settings-new-thesauri"
-            className="border rounded-md shadow-sm border-gray-50"
+            className="overflow-y-auto border rounded-md shadow-sm border-gray-50"
           >
             <div className="p-4">
               <InputField
@@ -225,15 +261,15 @@ const NewThesauri = () => {
               enableSelection
               columns={columns}
               subRowsKey="values"
-              onChange={setValueChanges}
+              onChange={checkDnDBeforeChanges}
               data={valueChanges}
               initialState={{ sorting: [{ id: 'label', desc: false }] }}
               onSelection={setSelectedValues}
             />
           </div>
         </SettingsContent.Body>
-        <SettingsContent.Footer className="bg-indigo-50">
-          <div className="flex justify-between w-full">
+        <SettingsContent.Footer className="bottom-0 bg-indigo-50">
+          <div className="flex justify-between w-full gap-2">
             {selectedValues.length ? (
               <div className="flex gap-2">
                 <Button
@@ -308,6 +344,12 @@ const NewThesauri = () => {
           setShowThesauriGroupFormSidepanel(false);
         }}
       />
+      {showConfirmNavigationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setShowConfirmNavigationModal}
+          onConfirm={blocker.proceed}
+        />
+      )}
     </div>
   );
 };
