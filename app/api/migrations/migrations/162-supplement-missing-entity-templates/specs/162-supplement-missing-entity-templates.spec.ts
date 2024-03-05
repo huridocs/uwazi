@@ -35,7 +35,7 @@ afterAll(async () => {
 
 describe('migration test', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(161);
+    expect(migration.delta).toBe(162);
   });
 
   describe('on collections where no entity template is missing', () => {

@@ -37,7 +37,7 @@ const recoveryTemplate: Template = {
 };
 
 export default {
-  delta: 161,
+  delta: 162,
 
   name: 'supplement-missing-entity-templates',
 
