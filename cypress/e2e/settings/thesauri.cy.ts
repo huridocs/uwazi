@@ -67,7 +67,6 @@ describe('Menu configuration', () => {
     cy.wait('@fetchStats');
     cy.get('#thesauri-name').type(' edited');
     cy.contains('button', 'Edit').eq(0).click();
-    cy.wait(50);
     cy.get('input#item-name').type(' edited');
     cy.getByTestId('menu-form-submit').click();
 
