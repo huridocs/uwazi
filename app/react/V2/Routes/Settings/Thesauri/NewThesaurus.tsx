@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -28,8 +28,10 @@ import { ImportButton } from './components/ImportButton';
 const NewThesauri = () => {
   const navigate = useNavigate();
   const columnHelper = createColumnHelper<any>();
+  const [saved, setSaved] = useState(false);
   const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
+  const [savedThesaurus, setSavedThesaurus] = useState<ThesaurusSchema>();
   const [valueChanges, setValueChanges] = useState<ThesaurusValueSchema[]>([]);
   const [showConfirmNavigationModal, setShowConfirmNavigationModal] = useState(false);
   const [selectedValues, setSelectedValues] = useState<Row<ThesaurusValueSchema>[]>([]);
@@ -39,28 +41,23 @@ const NewThesauri = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
 
   const {
+    reset,
     watch,
     setError,
     register,
     setValue,
     getValues,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ThesaurusSchema>({
     mode: 'onSubmit',
-    defaultValues: { name: '', values: [] },
+    defaultValues: { name: '' },
   });
 
-  const blocker = useBlocker(details => {
-    return (
-      (Boolean(getValues().values?.length) || getValues().name !== '') &&
-      !details.nextLocation.pathname.includes('edit')
-    );
-  });
+  const blocker = useBlocker((!saved && isDirty) || Boolean(valueChanges.length));
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
-      console.log('blocker state: ', blocker.state);
       setShowConfirmNavigationModal(true);
     }
   }, [blocker, setShowConfirmNavigationModal]);
@@ -70,6 +67,12 @@ const NewThesauri = () => {
     valuesCopy.sort((first, second) => (first.label > second.label ? 1 : -1));
     setValueChanges(valuesCopy);
   };
+
+  useEffect(() => {
+    if (saved && savedThesaurus) {
+      navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
+    }
+  }, [saved, savedThesaurus]);
 
   const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
     let currentValues: ThesaurusValueSchema[] = [...valueChanges];
@@ -133,12 +136,13 @@ const NewThesauri = () => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, valueChanges);
     try {
       const savedThesaurus = await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
+      setSavedThesaurus(savedThesaurus);
       setNotifications({
         type: 'success',
         text: <Translate>Thesauri added.</Translate>,
       });
-      setValue('name', ''); // Reset to make blocker happy
-      navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
+      setValueChanges([]);
+      setSaved(true);
     } catch (e) {
       setNotifications({
         type: 'error',
@@ -170,12 +174,13 @@ const NewThesauri = () => {
     }
     try {
       const importedThesauri: ThesaurusSchema = await importThesaurus(thesaurus, file);
-      setValue('name', ''); // Reset to make blocker happy
-      navigate(`/settings/thesauri/edit/${importedThesauri._id}`);
+      setSavedThesaurus(importedThesauri);
       setNotifications({
         type: 'success',
         text: <Translate>Data imported</Translate>,
       });
+      setValueChanges([]);
+      setSaved(true);
     } catch (e) {
       setNotifications({
         type: 'error',
