@@ -5,7 +5,7 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Translate, t } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { InputField } from 'app/V2/Components/Forms';
+import { InputField, DatePicker, DateRangePicker } from 'app/V2/Components/Forms';
 import * as activityLogAPI from 'V2/api/activityLog';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { ActivityLogTable } from './components/ActivityLogTable';
@@ -73,6 +73,8 @@ const ActivityLog = () => {
               placeholder={t('System', 'by IDs, methods, keywords, etc.', null, false)}
               {...register('user')}
             />
+            <DateRangePicker language="en-es" labelToday="today" labelClear="clear" />
+            <DatePicker language="en-es" labelToday="today" labelClear="clear" />
           </div>
           <ActivityLogTable
             data={activityLogData}
