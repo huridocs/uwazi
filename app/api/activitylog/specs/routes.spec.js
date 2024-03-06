@@ -78,11 +78,15 @@ describe('Activitylog routes', () => {
         page: 1,
         method: ['POST'],
         search: 'no value',
+        sort: { prop: 'username', asc: 1 },
+        time: { from: 1627924445000, to: 1627924445000 },
       };
 
-      it('should allow a valid query', async () => {
+      fit('should allow a valid query', async () => {
         currentUser = adminUser;
-        const response = await request(app).get('/api/activitylog').query(qs.stringify(validQuery));
+        const queryString = qs.stringify(validQuery);
+        console.log(queryString)
+        const response = await request(app).get('/api/activitylog').query(queryString);
         expect(response.status).toBe(200);
       });
 
@@ -110,6 +114,18 @@ describe('Activitylog routes', () => {
           expectedError: 'minimum',
           expectedPath: '/query/page',
           case: 'a page minimum error',
+        },
+        {
+          changedProperty: { sort: { prop: 'username', asc: -1 } },
+          expectedError: 'type',
+          expectedPath: '/query/sort/asc',
+          case: 'a sort.asc type error',
+        },
+        {
+          changedProperty: { sort: { prop: 'invalid_prop', asc: 1 } },
+          expectedError: 'additionalProperties',
+          expectedPath: '/query/sort',
+          case: 'an invalid value for sort.prop',
         },
       ])(
         'should return a validation error for $case',

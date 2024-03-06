@@ -15,6 +15,7 @@ const pagesSchema = new mongoose.Schema({
 
 pagesSchema.index({ method: 1 });
 pagesSchema.index({ time: 1 });
+pagesSchema.index({ url: 1 });
 pagesSchema.index({ username: 1 }, { collation: { locale: 'en', strength: 2 } });
 
 export default instanceModel('activitylog', pagesSchema);

@@ -1,7 +1,7 @@
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
 
-const sortingParams = new Set(['method', 'time', 'username']);
+const sortingParams = new Set(['method', 'time', 'username', 'url']);
 
 const isValidSortingParam = param => sortingParams.has(param);
 

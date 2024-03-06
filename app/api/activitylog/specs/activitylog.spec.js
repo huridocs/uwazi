@@ -200,6 +200,14 @@ describe('activitylog', () => {
         expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 8000, 6000]);
       });
 
+      it('should sort by url', async () => {
+        let results = await activitylog.get({ sort: { prop: 'url', asc: true } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 5000, 2000, 6000, 1000]);
+
+        results = await activitylog.get({ sort: { prop: 'url', asc: false } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 6000, 8000, 5000, 2000]);
+      });
+
       it('should sort by time', async () => {
         let results = await activitylog.get({ sort: { prop: 'time', asc: true } });
         expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000]);

@@ -30,6 +30,14 @@ export default app => {
             page: { type: 'number', minimum: 1 },
             method: { type: 'array', items: { type: 'string' } },
             search: { type: 'string' },
+            sort: {
+              type: 'object',
+              properties: {
+                prop: { type: 'string' },
+                asc: { type: 'number', minimum: 0, maximum: 1 },
+              },
+              required: ['prop', 'asc'],
+            },
           },
         },
       },
