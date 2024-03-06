@@ -189,7 +189,7 @@ const NewThesauri = () => {
       currentValue => currentValue.values && Array.isArray(currentValue.values)
     );
     let groupsHaveChanged = false;
-    for (let i = 0; i < groups.length; i++) {
+    for (let i = 0; i < groups.length; i += 1) {
       const group = groups[i];
       const tableGroup = tableValues.find((tg: ThesaurusValueSchema) => tg.id === group.id);
       if (tableGroup && tableGroup.values?.length !== group.values?.length) {
