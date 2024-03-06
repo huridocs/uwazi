@@ -184,7 +184,7 @@ module.exports = {
     'react/no-unknown-property': [
       'error',
       {
-        ignore: ['no-translate'],
+        ignore: ['no-translate', 'date-rangepicker', 'datepicker', 'inline-datepicker'],
       },
     ],
     //jsx-a11y

@@ -63,6 +63,31 @@ module.exports = production => {
     },
     module: {
       rules: [
+        // {
+        //   test: /^flowbite\.min\.css$/,
+        //   include: path.join(rootPath, 'node_modules/flowbite/dist'),
+        //   use: [
+        //     MiniCssExtractPlugin.loader,
+        //     {
+        //       loader: 'css-loader',
+        //       options: { import: true, url: false, sourceMap: true, esModule: true },
+        //     },
+        //   ],
+        // },
+        {
+          test: /^thirdpart\.css$/,
+          include: path.join(rootPath, 'app/react/App/styles'),
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: { import: true, url: false, sourceMap: true, esModule: true },
+            },
+            {
+              loader: 'postcss-loader',
+            },
+          ],
+        },
         {
           test: /\.(js|jsx|ts|tsx)$/,
           include: path.join(rootPath, 'app'),
@@ -77,8 +102,11 @@ module.exports = production => {
           ],
         },
         {
-          test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
-          exclude: [path.resolve(__dirname, '../node_modules/monaco-editor/min/vs')],
+          test: /^(?!main\.css|globals\.css|thirdpart\.min\.css)^((.+)\.s?[ac]ss)$/,
+          exclude: [
+            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
+            path.resolve(__dirname, '../node_modules/flowbite/dist'),
+          ],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -86,8 +114,9 @@ module.exports = production => {
           ],
         },
         {
-          test: /(main\.css|globals\.css)$/,
+          test: /^(main\.css|globals\.css)$/,
           use: ['postcss-loader'],
+          exclude: /node_modules/,
         },
         {
           test: /\.svg$/,

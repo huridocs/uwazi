@@ -1749,6 +1749,10 @@ input:checked + .toggle-bg {
   right: 0px;
 }
 
+.start-0 {
+  inset-inline-start: 0px;
+}
+
 .-top-3 {
   top: -0.75rem;
 }
@@ -2302,6 +2306,10 @@ input:checked + .toggle-bg {
 
 .w-7 {
   width: 1.75rem;
+}
+
+.w-72 {
+  width: 18rem;
 }
 
 .w-8 {
@@ -3897,6 +3905,14 @@ input:checked + .toggle-bg {
 
 .pr-4 {
   padding-right: 1rem;
+}
+
+.ps-10 {
+  padding-inline-start: 2.5rem;
+}
+
+.ps-3 {
+  padding-inline-start: 0.75rem;
 }
 
 .ps-5 {
@@ -6785,6 +6801,11 @@ input:checked + .toggle-bg {
 
   .sm\:text-right {
     text-align: right;
+  }
+
+  .sm\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .sm\:text-xs {
