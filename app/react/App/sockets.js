@@ -61,7 +61,7 @@ socket.on('thesauriDelete', thesauri => {
 socket.on('translationsChange', translations => {
   store.dispatch(actions.update('translations', translations, 'locale'));
   t.resetCachedTranslation();
-  Translate.resetCachedTranslation();
+  // Translate.resetCachedTranslation();
 });
 
 socket.on('translationsInstallDone', () => {
@@ -90,7 +90,7 @@ socket.on('translationsInstallError', errorMessage => {
 socket.on('translationsDelete', locale => {
   store.dispatch(actions.remove('translations', { locale }, 'locale'));
   t.resetCachedTranslation();
-  Translate.resetCachedTranslation();
+  // Translate.resetCachedTranslation();
 });
 
 socket.on('translationsDeleteDone', () => {

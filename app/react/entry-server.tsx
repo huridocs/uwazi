@@ -244,7 +244,7 @@ const getSSRProperties = async (
 
 const resetTranslations = () => {
   t.resetCachedTranslation();
-  Translate.resetCachedTranslation();
+  // Translate.resetCachedTranslation();
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {
