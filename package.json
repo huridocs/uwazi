@@ -143,6 +143,7 @@
     "filesize": "^10.1.0",
     "flag-icon-css": "^4.1.7",
     "flowbite": "^2.3.0",
+    "flowbite-datepicker": "^1.2.6",
     "flowbite-react": "^0.7.2",
     "formatcoords": "^1.1.3",
     "franc": "5.0.0",
