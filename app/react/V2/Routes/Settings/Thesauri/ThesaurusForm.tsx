@@ -14,7 +14,7 @@ import {
   ThesauriValueFormSidepanel,
 } from './components/ThesauriValueFormSidepanel';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
-import { importThesaurus, mergeValues, sanitizeThesaurusValues } from './helpers';
+import { mergeValues, sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -26,12 +26,14 @@ const LabelHeader = () => <Translate>Label</Translate>;
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { _id } }) =>
-    ThesauriAPI.getThesauri(new RequestParams({ _id }, headers));
+  async ({ params: { _id } }) => {
+    const response = await ThesauriAPI.getThesauri(new RequestParams({ _id }, headers));
+    return response[0];
+  };
 
-const EditThesauri = () => {
+const ThesaurusForm = () => {
   const revalidator = useRevalidator();
-  const thesaurus = (useLoaderData() as ThesaurusSchema[])[0];
+  const thesaurus = useLoaderData() as ThesaurusSchema;
   const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
   const [showConfirmNavigationModal, setShowConfirmNavigationModal] = useState(false);
@@ -148,24 +150,6 @@ const EditThesauri = () => {
     setShowThesauriGroupFormSidepanel(false);
   };
 
-  const importThesauriAndNotify = async (file: File) => {
-    const sanitizedThesaurus = sanitizeThesaurusValues(getValues(), thesaurusValues);
-    try {
-      await importThesaurus(sanitizedThesaurus, file);
-      setNotifications({
-        type: 'success',
-        text: <Translate>Data imported</Translate>,
-      });
-    } catch (e) {
-      setNotifications({
-        type: 'error',
-        text: <Translate>Error adding thesauri.</Translate>,
-      });
-    } finally {
-      revalidator.revalidate();
-    }
-  };
-
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, thesaurusValues);
     try {
@@ -202,7 +186,6 @@ const EditThesauri = () => {
             setEditGroup(row.original as ThesaurusValueSchema);
             setShowThesauriGroupFormSidepanel(true);
           } else {
-            // setEditValueAndShowItemSidepanel({ value: row.original, showSidepanel: true });
             await setEditValue(row.original as ThesaurusValueSchema);
             setShowThesauriValueFormSidepanel(true);
           }
@@ -276,10 +259,19 @@ const EditThesauri = () => {
                   <Translate>Sort</Translate>
                 </Button>
                 <ImportButton
-                  onChange={async e => {
-                    if (e.target.files && e.target.files[0]) {
-                      await importThesauriAndNotify(e.target.files[0]);
-                    }
+                  thesaurus={sanitizeThesaurusValues(getValues(), thesaurusValues)}
+                  onSuccess={() => {
+                    setNotifications({
+                      type: 'success',
+                      text: <Translate>Thesauri updated.</Translate>,
+                    });
+                    revalidator.revalidate();
+                  }}
+                  onFailure={() => {
+                    setNotifications({
+                      type: 'error',
+                      text: <Translate>Error adding thesauri.</Translate>,
+                    });
                   }}
                 ></ImportButton>
               </div>
@@ -330,4 +322,4 @@ const EditThesauri = () => {
   );
 };
 
-export { EditThesauri, editTheasaurusLoader };
+export { ThesaurusForm, editTheasaurusLoader };

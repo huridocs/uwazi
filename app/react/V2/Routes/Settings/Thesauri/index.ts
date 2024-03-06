@@ -1,5 +1,4 @@
-import { EditThesauri } from './EditThesaurus';
-import { NewThesauri } from './NewThesaurus';
+import { ThesaurusForm } from './ThesaurusForm';
 import { ThesauriList, theasauriListLoader } from './ThesauriList';
 
-export { EditThesauri, NewThesauri, ThesauriList, theasauriListLoader };
+export { ThesaurusForm, ThesauriList, theasauriListLoader };

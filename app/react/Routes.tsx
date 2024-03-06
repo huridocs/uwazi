@@ -34,12 +34,7 @@ import {
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 
-import {
-  EditThesauri,
-  NewThesauri,
-  theasauriListLoader,
-  ThesauriList,
-} from 'app/V2/Routes/Settings/Thesauri';
+import { ThesaurusForm, theasauriListLoader, ThesauriList } from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import {
@@ -60,7 +55,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
-import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/EditThesaurus';
+import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/ThesaurusForm';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -141,13 +136,12 @@ const getRoutesLayout = (
           element={adminsOnlyRoute(<ThesauriList />)}
           loader={theasauriListLoader(headers)}
         />
-        <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
+        <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
         <Route
           path="edit/:_id"
-          element={adminsOnlyRoute(<EditThesauri />)}
+          element={adminsOnlyRoute(<ThesaurusForm />)}
           loader={editTheasaurusLoader(headers)}
         />
-        {/* <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} /> */}
       </Route>
       <Route
         path="languages"

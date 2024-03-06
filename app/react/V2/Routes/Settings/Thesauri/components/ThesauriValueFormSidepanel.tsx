@@ -26,9 +26,8 @@ const ThesauriValueFormSidepanel = ({
   setShowSidepanel,
 }: ThesauriValueFormSidepanelProps) => {
   const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
-  const [typing, setTyping] = useState('');
 
-  const { reset, control, register, getValues, handleSubmit } = useForm<
+  const { reset, control, register, handleSubmit, watch } = useForm<
     { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
   >({
     mode: 'onSubmit',
@@ -41,6 +40,16 @@ const ThesauriValueFormSidepanel = ({
   }, [value]);
 
   useEffect(() => {
+    const subscription = watch(formData => {
+      const values = formData.newValues ? formData.newValues : [formData];
+      if (values[values.length - 1].label !== '') {
+        append({ label: '' }, { shouldFocus: false });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, append]);
+
+  useEffect(() => {
     if (value && groups) {
       const group = groups.find(singleGroup => {
         return singleGroup.values?.includes(value);
@@ -48,16 +57,6 @@ const ThesauriValueFormSidepanel = ({
       setParentGroup(group);
     }
   }, [value, groups]);
-
-  useEffect(() => {
-    const newValues = (getValues() as { newValues: ThesaurusValueSchema[] }).newValues;
-    if (!value) {
-      const hasEmpty = newValues.find(nv => nv.label === '');
-      if (!hasEmpty) {
-        append({ label: '' });
-      }
-    }
-  }, [typing]);
 
   const renderInputs = () => {
     if (!value) {
@@ -70,9 +69,7 @@ const ThesauriValueFormSidepanel = ({
               label={<Translate>Title</Translate>}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...register(`newValues.${index}.label`)}
-              onBlur={e => setTyping(e.target.value)}
-              // onBlur={determineIfNeedToAddNewItem}
-              // hasErrors={!!errors.label}
+              // onBlur={e => setTyping(e.target.value)}
             />
             {groups && (
               <Select
@@ -151,8 +148,8 @@ const ThesauriValueFormSidepanel = ({
     if (parentGroup) {
       (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
     }
-    // @ts-ignore
-    submit([item]);
+    const itemToSubmit = item as LocalThesaurusValueSchema;
+    submit([{ label: itemToSubmit.label, id: itemToSubmit.id, groupId: itemToSubmit.groupId }]);
     reset({ newValues: [{ label: '' }] });
   };
 
@@ -199,7 +196,7 @@ const ThesauriValueFormSidepanel = ({
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="grow" type="submit" data-testid="menu-form-submit">
+            <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
               <Translate>Add</Translate>
             </Button>
           </div>
