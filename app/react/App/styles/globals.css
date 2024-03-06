@@ -2014,10 +2014,6 @@ input:checked + .toggle-bg {
   display: inline-flex;
 }
 
-.\!table {
-  display: table !important;
-}
-
 .table {
   display: table;
 }
