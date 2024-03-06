@@ -37,12 +37,11 @@ describe('Thesauri configuration', () => {
     cy.get('tbody tr:nth-of-type(2) td:nth-of-type(2)').should('have.text', 'Second Item');
 
     cy.contains('button', 'Save').click();
+    cy.contains('span', 'Thesauri').click();
     cy.wait('@fetchStats');
   });
 
   it('should add groups', () => {
-    cy.contains('span', 'Thesauri').click();
-    cy.wait('@fetchThesauri');
     cy.intercept('GET', '/api/dictionaries').as('fetchThesauriAddGroups');
     cy.contains('a', 'Add thesaurus').click();
     cy.get('#thesauri-name').type('New Thesauri with groups');
