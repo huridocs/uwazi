@@ -1,7 +1,6 @@
+import { sortingParams } from 'shared/types/activityLogApiSchemas';
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
-
-const sortingParams = ['method', 'time', 'username', 'url'];
 
 const sortingParamsAsSet = new Set(sortingParams);
 

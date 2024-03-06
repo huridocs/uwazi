@@ -1,4 +1,5 @@
-import { objectIdSchema } from 'shared/types/commonSchemas';
+import { ActivityLogGetRequestSchema } from 'shared/types/activityLogApiSchemas';
+
 import { parseQuery, validation } from '../utils';
 import needsAuthorization from '../auth/authMiddleware';
 import activitylog from './activitylog';
@@ -8,40 +9,7 @@ export default app => {
     '/api/activitylog',
     needsAuthorization(['admin']),
     parseQuery,
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          additionalProperties: false,
-          type: 'object',
-          properties: {
-            user: objectIdSchema,
-            username: { type: 'string' },
-            find: { type: 'string' },
-            time: {
-              type: 'object',
-              properties: {
-                from: { type: 'number' },
-                to: { type: 'number' },
-              },
-            },
-            before: { type: 'number' },
-            limit: { type: 'number' },
-            page: { type: 'number', minimum: 1 },
-            method: { type: 'array', items: { type: 'string' } },
-            search: { type: 'string' },
-            sort: {
-              type: 'object',
-              properties: {
-                prop: { type: 'string', enum: activitylog.sortingParams },
-                asc: { type: 'number', minimum: 0, maximum: 1 },
-              },
-              required: ['prop', 'asc'],
-            },
-          },
-        },
-      },
-    }),
+    validation.validateRequest(ActivityLogGetRequestSchema),
     (req, res, next) =>
       activitylog
         .get(req.query)
