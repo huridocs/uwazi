@@ -185,46 +185,46 @@ describe('activitylog', () => {
       });
 
       it('should sort by method', async () => {
-        let results = await activitylog.get({ sort: { prop: 'method', asc: true } });
+        let results = await activitylog.get({ sort: { prop: 'method', asc: 1 } });
         expect(results.rows.map(r => r.time)).toEqual([2000, 5000, 8000, 6000, 1000]);
 
-        results = await activitylog.get({ sort: { prop: 'method', asc: false } });
+        results = await activitylog.get({ sort: { prop: 'method', asc: 0 } });
         expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000, 5000, 2000]);
       });
 
       it('should sort by user', async () => {
-        let results = await activitylog.get({ sort: { prop: 'username', asc: true } });
+        let results = await activitylog.get({ sort: { prop: 'username', asc: 1 } });
         expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
 
-        results = await activitylog.get({ sort: { prop: 'username', asc: false } });
+        results = await activitylog.get({ sort: { prop: 'username', asc: 0 } });
         expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 8000, 6000]);
       });
 
       it('should sort by url', async () => {
-        let results = await activitylog.get({ sort: { prop: 'url', asc: true } });
+        let results = await activitylog.get({ sort: { prop: 'url', asc: 1 } });
         expect(results.rows.map(r => r.time)).toEqual([8000, 5000, 2000, 6000, 1000]);
 
-        results = await activitylog.get({ sort: { prop: 'url', asc: false } });
+        results = await activitylog.get({ sort: { prop: 'url', asc: 0 } });
         expect(results.rows.map(r => r.time)).toEqual([1000, 6000, 8000, 5000, 2000]);
       });
 
       it('should sort by time', async () => {
-        let results = await activitylog.get({ sort: { prop: 'time', asc: true } });
+        let results = await activitylog.get({ sort: { prop: 'time', asc: 1 } });
         expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000]);
 
-        results = await activitylog.get({ sort: { prop: 'time', asc: false } });
+        results = await activitylog.get({ sort: { prop: 'time', asc: 0 } });
         expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
       });
 
       it('should respect filters', async () => {
         let results = await activitylog.get({
-          sort: { prop: 'username', asc: true },
+          sort: { prop: 'username', asc: 1 },
           method: ['PUT'],
         });
         expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000]);
 
         results = await activitylog.get({
-          sort: { prop: 'username', asc: false },
+          sort: { prop: 'username', asc: 0 },
           method: ['PUT'],
         });
         expect(results.rows.map(r => r.time)).toEqual([1000, 8000, 6000]);
@@ -232,7 +232,7 @@ describe('activitylog', () => {
 
       it('should respect pagination', async () => {
         let results = await activitylog.get({
-          sort: { prop: 'username', asc: true },
+          sort: { prop: 'username', asc: 1 },
           page: 1,
           limit: 2,
           method: ['PUT'],
@@ -246,7 +246,7 @@ describe('activitylog', () => {
         });
 
         results = await activitylog.get({
-          sort: { prop: 'username', asc: true },
+          sort: { prop: 'username', asc: 1 },
           page: 2,
           limit: 2,
           method: ['PUT'],
@@ -254,7 +254,7 @@ describe('activitylog', () => {
         assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
 
         results = await activitylog.get({
-          sort: { prop: 'username', asc: true },
+          sort: { prop: 'username', asc: 1 },
           page: 3,
           limit: 2,
           method: ['PUT'],

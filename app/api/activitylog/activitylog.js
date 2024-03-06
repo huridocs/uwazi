@@ -87,7 +87,7 @@ const getPagination = query => {
 const getSort = query => {
   const { sort } = query;
   const prop = sort?.prop || 'time';
-  const asc = sort?.asc || false;
+  const asc = !!sort?.asc || false;
   validateSortingParam(prop);
   const sortOptions = { sort: {}, collation: { locale: 'en', strength: 2 } };
   sortOptions.sort[prop] = asc ? 1 : -1;
@@ -127,7 +127,6 @@ export default {
 
     const totalRows = await model.count(mongoQuery);
     const dbResults = await model.get(mongoQuery, null, optionsQuery);
-    console.log(mongoQuery, optionsQuery);
 
     const semanticResults = await dbResults.reduce(async (prev, logEntry) => {
       const results = await prev;
