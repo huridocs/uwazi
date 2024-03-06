@@ -78,14 +78,13 @@ describe('Activitylog routes', () => {
         page: 1,
         method: ['POST'],
         search: 'no value',
-        sort: { prop: 'username', asc: 1 },
-        time: { from: 1627924445000, to: 1627924445000 },
+        sort: JSON.stringify({ prop: 'username', asc: 1 }),
+        time: JSON.stringify({ from: 1627924445000, to: 1627924445000 }),
       };
 
-      fit('should allow a valid query', async () => {
+      it('should allow a valid query', async () => {
         currentUser = adminUser;
         const queryString = qs.stringify(validQuery);
-        console.log(queryString)
         const response = await request(app).get('/api/activitylog').query(queryString);
         expect(response.status).toBe(200);
       });
@@ -116,16 +115,16 @@ describe('Activitylog routes', () => {
           case: 'a page minimum error',
         },
         {
-          changedProperty: { sort: { prop: 'username', asc: -1 } },
-          expectedError: 'type',
+          changedProperty: { sort: JSON.stringify({ prop: 'username', asc: -1 }) },
+          expectedError: 'minimum',
           expectedPath: '/query/sort/asc',
-          case: 'a sort.asc type error',
+          case: 'a sort.asc value error',
         },
         {
-          changedProperty: { sort: { prop: 'invalid_prop', asc: 1 } },
-          expectedError: 'additionalProperties',
-          expectedPath: '/query/sort',
-          case: 'an invalid value for sort.prop',
+          changedProperty: { sort: JSON.stringify({ prop: 'invalid_prop', asc: 1 }) },
+          expectedError: 'enum',
+          expectedPath: '/query/sort/prop',
+          case: 'a sort.prop value error',
         },
       ])(
         'should return a validation error for $case',

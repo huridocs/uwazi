@@ -33,7 +33,7 @@ export default app => {
             sort: {
               type: 'object',
               properties: {
-                prop: { type: 'string' },
+                prop: { type: 'string', enum: activitylog.sortingParams },
                 asc: { type: 'number', minimum: 0, maximum: 1 },
               },
               required: ['prop', 'asc'],

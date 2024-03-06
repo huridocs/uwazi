@@ -1,9 +1,11 @@
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
 
-const sortingParams = new Set(['method', 'time', 'username', 'url']);
+const sortingParams = ['method', 'time', 'username', 'url'];
 
-const isValidSortingParam = param => sortingParams.has(param);
+const sortingParamsAsSet = new Set(sortingParams);
+
+const isValidSortingParam = param => sortingParamsAsSet.has(param);
 
 const validateSortingParam = param => {
   if (!isValidSortingParam(param)) {
@@ -105,6 +107,10 @@ export default {
   save(entry) {
     return model.save(entry);
   },
+
+  sortingParams,
+
+  isValidSortingParam,
 
   async get(query = {}) {
     const mongoQuery = Object.assign(prepareQuery(query), timeQuery(query));
