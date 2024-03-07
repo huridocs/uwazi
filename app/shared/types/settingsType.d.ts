@@ -68,7 +68,7 @@ export interface Settings {
   /**
    * @minItems 1
    */
-  mapLayers?: string[];
+  mapLayers?: [string, ...string[]];
   newNameGeneration?: true;
   ocrServiceEnabled?: boolean;
   sync?: SettingsSyncSchema[];
@@ -110,9 +110,7 @@ export interface Settings {
     newRelationships?:
       | boolean
       | {
-          updateStrategy:
-            | 'OnlineRelationshipPropertyUpdateStrategy'
-            | 'QueuedRelationshipPropertyUpdateStrategy';
+          updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
     [k: string]: unknown | undefined;
   };

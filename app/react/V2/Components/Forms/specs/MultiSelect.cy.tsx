@@ -5,7 +5,6 @@ import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/Forms/MultiSelect.stories';
 
 const { Basic: MultiSelect } = composeStories(stories);
-const { options } = stories.Basic.args;
 
 describe('MultiSelect', () => {
   describe('Rendering', () => {
@@ -71,7 +70,7 @@ describe('MultiSelect', () => {
       cy.get('[data-testid="multiselect"] button').click();
       cy.get('ul li').get('input').eq(1).click();
 
-      cy.get('@onChange').should('have.been.calledOnceWith', [options[1].value]);
+      cy.get('@onChange').should('have.been.calledOnceWith', ['another']);
     });
   });
 

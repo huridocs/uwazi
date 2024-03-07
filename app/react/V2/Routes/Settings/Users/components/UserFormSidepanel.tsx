@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { InputField, Select, MultiSelect, MultiSelectProps } from 'V2/Components/Forms';
+import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
