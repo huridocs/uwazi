@@ -39,26 +39,10 @@ const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: Clie
         existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
   );
 
-const calculateSelectedGroups = (
-  selectedGroups: MultiSelectProps['options'],
-  groups?: ClientUserGroupSchema[]
-) =>
-  selectedGroups
-    .filter(selectedGroup => selectedGroup.selected)
-    .map(selectedGroup => {
-      const group = groups?.find(originalGroup => originalGroup.name === selectedGroup.value);
-      return { _id: group?._id as string, name: group?.name as string };
-    });
-
-const getOptions = (groups?: ClientUserGroupSchema[], selectedUser?: ClientUserSchema) =>
-  (groups || []).map(group => {
-    const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name);
-
-    if (userGroups?.includes(group.name)) {
-      return { label: group.name, value: group.name, selected: true };
-    }
-
-    return { label: group.name, value: group.name };
+const calculateSelectedGroups = (selectedGroups: string[], groups?: ClientUserGroupSchema[]) =>
+  selectedGroups.map(selectedGroup => {
+    const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
+    return { _id: group?._id as string, name: group?.name as string };
   });
 
 const getFieldError = (field: 'username' | 'password' | 'email', type?: string) => {
@@ -156,8 +140,6 @@ const UserFormSidepanel = ({
     setShowSidepanel(false);
     reset(defaultValues);
   };
-
-  const multiselectOptions = getOptions(groups, selectedUser);
 
   return (
     <>
@@ -283,7 +265,8 @@ const UserFormSidepanel = ({
                     const values = calculateSelectedGroups(selectedGroups, groups);
                     setValue('groups', values, { shouldDirty: true });
                   }}
-                  options={multiselectOptions}
+                  options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
+                  value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
                   placeholder="Nothing selected"
                 />
               </div>

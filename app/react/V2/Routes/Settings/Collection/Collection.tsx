@@ -126,25 +126,21 @@ const Collection = () => {
   const templateOptions = templates.map(template => ({
     label: template.name,
     value: template._id,
-    selected: settings.allowedPublicTemplates?.includes(template._id),
   }));
 
   const mapLayersOptions = [
-    { label: 'Dark', value: 'Dark', selected: settings.mapLayers?.includes('Dark') },
+    { label: 'Dark', value: 'Dark' },
     {
       label: 'Streets',
       value: 'Streets',
-      selected: settings.mapLayers?.includes('Streets') || !settings.mapLayers?.length,
     },
     {
       label: 'Satellite',
       value: 'Satellite',
-      selected: settings.mapLayers?.includes('Satellite') || !settings.mapLayers?.length,
     },
     {
       label: 'Hybrid',
       value: 'Hybrid',
-      selected: settings.mapLayers?.includes('Hybrid') || !settings.mapLayers?.length,
     },
   ];
 
@@ -313,11 +309,9 @@ const Collection = () => {
                     label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
                     options={templateOptions}
                     onChange={newValues => {
-                      setValue(
-                        'allowedPublicTemplates',
-                        newValues.filter(({ selected }) => selected).map(({ value }) => value)
-                      );
+                      setValue('allowedPublicTemplates', newValues);
                     }}
+                    value={settings.allowedPublicTemplates || []}
                   />
                 </div>
               </div>
@@ -348,12 +342,10 @@ const Collection = () => {
                     options={mapLayersOptions}
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
-                    onChange={(newValues: any[]) => {
-                      const values: [string, ...string[]] = newValues
-                        .filter(({ selected }) => selected)
-                        .map(({ value }) => value) as [string, ...string[]];
+                    value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
+                    onChange={(newValues: string[]) => {
                       clearErrors('mapLayers');
-                      if (!values.length) {
+                      if (!newValues.length) {
                         setError(
                           'mapLayers',
                           { type: 'custom', message: 'Map layers cannot be empty' },
@@ -361,7 +353,7 @@ const Collection = () => {
                         );
                         return;
                       }
-                      setValue('mapLayers', values);
+                      setValue('mapLayers', newValues);
                     }}
                   />
                 </div>

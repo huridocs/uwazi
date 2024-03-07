@@ -104,18 +104,6 @@ const GroupFormSidepanel = ({
     reset(defaultValues);
   };
 
-  const availableUsers = getAvailableUsers(users, selectedGroup);
-
-  const onChange = (options: { label: string; value: string; selected?: boolean }[]) => {
-    const selected = options
-      .filter(option => option.selected)
-      .map(option => ({
-        refId: option.value,
-      }));
-
-    setValue('members', selected, { shouldDirty: true });
-  };
-
   return (
     <Sidepanel
       isOpen={showSidepanel}
@@ -151,8 +139,17 @@ const GroupFormSidepanel = ({
                     Members
                   </Translate>
                 }
-                onChange={options => onChange(options)}
-                options={availableUsers || []}
+                onChange={selected =>
+                  setValue(
+                    'members',
+                    selected.map(s => ({ refId: s })),
+                    { shouldDirty: true }
+                  )
+                }
+                options={
+                  users?.map(user => ({ label: user.username, value: user._id as string })) || []
+                }
+                value={selectedGroup?.members?.map(member => member.refId) || []}
                 placeholder="Nothing selected"
               />
             </div>
