@@ -1,6 +1,0 @@
-.tw-datepicker {
-  @layer datepicker {
-    background: red;
-    @import url('flowbite/dist/flowbite.min.css');
-  }
-}

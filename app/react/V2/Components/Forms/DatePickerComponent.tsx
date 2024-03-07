@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Datepicker from 'flowbite-datepicker/Datepicker';
-import 'app/App/styles/thirdpart.css';
+import 'flowbite/dist/flowbite.min.css';
 
 interface DatePickerProps {
   language: string;
