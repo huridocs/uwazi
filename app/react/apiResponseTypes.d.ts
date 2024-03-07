@@ -7,8 +7,9 @@ import {
   SettingsLinkSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
+import { thesaurusValueSchema } from 'shared/types/thesaurusSchema';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -79,6 +80,21 @@ export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, 
   _id: string;
   templates: Template[];
   disableRowSelection: boolean;
+}
+
+export interface LocalThesaurusValueSchema
+  extends ThesaurusValueSchema,
+    Omit<thesaurusValueSchema, '_id'> {
+  _id?: string;
+  id?: string;
+  label: string;
+  values?: {
+    id?: string;
+    _id?: string;
+    label: string;
+    name?: string;
+    groupId?: string;
+  }[];
 }
 
 export interface ClientRelationshipType {

@@ -9,18 +9,17 @@ import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/Tabl
 import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import {
-  LocalThesaurusValueSchema,
-  ThesauriValueFormSidepanel,
-} from './components/ThesauriValueFormSidepanel';
+import { ThesauriValueFormSidepanel } from './components/ThesauriValueFormSidepanel';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
+import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
 import { mergeValues, sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ImportButton } from './components/ImportButton';
-import { isEqual } from 'lodash';
+import _, { isEqual } from 'lodash';
+import uniqueID from 'shared/uniqueID';
 
 const LabelHeader = () => <Translate>Label</Translate>;
 
@@ -34,20 +33,30 @@ const editTheasaurusLoader =
 const ThesaurusForm = () => {
   const revalidator = useRevalidator();
   const thesaurus = useLoaderData() as ThesaurusSchema;
-  const [editGroup, setEditGroup] = useState<ThesaurusValueSchema>();
-  const [editValue, setEditValue] = useState<ThesaurusValueSchema>();
+  const [editGroup, setEditGroup] = useState<LocalThesaurusValueSchema>();
+  const [editValue, setEditValue] = useState<LocalThesaurusValueSchema>();
   const [showConfirmNavigationModal, setShowConfirmNavigationModal] = useState(false);
   const [showThesauriValueFormSidepanel, setShowThesauriValueFormSidepanel] = useState(false);
   const [showThesauriGroupFormSidepanel, setShowThesauriGroupFormSidepanel] = useState(false);
-  const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<ThesaurusValueSchema>[]>(
-    []
-  );
-  const [thesaurusValues, setThesaurusValues] = useState<ThesaurusValueSchema[]>([]);
+  const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<
+    Row<LocalThesaurusValueSchema>[]
+  >([]);
+  const [thesaurusValues, setThesaurusValues] = useState<LocalThesaurusValueSchema[]>([]);
   const setNotifications = useSetRecoilState(notificationAtom);
 
   useEffect(() => {
-    setThesaurusValues(thesaurus?.values || []);
+    setThesaurusValues(
+      (thesaurus?.values?.map(val => ({
+        ...val,
+        _id: uniqueID(),
+        values: val.values?.map(thesValue => ({ ...thesValue, _id: uniqueID() })),
+      })) as LocalThesaurusValueSchema[]) || []
+    );
   }, [thesaurus]);
+
+  useEffect(() => {
+    console.log('New thesaurus: ', thesaurusValues);
+  }, [thesaurusValues]);
 
   const {
     watch,
@@ -70,21 +79,7 @@ const ThesaurusForm = () => {
     }
   }, [blocker, setShowConfirmNavigationModal]);
 
-  const deleteSelected = () => {
-    let newValues: ThesaurusValueSchema[] = thesaurusValues.filter(
-      value => !selectedThesaurusValue.find(tSelected => tSelected.original.id === value.id)
-    );
-
-    newValues = newValues.map(value => {
-      if (value.values) {
-        value.values = value.values.filter(
-          values => !selectedThesaurusValue.find(ttSelected => ttSelected.original.id === values.id)
-        );
-      }
-      return value;
-    });
-    setThesaurusValues(newValues);
-  };
+  const deleteSelected = () => {};
 
   const sortValues = () => {
     const valuesCopy = [...thesaurusValues];
@@ -92,51 +87,12 @@ const ThesaurusForm = () => {
     setThesaurusValues(valuesCopy);
   };
 
-  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
-    let currentValues: ThesaurusValueSchema[] = [...thesaurusValues];
-    if (editValue) {
-      // @ts-ignore
-      const editItem: ThesaurusValueSchema & { groupId?: string } = items[0];
-      if (editItem.groupId && editItem.groupId !== '') {
-        currentValues = currentValues.map(value => {
-          if (value.id === editItem.groupId) {
-            // Check the item does not exist
-            const existingItem = value.values?.find(eValue => eValue.id === editItem.id);
-            if (existingItem) {
-              value.values = value.values?.map(aValue =>
-                aValue.id === existingItem.id ? editItem : aValue
-              );
-            } else {
-              value.values?.push(editItem);
-            }
-          }
-          return value;
-        });
-        currentValues = currentValues.filter(cValue => cValue.id !== editItem.id);
-      } else {
-        currentValues = currentValues.map(value => {
-          if (value.id === (editItem as ThesaurusValueSchema).id) {
-            delete editItem.groupId;
-            return editItem;
-          }
-          return value;
-        }) as ThesaurusValueSchema[];
-      }
-      setEditValue(undefined);
-      setThesaurusValues(currentValues);
-      setShowThesauriValueFormSidepanel(false);
-      return;
-    }
-    currentValues = mergeValues(currentValues, items);
+  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {};
 
-    setThesaurusValues(currentValues);
-    setShowThesauriValueFormSidepanel(false);
-  };
-
-  const addGroupSubmit = (group: ThesaurusValueSchema) => {
+  const addGroupSubmit = (group: LocalThesaurusValueSchema) => {
     if (editGroup) {
       const updatedValues = thesaurusValues.map(item => {
-        if (item.id === group.id) {
+        if (item._id === group._id) {
           return group;
         }
         return item;
@@ -146,7 +102,11 @@ const ThesaurusForm = () => {
       setShowThesauriGroupFormSidepanel(false);
       return;
     }
-    setThesaurusValues(old => [...old, group]);
+    console.log('Adding group: ', group);
+    setThesaurusValues(old => {
+      debugger;
+      return [...old, { ...group }];
+    });
     setShowThesauriGroupFormSidepanel(false);
   };
 
@@ -168,6 +128,23 @@ const ThesaurusForm = () => {
     }
   };
 
+  const checkDNDBeforeCommit = (values: LocalThesaurusValueSchema[]) => {
+    const groups = values.filter(groupValue => Array.isArray(groupValue.values));
+    let groupsHaveChanged = false;
+    for (let i = 0; i < groups.length; i += 1) {
+      const group = groups[i];
+      const originalGroup = thesaurusValues.find(tv => tv._id === group._id);
+      if (group.values?.length !== originalGroup?.values?.length) {
+        groupsHaveChanged = true;
+        break;
+      }
+    }
+
+    if (!groupsHaveChanged) {
+      setThesaurusValues(values);
+    }
+  };
+
   const columnHelper = createColumnHelper<any>();
   const columns = [
     columnHelper.accessor('label', {
@@ -175,24 +152,24 @@ const ThesaurusForm = () => {
       header: LabelHeader,
       cell: ThesaurusValueLabel,
       meta: { headerClassName: 'w-11/12' },
-    }) as ColumnDef<ThesaurusValueSchema, 'label'>,
-    columnHelper.accessor('id', {
+    }) as ColumnDef<LocalThesaurusValueSchema, 'label'>,
+    columnHelper.accessor('_id', {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: {
-        action: async (row: Row<ThesaurusValueSchema>) => {
+        action: async (row: Row<LocalThesaurusValueSchema>) => {
           if (row.original.values && Array.isArray(row.original.values)) {
-            setEditGroup(row.original as ThesaurusValueSchema);
+            setEditGroup(row.original as LocalThesaurusValueSchema);
             setShowThesauriGroupFormSidepanel(true);
           } else {
-            await setEditValue(row.original as ThesaurusValueSchema);
+            await setEditValue(row.original as LocalThesaurusValueSchema);
             setShowThesauriValueFormSidepanel(true);
           }
         },
         headerClassName: 'text-center w-0',
       },
-    }) as ColumnDef<ThesaurusValueSchema, 'id'>,
+    }) as ColumnDef<LocalThesaurusValueSchema, '_id'>,
   ];
 
   return (
@@ -219,11 +196,11 @@ const ThesaurusForm = () => {
                   {...register('name', { required: true })}
                 />
               </div>
-              <Table<ThesaurusValueSchema>
+              <Table<LocalThesaurusValueSchema>
                 draggableRows
                 enableSelection
                 subRowsKey="values"
-                onChange={setThesaurusValues}
+                onChange={checkDNDBeforeCommit}
                 columns={columns}
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
@@ -244,7 +221,7 @@ const ThesaurusForm = () => {
                 <Translate>Remove</Translate>
               </Button>
               <Translate>Selected</Translate> {selectedThesaurusValue.length}{' '}
-              <Translate>of</Translate> {thesaurus.values?.length}
+              <Translate>of</Translate> {thesaurusValues.length}
             </div>
           ) : (
             <div className="flex justify-between w-full">

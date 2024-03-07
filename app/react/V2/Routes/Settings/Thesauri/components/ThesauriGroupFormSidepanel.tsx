@@ -4,13 +4,13 @@ import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
+import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
-  value?: ThesaurusValueSchema;
-  submit: SubmitHandler<ThesaurusValueSchema>;
+  value?: LocalThesaurusValueSchema;
+  submit: SubmitHandler<LocalThesaurusValueSchema>;
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -22,36 +22,64 @@ const ThesauriGroupFormSidepanel = ({
   showSidepanel,
   setShowSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
+  const defaultValues = {
+    label: '',
+    values: [{ label: '', _id: uniqueID() }],
+    _id: uniqueID(),
+  };
   const {
+    watch,
     reset,
     control,
     setValue,
     register,
-    getValues,
     handleSubmit,
     formState: { errors },
-  } = useForm<ThesaurusValueSchema & { groupId: string }>({
+  } = useForm<LocalThesaurusValueSchema>({
     mode: 'onSubmit',
   });
 
-  const { fields } = useFieldArray({ control, name: 'values' });
+  const { append, fields } = useFieldArray({ control, name: 'values', keyName: 'temporaryId' });
 
   useEffect(() => {
     if (value) {
       reset(value);
     } else {
-      reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
+      reset(defaultValues);
     }
   }, [value]);
 
-  const curateBeforeSubmit = (tValue: ThesaurusValueSchema) => {
+  useEffect(() => {
+    const subscription = watch(formData => {
+      const values = formData.values;
+      // @ts-ignore
+      if (values[values.length - 1].label !== '') {
+        // @ts-ignore
+        append({ label: '' }, { shouldFocus: false });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, append]);
+
+  const curateBeforeSubmit = (tValue: LocalThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
-    submit({ label: tValue.label, id: tValue.id, values: filteredValues });
-    reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
+    // console.log('Before submit group: ', filteredValues);
+    const v = filteredValues?.map(filteredValue => {
+      return { ...filteredValue, _id: 'somewthing' };
+    });
+    console.log(v);
+    const t = {
+      _id: tValue._id,
+      label: tValue.label,
+      values: v,
+    };
+    // console.log(t);
+    submit(t);
+    reset(defaultValues);
   };
 
   const closeSidepanel = () => {
-    reset({ label: '', values: [{ label: '', id: uniqueID() }], id: uniqueID() });
+    reset(defaultValues);
     setShowSidepanel(false);
     closePanel();
   };

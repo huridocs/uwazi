@@ -4,14 +4,13 @@ import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import uniqueID from 'shared/uniqueID';
+import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
 
-type LocalThesaurusValueSchema = ThesaurusValueSchema & { groupId?: string };
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
-  value?: ThesaurusValueSchema;
-  groups?: ThesaurusValueSchema[];
+  value?: LocalThesaurusValueSchema;
+  groups?: LocalThesaurusValueSchema[];
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   submit: SubmitHandler<LocalThesaurusValueSchema[]>;
@@ -25,7 +24,7 @@ const ThesauriValueFormSidepanel = ({
   showSidepanel,
   setShowSidepanel,
 }: ThesauriValueFormSidepanelProps) => {
-  const [parentGroup, setParentGroup] = useState<ThesaurusValueSchema | undefined>();
+  const [parentGroup, setParentGroup] = useState<LocalThesaurusValueSchema | undefined>();
 
   const { reset, control, register, handleSubmit, watch } = useForm<
     { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
@@ -41,8 +40,12 @@ const ThesauriValueFormSidepanel = ({
 
   useEffect(() => {
     const subscription = watch(formData => {
-      const values = formData.newValues ? formData.newValues : [formData];
+      const values = (formData as { newValues: LocalThesaurusValueSchema[] }).newValues
+        ? (formData as { newValues: LocalThesaurusValueSchema[] }).newValues
+        : [formData];
+      // @ts-ignore
       if (values[values.length - 1].label !== '') {
+        // @ts-ignore
         append({ label: '' }, { shouldFocus: false });
       }
     });
@@ -78,14 +81,14 @@ const ThesauriValueFormSidepanel = ({
                 label={<Translate>Group</Translate>}
                 // eslint-disable-next-line react/jsx-props-no-spreading
                 {...register(`newValues.${index}.groupId`)}
-                value={parentGroup ? parentGroup.id : undefined}
+                value={parentGroup ? parentGroup._id : undefined}
                 disabled={!!parentGroup}
                 options={[
                   { value: '', label: 'No Group', key: '0' },
                   ...groups.map(group => ({
-                    value: group.id as string,
+                    value: group._id as string,
                     label: group.label as string,
-                    key: group.id as string,
+                    key: group._id as string,
                   })),
                 ]}
               />
@@ -112,14 +115,14 @@ const ThesauriValueFormSidepanel = ({
               label={<Translate>Group</Translate>}
               // eslint-disable-next-line react/jsx-props-no-spreading
               {...register('groupId')}
-              value={parentGroup ? parentGroup.id : undefined}
+              value={parentGroup ? parentGroup._id : undefined}
               disabled
               options={[
                 { value: '', label: 'No Group', key: '0' },
                 ...groups.map(group => ({
-                  value: group.id as string,
+                  value: group._id as string,
                   label: group.label as string,
-                  key: group.id as string,
+                  key: group._id as string,
                 })),
               ]}
             />
@@ -140,16 +143,16 @@ const ThesauriValueFormSidepanel = ({
     if (!value) {
       const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
         .filter(newValue => newValue.label !== '')
-        .map(valueWithoutId => ({ ...valueWithoutId, id: uniqueID() }));
+        .map(valueWithoutId => ({ ...valueWithoutId, _id: uniqueID() }));
       submit(items);
       reset({ newValues: [{ label: '' }] });
       return;
     }
     if (parentGroup) {
-      (item as LocalThesaurusValueSchema).groupId = parentGroup.id;
+      (item as LocalThesaurusValueSchema).groupId = parentGroup._id;
     }
     const itemToSubmit = item as LocalThesaurusValueSchema;
-    submit([{ label: itemToSubmit.label, id: itemToSubmit.id, groupId: itemToSubmit.groupId }]);
+    submit([{ label: itemToSubmit.label, _id: itemToSubmit._id, groupId: itemToSubmit.groupId }]);
     reset({ newValues: [{ label: '' }] });
   };
 
