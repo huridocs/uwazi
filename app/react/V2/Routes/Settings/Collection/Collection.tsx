@@ -343,7 +343,7 @@ const Collection = () => {
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
                     value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
-                    onChange={(newValues: string[]) => {
+                    onChange={newValues => {
                       clearErrors('mapLayers');
                       if (!newValues.length) {
                         setError(
@@ -353,6 +353,7 @@ const Collection = () => {
                         );
                         return;
                       }
+                      //@ts-ignore
                       setValue('mapLayers', newValues);
                     }}
                   />
