@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
-import { isString, sortBy } from 'lodash';
+import { isString } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
 
-type Option = { label: string; value: string; selected?: boolean };
+type Option = { label: string; value: string };
 
 interface MultiSelectProps {
-  label: String | React.ReactNode;
+  label: string | React.ReactNode;
   options: Option[];
   disabled?: boolean;
   hasErrors?: boolean;
-  onChange?: (options: Option[]) => any;
-  placeholder?: String | React.ReactNode;
+  onChange?: (options: string[]) => any;
+  value: string[];
+  placeholder?: string | React.ReactNode;
   canBeEmpty?: boolean;
 }
 
@@ -30,8 +31,8 @@ const MultiSelect = ({
   onChange = () => {},
   placeholder = 'No options',
   canBeEmpty = true,
+  value,
 }: MultiSelectProps) => {
-  const [optionsState, setOptionsState] = useState<Option[]>(sortBy(options, 'label'));
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -39,7 +40,24 @@ const MultiSelect = ({
     strategy: 'absolute',
   });
 
-  const selectedOptions = optionsState.filter(option => option.selected);
+  const [currentValue, setCurrentValue] = useState<string[]>(value);
+
+  const optionIsSelected = (option: Option) => currentValue.includes(option.value);
+
+  const removeValue = (v: string) => {
+    const newValue = currentValue.filter(_v => _v !== v);
+    setCurrentValue(newValue);
+    onChange(newValue);
+  };
+
+  const selectOption = (option: Option) => {
+    const newValue = currentValue.includes(option.value)
+      ? currentValue.filter(v => v !== option.value)
+      : [...currentValue, option.value];
+
+    setCurrentValue(newValue);
+    onChange(newValue);
+  };
 
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-sm">
@@ -59,7 +77,7 @@ const MultiSelect = ({
           <Popover.Button
             ref={setReferenceElement}
             className=" text-primary-700 disabled:text-primary-300"
-            disabled={disabled}
+            disabled={disabled || options.length === 0}
           >
             <span className="sr-only">{t('System', 'Select', null, false)}</span>
             <PlusCircleIcon className="w-6 text-lg" />
@@ -75,26 +93,18 @@ const MultiSelect = ({
               className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow max-h-56 w-fit min-w-56"
               data-testid="multiselect-popover"
             >
-              {optionsState.map((option: Option) => (
+              {options.map((option: Option) => (
                 <li key={option.label} className="flex gap-2 py-1 align-top">
                   <Checkbox
                     className="cursor-pointer"
                     id={option.value}
-                    checked={Boolean(option.selected)}
+                    checked={optionIsSelected(option)}
                     disabled={
                       disabled ||
-                      (Boolean(option.selected) && !canBeEmpty && selectedOptions.length === 1)
+                      (optionIsSelected(option) && !canBeEmpty && currentValue.length === 1)
                     }
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      const isChecked = e.target.checked;
-                      const selected = optionsState.map(opt => {
-                        if (opt.value === option.value) {
-                          return { ...opt, selected: isChecked };
-                        }
-                        return opt;
-                      });
-                      setOptionsState(selected);
-                      onChange(selected);
+                    onChange={() => {
+                      selectOption(option);
                     }}
                   />
                   <label className="w-full cursor-pointer" htmlFor={option.value}>
@@ -108,9 +118,11 @@ const MultiSelect = ({
       </div>
 
       <div className="flex flex-wrap gap-2 p-4 min-h-fit">
-        {selectedOptions.length
-          ? selectedOptions.map((option: Option) => {
-              const isDisabled = disabled || (!canBeEmpty && selectedOptions.length === 1);
+        {currentValue.length
+          ? currentValue.map((v: string) => {
+              const option = options.find(opt => opt.value === v);
+              const isDisabled = disabled || (!canBeEmpty && value.length === 1);
+              if (!option) return null;
               return (
                 <Pill color="gray" key={option.value} className="flex flex-row gap-2">
                   <span className="text-gray-600">{option.label}</span>
@@ -123,14 +135,7 @@ const MultiSelect = ({
                     }`}
                     disabled={isDisabled}
                     onClick={() => {
-                      const selected = optionsState.map(opt => {
-                        if (opt.value === option.value) {
-                          return { value: opt.value, label: opt.label };
-                        }
-                        return opt;
-                      });
-                      setOptionsState(selected);
-                      onChange(selected);
+                      removeValue(v);
                     }}
                   >
                     <Translate className="sr-only">Remove</Translate>
