@@ -52,6 +52,7 @@ jobs:
       - name: Clone dummy services
         uses: actions/checkout@v2
         with:
+          ref: 99a6150d7537444e4c93a7a42ac241b1aba2a75e # downgraded to stable version without multiselect
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
       - run: python3 -m venv venv
