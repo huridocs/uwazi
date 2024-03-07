@@ -1,10 +1,35 @@
 import { ObjectId } from 'mongodb';
 
+interface Language {
+  _id?: ObjectId;
+  label: string;
+  key: 'es' | 'en';
+  default?: boolean;
+}
+
+interface Settings {
+  _id?: ObjectId;
+  languages?: Language[];
+}
+
+interface TranslationDBO {
+  _id: ObjectId;
+  language: 'es' | 'en';
+  key: string;
+  value: string;
+  context: {
+    type: 'Entity' | 'Relationship Type' | 'Uwazi UI' | 'Thesaurus';
+    label: string;
+    id: string;
+  };
+}
+
 interface Entity {
   _id?: ObjectId;
   sharedId?: string;
   title?: string;
   template?: ObjectId;
+  language?: string;
   [k: string]: unknown | undefined;
 }
 
@@ -53,6 +78,8 @@ interface Template {
 interface Fixture {
   entities: Entity[];
   templates: Template[];
+  settings: Settings[];
+  translationsV2: TranslationDBO[];
 }
 
-export type { Entity, Fixture, Template };
+export type { Entity, Fixture, Template, Settings, TranslationDBO, Language };

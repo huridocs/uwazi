@@ -1,5 +1,5 @@
 import { Db, ObjectId } from 'mongodb';
-import { Template } from './types';
+import { Language, Settings, Template, TranslationDBO } from './types';
 
 const recoveryTemplateId = new ObjectId();
 
@@ -36,6 +36,39 @@ const recoveryTemplate: Template = {
   color: '##ff0000',
 };
 
+const recoveryTemplateTranslationContext: TranslationDBO['context'] = {
+  type: 'Entity',
+  label: recoveryTemplate.name,
+  id: recoveryTemplate._id!.toString(),
+};
+
+const recoveryTemplateTranslationsForLanguage = (languageKey: Language['key']) => [
+  {
+    _id: new ObjectId(),
+    language: languageKey,
+    key: 'Title',
+    value: 'Title',
+    context: recoveryTemplateTranslationContext,
+  },
+  {
+    _id: new ObjectId(),
+    language: languageKey,
+    key: recoveryTemplate.name,
+    value: recoveryTemplate.name,
+    context: recoveryTemplateTranslationContext,
+  },
+];
+
+const insertRecoveryTemplateTranslations = async (db: Db) => {
+  const settings = await db.collection<Settings>('settings').findOne();
+  const translations = settings?.languages
+    ?.map(l => recoveryTemplateTranslationsForLanguage(l.key))
+    .flat();
+  if (translations) {
+    await db.collection<TranslationDBO>('translationsV2').insertMany(translations);
+  }
+};
+
 export default {
   delta: 162,
 
@@ -58,6 +91,7 @@ export default {
     if (!preliminaryUpdateCount) return;
 
     await db.collection<Template>('templates').insertOne(recoveryTemplate);
+    await insertRecoveryTemplateTranslations(db);
 
     const updateResult = await db
       .collection('entities')

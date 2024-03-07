@@ -2,13 +2,14 @@ import { Db, ObjectId } from 'mongodb';
 
 import testingDB from 'api/utils/testing_db';
 import migration from '../index';
-import { Entity, Fixture, Template } from '../types';
+import { Entity, Fixture, Template, TranslationDBO } from '../types';
 import { fixtures, correctFixture, template1, template2, template3 } from './fixtures';
 
 let db: Db | null;
 let entityTemplatesInDB: (ObjectId | undefined)[] = [];
 let newTemplate: Template | null;
 let newTemplateId: ObjectId | null;
+let translations: TranslationDBO[] = [];
 
 const initTest = async (fixture: Fixture) => {
   await testingDB.setupFixturesAndContext(fixture);
@@ -22,6 +23,7 @@ const initTest = async (fixture: Fixture) => {
     .collection<Template>('templates')
     .findOne({ name: '__recovered_entities__' });
   newTemplateId = newTemplate?._id || null;
+  translations = await db.collection<TranslationDBO>('translationsV2').find({}).toArray();
 };
 
 beforeAll(async () => {
@@ -47,8 +49,12 @@ describe('migration test', () => {
       expect(newTemplate).toBe(null);
     });
 
+    it('should not change translations', async () => {
+      expect(translations).toEqual(correctFixture.translationsV2);
+    });
+
     it('should not change the entities', async () => {
-      expect(entityTemplatesInDB).toEqual([template1, template2, template3]);
+      expect(entityTemplatesInDB).toEqual(correctFixture.entities.map(e => e.template));
     });
 
     it('should not signal reindex', () => {
@@ -96,8 +102,54 @@ describe('migration test', () => {
       });
     });
 
+    it('should add the new template to the translations', async () => {
+      const expectedContext = {
+        type: 'Entity',
+        label: '__recovered_entities__',
+        id: newTemplateId!.toString(),
+      };
+      expect(translations).toEqual([
+        ...fixtures.translationsV2,
+        {
+          _id: expect.any(ObjectId),
+          language: 'en',
+          key: 'Title',
+          value: 'Title',
+          context: expectedContext,
+        },
+        {
+          _id: expect.any(ObjectId),
+          language: 'en',
+          key: '__recovered_entities__',
+          value: '__recovered_entities__',
+          context: expectedContext,
+        },
+        {
+          _id: expect.any(ObjectId),
+          language: 'es',
+          key: 'Title',
+          value: 'Title',
+          context: expectedContext,
+        },
+        {
+          _id: expect.any(ObjectId),
+          language: 'es',
+          key: '__recovered_entities__',
+          value: '__recovered_entities__',
+          context: expectedContext,
+        },
+      ]);
+    });
+
     it('should add the new template to the missing entities', async () => {
       expect(entityTemplatesInDB).toEqual([
+        template1,
+        template2,
+        newTemplateId,
+        template2,
+        newTemplateId,
+        template3,
+        newTemplateId,
         template1,
         template2,
         newTemplateId,
