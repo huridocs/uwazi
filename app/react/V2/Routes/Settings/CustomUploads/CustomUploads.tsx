@@ -30,8 +30,11 @@ const CustomUploads = () => {
   const [uploadingFile, setUploadingFile] = useState<string>();
   const [uploadProgress, setUploadProgress] = useState<number>();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
-  const [uploadsModal, setUploadsModal] = useState(false);
+  const [uploadQueueResponse, setUploadQueueResponse] = useState<FileType[] | FetchResponseError[]>(
+    []
+  );
   const [confirmationModal, setConfirmationModal] = useState(false);
+  const [uploadsModal, setUploadsModal] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
     items: Row<FileType>[] | FileType[];
@@ -57,29 +60,30 @@ const CustomUploads = () => {
   const uploadFile = async (file: File) => {
     setUploadingFile(file.name);
     setUploadProgress(0);
-
     return upload(file, 'custom', progress => {
       setUploadProgress(progress);
     });
   };
 
-  const uploadNextFile = async (filesToUpload: File[]) => {
+  const uploadQueue = async (filesToUpload: File[]) => {
     if (filesToUpload.length === 0) {
+      notify(uploadQueueResponse, <Translate>Uploaded custom file</Translate>);
       return;
     }
-
     const file = filesToUpload.shift();
     if (file) {
-      await uploadFile(file);
-      await uploadNextFile(filesToUpload);
+      const result = await uploadFile(file);
+      setUploadQueueResponse([...uploadQueueResponse, result]);
+      revalidator.revalidate();
+      await uploadQueue(filesToUpload);
     }
   };
 
   const handleSave = async () => {
     setUploadsModal(false);
-    await uploadNextFile(uploads);
-    // notify(responses, <Translate>Uploaded custom file</Translate>);
-    revalidator.revalidate();
+    await uploadQueue([...uploads]);
+    setUploadingFile(undefined);
+    setUploadProgress(0);
   };
 
   const handleDelete = async (file: FileType) => {
@@ -118,16 +122,19 @@ const CustomUploads = () => {
             columns={createColumns(handleDelete)}
             data={files}
             title={<Translate>Custom Uploads</Translate>}
-            initialState={{ sorting: [{ id: 'originalname', desc: false }] }}
           />
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2 justify-end items-center">
           {uploadingFile && (
-            <div className="grow">
+            <div className="flex grow">
               <Translate>Uploading</Translate>...&nbsp;
               <span className="font-semibold">{uploadingFile}</span>&nbsp;
-              {uploadProgress}%
+              {uploadProgress}%&nbsp;
+              <span className="flex flex-nowrap before:content-['('] after:content-[')']">
+                {uploads.length - uploadQueueResponse.length}&nbsp;
+                <Translate>remaining files</Translate>
+              </span>
             </div>
           )}
           {selectedRows.length > 0 && (

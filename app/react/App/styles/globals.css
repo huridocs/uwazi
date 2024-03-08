@@ -4641,6 +4641,11 @@ input:checked + .toggle-bg {
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 }
 
+.before\:content-\[\'\(\'\]::before {
+  --tw-content: '(';
+  content: var(--tw-content);
+}
+
 .after\:absolute::after {
   content: var(--tw-content);
   position: absolute;
@@ -4744,6 +4749,11 @@ input:checked + .toggle-bg {
 
 .after\:content-\[\'\'\]::after {
   --tw-content: '';
+  content: var(--tw-content);
+}
+
+.after\:content-\[\'\)\'\]::after {
+  --tw-content: ')';
   content: var(--tw-content);
 }
 
