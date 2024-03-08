@@ -33,7 +33,7 @@ const recoveryTemplate: Template = {
     },
   ],
   properties: [],
-  color: '##ff0000',
+  color: '#ff0000',
 };
 
 const recoveryTemplateTranslationContext: TranslationDBO['context'] = {
