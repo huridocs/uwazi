@@ -156,7 +156,11 @@ describe('entities', () => {
       expect(createdDocument.user.equals(user._id)).toBe(true);
       expect(createdDocument.language).toEqual('en');
       expect(createdDocument.fullText).not.toBeDefined();
-      expect(createdDocument.metadata).toEqual({});
+      expect(createdDocument.metadata).toEqual({
+        property1: [],
+        property2: [],
+        property3: [],
+      });
       expect(createdDocument.template).toBeDefined();
     });
 
@@ -544,14 +548,18 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        description: [],
         enemies: [],
         field_nested: [],
         friends: [],
         multidate: [],
         multidaterange: [],
         multiselect: [],
-        select: [],
         numeric: [],
+        property1: [],
+        property2: [],
+        select: [],
+        text: [],
       });
     });
 
