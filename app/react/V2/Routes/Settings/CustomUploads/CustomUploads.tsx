@@ -1,5 +1,5 @@
 /* eslint-disable max-statements */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Row } from '@tanstack/react-table';
@@ -7,7 +7,7 @@ import { useSetRecoilState } from 'recoil';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
-import { getByType, upload, remove } from 'V2/api/files';
+import { getByType, remove, UploadService } from 'V2/api/files';
 import { Button, ConfirmationModal, Modal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { FileDropzone } from 'V2/Components/Forms';
@@ -22,6 +22,8 @@ const customUploadsLoader =
     return files;
   };
 
+const upload = new UploadService('custom');
+
 const CustomUploads = () => {
   const files = useLoaderData() as FileType[];
   const setNotifications = useSetRecoilState(notificationAtom);
@@ -30,6 +32,7 @@ const CustomUploads = () => {
   const [uploadingFile, setUploadingFile] = useState<string>();
   const [uploadProgress, setUploadProgress] = useState<number>();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
+  const [interrupt, setInterrupt] = useState(false);
   const [uploadQueueResponse, setUploadQueueResponse] = useState<FileType[] | FetchResponseError[]>(
     []
   );
@@ -42,6 +45,12 @@ const CustomUploads = () => {
     action: () => {},
     items: [],
   });
+
+  useEffect(() => {
+    if (interrupt) {
+      upload.abort();
+    }
+  }, [interrupt]);
 
   const notify = (responses: FileType[] | FetchResponseError[], message: React.ReactNode) => {
     const hasErrors = responses.find(response => response instanceof FetchResponseError);
@@ -60,9 +69,13 @@ const CustomUploads = () => {
   const uploadFile = async (file: File) => {
     setUploadingFile(file.name);
     setUploadProgress(0);
-    return upload(file, 'custom', progress => {
-      setUploadProgress(progress);
+    upload.setFile(file);
+
+    const result = await upload.start(percent => {
+      setUploadProgress(percent);
     });
+
+    return result;
   };
 
   const uploadQueue = async (filesToUpload: File[]) => {
@@ -151,6 +164,9 @@ const CustomUploads = () => {
           )}
           <Button styling="solid" color="primary" onClick={async () => setUploadsModal(true)}>
             <Translate>Import asset</Translate>
+          </Button>
+          <Button className="w-1/2" onClick={async () => setInterrupt(true)}>
+            <Translate>Cancel</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>
