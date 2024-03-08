@@ -18,8 +18,8 @@ const ImportButton = ({
       try {
         await importThesaurus(thesaurus, e.target.files[0]);
         onSuccess();
-      } catch (e) {
-        onFailure(e);
+      } catch (ex) {
+        onFailure(ex);
       }
     }
   };

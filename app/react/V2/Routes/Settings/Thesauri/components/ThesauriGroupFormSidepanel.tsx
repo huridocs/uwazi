@@ -53,7 +53,7 @@ const ThesauriGroupFormSidepanel = ({
     const subscription = watch(formData => {
       const values = formData.values;
       // @ts-ignore
-      if (values[values.length - 1].label !== '') {
+      if (Boolean(values.length) && values[values.length - 1].label !== '') {
         // @ts-ignore
         append({ label: '' }, { shouldFocus: false });
       }
@@ -153,7 +153,7 @@ const ThesauriGroupFormSidepanel = ({
             >
               <Translate>Cancel</Translate>
             </Button>
-            <Button className="grow" type="submit" data-testid="menu-form-submit">
+            <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
               <Translate>Add</Translate>
             </Button>
           </div>

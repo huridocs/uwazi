@@ -2,29 +2,29 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import { httpRequest } from 'shared/superagent';
 import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
 
-const mergeValues = (
-  oldItems: LocalThesaurusValueSchema[],
-  newItems: LocalThesaurusValueSchema[]
-): LocalThesaurusValueSchema[] => {
-  const itemsWithGroups = newItems.filter(item => item.groupId && item.groupId !== '');
-  const itemsWithoutGroups = newItems
-    .filter(item => !item.groupId || item.groupId === '')
-    .map(item => {
-      delete item.groupId;
-      return item;
-    });
-  oldItems = oldItems.map(value => {
-    const groupItem = itemsWithGroups.find(item => value._id === item.groupId);
-    if (groupItem) {
-      delete groupItem.groupId;
-      value.values?.push(groupItem as LocalThesaurusValueSchema);
-      return value;
-    }
-    return value;
-  });
+// const mergeValues = (
+//   oldItems: LocalThesaurusValueSchema[],
+//   newItems: LocalThesaurusValueSchema[]
+// ): LocalThesaurusValueSchema[] => {
+//   const itemsWithGroups = newItems.filter(item => item.groupId && item.groupId !== '');
+//   const itemsWithoutGroups = newItems
+//     .filter(item => !item.groupId || item.groupId === '')
+//     .map(item => {
+//       delete item.groupId;
+//       return item;
+//     });
+//   oldItems = oldItems.map(value => {
+//     const groupItem = itemsWithGroups.find(item => value._id === item.groupId);
+//     if (groupItem) {
+//       delete groupItem.groupId;
+//       value.values?.push(groupItem as LocalThesaurusValueSchema);
+//       return value;
+//     }
+//     return value;
+//   });
 
-  return [...oldItems, ...itemsWithoutGroups] as LocalThesaurusValueSchema[];
-};
+//   return [...oldItems, ...itemsWithoutGroups] as LocalThesaurusValueSchema[];
+// };
 
 const sanitizeThesaurusValues = (
   thesaurus: ThesaurusSchema,
@@ -79,4 +79,4 @@ const importThesaurus = async (
   return (await httpRequest('thesauris', fields, headers, file)) as ThesaurusSchema;
 };
 
-export { mergeValues, sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };
+export { sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };

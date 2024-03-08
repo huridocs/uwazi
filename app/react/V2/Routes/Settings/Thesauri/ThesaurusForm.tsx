@@ -7,18 +7,25 @@ import { Button, Table } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { ActionHeader, EditButton, ThesaurusValueLabel } from './components/TableComponents';
 import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
-import { Link, LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
+import {
+  Link,
+  LoaderFunction,
+  useBlocker,
+  useLoaderData,
+  useNavigate,
+  useRevalidator,
+} from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { ThesauriValueFormSidepanel } from './components/ThesauriValueFormSidepanel';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
 import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
-import { mergeValues, sanitizeThesaurusValues } from './helpers';
+import { sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
 import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ImportButton } from './components/ImportButton';
-import _, { isEqual } from 'lodash';
+import { unionWith } from 'lodash';
 import uniqueID from 'shared/uniqueID';
 
 const LabelHeader = () => <Translate>Label</Translate>;
@@ -32,6 +39,7 @@ const editTheasaurusLoader =
 
 const ThesaurusForm = () => {
   const revalidator = useRevalidator();
+  const navigate = useNavigate();
   const thesaurus = useLoaderData() as ThesaurusSchema;
   const [editGroup, setEditGroup] = useState<LocalThesaurusValueSchema>();
   const [editValue, setEditValue] = useState<LocalThesaurusValueSchema>();
@@ -65,13 +73,15 @@ const ThesaurusForm = () => {
     mode: 'onSubmit',
   });
 
-  const blocker = useBlocker(() => {
+  const blocker = useBlocker(({ nextLocation }) => {
     let shouldBlock = false;
     if (thesaurus) {
       shouldBlock =
-        !isEqual(thesaurus.values, thesaurusValues) || getValues().name !== thesaurus.name;
+        thesaurus.values?.length !== thesaurusValues.length || getValues().name !== thesaurus.name;
     } else {
-      shouldBlock = Boolean(thesaurusValues.length) || getValues().name !== '';
+      shouldBlock =
+        (Boolean(thesaurusValues.length) || getValues().name !== '') &&
+        !nextLocation.pathname.includes('thesauri/edit/');
     }
     return shouldBlock;
   });
@@ -115,7 +125,7 @@ const ThesaurusForm = () => {
     );
     const valuesWithGroupedItems = thesaurusValues.map(value => {
       const newItemsForThisGroup = itemsWithGroups.filter(gItem => gItem.groupId === value._id);
-      const uniqueValues = _.unionWith(
+      const uniqueValues = unionWith(
         value.values,
         newItemsForThisGroup,
         (f, s) => f.label === s.label
@@ -150,18 +160,21 @@ const ThesaurusForm = () => {
   const formSubmit: SubmitHandler<ThesaurusSchema> = async data => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, thesaurusValues);
     try {
-      await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
+      const savedThesaurus = await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
       setNotifications({
         type: 'success',
-        text: <Translate>Thesauri updated.</Translate>,
+        text: thesaurus ? (
+          <Translate>Thesauri updated.</Translate>
+        ) : (
+          <Translate>Thesauri added.</Translate>
+        ),
       });
+      navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
     } catch (e) {
       setNotifications({
         type: 'error',
         text: <Translate>Error updating thesauri.</Translate>,
       });
-    } finally {
-      revalidator.revalidate();
     }
   };
 
