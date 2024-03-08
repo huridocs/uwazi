@@ -114,9 +114,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
         await prev;
         if (entity[metadataParent]) {
           toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
-          toSyncProperties.forEach(p => {
-            toSave[metadataParent][p] = entity[metadataParent][p] || [];
-          });
+          toSyncProperties
+            .filter(p => entity[metadataParent][p])
+            .forEach(p => {
+              toSave[metadataParent][p] = entity[metadataParent][p];
+            });
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
             toSave.language,
