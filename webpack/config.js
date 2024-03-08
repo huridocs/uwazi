@@ -115,9 +115,20 @@ module.exports = production => {
               loader: 'css-loader',
               options: { import: true, url: false, sourceMap: true, esModule: true },
             },
-            'postcss-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: {
+                    'postcss-prefix-selector': {
+                      prefix: '.tw-datepicker',
+                    },
+                  },
+                },
+              },
+            },
           ],
-        },  
+        },
       ],
     },
     plugins: [
