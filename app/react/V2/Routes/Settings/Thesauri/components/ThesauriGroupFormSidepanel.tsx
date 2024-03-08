@@ -39,7 +39,7 @@ const ThesauriGroupFormSidepanel = ({
     mode: 'onSubmit',
   });
 
-  const { append, fields } = useFieldArray({ control, name: 'values', keyName: 'temporaryId' });
+  const { append, fields } = useFieldArray({ control, name: 'values', keyName: 'tempId' });
 
   useEffect(() => {
     if (value) {
@@ -63,18 +63,15 @@ const ThesauriGroupFormSidepanel = ({
 
   const curateBeforeSubmit = (tValue: LocalThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
-    // console.log('Before submit group: ', filteredValues);
-    const v = filteredValues?.map(filteredValue => {
-      return { ...filteredValue, _id: 'somewthing' };
+    const values = filteredValues?.map(filteredValue => {
+      return { ...filteredValue, _id: uniqueID() };
     });
-    console.log(v);
-    const t = {
+    const group = {
       _id: tValue._id,
       label: tValue.label,
-      values: v,
+      values,
     };
-    // console.log(t);
-    submit(t);
+    submit(group);
     reset(defaultValues);
   };
 
@@ -86,8 +83,8 @@ const ThesauriGroupFormSidepanel = ({
 
   const renderItem = () =>
     fields.map((localValue, index) => (
-      <div className="mt-2" key={localValue.id}>
-        <Card title={<Translate>Item</Translate>} key={localValue.id}>
+      <div className="mt-2" key={localValue.tempId}>
+        <Card title={<Translate>Item</Translate>}>
           <div className="flex flex-col gap-4">
             <InputField
               id="item-name"

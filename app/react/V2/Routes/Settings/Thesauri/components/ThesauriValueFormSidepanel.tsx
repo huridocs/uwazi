@@ -32,7 +32,7 @@ const ThesauriValueFormSidepanel = ({
     mode: 'onSubmit',
   });
 
-  const { append, fields } = useFieldArray({ control, name: 'newValues' });
+  const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'tempId' });
 
   useEffect(() => {
     reset(value || { newValues: [{ label: '' }] });
@@ -64,7 +64,7 @@ const ThesauriValueFormSidepanel = ({
   const renderInputs = () => {
     if (!value) {
       return fields.map((localValue, index) => (
-        <Card title={<Translate>Item</Translate>} key={localValue.id}>
+        <Card title={<Translate>Item</Translate>} key={localValue.tempId}>
           <div className="flex flex-col gap-4">
             <InputField
               id="item-name"
@@ -143,7 +143,9 @@ const ThesauriValueFormSidepanel = ({
     if (!value) {
       const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
         .filter(newValue => newValue.label !== '')
-        .map(valueWithoutId => ({ ...valueWithoutId, _id: uniqueID() }));
+        .map(valueWithoutId => {
+          return { ...valueWithoutId, _id: uniqueID() };
+        });
       submit(items);
       reset({ newValues: [{ label: '' }] });
       return;

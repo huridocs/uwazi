@@ -54,10 +54,6 @@ const ThesaurusForm = () => {
     );
   }, [thesaurus]);
 
-  useEffect(() => {
-    console.log('New thesaurus: ', thesaurusValues);
-  }, [thesaurusValues]);
-
   const {
     watch,
     register,
@@ -70,7 +66,14 @@ const ThesaurusForm = () => {
   });
 
   const blocker = useBlocker(() => {
-    return !isEqual(thesaurus.values, thesaurusValues) || getValues().name !== thesaurus.name;
+    let shouldBlock = false;
+    if (thesaurus) {
+      shouldBlock =
+        !isEqual(thesaurus.values, thesaurusValues) || getValues().name !== thesaurus.name;
+    } else {
+      shouldBlock = Boolean(thesaurusValues.length) || getValues().name !== '';
+    }
+    return shouldBlock;
   });
 
   useMemo(() => {
@@ -79,7 +82,25 @@ const ThesaurusForm = () => {
     }
   }, [blocker, setShowConfirmNavigationModal]);
 
-  const deleteSelected = () => {};
+  const deleteSelected = () => {
+    const parentsDeleted = thesaurusValues.filter(currentValue => {
+      return !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id);
+    });
+
+    const childrenDeleted = parentsDeleted.map(singleThesaurus => {
+      if (singleThesaurus.values) {
+        const newValues = singleThesaurus.values?.filter(currentGroupItem => {
+          return !selectedThesaurusValue.find(
+            selected => selected.original.label === currentGroupItem.label
+          );
+        });
+        singleThesaurus.values = newValues;
+      }
+      return singleThesaurus;
+    });
+
+    setThesaurusValues(childrenDeleted);
+  };
 
   const sortValues = () => {
     const valuesCopy = [...thesaurusValues];
@@ -87,7 +108,25 @@ const ThesaurusForm = () => {
     setThesaurusValues(valuesCopy);
   };
 
-  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {};
+  const addItemSubmit = (items: LocalThesaurusValueSchema[]) => {
+    const itemsWithoutGroups = items.filter(item => !item.groupId || item.groupId === '');
+    const itemsWithGroups = items.filter(
+      groupedItem => groupedItem.groupId && groupedItem.groupId !== ''
+    );
+    const valuesWithGroupedItems = thesaurusValues.map(value => {
+      const newItemsForThisGroup = itemsWithGroups.filter(gItem => gItem.groupId === value._id);
+      const uniqueValues = _.unionWith(
+        value.values,
+        newItemsForThisGroup,
+        (f, s) => f.label === s.label
+      );
+      value.values = uniqueValues;
+      return value;
+    });
+    const newItems = [...valuesWithGroupedItems, ...itemsWithoutGroups];
+    setThesaurusValues(newItems);
+    setShowThesauriValueFormSidepanel(false);
+  };
 
   const addGroupSubmit = (group: LocalThesaurusValueSchema) => {
     if (editGroup) {
@@ -102,9 +141,7 @@ const ThesaurusForm = () => {
       setShowThesauriGroupFormSidepanel(false);
       return;
     }
-    console.log('Adding group: ', group);
     setThesaurusValues(old => {
-      debugger;
       return [...old, { ...group }];
     });
     setShowThesauriGroupFormSidepanel(false);
