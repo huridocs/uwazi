@@ -91,8 +91,8 @@ describe('Collection', () => {
   });
 
   it('should whitelist templates successfully', () => {
-    cy.get('[data-testid="pill-comp"] > span').eq(0).should('have.text', 'Causa');
-    cy.get('[data-testid="pill-comp"] > span').eq(1).should('have.text', 'Mecanismo');
+    cy.get('[data-testid="pill-comp"] > span').eq(0).should('have.text', 'Mecanismo');
+    cy.get('[data-testid="pill-comp"] > span').eq(1).should('have.text', 'Causa');
   });
 
   it('should have changed all the buttons', () => {
