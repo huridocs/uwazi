@@ -27,6 +27,8 @@ const CustomUploads = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
   const [uploads, setUploads] = useState<File[]>([]);
+  const [uploadingFile, setUploadingFile] = useState<string>();
+  const [uploadProgress, setUploadProgress] = useState<number>();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [uploadsModal, setUploadsModal] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(false);
@@ -52,12 +54,31 @@ const CustomUploads = () => {
     setUploads([]);
   };
 
+  const uploadFile = async (file: File) => {
+    setUploadingFile(file.name);
+    setUploadProgress(0);
+
+    return upload(file, 'custom', progress => {
+      setUploadProgress(progress);
+    });
+  };
+
+  const uploadNextFile = async (filesToUpload: File[]) => {
+    if (filesToUpload.length === 0) {
+      return;
+    }
+
+    const file = filesToUpload.shift();
+    if (file) {
+      await uploadFile(file);
+      await uploadNextFile(filesToUpload);
+    }
+  };
+
   const handleSave = async () => {
     setUploadsModal(false);
-    const responses = await Promise.all(
-      uploads.map(async file => upload(file, 'custom', progress => {}))
-    );
-    notify(responses, <Translate>Uploaded custom file</Translate>);
+    await uploadNextFile(uploads);
+    // notify(responses, <Translate>Uploaded custom file</Translate>);
     revalidator.revalidate();
   };
 
@@ -101,7 +122,14 @@ const CustomUploads = () => {
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="flex gap-2 justify-end">
+        <SettingsContent.Footer className="flex gap-2 justify-end items-center">
+          {uploadingFile && (
+            <div className="grow">
+              <Translate>Uploading</Translate>...&nbsp;
+              <span className="font-semibold">{uploadingFile}</span>&nbsp;
+              {uploadProgress}%
+            </div>
+          )}
           {selectedRows.length > 0 && (
             <Button
               styling="solid"
@@ -139,19 +167,21 @@ const CustomUploads = () => {
             />
           </Modal.Body>
           <Modal.Footer>
-            <div className="flex gap-4 justify-around w-full">
-              <Button
-                className="w-1/2"
-                styling="outline"
-                onClick={() => {
-                  handleCancel();
-                }}
-              >
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button className="w-1/2" onClick={async () => handleSave()}>
-                <Translate>Add</Translate>
-              </Button>
+            <div className="flex w-full">
+              <div className="flex gap-4">
+                <Button
+                  className="w-1/2"
+                  styling="outline"
+                  onClick={() => {
+                    handleCancel();
+                  }}
+                >
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button className="w-1/2" onClick={async () => handleSave()}>
+                  <Translate>Add</Translate>
+                </Button>
+              </div>
             </div>
           </Modal.Footer>
         </Modal>

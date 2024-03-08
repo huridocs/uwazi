@@ -52,7 +52,7 @@ const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseErr
 const upload = async (
   file: File,
   endpoint: 'attachment' | 'custom' | 'document',
-  onProgress?: (percent: number) => void
+  onProgress?: (percent: number, total?: number) => void
 ): Promise<FileType | FetchResponseError> => {
   const route = `${APIURL}files/upload/${endpoint}`;
   try {
@@ -63,7 +63,7 @@ const upload = async (
       .attach('file', file)
       .on('progress', event => {
         if (onProgress && event.percent) {
-          onProgress(Math.floor(event.percent));
+          onProgress(Math.floor(event.percent), event.total);
         }
       });
 
