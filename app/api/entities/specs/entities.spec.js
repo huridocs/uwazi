@@ -724,6 +724,38 @@ describe('entities', () => {
       const doc = await entities.getById('shared', 'en');
       expect(doc.metadata.numeric).toEqual(undefined);
     });
+
+    it('should supply empty arrays for missing metadata, for all languages', async () => {
+      const user = { _id: db.id() };
+      const doc1 = {
+        title: 'newEntity',
+        metadata: { text: [{ value: 'text' }], numeric: [{ value: 1 }] },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { user, language: 'en' });
+      const docs = await entities.get({ title: 'newEntity' });
+      expect(docs.length).toBe(3);
+      expect(docs.map(d => d.language).sort()).toEqual(['en', 'es', 'pt']);
+      docs.forEach(doc => {
+        expect(doc.metadata).toEqual({
+          text: [{ value: 'text' }],
+          property1: [],
+          property2: [],
+          description: [],
+          select: [],
+          multiselect: [],
+          date: [],
+          multidate: [],
+          multidaterange: [],
+          daterange: [],
+          friends: [],
+          enemies: [],
+          field_nested: [],
+          numeric: [{ value: 1 }],
+        });
+      });
+    });
   });
 
   describe('get', () => {

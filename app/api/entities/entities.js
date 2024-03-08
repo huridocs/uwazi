@@ -226,6 +226,10 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
+    if (!sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, { [name]: [] });
+    }
+
     if (
       [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
       sanitizedMetadata[name]
