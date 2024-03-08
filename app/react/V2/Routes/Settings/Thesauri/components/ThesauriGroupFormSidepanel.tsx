@@ -5,14 +5,13 @@ import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import uniqueID from 'shared/uniqueID';
-import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
+import { ClientThesaurusValueSchema } from 'app/apiResponseTypes';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
-  value?: LocalThesaurusValueSchema;
-  submit: SubmitHandler<LocalThesaurusValueSchema>;
+  value?: ClientThesaurusValueSchema;
+  submit: SubmitHandler<ClientThesaurusValueSchema>;
   showSidepanel: boolean;
-  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ThesauriGroupFormSidepanel = ({
@@ -20,7 +19,6 @@ const ThesauriGroupFormSidepanel = ({
   closePanel,
   value,
   showSidepanel,
-  setShowSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
   const defaultValues = {
     label: '',
@@ -35,7 +33,7 @@ const ThesauriGroupFormSidepanel = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LocalThesaurusValueSchema>({
+  } = useForm<ClientThesaurusValueSchema>({
     mode: 'onSubmit',
   });
 
@@ -61,7 +59,7 @@ const ThesauriGroupFormSidepanel = ({
     return () => subscription.unsubscribe();
   }, [watch, append]);
 
-  const curateBeforeSubmit = (tValue: LocalThesaurusValueSchema) => {
+  const curateBeforeSubmit = (tValue: ClientThesaurusValueSchema) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
     const values = filteredValues?.map(filteredValue => {
       return { ...filteredValue, _id: uniqueID() };
@@ -73,11 +71,6 @@ const ThesauriGroupFormSidepanel = ({
     };
     submit(group);
     reset(defaultValues);
-  };
-
-  const closeSidepanel = () => {
-    reset(defaultValues);
-    setShowSidepanel(false);
     closePanel();
   };
 
@@ -101,7 +94,7 @@ const ThesauriGroupFormSidepanel = ({
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={closeSidepanel}
+      closeSidepanelFunction={closePanel}
       title={value ? <Translate>Edit group</Translate> : <Translate>Add group</Translate>}
     >
       <form

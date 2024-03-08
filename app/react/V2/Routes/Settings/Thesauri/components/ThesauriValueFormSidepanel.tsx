@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import uniqueID from 'shared/uniqueID';
-import { LocalThesaurusValueSchema } from 'app/apiResponseTypes';
+import { ClientThesaurusValue } from 'app/apiResponseTypes';
+
+interface FormTheasauriValue extends ClientThesaurusValue {
+  groupId?: string;
+}
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
-  value?: LocalThesaurusValueSchema;
-  groups?: LocalThesaurusValueSchema[];
+  value: FormTheasauriValue[];
+  groups?: FormTheasauriValue[];
   showSidepanel: boolean;
-  setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  submit: SubmitHandler<LocalThesaurusValueSchema[]>;
+  submit: SubmitHandler<ClientThesaurusValue[]>;
 }
 
 const ThesauriValueFormSidepanel = ({
@@ -22,26 +24,26 @@ const ThesauriValueFormSidepanel = ({
   groups,
   value,
   showSidepanel,
-  setShowSidepanel,
 }: ThesauriValueFormSidepanelProps) => {
-  const [parentGroup, setParentGroup] = useState<LocalThesaurusValueSchema | undefined>();
-
-  const { reset, control, register, handleSubmit, watch } = useForm<
-    { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
-  >({
+  const { reset, control, register, handleSubmit, watch } = useForm<{
+    newValues: FormTheasauriValue[];
+  }>({
     mode: 'onSubmit',
+    values: { newValues: value.length ? value : [{ label: '' }] },
   });
+
+  useEffect(() => {
+    reset({ newValues: value.length ? value : [{ label: '' }] });
+  }, [reset, value]);
 
   const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'tempId' });
 
   useEffect(() => {
-    reset(value || { newValues: [{ label: '' }] });
-  }, [value]);
-
-  useEffect(() => {
     const subscription = watch(formData => {
-      const values = (formData as { newValues: LocalThesaurusValueSchema[] }).newValues
-        ? (formData as { newValues: LocalThesaurusValueSchema[] }).newValues
+      if (value.length) return; // if editing, don't append new fields
+
+      const values = (formData as { newValues: FormTheasauriValue[] }).newValues
+        ? (formData as { newValues: FormTheasauriValue[] }).newValues
         : [formData];
       // @ts-ignore
       if (values[values.length - 1].label !== '') {
@@ -50,123 +52,22 @@ const ThesauriValueFormSidepanel = ({
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch, append]);
+  }, [watch, append, value]);
 
-  useEffect(() => {
-    if (value && groups) {
-      const group = groups.find(singleGroup => {
-        return singleGroup.values?.includes(value);
-      });
-      setParentGroup(group);
-    }
-  }, [value, groups]);
-
-  const renderInputs = () => {
-    if (!value) {
-      return fields.map((localValue, index) => (
-        <Card title={<Translate>Item</Translate>} key={localValue.tempId}>
-          <div className="flex flex-col gap-4">
-            <InputField
-              id="item-name"
-              data-testid="thesauri-form-item-name"
-              label={<Translate>Title</Translate>}
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...register(`newValues.${index}.label`)}
-              // onBlur={e => setTyping(e.target.value)}
-            />
-            {groups && (
-              <Select
-                id="item-group"
-                data-testid="thesauri-form-item-group"
-                label={<Translate>Group</Translate>}
-                // eslint-disable-next-line react/jsx-props-no-spreading
-                {...register(`newValues.${index}.groupId`)}
-                value={parentGroup ? parentGroup._id : undefined}
-                disabled={!!parentGroup}
-                options={[
-                  { value: '', label: 'No Group', key: '0' },
-                  ...groups.map(group => ({
-                    value: group._id as string,
-                    label: group.label as string,
-                    key: group._id as string,
-                  })),
-                ]}
-              />
-            )}
-          </div>
-        </Card>
-      ));
-    }
-    return (
-      <Card title={<Translate>Item</Translate>}>
-        <div className="flex flex-col gap-4">
-          <InputField
-            id="item-name"
-            data-testid="thesauri-form-item-name"
-            label={<Translate>Title</Translate>}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...register('label', { required: true })}
-            // hasErrors={!!errors.label}
-          />
-          {groups && (
-            <Select
-              id="item-group"
-              data-testid="thesauri-form-item-group"
-              label={<Translate>Group</Translate>}
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...register('groupId')}
-              value={parentGroup ? parentGroup._id : undefined}
-              disabled
-              options={[
-                { value: '', label: 'No Group', key: '0' },
-                ...groups.map(group => ({
-                  value: group._id as string,
-                  label: group.label as string,
-                  key: group._id as string,
-                })),
-              ]}
-            />
-          )}
-        </div>
-      </Card>
-    );
-  };
-
-  const closeSidepanel = () => {
-    reset({ newValues: [{ label: '' }] });
-    setShowSidepanel(false);
-  };
-
-  const addIdsBeforeSubmit = (
-    item: { newValues: LocalThesaurusValueSchema[] } | LocalThesaurusValueSchema
-  ) => {
-    if (!value) {
-      const items = (item as { newValues: LocalThesaurusValueSchema[] }).newValues
-        .filter(newValue => newValue.label !== '')
-        .map(valueWithoutId => {
-          return { ...valueWithoutId, _id: uniqueID() };
-        });
-      submit(items);
-      reset({ newValues: [{ label: '' }] });
-      return;
-    }
-    if (parentGroup) {
-      (item as LocalThesaurusValueSchema).groupId = parentGroup._id;
-    }
-    const itemToSubmit = item as LocalThesaurusValueSchema;
-    submit([{ label: itemToSubmit.label, _id: itemToSubmit._id, groupId: itemToSubmit.groupId }]);
-    reset({ newValues: [{ label: '' }] });
+  const submitHandler = (data: { newValues: FormTheasauriValue[] }) => {
+    submit(data.newValues.filter(thesaurus => thesaurus.label !== ''));
+    closePanel();
   };
 
   return (
     <Sidepanel
       isOpen={showSidepanel}
       withOverlay
-      closeSidepanelFunction={closeSidepanel}
+      closeSidepanelFunction={closePanel}
       title={value ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
     >
       <form
-        onSubmit={handleSubmit(addIdsBeforeSubmit)}
+        onSubmit={handleSubmit(submitHandler)}
         className="flex flex-col h-full"
         id="value-thesauri-form"
       >
@@ -189,7 +90,38 @@ const ThesauriValueFormSidepanel = ({
               </div>
             </div>
           )}
-          {renderInputs()}
+          {fields.map((localValue, index) => (
+            <Card title={<Translate>Item</Translate>} key={localValue.tempId}>
+              <div className="flex flex-col gap-4">
+                <InputField
+                  id="item-name"
+                  data-testid="thesauri-form-item-name"
+                  label={<Translate>Title</Translate>}
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  {...register(`newValues.${index}.label`)}
+                  // onBlur={e => setTyping(e.target.value)}
+                />
+                {groups && (
+                  <Select
+                    id="item-group"
+                    data-testid="thesauri-form-item-group"
+                    label={<Translate>Group</Translate>}
+                    // eslint-disable-next-line react/jsx-props-no-spreading
+                    {...register(`newValues.${index}.groupId`)}
+                    disabled={value.length > 0}
+                    options={[
+                      { value: '', label: 'No Group', key: '0' },
+                      ...groups.map(group => ({
+                        value: group._id as string,
+                        label: group.label as string,
+                        key: group._id as string,
+                      })),
+                    ]}
+                  />
+                )}
+              </div>
+            </Card>
+          ))}
         </Sidepanel.Body>
         <Sidepanel.Footer className="bottom-0">
           <div className="flex gap-2">
@@ -212,4 +144,4 @@ const ThesauriValueFormSidepanel = ({
 };
 
 export { ThesauriValueFormSidepanel };
-export type { LocalThesaurusValueSchema };
+export type { ClientThesaurusValue, FormTheasauriValue };

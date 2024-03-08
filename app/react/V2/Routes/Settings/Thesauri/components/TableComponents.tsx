@@ -1,10 +1,12 @@
 import React from 'react';
-import { CellContext } from '@tanstack/react-table';
+import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { Button, EmbededButton, Pill } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import ChevronUpIcon from '@heroicons/react/20/solid/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
+import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { OMST } from 'src/data/timezoneNames';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
@@ -53,8 +55,6 @@ const templatesCells = ({ cell }: CellContext<any, any>) => (
   </div>
 );
 
-const LabelHeader = () => <Translate>Language</Translate>;
-
 const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   <Button
     styling="action"
@@ -65,6 +65,31 @@ const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
   </Button>
 );
 
+const LabelHeader = () => <Translate>Label</Translate>;
+
+interface TableTheasurusValue extends ClientThesaurusValue, Omit<ClientThesaurusValue, 'values'> {
+  values?: (ClientThesaurusValue & { _id: string })[];
+}
+
+const columnHelper = createColumnHelper<any>();
+const columns = (actions: { edit: Function }) => [
+  columnHelper.accessor('label', {
+    id: 'label',
+    header: LabelHeader,
+    cell: ThesaurusValueLabel,
+    meta: { headerClassName: 'w-11/12' },
+  }) as ColumnDef<TableTheasurusValue, 'label'>,
+  columnHelper.accessor('_id', {
+    header: ActionHeader,
+    cell: EditButton,
+    enableSorting: false,
+    meta: {
+      action: actions.edit,
+      headerClassName: 'text-center w-0',
+    },
+  }) as ColumnDef<TableTheasurusValue, '_id'>,
+];
+
 export {
   ThesaurusLabel,
   LabelHeader,
@@ -73,4 +98,7 @@ export {
   ActionHeader,
   templatesCells,
   TemplateHeader,
+  columns,
 };
+
+export type { TableTheasurusValue };

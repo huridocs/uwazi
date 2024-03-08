@@ -76,24 +76,21 @@ export interface ClientSettings
   };
 }
 
-export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id'> {
+export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {
   _id: string;
-  templates: Template[];
-  disableRowSelection: boolean;
+  values: ClientThesaurusValue[];
 }
 
-export interface LocalThesaurusValueSchema
+export interface ClientThesaurusValue
   extends ThesaurusValueSchema,
-    Omit<thesaurusValueSchema, '_id'> {
-  _id?: string;
+    Omit<ThesaurusValueSchema, '_id'> {
+  _id: string;
   id?: string;
   label: string;
   values?: {
     id?: string;
-    _id?: string;
     label: string;
     name?: string;
-    groupId?: string;
   }[];
 }
 
