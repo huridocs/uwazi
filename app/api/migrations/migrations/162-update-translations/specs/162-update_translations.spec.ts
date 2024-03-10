@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import testingDB from 'api/utils/testing_db';
-import migration, { newKeys, deletedKeys } from '../index';
+import migration, { deletedKeys } from '../index';
 import { fixtures } from './fixtures';
 import { Fixture } from '../types';
 
