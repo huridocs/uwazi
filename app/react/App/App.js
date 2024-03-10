@@ -16,6 +16,7 @@ import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
 import { Matomo } from './Matomo';
+import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icons.scss';
