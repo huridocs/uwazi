@@ -17,7 +17,7 @@ import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
 import { Matomo } from './Matomo';
 import 'bootstrap/dist/css/bootstrap.css';
-import 'react-widgets/lib/scss/react-widgets.scss';
+
 import 'nprogress/nprogress.css';
 import 'flag-icon-css/sass/flag-icons.scss';
 import './scss/styles.scss';

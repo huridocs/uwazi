@@ -2,6 +2,10 @@
 //   height: 1em;
 // }
 
+@import 'node_modules/react-widgets/lib/scss/variables.scss';
+@import 'node_modules/react-widgets/lib/scss/mixins.scss';
+@import 'node_modules/react-widgets/lib/scss/dropdown-list.scss';
+
 .rw-widget-picker .rw-input-reset {
-  position:absolute;
+  position: absolute;
 }
