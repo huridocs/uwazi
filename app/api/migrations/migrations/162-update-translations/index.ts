@@ -39,17 +39,19 @@ export default {
       'context.id': 'System',
     });
 
-    const insertMany = languages.map(async (l: any) =>
-      db.collection('translationsV2').insertMany(
-        newKeys.map(k => ({
-          key: k.key,
-          value: k.key,
-          language: l,
-          context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
-        }))
-      )
-    );
-    await Promise.all(insertMany);
+    if (newKeys.length > 0) {
+      const insertMany = languages.map(async (l: any) =>
+        db.collection('translationsV2').insertMany(
+          newKeys.map(k => ({
+            key: k.key,
+            value: k.key,
+            language: l,
+            context: { id: 'System', type: 'Uwazi UI', label: 'User Interface' },
+          }))
+        )
+      );
+      await Promise.all(insertMany);
+    }
 
     process.stdout.write(`${this.name}...\r\n`);
   },
