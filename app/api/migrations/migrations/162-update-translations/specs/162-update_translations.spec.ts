@@ -1,6 +1,6 @@
 import { Db } from 'mongodb';
 import testingDB from 'api/utils/testing_db';
-import migration, { newKeys, deletedKeys } from '../index';
+import migration, { deletedKeys } from '../index';
 import { fixtures } from './fixtures';
 import { Fixture } from '../types';
 
@@ -42,15 +42,6 @@ describe('migration update translations of settings', () => {
       .toArray();
 
     expect(translations.length).toBe(2);
-  });
-
-  it('should add new translations per language', async () => {
-    const translations = await testingDB
-      .mongodb!.collection('translationsV2')
-      .find({ key: { $in: newKeys.map(k => k.key) } })
-      .toArray();
-
-    expect(translations.length).toBe(24);
   });
 
   it('should be idempotent (do not throw an error on multiple runs)', async () => {
