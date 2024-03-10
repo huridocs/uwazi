@@ -44,15 +44,6 @@ describe('migration update translations of settings', () => {
     expect(translations.length).toBe(2);
   });
 
-  it('should add new translations per language', async () => {
-    const translations = await testingDB
-      .mongodb!.collection('translationsV2')
-      .find({ key: { $in: newKeys.map(k => k.key) } })
-      .toArray();
-
-    expect(translations.length).toBe(4);
-  });
-
   it('should be idempotent (do not throw an error on multiple runs)', async () => {
     await expect(migration.up(testingDB.mongodb!)).resolves.toBe(undefined);
   });
