@@ -1,11 +1,18 @@
-// .rw-widget-picker {
-//   height: 1em;
-// }
-
 @import 'node_modules/react-widgets/lib/scss/variables.scss';
+
 @import 'node_modules/react-widgets/lib/scss/mixins.scss';
+@import 'node_modules/react-widgets/lib/scss/normalize.scss';
+@import 'node_modules/react-widgets/lib/scss/icons.scss';
+
+@import 'node_modules/react-widgets/lib/scss/button.scss';
+@import 'node_modules/react-widgets/lib/scss/widget.scss';
+@import 'node_modules/react-widgets/lib/scss/list.scss';
 @import 'node_modules/react-widgets/lib/scss/dropdown-list.scss';
 
-.rw-widget-picker .rw-input-reset {
-  position: absolute;
-}
+@import 'node_modules/react-widgets/lib/scss/calendar.scss';
+@import 'node_modules/react-widgets/lib/scss/select-list.scss';
+@import 'node_modules/react-widgets/lib/scss/multiselect.scss';
+@import 'node_modules/react-widgets/lib/scss/autocomplete.scss';
+
+@import 'node_modules/react-widgets/lib/scss/popup.scss';
+@import 'node_modules/react-widgets/lib/scss/state.scss';
