@@ -68,6 +68,10 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Create,
     idField: 'sharedId',
     nameField: 'title',
+    nameFunc: data => {
+      const body = data.entity ? JSON.parse(data.entity) : data;
+      return body.sharedId ? `${body.title} (${body.sharedId})` : body.title;
+    },
     related: helpers.loadTemplate,
     extra: helpers.extraTemplate,
   },
