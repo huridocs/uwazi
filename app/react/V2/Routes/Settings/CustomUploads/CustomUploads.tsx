@@ -95,11 +95,11 @@ const CustomUploads = () => {
     });
     uploadService.onUploadComplete(response => {
       setUploadedFiles([...uploadedFiles, response]);
-      setUploadingFile(undefined);
-      setUploadProgress(undefined);
       revalidator.revalidate();
     });
     const results = await uploadService.upload([...uploads]);
+    setUploadingFile(undefined);
+    setUploadProgress(undefined);
     notify(results, <Translate>Uploaded custom file</Translate>);
   };
 
@@ -149,7 +149,7 @@ const CustomUploads = () => {
               <span className="font-semibold">{uploadingFile}</span>&nbsp;
               {uploadProgress}%&nbsp;
               <span className="flex flex-nowrap before:content-['('] after:content-[')']">
-                {uploads.length - uploadedFiles.length}&nbsp;
+                {uploadService.getFilesInQueue().length + 1}&nbsp;
                 <Translate>remaining files</Translate>
               </span>
             </div>
