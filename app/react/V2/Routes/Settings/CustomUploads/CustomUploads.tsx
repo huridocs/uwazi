@@ -33,9 +33,7 @@ const CustomUploads = () => {
   const [uploadProgress, setUploadProgress] = useState<number>();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [interrupt, setInterrupt] = useState(false);
-  const [uploadQueueResponse, setUploadQueueResponse] = useState<FileType[] | FetchResponseError[]>(
-    []
-  );
+  const [uploadedFiles, setUploadedFiles] = useState<(FileType | FetchResponseError)[]>([]);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [uploadsModal, setUploadsModal] = useState(false);
   const [modalProps, setModalProps] = useState<{
@@ -52,7 +50,7 @@ const CustomUploads = () => {
     }
   }, [interrupt]);
 
-  const notify = (responses: FileType[] | FetchResponseError[], message: React.ReactNode) => {
+  const notify = (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => {
     const hasErrors = responses.find(response => response instanceof FetchResponseError);
 
     setNotifications({
@@ -66,35 +64,19 @@ const CustomUploads = () => {
     setUploads([]);
   };
 
-  const uploadFile = async (file: File) => {
-    setUploadingFile(file.name);
-    setUploadProgress(0);
-    upload.setFile(file);
-
-    const result = await upload.start(percent => {
-      setUploadProgress(percent);
-    });
-
-    return result;
-  };
-
-  const uploadQueue = async (filesToUpload: File[]) => {
-    if (filesToUpload.length === 0) {
-      notify(uploadQueueResponse, <Translate>Uploaded custom file</Translate>);
-      return;
-    }
-    const file = filesToUpload.shift();
-    if (file) {
-      const result = await uploadFile(file);
-      setUploadQueueResponse([...uploadQueueResponse, result]);
-      revalidator.revalidate();
-      await uploadQueue(filesToUpload);
-    }
-  };
-
   const handleSave = async () => {
     setUploadsModal(false);
-    await uploadQueue([...uploads]);
+    upload.setFiles([...uploads]);
+    upload.onProgress((filename, percent) => {
+      setUploadingFile(filename);
+      setUploadProgress(percent);
+    });
+    upload.onUploadComplete(result => {
+      revalidator.revalidate();
+      setUploadedFiles([...uploadedFiles, result]);
+    });
+    const results = await upload.start();
+    notify(results, <Translate>Uploaded custom file</Translate>);
     setUploadingFile(undefined);
     setUploadProgress(0);
   };
@@ -145,7 +127,7 @@ const CustomUploads = () => {
               <span className="font-semibold">{uploadingFile}</span>&nbsp;
               {uploadProgress}%&nbsp;
               <span className="flex flex-nowrap before:content-['('] after:content-[')']">
-                {uploads.length - uploadQueueResponse.length}&nbsp;
+                {uploads.length - uploadedFiles.length}&nbsp;
                 <Translate>remaining files</Translate>
               </span>
             </div>
@@ -164,9 +146,6 @@ const CustomUploads = () => {
           )}
           <Button styling="solid" color="primary" onClick={async () => setUploadsModal(true)}>
             <Translate>Import asset</Translate>
-          </Button>
-          <Button className="w-1/2" onClick={async () => setInterrupt(true)}>
-            <Translate>Cancel</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>

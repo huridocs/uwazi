@@ -6,11 +6,15 @@ import { FetchResponseError } from 'shared/JSONRequest';
 type Endpoint = 'attachment' | 'custom' | 'document';
 
 class UploadService {
-  private request: superagent.SuperAgentRequest | null = null;
+  private requests: superagent.SuperAgentRequest[] = [];
 
-  private onProgress: ((percent: number, total?: number) => void) | undefined;
+  private onProgressCallback:
+    | ((filename: string, percent: number, total?: number) => void)
+    | undefined;
 
-  private file: File | null = null;
+  private onUploadCompleteCallback: ((response: FileType | FetchResponseError) => void) | undefined;
+
+  private files: File[] = [];
 
   private endpoint: Endpoint | null = null;
 
@@ -18,41 +22,62 @@ class UploadService {
     this.endpoint = endpoint;
   }
 
-  public setFile(file: File) {
-    this.file = file;
+  public setFiles(files: File[]) {
+    this.files = files;
   }
 
-  public async start(onProgress?: (percent: number, total?: number) => void) {
-    if (!this.file || !this.endpoint) {
-      throw new Error('File and endpoint must be set before starting upload.');
-    }
+  public onUploadComplete(callback: (response: FileType | FetchResponseError) => void) {
+    this.onUploadCompleteCallback = callback;
+  }
 
-    this.onProgress = onProgress;
+  public onProgress(callback: (filename: string, percent: number, total?: number) => void) {
+    this.onProgressCallback = callback;
+  }
 
-    const route = `${APIURL}files/upload/${this.endpoint}`;
-    this.request = superagent
-      .post(route)
-      .set('Accept', 'application/json')
-      .set('X-Requested-With', 'XMLHttpRequest')
-      .attach('file', this.file)
-      .on('progress', event => {
-        if (this.onProgress && event.percent) {
-          this.onProgress(Math.floor(event.percent), event.total);
+  public async start() {
+    // eslint-disable-next-line max-statements
+    const uploads: Promise<FileType | FetchResponseError>[] = this.files?.map(async file => {
+      const route = `${APIURL}files/upload/${this.endpoint}`;
+      const request = superagent
+        .post(route)
+        .set('Accept', 'application/json')
+        .set('X-Requested-With', 'XMLHttpRequest')
+        .attach('file', file)
+        .on('progress', event => {
+          if (this.onProgressCallback && event.percent) {
+            this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
+          }
+        });
+
+      this.requests.push(request);
+
+      try {
+        const response = await request;
+        if (this.onUploadCompleteCallback) {
+          this.onUploadCompleteCallback(response.body as FileType);
         }
-      });
+        return response.body as FileType;
+      } catch (error) {
+        if (this.onUploadCompleteCallback) {
+          this.onUploadCompleteCallback(error as FetchResponseError);
+        }
+        return error as FetchResponseError;
+      }
+    });
 
     try {
-      const response = await this.request;
-      return response.body as FileType;
+      const responses = await Promise.all(uploads);
+      return responses;
     } catch (error) {
-      return error as FetchResponseError;
+      return error as FetchResponseError[];
     }
   }
 
   public abort() {
-    if (this.request) {
-      this.request.abort();
-    }
+    this.requests.forEach(request => {
+      request.abort();
+    });
   }
 }
+
 export { UploadService };
