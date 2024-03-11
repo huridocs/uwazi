@@ -41,7 +41,7 @@ const remove = async (_id: FileType['_id']): Promise<FileType | FetchResponseErr
   try {
     const requestParams = new RequestParams({ _id });
     const { json: response } = await api.delete('files', requestParams);
-    return response;
+    return response[0];
   } catch (e) {
     return e;
   }

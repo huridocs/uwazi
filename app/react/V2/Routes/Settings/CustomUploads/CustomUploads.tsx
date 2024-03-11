@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Row } from '@tanstack/react-table';
 import { useSetRecoilState } from 'recoil';
@@ -10,7 +10,7 @@ import { FileType } from 'shared/types/fileType';
 import { getByType, remove, UploadService } from 'V2/api/files';
 import { Button, ConfirmationModal, Modal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { FileDropzone } from 'V2/Components/Forms';
+import { ConfirmNavigationModal, FileDropzone } from 'V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
 import { createColumns } from './components/UploadsTable';
 import { FileList } from './components/FileList';
@@ -22,7 +22,7 @@ const customUploadsLoader =
     return files;
   };
 
-const upload = new UploadService('custom');
+const uploadService = new UploadService('custom');
 
 const CustomUploads = () => {
   const files = useLoaderData() as FileType[];
@@ -36,6 +36,7 @@ const CustomUploads = () => {
   const [uploadedFiles, setUploadedFiles] = useState<(FileType | FetchResponseError)[]>([]);
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [uploadsModal, setUploadsModal] = useState(false);
+  const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
     items: Row<FileType>[] | FileType[];
@@ -43,20 +44,42 @@ const CustomUploads = () => {
     action: () => {},
     items: [],
   });
+  const blocker = useBlocker(Boolean(uploadingFile || uploadProgress));
 
   useEffect(() => {
     if (interrupt) {
-      upload.abort();
+      uploadService.abort();
+    }
+    if (blocker.proceed) {
+      blocker.proceed();
     }
   }, [interrupt]);
 
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setConfirmNavigationModal(true);
+    }
+  }, [blocker, setConfirmNavigationModal]);
+
   const notify = (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => {
     const hasErrors = responses.find(response => response instanceof FetchResponseError);
+    const didUploadFiles = responses.find(
+      response => !(response instanceof FetchResponseError) && response._id
+    );
 
-    setNotifications({
-      type: hasErrors ? 'error' : 'success',
-      text: hasErrors ? <Translate>An error occurred</Translate> : message,
-    });
+    if (didUploadFiles) {
+      setNotifications({
+        type: 'success',
+        text: message,
+      });
+    }
+
+    if (hasErrors) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -66,19 +89,18 @@ const CustomUploads = () => {
 
   const handleSave = async () => {
     setUploadsModal(false);
-    upload.setFiles([...uploads]);
-    upload.onProgress((filename, percent) => {
+    uploadService.onProgress((filename, percent) => {
       setUploadingFile(filename);
       setUploadProgress(percent);
     });
-    upload.onUploadComplete(result => {
+    uploadService.onUploadComplete(response => {
       revalidator.revalidate();
-      setUploadedFiles([...uploadedFiles, result]);
+      setUploadedFiles([...uploadedFiles, response]);
     });
-    const results = await upload.start();
+    const results = await uploadService.upload([...uploads]);
     notify(results, <Translate>Uploaded custom file</Translate>);
     setUploadingFile(undefined);
-    setUploadProgress(0);
+    setUploadProgress(undefined);
   };
 
   const handleDelete = async (file: FileType) => {
@@ -197,6 +219,15 @@ const CustomUploads = () => {
           onAcceptClick={async () => modalProps.action()}
           onCancelClick={() => setConfirmationModal(false)}
           dangerStyle
+        />
+      )}
+
+      {confirmNavigationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setConfirmNavigationModal}
+          onConfirm={() => {
+            setInterrupt(true);
+          }}
         />
       )}
     </div>

@@ -1,4 +1,4 @@
-import superagent from 'superagent';
+import superagent, { SuperAgentRequest } from 'superagent';
 import { APIURL } from 'app/config';
 import { FileType } from 'shared/types/fileType';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -6,7 +6,7 @@ import { FetchResponseError } from 'shared/JSONRequest';
 type Endpoint = 'attachment' | 'custom' | 'document';
 
 class UploadService {
-  private requests: superagent.SuperAgentRequest[] = [];
+  private requests: SuperAgentRequest[] = [];
 
   private onProgressCallback:
     | ((filename: string, percent: number, total?: number) => void)
@@ -22,10 +22,6 @@ class UploadService {
     this.endpoint = endpoint;
   }
 
-  public setFiles(files: File[]) {
-    this.files = files;
-  }
-
   public onUploadComplete(callback: (response: FileType | FetchResponseError) => void) {
     this.onUploadCompleteCallback = callback;
   }
@@ -34,9 +30,9 @@ class UploadService {
     this.onProgressCallback = callback;
   }
 
-  public async start() {
+  public async upload(files: File[]) {
     // eslint-disable-next-line max-statements
-    const uploads: Promise<FileType | FetchResponseError>[] = this.files?.map(async file => {
+    const uploads: Promise<FileType | FetchResponseError>[] = files?.map(async file => {
       const route = `${APIURL}files/upload/${this.endpoint}`;
       const request = superagent
         .post(route)
