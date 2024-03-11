@@ -49,14 +49,14 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - name: Clone dummy services
-        uses: actions/checkout@v3
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: 3.11
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services
+      - name: Clone dummy services
+        uses: actions/checkout@v3
       - run: python3 -m venv .venv
         working-directory: dummy_extractor_services
       - run: make install_venv -C dummy_extractor_services
