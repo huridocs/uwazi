@@ -11,17 +11,17 @@ interface ModalProps {
 const Modal = ({ children, size }: ModalProps) => {
   const sizes = {
     sm: 'max-w-sm',
-    md: 'max-w-md',
-    lg: 'max-w-lg',
-    xl: 'max-w-xl',
-    xxl: 'max-w-2xl',
-    xxxl: 'max-w-3xl',
+    md: 'max-w-md min-w-[24rem]',
+    lg: 'max-w-lg min-w-[28rem]',
+    xl: 'max-w-xl min-w-[32rem]',
+    xxl: 'max-w-2xl min-w-[36rem]',
+    xxxl: 'max-w-3xl min-w-[40rem]',
   };
 
   return (
     <div
       aria-hidden="false"
-      className="flex overflow-x-hidden fixed inset-0 top-0 left-0 z-50 justify-center items-center bg-gray-900 bg-opacity-50"
+      className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center overflow-x-hidden bg-gray-900 bg-opacity-50"
       data-testid="modal"
       role="dialog"
       aria-label="Modal"
@@ -58,7 +58,7 @@ Modal.Body = ({ children, className }: ModalChildrenProps) => (
 );
 
 Modal.Footer = ({ children }: ModalChildrenProps) => (
-  <div className="flex justify-center p-6 space-x-2 rounded-b border-t border-gray-200">
+  <div className="flex justify-center p-6 space-x-2 border-t border-gray-200 rounded-b">
     {children}
   </div>
 );
