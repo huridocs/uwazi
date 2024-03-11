@@ -14,12 +14,47 @@ class UploadService {
 
   private onUploadCompleteCallback: ((response: FileType | FetchResponseError) => void) | undefined;
 
-  private files: File[] = [];
+  private filesQueue: File[] = [];
 
-  private endpoint: Endpoint | null = null;
+  private route: string;
 
   constructor(endpoint: Endpoint) {
-    this.endpoint = endpoint;
+    this.route = `${APIURL}files/upload/${endpoint}`;
+  }
+
+  // eslint-disable-next-line max-statements
+  private async uploadQueue(files: File[], responses: (FileType | FetchResponseError)[]) {
+    if (files.length === 0) return;
+
+    const file = files.shift()!;
+
+    const request = superagent
+      .post(this.route)
+      .set('Accept', 'application/json')
+      .set('X-Requested-With', 'XMLHttpRequest')
+      .attach('file', file)
+      .on('progress', event => {
+        if (this.onProgressCallback && event.percent) {
+          this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
+        }
+      });
+
+    this.requests.push(request);
+
+    try {
+      const response = await request;
+      responses.push(response.body as FileType);
+      if (this.onUploadCompleteCallback) {
+        this.onUploadCompleteCallback(response.body as FileType);
+      }
+    } catch (error) {
+      responses.push(error as FetchResponseError);
+      if (this.onUploadCompleteCallback) {
+        this.onUploadCompleteCallback(error as FetchResponseError);
+      }
+    }
+
+    await this.uploadQueue(files, responses);
   }
 
   public onUploadComplete(callback: (response: FileType | FetchResponseError) => void) {
@@ -31,42 +66,17 @@ class UploadService {
   }
 
   public async upload(files: File[]) {
-    // eslint-disable-next-line max-statements
-    const uploads: Promise<FileType | FetchResponseError>[] = files?.map(async file => {
-      const route = `${APIURL}files/upload/${this.endpoint}`;
-      const request = superagent
-        .post(route)
-        .set('Accept', 'application/json')
-        .set('X-Requested-With', 'XMLHttpRequest')
-        .attach('file', file)
-        .on('progress', event => {
-          if (this.onProgressCallback && event.percent) {
-            this.onProgressCallback(file.name, Math.floor(event.percent), event.total);
-          }
-        });
-
-      this.requests.push(request);
-
-      try {
-        const response = await request;
-        if (this.onUploadCompleteCallback) {
-          this.onUploadCompleteCallback(response.body as FileType);
-        }
-        return response.body as FileType;
-      } catch (error) {
-        if (this.onUploadCompleteCallback) {
-          this.onUploadCompleteCallback(error as FetchResponseError);
-        }
-        return error as FetchResponseError;
-      }
-    });
-
-    try {
-      const responses = await Promise.all(uploads);
+    this.filesQueue.push(...files);
+    if (this.requests.length === 0) {
+      const responses: (FileType | FetchResponseError)[] = [];
+      await this.uploadQueue(this.filesQueue, responses);
       return responses;
-    } catch (error) {
-      return error as FetchResponseError[];
     }
+    return [];
+  }
+
+  public getFilesInQueue() {
+    return this.filesQueue;
   }
 
   public abort() {

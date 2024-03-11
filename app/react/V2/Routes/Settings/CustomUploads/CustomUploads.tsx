@@ -94,13 +94,13 @@ const CustomUploads = () => {
       setUploadProgress(percent);
     });
     uploadService.onUploadComplete(response => {
-      revalidator.revalidate();
       setUploadedFiles([...uploadedFiles, response]);
+      setUploadingFile(undefined);
+      setUploadProgress(undefined);
+      revalidator.revalidate();
     });
     const results = await uploadService.upload([...uploads]);
     notify(results, <Translate>Uploaded custom file</Translate>);
-    setUploadingFile(undefined);
-    setUploadProgress(undefined);
   };
 
   const handleDelete = async (file: FileType) => {
