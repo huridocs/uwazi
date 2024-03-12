@@ -7,6 +7,7 @@ import { fixtures, correctFixture, template1, template2, template3 } from './fix
 
 let db: Db | null;
 let entityTemplatesInDB: (ObjectId | undefined)[] = [];
+let publishedStatesInDB: (boolean | undefined)[] = [];
 let newTemplate: Template | null;
 let newTemplateId: ObjectId | null;
 let translations: TranslationDBO[] = [];
@@ -16,9 +17,9 @@ const initTest = async (fixture: Fixture) => {
   db = testingDB.mongodb!;
   migration.reindex = false;
   await migration.up(db);
-  entityTemplatesInDB = (await db.collection<Entity>('entities').find({}).toArray()).map(
-    e => e.template
-  );
+  const entities = await db.collection<Entity>('entities').find({}).toArray();
+  entityTemplatesInDB = entities.map(e => e.template);
+  publishedStatesInDB = entities.map(e => e.published);
   newTemplate = await db!
     .collection<Template>('templates')
     .findOne({ name: '__recovered_entities__' });
@@ -55,6 +56,7 @@ describe('migration test', () => {
 
     it('should not change the entities', async () => {
       expect(entityTemplatesInDB).toEqual(correctFixture.entities.map(e => e.template));
+      expect(publishedStatesInDB).toEqual(correctFixture.entities.map(e => e.published));
     });
 
     it('should not signal reindex', () => {
@@ -157,6 +159,25 @@ describe('migration test', () => {
         newTemplateId,
         template3,
         newTemplateId,
+      ]);
+    });
+
+    it('should set the touched entities as private', async () => {
+      expect(publishedStatesInDB).toEqual([
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
       ]);
     });
 

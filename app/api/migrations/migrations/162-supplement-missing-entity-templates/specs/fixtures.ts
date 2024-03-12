@@ -64,22 +64,22 @@ const translationsV2: TranslationDBO[] = [
 ];
 
 const entities: Entity[] = [
-  { sharedId: 's1', title: 'entity1', template: template1, language: 'en' },
-  { sharedId: 's2', title: 'entity2', template: template2, language: 'en' },
-  { sharedId: 's3', title: 'entity3', language: 'en' },
-  { sharedId: 's4', title: 'entity4', template: template2, language: 'en' },
-  { sharedId: 's5', title: 'entity5', template: undefined, language: 'en' },
-  { sharedId: 's6', title: 'entity6', template: template3, language: 'en' },
+  { sharedId: 's1', title: 'entity1', template: template1, language: 'en', published: true },
+  { sharedId: 's2', title: 'entity2', template: template2, language: 'en', published: true },
+  { sharedId: 's3', title: 'entity3', language: 'en', published: true },
+  { sharedId: 's4', title: 'entity4', template: template2, language: 'en', published: true },
+  { sharedId: 's5', title: 'entity5', template: undefined, language: 'en', published: true },
+  { sharedId: 's6', title: 'entity6', template: template3, language: 'en', published: true },
   // @ts-ignore - intentional wrong fixture
-  { sharedId: 's7', title: 'entity7', template: null, language: 'en' },
-  { sharedId: 's1', title: 'entity1', template: template1, language: 'es' },
-  { sharedId: 's2', title: 'entity2', template: template2, language: 'es' },
-  { sharedId: 's3', title: 'entity3', language: 'es' },
-  { sharedId: 's4', title: 'entity4', template: template2, language: 'es' },
-  { sharedId: 's5', title: 'entity5', template: undefined, language: 'es' },
-  { sharedId: 's6', title: 'entity6', template: template3, language: 'es' },
+  { sharedId: 's7', title: 'entity7', template: null, language: 'en', published: true },
+  { sharedId: 's1', title: 'entity1', template: template1, language: 'es', published: true },
+  { sharedId: 's2', title: 'entity2', template: template2, language: 'es', published: true },
+  { sharedId: 's3', title: 'entity3', language: 'es', published: true },
+  { sharedId: 's4', title: 'entity4', template: template2, language: 'es', published: true },
+  { sharedId: 's5', title: 'entity5', template: undefined, language: 'es', published: true },
+  { sharedId: 's6', title: 'entity6', template: template3, language: 'es', published: true },
   // @ts-ignore - intentional wrong fixture
-  { sharedId: 's7', title: 'entity7', template: null, language: 'es' },
+  { sharedId: 's7', title: 'entity7', template: null, language: 'es', published: true },
 ];
 
 const fixtures: Fixture = {
@@ -92,12 +92,12 @@ const fixtures: Fixture = {
 const correctFixture = {
   settings,
   entities: [
-    { sharedId: 's1', title: 'entity1', template: template1, language: 'en' },
-    { sharedId: 's2', title: 'entity2', template: template2, language: 'en' },
-    { sharedId: 's3', title: 'entity6', template: template3, language: 'en' },
-    { sharedId: 's1', title: 'entity1', template: template1, language: 'es' },
-    { sharedId: 's2', title: 'entity2', template: template2, language: 'es' },
-    { sharedId: 's3', title: 'entity6', template: template3, language: 'es' },
+    { sharedId: 's1', title: 'entity1', template: template1, language: 'en', published: true },
+    { sharedId: 's2', title: 'entity2', template: template2, language: 'en', published: true },
+    { sharedId: 's3', title: 'entity6', template: template3, language: 'en', published: true },
+    { sharedId: 's1', title: 'entity1', template: template1, language: 'es', published: true },
+    { sharedId: 's2', title: 'entity2', template: template2, language: 'es', published: true },
+    { sharedId: 's3', title: 'entity6', template: template3, language: 'es', published: true },
   ],
   templates,
   translationsV2,

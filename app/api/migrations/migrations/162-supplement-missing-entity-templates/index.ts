@@ -95,7 +95,7 @@ export default {
 
     const updateResult = await db
       .collection('entities')
-      .updateMany(updateFilter, { $set: { template: recoveryTemplateId } });
+      .updateMany(updateFilter, { $set: { template: recoveryTemplateId, published: false } });
 
     if (updateResult.modifiedCount) this.reindex = true;
   },

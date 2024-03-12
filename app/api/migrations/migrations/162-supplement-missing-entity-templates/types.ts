@@ -30,6 +30,7 @@ interface Entity {
   title?: string;
   template?: ObjectId;
   language?: string;
+  published?: boolean;
   [k: string]: unknown | undefined;
 }
 
