@@ -6,6 +6,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTestingQueueAdapter } from 'api/queue.v2/configuration/factories';
 import { NamespacedDispatcher } from '../NamespacedDispatcher';
 import { QueueWorker } from '../QueueWorker';
+import { createSignals } from './Signals';
 
 async function sleep(ms: number) {
   return new Promise(resolve => {
@@ -14,9 +15,12 @@ async function sleep(ms: number) {
 }
 
 class TestJob implements Dispatchable {
-  private logger: (message: string) => void;
+  private signal: (index: string) => void;
 
-  constructor(logger: (message: string) => void) {
+  private logger: (message: string, index: number) => void;
+
+  constructor(signal: (index: string) => void, logger: (message: string, index: number) => void) {
+    this.signal = signal;
     this.logger = logger;
   }
 
@@ -24,8 +28,10 @@ class TestJob implements Dispatchable {
     _heartbeat: HeartbeatCallback,
     params: { data: { pieceOfData: string[] }; aNumber: number }
   ): Promise<void> {
+    this.signal(`starting-${params.aNumber}`);
     await sleep(50);
-    this.logger(`${params.aNumber}, ${params.data.pieceOfData.join('|')}`);
+    this.logger(`${params.aNumber}, ${params.data.pieceOfData.join('|')}`, params.aNumber);
+    this.signal(`ending-${params.aNumber}`);
   }
 }
 
@@ -45,9 +51,12 @@ it('should process all the jobs', async () => {
 
   const worker = new QueueWorker('name', adapter, () => {});
 
+  const signals = createSignals();
+
   worker.register(
     TestJob,
-    async namespace => new TestJob(message => output.push(`${namespace} ${message}`))
+    async namespace =>
+      new TestJob(signals.signal, message => output.push(`${namespace} ${message}`))
   );
 
   const dispatch = async (params: any, i: number) => {
@@ -70,7 +79,7 @@ it('should process all the jobs', async () => {
       )
       .then(async () => {
         output.push('finished enqueueing jobs post worker.start');
-        await sleep(2000);
+        await signals.signaled('ending-6');
         await worker.stop();
         output.push('worker stopped');
       }),
@@ -97,13 +106,16 @@ it('should finish the in-progress job before stopping', async () => {
 
   const worker = new QueueWorker('name', adapter, () => {});
 
-  worker.register(
-    TestJob,
-    async namespace => new TestJob(message => output.push(`${namespace} ${message}`))
-  );
+  const signals = createSignals();
+
+  const buildLogger = (namespace: string) => (message: string) => {
+    output.push(`${namespace} ${message}`);
+  };
+
+  worker.register(TestJob, async namespace => new TestJob(signals.signal, buildLogger(namespace)));
 
   const dispatch = async (params: any, i: number) => {
-    await sleep(2);
+    await sleep(5);
     return (i % 2 ? dispatcher2 : dispatcher1).dispatch(TestJob, params);
   };
 
@@ -123,7 +135,7 @@ it('should finish the in-progress job before stopping', async () => {
       )
       .then(async () => {
         output.push('finished enqueueing jobs post worker.start');
-        await sleep(4 * 50 + 30);
+        await signals.signaled('starting-4');
         output.push('stopping worker');
         await worker.stop();
         output.push('worker stopped');
