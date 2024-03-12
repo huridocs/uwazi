@@ -11,7 +11,7 @@ const graphs = {
 
 const insertChart = (chart: string, chartName: string) => {
   cy.clearAndType('input[name="title"]', chartName);
-  cy.contains('Code').click();
+  cy.contains('Markdown').click();
   cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
     parseSpecialCharSequences: false,
   });

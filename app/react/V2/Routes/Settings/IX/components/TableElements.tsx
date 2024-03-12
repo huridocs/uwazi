@@ -58,6 +58,7 @@ const TitleHeader = () => <Translate>Document</Translate>;
 const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
 const AcceptHeader = () => <Translate>Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
@@ -172,10 +173,10 @@ const extractorsTableColumns = [
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('_id', {
-    header: () => null,
+    header: ActionHeader,
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'hidden' },
+    meta: { headerClassName: 'sr-only invisible bg-gray-50' },
   }),
 ];
 
@@ -216,10 +217,10 @@ const suggestionsTableColumnsBuilder: Function = (
     }),
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
-      header: () => null,
+      header: ActionHeader,
       cell: OpenPDFButton,
       meta: {
-        headerClassName: 'hidden',
+        headerClassName: 'sr-only invisible bg-gray-50',
         contentClassName: 'text-center',
         action: openPdfSidepanel,
       },

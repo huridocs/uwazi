@@ -4,17 +4,13 @@ import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
-import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { EditRelationType } from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
 import {
   PreserveSettings,
   CustomUploads,
   EntityTypesList,
   FiltersForm,
-  RelationTypesList,
   Settings,
   ThesauriList,
   Dashboard,
@@ -42,6 +38,10 @@ import {
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+import {
+  RelationshipTypes,
+  relationshipTypesLoader,
+} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
 import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
@@ -81,7 +81,6 @@ const getRoutesLayout = (
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
@@ -122,10 +121,12 @@ const getRoutesLayout = (
         loader={IXSuggestionsLoader(headers)}
         element={adminsOnlyRoute(<IXSuggestions />)}
       />
-      <Route path="connections">
-        <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
+      <Route path="relationship-types">
+        <Route
+          index
+          element={adminsOnlyRoute(<RelationshipTypes />)}
+          loader={relationshipTypesLoader(headers)}
+        />
       </Route>
       <Route path="dictionaries">
         <Route index element={adminsOnlyRoute(<ThesauriList />)} />
