@@ -75,7 +75,7 @@ const ThesauriValueFormSidepanel = ({
         id="value-thesauri-form"
       >
         <Sidepanel.Body>
-          {!Boolean(value.length) && (
+          {value.length > 0 && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
               <div className="flex items-center gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">

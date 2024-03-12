@@ -9,7 +9,6 @@ import {
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
-import { thesaurusValueSchema } from 'shared/types/thesaurusSchema';
 
 export interface GroupMemberSchema {
   refId: string;

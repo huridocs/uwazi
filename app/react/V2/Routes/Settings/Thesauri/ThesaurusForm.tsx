@@ -23,7 +23,6 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { ImportButton } from './components/ImportButton';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { isEqual } from 'lodash';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -77,11 +76,10 @@ const ThesaurusForm = () => {
       // We are editing
       const valuesHaveChanged = thesaurusValues.length !== thesaurus.values.length;
       return valuesHaveChanged || thesaurus.name !== getValues().name;
-    } else {
-      const newValues = Boolean(thesaurusValues.length);
-      const hasSaved = nextLocation.pathname.includes('edit');
-      return (newValues || nameHasChanged) && !hasSaved;
     }
+    const newValues = Boolean(thesaurusValues.length);
+    const hasSaved = nextLocation.pathname.includes('edit');
+    return (newValues || nameHasChanged) && !hasSaved;
   });
 
   useMemo(() => {

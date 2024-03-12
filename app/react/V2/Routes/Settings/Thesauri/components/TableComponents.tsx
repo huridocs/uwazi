@@ -6,7 +6,6 @@ import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusTyp
 import ChevronUpIcon from '@heroicons/react/20/solid/ChevronUpIcon';
 import ChevronDownIcon from '@heroicons/react/20/solid/ChevronDownIcon';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
-import { OMST } from 'src/data/timezoneNames';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
