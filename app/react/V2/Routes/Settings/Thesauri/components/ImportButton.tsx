@@ -1,8 +1,9 @@
 import React, { ChangeEventHandler } from 'react';
 import { Translate } from 'app/I18N';
 import { Button } from 'app/V2/Components/UI';
-import { importThesaurus } from 'app/Thesauri/actions/thesauriActions';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import ThesauriAPI from 'app/V2/api/thesauri';
+import { ClientThesaurus } from 'app/apiResponseTypes';
+import { sanitizeThesaurusValues } from '../helpers';
 
 const ImportButton = ({
   onSuccess,
@@ -11,14 +12,17 @@ const ImportButton = ({
 }: {
   onSuccess: Function;
   onFailure: Function;
-  thesaurus: ThesaurusSchema;
+  thesaurus: ClientThesaurus;
 }) => {
   const importThesauri: ChangeEventHandler<HTMLInputElement> = async e => {
     if (e.target.files && e.target.files[0]) {
       try {
-        await importThesaurus(thesaurus, e.target.files[0]);
-        onSuccess();
+        const sanitizedThesaurus = sanitizeThesaurusValues(thesaurus, thesaurus.values);
+        console.log(sanitizedThesaurus);
+        const data = await ThesauriAPI.importThesaurus(sanitizedThesaurus, e.target.files[0]);
+        onSuccess(data);
       } catch (ex) {
+        console.log(ex);
         onFailure(ex);
       }
     }

@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
-import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+import ThesauriAPI from 'app/V2/api/thesauri';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table, ConfirmationModal } from 'app/V2/Components/UI';
-import { RequestParams } from 'app/utils/RequestParams';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
 import {
-  ActionHeader,
   EditButton,
   LabelHeader,
+  ActionHeader,
   TemplateHeader,
   ThesaurusLabel,
   templatesCells,
@@ -23,7 +22,7 @@ import { ClientThesaurus, Template } from 'app/apiResponseTypes';
 const theasauriListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    ThesauriAPI.getThesauri(new RequestParams({}, headers));
+    ThesauriAPI.getThesauri({}, headers);
 
 const ThesauriList = () => {
   const navigate = useNavigate();
@@ -63,7 +62,7 @@ const ThesauriList = () => {
   const deleteSelectedThesauri = async () => {
     try {
       const requests = selectedThesauri.map(sThesauri => {
-        return ThesauriAPI.delete(new RequestParams({ _id: sThesauri.original._id }));
+        return ThesauriAPI.delete({ _id: sThesauri.original._id });
       });
       await Promise.all(requests);
       setNotifications({

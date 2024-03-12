@@ -5,17 +5,19 @@ import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { TableThesaurusValue } from './TableComponents';
+import uniqueID from 'shared/uniqueID';
 
-interface FormTheasauriValue extends ClientThesaurusValue {
+interface FormThesauriValue extends TableThesaurusValue {
   groupId?: string;
 }
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
-  value: FormTheasauriValue[];
-  groups?: FormTheasauriValue[];
+  value: FormThesauriValue[];
+  groups?: FormThesauriValue[];
   showSidepanel: boolean;
-  submit: SubmitHandler<ClientThesaurusValue[]>;
+  submit: SubmitHandler<FormThesauriValue[]>;
 }
 
 const ThesauriValueFormSidepanel = ({
@@ -26,10 +28,10 @@ const ThesauriValueFormSidepanel = ({
   showSidepanel,
 }: ThesauriValueFormSidepanelProps) => {
   const { reset, control, register, handleSubmit, watch } = useForm<{
-    newValues: FormTheasauriValue[];
+    newValues: FormThesauriValue[];
   }>({
     mode: 'onSubmit',
-    values: { newValues: value.length ? value : [{ label: '' }] },
+    defaultValues: { newValues: value.length ? value : [{ label: '', _id: `temp_${uniqueID()}` }] },
   });
 
   useEffect(() => {
@@ -39,22 +41,23 @@ const ThesauriValueFormSidepanel = ({
   const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'tempId' });
 
   useEffect(() => {
-    const subscription = watch(formData => {
-      if (value.length) return; // if editing, don't append new fields
-
-      const values = (formData as { newValues: FormTheasauriValue[] }).newValues
-        ? (formData as { newValues: FormTheasauriValue[] }).newValues
-        : [formData];
-      // @ts-ignore
-      if (values[values.length - 1].label !== '') {
+    // if editing, don't append new fields
+    if (!value.length) {
+      const subscription = watch(formData => {
+        const values = (formData as { newValues: FormThesauriValue[] }).newValues
+          ? (formData as { newValues: FormThesauriValue[] }).newValues
+          : [formData];
         // @ts-ignore
-        append({ label: '' }, { shouldFocus: false });
-      }
-    });
-    return () => subscription.unsubscribe();
+        if (values[values.length - 1].label !== '') {
+          // @ts-ignore
+          append({ label: '' }, { shouldFocus: false });
+        }
+      });
+      return () => subscription.unsubscribe();
+    }
   }, [watch, append, value]);
 
-  const submitHandler = (data: { newValues: FormTheasauriValue[] }) => {
+  const submitHandler = (data: { newValues: FormThesauriValue[] }) => {
     submit(data.newValues.filter(thesaurus => thesaurus.label !== ''));
     closePanel();
   };
@@ -72,7 +75,7 @@ const ThesauriValueFormSidepanel = ({
         id="value-thesauri-form"
       >
         <Sidepanel.Body>
-          {!value && (
+          {!Boolean(value.length) && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
               <div className="flex items-center gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
@@ -144,4 +147,4 @@ const ThesauriValueFormSidepanel = ({
 };
 
 export { ThesauriValueFormSidepanel };
-export type { ClientThesaurusValue, FormTheasauriValue };
+export type { ClientThesaurusValue, FormThesauriValue };

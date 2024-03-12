@@ -67,8 +67,13 @@ const EditButton = ({ cell, column }: CellContext<ThesaurusSchema, string>) => (
 
 const LabelHeader = () => <Translate>Label</Translate>;
 
-interface TableTheasurusValue extends ClientThesaurusValue, Omit<ClientThesaurusValue, 'values'> {
-  values?: (ClientThesaurusValue & { _id: string })[];
+interface TableThesaurusValue extends ClientThesaurusValue, Omit<ClientThesaurusValue, 'values'> {
+  values?: {
+    _id: string;
+    id?: string;
+    label: string;
+    name?: string;
+  }[];
 }
 
 const columnHelper = createColumnHelper<any>();
@@ -78,7 +83,7 @@ const columns = (actions: { edit: Function }) => [
     header: LabelHeader,
     cell: ThesaurusValueLabel,
     meta: { headerClassName: 'w-11/12' },
-  }) as ColumnDef<TableTheasurusValue, 'label'>,
+  }) as ColumnDef<TableThesaurusValue, 'label'>,
   columnHelper.accessor('_id', {
     header: ActionHeader,
     cell: EditButton,
@@ -87,7 +92,7 @@ const columns = (actions: { edit: Function }) => [
       action: actions.edit,
       headerClassName: 'text-center w-0',
     },
-  }) as ColumnDef<TableTheasurusValue, '_id'>,
+  }) as ColumnDef<TableThesaurusValue, '_id'>,
 ];
 
 export {
@@ -101,4 +106,4 @@ export {
   columns,
 };
 
-export type { TableTheasurusValue };
+export type { TableThesaurusValue };

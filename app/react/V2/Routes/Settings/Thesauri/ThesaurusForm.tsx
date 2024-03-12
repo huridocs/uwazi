@@ -6,75 +6,90 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'app/V2/Components/UI';
-import { columns, TableTheasurusValue } from './components/TableComponents';
+import { columns, TableThesaurusValue } from './components/TableComponents';
 import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
-import {
-  Link,
-  LoaderFunction,
-  useBlocker,
-  useLoaderData,
-  useNavigate,
-  useRevalidator,
-} from 'react-router-dom';
+import { Link, LoaderFunction, useBlocker, useLoaderData, useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import {
   ThesauriValueFormSidepanel,
-  FormTheasauriValue,
+  FormThesauriValue,
 } from './components/ThesauriValueFormSidepanel';
 import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
 import { ClientThesaurusValue, ClientThesaurus } from 'app/apiResponseTypes';
 import { sanitizeThesaurusValues } from './helpers';
 import { notificationAtom } from 'app/V2/atoms/notificationAtom';
-import ThesauriAPI from 'app/Thesauri/ThesauriAPI';
+import ThesauriAPI from 'app/V2/api/thesauri';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { RequestParams } from 'app/utils/RequestParams';
 import { ImportButton } from './components/ImportButton';
 import uniqueID from 'shared/uniqueID';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { isEqual } from 'lodash';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { _id } }) => {
-    const response = await ThesauriAPI.getThesauri(new RequestParams({ _id }, headers));
+    const response = await ThesauriAPI.getThesauri({ _id }, headers);
     return response[0];
   };
 
 const ThesaurusForm = () => {
-  const revalidator = useRevalidator();
   const navigate = useNavigate();
   const thesaurus = useLoaderData() as ClientThesaurus;
-  const [groupFormValues, setGroupFormValues] = useState<FormTheasauriValue>();
-  const [itemFormValues, setItemFormValues] = useState<FormTheasauriValue[]>([]);
+  const [showNavigationModal, setShowNavigationModal] = useState(false);
+  const [groupFormValues, setGroupFormValues] = useState<FormThesauriValue>();
+  const [itemFormValues, setItemFormValues] = useState<FormThesauriValue[]>([]);
   const [showThesauriValueFormSidepanel, setShowThesauriValueFormSidepanel] = useState(false);
   const [showThesauriGroupFormSidepanel, setShowThesauriGroupFormSidepanel] = useState(false);
-  const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<TableTheasurusValue>[]>(
+  const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<Row<TableThesaurusValue>[]>(
     []
   );
-  const [thesaurusValues, setThesaurusValues] = useState<TableTheasurusValue[]>([]);
+  const [thesaurusValues, setThesaurusValues] = useState<TableThesaurusValue[]>([]);
   const setNotifications = useSetRecoilState(notificationAtom);
 
   useEffect(() => {
-    const values = thesaurus.values || [];
-
-    const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
-      ...value,
-      values: value.values?.map(val => ({
-        ...val,
-        _id: `temp_${uniqueID()}`,
-      })),
-    }));
-
-    setThesaurusValues(valuesWithIds);
+    if (thesaurus) {
+      const values = thesaurus.values || [];
+      const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
+        ...value,
+        values: value.values?.map(val => ({
+          ...val,
+          _id: `temp_${uniqueID()}`,
+        })),
+      }));
+      setThesaurusValues(valuesWithIds);
+    }
   }, [thesaurus]);
 
   const {
     watch,
     register,
+    getValues,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ClientThesaurus>({
     defaultValues: thesaurus,
     mode: 'onSubmit',
   });
+
+  const blocker = useBlocker(({ nextLocation }) => {
+    const nameHasChanged = isDirty;
+    if (thesaurus) {
+      // We are editing
+      const valuesHaveChanged = thesaurusValues.length !== thesaurus.values.length;
+      return valuesHaveChanged || thesaurus.name !== getValues().name;
+    } else {
+      const newValues = Boolean(thesaurusValues.length);
+      const hasSaved = nextLocation.pathname.includes('edit');
+      return (newValues || nameHasChanged) && !hasSaved;
+    }
+  });
+
+  useMemo(() => {
+    console.log(blocker);
+    if (blocker.state === 'blocked') {
+      setShowNavigationModal(true);
+    }
+  }, [blocker, setShowNavigationModal]);
 
   const addItem = () => {
     setItemFormValues([]);
@@ -82,22 +97,27 @@ const ThesaurusForm = () => {
   };
 
   const addGroup = () => {
-    setGroupFormValues({ _id: `temp_${uniqueID()}`, label: '', values: [] });
+    setGroupFormValues({
+      _id: `temp_${uniqueID()}`,
+      label: '',
+      values: [{ label: '', _id: `temp_${uniqueID()}` }],
+    });
     setShowThesauriGroupFormSidepanel(true);
   };
 
-  const editGroup = (row: Row<TableTheasurusValue>) => {
+  const editGroup = (row: Row<TableThesaurusValue>) => {
     setGroupFormValues(row.original);
     setShowThesauriGroupFormSidepanel(true);
   };
 
-  const editValue = (row: Row<TableTheasurusValue>) => {
+  const editValue = (row: Row<TableThesaurusValue>) => {
     setItemFormValues([{ ...row.original, groupId: row.getParentRow()?.original._id }]);
     setShowThesauriValueFormSidepanel(true);
   };
 
-  const edit = (row: Row<TableTheasurusValue>) => {
-    if (row.original.values && row.original.values.length > 0) {
+  const edit = (row: Row<TableThesaurusValue>) => {
+    console.log('Editing: ', row.original);
+    if (row.original.values) {
       editGroup(row);
     } else {
       editValue(row);
@@ -131,7 +151,7 @@ const ThesaurusForm = () => {
     setThesaurusValues(valuesCopy);
   };
 
-  const addItemSubmit = (items: FormTheasauriValue[]) => {
+  const addItemSubmit = (items: FormThesauriValue[]) => {
     const addingNewItems = !items[0]._id;
     const thesaurusValuesCopy = [...thesaurusValues];
     if (addingNewItems) {
@@ -172,7 +192,7 @@ const ThesaurusForm = () => {
     setThesaurusValues(thesaurusValuesCopy);
   };
 
-  const addGroupSubmit = (group: ClientThesaurusValue) => {
+  const addGroupSubmit = (group: FormThesauriValue) => {
     const thesaurusValuesCopy = thesaurusValues.filter(item => item._id !== group._id);
     console.log(188);
     setThesaurusValues([...thesaurusValuesCopy, group]);
@@ -181,7 +201,7 @@ const ThesaurusForm = () => {
   const formSubmit: SubmitHandler<ClientThesaurus> = async data => {
     const sanitizedThesaurus = sanitizeThesaurusValues(data, thesaurusValues);
     try {
-      const savedThesaurus = await ThesauriAPI.save(new RequestParams(sanitizedThesaurus));
+      const savedThesaurus = await ThesauriAPI.save(sanitizedThesaurus);
       setNotifications({
         type: 'success',
         text: thesaurus ? (
@@ -199,7 +219,7 @@ const ThesaurusForm = () => {
     }
   };
 
-  const checkDNDBeforeCommit = (values: ClientThesaurusValue[]) => {
+  const checkDNDBeforeCommit = (values: TableThesaurusValue[]) => {
     const groups = values.filter(groupValue => Array.isArray(groupValue.values));
     let groupsHaveChanged = false;
     for (let i = 0; i < groups.length; i += 1) {
@@ -240,7 +260,7 @@ const ThesaurusForm = () => {
                   {...register('name', { required: true })}
                 />
               </div>
-              <Table<TableTheasurusValue>
+              <Table<TableThesaurusValue>
                 draggableRows
                 enableSelection
                 subRowsKey="values"
@@ -280,13 +300,13 @@ const ThesaurusForm = () => {
                   <Translate>Sort</Translate>
                 </Button>
                 <ImportButton
-                  thesaurus={thesaurusValues}
-                  onSuccess={() => {
+                  thesaurus={{ ...getValues(), values: thesaurusValues }}
+                  onSuccess={(thesaurus: ThesaurusSchema) => {
                     setNotifications({
                       type: 'success',
                       text: <Translate>Thesauri updated.</Translate>,
                     });
-                    revalidator.revalidate();
+                    navigate(`/settings/thesauri/edit/${thesaurus._id}`);
                   }}
                   onFailure={() => {
                     setNotifications({
@@ -329,6 +349,9 @@ const ThesaurusForm = () => {
           setShowThesauriGroupFormSidepanel(false);
         }}
       />
+      {showNavigationModal && (
+        <ConfirmNavigationModal setShowModal={setShowNavigationModal} onConfirm={blocker.proceed} />
+      )}
     </div>
   );
 };

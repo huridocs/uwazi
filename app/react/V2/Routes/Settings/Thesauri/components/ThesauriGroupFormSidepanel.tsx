@@ -5,12 +5,12 @@ import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import uniqueID from 'shared/uniqueID';
-import { ClientThesaurusValueSchema } from 'app/apiResponseTypes';
+import { FormThesauriValue } from './ThesauriValueFormSidepanel';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
-  value?: ClientThesaurusValueSchema;
-  submit: SubmitHandler<ClientThesaurusValueSchema>;
+  value?: FormThesauriValue;
+  submit: SubmitHandler<FormThesauriValue>;
   showSidepanel: boolean;
 }
 
@@ -20,10 +20,10 @@ const ThesauriGroupFormSidepanel = ({
   value,
   showSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
-  const defaultValues = {
+  const defaultValues: FormThesauriValue = {
     label: '',
-    values: [{ label: '', _id: uniqueID() }],
-    _id: uniqueID(),
+    values: [{ label: '', _id: `temp_${uniqueID()}` }],
+    _id: `temp_${uniqueID()}`,
   };
   const {
     watch,
@@ -33,8 +33,9 @@ const ThesauriGroupFormSidepanel = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ClientThesaurusValueSchema>({
+  } = useForm<FormThesauriValue>({
     mode: 'onSubmit',
+    defaultValues: value,
   });
 
   const { append, fields } = useFieldArray({ control, name: 'values', keyName: 'tempId' });
@@ -48,28 +49,25 @@ const ThesauriGroupFormSidepanel = ({
   }, [value]);
 
   useEffect(() => {
-    const subscription = watch(formData => {
+    const subscription: any = watch((formData): void => {
       const values = formData.values;
       // @ts-ignore
       if (Boolean(values.length) && values[values.length - 1].label !== '') {
         // @ts-ignore
-        append({ label: '' }, { shouldFocus: false });
+        append({ label: '', _id: `temp_${uniqueID()}` }, { shouldFocus: false });
       }
     });
     return () => subscription.unsubscribe();
   }, [watch, append]);
 
-  const curateBeforeSubmit = (tValue: ClientThesaurusValueSchema) => {
+  const curateBeforeSubmit = (tValue: FormThesauriValue) => {
     const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
-    const values = filteredValues?.map(filteredValue => {
-      return { ...filteredValue, _id: uniqueID() };
-    });
-    const group = {
+
+    submit({
       _id: tValue._id,
       label: tValue.label,
-      values,
-    };
-    submit(group);
+      values: filteredValues,
+    });
     reset(defaultValues);
     closePanel();
   };
@@ -95,7 +93,13 @@ const ThesauriGroupFormSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       closeSidepanelFunction={closePanel}
-      title={value ? <Translate>Edit group</Translate> : <Translate>Add group</Translate>}
+      title={
+        value && value.label !== '' ? (
+          <Translate>Edit group</Translate>
+        ) : (
+          <Translate>Add group</Translate>
+        )
+      }
     >
       <form
         onSubmit={handleSubmit(curateBeforeSubmit)}
@@ -103,7 +107,7 @@ const ThesauriGroupFormSidepanel = ({
         className="flex flex-col h-full"
       >
         <Sidepanel.Body>
-          {!value && (
+          {value && value.label === '' && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
               <div className="flex items-center w-full gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
