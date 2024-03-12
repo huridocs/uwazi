@@ -23,7 +23,7 @@ describe('migration update translations of settings', () => {
   });
 
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(163);
+    expect(migration.delta).toBe(164);
   });
 
   it('should delete old translations', async () => {
