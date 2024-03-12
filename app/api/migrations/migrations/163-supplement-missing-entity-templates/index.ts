@@ -70,7 +70,7 @@ const insertRecoveryTemplateTranslations = async (db: Db) => {
 };
 
 export default {
-  delta: 162,
+  delta: 163,
 
   name: 'supplement-missing-entity-templates',
 
