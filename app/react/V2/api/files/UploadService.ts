@@ -70,6 +70,7 @@ class UploadService {
     if (this.requests.length === 0) {
       const responses: (FileType | FetchResponseError)[] = [];
       await this.uploadQueue(this.filesQueue, responses);
+      this.requests = [];
       return responses;
     }
     return [];
