@@ -104,7 +104,7 @@
     "@remix-run/router": "^1.15.2",
     "@sentry/node": "^7.103.0",
     "@sentry/react": "7.103.0",
-    "@sentry/tracing": "^7.103.0",
+    "@sentry/tracing": "^7.106.1",
     "@smithy/node-http-handler": "^2.4.1",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
