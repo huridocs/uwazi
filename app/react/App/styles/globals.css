@@ -3716,6 +3716,11 @@ input:checked + .toggle-bg {
      object-fit: cover;
 }
 
+.object-scale-down {
+  -o-object-fit: scale-down;
+     object-fit: scale-down;
+}
+
 .p-0 {
   padding: 0px;
 }

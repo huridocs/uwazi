@@ -56,14 +56,14 @@ const createColumns = (action: (file: FileType) => void) => [
     header: URLHeader,
     cell: URLCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-2/4' },
+    meta: { headerClassName: 'w-1/4' },
   }),
   columnHelper.display({
     id: 'action',
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: { action, headerClassName: 'w-0 sr-only' },
+    meta: { action, headerClassName: 'sr-only' },
   }),
 ];
 

@@ -36,7 +36,11 @@ const FileIcon = ({ mimetype = '', filename, altText, className }: FileIconProps
   if (type === 'image') {
     return (
       <div className={className}>
-        <img src={`/api/files/${filename}`} alt={altText || filename} />
+        <img
+          className="object-scale-down w-full h-full"
+          src={`/api/files/${filename}`}
+          alt={altText || filename}
+        />
       </div>
     );
   }
