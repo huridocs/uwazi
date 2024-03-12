@@ -299,12 +299,12 @@ const ThesaurusForm = () => {
                 </Button>
                 <ImportButton
                   thesaurus={{ ...getValues(), values: thesaurusValues }}
-                  onSuccess={(thesaurus: ThesaurusSchema) => {
+                  onSuccess={(savedThesaurus: ThesaurusSchema) => {
                     setNotifications({
                       type: 'success',
                       text: <Translate>Thesauri updated.</Translate>,
                     });
-                    navigate(`/settings/thesauri/edit/${thesaurus._id}`);
+                    navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
                   }}
                   onFailure={() => {
                     setNotifications({

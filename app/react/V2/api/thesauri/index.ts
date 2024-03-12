@@ -29,6 +29,6 @@ export default {
     const fields = {
       thesauri: JSON.stringify(thesaurus),
     };
-    return await httpRequest('thesauris', fields, headers, file);
+    return httpRequest('thesauris', fields, headers, file);
   },
 };
