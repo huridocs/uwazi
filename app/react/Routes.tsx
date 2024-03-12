@@ -8,7 +8,6 @@ import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import {
   PreserveSettings,
-  // CustomUploads,
   EntityTypesList,
   FiltersForm,
   Settings,
