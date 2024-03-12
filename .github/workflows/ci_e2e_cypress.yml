@@ -37,11 +37,11 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - name: Setup Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
       - name: Cache node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -49,10 +49,9 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - uses: actions/checkout@v3
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: ./prod
           key: >-
