@@ -49,20 +49,6 @@ jobs:
         run: yarn install
       - run: sudo apt update
       - run: sudo apt-get install poppler-utils
-      - name: Clone dummy services
-        uses: actions/checkout@v2
-        with:
-          ref: 99a6150d7537444e4c93a7a42ac241b1aba2a75e # downgraded to stable version without multiselect
-          repository: huridocs/dummy_extractor_services
-          path: dummy_extractor_services
-      - run: python3 -m venv venv
-        working-directory: dummy_extractor_services
-      - run: make install_venv -C dummy_extractor_services
-      - run: make start -C dummy_extractor_services > logs.log &
-      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
-      - name: Log on failure
-        if: ${{ failure() }}
-        run: cat dummy_extractor_services/logs.log
       - name: Cache build
         id: cache-build
         uses: actions/cache@v2
@@ -78,6 +64,23 @@ jobs:
       - name: build production
         if: steps.cache-build.outputs.cache-hit != 'true'
         run: yarn production-build
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Clone dummy services
+        uses: actions/checkout@v3
+        with:
+          repository: huridocs/dummy_extractor_services
+          path: dummy_extractor_services
+      - run: python3 -m venv .venv
+        working-directory: dummy_extractor_services
+      - run: make install_venv -C dummy_extractor_services
+      - run: make start -C dummy_extractor_services > logs.log &
+      - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
+      - name: Log on failure
+        if: ${{ failure() }}
+        run: cat dummy_extractor_services/logs.log
       - run: yarn blank-state
         env:
           DBHOST: localhost:27017
