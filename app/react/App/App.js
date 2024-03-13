@@ -9,7 +9,8 @@ import { Icon } from 'UI';
 
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { settingsAtom } from 'V2/atoms/settingsAtom';
+import { TranslateModal } from 'app/I18N/components/TranslateModal';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -98,6 +99,7 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
+      <TranslateModal />
     </div>
   );
 };

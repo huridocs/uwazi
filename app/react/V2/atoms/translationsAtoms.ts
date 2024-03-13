@@ -3,7 +3,7 @@ import { atom } from 'recoil';
 
 const translationsAtom = atom({
   key: 'translations',
-  default: { translations: [] as ClientTranslationSchema[], locale: '', inlineEdit: false },
+  default: { translations: [] as ClientTranslationSchema[], locale: '' },
   //sync deprecated redux store
   //   effects: [
   //     ({ onSet }) => {
@@ -14,4 +14,13 @@ const translationsAtom = atom({
   //   ],
 });
 
-export { translationsAtom };
+const inlineEditAtom = atom({
+  key: 'inlineEdit',
+  default: { inlineEdit: false, context: '', translationKey: '' } as {
+    inlineEdit: boolean;
+    context?: string;
+    translationKey?: string;
+  },
+});
+
+export { translationsAtom, inlineEditAtom };

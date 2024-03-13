@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
-import { useRecoilValue } from 'recoil';
-import { translationsAtom } from 'V2/atoms';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { translationsAtom, inlineEditAtom } from 'V2/atoms';
 
 const parseMarkdownMarker = (
   line: string,
@@ -30,15 +30,23 @@ const parseMarkdownItalicMarker = (line: string) =>
 
 const Translate = ({ className, children, context = 'System', translationKey }) => {
   const { locale, translations } = useRecoilValue(translationsAtom);
+  const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
+
   const language = translations.find(translation => translation.locale === locale);
-  // const className = this.props.i18nmode ? 'translation active' : 'translation';
+  const activeClassName = inlineEditState.inlineEdit ? 'translation active' : 'translation';
 
   const translationContext = language?.contexts.find(ctx => ctx.id === context) || { values: {} };
   const text = translationContext.values[translationKey || children] || children;
   const lines = text ? text.split('\n') : [];
 
   return (
-    <span onClick={() => {}} className={className}>
+    <span
+      onClick={() =>
+        inlineEditState.inlineEdit &&
+        setInlineEditState({ inlineEdit: inlineEditState.inlineEdit, context, translationKey })
+      }
+      className={`${activeClassName} ${className}`}
+    >
       {lines.map((line, index) => {
         const boldMatches = parseMarkdownBoldMarker(line);
         const italicMatches = parseMarkdownItalicMarker(line);
