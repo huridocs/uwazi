@@ -1,10 +1,14 @@
 import React from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { Modal } from 'V2/Components/UI';
-import { inlineEditAtom } from 'V2/atoms';
+import { settingsAtom, translationsAtom, inlineEditAtom } from 'V2/atoms';
 
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
+  const [translations, setTranslations] = useRecoilState(translationsAtom);
+  const { languages } = useRecoilValue(settingsAtom);
+
+  console.log(translations);
 
   return (
     inlineEditState.context && (
@@ -18,7 +22,10 @@ const TranslateModal = () => {
           >
             Close
           </Modal.CloseButton>
-          <Modal.Body>Modal!</Modal.Body>
+          <Modal.Body>
+            <p>{inlineEditState.context}</p>
+            <p>{inlineEditState.translationKey}</p>
+          </Modal.Body>
         </Modal>
       </div>
     )

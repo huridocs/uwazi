@@ -41,10 +41,17 @@ const Translate = ({ className, children, context = 'System', translationKey }) 
 
   return (
     <span
-      onClick={() =>
-        inlineEditState.inlineEdit &&
-        setInlineEditState({ inlineEdit: inlineEditState.inlineEdit, context, translationKey })
-      }
+      onClick={event => {
+        if (inlineEditState.inlineEdit) {
+          event.stopPropagation();
+          event.preventDefault();
+          setInlineEditState({
+            inlineEdit: inlineEditState.inlineEdit,
+            context,
+            translationKey: text,
+          });
+        }
+      }}
       className={`${activeClassName} ${className}`}
     >
       {lines.map((line, index) => {
