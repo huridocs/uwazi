@@ -1,5 +1,5 @@
 import { PermissionSchema } from 'shared/types/permissionType';
-import { AccessLevels, permissionSchema, PermissionType } from 'shared/types/permissionSchema';
+import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { instanceModelWithPermissions, ModelWithPermissions } from 'api/odm/ModelWithPermissions';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import testingDB from 'api/utils/testing_db';
@@ -15,11 +15,7 @@ describe('ModelWithPermissions', () => {
   let connection;
   const testSchema = new mongoose.Schema({
     name: String,
-    permissions: {
-      type: 'array',
-      items: permissionSchema,
-      select: false,
-    },
+    permissions: { type: mongoose.Schema.Types.Mixed, select: false },
     fixed: Boolean,
   });
   const readDocId = testingDB.id();
@@ -508,13 +504,14 @@ describe('ModelWithPermissions', () => {
         expect(saved).toMatchObject([
           {
             name: 'newDoc',
-            permissions: [],
           },
           {
             name: 'newDoc2',
-            permissions: [],
           },
         ]);
+        saved.forEach(item => {
+          expect(item.permissions).toBe(undefined);
+        });
       });
     });
 

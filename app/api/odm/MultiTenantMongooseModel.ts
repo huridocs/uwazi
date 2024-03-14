@@ -6,6 +6,7 @@ import {
   UwaziUpdateQuery,
   UwaziQueryOptions,
   EnforcedWithId,
+  UwaziUpdateOptions,
 } from './model';
 import { tenants } from '../tenants/tenantContext';
 import { DB } from './DB';
@@ -58,7 +59,7 @@ class MultiTenantMongooseModel<T> {
   async _updateMany(
     conditions: UwaziFilterQuery<DataType<T>>,
     doc: UwaziUpdateQuery<DataType<T>>,
-    options?: UwaziQueryOptions
+    options?: UwaziUpdateOptions<DataType<T>>
   ) {
     return this.dbForCurrentTenant().updateMany(conditions, doc, options);
   }
