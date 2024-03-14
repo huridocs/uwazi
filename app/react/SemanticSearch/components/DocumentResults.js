@@ -112,7 +112,9 @@ export class DocumentResults extends Component {
           </div>
           {this.renderFilter()}
           <dl className="metadata-type-numeric">
-            <dt></dt>
+            <dt>
+              <Translate>Number of sentences above threshold</Translate>
+            </dt>
             <dd>{filteredResults.length}</dd>
           </dl>
           <dl className="metadata-type-numeric">
