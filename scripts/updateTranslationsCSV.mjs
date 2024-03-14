@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 import parser from '@babel/parser';
@@ -155,17 +156,24 @@ const findMissingTranslations = async (files, translations) => {
 
   return allTexts.filter(
     text =>
-      !translations.find(translation => translation.key === text.key.trim().replace(/\n\s*/g, ' '))
+      !translations.find(
+        translation =>
+          translation.key.trim().replace(/\n\s*/g, ' ') === text.key.trim().replace(/\n\s*/g, ' ')
+      )
   );
 };
 
+const logger = new console.Console(process.stdout, process.stderr);
 const reportTexts = (texts, message) => {
   if (texts.length) {
-    texts.forEach(({ text, container, file }) => {
-      process.stdout.write(`\x1b[36m ${file}\x1b[37m ${text}\x1b[31m ${container}\x1b[0m \n`);
-    });
+    logger.log(`=== Found \x1b[31m ${texts.length} \x1b[0m ${message} ===`);
 
-    process.stdout.write(` === Found \x1b[31m ${texts.length} \x1b[0m ${message} ===\n`);
+    const textsToLog = texts.map(t => ({
+      file: t.file,
+      text: t.text.length > 50 ? `${t.text.slice(0, 50)}...` : t.text,
+    }));
+    logger.table(textsToLog, ['file', 'text']);
+    logger.log('\n');
   }
 };
 
@@ -177,15 +185,14 @@ const reportNoTranslateElement = textsWithoutTranslateElement => {
   reportTexts(textsWithoutTranslateElement, 'texts not wrapped in a <Translate> element');
 };
 
-const reportObsoleteTranslations = unusedTranslations => {
-  if (unusedTranslations.length) {
-    unusedTranslations.forEach(({ key, value }) => {
-      process.stdout.write(` \x1b[36m ${key} \x1b[37m ${value}\x1b[0m \n`);
-    });
-
-    process.stdout.write(
-      ` === Found \x1b[31m ${unusedTranslations.length} \x1b[0m potential obsolete translations ===\n`
-    );
+const reportObsoleteTranslations = unused => {
+  if (unused.length) {
+    const unusedToLog = unused.map(t => ({
+      key: t.key.length > 50 ? `${t.key.slice(0, 50)}...` : t.key,
+    }));
+    logger.log(`=== Found \x1b[31m ${unused.length} \x1b[0m potential obsolete translations ===`);
+    logger.table(unusedToLog, ['key']);
+    logger.log('\n');
   }
 };
 
