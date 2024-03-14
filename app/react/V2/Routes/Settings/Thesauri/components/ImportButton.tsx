@@ -18,11 +18,9 @@ const ImportButton = ({
     if (e.target.files && e.target.files[0]) {
       try {
         const sanitizedThesaurus = sanitizeThesaurusValues(thesaurus, thesaurus.values);
-        console.log(sanitizedThesaurus);
         const data = await ThesauriAPI.importThesaurus(sanitizedThesaurus, e.target.files[0]);
         onSuccess(data);
       } catch (ex) {
-        console.log(ex);
         onFailure(ex);
       }
     }

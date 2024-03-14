@@ -83,7 +83,6 @@ const ThesaurusForm = () => {
   });
 
   useMemo(() => {
-    console.log(blocker);
     if (blocker.state === 'blocked') {
       setShowNavigationModal(true);
     }
@@ -114,7 +113,6 @@ const ThesaurusForm = () => {
   };
 
   const edit = (row: Row<TableThesaurusValue>) => {
-    console.log('Editing: ', row.original);
     if (row.original.values) {
       editGroup(row);
     } else {
@@ -145,7 +143,6 @@ const ThesaurusForm = () => {
   const sortValues = () => {
     const valuesCopy = [...thesaurusValues];
     valuesCopy.sort((first, second) => (first.label > second.label ? 1 : -1));
-    console.log(135);
     setThesaurusValues(valuesCopy);
   };
 
@@ -192,7 +189,6 @@ const ThesaurusForm = () => {
 
   const addGroupSubmit = (group: FormThesauriValue) => {
     const thesaurusValuesCopy = thesaurusValues.filter(item => item._id !== group._id);
-    console.log(188);
     setThesaurusValues([...thesaurusValuesCopy, group]);
   };
 
