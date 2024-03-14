@@ -32,6 +32,7 @@
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
     "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
     "compare-translations": "node --no-experimental-fetch ./scripts/compareTranslations.js",
+    "update-contents": "node --no-experimental-fetch ./scripts/updateContents.mjs",
     "describe-database": "node --no-experimental-fetch ./scripts/describeDatabase.mjs",
     "tailwind-watch": "yarn run tailwind --watch",
     "tailwind": " npx tailwindcss -i ./app/react/App/styles/main.css -o ./app/react/App/styles/globals.css",
