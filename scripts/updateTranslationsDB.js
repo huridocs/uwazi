@@ -9,7 +9,7 @@ import { config } from '../app/api/config.ts';
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);
-const operations = [];
+const operationsLog = { update: [], insert: [], remove: [] };
 
 let auth;
 if (process.env.DBUSER) {
@@ -52,10 +52,9 @@ const updateLanguage = async (db, language, csvTranslations) => {
   currentTranslations.forEach(async translation => {
     const csvValue = csvTranslations.find(t => t.key === translation.key);
     if (csvValue && translation.key === translation.value && translation.value !== csvValue.value) {
-      operations.push({
+      operationsLog.update.push({
         language,
         key: translation.key.length > 50 ? `${translation.key.slice(0, 50)}...` : translation.key,
-        action: 'Update',
       });
       bulkOperations.push({
         updateOne: {
@@ -66,10 +65,9 @@ const updateLanguage = async (db, language, csvTranslations) => {
     }
 
     if (!csvValue) {
-      operations.push({
+      operationsLog.remove.push({
         language,
         key: translation.key.length > 50 ? `${translation.key.slice(0, 50)}...` : translation.key,
-        action: 'Remove',
       });
       bulkOperations.push({
         deleteOne: {
@@ -82,10 +80,9 @@ const updateLanguage = async (db, language, csvTranslations) => {
   csvTranslations.forEach(translation => {
     const currentTranslation = currentTranslations.find(t => t.key === translation.key);
     if (!currentTranslation) {
-      operations.push({
+      operationsLog.insert.push({
         language,
         key: translation.key.length > 50 ? `${translation.key.slice(0, 50)}...` : translation.key,
-        action: 'Insert',
       });
       bulkOperations.push({
         insertOne: {
@@ -102,6 +99,23 @@ const updateLanguage = async (db, language, csvTranslations) => {
 
   if (bulkOperations.length) {
     await collection.bulkWrite(bulkOperations);
+  }
+};
+
+const report = () => {
+  logger.log(`=== Tenant: \x1b[32m ${config.defaultTenant.dbName} \x1b[0m ===`);
+  if (operationsLog.insert.length) {
+    logger.log(`\n=== Inserted \x1b[32m ${operationsLog.insert.length} \x1b[0m translations ===`);
+    logger.table(operationsLog.insert, ['language', 'key']);
+  }
+  if (operationsLog.update.length) {
+    logger.log(`\n=== Updated \x1b[32m ${operationsLog.update.length} \x1b[0m translations ===`);
+    logger.table(operationsLog.update, ['language', 'key']);
+  }
+
+  if (operationsLog.remove.length) {
+    logger.log(`\n=== Removed \x1b[32m ${operationsLog.remove.length} \x1b[0m translations ===`);
+    logger.table(operationsLog.remove, ['language', 'key']);
   }
 };
 
@@ -124,15 +138,7 @@ const run = async () => {
   }
 
   await DB.disconnect();
-
-  logger.log(`Tenant: ${config.defaultTenant.dbName}`);
-  if (operations.length === 0) {
-    logger.log('No translations were updated');
-    return;
-  }
-
-  logger.table(operations, ['language', 'key', 'action']);
-  logger.log('\n');
+  report();
 };
 
 run();

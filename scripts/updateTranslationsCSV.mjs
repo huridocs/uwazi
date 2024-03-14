@@ -190,7 +190,7 @@ const reportObsoleteTranslations = unused => {
     const unusedToLog = unused.map(t => ({
       key: t.key.length > 50 ? `${t.key.slice(0, 50)}...` : t.key,
     }));
-    logger.log(`=== Found \x1b[31m ${unused.length} \x1b[0m potential obsolete translations ===`);
+    logger.log(`=== Found \x1b[31m ${unused.length} \x1b[0m obsolete translations ===`);
     logger.table(unusedToLog, ['key']);
     logger.log('\n');
   }
