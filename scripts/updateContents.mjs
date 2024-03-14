@@ -79,12 +79,11 @@ const findUnusedTranslations = async (files, _translations) => {
 };
 
 const processTextNode = (_path, file) => {
-  const regexp = /\b[a-zA-Z]+\b/g;
   const text = _path.node.value.trim();
   const parentTag = _path.parent.openingElement;
   const container = parentTag?.name.name;
 
-  if (!regexp.test(text)) {
+  if (!/\b[a-zA-Z]+\b/g.test(text)) {
     return null;
   }
 
@@ -250,7 +249,7 @@ async function checkTranslations(dir) {
   reportNoTranslateElement(textsWithoutTranslateElement);
   reportObsoleteTranslations(unusedTranslationsKeys);
 
-  //await updateContents(unusedTranslationsKeys, textsNotInTranslations);
+  await updateContents(unusedTranslationsKeys, textsNotInTranslations);
 }
 
 checkTranslations('./app');
