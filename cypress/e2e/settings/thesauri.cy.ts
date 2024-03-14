@@ -45,7 +45,6 @@ describe('Thesauri configuration', () => {
 
   it('should add groups', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
-
     cy.contains('a', 'Add thesaurus').click();
     cy.get('#thesauri-name').type('New Thesauri with groups');
     cy.contains('button', 'Add group').click();
@@ -68,7 +67,6 @@ describe('Thesauri configuration', () => {
     cy.contains('span', 'Thesauri').click();
     cy.wait('@fetchThesauri');
     cy.wait('@fetchTemplates');
-
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.contains('button', 'Edit').click();
     cy.wait('@fetchStats');
@@ -78,8 +76,8 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.contains('button', 'Save').click();
     cy.wait('@fetchThesauri');
-    cy.contains('button', 'Discard changes').click();
     cy.get('tbody tr:nth-of-type(1) td:nth-of-type(2)').should('have.text', 'First Item edited');
+    cy.wait('@editThesauri');
   });
 
   it('should edit groups', () => {
@@ -94,7 +92,7 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr:nth-of-type(2) td:nth-of-type(2)').should('have.text', 'First group edited');
     cy.contains('button', 'Save').click();
-    cy.contains('button', 'Discard changes').click();
+    cy.wait('@editThesauri');
   });
 
   it('should delete', () => {

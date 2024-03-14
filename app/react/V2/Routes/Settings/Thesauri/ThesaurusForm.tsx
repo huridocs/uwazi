@@ -72,14 +72,15 @@ const ThesaurusForm = () => {
 
   const blocker = useBlocker(({ nextLocation }) => {
     const nameHasChanged = isDirty;
+    const hasSaved = nextLocation.pathname.includes('edit');
+    if (hasSaved) return false;
     if (thesaurus) {
       // We are editing
       const valuesHaveChanged = thesaurusValues.length !== thesaurus.values.length;
       return valuesHaveChanged || thesaurus.name !== getValues().name;
     }
     const newValues = Boolean(thesaurusValues.length);
-    const hasSaved = nextLocation.pathname.includes('edit');
-    return (newValues || nameHasChanged) && !hasSaved;
+    return newValues || nameHasChanged;
   });
 
   useMemo(() => {
