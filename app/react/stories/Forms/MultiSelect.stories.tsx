@@ -25,6 +25,7 @@ const Primary: Story = {
             disabled={args.disabled}
             placeholder={args.placeholder}
             canBeEmpty={args.canBeEmpty}
+            value={args.value}
           />
         </div>
       </div>
@@ -60,6 +61,7 @@ const Basic: Story = {
     disabled: false,
     placeholder: 'Nothing selected',
     canBeEmpty: true,
+    value: [],
   },
 };
 
