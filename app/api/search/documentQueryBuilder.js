@@ -466,5 +466,9 @@ export default function () {
 
       return this;
     },
+
+    scroll() {
+      baseQuery.scroll = '30s';
+    },
   };
 }

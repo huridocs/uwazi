@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 
 import date from 'api/utils/date';
@@ -14,6 +15,7 @@ import { sequentialPromises } from 'shared/asyncUtils';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { propertyTypes } from 'shared/propertyTypes';
 import { UserRole } from 'shared/types/userSchema';
+import { inspect } from 'util';
 import documentQueryBuilder from './documentQueryBuilder';
 import { elastic } from './elastic';
 import entitiesModel from '../entities/entitiesModel';
@@ -641,6 +643,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     totalRows: response.body.hits.total.value,
     relation: response.body.hits.total.relation,
     aggregations: { all: aggregationsWithAny },
+    ...(response.body._scroll_id ? { scrollId: response.body._scroll_id } : {}),
   };
 };
 
@@ -769,18 +772,27 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   return queryBuilder;
 };
 
+async function prepareSearch(query, language, user) {
+  const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
+  const includeReviewAggregations = query.includeReviewAggregations || false;
+  const queryBuilder = await buildQuery(
+    query,
+    language,
+    user,
+    resources,
+    includeReviewAggregations
+  );
+
+  return { queryBuilder, resources };
+}
+
 const search = {
   async search(query, language, user) {
-    const resources = await Promise.all([templatesModel.get(), dictionariesModel.get()]);
-    const [templates, dictionaries] = resources;
-    const includeReviewAggregations = query.includeReviewAggregations || false;
-    const queryBuilder = await buildQuery(
-      query,
-      language,
-      user,
-      resources,
-      includeReviewAggregations
-    );
+    const {
+      queryBuilder,
+      resources: [templates, dictionaries],
+    } = await prepareSearch(query, language, user);
+
     if (query.geolocation) {
       searchGeolocation(queryBuilder, templates);
     }
@@ -816,6 +828,61 @@ const search = {
       .catch(e => {
         throw createError(e, 400);
       });
+  },
+
+  async scroll(query, language, user, batchSize = 1) {
+    const {
+      queryBuilder,
+      resources: [templates, dictionaries],
+    } = await prepareSearch(query, language, user);
+
+    queryBuilder.limit(batchSize);
+
+    const firstResponse = await elastic.search({ body: queryBuilder.query(), scroll: '30s' });
+    const firstPage = await processResponse(
+      firstResponse,
+      templates,
+      dictionaries,
+      language,
+      query.filters
+    );
+
+    const pagesQueue = [firstPage];
+
+    const appendResponseAggrsPlaceholder = response => ({
+      ...response,
+      body: { ...response.body, aggregations: { all: {} } },
+    });
+
+    const appendOriginalAggregations = page => ({ ...page, aggregations: firstPage.aggregations });
+
+    const preloadNextPage = async scrollId => {
+      const nextPage = await elastic.scroll(scrollId);
+
+      if (nextPage.body.hits.hits.length) {
+        pagesQueue.push(
+          await processResponse(
+            appendResponseAggrsPlaceholder(nextPage),
+            templates,
+            dictionaries,
+            language,
+            query.filters
+          )
+        );
+      }
+    };
+
+    return {
+      hasNext() {
+        return pagesQueue.length > 0;
+      },
+
+      async next() {
+        const { scrollId, ...currentPage } = pagesQueue.shift();
+        await preloadNextPage(scrollId);
+        return appendOriginalAggregations(currentPage);
+      },
+    };
   },
 
   async searchGeolocations(query, language, user) {
