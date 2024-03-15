@@ -3,10 +3,18 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 
+interface ActivityLogResponse {
+  rows: ActivityLogEntryType[];
+  remainingRows: number;
+  limit: number;
+  page: number;
+  message: string;
+}
+
 const get = async (
   searchParams: any,
   headers?: IncomingHttpHeaders
-): Promise<{ rows: ActivityLogEntryType[]; remainingRows: number }> => {
+): Promise<ActivityLogResponse> => {
   try {
     const requestParams = new RequestParams(searchParams, headers);
     const response = await api.get('activityLog', requestParams);
@@ -16,4 +24,5 @@ const get = async (
   }
 };
 
+export type { ActivityLogResponse };
 export { get };
