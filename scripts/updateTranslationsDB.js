@@ -121,7 +121,8 @@ const report = () => {
 
 // eslint-disable-next-line max-statements
 const run = async () => {
-  await DB.connect(config.DBHOST, auth);
+  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
+  await DB.connect(url, auth);
   const { db } = DB.connectionForDB(config.defaultTenant.dbName);
 
   const settings = await db.collection('settings').findOne();
