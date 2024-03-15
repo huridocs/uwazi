@@ -129,7 +129,19 @@ module.exports = {
     'react/self-closing-comp': ['warn'],
     'react/no-multi-comp': ['warn'],
     'react/jsx-closing-bracket-location': ['warn'],
-    'react/jsx-boolean-value': ['warn'],
+    'react/jsx-boolean-value': [
+      'warn',
+      'always',
+      {
+        never: [
+          'no-translate',
+          'date-rangepicker',
+          'datepicker',
+          'inline-datepicker',
+          'datepicker-autohide',
+        ],
+      },
+    ],
     'react/jsx-indent': ['off'],
     'react/jsx-indent-props': ['warn'],
     'react/no-array-index-key': ['warn'],
@@ -184,7 +196,13 @@ module.exports = {
     'react/no-unknown-property': [
       'error',
       {
-        ignore: ['no-translate', 'date-rangepicker', 'datepicker', 'inline-datepicker'],
+        ignore: [
+          'no-translate',
+          'date-rangepicker',
+          'datepicker',
+          'inline-datepicker',
+          'datepicker-autohide',
+        ],
       },
     ],
     //jsx-a11y
