@@ -268,7 +268,7 @@
     "@cfaester/enzyme-adapter-react-18": "^0.7.1",
     "@cypress/react18": "^2.0.0",
     "@storybook/addon-actions": "^7.6.17",
-    "@storybook/addon-essentials": "^7.6.17",
+    "@storybook/addon-essentials": "^8.0.0",
     "@storybook/addon-interactions": "^7.6.17",
     "@storybook/addon-links": "^7.6.17",
     "@storybook/addon-viewport": "^7.6.17",
