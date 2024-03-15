@@ -42,6 +42,7 @@ jobs:
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - run: yarn update-translations-db
       - run: yarn check-translations
         env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
