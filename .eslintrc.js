@@ -131,9 +131,9 @@ module.exports = {
     'react/jsx-closing-bracket-location': ['warn'],
     'react/jsx-boolean-value': [
       'warn',
-      'always',
+      'never',
       {
-        never: [
+        always: [
           'no-translate',
           'date-rangepicker',
           'datepicker',

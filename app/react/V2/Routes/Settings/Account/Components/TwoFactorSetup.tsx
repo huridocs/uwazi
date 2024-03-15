@@ -33,17 +33,19 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const [tokenError, setTokenError] = useState(false);
 
   useEffect(() => {
-    api
-      .post('auth2fa-secret')
-      .then((resp: Response) => resp.json)
-      .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
-        setSecret(secret);
-        setOtpauth(otpauth);
-      })
-      .catch((error: Error) => {
-        throw error;
-      });
-  }, []);
+    if (isOpen && !_secret) {
+      api
+        .post('auth2fa-secret')
+        .then((resp: Response) => resp.json)
+        .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
+          setSecret(secret);
+          setOtpauth(otpauth);
+        })
+        .catch((error: Error) => {
+          throw error;
+        });
+    }
+  }, [isOpen, _secret]);
 
   const tokenChange = (value: string) => {
     setToken(value);
