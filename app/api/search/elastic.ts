@@ -21,6 +21,10 @@ const elastic = {
     );
   },
 
+  async scroll(scrollId: string, keepAlive = '30s') {
+    return elasticClient.scroll({ scroll_id: scrollId, scroll: keepAlive });
+  },
+
   async delete(params: RequestParams.Delete, options?: TransportRequestOptions) {
     return elasticClient.delete({ ...params, index: tenants.current().indexName }, options);
   },
