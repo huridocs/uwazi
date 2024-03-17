@@ -37,6 +37,7 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
+        details: response.message,
       });
     }
   };

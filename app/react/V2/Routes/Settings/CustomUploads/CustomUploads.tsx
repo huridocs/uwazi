@@ -57,7 +57,6 @@ const CustomUploads = () => {
     }
 
     if (blocker.state === 'proceeding') {
-      console.log('aborting all requests!');
       uploadService.abort();
     }
   }, [blocker, setConfirmNavigationModal]);

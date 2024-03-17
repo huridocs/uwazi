@@ -80,4 +80,5 @@ const DropzoneModal = ({ notify, isOpen, setIsOpen, uploadService }: DropzoneMod
     <div />
   );
 };
+
 export { DropzoneModal };

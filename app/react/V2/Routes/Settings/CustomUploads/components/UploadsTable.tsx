@@ -75,7 +75,7 @@ const createColumns = (
     header: URLHeader,
     cell: URLCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-1/4' },
+    meta: { headerClassName: 'w-2/4' },
   }),
   columnHelper.display({
     id: 'action',
@@ -84,7 +84,7 @@ const createColumns = (
     enableSorting: false,
     meta: {
       action: () => ({ delete: handleDelete, edit: editFile }),
-      headerClassName: 'sr-only',
+      headerClassName: 'w-0 sr-only',
     },
   }),
 ];
