@@ -14,16 +14,6 @@ const ActionHeader = () => <Translate>Action</Translate>;
 
 const TitleCell = ({ getValue }: CellContext<FileType, string>) => getValue();
 const URLCell = ({ getValue }: CellContext<FileType, string>) => `/assets/${getValue()}`;
-const ActionCell = ({ cell }: CellContext<FileType, any>) => (
-  <Button
-    styling="outline"
-    color="error"
-    className="leading-3"
-    onClick={() => cell.column.columnDef.meta?.action?.(cell.row.original)}
-  >
-    <Translate>Delete</Translate>
-  </Button>
-);
 const PreviewCell = ({ cell }: CellContext<FileType, any>) => {
   const { mimetype = '', originalname, filename } = cell.row.original;
   return (
@@ -37,8 +27,37 @@ const PreviewCell = ({ cell }: CellContext<FileType, any>) => {
     </div>
   );
 };
+const ActionCell = ({ cell }: CellContext<FileType, any>) => {
+  const actions = cell.column.columnDef.meta?.action
+    ? cell.column.columnDef.meta?.action()
+    : undefined;
 
-const createColumns = (action: (file: FileType) => void) => [
+  return (
+    <div className="flex flex-nowrap gap-2">
+      <Button
+        styling="outline"
+        color="primary"
+        className="leading-3"
+        onClick={() => actions.edit(cell.row.original)}
+      >
+        <Translate>Edit</Translate>
+      </Button>
+      <Button
+        styling="outline"
+        color="error"
+        className="leading-3"
+        onClick={() => actions.delete(cell.row.original)}
+      >
+        <Translate>Delete</Translate>
+      </Button>
+    </div>
+  );
+};
+
+const createColumns = (
+  handleDelete: (file: FileType) => void,
+  editFile: (file: FileType) => void
+) => [
   columnHelper.display({
     id: 'preview',
     header: PreviewHeader,
@@ -63,7 +82,10 @@ const createColumns = (action: (file: FileType) => void) => [
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: { action, headerClassName: 'sr-only' },
+    meta: {
+      action: () => ({ delete: handleDelete, edit: editFile }),
+      headerClassName: 'sr-only',
+    },
   }),
 ];
 

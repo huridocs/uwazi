@@ -14,10 +14,13 @@ import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
-import { createColumns } from './components/UploadsTable';
-import { FileList } from './components/FileList';
-import { UploadProgress } from './components/UploadProgress';
-import { DropzoneModal } from './components/DropzoneModal';
+import {
+  createColumns,
+  FileList,
+  UploadProgress,
+  DropzoneModal,
+  EditFileSidepanel,
+} from './components';
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<FileType[]> =>
@@ -33,10 +36,11 @@ const CustomUploads = () => {
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
-  const [interrupt, setInterrupt] = useState(false);
+  const [fileToEdit, setFileToEdit] = useState<FileType>();
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [showUploadsModal, setShowUploadsModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
+  const [showSidepanel, setShowSipanel] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
     items: Row<FileType>[] | FileType[];
@@ -45,20 +49,16 @@ const CustomUploads = () => {
     items: [],
   });
 
-  const blocker = useBlocker(Boolean(uploadService.getFilesInQueue().length));
-
-  useEffect(() => {
-    if (interrupt) {
-      uploadService.abort();
-    }
-    if (blocker.proceed) {
-      blocker.proceed();
-    }
-  }, [interrupt]);
+  const blocker = useBlocker(Boolean(uploadService.isUploading()));
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
       setConfirmNavigationModal(true);
+    }
+
+    if (blocker.state === 'proceeding') {
+      console.log('aborting all requests!');
+      uploadService.abort();
     }
   }, [blocker, setConfirmNavigationModal]);
 
@@ -116,7 +116,10 @@ const CustomUploads = () => {
             onSelection={selected => {
               setSelectedRows(selected);
             }}
-            columns={createColumns(handleDelete)}
+            columns={createColumns(handleDelete, file => {
+              setShowSipanel(true);
+              setFileToEdit(file);
+            })}
             data={files}
             title={<Translate>Custom Uploads</Translate>}
           />
@@ -163,11 +166,19 @@ const CustomUploads = () => {
       {confirmNavigationModal && (
         <ConfirmNavigationModal
           setShowModal={setConfirmNavigationModal}
-          onConfirm={() => {
-            setInterrupt(true);
+          onConfirm={async () => {
+            if (blocker.proceed) {
+              blocker.proceed();
+            }
           }}
         />
       )}
+
+      <EditFileSidepanel
+        showSidepanel={showSidepanel}
+        closeSidepanel={() => setShowSipanel(false)}
+        file={fileToEdit}
+      />
     </div>
   );
 };
