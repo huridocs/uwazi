@@ -1,3 +1,5 @@
+/* eslint-disable func-call-spacing */
+/* eslint-disable no-spaced-func */
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
@@ -8,12 +10,14 @@ import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 import { getByType, remove, UploadService } from 'V2/api/files';
-import { Button, ConfirmationModal, Modal, Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { ConfirmNavigationModal, FileDropzone } from 'V2/Components/Forms';
+import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
 import { createColumns } from './components/UploadsTable';
 import { FileList } from './components/FileList';
+import { UploadProgress } from './components/UploadProgress';
+import { DropzoneModal } from './components/DropzoneModal';
 
 const customUploadsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<FileType[]> =>
@@ -28,14 +32,10 @@ const CustomUploads = () => {
   const files = useLoaderData() as FileType[];
   const setNotifications = useSetRecoilState(notificationAtom);
   const revalidator = useRevalidator();
-  const [uploads, setUploads] = useState<File[]>([]);
-  const [uploadingFile, setUploadingFile] = useState<string>();
-  const [uploadProgress, setUploadProgress] = useState<number>();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [interrupt, setInterrupt] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<(FileType | FetchResponseError)[]>([]);
   const [confirmationModal, setConfirmationModal] = useState(false);
-  const [uploadsModal, setUploadsModal] = useState(false);
+  const [showUploadsModal, setShowUploadsModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
@@ -44,7 +44,8 @@ const CustomUploads = () => {
     action: () => {},
     items: [],
   });
-  const blocker = useBlocker(Boolean(uploadingFile || uploadProgress));
+
+  const blocker = useBlocker(Boolean(uploadService.getFilesInQueue().length));
 
   useEffect(() => {
     if (interrupt) {
@@ -80,27 +81,6 @@ const CustomUploads = () => {
         text: <Translate>An error occurred</Translate>,
       });
     }
-  };
-
-  const handleCancel = () => {
-    setUploadsModal(false);
-    setUploads([]);
-  };
-
-  const handleSave = async () => {
-    setUploadsModal(false);
-    uploadService.onProgress((filename, percent) => {
-      setUploadingFile(filename);
-      setUploadProgress(percent);
-    });
-    uploadService.onUploadComplete(response => {
-      setUploadedFiles([...uploadedFiles, response]);
-      revalidator.revalidate();
-    });
-    const results = await uploadService.upload([...uploads]);
-    setUploadingFile(undefined);
-    setUploadProgress(undefined);
-    notify(results, <Translate>Uploaded custom file</Translate>);
   };
 
   const handleDelete = async (file: FileType) => {
@@ -143,17 +123,7 @@ const CustomUploads = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex gap-2 justify-end items-center">
-          {uploadingFile && (
-            <div className="flex grow">
-              <Translate>Uploading</Translate>...&nbsp;
-              <span className="font-semibold">{uploadingFile}</span>&nbsp;
-              {uploadProgress}%&nbsp;
-              <span className="flex flex-nowrap before:content-['('] after:content-[')']">
-                {uploadService.getFilesInQueue().length + 1}&nbsp;
-                <Translate>remaining files</Translate>
-              </span>
-            </div>
-          )}
+          <UploadProgress queueLength={uploadService.getFilesInQueue().length} />
           {selectedRows.length > 0 && (
             <Button
               styling="solid"
@@ -166,50 +136,18 @@ const CustomUploads = () => {
               <Translate>Delete</Translate>
             </Button>
           )}
-          <Button styling="solid" color="primary" onClick={async () => setUploadsModal(true)}>
+          <Button styling="solid" color="primary" onClick={async () => setShowUploadsModal(true)}>
             <Translate>Import asset</Translate>
           </Button>
         </SettingsContent.Footer>
       </SettingsContent>
 
-      {uploadsModal && (
-        <Modal size="xl">
-          <Modal.Header>
-            <Translate>Import asset</Translate>
-            <Modal.CloseButton
-              onClick={() => {
-                handleCancel();
-              }}
-            />
-          </Modal.Header>
-          <Modal.Body>
-            <FileDropzone
-              className="w-auto md:min-w-72"
-              onChange={newFiles => {
-                setUploads(newFiles);
-              }}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <div className="flex w-full">
-              <div className="flex gap-4">
-                <Button
-                  className="w-1/2"
-                  styling="outline"
-                  onClick={() => {
-                    handleCancel();
-                  }}
-                >
-                  <Translate>Cancel</Translate>
-                </Button>
-                <Button className="w-1/2" onClick={async () => handleSave()}>
-                  <Translate>Add</Translate>
-                </Button>
-              </div>
-            </div>
-          </Modal.Footer>
-        </Modal>
-      )}
+      <DropzoneModal
+        isOpen={showUploadsModal}
+        setIsOpen={setShowUploadsModal}
+        uploadService={uploadService}
+        notify={notify}
+      />
 
       {confirmationModal && (
         <ConfirmationModal
