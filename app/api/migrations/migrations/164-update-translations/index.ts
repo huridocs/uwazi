@@ -2,6 +2,9 @@ import { Db } from 'mongodb';
 
 const newKeys = [
   { key: 'Reset passwords' },
+  { key: 'Import asset' },
+  { key: 'File name' },
+  { key: 'remaining files' },
   { key: 'Do you want to delete the following items?' },
   { key: 'Do you want disable 2FA for the following users?' },
   { key: 'Do you want reset the password for the following users?' },

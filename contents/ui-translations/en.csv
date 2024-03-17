@@ -244,6 +244,8 @@ Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Display entity view from page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Document and entity types
@@ -316,6 +318,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,File
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -366,6 +369,7 @@ Icon,Icon
 "If you want to continue, please type","If you want to continue, please type"
 Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
 Import,Import
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Import CSV
 Import instructions,Import instructions
@@ -640,6 +644,7 @@ relationships,relationships
 Relationships,Relationships
 Relationships saved,Relationships saved
 RelationType saved,RelationType saved
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
 remove icon,remove icon
@@ -654,6 +659,7 @@ Reset,Reset
 Reset 2FA,Reset 2FA
 Reset default translation,Reset default translation
 Reset Password,Reset Password
+Reset passwords,Reset passwords
 Restricted,Restricted
 Return to login,Return to login
 Return to the thesaurus page when you finished labeling to start learning.,Return to the thesaurus page when you finished labeling to start learning.
@@ -923,7 +929,6 @@ x less,less
 x more,more
 Year,Year
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.

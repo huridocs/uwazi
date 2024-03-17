@@ -242,6 +242,8 @@ Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,แสดงมุมมองรายการจากหน้า
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
@@ -314,6 +316,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ไฟล์
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -364,6 +367,7 @@ Icon,ไอคอน
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,นำเข้า
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
 Import instructions,คำแนะนำการนำเข้าข้อมูล
@@ -638,6 +642,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
 remove icon,ลบไอคอน
@@ -652,6 +657,7 @@ Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
 Reset Password,สร้าง รหัสผ่าน ใหม่
+Reset passwords,Reset passwords
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Return to the thesaurus page when you finished labeling to start learning.,กลับไปที่หน้าคำอธิบายกลุ่มคำเมื่อคุณแยกประเภทเสร็จสิ้นเพื่อเริ่มการเรียนรู้
@@ -925,7 +931,6 @@ x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,นอกจากนี้คุณยังสามารถพัฒนาโมเดลได้โดยใช้เอกสารที่ถูกจำแนกประเภทในจำนวนที่มากขึ้น

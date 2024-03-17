@@ -50,7 +50,7 @@ describe('migration update translations of settings', () => {
       .find({ key: { $in: newKeys.map(k => k.key) } })
       .toArray();
 
-    expect(translations.length).toBe(8);
+    expect(translations.length).toBe(14);
   });
 
   it('should be idempotent (do not throw an error on multiple runs)', async () => {

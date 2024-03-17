@@ -242,6 +242,8 @@ Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Sayfadan varlık görünümünü görüntüle
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Belge
 Document and entity types,Belge ve varlık türü
@@ -314,6 +316,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Dosya
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -364,6 +367,7 @@ Icon,Simge
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,İçe aktar
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV'yi içe aktar
 Import instructions,Talimatları içe aktar
@@ -638,6 +642,7 @@ relationships,İlişkiler
 Relationships,İlişkiler
 Relationships saved,Relationships saved
 RelationType saved,İlişki türü kaydedildi
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Kaldır
 remove icon,simgeyi kaldır
@@ -652,6 +657,7 @@ Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
 Reset Password,Parolayı sıfırla
+Reset passwords,Reset passwords
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
 Return to the thesaurus page when you finished labeling to start learning.,Öğrenmeye başlamak için etiketlemeyi bitirdiğinizde Thesaurus sayfasına dönün.
@@ -921,7 +927,6 @@ x less,daha az
 x more,daha az
 Year,Yıl
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, çizelgeler ve varlık listeleri gibi gelişmiş bileşenleri de yerleştirebilirsiniz."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,Ayrıca daha fazla etiketli belge sağlayarak modeli iyileştirebilirsiniz.

@@ -242,6 +242,8 @@ Discard changes,အပြောင်းအလဲများကို ပယ်
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,စာမျက်နှာမှ ဖြည့်သွင်းချက် မြင်ကွင်းကို ပြသရန်
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,စာရွက်စာတမ်း
 Document and entity types,စာရွက်စာတမ်းနှင့် ဖြည့်သွင်းချက် အမျိုးအစားများ
@@ -314,6 +316,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ဖိုင်
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -364,6 +367,7 @@ Icon,အိုင်ကွန်
 "If you want to continue, please type",ဆက်လက်ဆောင်ရွက်လိုပါက ကျေးဇူးပြု၍ စာရိုက်ပါ
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,ထည့်သွင်းရန်
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV ထည့်သွင်းရန်
 Import instructions,ထည့်သွင်းမှု ညွှန်ကြားချက်များ
@@ -638,6 +642,7 @@ relationships,ဆက်နွှယ်မှုများ
 Relationships,ဆက်နွှယ်မှုများ
 Relationships saved,Relationships saved
 RelationType saved,RelationType သိမ်းဆည်းပြီး
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ဖယ်ရှားရန်
 remove icon,အိုင်ကွန် ဖယ်ရှားရန်
@@ -652,6 +657,7 @@ Reset,ပြန်လည်သတ်မှတ်ရန်
 Reset 2FA,2FA ကို ပြန်လည်သတ်မှတ်ရန်
 Reset default translation,Reset default translation
 Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ်ရန်
+Reset passwords,Reset passwords
 Restricted,ကန့်သတ်ထားသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
 Return to the thesaurus page when you finished labeling to start learning.,သင် တံဆိပ်တပ်ပြီးသည့်အခါ စတင်လေ့လာရန်အတွက် ဝေါဟာရပဒေသာကျမ်း စာမျက်နှာသို့ ပြန်သွားပါ။
@@ -921,7 +927,6 @@ x less,x လျော့
 x more,x ပို
 Year,နှစ်
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,သင်သည် နောက်ထပ် တံဆိပ်တပ်မှတ်သားထားသော စာရွက်စာတမ်းများ ပေးခြင်းဖြင့်လည်း မော်ဒယ်ကို ပိုကောင်းအောင်လုပ်နိုင်သည်။

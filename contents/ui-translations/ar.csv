@@ -241,6 +241,8 @@ Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,عرض معاينة الكيان (الإدخال) من الصفحة
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,مستند
 Document and entity types,انواع الوثائق والكيانات
@@ -313,6 +315,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ملف
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -363,6 +366,7 @@ Icon,أيقونة
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,استيراد
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import instructions,استيراد التعليمات
@@ -637,6 +641,7 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
 remove icon,إزالة الأيقونة
@@ -651,6 +656,7 @@ Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
 Reset default translation,Reset default translation
 Reset Password,إعادة تعيين كلمة المرور
+Reset passwords,Reset passwords
 Restricted,مُقَيَّد
 Return to login,العودة لتسجيل الدخول
 Return to the thesaurus page when you finished labeling to start learning.,عد إلى صفحة قائمة المفردات عند انتهائك من التسمية للبدء في التعلم
@@ -920,7 +926,6 @@ x less,X أقل
 x more,X أكثر
 Year,سنة
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
 You can also improve the model by providing more labeled documents.,يمكنك أيضاً تحسين النموذج من خلال توفير المزيد من المستندات المسماه
