@@ -8,6 +8,8 @@ type Endpoint = 'attachment' | 'custom' | 'document';
 class UploadService {
   private requests: SuperAgentRequest[] = [];
 
+  private aborted: boolean = false;
+
   private onProgressCallback:
     | ((filename: string, percent: number, total?: number) => void)
     | undefined;
@@ -25,6 +27,8 @@ class UploadService {
   // eslint-disable-next-line max-statements
   private async uploadQueue(files: File[], responses: (FileType | FetchResponseError)[]) {
     if (files.length === 0) return;
+
+    if (this.aborted) return;
 
     const file = files.shift()!;
 
@@ -81,9 +85,13 @@ class UploadService {
   }
 
   public abort() {
-    this.requests.forEach(request => {
-      request.abort();
-    });
+    this.aborted = true;
+    this.requests.forEach(request => request.abort());
+    this.aborted = false;
+  }
+
+  public isUploading() {
+    return Boolean(this.requests.length);
   }
 }
 
