@@ -56,6 +56,18 @@ describe('customization', () => {
     cy.contains('button', 'Dismiss').click();
   });
 
+  it('should rename a file', () => {
+    cy.contains('td', 'batman.jpg').parent().contains('button', 'Edit').click();
+    cy.contains('Edit File');
+    cy.checkA11y();
+    cy.get('aside').within(() => {
+      cy.get('#filename').clear();
+      cy.get('#filename').type('Batman - superhero pic');
+      cy.contains('button', 'Save').click();
+    });
+    cy.contains('td', 'Batman - superhero pic.jpg');
+  });
+
   it('should delete a file', () => {
     cy.contains('td', 'short-video.mp4').parent().contains('button', 'Delete').click();
     cy.contains('li', 'short-video.mp4');
@@ -73,7 +85,7 @@ describe('customization', () => {
     cy.get('[data-testid="settings-content-footer"]').within(() => {
       cy.contains('button', 'Delete').click();
     });
-    cy.contains('li', 'batman.jpg');
+    cy.contains('li', 'Batman - superhero pic.jpg');
     cy.contains('li', 'sample.pdf');
     cy.contains('li', 'valid.pdf');
     cy.contains('li', 'short-video-thumbnail.jpg');
