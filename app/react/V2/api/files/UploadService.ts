@@ -36,6 +36,7 @@ class UploadService {
       .post(this.route)
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
+      .field('originalname', file.name)
       .attach('file', file)
       .on('progress', event => {
         if (this.onProgressCallback && event.percent) {
