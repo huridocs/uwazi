@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   LoaderFunction,
   useLoaderData,
@@ -13,7 +13,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
 import { SortingState } from '@tanstack/react-table';
-import { debounce, isEmpty, isUndefined, omitBy } from 'lodash';
+import { DebouncedFunc, debounce, isUndefined, omitBy } from 'lodash';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -35,15 +35,27 @@ interface LoaderData {
   page: number;
 }
 
+type searchParam = 'username' | 'search' | 'from' | 'to' | 'sort' | 'order' | 'page';
 const sortingParams = ['method', 'time', 'username', 'url'];
 
-const getQueryParamsBySearchParams = searchParams => {
+interface ActivityLogSearchParams {
+  username?: string;
+  search?: string;
+  from?: number;
+  to?: string;
+  sort?: string;
+  order?: string;
+  page?: number;
+  limit?: number;
+}
+
+const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
   const {
     username,
     search,
     from,
     to,
-    sort,
+    sort = 'time',
     order = 'desc',
     page = 1,
     limit = ITEMS_PER_PAGE,
@@ -56,7 +68,7 @@ const getQueryParamsBySearchParams = searchParams => {
     ...(username !== undefined ? { username } : {}),
     ...(search !== undefined ? { method: search } : {}),
     ...(search !== undefined ? { find: search } : {}),
-    ...(search !== undefined ? { searchText: search } : {}),
+    ...(search !== undefined ? { search } : {}),
     ...(from !== undefined && to !== undefined ? { from, to } : {}),
     page,
     limit,
@@ -135,16 +147,16 @@ const ActivityLog = () => {
   const updateSearchUrl = (updatedParams: ActivityLogSearch) =>
     `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
 
-  // useEffect(() => {
-  //   if (isFirstRender && sorting.length === 0) {
-  //     return;
-  //   }
-  //   const sortingProp = sorting?.[0]?.id;
-  //   const sortingOrder = sorting?.[0]?.desc ? 'desc' : 'asc';
-  //   const updatedParams = { ...searchedParams, sort: sortingProp, order: sortingOrder };
-  //   navigate(updateSearchUrl(updatedParams));
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [sorting]);
+  useEffect(() => {
+    const sortingProp = sorting?.[0]?.id;
+    const sortingOrder = sorting?.[0]?.desc ? 'desc' : 'asc';
+    if (isFirstRender && (!sortingProp || (sortingProp === sort && sortingOrder === order))) {
+      return;
+    }
+    const updatedParams = { ...searchedParams, sort: sortingProp, order: sortingOrder };
+    navigate(updateSearchUrl(updatedParams));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sorting]);
 
   const onSubmit = async (data: ActivityLogSearch) => {
     const filters = omitBy(omitBy(data, isUndefined), val => val === '');
@@ -152,15 +164,24 @@ const ActivityLog = () => {
     navigate(updateSearchUrl(updatedParams));
   };
 
-  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
+  const de = useRef<DebouncedFunc<() => void> | null>(null);
+
+  const debouncedChangeHandler = useMemo(
+    () => (handler: () => void) => {
+      de.current = debounce(handler, 500);
+      return de.current;
+    },
+    []
+  );
 
   useEffect(() => {
-    const subscription = watch(async () => handleSubmit(onSubmit)());
+    de.current?.cancel();
+    const subscription = watch(async () => debouncedChangeHandler(handleSubmit(onSubmit))());
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSubmit, watch]);
 
-  const setFieldValue = (field, value: string | number) => {
+  const setFieldValue = (field: searchParam, value: string | number) => {
     if (value !== undefined) {
       setValue(field, value);
     }
@@ -193,21 +214,21 @@ const ActivityLog = () => {
                 <Translate>Activity log</Translate>
               </h2>
               <InputField
-                id="user"
+                id="username"
                 label="User"
-                hideLabel={true}
+                hideLabel
                 placeholder="User"
                 hasErrors={!!errors.username}
                 {...register('username')}
                 onChange={e => {
                   setValue('username', e.target.value);
-                  debouncedChangeHandler(handleSubmit(onSubmit));
+                  handleSubmit(onSubmit);
                 }}
               />
               <InputField
-                id="searchText"
-                label="searchText"
-                hideLabel={true}
+                id="search"
+                label="search"
+                hideLabel
                 hasErrors={!!errors.search}
                 placeholder={t('System', 'by IDs, methods, keywords, etc.', null, false)}
                 {...register('search')}
@@ -224,7 +245,6 @@ const ActivityLog = () => {
                 {...register('from')}
                 onChange={e => {
                   setValue('from', new Date().getTime());
-                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
               />
             </div>
