@@ -19,6 +19,7 @@ describe('Upload service', () => {
     const mockUpload = superagent.post('api/files');
     spyOn(mockUpload, 'field').and.returnValue(mockUpload);
     spyOn(mockUpload, 'attach').and.returnValue(mockUpload);
+    spyOn(mockUpload, 'abort').and.returnValue(mockUpload);
     spyOn(superagent, 'post').and.returnValue(mockUpload);
     return mockUpload;
   };
@@ -62,9 +63,12 @@ describe('Upload service', () => {
 
   it('should abort', async () => {
     const mock = mockSuperAgent();
+    const uploadPromise = uploadService.upload([file1, file2]);
     uploadService.abort();
-    await uploadService.upload([file1]);
-    expect(mock.field).not.toHaveBeenCalled();
+    await uploadPromise;
+    expect(mock.field).toHaveBeenCalledWith('originalname', 'file1.txt');
+    expect(mock.field).not.toHaveBeenCalledWith('originalname', 'file2.txt');
+    expect(mock.abort).toHaveBeenCalledTimes(1);
   });
 
   it('should be able to start uploading again after an abort event', async () => {
@@ -72,8 +76,8 @@ describe('Upload service', () => {
     uploadService.abort();
     await uploadService.upload([file1]);
     expect(mock.field).not.toHaveBeenCalled();
-    await uploadService.upload([file1]);
-    expect(mock.field).toHaveBeenNthCalledWith(1, 'originalname', 'file1.txt');
-    expect(mock.attach).toHaveBeenNthCalledWith(1, 'file', file1);
+    await uploadService.upload([file2]);
+    expect(mock.field).toHaveBeenCalledWith('originalname', 'file2.txt');
+    expect(mock.attach).toHaveBeenCalledWith('file', file2);
   });
 });
