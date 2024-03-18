@@ -47,7 +47,7 @@ describe('Upload service', () => {
     expect(uploadService.getFilesInQueue()).toMatchObject([]);
   });
 
-  it('should get the files that are in the queue', async () => {
+  it('should get information about the queue', async () => {
     // eslint-disable-next-line no-void
     void mockSuperAgent();
     const uploadPromise = uploadService.upload([file1, file2, file1]);
@@ -67,7 +67,7 @@ describe('Upload service', () => {
     expect(mock.field).not.toHaveBeenCalled();
   });
 
-  it('should be able to start uploading again after aborting', async () => {
+  it('should be able to start uploading again after an abort event', async () => {
     const mock = mockSuperAgent();
     uploadService.abort();
     await uploadService.upload([file1]);
