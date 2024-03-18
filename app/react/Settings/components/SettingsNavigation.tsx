@@ -87,7 +87,11 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           </I18NLink>
         </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
-          <I18NLink to="settings/connections" activeclassname="active" className="list-group-item">
+          <I18NLink
+            to="settings/relationship-types"
+            activeclassname="active"
+            className="list-group-item"
+          >
             <Translate>Relationship types</Translate>
           </I18NLink>
         </NeedAuthorization>
