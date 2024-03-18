@@ -4,7 +4,6 @@ import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
-import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import {
@@ -82,7 +81,6 @@ const getRoutesLayout = (
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
