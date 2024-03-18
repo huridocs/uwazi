@@ -79,6 +79,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       strokeDasharray="2 4"
     />
     <Tooltip
+      accessibilityLayer={false}
       allowEscapeViewBox={
         Object {
           "x": false,
@@ -138,7 +139,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       wrapperStyle={Object {}}
     />
     <Bar
-      activeBar={true}
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -161,7 +162,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       yAxisId={0}
     />
     <Bar
-      activeBar={true}
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -279,6 +280,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       strokeDasharray="2 4"
     />
     <Tooltip
+      accessibilityLayer={false}
       allowEscapeViewBox={
         Object {
           "x": false,
@@ -329,7 +331,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       wrapperStyle={Object {}}
     />
     <Bar
-      activeBar={true}
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -352,7 +354,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       yAxisId={0}
     />
     <Bar
-      activeBar={true}
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
