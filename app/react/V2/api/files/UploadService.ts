@@ -26,9 +26,12 @@ class UploadService {
 
   // eslint-disable-next-line max-statements
   private async uploadQueue(files: File[], responses: (FileType | FetchResponseError)[]) {
-    if (files.length === 0) return;
+    if (this.aborted) {
+      this.aborted = false;
+      return;
+    }
 
-    if (this.aborted) return;
+    if (files.length === 0) return;
 
     const file = files.shift()!;
 
@@ -88,7 +91,6 @@ class UploadService {
   public abort() {
     this.aborted = true;
     this.requests.forEach(request => request.abort());
-    this.aborted = false;
   }
 
   public isUploading() {
