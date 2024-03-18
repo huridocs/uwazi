@@ -8,9 +8,18 @@ import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
+import { propertyTypes } from 'shared/propertyTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
-const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
+const ALLOWED_PROPERTY_TYPES: (typeof propertyTypes)[keyof typeof propertyTypes][] = [
+  'text',
+  'numeric',
+  'date',
+  'select',
+  'multiselect',
+];
+
+const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
   const tArray = await templates.get({ _id: { $in: templateIds } });
   const usedTemplates = objectIndex(
     tArray,
@@ -23,15 +32,19 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
     }
   });
 
-  const propertyMap = Object.fromEntries(
-    Object.entries(usedTemplates).map(([tId, t]) => [
-      tId,
-      new Set(t.properties?.map(p => p.name) || []),
-    ])
-  );
+  if (propertyName === 'title') {
+    return;
+  }
+
   templateIds.forEach(id => {
-    if (property !== 'title' && !propertyMap[id].has(property)) {
-      throw Error('Missing property.');
+    const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
+
+    if (!property) {
+      throw new Error('Missing property.');
+    }
+
+    if (!ALLOWED_PROPERTY_TYPES.includes(property.type)) {
+      throw new Error('Property type not allowed.');
     }
   });
 };
