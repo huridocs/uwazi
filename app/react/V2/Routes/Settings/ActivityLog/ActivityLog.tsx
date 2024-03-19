@@ -17,7 +17,7 @@ import { DebouncedFunc, debounce, isUndefined, omitBy } from 'lodash';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { InputField, DatePicker } from 'app/V2/Components/Forms';
+import { InputField, DateRangePicker } from 'app/V2/Components/Forms';
 import { Paginator, Table } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
@@ -66,7 +66,7 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     : { prop: 'time', asc: 0 };
   const params = {
     ...(username !== undefined ? { username } : {}),
-    ...(search !== undefined ? { method: search } : {}),
+    ...(search !== undefined ? { method: [search] } : {}),
     ...(search !== undefined ? { find: search } : {}),
     ...(search !== undefined ? { search } : {}),
     ...(from !== undefined && to !== undefined ? { from, to } : {}),
@@ -175,6 +175,9 @@ const ActivityLog = () => {
   );
 
   useEffect(() => {
+    if (isFirstRender) {
+      return;
+    }
     de.current?.cancel();
     const subscription = watch(async () => debouncedChangeHandler(handleSubmit(onSubmit))());
     return () => subscription.unsubscribe();
@@ -209,15 +212,20 @@ const ActivityLog = () => {
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(onSubmit)} id="account-form">
-            <div className="flex flex-row">
-              <h2>
+            <div className="flex flex-row items-center gap-4 justify-items-stretch">
+              <h2 className="basis-1/6">
                 <Translate>Activity log</Translate>
               </h2>
               <InputField
                 id="username"
                 label="User"
+                className="basis-1/5"
                 hideLabel
                 placeholder="User"
+                clearFieldAction={() => {
+                  setValue('username', '');
+                  handleSubmit(onSubmit);
+                }}
                 hasErrors={!!errors.username}
                 {...register('username')}
                 onChange={e => {
@@ -229,6 +237,7 @@ const ActivityLog = () => {
                 id="search"
                 label="search"
                 hideLabel
+                className="basis-1/3"
                 hasErrors={!!errors.search}
                 placeholder={t('System', 'by IDs, methods, keywords, etc.', null, false)}
                 {...register('search')}
@@ -237,14 +246,17 @@ const ActivityLog = () => {
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
               />
-              <DatePicker
+              <DateRangePicker
                 language="en-es"
                 labelToday="today"
-                hasErrors={!!errors.from}
+                hasErrors={!!errors.from || !!errors.to}
                 labelClear="clear"
                 {...register('from')}
-                onChange={e => {
-                  setValue('from', new Date().getTime());
+                onStartChange={e => {
+                  setValue('from', e.target.datepicker.dates[0]);
+                }}
+                onEndChange={e => {
+                  setValue('to', e.target.datepicker.dates[0]);
                 }}
               />
             </div>

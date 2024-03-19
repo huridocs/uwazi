@@ -1,4 +1,4 @@
-import React, { useEffect, Ref, ChangeEventHandler } from 'react';
+import React, { useEffect, Ref, ChangeEventHandler, useRef } from 'react';
 import moment from 'moment';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
@@ -54,11 +54,11 @@ const DatePickerComponent = React.forwardRef(
       id = uniqueID(),
       label,
       disabled,
-      hideLabel,
       placeholder,
       hasErrors,
       errorMessage,
       value,
+      hideLabel = true,
       className = '',
       name = '',
       onChange = () => {},
@@ -70,15 +70,21 @@ const DatePickerComponent = React.forwardRef(
       ? `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
+    const instance = useRef<Datepicker | null>(null);
+
     useEffect(() => {
-      const datepickerEl = document?.getElementById(id);
+      const datePickerEl = document?.getElementById(id);
       Object.assign(Datepicker.locales, { [language]: datePickerOptionsByLocale });
-      const data = new Datepicker(datepickerEl, {
+      instance.current = new Datepicker(datePickerEl, {
         container: '#tw-container',
         language,
         locales: { language: datePickerOptionsByLocale },
+        todayBtnMode: 1,
+        todayBtn: true,
+        clearBtn: true,
+        autohide: true,
       });
-    }, [language, labelToday, labelClear]);
+    }, [id, language, labelToday, labelClear]);
 
     return (
       <div className="tw-content">
@@ -95,8 +101,10 @@ const DatePickerComponent = React.forwardRef(
             <input
               id={id}
               // @ts-ignore
-              datepicker
-              datepicker-autohide
+              datepicker={true}
+              datepicker-autohide={true}
+              datepicker-buttons
+              datepicker-autoselect-today
               type="text"
               lang={language}
               onChange={onChange}
