@@ -75,21 +75,63 @@ describe('Activitylog routes', () => {
         find: 'textToFind',
         before: 1627924445000,
         limit: 3,
+        page: 1,
         method: ['POST'],
         search: 'no value',
+        sort: JSON.stringify({ prop: 'username', asc: 1 }),
+        time: JSON.stringify({ from: 1627924445000, to: 1627924445000 }),
       };
-      it.each`
-        changedProperty          | expectedError             | expectedPath
-        ${{ additional: 'abc' }} | ${'additionalProperties'} | ${'/query'}
-        ${{ limit: 'abc' }}      | ${'type'}                 | ${'/query/limit'}
-        ${{ before: 'abc' }}     | ${'type'}                 | ${'/query/before'}
-      `(
-        'should return a validation error',
+
+      it('should allow a valid query', async () => {
+        currentUser = adminUser;
+        const queryString = qs.stringify(validQuery);
+        const response = await request(app).get('/api/activitylog').query(queryString);
+        expect(response.status).toBe(200);
+      });
+
+      it.each([
+        {
+          changedProperty: { additional: 'abc' },
+          expectedError: 'additionalProperties',
+          expectedPath: '/query',
+          case: 'an additional property',
+        },
+        {
+          changedProperty: { limit: 'abc' },
+          expectedError: 'type',
+          expectedPath: '/query/limit',
+          case: 'a limit type error',
+        },
+        {
+          changedProperty: { before: 'abc' },
+          expectedError: 'type',
+          expectedPath: '/query/before',
+          case: 'a before type error',
+        },
+        {
+          changedProperty: { page: 0 },
+          expectedError: 'minimum',
+          expectedPath: '/query/page',
+          case: 'a page minimum error',
+        },
+        {
+          changedProperty: { sort: JSON.stringify({ prop: 'username', asc: -1 }) },
+          expectedError: 'minimum',
+          expectedPath: '/query/sort/asc',
+          case: 'a sort.asc value error',
+        },
+        {
+          changedProperty: { sort: JSON.stringify({ prop: 'invalid_prop', asc: 1 }) },
+          expectedError: 'enum',
+          expectedPath: '/query/sort/prop',
+          case: 'a sort.prop value error',
+        },
+      ])(
+        'should return a validation error for $case',
         async ({ changedProperty, expectedError, expectedPath }) => {
           currentUser = adminUser;
-          const response = await request(app)
-            .get('/api/activitylog')
-            .query(qs.stringify({ ...validQuery, ...changedProperty }));
+          const input = { ...validQuery, ...changedProperty };
+          const response = await request(app).get('/api/activitylog').query(qs.stringify(input));
           expect(response.status).toBe(400);
           expect(activitylog.get).not.toHaveBeenCalled();
           expect(response.body.errors[0].keyword).toBe(expectedError);

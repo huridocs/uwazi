@@ -6,6 +6,7 @@ module.exports = {
     './app/react/V2/**/*.{js,jsx,ts,tsx}',
     './app/react/stories/**/*.{js,jsx,ts,tsx}',
     'node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-datepicker/**/*.{js,jsx,ts,tsx,css}',
   ],
   theme: {
     fontFamily: {
