@@ -331,23 +331,25 @@ const PDFSidepanel = ({
         </form>{' '}
       </Sidepanel.Body>
       <Sidepanel.Footer className="p-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-        <div className="flex flex-wrap gap-1 row">
-          <div className="flex p-2 grow">
-            <p className="mb-1 font-bold grow">{propertyLabel}</p>
-            <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
-              {labelInputIsOpen ? <ChevronUpIcon width={20} /> : <ChevronDownIcon width={20} />}
-            </span>
-          </div>
+        <div className="flex py-2">
+          <p className={!!selectionError ? 'grow text-pink-600' : 'grow'}>
+            <span className="uppercase">{propertyLabel}</span>{' '}
+            {selectionError && <span>{selectionError}</span>}
+          </p>
+          <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
+            {labelInputIsOpen ? <ChevronUpIcon width={20} /> : <ChevronDownIcon width={20} />}
+          </span>
         </div>
         {labelInputIsOpen && (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex gap-2 pb-2">
             <div className="grow">
               <InputField
+                clearFieldAction={() => {}}
                 id={propertyLabel}
                 label={propertyLabel}
                 hideLabel
                 type={propertyType}
-                hasErrors={errors.field?.type === 'required'}
+                hasErrors={errors.field?.type === 'required' || !!selectionError}
                 {...register('field', {
                   required: isRequired,
                   valueAsDate: propertyType === 'date' || undefined,
@@ -361,7 +363,7 @@ const PDFSidepanel = ({
                 onClick={async () => handleClickToFill()}
                 disabled={!selectedText?.selectionRectangles.length || isSubmitting}
               >
-                <Translate className="leading-3 whitespace-nowrap">Click to fill</Translate>
+                <Translate className="">Click to fill</Translate>
               </Button>
             </div>
             <div className="sm:text-right">
@@ -382,7 +384,6 @@ const PDFSidepanel = ({
               >
                 <Translate>Clear</Translate>
               </Button>
-              <SelectionError error={selectionError} />
             </div>
           </div>
         )}
