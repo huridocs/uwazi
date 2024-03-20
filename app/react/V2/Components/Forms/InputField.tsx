@@ -6,7 +6,8 @@ import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
-  label?: string | React.ReactNode;
+  inputClassName?: string;
+  label: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
@@ -34,6 +35,7 @@ const InputField = React.forwardRef(
       hasErrors,
       errorMessage,
       value,
+      inputClassName = '',
       className = '',
       preText,
       type = 'text',
@@ -85,7 +87,7 @@ const InputField = React.forwardRef(
             value={value}
             className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
               type !== 'file' ? 'p-2.5' : ''
-            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
+            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'} ${inputClassName}`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (

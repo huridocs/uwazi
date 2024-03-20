@@ -19,7 +19,6 @@ import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom } from 'V2/atoms';
-import { SelectionError } from './SelectionError';
 import { Highlights } from '../types';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
@@ -344,6 +343,7 @@ const PDFSidepanel = ({
           <div className="flex gap-2 pb-2">
             <div className="grow">
               <InputField
+                inputClassName="px-4 py-2"
                 clearFieldAction={() => {}}
                 id={propertyLabel}
                 label={propertyLabel}
