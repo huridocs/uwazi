@@ -60,11 +60,13 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        {label && (
-          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
-            {label}
-          </Label>
-        )}
+        <Label
+          htmlFor={id}
+          hideLabel={!Boolean(label) || hideLabel}
+          hasErrors={Boolean(hasErrors || errorMessage)}
+        >
+          {label}
+        </Label>
         <div className="relative flex w-full">
           {preText && (
             <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-e-0 rounded-s-md">

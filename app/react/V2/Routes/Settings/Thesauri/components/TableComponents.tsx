@@ -89,7 +89,7 @@ const columns = (actions: { edit: Function }) => [
     enableSorting: false,
     meta: {
       action: actions.edit,
-      headerClassName: 'text-center w-0',
+      headerClassName: 'text-center w-0 sr-only',
     },
   }) as ColumnDef<TableThesaurusValue, '_id'>,
 ];

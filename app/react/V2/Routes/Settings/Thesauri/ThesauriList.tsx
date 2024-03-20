@@ -98,7 +98,7 @@ const ThesauriList = () => {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
-      meta: { action: edit, headerClassName: 'w-0 text-center' },
+      meta: { action: edit, headerClassName: 'w-0 text-center sr-only' },
     }) as ColumnDef<ClientThesaurus, '_id'>,
   ];
 
