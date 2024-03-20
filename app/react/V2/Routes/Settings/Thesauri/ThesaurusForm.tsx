@@ -50,6 +50,7 @@ const ThesaurusForm = () => {
       const values = thesaurus.values || [];
       const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
         ...value,
+        _id: `temp_${uniqueID()}`,
         values: value.values?.map(val => ({
           ...val,
           _id: `temp_${uniqueID()}`,
@@ -126,6 +127,8 @@ const ThesaurusForm = () => {
       return !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id);
     });
 
+    console.log('Parents: ', parentsDeleted, selectedThesaurusValue, thesaurusValues);
+
     const childrenDeleted = parentsDeleted.map(singleThesaurus => {
       if (singleThesaurus.values) {
         const newValues = singleThesaurus.values?.filter(currentGroupItem => {
@@ -137,6 +140,8 @@ const ThesaurusForm = () => {
       }
       return singleThesaurus;
     });
+
+    console.log('Final: ', childrenDeleted);
 
     setThesaurusValues(childrenDeleted);
   };

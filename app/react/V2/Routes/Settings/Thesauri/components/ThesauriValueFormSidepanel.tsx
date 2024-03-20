@@ -67,7 +67,7 @@ const ThesauriValueFormSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       closeSidepanelFunction={closePanel}
-      title={value ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
+      title={value.length > 0 ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
     >
       <form
         onSubmit={handleSubmit(submitHandler)}
@@ -75,7 +75,7 @@ const ThesauriValueFormSidepanel = ({
         id="value-thesauri-form"
       >
         <Sidepanel.Body>
-          {value.length > 0 && (
+          {value.length === 0 && (
             <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
               <div className="flex items-center gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
