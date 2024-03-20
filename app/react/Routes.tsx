@@ -6,13 +6,7 @@ import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import {
-  PreserveSettings,
-  EntityTypesList,
-  FiltersForm,
-  Settings,
-  Dashboard,
-} from 'app/Settings';
+import { PreserveSettings, EntityTypesList, FiltersForm, Settings, Dashboard } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
