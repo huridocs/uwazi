@@ -62,7 +62,7 @@ const InputField = React.forwardRef(
       <div className={className}>
         <Label
           htmlFor={id}
-          hideLabel={!Boolean(label) || hideLabel}
+          hideLabel={!label || hideLabel}
           hasErrors={Boolean(hasErrors || errorMessage)}
         >
           {label}
