@@ -25,16 +25,7 @@ async function getFiles(dir) {
   );
   return Array.prototype
     .concat(...files)
-    .filter(
-      file =>
-        !file.match('.spec') &&
-        !file.match('.stories') &&
-        !file.match('.cy') &&
-        (file.endsWith('.js') ||
-          file.endsWith('.ts') ||
-          file.endsWith('.tsx') ||
-          file.endsWith('.jsx'))
-    );
+    .filter(file => !file.match(/(\.spec|stories|\.cy)/) && file.match(/(\.js|\.ts|\.tsx|\.jsx)$/));
 }
 
 const getKeysFromRepository = async (locale = 'en') =>
