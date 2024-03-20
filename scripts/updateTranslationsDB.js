@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable node/no-restricted-import */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
@@ -6,6 +7,7 @@ import csvtojson from 'csvtojson';
 import fs from 'fs';
 import { DB } from '../app/api/odm/DB.ts';
 import { config } from '../app/api/config.ts';
+import { exit } from 'process';
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);
@@ -46,7 +48,9 @@ const getAvailableLanguages = async () =>
 const updateLanguage = async (db, language, csvTranslations) => {
   const context = { type: 'Uwazi UI', label: 'User Interface', id: 'System' };
   const collection = db.collection('translationsV2');
-  const currentTranslations = await collection.find({ language }).toArray();
+  const currentTranslations = await collection
+    .find({ language, 'context.id': context.id })
+    .toArray();
   const bulkOperations = [];
 
   currentTranslations.forEach(async translation => {
@@ -119,6 +123,43 @@ const report = () => {
   }
 };
 
+const checkCSVsIntegrity = async availableCSVs => {
+  const allLanguagesKeys = [];
+
+  for (const lang of availableCSVs) {
+    const cvsKeys = await getKeysFromRepository(lang);
+    allLanguagesKeys.push({ lang, keys: cvsKeys, set: new Set(cvsKeys.map(k => k.key)) });
+  }
+
+  let keysLength;
+  for (const lang of allLanguagesKeys) {
+    if (!keysLength) {
+      keysLength = lang.keys.length;
+    }
+
+    if (keysLength !== lang.keys.length) {
+      logger.log(
+        `The number of keys in the ${lang.lang}.csv file is different from other languages \n`
+      );
+      exit(1);
+    }
+  }
+
+  for (const lang of allLanguagesKeys) {
+    for (const lang2 of allLanguagesKeys) {
+      if (lang.set !== lang2.set) {
+        const diff = new Set([...lang.set].filter(x => !lang2.set.has(x)));
+        if (diff.size) {
+          logger.log(
+            `The keys in the ${lang.lang}.csv file are different from the keys in the ${lang2.lang}.csv file: \x1b[31m ${[...diff].join(', ')} \x1b[0m \n`
+          );
+          exit(1);
+        }
+      }
+    }
+  }
+};
+
 // eslint-disable-next-line max-statements
 const run = async () => {
   const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
@@ -131,7 +172,7 @@ const run = async () => {
     .filter((value, index, array) => array.indexOf(value) === index);
 
   const availableCSVs = await getAvailableLanguages();
-
+  await checkCSVsIntegrity(availableCSVs);
   for (const lang of installedLanguages) {
     const csvLang = availableCSVs.includes(lang) ? lang : 'en';
     const cvsKeys = await getKeysFromRepository(csvLang);
