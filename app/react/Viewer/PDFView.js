@@ -93,7 +93,8 @@ class PDFViewComponent extends Component {
     const { page, ...queryWithoutPage } = searchParamsFromSearchParams(this.props.searchParams);
 
     this.props.navigate(
-      `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
+      `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`,
+      { replace: true }
     );
   }
 
