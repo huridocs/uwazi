@@ -7,6 +7,7 @@ import {
   SettingsLinkSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { TemplateSchema } from 'shared/types/templateType';
 
 export interface GroupMemberSchema {
@@ -72,6 +73,24 @@ export interface ClientSettings
     };
     [k: string]: unknown | undefined;
   };
+}
+
+export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {
+  _id: string;
+  values: ClientThesaurusValue[];
+}
+
+export interface ClientThesaurusValue
+  extends ThesaurusValueSchema,
+    Omit<ThesaurusValueSchema, '_id'> {
+  _id: string;
+  id?: string;
+  label: string;
+  values?: {
+    id?: string;
+    label: string;
+    name?: string;
+  }[];
 }
 
 export interface ClientRelationshipType {
