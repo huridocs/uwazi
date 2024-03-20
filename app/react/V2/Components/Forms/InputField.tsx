@@ -6,7 +6,7 @@ import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
-  label: string | React.ReactNode;
+  label?: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
@@ -60,7 +60,11 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+        <Label
+          htmlFor={id}
+          hideLabel={!label || hideLabel}
+          hasErrors={Boolean(hasErrors || errorMessage)}
+        >
           {label}
         </Label>
         <div className="relative flex w-full">
