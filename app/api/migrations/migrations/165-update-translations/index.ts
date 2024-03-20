@@ -13,7 +13,7 @@ const newKeys = [
 const deletedKeys: { key: string }[] = [{ key: 'You are about to delete a page' }];
 
 export default {
-  delta: 164,
+  delta: 165,
 
   reindex: false,
 
