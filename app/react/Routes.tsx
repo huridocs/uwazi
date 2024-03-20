@@ -11,14 +11,10 @@ import {
   EntityTypesList,
   FiltersForm,
   Settings,
-  ThesauriList,
   Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import { EditThesauri } from 'app/Thesauri/EditThesauri';
-import NewThesauri from 'app/Thesauri/NewThesauri';
-import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
@@ -35,6 +31,8 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+
+import { ThesaurusForm, theasauriListLoader, ThesauriList } from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import {
@@ -56,6 +54,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/ThesaurusForm';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -128,11 +127,19 @@ const getRoutesLayout = (
           loader={relationshipTypesLoader(headers)}
         />
       </Route>
-      <Route path="dictionaries">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
-        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
+
+      <Route path="thesauri">
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={theasauriListLoader(headers)}
+        />
+        <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
+        <Route
+          path="edit/:_id"
+          element={adminsOnlyRoute(<ThesaurusForm />)}
+          loader={editTheasaurusLoader(headers)}
+        />
       </Route>
       <Route
         path="languages"

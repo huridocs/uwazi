@@ -57,7 +57,11 @@ const SettingsHeader = ({ contextId, title, children, path, className }: Setting
 
 SettingsContent.Header = SettingsHeader;
 SettingsContent.Body = ({ children, className }: SettingsContentProps) => (
-  <div className={`${className || ''} flex-grow px-4`} data-testid="settings-content-body">
+  <div
+    className={`${className || ''} flex-grow px-4`}
+    data-testid="settings-content-body"
+    style={{ height: 'calc(100% - 60px)' }}
+  >
     {children}
   </div>
 );
@@ -68,9 +72,9 @@ SettingsContent.Footer = ({
   highlighted = false,
 }: SettingsContentFooterProps) => (
   <div
-    className={`bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 ${
+    className={`bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 ${className} ${
       highlighted ? 'bg-primary-50' : 'bg-white'
-    } ${className}`}
+    }`}
     data-testid="settings-content-footer"
   >
     {children}

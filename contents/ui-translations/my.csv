@@ -29,6 +29,7 @@ Add from URL,url မှ ထည့်ရန်
 Add from web,ဝက်ဘ်မှ ထည့်ရန်
 Add group,အုပ်စု ထည့်ရန်
 add icon,အိုင်ကွန် ထည့်ရန်
+Add item,Add item
 Add language,ဘာသာစကား ထည့်ရန်
 Add link,လင့်ခ် ထည့်ရန်
 Add page,စာမျက်နှာ ထည့်ရန်
@@ -51,6 +52,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
@@ -73,7 +76,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -101,7 +103,6 @@ Can view,ကြည့်နိုင်သည်
 Cancel,ပယ်ဖျက်ရန်
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,ကက်ပ်ချာ
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -134,7 +135,6 @@ Collection,စုစည်းမှု
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
-Configure suggestions,အကြံပြုချက်များကို ချိန်ညှိပါ
 Configure templates,Configure templates
 Confirm,အတည်ပြုရန်
 CONFIRM,အတည်ပြုရန်
@@ -148,9 +148,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Confirm publish multiple items,အရာများစွာကို တင်ရန် အတည်ပြုပါ
 Connect to a document,စာရွက်စာတမ်းနှင့် ချိတ်ဆက်ရန်
@@ -219,7 +217,6 @@ Delete,ဖျက်ရန်
 DELETE,ဖျက်ရန်
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
-Delete Group,အုပ်စု ဖျက်ရန်
 Delete language,ဘာသာစကား ဖျက်ရန်
 Delete Property,ထူးခြားချက် ဖျက်ရန်
 Deleted attachment,Deleted attachment
@@ -253,12 +250,8 @@ Document Title,စာရွက်စာတမ်း ခေါင်းစဉ်
 Documentation,စာရွက်စာတမ်း
 documents,စာရွက်စာတမ်းများ
 Documents,စာရွက်စာတမ်းများ
-documents before training (30 per topic).,မလေ့ကျင့်မီ စာရွက်စာတမ်းများ (အကြောင်းအရာတစ်ခုလျှင် 30)။
 Documents for custom filter,စိတ်ကြိုက် စစ်ထုတ်မှုအတွက် စာရွက်စာတမ်းများ
 Documents including suggestion:,အကြံပြုချက်ပါသော စာရွက်စာတမ်းများ-
-documents so far.,ယခုအချိန်ထိ စာရွက်စာတမ်းများ။
-documents to be reviewed,ပြန်လည်သုံးသပ်ရန် စာရွက်စာတမ်းများ
-Documents to be reviewed,ပြန်လည်သုံးသပ်ရန် စာရွက်စာတမ်းများ
 documents.,စာရွက်စာတမ်းများ။
 Download,ဒေါင်းလုဒ်လုပ်ရန်
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -275,6 +268,7 @@ Edit,တည်းဖြတ်ရန်
 Edit all documents matching this criteria,ဤစံနှုန်းနှင့် ကိုက်ညီသော စာရွက်စာတမ်းအားလုံးကို တည်းဖြတ်ပါ
 Edit Extractor,Edit Extractor
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,အယ်ဒီတာ
@@ -299,6 +293,8 @@ Entity saved,Entity saved
 Entity types,ဖြည့်သွင်းချက် အမျိုးအစားများ
 Entity updated,Entity updated
 Error,ချွတ်ယွင်းချက်
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,စူးစမ်းလေ့လာခြင်း
 Export CSV,CSV တင်ပို့ရန်
@@ -349,7 +345,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -396,7 +391,6 @@ Invalid csv: nested value need to be under a non-nested value,Invalid csv: neste
 Invalid form,ပုံစံ မှားနေသည်
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,၎င်းသည် အက်ပ်ကိုလည်း အလွန်လွယ်ကူစွာ ဖျက်နိုင်သည်။ သင်ဘာလုပ်နေသည်ကို သေချာသိမှသာ ဤနေရာတွင် ကုဒ်ရေးပါ။
 Item,Item
-Item name,Item name
 Items:,ပါဝင်သည့်အရာများ-
 Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
@@ -404,7 +398,6 @@ key,Burmese
 Label,တံဆိပ် အမှတ်အသား
 "Label date ""From""","ရက်စွဲ ""မှ"" တံဆိပ်တပ်ပါ"
 "Label date ""to""","ရက်စွဲ ""သို့"" တံဆိပ်တပ်ပါ"
-Label more documents,နောက်ထပ် စာရွက်စာတမ်းများကို တံဆိပ်အမှတ်အသားတပ်ပါ
 Label your collection note,သင်၏ စုစည်းမှု မှတ်စုကို တံဆိပ်အမှတ်အသားတပ်ပါ
 Labeled,Labeled
 Landing page,ရောက်ရှိမည့် စာမျက်နှာ
@@ -428,7 +421,6 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,လတ္တီကျု
 Learn more,ပိုမိုလေ့လာရန်
-Learning...,လေ့လာဆဲ...
 Legend,ဒဏ္ဍာရီ
 Lengthy reindex process,Lengthy reindex process
 Library,စာကြည့်တိုက်
@@ -662,7 +654,6 @@ Restricted,ကန့်သတ်ထားသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
 Return to the thesaurus page when you finished labeling to start learning.,သင် တံဆိပ်တပ်ပြီးသည့်အခါ စတင်လေ့လာရန်အတွက် ဝေါဟာရပဒေသာကျမ်း စာမျက်နှာသို့ ပြန်သွားပါ။
 Review,Review
-Review unpublished document,မထုတ်ဝေရသေးသော စာရွက်စာတမ်းကို ပြန်လည်သုံးသပ်ရန်
 Reviewed,သုံးသပ်ပြီး
 Role,အခန်းကဏ္ဍ
 Route,လမ်းကြောင်း
@@ -733,7 +724,6 @@ Show cookie policy,ကွတ်ကီး မူဝါဒ ပြရန်
 Show filters,စစ်ထုတ်မှုများကို ပြရန်
 Show in cards,Show in cards
 Show more,ပိုမိုပြသရန်
-Show Suggestions,အကြံပြုချက်များ ပြရန်
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,ပြသထားသည််
@@ -761,7 +751,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -785,8 +774,6 @@ Template(s),Template(s)
 Templates,ပုံစံပြားများ
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,လက်ရှိ မော်ဒယ်ကို ဤတွင် လေ့ကျင့်ထားပါသည်
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.",ပထမအဆင့်မှာ သင့်စာရွက်စာတမ်းများ နမူနာကို တံဆိပ်တပ်ရန်ဖြစ်ရာ Uwazi သည် သင့်စုဆောင်းမှုကို သင်အညွှန်းတပ်ရာတွင် ကူညီသည့်အခါ မည်သည့်အကြောင်းအရာများအား အကြံပြုရမည်ကို လေ့လာနိုင်သည်။
 The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-
 The request could not be processed.,The request could not be processed.
 The template contains errors,ပုံစံပြားတွင် ချွတ်ယွင်းချက်များ ရှိနေသည်
@@ -796,7 +783,12 @@ There are no pages enabled for entity view,ဖြည့်သွင်းချ�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,ဝေါဟာရပဒေသာကျမ်းများ
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,ဝေါဟာရပဒေသာကျမ်း သိမ်းပြီး
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -817,7 +809,6 @@ This property will be shown without the label.,ဤထူးခြားချက
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,ဤပုံစံပြားကို ဖြည့်သွင်းချက်အသစ်များအတွက် နဂိုမူလအဖြစ် သုံးပါမည်။
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်
 Time,အချိန်
@@ -829,12 +820,10 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,အစိတ်အပိုင်းများအကြောင်း ပိုမိုလေ့လာရန်။
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Tools,ကိရိယာများ
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
 Total entities,Total entities
 Total files,Total files
 "Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
 Total users,Total users
-Train model,မော်ဒယ် လေ့ကျင့်ရန်
 Training,Training
 Training model...,Training model...
 Translate,ဘာသာပြန်ရန်
@@ -900,7 +889,6 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi ကို တီထွင်ရေးသားသူမှာ
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi is သည် တံဆိပ်တပ်ထားသော စာရွက်စာတမ်းများကို သုံး၍ လေ့လာနေသည်။ ၎င်းသည် 2 နာရီအထိ ကြာနိုင်ပြီး ပြီးစီးသည်နှင့် သင်သည် သင့်စုစည်းမှုအတွက် Uwazi မှ အကြံပြုချက်များကို သုံးသပ်စစ်ဆေးနိုင်သည်။
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -913,11 +901,9 @@ View in library,စာကြည့်တိုက်တွင် ကြည့်
 View less,View less
 View more,View more
 View page,စာမျက်နှာ ကြည့်ရန်
-View suggestions,အကြံပြုချက်များ ကြည့်ရန်
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,သတိပေးချက်- သင်သည် ဖြည့်သွင်းချက်များစွာကို တည်းဖြတ်နေသည်။ ဤသို့ မှတ်သားထားသော အကွက်များတွင်
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,တံဆိပ်အမှတ်အသားတပ်ရန် ကျွန်ုပ်တို့ အကြံပြုပါသည်
 Welcome to Uwazi,Uwazi မှ ကြိုဆိုပါသည်
 "Well, this is awkward...",အင်း၊ ဒါက ထူးဆန်းပါတယ်...
 will be updated with the same value.,တူညီသော တန်ဖိုးဖြင့် အပ်ဒိတ်လုပ်ပါမည်။
@@ -927,11 +913,11 @@ x less,x လျော့
 x more,x ပို
 Year,နှစ်
 Yes,Yes
+You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",သင်သည် သင့်စာမျက်နှာတွင် မြေပုံများ၊ ပုံများနှင့် ဖြည့်သွင်းချက်စာရင်းများကဲ့သို့ အဆင့်မြင့် အစိတ်အပိုင်းများကိုလည်း ထည့်သွင်းနိုင်သည်။
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,သင်သည် နောက်ထပ် တံဆိပ်တပ်မှတ်သားထားသော စာရွက်စာတမ်းများ ပေးခြင်းဖြင့်လည်း မော်ဒယ်ကို ပိုကောင်းအောင်လုပ်နိုင်သည်။
 You can create metadata templates in,သင်သည် ဤနေရာတွင် မီတာဒေတာ ပုံစံပြားများကို ဖန်တီးနိုင်သည်
-You have labeled,သင် တံဆိပ်တပ်မှတ်သားထားသည်
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,အကောင့် လုံခြုံရေး ပိုမိုကောင်းမွန်စေရန် ဤအပြင်အဆင်ကို သင် သက်ဝင်လုပ်ဆောင်သင့်သည်
