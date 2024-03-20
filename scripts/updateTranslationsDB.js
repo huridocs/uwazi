@@ -8,7 +8,6 @@ import fs from 'fs';
 import { exit } from 'process';
 import { DB } from '../app/api/odm/DB.ts';
 import { config } from '../app/api/config.ts';
-import { all } from 'superagent/lib/request-base';
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);
@@ -141,17 +140,14 @@ const checkCSVslength = async allLanguagesKeys => {
 };
 
 const checkCSVsKeys = async allLanguagesKeys => {
+  const english = allLanguagesKeys.find(lang => lang.lang === 'en');
   for (const lang of allLanguagesKeys) {
-    for (const lang2 of allLanguagesKeys) {
-      if (lang.set !== lang2.set) {
-        const diff = new Set([...lang.set].filter(x => !lang2.set.has(x)));
-        if (diff.size) {
-          logger.log(
-            `The keys in the ${lang.lang}.csv file are different from the keys in the ${lang2.lang}.csv file: \x1b[31m ${[...diff].join(', ')} \x1b[0m \n`
-          );
-          exit(1);
-        }
-      }
+    const diff = new Set([...lang.set].filter(x => !english.set.has(x)));
+    if (diff.size) {
+      logger.log(
+        `The keys in the ${lang.lang}.csv file are different from the keys in the ${english.lang}.csv file: \x1b[31m ${[...diff].join(', ')} \x1b[0m \n`
+      );
+      exit(1);
     }
   }
 };
