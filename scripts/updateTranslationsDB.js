@@ -5,9 +5,10 @@
 /* eslint-disable no-console */
 import csvtojson from 'csvtojson';
 import fs from 'fs';
+import { exit } from 'process';
 import { DB } from '../app/api/odm/DB.ts';
 import { config } from '../app/api/config.ts';
-import { exit } from 'process';
+import { all } from 'superagent/lib/request-base';
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);
@@ -123,14 +124,7 @@ const report = () => {
   }
 };
 
-const checkCSVsIntegrity = async availableCSVs => {
-  const allLanguagesKeys = [];
-
-  for (const lang of availableCSVs) {
-    const cvsKeys = await getKeysFromRepository(lang);
-    allLanguagesKeys.push({ lang, keys: cvsKeys, set: new Set(cvsKeys.map(k => k.key)) });
-  }
-
+const checkCSVslength = async allLanguagesKeys => {
   let keysLength;
   for (const lang of allLanguagesKeys) {
     if (!keysLength) {
@@ -144,7 +138,9 @@ const checkCSVsIntegrity = async availableCSVs => {
       exit(1);
     }
   }
+};
 
+const checkCSVsKeys = async allLanguagesKeys => {
   for (const lang of allLanguagesKeys) {
     for (const lang2 of allLanguagesKeys) {
       if (lang.set !== lang2.set) {
@@ -158,6 +154,18 @@ const checkCSVsIntegrity = async availableCSVs => {
       }
     }
   }
+};
+
+const checkCSVsIntegrity = async availableCSVs => {
+  const allLanguagesKeys = [];
+
+  for (const lang of availableCSVs) {
+    const cvsKeys = await getKeysFromRepository(lang);
+    allLanguagesKeys.push({ lang, keys: cvsKeys, set: new Set(cvsKeys.map(k => k.key)) });
+  }
+
+  await checkCSVslength(allLanguagesKeys);
+  await checkCSVsKeys(allLanguagesKeys);
 };
 
 // eslint-disable-next-line max-statements
