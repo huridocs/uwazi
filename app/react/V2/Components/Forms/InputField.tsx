@@ -6,8 +6,6 @@ import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
-  inputClassName?: string;
-  clearFieldClassName?: string;
   label?: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
@@ -36,8 +34,6 @@ const InputField = React.forwardRef(
       hasErrors,
       errorMessage,
       value,
-      inputClassName = '',
-      clearFieldClassName = '',
       className = '',
       preText,
       type = 'text',
@@ -89,7 +85,7 @@ const InputField = React.forwardRef(
             value={value}
             className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm ${
               type !== 'file' ? 'p-2.5' : ''
-            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'} ${inputClassName}`}
+            } ${preText ? 'rounded-none rounded-e-lg' : 'rounded-lg'}`}
             placeholder={placeholder}
           />
           {Boolean(clearFieldAction) && (
@@ -99,7 +95,7 @@ const InputField = React.forwardRef(
               disabled={disabled}
               data-testid="clear-field-button"
               className={`${clearFieldStyles} top-px disabled:text-gray-500 absolute p-2.5 right-0 text-sm font-medium rounded-r-lg
-             focus:outline-none ${clearFieldClassName}`}
+             focus:outline-none`}
             >
               <XMarkIcon className="w-5" />
               <Translate className="sr-only">Clear</Translate>

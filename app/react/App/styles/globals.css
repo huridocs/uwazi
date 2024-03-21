@@ -3896,6 +3896,10 @@ input:checked + .toggle-bg {
   padding-bottom: 3px;
 }
 
+.pb-0 {
+  padding-bottom: 0px;
+}
+
 .pb-14 {
   padding-bottom: 3.5rem;
 }
@@ -4116,10 +4120,6 @@ input:checked + .toggle-bg {
 
 .italic {
   font-style: italic;
-}
-
-.leading-3 {
-  line-height: .75rem;
 }
 
 .leading-4 {
@@ -5492,10 +5492,6 @@ input:checked + .toggle-bg {
 .enabled\:hover\:text-white:hover:enabled {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.enabled\:hover\:underline:hover:enabled {
-  text-decoration-line: underline;
 }
 
 .disabled\:cursor-not-allowed:disabled {
@@ -6898,10 +6894,6 @@ input:checked + .toggle-bg {
 
   .sm\:pr-8 {
     padding-right: 2rem;
-  }
-
-  .sm\:pt-0 {
-    padding-top: 0px;
   }
 
   .sm\:text-center {

@@ -126,7 +126,7 @@ const ThesauriValueFormSidepanel = ({
             </Card>
           ))}
         </Sidepanel.Body>
-        <Sidepanel.Footer className="bottom-0">
+        <Sidepanel.Footer className="bottom-0 px-4 py-3">
           <div className="flex gap-2">
             <Button
               styling="light"
