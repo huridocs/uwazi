@@ -331,7 +331,7 @@ const PDFSidepanel = ({
       </Sidepanel.Body>
       <Sidepanel.Footer className="p-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
         <div className="flex py-2">
-          <p className={!!selectionError ? 'grow text-pink-600' : 'grow'}>
+          <p className={selectionError ? 'grow text-pink-600' : 'grow'}>
             <span className="uppercase">{propertyLabel}</span>{' '}
             {selectionError && <span>{selectionError}</span>}
           </p>
