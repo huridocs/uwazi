@@ -350,7 +350,7 @@ const PDFSidepanel = ({
       case 'number':
         return renderInputTextLabel(propertyType);
       default:
-        return;
+        return '';
     }
   };
 
