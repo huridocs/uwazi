@@ -12,7 +12,6 @@ import {
   EntityTypesList,
   FiltersForm,
   Settings,
-  Dashboard,
 } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
@@ -32,6 +31,7 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
 
 import { ThesaurusForm, theasauriListLoader, ThesauriList } from 'app/V2/Routes/Settings/Thesauri';
 
@@ -42,7 +42,7 @@ import {
 } from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
-import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
+import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
@@ -79,7 +79,11 @@ const getRoutesLayout = (
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
-      <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
+      <Route
+        path="dashboard"
+        element={adminsOnlyRoute(<Dashboard />)}
+        loader={dashboardLoader(headers)}
+      />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
@@ -113,7 +117,7 @@ const getRoutesLayout = (
       <Route
         path="metadata_extraction"
         element={adminsOnlyRoute(<IXDashboard />)}
-        loader={dashboardLoader(headers)}
+        loader={IXdashboardLoader(headers)}
       />
       <Route
         path="metadata_extraction/suggestions/:extractorId"
