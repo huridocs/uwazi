@@ -62,7 +62,9 @@ const CustomUploads = () => {
   }, [blocker, setConfirmNavigationModal]);
 
   const notify = (responses: (FileType | FetchResponseError)[], message: React.ReactNode) => {
-    const hasErrors = responses.find(response => response instanceof FetchResponseError);
+    const hasErrors = responses.find(
+      response => response instanceof FetchResponseError || !response._id
+    );
     const didUploadFiles = responses.find(
       response => !(response instanceof FetchResponseError) && response._id
     );
