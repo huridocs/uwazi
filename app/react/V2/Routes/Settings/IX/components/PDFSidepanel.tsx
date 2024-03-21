@@ -329,8 +329,8 @@ const PDFSidepanel = ({
           </div>
         </form>{' '}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="p-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-        <div className="flex py-2">
+      <Sidepanel.Footer className="px-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+        <div className="flex px-4 py-2">
           <p className={selectionError ? 'grow text-pink-600' : 'grow'}>
             <span className="uppercase">{propertyLabel}</span>{' '}
             {selectionError && <span>{selectionError}</span>}
@@ -343,7 +343,8 @@ const PDFSidepanel = ({
           <div className="flex gap-2 pb-2">
             <div className="grow">
               <InputField
-                inputClassName="px-4 py-2"
+                inputClassName="px-4 py-2 leading-tight text-sm font-normal"
+                clearFieldClassName="p-1"
                 clearFieldAction={() => {}}
                 id={propertyLabel}
                 label={propertyLabel}
