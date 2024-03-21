@@ -373,7 +373,7 @@
     "sass": "^1.71.1",
     "sass-loader": "14.1.0",
     "sharp": "^0.33.2",
-    "storybook": "^8.0.1",
+    "storybook": "^8.0.2",
     "stream-mock": "^2.0.5",
     "supertest": "6.3.3",
     "svg-inline-loader": "^0.8.2",
