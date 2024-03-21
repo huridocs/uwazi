@@ -7,7 +7,7 @@ import { Label } from './Label';
 interface InputFieldProps {
   id: string;
   inputClassName?: string;
-  label: string | React.ReactNode;
+  label?: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
