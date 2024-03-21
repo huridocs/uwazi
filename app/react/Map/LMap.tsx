@@ -142,3 +142,4 @@ const LMap = ({
 };
 
 export { LMap };
+export type { LMapProps };

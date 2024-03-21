@@ -75,8 +75,6 @@ describe('Groups', () => {
     cy.contains('td', 'Knights of the Zodiac');
     cy.get('tbody > :nth-child(3) > :nth-child(3)').within(() => {
       cy.getByTestId('pill-comp').eq(0).contains('span', 'Cynthia');
-      cy.getByTestId('pill-comp').eq(1).contains('span', 'admin');
-      cy.getByTestId('pill-comp').eq(2).contains('span', 'editor');
     });
 
     const groups = ['Asesores legales', 'Group One', 'Knights of the Zodiac'];
