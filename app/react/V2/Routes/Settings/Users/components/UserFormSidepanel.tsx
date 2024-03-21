@@ -282,7 +282,7 @@ const UserFormSidepanel = ({
               >
                 <Translate>Cancel</Translate>
               </Button>
-              <Button className="flex-grow" type="submit" styling="">
+              <Button className="flex-grow" type="submit">
                 <Translate>Save</Translate>
               </Button>
             </div>

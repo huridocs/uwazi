@@ -349,6 +349,8 @@ const PDFSidepanel = ({
       case 'date':
       case 'number':
         return renderInputTextLabel(propertyType);
+      default:
+        return;
     }
   };
 
@@ -412,7 +414,7 @@ const PDFSidepanel = ({
           >
             <Translate>Cancel</Translate>
           </Button>
-          <Button type="submit" form="ixpdfform" disabled={isSubmitting}>
+          <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
             <Translate>Accept</Translate>
           </Button>
         </div>
