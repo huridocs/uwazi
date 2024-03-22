@@ -14,6 +14,7 @@ import { TestEmitSources, iosocket, setUpApp } from 'api/utils/testingRoutes';
 import { availableLanguages } from 'shared/languagesList';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { UserRole } from 'shared/types/userSchema';
+import { TranslationContext, TranslationType } from 'shared/translationType';
 import { DefaultTranslations } from '../defaultTranslations';
 import { sortByLocale } from './sortByLocale';
 
@@ -229,6 +230,31 @@ describe('i18n translations routes', () => {
             locale: 'es',
           })
         );
+      });
+    });
+
+    describe('api/translationsV2', () => {
+      it('should update the translations', async () => {
+        const response = await request(app)
+          .post('/api/translationsV2')
+          .send([
+            {
+              language: 'es',
+              key: 'Search',
+              value: 'Búsqueda',
+              context: {
+                id: 'System',
+                label: 'User Interface',
+                type: 'Uwazi UI',
+              },
+            },
+          ]);
+        const systemTranslations = response.body
+          .find((language: TranslationType) => language.locale === 'es')
+          .contexts.find((context: TranslationContext) => context.id === 'System');
+        expect(systemTranslations).toMatchObject({
+          values: { Search: 'Búsqueda' },
+        });
       });
     });
 

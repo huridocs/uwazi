@@ -11,6 +11,7 @@ import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
+import { upsertTranslationEntries } from './v2_support';
 
 const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);
@@ -154,6 +155,47 @@ export default (app: Application) => {
       const { locale } = await translations.save(req.body);
       const [response] = await translations.get({ locale });
       req.sockets.emitToCurrentTenant('translationsChange', response);
+      res.json(response);
+    }
+  );
+
+  app.post(
+    '/api/translationsV2',
+    needsAuthorization(),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string' },
+              language: { type: 'string' },
+              key: { type: 'string' },
+              value: { type: 'string' },
+              context: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  label: { type: 'string' },
+                  type: { type: 'string' },
+                },
+                required: ['id', 'label', 'type'],
+              },
+            },
+            required: ['language', 'key', 'value', 'context'],
+          },
+        },
+      },
+      required: ['body'],
+    }),
+    async (req, res) => {
+      await upsertTranslationEntries(req.body);
+      const response = await translations.get();
+      response.forEach(language => {
+        req.sockets.emitToCurrentTenant('translationsChange', language);
+      });
       res.json(response);
     }
   );
