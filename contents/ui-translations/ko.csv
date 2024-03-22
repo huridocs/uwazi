@@ -235,6 +235,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -427,6 +428,7 @@ Library,라이브러리
 library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
 library table view,라이브러리 테이블 뷰
+Link,Link
 linked,링크 완료
 Live translate,Live translate
 Loading,Loading
@@ -648,6 +650,7 @@ Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,암호 재설정
 Reset passwords,Reset passwords
 Restricted,비공개 게시물
