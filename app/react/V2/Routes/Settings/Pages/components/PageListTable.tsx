@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { kebabCase } from 'lodash';
-import { CellContext } from '@tanstack/react-table';
+import { CellContext, Row } from '@tanstack/react-table';
 import { Page } from 'app/V2/shared/types';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -19,7 +19,7 @@ const ActionCell = ({ cell }: CellContext<Page, string>) => {
   const isEntityView = cell.row.original.entityView;
 
   return (
-    <div className="flex justify-end gap-2">
+    <div className="flex gap-2 justify-end">
       <Link
         to={`/${cell.row.original.language}/${pageUrl}`}
         target="_blank"
@@ -53,6 +53,15 @@ const UrlCell = ({ cell }: CellContext<Page, string>) => {
   return url;
 };
 
+const List = ({ items }: { items: Row<Page>[] }) => (
+  <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
+    {items.map(item => {
+      const page = item.original;
+      return <li key={page._id as string}>{page.title}</li>;
+    })}
+  </ul>
+);
+
 export {
   YesNoPill,
   ActionCell,
@@ -62,4 +71,5 @@ export {
   ActionHeader,
   UrlCell,
   getPageUrl,
+  List,
 };

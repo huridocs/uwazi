@@ -239,6 +239,8 @@ Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Afficher la vue de l'entité depuis la page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Types de documents et d'entités
@@ -265,6 +267,7 @@ Duplicated username,Nom d'utilisateur en double
 Edit,Éditer
 Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
@@ -310,6 +313,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -359,6 +363,7 @@ Icon,Icône
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Importer
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import instructions,Instructions d'importation
@@ -631,6 +636,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
 remove icon,Supprimer l'icône
@@ -646,6 +652,7 @@ Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
+Reset passwords,Reset passwords
 Restricted,Limité
 Return to login,Retourner à la connexion
 Return to the thesaurus page when you finished labeling to start learning.,Revenez à la page du thésaurus lorsque vous avez terminé l'étiquetage pour commencer à apprendre.
@@ -909,7 +916,6 @@ x less,x en moins
 x more,x en plus
 Year,Année
 Yes,Oui
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
