@@ -235,6 +235,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Tanım
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -423,6 +424,7 @@ Library,Kütüphane
 library list view,kütüphane listesi görünümü
 library map view,kütüphane harita görünümü
 library table view,kütüphane tablo görünümü
+Link,Link
 linked,bağlantılı
 Live translate,Live translate
 Loading,Loading
@@ -643,6 +645,7 @@ Required property,Gerekli özellik
 Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Parolayı sıfırla
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
