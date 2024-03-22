@@ -234,6 +234,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -422,6 +423,7 @@ Library,مكتبة
 library list view,معاينة القائمة المكتبية
 library map view,معاينة خريطة المكتبة
 library table view,معاينة جدول المكتبة
+Link,Link
 linked,مرتبط
 Live translate,Live translate
 Loading,Loading
@@ -642,6 +644,7 @@ Required property,الخاصية المطلوبة
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,إعادة تعيين كلمة المرور
 Restricted,مُقَيَّد
 Return to login,العودة لتسجيل الدخول
