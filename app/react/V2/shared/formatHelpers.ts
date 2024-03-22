@@ -6,4 +6,13 @@ const formatBytes = (bytes: number) => {
   return `${parseFloat((bytes / 1024 ** index).toFixed(2))} ${sizes[index]}`;
 };
 
-export { formatBytes };
+const getFileNameAndExtension = (filename?: string) => {
+  if (!filename) return { name: '', extension: '' };
+
+  const name = filename.slice(0, filename.lastIndexOf('.'));
+  const extension = filename.slice(filename.lastIndexOf('.') + 1);
+
+  return { name, extension };
+};
+
+export { formatBytes, getFileNameAndExtension };

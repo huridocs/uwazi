@@ -6,6 +6,4 @@ import SettingsAPI from './SettingsAPI';
 import { Dashboard } from './components/Dashboard';
 import { PreserveSettings } from './components/PreserveSettings';
 
-export { CustomUploads } from './components/CustomUploads';
-
 export { Settings, SettingsAPI, PreserveSettings, EntityTypesList, FiltersForm, Dashboard };
