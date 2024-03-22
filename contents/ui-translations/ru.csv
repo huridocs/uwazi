@@ -232,6 +232,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -420,6 +421,7 @@ Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 library table view,просмотр библиотеки в табличном виде
+Link,Link
 linked,связанный
 Live translate,Live translate
 Loading,Loading
@@ -640,6 +642,7 @@ Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Сбросить пароль
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
