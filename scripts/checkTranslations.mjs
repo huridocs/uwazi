@@ -38,9 +38,8 @@ const parserOptions = {
   ],
 };
 
-const wordRegexp = /\b[a-zA-Z]+\b/g;
-
 const processTextNode = (path, file) => {
+  const wordRegexp = /\b[a-zA-Z]+\b/g;
   const text = path.node.value.trim();
   const parentTag = path.parent.openingElement;
   const container = parentTag?.name.name;
