@@ -235,6 +235,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -423,6 +424,7 @@ Library,စာကြည့်တိုက်
 library list view,စာကြည့်တိုက် စာရင်း မြင်ကွင်း
 library map view,စာကြည့်တိုက် မြေပုံ မြင်ကွင်း
 library table view,စာကြည့်တိုက် ဇယား မြင်ကွင်း
+Link,Link
 linked,ချိတ်ဆက်ထားသော
 Live translate,Live translate
 Loading,Loading
@@ -643,6 +645,7 @@ Required property,လိုအပ်သော ထူးခြားချက်
 Reset,ပြန်လည်သတ်မှတ်ရန်
 Reset 2FA,2FA ကို ပြန်လည်သတ်မှတ်ရန်
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,စကားဝှက် ပြန်လည်သတ်မှတ်ရန်
 Restricted,ကန့်သတ်ထားသည်
 Return to login,လော့ဂ်အင်သို့ ပြန်သွားရန်
