@@ -45,7 +45,6 @@ const FIELD_TYPES_TO_SYNC = [
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
-
   if (
     docLanguages[0].template &&
     entity.template &&
@@ -464,7 +463,7 @@ export default {
       }
 
       const entities = await this.get(query, 'sharedId', { skip: offset, limit });
-      await this.updateMetdataFromRelationships(
+      await this.updateMetadataFromRelationships(
         entities.map(entity => entity.sharedId),
         language,
         reindex
@@ -594,7 +593,7 @@ export default {
   },
 
   /** Rebuild relationship-based metadata objects as {value = id, label: title}. */
-  async updateMetdataFromRelationships(entities, language, reindex = true) {
+  async updateMetadataFromRelationships(entities, language, reindex = true) {
     const entitiesToReindex = [];
     const _templates = await templates.get();
     await Promise.all(

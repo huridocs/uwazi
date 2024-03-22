@@ -1,3 +1,4 @@
+import { denormalizePublishedStateInRelated } from 'api/entities/denormalize';
 import entities from 'api/entities/entities';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
@@ -122,7 +123,8 @@ export const entitiesPermissions = {
       ...getPublishingQuery(publicPermission),
     }));
 
-    await entities.saveMultiple(toSave);
+    const saved = await entities.saveMultiple(toSave);
+    await denormalizePublishedStateInRelated(saved, permissionsData.permissions);
   },
 
   get: async (sharedIds: string[]) => {
