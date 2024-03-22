@@ -296,7 +296,7 @@ describe('Information Extraction', () => {
         cy.get('input').clear();
       });
       cy.get('#pdf-container').scrollTo(0, 0);
-      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
         //@ts-ignore
