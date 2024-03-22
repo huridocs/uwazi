@@ -238,6 +238,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,คำอธิบาย
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -431,6 +432,7 @@ Library,ไลบรารี่
 library list view,มุมมองรายการไลบรารี
 library map view,มุมมองแผนที่ไลบรารี
 library table view,มุมมองตารางไลบรารี
+Link,Link
 linked,เชื่อมโยงแล้ว
 Live translate,Live translate
 Loading,Loading
@@ -651,6 +653,7 @@ Required property,คุณสมบัติที่จำเป็น
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,สร้าง รหัสผ่าน ใหม่
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ

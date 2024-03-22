@@ -237,6 +237,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Description
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
@@ -430,6 +431,7 @@ Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
 library table view,Bilbliothèque en vue tabulaire
+Link,Link
 linked,Lié
 Live translate,Live translate
 Loading,Loading
@@ -650,6 +652,7 @@ Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
 Restricted,Limité
 Return to login,Retourner à la connexion
