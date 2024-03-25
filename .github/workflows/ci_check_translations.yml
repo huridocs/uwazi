@@ -39,7 +39,9 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: yarn blank-state
+      - run: yarn production-build
         env:
+          NODE_ENV: production
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
       - run: yarn update-translations-db
