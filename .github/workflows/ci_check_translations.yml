@@ -21,11 +21,12 @@ jobs:
         ports:
           - 9200/tcp
         options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
-      mongodb:
-        image: mongo:4.2.6
-        ports:
-          - 27017/tcp
     steps:
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: 4.2.6
+          mongodb-replica-set: test-rs
       - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -40,10 +41,15 @@ jobs:
         run: yarn install
       - run: yarn blank-state
         env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - run: yarn production-build
+        env:
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - run: yarn update-translations-db
+      - run: cd prod; yarn update-translations-db
         env:
+          NODE_ENV: production
           DBHOST: localhost:${{ job.services.mongodb.ports[27017] }}
       - run: yarn check-translations
         env:
