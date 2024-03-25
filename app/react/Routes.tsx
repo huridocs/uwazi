@@ -4,23 +4,11 @@ import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import Activitylog from 'app/Activitylog/Activitylog';
-import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import {
-  PreserveSettings,
-  CustomUploads,
-  EntityTypesList,
-  FiltersForm,
-  Settings,
-  ThesauriList,
-  Dashboard,
-} from 'app/Settings';
+import { PreserveSettings, EntityTypesList, FiltersForm, Settings, Dashboard } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import { EditThesauri } from 'app/Thesauri/EditThesauri';
-import NewThesauri from 'app/Thesauri/NewThesauri';
-import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
 import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
@@ -38,6 +26,8 @@ import {
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 
+import { ThesaurusForm, theasauriListLoader, ThesauriList } from 'app/V2/Routes/Settings/Thesauri';
+
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import {
   RelationshipTypes,
@@ -49,6 +39,7 @@ import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard'
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
+import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -57,6 +48,7 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
+import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/ThesaurusForm';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -82,7 +74,6 @@ const getRoutesLayout = (
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
       <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
@@ -130,11 +121,19 @@ const getRoutesLayout = (
           loader={relationshipTypesLoader(headers)}
         />
       </Route>
-      <Route path="dictionaries">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
-        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
+
+      <Route path="thesauri">
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={theasauriListLoader(headers)}
+        />
+        <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
+        <Route
+          path="edit/:_id"
+          element={adminsOnlyRoute(<ThesaurusForm />)}
+          loader={editTheasaurusLoader(headers)}
+        />
       </Route>
       <Route
         path="languages"
@@ -160,7 +159,11 @@ const getRoutesLayout = (
         element={adminsOnlyRoute(<Customisation />)}
         loader={customisationLoader(headers)}
       />
-      <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
+      <Route
+        path="custom-uploads"
+        element={adminsOnlyRoute(<CustomUploads />)}
+        loader={customUploadsLoader(headers)}
+      />
       <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
       <Route
         path="newrelmigration"

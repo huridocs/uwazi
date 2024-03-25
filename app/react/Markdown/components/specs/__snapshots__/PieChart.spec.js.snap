@@ -96,6 +96,7 @@ exports[`PieChart Markdown component should render the data passed by mapStateTo
         />
       </Pie>
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -221,6 +222,7 @@ exports[`PieChart Markdown component when passing maxCategories should not rende
         />
       </Pie>
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -346,6 +348,7 @@ exports[`PieChart Markdown component when passing maxCategories should only rend
         />
       </Pie>
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -481,6 +484,7 @@ exports[`PieChart Markdown component when passing maxCategories should render ot
         />
       </Pie>
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -615,6 +619,7 @@ exports[`PieChart Markdown component when passing scatter should display nested 
         />
       </Pie>
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,

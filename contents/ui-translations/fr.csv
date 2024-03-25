@@ -3,9 +3,7 @@ Key,French
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
-2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
-2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,Un identifiant généré sera le titre par défaut.
 Accept,Accepter
 Accept suggestion,Accept suggestion
@@ -18,7 +16,6 @@ Account updated,Account updated
 Accuracy,Accuracy
 Action,Action
 Activate,Activate
-Activate this feature for enhanced account security,Activez cette fonction pour renforcer la sécurité du compte
 Activated,Activated
 Active languages,Active languages
 Activity log,Journal d'activité
@@ -32,6 +29,7 @@ Add from URL,Ajouter à partir d'une url
 Add from web,Ajouter à partir du web
 Add group,Ajouter un groupe
 add icon,Ajouter une icône
+Add item,Add item
 Add language,Ajouter une langue
 Add link,Ajouter un lien
 Add page,Ajouter une page
@@ -54,6 +52,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
@@ -76,7 +76,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -104,7 +103,6 @@ Can view,Peut voir
 Cancel,Annuler
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,Captcha
 Captcha bypass,Contournement du captcha
 Cards,Cartes
@@ -136,7 +134,6 @@ Collection,Collection
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Configurer les filtres
-Configure suggestions,Configurer les suggestions
 Configure templates,Configure templates
 Confirm,Confirmer
 CONFIRM,CONFIRMER
@@ -150,9 +147,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Confirmer le nouveau mot de passe
 Confirm publish multiple items,Confirmer la publication de plusieurs éléments
 Connect to a document,Se connecter à un document
@@ -221,7 +216,6 @@ Delete,Effacer
 DELETE,Effacer
 Delete entities and documents,Delete entities and documents
 Delete file,Supprimer le fichier
-Delete Group,Supprimer un groupe
 Delete language,Supprimer la langue
 Delete Property,Supprimer la propriété
 Deleted attachment,Deleted attachment
@@ -240,10 +234,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Description
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Afficher la vue de l'entité depuis la page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Types de documents et d'entités
@@ -253,12 +250,8 @@ Document Title,Titre du document
 Documentation,Documentation
 documents,Documents
 Documents,Documents
-documents before training (30 per topic).,documents avant la formation (30 par sujet).
 Documents for custom filter,Documents pour le filtre personnalisé
 Documents including suggestion:,Documents incluant une suggestion :
-documents so far.,documents jusqu'à présent.
-documents to be reviewed,Documents à revoir
-Documents to be reviewed,Documents à revoir
 documents.,Documents.
 Download,Télécharger
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -274,7 +267,9 @@ Duplicated username,Nom d'utilisateur en double
 Edit,Éditer
 Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Éditeur
@@ -288,7 +283,6 @@ empty property tip,You won't be able to save an entity if this property is empty
 Enable,Enable
 Enable this page to be used as an entity view page:,Activez cette page pour qu'elle soit utilisée comme page de visualisation des entités :
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-Enter the 6-digit verification code generated by your Authenticator app:,Saisissez le code de vérification à 6 chiffres généré par votre application d'authentification :
 Entities,Entités
 entities,Entités
 Entities across all languages,Entities across all languages
@@ -300,6 +294,8 @@ Entity saved,Entity saved
 Entity types,Types d'entités
 Entity updated,Entity updated
 Error,Erreur
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Exploration
 Export CSV,Exporter CSV
@@ -317,6 +313,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -349,7 +346,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,Indentifiant Google Analytics
 Google Maps,Google Maps
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -367,6 +363,7 @@ Icon,Icône
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Importer
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import instructions,Instructions d'importation
@@ -386,7 +383,6 @@ Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
-Install the Google Authenticator app on your mobile device,Installez l'application Google Authenticator sur votre appareil mobile
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -396,7 +392,6 @@ Invalid csv: nested value need to be under a non-nested value,Invalid csv: neste
 Invalid form,Formulaire invalide
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,Cela pourrait aussi très facilement casser l'application. N'écrivez du code ici que si vous savez exactement ce que vous faites.
 Item,Item
-Item name,Item name
 Items:,Articles :
 Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
@@ -404,7 +399,6 @@ key,French
 Label,Étiquette
 "Label date ""From""",Du
 "Label date ""to""",Au
-Label more documents,Étiqueter d'autres documents
 Label your collection note,Étiqueter votre note de collecte
 Labeled,Labeled
 Landing page,Page d'accueuil
@@ -428,13 +422,13 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Latitude
 Learn more,Learn more
-Learning...,Learning...
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Bibliothèque
 library list view,Bilbliothèque en vue par liste
 library map view,Bilbliothèque en vue cartographique
 library table view,Bilbliothèque en vue tabulaire
+Link,Link
 linked,Lié
 Live translate,Live translate
 Loading,Loading
@@ -555,7 +549,6 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Ouvrez l'application d'authentification à deux facteurs sur votre appareil
 or,ou
 or drop your files here.,ou déposez vos fichiers ici.
-Or enter this secret key into your Authenticator app,Ou entrez cette clé secrète dans votre application d'authentification
 Order,Organiser par
 Other,Autre
 other,Autre
@@ -643,6 +636,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
 remove icon,Supprimer l'icône
@@ -656,12 +650,13 @@ Required property,Propriété requise
 Reset,Réinitialiser
 Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
+Reset passwords,Reset passwords
 Restricted,Limité
 Return to login,Retourner à la connexion
 Return to the thesaurus page when you finished labeling to start learning.,Revenez à la page du thésaurus lorsque vous avez terminé l'étiquetage pour commencer à apprendre.
 Review,Review
-Review unpublished document,Réviser le document non publié
 Reviewed,Révisé
 Role,Rôle
 Route,Route
@@ -689,7 +684,6 @@ Search Tips: exact term,Astuces de recherche: Terme exact
 Search Tips: one char wildcard,Astuces de recherche: terme générique a un caractère
 Search Tips: proximity,Astuces de recherche: proximité
 Search Tips: wildcard,Astuces de recherche: caractère générique
-secret key recommendation,(please keep this key secret and don't share it):
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -733,7 +727,6 @@ Show cookie policy,Afficher la politique en matière de cookies
 Show filters,Afficher les filtres
 Show in cards,Afficher sur les cartes
 Show more,Afficher plus
-Show Suggestions,Afficher les suggestions
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,Listé sur un total de
@@ -761,7 +754,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -785,8 +777,6 @@ Template(s),Template(s)
 Templates,Modèles
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,Le modèle actuel a été formé à
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","La première étape consiste à étiqueter un échantillon de vos documents, afin qu'Uwazi puisse apprendre quels sujets suggérer lorsqu'il vous aide à étiqueter votre collection."
 The import process threw an error:,Le processus d'importation a généré une erreur :
 The request could not be processed.,The request could not be processed.
 The template contains errors,Le modèle contient des erreurs
@@ -796,7 +786,12 @@ There are no pages enabled for entity view,Il n'y a pas de pages activées pour 
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus sauvegardé
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -817,7 +812,6 @@ This property will be shown without the label.,Cette propriété sera affichée 
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,Ce modèle sera utilisé par défaut pour les nouvelles entités.
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Seuil
 Time,Temps
@@ -829,12 +823,10 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,Pour en savoir plus sur les composants.
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
 Tools,Outils
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
 Total entities,Total entities
 Total files,Total files
 "Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
 Total users,Total users
-Train model,Former un modèle
 Training,Training
 Training model...,Training model...
 Translate,Traduire
@@ -850,8 +842,6 @@ Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,Échec de la vérification à deux facteurs
 Two-step verification,Vérification en deux étapes
-Two-step verification successfully,"Congratulations!
-You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,Type
 Unexpected error,Unexpected error
@@ -900,10 +890,8 @@ Usernames cannot have spaces,Usernames cannot have spaces
 Users,Utilisateurs
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
-Using Google Authenticator,Utilisation de Google Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi est développé par
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi apprend en utilisant les documents étiquetés. Cela peut prendre jusqu'à 2 heures, et une fois terminé, vous pouvez revoir les suggestions faites par Uwazi pour votre collection."
 Uwazi UI,Interface utilisateur d'Uwazi
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -916,11 +904,9 @@ View in library,Voir dans la bibliothèque
 View less,View less
 View more,View more
 View page,Voir page
-View suggestions,Voir les suggestions
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Attention : vous êtes en train de modifier plusieurs entités. Les champs marqués d'un
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,Nous recommandons d'étiqueter
 Welcome to Uwazi,Bienvenue à Uwazi
 "Well, this is awkward...","Eh bien, c'est gênant..."
 will be updated with the same value.,sera mis à jour avec la même valeur.
@@ -930,12 +916,10 @@ x less,x en moins
 x more,x en plus
 Year,Année
 Yes,Oui
-You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,Vous pouvez également améliorer le modèle en fournissant davantage de documents étiquetés.
 You can create metadata templates in,Vous pouvez créer des modèles de métadonnées dans
-You have labeled,Vous avez étiqueté
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Vous devriez activer cette fonction pour renforcer la sécurité du compte

@@ -319,7 +319,9 @@ describe('PDFView', () => {
       const searchParams = mapProperties({ raw: 'true', page: 15, anotherProp: 'test' });
       const wrapper = shallowComponent(searchParams);
       wrapper.instance().changeBrowserHistoryPage(16);
-      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16');
+      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=true&anotherProp=test&page=16', {
+        replace: true,
+      });
 
       mockNavigate.mockClear();
       searchParams.set('raw', 'false');
@@ -327,7 +329,7 @@ describe('PDFView', () => {
       wrapper.setProps({ searchParams });
       wrapper.update();
       wrapper.instance().changeBrowserHistoryPage(16);
-      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=false&page=16');
+      expect(mockNavigate).toHaveBeenCalledWith('pathname?raw=false&page=16', { replace: true });
     });
   });
 

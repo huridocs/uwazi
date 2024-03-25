@@ -3,9 +3,7 @@ Key,Korean
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
 2FA,2FA
-2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
-2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,생성된 아이디가 기본값으로 설정됩니다.
 Accept,수락
 Accept suggestion,Accept suggestion
@@ -18,7 +16,6 @@ Account updated,Account updated
 Accuracy,Accuracy
 Action,활동
 Activate,Activate
-Activate this feature for enhanced account security,계정 보안 강화가 필요한 경우 이 기능을 활성화하십시오.
 Activated,Activated
 Active languages,Active languages
 Activity log,활동 로그
@@ -32,6 +29,7 @@ Add from URL,URL 에서 추가
 Add from web,웹에서 추가
 Add group,그룹 추가
 add icon,아이콘 추가
+Add item,Add item
 Add language,언어 추가
 Add link,링크 추가
 Add page,페이지 추가
@@ -54,6 +52,8 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
@@ -76,7 +76,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -104,7 +103,6 @@ Can view,열람 가능
 Cancel,취소
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,보안 문자
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -137,7 +135,6 @@ Collection,컬렉션
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,필터 구성
-Configure suggestions,제안 구성
 Configure templates,Configure templates
 Confirm,확인
 CONFIRM,CONFIRM
@@ -151,9 +148,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,새 비밀번호 확인
 Confirm publish multiple items,여러 항목 게시 확인
 Connect to a document,문서와 연결
@@ -222,7 +217,6 @@ Delete,삭제
 DELETE,삭제
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
-Delete Group,그룹 삭제
 Delete language,언어 삭제
 Delete Property,속성 삭제
 Deleted attachment,Deleted attachment
@@ -241,10 +235,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,페이지에서 엔티티 뷰 표시
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,문서
 Document and entity types,문서 및 엔티티 유형
@@ -254,12 +251,8 @@ Document Title,문서 제목
 Documentation,기록
 documents,문서
 Documents,문서
-documents before training (30 per topic).,트레이닝 전 문서 (주제 당 30 개)
 Documents for custom filter,사용자 맞춤 필터 문서
 Documents including suggestion:,제안 포함 문서:
-documents so far.,현재까지 문서
-documents to be reviewed,검토할 문서
-Documents to be reviewed,검토할 문서
 documents.,문서
 Download,다운로드
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -275,7 +268,9 @@ Duplicated username,사용자 이름 중복
 Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,편집자
@@ -289,7 +284,6 @@ empty property tip,You won't be able to save an entity if this property is empty
 Enable,Enable
 Enable this page to be used as an entity view page:,엔티티 뷰 페이지가 필요할 경우 활성화하십시오.
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-Enter the 6-digit verification code generated by your Authenticator app:,보안 인증 앱에서 생성된 6자리 인증 코드를 입력하십시오.
 Entities,엔티티
 entities,엔티티
 Entities across all languages,Entities across all languages
@@ -301,6 +295,8 @@ Entity saved,Entity saved
 Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,탐색
 Export CSV,CSV 추출
@@ -318,6 +314,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,선택 필터
 File,파일
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -350,7 +347,6 @@ Google Analytics,구글 분석
 Google Analytics ID,구글 분석 ID
 Google Maps,Google Maps
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -368,6 +364,7 @@ Icon,아이콘
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,업로드
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
 Import instructions,업로드 가이드라인
@@ -387,7 +384,6 @@ Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
-Install the Google Authenticator app on your mobile device,모바일 기기에 Google Authenticator 앱을 설치하십시오.
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -397,7 +393,6 @@ Invalid csv: nested value need to be under a non-nested value,Invalid csv: neste
 Invalid form,잘못된 형식
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,앱을 손상시킬 수 있습니다. 반드시 필요한 경우에만 코드를 입력하십시오.
 Item,Item
-Item name,Item name
 Items:,아이템
 Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
@@ -405,7 +400,6 @@ key,Korean
 Label,라벨
 "Label date ""From""",~부터
 "Label date ""to""",~까지
-Label more documents,더 많은 문서에 라벨 지정
 Label your collection note,컬렉션 노트에 라벨 지정
 Labeled,Labeled
 Landing page,랜딩 페이지
@@ -429,13 +423,13 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,위도
 Learn more,더 알아보기
-Learning...,학습 중
 Legend,범례
 Lengthy reindex process,Lengthy reindex process
 Library,라이브러리
 library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
 library table view,라이브러리 테이블 뷰
+Link,Link
 linked,링크 완료
 Live translate,Live translate
 Loading,Loading
@@ -556,7 +550,6 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
 or,or
 or drop your files here.,혹은 여기에 파일을 드롭하십시오.
-Or enter this secret key into your Authenticator app,혹은 다음 키를 Authenticator 앱에 입력하십시오.
 Order,순서
 Other,기타
 other,기타
@@ -644,6 +637,7 @@ relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
 RelationType saved,연결 유형 저장 완료
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
 remove icon,아이콘 제거
@@ -657,12 +651,13 @@ Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,암호 재설정
+Reset passwords,Reset passwords
 Restricted,비공개 게시물
 Return to login,로그인으로 돌아가기
 Return to the thesaurus page when you finished labeling to start learning.,라벨링을 마치면 학습 시작을 위해 시소러스 페이지로 돌아가십시오.
 Review,Review
-Review unpublished document,게시 전 문서 검토
 Reviewed,검토 완료
 Role,권한
 Route,루트
@@ -690,7 +685,6 @@ Search Tips: exact term,검색 팁: 정확한 용어
 Search Tips: one char wildcard,검색 팁: one char wildcard
 Search Tips: proximity,검색 팁: 근접성
 Search Tips: wildcard,검색 팁: wildcard
-secret key recommendation,(please keep this key secret and don't share it):
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -734,7 +728,6 @@ Show cookie policy,쿠키 정책 보기
 Show filters,필터 보기
 Show in cards,카드에 표시하기
 Show more,자세히 보기
-Show Suggestions,자동 제안 보기
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,/
@@ -762,7 +755,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -786,8 +778,6 @@ Template(s),Template(s)
 Templates,템플릿
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,현재 모델의 훈련은:
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","첫째, 문서를 라벨링하십시오. 라벨링된 문서는 Uwazi 가 알맞은 주제를 자동 제안하는 데에 필요한 샘플이 됩니다."
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:
 The request could not be processed.,The request could not be processed.
 The template contains errors,템플릿에 오류가 포함되어 있습니다.
@@ -797,7 +787,12 @@ There are no pages enabled for entity view,엔티티 뷰가 활성화된 페이�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,시소러스
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,시소러스 저장 완료
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -818,7 +813,6 @@ This property will be shown without the label.,이 속성은 라벨 없이 표�
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,이 템플릿을 새 엔티티의 기본값으로 사용합니다.
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,임계점
 Time,시간
@@ -830,12 +824,10 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,구성 요소에 대해 더 자세히 알기
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
 Tools,도구
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
 Total entities,Total entities
 Total files,Total files
 "Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
 Total users,Total users
-Train model,트레이닝 모델:
 Training,Training
 Training model...,Training model...
 Translate,번역
@@ -851,8 +843,6 @@ Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,이중 인증 절차 실패
 Two-step verification,이중 인증
-Two-step verification successfully,"Congratulations!
-You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,유형
 Unexpected error,Unexpected error
@@ -901,10 +891,8 @@ Usernames cannot have spaces,Usernames cannot have spaces
 Users,사용자
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
-Using Google Authenticator,Google Authenticator 사용 중
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi 제작 및 개발:
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.",Uwazi 가 라벨링된 문서를 학습하고 있습니다. 이 과정은 최대 2 시간이 소요될 수 있습니다. 완료 후 Uwazi 의 자동 제안을 검토할 수 있습니다.
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -917,11 +905,9 @@ View in library,라이브러리에서 보기
 View less,View less
 View more,View more
 View page,페이지 보기
-View suggestions,자동 제안 보기
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,경고: 여러 엔티티 동시에 편집
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,라벨링을 추천합니다.
 Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 "Well, this is awkward...",알 수 없는 에러 발생
 will be updated with the same value.,동일 값으로 업데이트됩니다.
@@ -931,12 +917,10 @@ x less,덜 보기
 x more,더 보기
 Year,연도
 Yes,Yes
-You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,더 많은 문서를 라벨링해 자동 제안 기능을 향상시킬 수 있습니다.
 You can create metadata templates in,메타데이터 템플릿을 작성할 수 있습니다:
-You have labeled,라벨링 완료:
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,계정 보안 향상이 필요한 경우 이 기능을 활성화해야 합니다.
