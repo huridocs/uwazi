@@ -192,6 +192,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         strokeDasharray="2 4"
       />
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -239,7 +240,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 1`] 
         wrapperStyle={Object {}}
       />
       <Bar
-        activeBar={true}
+        activeBar={false}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -379,6 +380,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         strokeDasharray="2 4"
       />
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -426,7 +428,7 @@ exports[`FreeBarChart when data should allow changing dataKeys with buttons 2`] 
         wrapperStyle={Object {}}
       />
       <Bar
-        activeBar={true}
+        activeBar={false}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -546,6 +548,7 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         strokeDasharray="2 4"
       />
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -593,7 +596,7 @@ exports[`FreeBarChart when data should allow personalizing the options 1`] = `
         wrapperStyle={Object {}}
       />
       <Bar
-        activeBar={true}
+        activeBar={false}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
@@ -713,6 +716,7 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         strokeDasharray="2 4"
       />
       <Tooltip
+        accessibilityLayer={false}
         allowEscapeViewBox={
           Object {
             "x": false,
@@ -760,7 +764,7 @@ exports[`FreeBarChart when data should render basic data with correct defaults 1
         wrapperStyle={Object {}}
       />
       <Bar
-        activeBar={true}
+        activeBar={false}
         animationBegin={0}
         animationDuration={400}
         animationEasing="ease"
