@@ -1,7 +1,10 @@
-import React, { useEffect, Ref, useRef } from 'react';
+import React, { useEffect, Ref, ChangeEventHandler, useRef } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
+import { useRecoilValue } from 'recoil';
 import 'flowbite/dist/flowbite.min.css';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { ClientSettings } from 'app/apiResponseTypes';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
@@ -12,6 +15,8 @@ interface DateRangePickerProps extends DatePickerProps {
   to: number;
   placeholderStart: string;
   placeholderEnd: string;
+  onFromDateSelected: ChangeEventHandler<HTMLInputElement>;
+  onToDateSelected: ChangeEventHandler<HTMLInputElement>;
 }
 const DateRangePickerComponent = React.forwardRef(
   (
@@ -28,15 +33,16 @@ const DateRangePickerComponent = React.forwardRef(
       errorMessage,
       from,
       to,
-      showTodayButton,
-      hideLabel = false,
+      hideLabel = true,
       className = '',
-      name = '',
-      onChange = () => {},
+      onFromDateSelected = () => {},
+      onToDateSelected = () => {},
       onBlur = () => {},
     }: DateRangePickerProps,
     ref: Ref<any>
   ) => {
+    const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
+    const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
@@ -51,13 +57,14 @@ const DateRangePickerComponent = React.forwardRef(
         inputs: [startEl, endEl],
         container: '#tw-container',
         language,
-        locales: { language: datePickerOptionsByLocale },
+        locales: { language: { ...datePickerOptionsByLocale, format: datePickerFormat } },
+        todayBtnMode: 1,
+        todayBtn: true,
+        clearBtn: true,
+        autohide: true,
+        format: datePickerFormat,
       });
-    }, [language, labelToday, labelClear]);
-
-    const handleOnChange = e => {
-      onChange({ ...e, value: instance.current.dates });
-    };
+    }, [language, labelToday, labelClear, datePickerFormat]);
 
     return (
       <div className="tw-content">
@@ -94,8 +101,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="start"
                 name="start"
                 type="text"
-                onChange={handleOnChange}
-                onSelect={handleOnChange}
+                onSelect={onFromDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={from}
@@ -125,8 +131,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="end"
                 name="end"
                 type="text"
-                onChange={handleOnChange}
-                onSelect={handleOnChange}
+                onSelect={onToDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={to}
@@ -142,4 +147,5 @@ const DateRangePickerComponent = React.forwardRef(
   }
 );
 
+export type { DateRangePickerProps };
 export { DateRangePickerComponent };

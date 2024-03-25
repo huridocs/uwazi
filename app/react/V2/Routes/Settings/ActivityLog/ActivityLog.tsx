@@ -12,8 +12,8 @@ import {
 } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
+import { debounce, isUndefined, omitBy } from 'lodash';
 import { SortingState } from '@tanstack/react-table';
-import { DebouncedFunc, debounce, isUndefined, omitBy } from 'lodash';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -22,7 +22,6 @@ import { Paginator, Table } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
-
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
@@ -41,7 +40,7 @@ const sortingParams = ['method', 'time', 'username', 'url'];
 interface ActivityLogSearchParams {
   username?: string;
   search?: string;
-  from?: number;
+  from?: string;
   to?: string;
   sort?: string;
   order?: string;
@@ -61,6 +60,12 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     limit = ITEMS_PER_PAGE,
   } = searchParams;
 
+  let time = {};
+  if (from !== undefined && to !== undefined) {
+    const fromDate = new Date(from).getTime() / 1000;
+    const toDate = new Date(to).getTime() / 1000;
+    time = { time: { from: fromDate, to: toDate } };
+  }
   const sortOptions = sortingParams.includes(sort)
     ? { prop: sort, asc: +(order === 'asc') }
     : { prop: 'time', asc: 0 };
@@ -69,7 +74,7 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     ...(search !== undefined ? { method: [search] } : {}),
     ...(search !== undefined ? { find: search } : {}),
     ...(search !== undefined ? { search } : {}),
-    ...(from !== undefined && to !== undefined ? { from, to } : {}),
+    ...time,
     page,
     limit,
     sort: sortOptions,
@@ -101,8 +106,8 @@ interface ActivityLogSearch {
   username: string;
   search: string;
   page: number;
-  from: number;
-  to: number;
+  from: string;
+  to: string;
   sort: string;
   order: string;
 }
@@ -117,8 +122,6 @@ const ActivityLog = () => {
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
   const {
-    username,
-    search,
     from,
     to,
     sort,
@@ -144,7 +147,7 @@ const ActivityLog = () => {
     setSelectedEntry(null);
   };
 
-  const updateSearchUrl = (updatedParams: ActivityLogSearch) =>
+  const updateSearchUrl = (updatedParams: any) =>
     `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
 
   useEffect(() => {
@@ -160,46 +163,21 @@ const ActivityLog = () => {
 
   const onSubmit = async (data: ActivityLogSearch) => {
     const filters = omitBy(omitBy(data, isUndefined), val => val === '');
-    const updatedParams = { ...searchedParams, ...filters };
-    navigate(updateSearchUrl(updatedParams));
+    navigate(updateSearchUrl({ ...searchedParams, ...filters }));
   };
 
-  const de = useRef<DebouncedFunc<() => void> | null>(null);
-
-  const debouncedChangeHandler = useMemo(
-    () => (handler: () => void) => {
-      de.current = debounce(handler, 500);
-      return de.current;
-    },
-    []
-  );
+  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
+  const de = useRef<any>(null);
 
   useEffect(() => {
-    if (isFirstRender) {
-      return;
-    }
     de.current?.cancel();
-    const subscription = watch(async () => debouncedChangeHandler(handleSubmit(onSubmit))());
+    const subscription = watch(async () => {
+      de.current = debouncedChangeHandler(handleSubmit(onSubmit))();
+      return de.current;
+    });
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSubmit, watch]);
-
-  const setFieldValue = (field: searchParam, value: string | number) => {
-    if (value !== undefined) {
-      setValue(field, value);
-    }
-  };
-
-  useEffect(() => {
-    if (isFirstRender) {
-      setFieldValue('username', username);
-      setFieldValue('search', search);
-      setFieldValue('from', from);
-      setFieldValue('to', to);
-      setSorting([{ id: sort, desc: order === 'desc' }]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchedParams]);
 
   const columns = getActivityLogColumns(setSelectedEntry);
   return (
@@ -211,7 +189,7 @@ const ActivityLog = () => {
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body>
-          <form onSubmit={handleSubmit(onSubmit)} id="account-form">
+          <form id="account-form">
             <div className="flex flex-row items-center gap-4 justify-items-stretch">
               <h2 className="basis-1/6">
                 <Translate>Activity log</Translate>
@@ -224,13 +202,13 @@ const ActivityLog = () => {
                 placeholder="User"
                 clearFieldAction={() => {
                   setValue('username', '');
-                  handleSubmit(onSubmit);
+                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 hasErrors={!!errors.username}
                 {...register('username')}
                 onChange={e => {
                   setValue('username', e.target.value);
-                  handleSubmit(onSubmit);
+                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
               />
               <InputField
@@ -247,16 +225,22 @@ const ActivityLog = () => {
                 }}
               />
               <DateRangePicker
+                from={from}
+                to={to}
+                placeholderStart="From"
+                placeholderEnd="To"
                 language="en-es"
                 labelToday="today"
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear="clear"
                 {...register('from')}
-                onStartChange={e => {
-                  setValue('from', e.target.datepicker.dates[0]);
+                onFromDateSelected={e => {
+                  setValue('from', e.target.value);
+                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
-                onEndChange={e => {
-                  setValue('to', e.target.datepicker.dates[0]);
+                onToDateSelected={e => {
+                  setValue('to', e.target.value);
+                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
               />
             </div>

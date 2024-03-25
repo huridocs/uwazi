@@ -3,7 +3,10 @@ import moment from 'moment';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
+import { useRecoilValue } from 'recoil';
 import 'flowbite/dist/flowbite.min.css';
+import { settingsAtom } from 'app/V2/atoms/settingsAtom';
+import { ClientSettings } from 'app/apiResponseTypes';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
@@ -66,6 +69,9 @@ const DatePickerComponent = React.forwardRef(
     }: DatePickerProps,
     ref: Ref<any>
   ) => {
+    const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
+
+    const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
@@ -74,7 +80,9 @@ const DatePickerComponent = React.forwardRef(
 
     useEffect(() => {
       const datePickerEl = document?.getElementById(id);
-      Object.assign(Datepicker.locales, { [language]: datePickerOptionsByLocale });
+      Object.assign(Datepicker.locales, {
+        [language]: { ...datePickerOptionsByLocale, format: datePickerFormat },
+      });
       instance.current = new Datepicker(datePickerEl, {
         container: '#tw-container',
         language,
@@ -83,8 +91,9 @@ const DatePickerComponent = React.forwardRef(
         todayBtn: true,
         clearBtn: true,
         autohide: true,
+        format: datePickerFormat,
       });
-    }, [id, language, labelToday, labelClear]);
+    }, [id, language, labelToday, labelClear, datePickerFormat]);
 
     return (
       <div className="tw-content">

@@ -1,6 +1,8 @@
+/* eslint-disable react/no-multi-comp */
 import React from 'react';
 import loadable from '@loadable/component';
 import { DatePickerProps } from './DatePickerComponent';
+import { DateRangePickerProps } from './DateRangePickerComponent';
 
 const DatePickerComponent = loadable(async () => {
   const { DatePickerComponent: Component } = await import(
@@ -19,6 +21,6 @@ const DateRangePickerComponent = loadable(async () => {
 // eslint-disable-next-line react/jsx-props-no-spreading
 const DatePicker = (props: DatePickerProps) => <DatePickerComponent {...props} />;
 // eslint-disable-next-line react/jsx-props-no-spreading
-const DateRangePicker = (props: DatePickerProps) => <DateRangePickerComponent {...props} />;
+const DateRangePicker = (props: DateRangePickerProps) => <DateRangePickerComponent {...props} />;
 
 export { DatePicker, DateRangePicker };
