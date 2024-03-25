@@ -1,5 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Location, useLocation } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
@@ -9,7 +11,7 @@ import { actions, Translate, t } from 'app/I18N';
 import { IStore } from 'app/istore';
 import { NeedAuthorization } from 'app/Auth';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { Location, useLocation } from 'react-router-dom';
+import { inlineEditAtom } from 'V2/atoms';
 
 const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
@@ -51,13 +53,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type mappedProps = ConnectedProps<typeof connector>;
 
-const i18NMenuComponent = ({
-  languages: languageMap,
-  i18nmode,
-  user,
-  locale,
-  toggleInlineEdit,
-}: mappedProps) => {
+const i18NMenuComponent = ({ languages: languageMap, i18nmode, user, locale }: mappedProps) => {
+  const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
+
   if (!languageMap || languageMap.size < 1 || (languageMap!.size <= 1 && !user.get('_id'))) {
     return <div className="no-i18nmenu" />;
   }
@@ -98,7 +96,7 @@ const i18NMenuComponent = ({
             <button
               className="singleItem"
               type="button"
-              onClick={toggleInlineEdit}
+              onClick={() => setInlineEditState({ inlineEdit: false })}
               aria-label={t('System', 'Turn off inline translation', null, false)}
             >
               <div className="live-translate">
@@ -146,7 +144,7 @@ const i18NMenuComponent = ({
                   className="live-translate"
                   type="button"
                   onClick={() => {
-                    toggleInlineEdit();
+                    setInlineEditState({ inlineEdit: !inlineEditState.inlineEdit });
                     setDropdownOpen(false);
                   }}
                 >
