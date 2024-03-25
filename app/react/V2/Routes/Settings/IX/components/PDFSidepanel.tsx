@@ -299,7 +299,9 @@ const PDFSidepanel = ({
       <div className="flex gap-2 p-4">
         <div className="grow">
           <InputField
-            clearFieldAction={() => {}}
+            clearFieldAction={() => {
+              setValue('field', '');
+            }}
             id={propertyLabel}
             label={propertyLabel}
             hideLabel
