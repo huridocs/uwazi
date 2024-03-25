@@ -4,7 +4,7 @@ const { defaults } = require('jest-config');
 module.exports = {
   displayName: 'Client',
   testRunner: 'jest-jasmine2',
-  testMatch: ['**/react/**/specs/*spec.(j|t)s?(x)'],
+  testMatch: ['**/app/react/**/specs/*spec.(j|t)s?(x)'],
   testPathIgnorePatterns: [],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],

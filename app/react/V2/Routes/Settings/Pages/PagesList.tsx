@@ -4,7 +4,7 @@ import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from '
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetRecoilState } from 'recoil';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -19,6 +19,7 @@ import {
   ActionCell,
   UrlCell,
   ActionHeader,
+  List,
 } from './components/PageListTable';
 
 const pagesListLoader =
@@ -104,7 +105,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={confirmDeletion}
@@ -133,11 +134,12 @@ const PagesList = () => {
       {showModal && (
         <div className="container w-10 h-10">
           <ConfirmationModal
-            header={t('System', 'Are you sure?', null, false)}
-            body={t('System', 'You are about to delete a page', null, false)}
+            header={<Translate>Are you sure?</Translate>}
+            warningText={<Translate>Do you want to delete the following items?</Translate>}
+            body={<List items={selectedPages} />}
             onAcceptClick={deleteSelected}
             onCancelClick={() => setShowModal(false)}
-            size="md"
+            size="lg"
           />
         </div>
       )}

@@ -13,5 +13,6 @@ export { Card } from './Card';
 export { CopyValueInput } from './CopyValueInput';
 export { Paginator } from './Paginator';
 export { MediaPlayer } from './MediaPlayer';
+export { FileIcon } from './FileIcon';
 
 export type { TableProps } from './Table/TableElements';
