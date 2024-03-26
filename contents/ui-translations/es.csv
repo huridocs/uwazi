@@ -233,10 +233,13 @@ Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
 Display entity view from page,Mostrar entidad de visualización desde la página
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Documento
 Document and entity types,Tipos de documento y entidad
@@ -263,6 +266,7 @@ Duplicated username,Nombre de usuario duplicado
 Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
@@ -308,6 +312,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
+File name,File name
 File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
@@ -357,6 +362,7 @@ Icon,Icono
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
 Import,Importar
+Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
 Import instructions,Instrucciones de importación
@@ -421,6 +427,7 @@ Library,Colección
 library list view,vista de lista de la colección
 library map view,vista de mapa de la colección
 library table view,vista de tabla de la colección
+Link,Link
 linked,vinculado
 Live translate,Traducción en vivo
 Loading,Cargando
@@ -628,6 +635,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
 remove icon,eliminar ícono
@@ -641,7 +649,9 @@ Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
+Reset language,Reset language
 Reset Password,Restablecer contraseña
+Reset passwords,Reset passwords
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
 Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
@@ -904,7 +914,6 @@ x less,menos
 x more,más
 Year,Año
 Yes,Sí
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

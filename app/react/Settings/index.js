@@ -5,6 +5,4 @@ import { Settings } from './Settings';
 import SettingsAPI from './SettingsAPI';
 import { PreserveSettings } from './components/PreserveSettings';
 
-export { CustomUploads } from './components/CustomUploads';
-
 export { Settings, SettingsAPI, PreserveSettings, EntityTypesList, FiltersForm };

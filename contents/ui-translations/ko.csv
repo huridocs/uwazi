@@ -235,10 +235,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,페이지에서 엔티티 뷰 표시
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,문서
 Document and entity types,문서 및 엔티티 유형
@@ -265,6 +268,7 @@ Duplicated username,사용자 이름 중복
 Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
@@ -310,6 +314,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,선택 필터
 File,파일
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -359,6 +364,7 @@ Icon,아이콘
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,업로드
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
 Import instructions,업로드 가이드라인
@@ -423,6 +429,7 @@ Library,라이브러리
 library list view,라이브러리 리스트 뷰
 library map view,라이브러리 지도 뷰
 library table view,라이브러리 테이블 뷰
+Link,Link
 linked,링크 완료
 Live translate,Live translate
 Loading,Loading
@@ -630,6 +637,7 @@ relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
 RelationType saved,연결 유형 저장 완료
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
 remove icon,아이콘 제거
@@ -643,7 +651,9 @@ Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,암호 재설정
+Reset passwords,Reset passwords
 Restricted,비공개 게시물
 Return to login,로그인으로 돌아가기
 Return to the thesaurus page when you finished labeling to start learning.,라벨링을 마치면 학습 시작을 위해 시소러스 페이지로 돌아가십시오.
@@ -907,7 +917,6 @@ x less,덜 보기
 x more,더 보기
 Year,연도
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

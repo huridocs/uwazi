@@ -232,10 +232,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
@@ -262,6 +265,7 @@ Duplicated username,Продублированное имя пользовате
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
@@ -307,6 +311,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Файл
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -356,6 +361,7 @@ Icon,Символ
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Импортировать
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Импортировать CSV
 Import instructions,Инструкции по импорту
@@ -420,6 +426,7 @@ Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 library table view,просмотр библиотеки в табличном виде
+Link,Link
 linked,связанный
 Live translate,Live translate
 Loading,Loading
@@ -627,6 +634,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
@@ -640,7 +648,9 @@ Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Сбросить пароль
+Reset passwords,Reset passwords
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
 Return to the thesaurus page when you finished labeling to start learning.,"После завершения маркировки, вернитесь на страницу с предметными указателями, чтобы начать обучение."
@@ -904,7 +914,6 @@ x less,x меньше
 x more,х больше
 Year,Год
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
