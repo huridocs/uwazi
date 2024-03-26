@@ -323,7 +323,7 @@ const PDFSidepanel = ({
             <Translate className="">Click to fill</Translate>
           </Button>
         </div>
-        <div className="sm:text-right">
+        <div className="sm:text-right" data-testid="ix-clear-button-container">
           <Button
             type="button"
             styling="outline"

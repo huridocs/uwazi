@@ -280,7 +280,7 @@ describe('Information Extraction', () => {
     });
 
     it('should clear the existing selection', () => {
-      cy.contains('button', 'Clear').click();
+      cy.contains('[data-testid="ix-clear-button-container"] button', 'Clear').click();
       cy.get('div.highlight-rectangle').should('have.length', 0);
     });
 
