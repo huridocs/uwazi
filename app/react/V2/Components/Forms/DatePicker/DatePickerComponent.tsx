@@ -129,9 +129,7 @@ const DatePickerComponent = React.forwardRef(
         clearFieldAction,
         format: datePickerFormat,
       });
-      return () => {
-        instance?.current?.hide();
-      };
+      return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
 
     return (

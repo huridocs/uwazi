@@ -76,9 +76,7 @@ const DateRangePickerComponent = React.forwardRef(
         autohide: true,
         format: datePickerFormat,
       });
-      return () => {
-        instance?.current?.hide();
-      };
+      return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [locale, labelToday, labelClear, datePickerFormat]);
 
     return (

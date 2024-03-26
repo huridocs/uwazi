@@ -93,15 +93,14 @@ const activityLogLoader =
     if (activityLogList.message !== undefined) {
       return { error: activityLogList.message };
     }
-    const totalPages = Math.ceil(
-      (Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows) /
-        params.limit
-    );
+    const total = Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows;
+    const totalPages = Math.ceil(total / params.limit);
 
     return {
       activityLogData: activityLogList.rows,
       totalPages,
       page: params.page,
+      total,
     };
   };
 
@@ -138,7 +137,7 @@ const ActivityLog = () => {
     reValidateMode: 'onSubmit',
   });
 
-  const { activityLogData, totalPages } = useLoaderData() as LoaderData;
+  const { activityLogData, totalPages, total } = useLoaderData() as LoaderData;
 
   const onCloseSidePanel = () => {
     setShowSidePanel(false);
@@ -255,7 +254,7 @@ const ActivityLog = () => {
                 <PaginationState
                   page={Number(page)}
                   size={limit}
-                  totalPages={totalPages}
+                  total={total}
                   currentLength={activityLogData.length}
                 />
                 <div>

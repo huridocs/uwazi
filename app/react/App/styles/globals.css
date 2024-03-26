@@ -2020,10 +2020,6 @@ input:checked + .toggle-bg {
   margin-top: 1.5rem;
 }
 
-.mr-8 {
-  margin-right: 2rem;
-}
-
 .block {
   display: block;
 }
@@ -2783,10 +2779,6 @@ input:checked + .toggle-bg {
   gap: 2rem;
 }
 
-.gap-16 {
-  gap: 4rem;
-}
-
 .-space-x-4 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(-1rem * var(--tw-space-x-reverse));
@@ -3349,6 +3341,11 @@ input:checked + .toggle-bg {
 
 .\!bg-transparent {
   background-color: transparent !important;
+}
+
+.bg-blue-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(224 231 255 / var(--tw-bg-opacity));
 }
 
 .bg-blue-50 {
@@ -4130,9 +4127,9 @@ input:checked + .toggle-bg {
   line-height: 2rem;
 }
 
-.text-4xl {
-  font-size: 2.25rem;
-  line-height: 2.5rem;
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
 }
 
 .text-9xl {
@@ -4165,14 +4162,8 @@ input:checked + .toggle-bg {
   line-height: 1rem;
 }
 
-.text-8xl {
-  font-size: 6rem;
-  line-height: 1;
-}
-
-.text-5xl {
-  font-size: 3rem;
-  line-height: 1;
+.font-black {
+  font-weight: 900;
 }
 
 .font-bold {
@@ -4193,10 +4184,6 @@ input:checked + .toggle-bg {
 
 .font-semibold {
   font-weight: 600;
-}
-
-.font-black {
-  font-weight: 900;
 }
 
 .uppercase {

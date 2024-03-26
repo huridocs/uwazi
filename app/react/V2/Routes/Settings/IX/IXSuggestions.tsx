@@ -209,7 +209,7 @@ const IXSuggestions = () => {
                 <PaginationState
                   page={Number(searchParams.get('page') || 1)}
                   size={SUGGESTIONS_PER_PAGE}
-                  totalPages={totalPages}
+                  total={status.data?.total || totalPages * SUGGESTIONS_PER_PAGE}
                   currentLength={currentSuggestions.length}
                 />
                 <div>
@@ -231,7 +231,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -259,7 +259,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
