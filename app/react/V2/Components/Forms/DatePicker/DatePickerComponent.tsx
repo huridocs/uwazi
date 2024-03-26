@@ -3,15 +3,14 @@ import moment from 'moment';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
-import { useRecoilValue } from 'recoil';
 import 'flowbite/dist/flowbite.min.css';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { ClientSettings } from 'app/apiResponseTypes';
 import uniqueID from 'shared/uniqueID';
+import { t } from 'app/I18N';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
 
 interface DatePickerProps extends FlowbiteDatepickerProps {
+  dateFormat: string;
   language: string;
   labelToday: string;
   labelClear: string;
@@ -25,15 +24,29 @@ interface DatePickerProps extends FlowbiteDatepickerProps {
   value?: string | number;
   className?: string;
   autoComplete?: 'on' | 'off';
-  preText?: string | React.ReactNode;
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
 
+const titleFormat = (locale: string) => {
+  switch (locale) {
+    case 'hu':
+      return 'y. MM';
+    case 'ja':
+      return 'y年mm月';
+    case 'ko':
+      return 'y년mm월';
+    case 'zh-CN':
+      return 'y年mm月';
+    default:
+      return 'MM y';
+  }
+};
 const datePickerOptionsByLocale = (language: string, labelToday: string, labelClear: string) => {
   const localeData = moment.localeData(language);
+  const isRTL = ['ar', 'dv', 'ha', 'he', 'ks', 'ku', 'ps', 'fa', 'ur', 'yi'].includes(language);
   return {
     days: localeData.weekdays(),
     daysShort: localeData.weekdaysShort(),
@@ -41,81 +54,98 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
     months: localeData.months(),
     monthsShort: localeData.monthsShort(),
     today: labelToday,
-    monthsTitle: 'Meses',
+    monthsTitle: t('System', 'Meses', null, false),
     clear: labelClear,
     weekStart: localeData.firstDayOfWeek(),
     format: 'dd/mm/yyyy',
+    titleFormat: titleFormat(language),
+    rtl: isRTL,
   };
+};
+
+const validateLocale = (language: string) => {
+  try {
+    // @ts-expect-error
+    Intl.getCanonicalLocales(language);
+    return language;
+  } catch (_err) {
+    return 'en';
+  }
 };
 
 const DatePickerComponent = React.forwardRef(
   (
     {
-      language = 'en',
       labelToday,
       labelClear,
-      id = uniqueID(),
       label,
       disabled,
       placeholder,
       hasErrors,
       errorMessage,
       value,
+      autoComplete,
+      id = uniqueID(),
+      language = 'en',
+      dateFormat = 'yyyy-mm-dd',
       hideLabel = true,
       className = '',
       name = '',
       onChange = () => {},
       onBlur = () => {},
+      clearFieldAction = () => {},
     }: DatePickerProps,
     ref: Ref<any>
   ) => {
-    const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
-
     const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
-      ? `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      ? // eslint-disable-next-line max-len
+        `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
+    const locale = validateLocale(language);
 
     useEffect(() => {
       const datePickerEl = document?.getElementById(id);
       Object.assign(Datepicker.locales, {
-        [language]: { ...datePickerOptionsByLocale, format: datePickerFormat },
+        [locale]: {
+          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+          format: datePickerFormat,
+        },
       });
       instance.current = new Datepicker(datePickerEl, {
         container: '#tw-container',
-        language,
-        locales: { language: datePickerOptionsByLocale },
+        language: locale,
+        labelToday,
+        labelClear,
+        locales: { [locale]: Datepicker.locales[locale] },
         todayBtnMode: 1,
         todayBtn: true,
         clearBtn: true,
         autohide: true,
+        clearFieldAction,
         format: datePickerFormat,
       });
-    }, [id, language, labelToday, labelClear, datePickerFormat]);
+    }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
 
     return (
       <div className="tw-content">
         <div id="tw-container" className="relative tw-datepicker" />
         <div className="tw-datepicker">
+          <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+            {label}
+          </Label>
           <div className="relative w-72">
-            <Label
-              htmlFor={id}
-              hideLabel={hideLabel}
-              hasErrors={Boolean(hasErrors || errorMessage)}
-            >
-              {label}
-            </Label>
             <input
               id={id}
               // @ts-ignore
-              datepicker={true}
-              datepicker-autohide={true}
-              datepicker-buttons
-              datepicker-autoselect-today
+              datepicker="true"
+              datepicker-autohide="true"
+              datepicker-buttons="true"
+              datepicker-autoselect-today="true"
               type="text"
-              lang={language}
+              lang={locale}
               onChange={onChange}
               onSelect={onChange}
               onBlur={onBlur}
@@ -125,6 +155,7 @@ const DatePickerComponent = React.forwardRef(
               value={value}
               className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm `}
               placeholder={placeholder}
+              autoComplete={autoComplete}
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none ">
               <svg
@@ -149,5 +180,22 @@ const DatePickerComponent = React.forwardRef(
   }
 );
 
+DatePickerComponent.defaultProps = {
+  id: uniqueID(),
+  label: '',
+  disabled: false,
+  hideLabel: true,
+  placeholder: 'Select a date',
+  hasErrors: false,
+  errorMessage: '',
+  value: '',
+  className: '',
+  autoComplete: 'off',
+  name: 'datePicker',
+  clearFieldAction: () => {},
+  onChange: () => {},
+  onBlur: () => {},
+};
+
 export type { DatePickerProps };
-export { DatePickerComponent, datePickerOptionsByLocale };
+export { DatePickerComponent, datePickerOptionsByLocale, validateLocale };

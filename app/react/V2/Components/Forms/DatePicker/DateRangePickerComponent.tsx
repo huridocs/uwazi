@@ -1,30 +1,27 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
-import { useRecoilValue } from 'recoil';
+//@ts-ignore
+import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
-import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { ClientSettings } from 'app/apiResponseTypes';
 import uniqueID from 'shared/uniqueID';
 import { Label } from '../Label';
 import { InputError } from '../InputError';
-import { DatePickerProps, datePickerOptionsByLocale } from './DatePickerComponent';
+import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 
 interface DateRangePickerProps extends DatePickerProps {
-  from: number;
-  to: number;
-  placeholderStart: string;
-  placeholderEnd: string;
-  onFromDateSelected: ChangeEventHandler<HTMLInputElement>;
-  onToDateSelected: ChangeEventHandler<HTMLInputElement>;
+  from?: string | number;
+  to?: string | number;
+  placeholderStart?: string;
+  placeholderEnd?: string;
+  onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
+  onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
 }
 const DateRangePickerComponent = React.forwardRef(
   (
     {
-      language = 'en',
       labelToday,
       labelClear,
-      id = uniqueID(),
       label,
       disabled,
       placeholderStart,
@@ -33,6 +30,9 @@ const DateRangePickerComponent = React.forwardRef(
       errorMessage,
       from,
       to,
+      id = uniqueID(),
+      language = 'en',
+      dateFormat = 'yyyy-mm-dd',
       hideLabel = true,
       className = '',
       onFromDateSelected = () => {},
@@ -41,30 +41,37 @@ const DateRangePickerComponent = React.forwardRef(
     }: DateRangePickerProps,
     ref: Ref<any>
   ) => {
-    const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
     const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
-      ? `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      ? // eslint-disable-next-line max-len
+        `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
       : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
     const instance = useRef<DateRangePicker | null>(null);
+    const locale = validateLocale(language);
 
     useEffect(() => {
       const datePickerEl = document.getElementById('dateRangePickerId');
+      Object.assign(Datepicker.locales, {
+        [locale]: {
+          ...datePickerOptionsByLocale(locale, labelToday, labelClear),
+          format: datePickerFormat,
+        },
+      });
       const startEl = document.getElementById('start');
       const endEl = document.getElementById('end');
 
       instance.current = new DateRangePicker(datePickerEl, {
         inputs: [startEl, endEl],
         container: '#tw-container',
-        language,
-        locales: { language: { ...datePickerOptionsByLocale, format: datePickerFormat } },
-        todayBtnMode: 1,
+        language: locale,
+        locales: { [locale]: Datepicker.locales[locale] },
+        Mode: 1,
         todayBtn: true,
         clearBtn: true,
         autohide: true,
         format: datePickerFormat,
       });
-    }, [language, labelToday, labelClear, datePickerFormat]);
+    }, [locale, labelToday, labelClear, datePickerFormat]);
 
     return (
       <div className="tw-content">
@@ -76,8 +83,8 @@ const DateRangePickerComponent = React.forwardRef(
           <div
             id="dateRangePickerId"
             date-rangepicker={true}
-            datepicker-buttons
-            datepicker-autoselect-today
+            datepicker-buttons={true}
+            datepicker-autoselect-today={true}
             className="flex items-center"
           >
             <div className="relative">
@@ -96,8 +103,8 @@ const DateRangePickerComponent = React.forwardRef(
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
-                datepicker-buttons
-                datepicker-autoselect-today
+                datepicker-buttons={true}
+                datepicker-autoselect-today={true}
                 id="start"
                 name="start"
                 type="text"
@@ -105,8 +112,10 @@ const DateRangePickerComponent = React.forwardRef(
                 onBlur={onBlur}
                 disabled={disabled}
                 value={from}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                // eslint-disable-next-line max-len
+                className={`${fieldStyles}bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder={placeholderStart}
+                ref={ref}
               />
             </div>
             <span className="mx-4 text-gray-500">to</span>
@@ -126,8 +135,8 @@ const DateRangePickerComponent = React.forwardRef(
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
-                datepicker-buttons
-                datepicker-autoselect-today
+                datepicker-buttons={true}
+                datepicker-autoselect-today={true}
                 id="end"
                 name="end"
                 type="text"
@@ -135,8 +144,10 @@ const DateRangePickerComponent = React.forwardRef(
                 onBlur={onBlur}
                 disabled={disabled}
                 value={to}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                // eslint-disable-next-line max-len
+                className={`${fieldStyles}bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder={placeholderEnd}
+                ref={ref}
               />
             </div>
           </div>
@@ -146,6 +157,15 @@ const DateRangePickerComponent = React.forwardRef(
     );
   }
 );
+
+DateRangePickerComponent.defaultProps = {
+  from: '',
+  to: '',
+  placeholderStart: 'Select start',
+  placeholderEnd: 'Select end',
+  onFromDateSelected: () => {},
+  onToDateSelected: () => {},
+};
 
 export type { DateRangePickerProps };
 export { DateRangePickerComponent };

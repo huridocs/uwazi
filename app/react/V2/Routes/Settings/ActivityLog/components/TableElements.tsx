@@ -46,30 +46,33 @@ const ViewCell = ({ cell, column }: CellContext<ActivityLogEntryType, string>) =
 
 const getActivityLogColumns = (setSelectedEntry: any) => [
   columnHelper.accessor('method', {
-    header: ActionHeader,
     cell: ActionCell,
-    meta: { headerClassName: 'w-0 text-center' },
+    meta: { headerClassName: 'text-center w-1/12' },
   }),
   columnHelper.accessor('username', {
     header: UserHeader,
     cell: UserCell,
-    meta: { headerClassName: 'w-0 text-center' },
+    meta: { headerClassName: 'text-center w-2/12' },
   }),
   columnHelper.accessor('semantic', {
     header: DescriptionHeader,
     cell: DescriptionCell,
     enableSorting: false,
-    meta: { headerClassName: 'w-0 text-center' },
+    meta: { headerClassName: 'text-center w-7/12' },
   }),
   columnHelper.accessor('time', {
     header: TimeHeader,
     cell: TimeCell,
-    meta: { headerClassName: 'w-0 text-center' },
+    meta: { headerClassName: 'text-center w-1/12' },
   }),
   columnHelper.accessor('_id', {
     header: () => null,
     cell: ViewCell,
-    meta: { action: setSelectedEntry, headerClassName: 'hidden' },
+    meta: {
+      action: setSelectedEntry,
+      headerClassName: 'sr-only invisible bg-gray-50 w-1/12',
+      contentClassName: 'text-center w-1/12',
+    },
   }),
 ];
 

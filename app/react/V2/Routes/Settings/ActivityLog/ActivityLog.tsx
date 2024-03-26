@@ -23,6 +23,9 @@ import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
+import { useRecoilValue } from 'recoil';
+import { ClientSettings } from 'app/apiResponseTypes';
+import { settingsAtom, translationsAtom } from 'app/V2/atoms';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
 
@@ -34,7 +37,6 @@ interface LoaderData {
   page: number;
 }
 
-type searchParam = 'username' | 'search' | 'from' | 'to' | 'sort' | 'order' | 'page';
 const sortingParams = ['method', 'time', 'username', 'url'];
 
 interface ActivityLogSearchParams {
@@ -115,20 +117,15 @@ interface ActivityLogSearch {
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<ActivityLogEntryType | null>(null);
   const [showSidePanel, setShowSidePanel] = useState(false);
+  const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
+  const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
-  const {
-    from,
-    to,
-    sort,
-    order,
-    page = 1,
-    limit = ITEMS_PER_PAGE,
-  } = searchedParams;
+  const { from, to, sort, order, page = 1, limit = ITEMS_PER_PAGE } = searchedParams;
   const {
     register,
     watch,
@@ -225,11 +222,12 @@ const ActivityLog = () => {
                 }}
               />
               <DateRangePicker
+                dateFormat={dateFormat}
+                language={locale}
                 from={from}
                 to={to}
                 placeholderStart="From"
                 placeholderEnd="To"
-                language="en-es"
                 labelToday="today"
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear="clear"

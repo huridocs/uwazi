@@ -4,7 +4,7 @@ import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { Provider } from 'react-redux';
 import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
-import { settingsAtom, templatesAtom } from './V2/atoms';
+import { settingsAtom, templatesAtom, translationsAtom } from './V2/atoms';
 import { store } from './store';
 
 const reduxState = store?.getState();
@@ -17,6 +17,7 @@ const router = createBrowserRouter(getRoutes(settings, reduxState?.user.get('_id
 const recoilGlobalState = ({ set }: MutableSnapshot) => {
   set(settingsAtom, settings);
   set(templatesAtom, templates);
+  set(translationsAtom, { locale: reduxState?.locale || 'en' });
 };
 
 const App = () => (
