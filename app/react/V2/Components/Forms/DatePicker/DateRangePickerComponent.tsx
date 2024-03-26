@@ -1,4 +1,4 @@
-import React, { useEffect, Ref, ChangeEventHandler, useRef } from 'react';
+import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -39,8 +39,13 @@ const DateRangePickerComponent = React.forwardRef(
       onToDateSelected = () => {},
       onBlur = () => {},
     }: DateRangePickerProps,
-    ref: Ref<any>
+    forwardedRef: Ref<HTMLInputElement | null>
   ) => {
+    const divRef = useRef(null);
+    const fromRef = useRef(null);
+    const toRef = useRef(null);
+    useImperativeHandle(forwardedRef, () => divRef.current);
+
     const datePickerFormat = dateFormat.toLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
@@ -50,27 +55,30 @@ const DateRangePickerComponent = React.forwardRef(
     const locale = validateLocale(language);
 
     useEffect(() => {
-      const datePickerEl = document.getElementById('dateRangePickerId');
       Object.assign(Datepicker.locales, {
         [locale]: {
           ...datePickerOptionsByLocale(locale, labelToday, labelClear),
           format: datePickerFormat,
         },
       });
-      const startEl = document.getElementById('start');
-      const endEl = document.getElementById('end');
+      const startEl = fromRef.current;
+      const endEl = toRef.current;
 
-      instance.current = new DateRangePicker(datePickerEl, {
+      instance.current = new DateRangePicker(divRef.current, {
         inputs: [startEl, endEl],
         container: '#tw-container',
         language: locale,
         locales: { [locale]: Datepicker.locales[locale] },
         Mode: 1,
+        todayBtnMode: 1,
         todayBtn: true,
         clearBtn: true,
         autohide: true,
         format: datePickerFormat,
       });
+      return () => {
+        instance.current.hide();
+      };
     }, [locale, labelToday, labelClear, datePickerFormat]);
 
     return (
@@ -81,7 +89,8 @@ const DateRangePickerComponent = React.forwardRef(
             {label}
           </Label>
           <div
-            id="dateRangePickerId"
+            ref={divRef}
+            id={id}
             date-rangepicker={true}
             datepicker-buttons={true}
             datepicker-autoselect-today={true}
@@ -115,7 +124,7 @@ const DateRangePickerComponent = React.forwardRef(
                 // eslint-disable-next-line max-len
                 className={`${fieldStyles}bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder={placeholderStart}
-                ref={ref}
+                ref={fromRef}
               />
             </div>
             <span className="mx-4 text-gray-500">to</span>
@@ -147,7 +156,7 @@ const DateRangePickerComponent = React.forwardRef(
                 // eslint-disable-next-line max-len
                 className={`${fieldStyles}bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
                 placeholder={placeholderEnd}
-                ref={ref}
+                ref={toRef}
               />
             </div>
           </div>

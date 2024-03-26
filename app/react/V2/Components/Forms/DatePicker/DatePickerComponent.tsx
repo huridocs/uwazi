@@ -1,4 +1,4 @@
-import React, { useEffect, Ref, ChangeEventHandler, useRef } from 'react';
+import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
 import moment from 'moment';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
@@ -95,8 +95,11 @@ const DatePickerComponent = React.forwardRef(
       onBlur = () => {},
       clearFieldAction = () => {},
     }: DatePickerProps,
-    ref: Ref<any>
+    forwardedRef: Ref<HTMLInputElement | null>
   ) => {
+    const ref: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
+    useImperativeHandle(forwardedRef, () => ref.current);
+
     const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
@@ -107,14 +110,13 @@ const DatePickerComponent = React.forwardRef(
     const locale = validateLocale(language);
 
     useEffect(() => {
-      const datePickerEl = document?.getElementById(id);
       Object.assign(Datepicker.locales, {
         [locale]: {
           ...datePickerOptionsByLocale(locale, labelToday, labelClear),
           format: datePickerFormat,
         },
       });
-      instance.current = new Datepicker(datePickerEl, {
+      instance.current = new Datepicker(ref.current, {
         container: '#tw-container',
         language: locale,
         labelToday,
@@ -127,6 +129,9 @@ const DatePickerComponent = React.forwardRef(
         clearFieldAction,
         format: datePickerFormat,
       });
+      return () => {
+        instance.current.hide();
+      };
     }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
 
     return (
