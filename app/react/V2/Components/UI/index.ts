@@ -13,6 +13,7 @@ export { ConfirmationModal } from './ConfirmationModal';
 export { Card } from './Card';
 export { CopyValueInput } from './CopyValueInput';
 export { Paginator } from './Paginator';
+export { PaginationState } from './PaginationState';
 export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
 

@@ -18,7 +18,7 @@ import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { InputField, DateRangePicker } from 'app/V2/Components/Forms';
-import { Paginator, Table } from 'app/V2/Components/UI';
+import { PaginationState, Paginator, Table } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
@@ -94,7 +94,8 @@ const activityLogLoader =
       return { error: activityLogList.message };
     }
     const totalPages = Math.ceil(
-      (activityLogList.rows.length + activityLogList.remainingRows) / params.limit
+      (Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows) /
+        params.limit
     );
 
     return {
@@ -251,11 +252,16 @@ const ActivityLog = () => {
             setSorting={setSorting}
             footer={
               <div className="flex justify-between h-6">
-                <div className="">total pages</div>
+                <PaginationState
+                  page={Number(page)}
+                  size={limit}
+                  totalPages={totalPages}
+                  currentLength={activityLogData.length}
+                />
                 <div>
                   <Paginator
                     totalPages={totalPages}
-                    currentPage={page}
+                    currentPage={Number(page)}
                     buildUrl={(pageTo: string | number) => {
                       const updatedParams = { ...searchedParams, page: pageTo, limit };
                       return updateSearchUrl(updatedParams);
