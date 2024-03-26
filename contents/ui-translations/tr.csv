@@ -57,6 +57,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -130,6 +131,7 @@ Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
 Collaborator,Katkı Sunan
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Koleksiyon
 Collection Name,Collection Name
@@ -275,6 +277,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editör
 editor,Editör
+Editors,Editors
 Email,E-posta
 Email address,E-posta adresi
 Email is required,E-posta gerekli
@@ -824,10 +827,11 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,bileşenleri hakkında daha fazla bilgi edinmek için.
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
 Tools,Araçlar
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Çevir
