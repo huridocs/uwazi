@@ -28,4 +28,9 @@ const saveLinks = async (links: ClientSettingsLinkSchema[], headers?: IncomingHt
   return api.post('settings/links', requestParams).then((response: any) => response.json);
 };
 
-export { get, save, getLinks, saveLinks };
+const getStats = async (headers?: IncomingHttpHeaders) => {
+  const requestParams = new RequestParams({}, headers);
+  return api.get('stats', requestParams).then((response: any) => response.json);
+};
+
+export { get, save, getLinks, saveLinks, getStats };

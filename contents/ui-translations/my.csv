@@ -57,6 +57,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ကပ်လျက်ရှိသော ပထဝီတည်နေရာ အချင်းအရာမျာသည် မြေပုံတစ်ခုတည်းတွင် တပေါင်းတည်း ပါဝင်ပါမည်
 Admin,အက်မင်
 Administrators and Editors,အက်မင်များနှင့် အယ်ဒီတာများ
+Admins,Admins
 ALL,အားလုံး
 All,အားလုံး
 "All changes will be lost, are you sure you want to proceed?",အပြောင်းအလဲအားလုံးကို ဆုံးရှုံးပါမည်၊ ရှေ့ဆက်လိုသည်မှာ သေချာပါသလား။
@@ -130,6 +131,7 @@ Click here,ဒီမှာ နှိပ်ပါ
 Click to fill,ဖြည့်ရန် နှိပ်ပါ
 Close,ပိတ်ရန်
 Collaborator,ပူးပေါင်းဆောင်ရွက်သူ
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,စုစည်းမှု
 Collection Name,Collection Name
@@ -275,6 +277,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,အယ်ဒီတာ
 editor,အယ်ဒီတာ
+Editors,Editors
 Email,အီးမေးလ်
 Email address,အီးမေးလ် လိပ်စာ
 Email is required,အီးမေးလ် လိုအပ်သည်
@@ -824,10 +827,11 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,အစိတ်အပိုင်းများအကြောင်း ပိုမိုလေ့လာရန်။
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
 Tools,ကိရိယာများ
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,ဘာသာပြန်ရန်

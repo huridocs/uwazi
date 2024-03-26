@@ -57,6 +57,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -129,6 +130,7 @@ Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
 Collaborator,Collaborateur
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
@@ -274,6 +276,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Éditeur
 editor,Éditeur
+Editors,Editors
 Email,E-mail
 Email address,Adresse e-mail
 Email is required,L'email est obligatoire
@@ -823,10 +826,11 @@ to learn how to add and configure a contact form on a webpage.,to learn how to a
 to learn more about the components.,Pour en savoir plus sur les composants.
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
 Tools,Outils
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Traduire

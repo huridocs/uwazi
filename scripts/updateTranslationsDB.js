@@ -166,7 +166,7 @@ const checkCSVsIntegrity = async availableCSVs => {
 
 // eslint-disable-next-line max-statements
 const run = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
+  const url = config.DBHOST;
   await DB.connect(url, auth);
   const { db } = DB.connectionForDB(config.defaultTenant.dbName);
 
