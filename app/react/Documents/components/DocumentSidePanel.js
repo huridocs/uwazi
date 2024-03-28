@@ -342,7 +342,7 @@ class DocumentSidePanel extends Component {
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'references'))
                             }
-                            replaceNavigationHistory
+                            replacenavigationhistory="true"
                           >
                             <Icon icon="sitemap" />
                             <span className="connectionsNumber">{references.size}</span>
