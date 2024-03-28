@@ -77,6 +77,7 @@ const InputField = React.forwardRef(
             type={type}
             autoComplete={autoComplete}
             id={id}
+            onSelect={onChange}
             onChange={onChange}
             onBlur={onBlur}
             name={name}

@@ -6,13 +6,12 @@ import {
   LoaderFunction,
   useLoaderData,
   useLocation,
-  useNavigate,
   useSearchParams,
   createSearchParams,
 } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
-import { debounce, isUndefined, omitBy } from 'lodash';
+import _ from 'lodash';
 import { SortingState } from '@tanstack/react-table';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
@@ -34,6 +33,7 @@ const ITEMS_PER_PAGE = 100;
 interface LoaderData {
   activityLogData: ActivityLogEntryType[];
   totalPages: number;
+  total: number;
   page: number;
 }
 
@@ -121,11 +121,19 @@ const ActivityLog = () => {
   const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
-  const { from, to, sort, order, page = 1, limit = ITEMS_PER_PAGE } = searchedParams;
+  const {
+    from,
+    to,
+    sort,
+    order,
+    page = 1,
+    limit = ITEMS_PER_PAGE,
+    username,
+    search,
+  } = searchedParams;
   const {
     register,
     watch,
@@ -135,6 +143,10 @@ const ActivityLog = () => {
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
+    defaultValues: {
+      username,
+      search,
+    },
   });
 
   const { activityLogData, totalPages, total } = useLoaderData() as LoaderData;
@@ -144,8 +156,22 @@ const ActivityLog = () => {
     setSelectedEntry(null);
   };
 
-  const updateSearchUrl = (updatedParams: any) =>
-    `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
+  const updateSearch = (filters: any) => {
+    const filterPairs = _(filters).toPairs().sortBy(0).value();
+    const newFilters = createSearchParams(filterPairs);
+    if (newFilters.toString() !== searchParams.toString()) {
+      setSearchParams((prev: URLSearchParams) => {
+        filterPairs.forEach(([key, value]) => {
+          if (value !== undefined && value !== '') {
+            prev.set(key, value);
+          } else {
+            prev.delete(key);
+          }
+        });
+        return prev;
+      });
+    }
+  };
 
   useEffect(() => {
     const sortingProp = sorting?.[0]?.id;
@@ -153,18 +179,26 @@ const ActivityLog = () => {
     if (isFirstRender && (!sortingProp || (sortingProp === sort && sortingOrder === order))) {
       return;
     }
-    const updatedParams = { ...searchedParams, sort: sortingProp, order: sortingOrder };
-    navigate(updateSearchUrl(updatedParams));
+    updateSearch({ sort: sortingProp, order: sortingOrder });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
 
   const onSubmit = async (data: ActivityLogSearch) => {
-    const filters = omitBy(omitBy(data, isUndefined), val => val === '');
-    navigate(updateSearchUrl({ ...searchedParams, ...filters }));
+    updateSearch(data);
   };
 
-  const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
+  const debouncedChangeHandler = useMemo(
+    () => (handler: (_args?: any) => void) => _.debounce(handler, 500),
+    []
+  );
+
   const de = useRef<any>(null);
+
+  const handleInputSubmit =
+    (field: 'username' | 'search') => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(field, e.target.value);
+      handleSubmit(onSubmit);
+    };
 
   useEffect(() => {
     de.current?.cancel();
@@ -176,7 +210,8 @@ const ActivityLog = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSubmit, watch]);
 
-  const columns = getActivityLogColumns(setSelectedEntry);
+  const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
+
   return (
     <div
       className="tw-content"
@@ -186,10 +221,13 @@ const ActivityLog = () => {
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body>
-          <form id="account-form">
+          <form
+            id="activity-filters-form mr-10"
+            onSubmit={handleSubmit(async data => onSubmit(data))}
+          >
             <div className="flex flex-row items-center gap-4 justify-items-stretch">
-              <h2 className="basis-1/6">
-                <Translate>Activity log</Translate>
+              <h2 className="w-40 p-4 text-base font-semibold text-left">
+                <Translate>Activity Log</Translate>
               </h2>
               <InputField
                 id="username"
@@ -197,30 +235,31 @@ const ActivityLog = () => {
                 className="basis-1/5"
                 hideLabel
                 placeholder="User"
+                hasErrors={!!errors.username}
+                {...register('username')}
                 clearFieldAction={() => {
                   setValue('username', '');
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
-                hasErrors={!!errors.username}
-                {...register('username')}
-                onChange={e => {
-                  setValue('username', e.target.value);
-                  debouncedChangeHandler(handleSubmit(onSubmit));
-                }}
+                onChange={debouncedChangeHandler(handleInputSubmit('username'))}
+                onBlur={() => {}}
               />
               <InputField
                 id="search"
                 label="search"
                 hideLabel
-                className="basis-1/3"
-                hasErrors={!!errors.search}
+                className="basis-2/5"
                 placeholder={t('System', 'by IDs, methods, keywords, etc.', null, false)}
                 {...register('search')}
-                onChange={e => {
-                  setValue('search', e.target.value);
+                clearFieldAction={() => {
+                  setValue('search', '');
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
+                onChange={debouncedChangeHandler(handleInputSubmit('search'))}
+                hasErrors={!!errors.search}
+                onBlur={() => {}}
               />
+
               <DateRangePicker
                 dateFormat={dateFormat}
                 language={locale}
@@ -229,15 +268,21 @@ const ActivityLog = () => {
                 placeholderStart="From"
                 placeholderEnd="To"
                 labelToday="today"
+                className="basis-1/3"
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear="clear"
-                {...register('from')}
                 onFromDateSelected={e => {
                   setValue('from', e.target.value);
+                  if (to === undefined || to === '') {
+                    setValue('to', e.target.value);
+                  }
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onToDateSelected={e => {
                   setValue('to', e.target.value);
+                  if (from === undefined || from === '') {
+                    setValue('from', e.target.value);
+                  }
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
               />
@@ -246,7 +291,6 @@ const ActivityLog = () => {
           <Table<ActivityLogEntryType>
             columns={columns}
             data={activityLogData}
-            title={<Translate>Activity Log</Translate>}
             sorting={sorting}
             setSorting={setSorting}
             footer={
@@ -263,7 +307,7 @@ const ActivityLog = () => {
                     currentPage={Number(page)}
                     buildUrl={(pageTo: string | number) => {
                       const updatedParams = { ...searchedParams, page: pageTo, limit };
-                      return updateSearchUrl(updatedParams);
+                      return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
                     }}
                   />
                 </div>

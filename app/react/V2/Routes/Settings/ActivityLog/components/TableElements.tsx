@@ -1,5 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
+import moment from 'moment';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Pill, Button } from 'app/V2/Components/UI';
 import type { PillColor } from 'app/V2/Components/UI';
@@ -58,7 +59,17 @@ const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLog
   );
 };
 
-const TimeCell = () => <Translate>Timestamp</Translate>;
+const TimeCell =
+  (dateFormat: string) =>
+  ({ cell }: CellContext<ActivityLogEntryType, number>) => {
+    const date = moment(cell.getValue());
+    return (
+      <>
+        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>-
+        <span>{date.format('hh:mm A')}</span>
+      </>
+    );
+  };
 
 const ViewCell = ({ cell, column }: CellContext<ActivityLogEntryType, string>) => (
   <Button
@@ -66,11 +77,11 @@ const ViewCell = ({ cell, column }: CellContext<ActivityLogEntryType, string>) =
     className="leading-4"
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
   >
-    <Translate>Edit</Translate>
+    <Translate>View</Translate>
   </Button>
 );
 
-const getActivityLogColumns = (setSelectedEntry: any) => [
+const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
   columnHelper.accessor('method', {
     header: ActionHeader,
     cell: ActionCell,
@@ -85,12 +96,12 @@ const getActivityLogColumns = (setSelectedEntry: any) => [
     header: DescriptionHeader,
     cell: DescriptionCell,
     enableSorting: false,
-    meta: { headerClassName: 'text-center w-7/12' },
+    meta: { headerClassName: 'text-center w-6/12' },
   }),
   columnHelper.accessor('time', {
     header: TimeHeader,
-    cell: TimeCell,
-    meta: { headerClassName: 'text-center w-1/12' },
+    cell: TimeCell(dateFormat),
+    meta: { headerClassName: 'text-center w-2/12' },
   }),
   columnHelper.accessor('_id', {
     header: () => null,

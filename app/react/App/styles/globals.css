@@ -1980,6 +1980,10 @@ input:checked + .toggle-bg {
   margin-left: auto;
 }
 
+.mr-10 {
+  margin-right: 2.5rem;
+}
+
 .mr-2 {
   margin-right: 0.5rem;
 }
@@ -2322,6 +2326,10 @@ input:checked + .toggle-bg {
   width: 66.666667%;
 }
 
+.w-40 {
+  width: 10rem;
+}
+
 .w-5 {
   width: 1.25rem;
 }
@@ -2344,10 +2352,6 @@ input:checked + .toggle-bg {
 
 .w-7 {
   width: 1.75rem;
-}
-
-.w-7\/12 {
-  width: 58.333333%;
 }
 
 .w-72 {
@@ -2520,8 +2524,8 @@ input:checked + .toggle-bg {
   flex-basis: 20%;
 }
 
-.basis-1\/6 {
-  flex-basis: 16.666667%;
+.basis-2\/5 {
+  flex-basis: 40%;
 }
 
 .border-collapse {
@@ -4056,10 +4060,6 @@ input:checked + .toggle-bg {
 
 .pr-4 {
   padding-right: 1rem;
-}
-
-.ps-10 {
-  padding-inline-start: 2.5rem;
 }
 
 .ps-3 {
@@ -7261,4 +7261,16 @@ input:checked + .toggle-bg {
 
 .\[\&\>\*\]\:last\:border-b-0:last-child>* {
   border-bottom-width: 0px;
+}
+
+.\[\&\>div\>\*\:nth-child\(odd\)\]\:border-0>div>*:nth-child(odd) {
+  border-width: 0px;
+}
+
+.\[\&\>div\>\*\:nth-child\(odd\)\]\:bg-transparent>div>*:nth-child(odd) {
+  background-color: transparent;
+}
+
+.\[\&\>div\>\*\:nth-child\(odd\)\]\:pl-8>div>*:nth-child(odd) {
+  padding-left: 2rem;
 }
