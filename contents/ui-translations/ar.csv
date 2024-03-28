@@ -18,7 +18,9 @@ Action,عمل/ إجراء
 Activate,Activate
 Activated,Activated
 Active languages,اللغات النشطة
+Activity,Activity
 Activity log,سجل النشاطات
+Activity Log,سجل النشاطات
 Add,ضف
 Add / remove favorite,إضافة/ إزالة المفضلة
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -337,6 +339,7 @@ Flag,علم
 for,for
 Forgot Password?,هل نسيت كلمة المرور؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
+From,From
 From all templates,From all templates
 Full edit mode,وضع التحرير الكامل
 Full width,Full width
@@ -474,6 +477,7 @@ mismatched passwords,Passwords don't match
 Mixed access,وصول مختلط
 ML TOC,ML TOC
 Month,شهر
+Months,Months
 more options.,مزيد من الخيارات
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -819,12 +823,15 @@ This will delete the template and all relationship properties from other templat
 Threshold,حد
 Time,زمن
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,عنوان
+To,To
 "To bring you a better experience, this site uses cookies.",لكي تستمتع بتجربة أفضل، يستخدم هذا الموقع ملفات تعريف الارتباط
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,لمعرفة المزيد حول المكونات
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
+Today,Today
 Tools,الأدوات
 total entities,total entities
 Total files,Total files

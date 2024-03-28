@@ -254,7 +254,7 @@ const ActivityLog = () => {
                 label="search"
                 hideLabel
                 className="basis-2/5"
-                placeholder={t('System', 'by IDs, methods, keywords, etc.', null, false)}
+                placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
                 {...register('search')}
                 clearFieldAction={() => {
                   setValue('search', '');

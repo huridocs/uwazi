@@ -54,7 +54,7 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
     months: localeData.months(),
     monthsShort: localeData.monthsShort(),
     today: labelToday,
-    monthsTitle: t('System', 'Meses', null, false),
+    monthsTitle: t('System', 'Months', null, false),
     clear: labelClear,
     weekStart: localeData.firstDayOfWeek(),
     format: 'dd/mm/yyyy',
