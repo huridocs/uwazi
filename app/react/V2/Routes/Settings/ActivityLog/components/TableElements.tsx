@@ -14,13 +14,15 @@ const DescriptionHeader = () => <Translate>Description</Translate>;
 const TimeHeader = () => <Translate>Timestamp</Translate>;
 
 const columnHelper = createColumnHelper<ActivityLogEntryType>();
-type Methods = 'UPDATE' | 'DELETE' | 'CREATE' | 'RAW';
+type Methods = 'CREATE' | 'UPDATE' | 'DELETE' | 'RAW' | 'MIGRATE' | 'WARNING';
 
 const methodColors: Map<Methods, PillColor> = new Map([
+  ['CREATE', 'green'],
   ['UPDATE', 'blue'],
   ['DELETE', 'red'],
-  ['CREATE', 'green'],
   ['RAW', 'gray'],
+  ['MIGRATE', 'primary'],
+  ['WARNING', 'yellow'],
 ]);
 
 const ActionPill = ({ action, className = '' }: { action: string; className?: string }) => {
