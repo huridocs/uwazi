@@ -2,6 +2,7 @@
 import React from 'react';
 import moment from 'moment';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { Tooltip } from 'flowbite-react';
 import { Pill, Button } from 'app/V2/Components/UI';
 import type { PillColor } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -39,7 +40,17 @@ const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLog
   const semanticData = cell.getValue();
 
   return (
-    <>
+    <Tooltip
+      // eslint-disable-next-line react/style-prop-object
+      style="light"
+      content={
+        <>
+          <Translate>Query</Translate> {cell.row.original.query}
+          <Translate>Body</Translate> {cell.row.original.body}
+        </>
+      }
+      placement="top"
+    >
       {semanticData.action !== 'RAW' && (
         <div className="gap-5">
           {semanticData.description && (
@@ -55,7 +66,7 @@ const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLog
           <Translate>{cell.row.original.url}</Translate>
         </div>
       )}
-    </>
+    </Tooltip>
   );
 };
 
