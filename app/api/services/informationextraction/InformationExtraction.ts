@@ -120,15 +120,31 @@ class InformationExtraction {
 
         if (type === 'labeled_data' && propertyLabeledData) {
           const defaultTrainingLanguage = 'en';
-          data = {
-            ...data,
-            language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: file.propertyValue || propertyLabeledData.selection?.text,
-            label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
-              const { page, ...selection } = r;
-              return { ...selection, page_number: page };
-            }),
-          };
+          const { selection } = propertyLabeledData;
+          data.language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
+
+          if (selection && 'text' in selection) {
+            data = {
+              ...data,
+              label_text: file.propertyValue || selection?.text,
+              label_segments_boxes: selection?.selectionRectangles?.map(r => {
+                const { page, ...rectangle } = r;
+                return { ...rectangle, page_number: page };
+              }),
+            };
+          }
+
+          if (selection && 'values' in selection) {
+            const values = (
+              (file.propertyValue as { value: string; label: string }[]) ||
+              selection?.values ||
+              []
+            ).map(({ value, label }) => ({ id: value, label }));
+            data = {
+              ...data,
+              values,
+            };
+          }
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {

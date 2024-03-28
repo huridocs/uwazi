@@ -212,16 +212,31 @@ export interface ExtractedMetadataSchema {
   name?: string;
   timestamp?: string;
   deleteSelection?: boolean;
-  selection?: {
-    text?: string;
-    selectionRectangles?: {
-      top?: number;
-      left?: number;
-      width?: number;
-      height?: number;
-      page?: string;
-    }[];
-  };
+  selection?:
+    | {
+        text?: string;
+        selectionRectangles?: {
+          top?: number;
+          left?: number;
+          width?: number;
+          height?: number;
+          page?: string;
+        }[];
+      }
+    | {
+        values?: {
+          value?: string;
+          label?: string;
+          [k: string]: unknown | undefined;
+        }[];
+        selectionRectangles?: {
+          top?: number;
+          left?: number;
+          width?: number;
+          height?: number;
+          page?: string;
+        }[];
+      };
 }
 
 export type GeolocationSchema = {

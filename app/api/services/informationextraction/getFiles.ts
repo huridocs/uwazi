@@ -18,13 +18,15 @@ import languages from 'shared/languages';
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
 
+type PropertyValue = string | Array<{ value: string; label: string }>;
+
 interface FileWithAggregation {
   _id: ObjectIdSchema;
   segmentation: SegmentationType;
   entity: string;
   language: string;
   extractedMetadata: ExtractedMetadataSchema[];
-  propertyValue?: string;
+  propertyValue?: PropertyValue;
 }
 
 type FileEnforcedNotUndefined = {
@@ -32,7 +34,7 @@ type FileEnforcedNotUndefined = {
   filename: string;
   language: string;
   entity: string;
-  propertyValue?: string;
+  propertyValue?: PropertyValue;
 };
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
@@ -63,6 +65,7 @@ async function getSegmentedFilesIds() {
   return segmentations.filter(x => x.fileID).map(x => x.fileID);
 }
 
+// eslint-disable-next-line max-statements
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const entities = await entitiesModel.getUnrestricted(
     { template: { $in: templates } },
@@ -106,6 +109,14 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     const entity = indexedEntities[file.entity + fileLang];
     if (!entity?.metadata || !entity?.metadata[property]?.length) {
       return file;
+    }
+
+    if ((<string[]>[propertyTypes.select, propertyTypes.multiselect]).includes(type!)) {
+      const propertyValue = (entity.metadata[property] || []).map(({ value, label }) => ({
+        value: <string>value,
+        label: <string>label,
+      }));
+      return { ...file, propertyValue };
     }
 
     const [{ value }] = entity.metadata[property] || [{}];
