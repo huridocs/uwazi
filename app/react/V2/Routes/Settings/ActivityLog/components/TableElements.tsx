@@ -23,50 +23,65 @@ const methodColors: Map<Methods, PillColor> = new Map([
   ['RAW', 'gray'],
 ]);
 
-const ActionCell = ({ cell }: CellContext<ActivityLogEntryType, string>) => {
-  const color = methodColors.get(cell.row.original.semantic.action as Methods) || 'gray';
+const ActionPill = ({ action, className = '' }: { action: string; className?: string }) => {
+  const color = methodColors.get(action as Methods) || 'gray';
   return (
-    <Pill className="bg-blue-100" color={color}>
-      {cell.row.original.semantic.action}
+    <Pill className={`${className} bg-blue-100`} color={color}>
+      <Translate>{action}</Translate>
     </Pill>
   );
 };
+const ActionCell = ({ cell }: CellContext<ActivityLogEntryType, string>) => (
+  <ActionPill action={cell.row.original.semantic.action} />
+);
 
 const UserCell = ({ cell }: CellContext<ActivityLogEntryType, string>) => (
-  <span>{cell.getValue()}</span>
+  <span className="text-primary-700">{cell.getValue()}</span>
 );
 
 const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLogSemanticType>) => {
   const semanticData = cell.getValue();
 
   return (
-    <Tooltip
-      // eslint-disable-next-line react/style-prop-object
-      style="light"
-      content={
-        <>
-          <Translate>Query</Translate> {cell.row.original.query}
-          <Translate>Body</Translate> {cell.row.original.body}
-        </>
-      }
-      placement="top"
-    >
-      {semanticData.action !== 'RAW' && (
-        <div className="gap-5">
-          {semanticData.description && (
-            <Translate className="font-semibold">{semanticData.description}</Translate>
-          )}
-          {semanticData.name && <Translate>{semanticData.name}</Translate>}
-          {semanticData.extra && <Translate>{semanticData.extra}</Translate>}
-        </div>
-      )}
-      {semanticData.action === 'RAW' && (
-        <div className="gap-5">
-          <Translate className="font-semibold">{cell.row.original.method}</Translate>
-          <Translate>{cell.row.original.url}</Translate>
-        </div>
-      )}
-    </Tooltip>
+    <div className="flex">
+      <Tooltip
+        // eslint-disable-next-line react/style-prop-object
+        style="light"
+        className="max-w-lg min-w-20 max-h-64"
+        content={
+          <div className="flex-col">
+            <div className="w-full gap-4 max-h-16">
+              <Translate>Query</Translate>
+              <span className="block overflow-hidden text-ellipsis">{cell.row.original.query}</span>
+            </div>
+            <div className="w-full gap-4 max-h-48">
+              <Translate>Body</Translate>
+              <span className="block overflow-hidden text-ellipsis max-h-40">
+                {cell.row.original.body}
+              </span>
+            </div>
+          </div>
+        }
+      >
+        {semanticData.action !== 'RAW' && (
+          <div className="space-x-2">
+            {semanticData.description && (
+              <>
+                <Translate className="font-semibold">{semanticData.description}</Translate>&#58;
+              </>
+            )}
+            {semanticData.name && <Translate>{semanticData.name}</Translate>}
+            {semanticData.extra && <Translate>{semanticData.extra}</Translate>}
+          </div>
+        )}
+        {semanticData.action === 'RAW' && (
+          <div className="space-x-2">
+            <Translate className="font-semibold">{cell.row.original.method}</Translate>
+            <Translate>{cell.row.original.url}</Translate>
+          </div>
+        )}
+      </Tooltip>
+    </div>
   );
 };
 
@@ -76,8 +91,8 @@ const TimeCell =
     const date = moment(cell.getValue());
     return (
       <>
-        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>-
-        <span>{date.format('hh:mm A')}</span>
+        <span className="font-semibold">{date.format(dateFormat.toUpperCase())}</span>
+        <span className="font-medium">&nbsp;-&nbsp;{date.format('hh:mm A')}</span>
       </>
     );
   };
@@ -125,4 +140,4 @@ const getActivityLogColumns = (setSelectedEntry: any, dateFormat: string) => [
   }),
 ];
 
-export { getActivityLogColumns };
+export { getActivityLogColumns, ActionPill };

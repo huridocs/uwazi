@@ -12,7 +12,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
-import { SortingState } from '@tanstack/react-table';
+import { Row, SortingState } from '@tanstack/react-table';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -35,6 +35,7 @@ interface LoaderData {
   totalPages: number;
   total: number;
   page: number;
+  error?: {};
 }
 
 const sortingParams = ['method', 'time', 'username', 'url'];
@@ -91,7 +92,13 @@ const activityLogLoader =
     const params = getQueryParamsBySearchParams(searchParams);
     const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
     if (activityLogList.message !== undefined) {
-      return { error: activityLogList.message };
+      return {
+        error: activityLogList.message,
+        activityLogData: [],
+        totalPages: 0,
+        page: 0,
+        total: 0,
+      };
     }
     const total = Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows;
     const totalPages = Math.ceil(total / params.limit);
@@ -115,7 +122,7 @@ interface ActivityLogSearch {
 }
 
 const ActivityLog = () => {
-  const [selectedEntry, setSelectedEntry] = useState<ActivityLogEntryType | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
   const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -148,7 +155,7 @@ const ActivityLog = () => {
     },
   });
 
-  const { activityLogData, totalPages, total } = useLoaderData() as LoaderData;
+  const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
   const onCloseSidePanel = () => {
     setSelectedEntry(null);
@@ -218,7 +225,7 @@ const ActivityLog = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
-        <SettingsContent.Body>
+        <SettingsContent.Body className="space-y-3">
           <form
             id="activity-filters-form mr-10"
             onSubmit={handleSubmit(async data => onSubmit(data))}
@@ -232,7 +239,7 @@ const ActivityLog = () => {
                 label="User"
                 className="basis-1/5"
                 hideLabel
-                placeholder="User"
+                placeholder={t('System', 'User', null, false)}
                 hasErrors={!!errors.username}
                 {...register('username')}
                 clearFieldAction={() => {
@@ -263,12 +270,12 @@ const ActivityLog = () => {
                 language={locale}
                 from={from}
                 to={to}
-                placeholderStart="From"
-                placeholderEnd="To"
-                labelToday="today"
+                placeholderStart={t('System', 'From', null, false)}
+                placeholderEnd={t('System', 'To', null, false)}
+                labelToday={t('System', 'Today', null, false)}
                 className="basis-1/3"
                 hasErrors={!!errors.from || !!errors.to}
-                labelClear="clear"
+                labelClear={t('System', 'Clear', null, false)}
                 onFromDateSelected={e => {
                   setValue('from', e.target.value);
                   if (to === undefined || to === '') {
@@ -286,32 +293,34 @@ const ActivityLog = () => {
               />
             </div>
           </form>
-          <Table<ActivityLogEntryType>
-            columns={columns}
-            data={activityLogData}
-            sorting={sorting}
-            setSorting={setSorting}
-            footer={
-              <div className="flex justify-between h-6">
-                <PaginationState
-                  page={Number(page)}
-                  size={limit}
-                  total={total}
-                  currentLength={activityLogData.length}
-                />
-                <div>
-                  <Paginator
-                    totalPages={totalPages}
-                    currentPage={Number(page)}
-                    buildUrl={(pageTo: string | number) => {
-                      const updatedParams = { ...searchedParams, page: pageTo, limit };
-                      return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
-                    }}
+          {error === undefined && (
+            <Table<ActivityLogEntryType>
+              columns={columns}
+              data={activityLogData}
+              sorting={sorting}
+              setSorting={setSorting}
+              footer={
+                <div className="flex justify-between h-6">
+                  <PaginationState
+                    page={Number(page)}
+                    size={limit}
+                    total={total}
+                    currentLength={activityLogData.length}
                   />
+                  <div>
+                    <Paginator
+                      totalPages={totalPages}
+                      currentPage={Number(page)}
+                      buildUrl={(pageTo: string | number) => {
+                        const updatedParams = { ...searchedParams, page: pageTo, limit };
+                        return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            }
-          />
+              }
+            />
+          )}
           {selectedEntry && (
             <ActivityLogSidePanel
               selectedEntry={selectedEntry.original}

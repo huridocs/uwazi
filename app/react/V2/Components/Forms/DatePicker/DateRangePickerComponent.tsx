@@ -101,9 +101,9 @@ const DateRangePickerComponent = React.forwardRef(
           <div
             ref={divRef}
             id={id}
-            date-rangepicker={true}
-            datepicker-buttons={true}
-            datepicker-autoselect-today={true}
+            date-rangepicker="true"
+            datepicker-buttons="true"
+            datepicker-autoselect-today="true"
             className="flex items-center gap-4"
           >
             <div
