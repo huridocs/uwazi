@@ -116,7 +116,6 @@ interface ActivityLogSearch {
 
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<ActivityLogEntryType | null>(null);
-  const [showSidePanel, setShowSidePanel] = useState(false);
   const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
   const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -152,7 +151,6 @@ const ActivityLog = () => {
   const { activityLogData, totalPages, total } = useLoaderData() as LoaderData;
 
   const onCloseSidePanel = () => {
-    setShowSidePanel(false);
     setSelectedEntry(null);
   };
 
@@ -316,8 +314,8 @@ const ActivityLog = () => {
           />
           {selectedEntry && (
             <ActivityLogSidePanel
-              selectedEntry={selectedEntry}
-              isOpen={showSidePanel}
+              selectedEntry={selectedEntry.original}
+              isOpen={selectedEntry !== null}
               onClose={onCloseSidePanel}
             />
           )}
