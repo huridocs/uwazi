@@ -160,7 +160,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           </div>
         </Card>
       </form>
-      <div className="absolute bottom-0 flex w-full gap-2">
+      <div className="absolute bottom-0 flex w-full gap-2 px-4 py-3">
         <Button
           styling="light"
           onClick={closePanel}
