@@ -4,7 +4,7 @@ import { CurrentLocationLink } from '../CurrentLocationLink';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: () => ({ pathname: 'pathanem', query: { param: 'value', param2: 'value2' } }),
+  useLocation: () => ({ pathname: 'pathanem', search: 'param=value&param2=value2' }),
 }));
 
 describe('Link', () => {

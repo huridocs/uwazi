@@ -4,7 +4,7 @@ exports[`Link should overwrite url query with query params passed (without mutat
 <Link
   className="className"
   prop="value"
-  to="pathanem?param=value&param2=new%20value&test=test"
+  to="pathanem?param=value&param2=new+value&test=test"
 >
   text
 </Link>
