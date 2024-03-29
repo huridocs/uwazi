@@ -103,8 +103,8 @@ const DatePickerComponent = React.forwardRef(
     const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${className} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
-      : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+        `${className || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      : `${className || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language);

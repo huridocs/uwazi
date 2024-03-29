@@ -28,7 +28,7 @@ const methodColors: Map<Methods, PillColor> = new Map([
 const ActionPill = ({ action, className = '' }: { action: string; className?: string }) => {
   const color = methodColors.get(action as Methods) || 'gray';
   return (
-    <Pill className={`${className} bg-blue-100`} color={color}>
+    <Pill className={`${className || ''} bg-blue-100`} color={color}>
       <Translate>{action}</Translate>
     </Pill>
   );

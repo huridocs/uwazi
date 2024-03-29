@@ -49,8 +49,8 @@ const DateRangePickerComponent = React.forwardRef(
 
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${className} bg-gray-50 border border-gray-300`
-      : `${className} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+        `${className || ''} bg-gray-50 border border-gray-300`
+      : `${className || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
     const instance = useRef<DateRangePicker | null>(null);
     const locale = validateLocale(language);
 
@@ -130,7 +130,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="start"
                 name="start"
                 type="text"
-                onChange={onFromDateSelected}
+                onSelect={onFromDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={from}
@@ -168,7 +168,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="end"
                 name="end"
                 type="text"
-                onChange={onToDateSelected}
+                onSelect={onToDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={to}
