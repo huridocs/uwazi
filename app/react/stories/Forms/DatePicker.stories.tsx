@@ -28,6 +28,7 @@ const Primary: Story = {
     <Provider store={createStore()}>
       <RecoilRoot initializeState={recoilGlobalState()}>
         <DatePicker
+          name={args.name}
           label={args.label}
           language={args.language}
           labelToday={args.labelToday}
@@ -48,6 +49,7 @@ const Primary: Story = {
 const Basic: Story = {
   ...Primary,
   args: {
+    name: 'dateField',
     label: 'Fecha',
     language: 'es',
     dateFormat: 'dd-mm-yyyy',
