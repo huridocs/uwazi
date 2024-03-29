@@ -134,7 +134,6 @@ module.exports = {
       'never',
       {
         always: [
-          'no-translate',
           'date-rangepicker',
           'datepicker',
           'inline-datepicker',
