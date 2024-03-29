@@ -4249,6 +4249,10 @@ input:checked + .toggle-bg {
   font-style: italic;
 }
 
+.leading-3 {
+  line-height: .75rem;
+}
+
 .leading-4 {
   line-height: 1rem;
 }

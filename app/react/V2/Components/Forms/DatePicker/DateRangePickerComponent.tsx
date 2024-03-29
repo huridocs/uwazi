@@ -93,7 +93,7 @@ const DateRangePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className="relative tw-datepicker" />
+        <div id="tw-container" className="relative tw-datepicker" data-test-id={id} />
         <div>
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
