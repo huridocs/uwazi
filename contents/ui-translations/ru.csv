@@ -18,7 +18,9 @@ Action,Действие
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,активности
 Activity log,Журнал активности
+Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -335,6 +337,7 @@ Flag,Флажок
 for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
+From,From
 From all templates,From all templates
 Full edit mode,Режим полного редактирования
 Full width,Full width
@@ -472,6 +475,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Month,Месяц
+Months,Months
 more options.,больше опций.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -817,12 +821,15 @@ This will delete the template and all relationship properties from other templat
 Threshold,Порог
 Time,Время
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Заголовок
+To,To
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,"для того, чтобы узнать больше о компонентах."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
+Today,Today
 Tools,Инструменты
 total entities,total entities
 Total files,Total files

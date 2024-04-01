@@ -10738,6 +10738,13 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
+flowbite-datepicker@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/flowbite-datepicker/-/flowbite-datepicker-1.2.6.tgz#97fbd46496ec72f0322e5ea4d3d2462437ec1c0e"
+  integrity sha512-UbU/xXs9HFiwWfL4M1vpwIo8EpS0NUQSOvYnp0Z9u3N118nU7lPFGoUOq7su9d0aOJy9FssXzx1SZwN8MXhE1g==
+  dependencies:
+    flowbite "^2.0.0"
+
 flowbite-react@^0.7.2:
   version "0.7.2"
   resolved "https://registry.yarnpkg.com/flowbite-react/-/flowbite-react-0.7.2.tgz#d7efd218b7d5ee0987c4bf9c2e250fbbb80b7117"

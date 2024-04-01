@@ -1,0 +1,44 @@
+exports[`Activity log > should list the last activity log entries #0`] = `
+<span
+  class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
+  data-testid="pill-comp"
+  ><span class="translation">UPDATE</span></span
+>
+`;
+
+exports[`Activity log > should list the last activity log entries #1`] = `
+<span class="text-primary-700">editor</span>
+`;
+
+exports[`Activity log > should list the last activity log entries #2`] = `
+<div class="w-fit" data-testid="flowbite-tooltip-target">
+  <div class="space-x-2">
+    <span class="translation font-semibold">Updated user</span>:<span
+      class="translation"
+      >editor (58ada34d299e82674854510e)</span
+    >
+  </div>
+</div>
+`;
+
+exports[`Activity log > should list the last activity log entries #3`] = `
+<span
+  class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-green-100 text-green-800"
+  data-testid="pill-comp"
+  ><span class="translation">CREATE</span></span
+>
+`;
+
+exports[`Activity log > should list the last activity log entries #4`] = `
+<span class="text-primary-700">editor</span>
+`;
+
+exports[`Activity log > should list the last activity log entries #5`] = `
+<div class="w-fit" data-testid="flowbite-tooltip-target">
+  <div class="space-x-2">
+    <span class="translation font-semibold"
+      >Two-factor authentication secret</span
+    >:
+  </div>
+</div>
+`;

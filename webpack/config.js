@@ -78,7 +78,10 @@ module.exports = production => {
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
-          exclude: [path.resolve(__dirname, '../node_modules/monaco-editor/min/vs')],
+          exclude: [
+            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
+            path.resolve(__dirname, '../node_modules/flowbite/dist'),
+          ],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -102,6 +105,29 @@ module.exports = production => {
           resolve: {
             fullySpecified: false,
           },
+        },
+        {
+          test: /flowbite\.min\.css$/,
+          include: [path.join(rootPath, 'node_modules/flowbite/dist')],
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: { import: true, url: false, sourceMap: true, esModule: true },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: {
+                    'postcss-prefix-selector': {
+                      prefix: '.tw-datepicker',
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
       ],
     },
