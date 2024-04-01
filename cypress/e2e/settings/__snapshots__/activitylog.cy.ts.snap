@@ -1,117 +1,44 @@
 exports[`Activity log > should list the last activity log entries #0`] = `
-<td class=" px-6  py-2 ">
-  <span
-    class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
-    data-testid="pill-comp"
-    ><span class="translation">UPDATE</span></span
-  >
-</td>
+<span
+  class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
+  data-testid="pill-comp"
+  ><span class="translation">UPDATE</span></span
+>
 `;
 
 exports[`Activity log > should list the last activity log entries #1`] = `
-<td class=" px-6  py-2 "><span class="text-primary-700">editor</span></td>
+<span class="text-primary-700">editor</span>
 `;
 
 exports[`Activity log > should list the last activity log entries #2`] = `
-<td class=" px-6  py-2 ">
-  <div class="flex">
-    <div class="w-fit" data-testid="flowbite-tooltip-target">
-      <div class="space-x-2">
-        <span class="translation font-semibold">Updated user</span>:<span
-          class="translation"
-          >editor (58ada34d299e82674854510e)</span
-        >
-      </div>
-    </div>
-    <div
-      data-testid="flowbite-tooltip"
-      tabindex="-1"
-      class="absolute inline-block z-10 rounded-lg py-2 px-3 text-sm font-medium shadow-sm transition-opacity duration-300 invisible opacity-0 border border-gray-200 bg-white text-gray-900 max-w-lg min-w-20 max-h-64"
-      id=":r0:"
-      role="tooltip"
-      style="position: absolute; top: 87.4686px; left: 206.587px;"
+<div class="w-fit" data-testid="flowbite-tooltip-target">
+  <div class="space-x-2">
+    <span class="translation font-semibold">Updated user</span>:<span
+      class="translation"
+      >editor (58ada34d299e82674854510e)</span
     >
-      <div class="relative z-20">
-        <div class="flex-col">
-          <div class="w-full gap-4 max-h-16">
-            <span class="translation">Query</span
-            ><span class="block overflow-hidden text-ellipsis">{}</span>
-          </div>
-          <div class="w-full gap-4 max-h-48">
-            <span class="translation">Body</span
-            ><span class="block overflow-hidden text-ellipsis max-h-40"
-              >{"_id":"58ada34d299e82674854510e","username":"editor","__v":0,"role":"editor","groups":[{"_id":"5fda2b675917fe58048a88f4","name":"Activistas"},{"_id":"5fda2b6f5917fe58048a88f6","name":"Asesores
-              legales"}],"email":"editor@uwazi.com"}</span
-            >
-          </div>
-        </div>
-      </div>
-      <div
-        class="absolute z-10 h-2 w-2 rotate-45 bg-white"
-        data-testid="flowbite-tooltip-arrow"
-        style="top: -4px; left: 250.506px;"
-      >
-        &nbsp;
-      </div>
-    </div>
   </div>
-</td>
+</div>
 `;
 
 exports[`Activity log > should list the last activity log entries #3`] = `
-<td class=" px-6  py-2 ">
-  <span
-    class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-green-100 text-green-800"
-    data-testid="pill-comp"
-    ><span class="translation">CREATE</span></span
-  >
-</td>
+<span
+  class=" bg-blue-100 px-2.5 py-1 rounded-md text-xs bg-green-100 text-green-800"
+  data-testid="pill-comp"
+  ><span class="translation">CREATE</span></span
+>
 `;
 
 exports[`Activity log > should list the last activity log entries #4`] = `
-<td class=" px-6  py-2 "><span class="text-primary-700">editor</span></td>
+<span class="text-primary-700">editor</span>
 `;
 
 exports[`Activity log > should list the last activity log entries #5`] = `
-<td class=" px-6  py-2 ">
-  <div class="flex">
-    <div class="w-fit" data-testid="flowbite-tooltip-target">
-      <div class="space-x-2">
-        <span class="translation font-semibold"
-          >Two-factor authentication secret</span
-        >:
-      </div>
-    </div>
-    <div
-      data-testid="flowbite-tooltip"
-      tabindex="-1"
-      class="absolute inline-block z-10 rounded-lg py-2 px-3 text-sm font-medium shadow-sm transition-opacity duration-300 invisible opacity-0 border border-gray-200 bg-white text-gray-900 max-w-lg min-w-20 max-h-64"
-      id=":r2:"
-      role="tooltip"
-      style="position: absolute; top: 10.2185px; left: 361.744px;"
-    >
-      <div class="relative z-20">
-        <div class="flex-col">
-          <div class="w-full gap-4 max-h-16">
-            <span class="translation">Query</span
-            ><span class="block overflow-hidden text-ellipsis">{}</span>
-          </div>
-          <div class="w-full gap-4 max-h-48">
-            <span class="translation">Body</span
-            ><span class="block overflow-hidden text-ellipsis max-h-40"
-              >{}</span
-            >
-          </div>
-        </div>
-      </div>
-      <div
-        class="absolute z-10 h-2 w-2 rotate-45 bg-white"
-        data-testid="flowbite-tooltip-arrow"
-        style="bottom: -4px; left: 35.0059px;"
-      >
-        &nbsp;
-      </div>
-    </div>
+<div class="w-fit" data-testid="flowbite-tooltip-target">
+  <div class="space-x-2">
+    <span class="translation font-semibold"
+      >Two-factor authentication secret</span
+    >:
   </div>
-</td>
+</div>
 `;
