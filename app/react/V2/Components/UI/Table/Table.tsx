@@ -100,7 +100,10 @@ const Table = <T,>({
       return;
     }
 
-    const sorted = table.getRowModel().rows.map(row => row.original);
+    const sorted = table
+      .getRowModel()
+      .rows.filter(row => !row.parentId)
+      .map(row => row.original);
     onChange(sorted);
     setSortedChanged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -119,7 +122,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="overflow-x-auto relative rounded-md border border-gray-50 shadow-sm">
+    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
