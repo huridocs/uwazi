@@ -17,7 +17,7 @@ import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Button, Paginator, Table } from 'V2/Components/UI';
+import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { ClientTemplateSchema } from 'app/istore';
@@ -162,26 +162,6 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
-  const showPageNumbers = () => {
-    const page = searchParams.has('page') ? Number(searchParams.get('page')) : 1;
-    const from = (page - 1) * SUGGESTIONS_PER_PAGE + 1;
-    return (
-      <div className="text-sm font-semibold text-center text-gray-900">
-        <span className="font-light text-gray-500">
-          <Translate>Showing</Translate>
-        </span>
-        &nbsp;
-        {from}-{from + currentSuggestions.length - 1}
-        &nbsp;
-        <span className="font-light text-gray-500">
-          <Translate>of</Translate>
-        </span>
-        &nbsp;
-        {totalPages}
-      </div>
-    );
-  };
-
   const openPDFSidepanel = (selectedSuggestion: EntitySuggestionType) => {
     setSidepanelSuggestion(selectedSuggestion);
     setSidepanel('pdf');
@@ -226,7 +206,12 @@ const IXSuggestions = () => {
             onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
-                <div className="">{showPageNumbers()}</div>
+                <PaginationState
+                  page={Number(searchParams.get('page') || 1)}
+                  size={SUGGESTIONS_PER_PAGE}
+                  total={status.data?.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  currentLength={currentSuggestions.length}
+                />
                 <div>
                   <Paginator
                     totalPages={totalPages}
@@ -246,7 +231,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -274,7 +259,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"

@@ -20,6 +20,7 @@ interface InputFieldProps {
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -41,6 +42,7 @@ const InputField = React.forwardRef(
       name = '',
       clearFieldAction,
       onChange = () => {},
+      onSelect = () => {},
       onBlur = () => {},
     }: InputFieldProps,
     ref: Ref<any>
@@ -77,6 +79,7 @@ const InputField = React.forwardRef(
             type={type}
             autoComplete={autoComplete}
             id={id}
+            onSelect={onSelect}
             onChange={onChange}
             onBlur={onBlur}
             name={name}

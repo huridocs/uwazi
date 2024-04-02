@@ -114,11 +114,7 @@ const RelationshipTypes = () => {
   };
 
   return (
-    <div
-      className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
-      data-testid="settings-account"
-    >
+    <div className="tw-content" style={{ width: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header title="Relationship types" />
         <SettingsContent.Body>

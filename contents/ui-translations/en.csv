@@ -18,7 +18,9 @@ Action,Action
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activity
 Activity log,Activity log
+Activity Log,Activity Log
 Add,Add
 Add / remove favorite,Add / remove favorite
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -132,6 +135,7 @@ Click here,Click here
 Click to fill,Click to fill
 Close,Close
 Collaborator,Collaborator
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
@@ -277,6 +281,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editor
 editor,editor
+Editors,Editors
 Email,Email
 Email address,Email address
 Email is required,Email is required
@@ -337,6 +342,7 @@ Flag,Flag
 for,for
 Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
+From,From
 From all templates,From all templates
 Full edit mode,Full edit mode
 Full width,Full width
@@ -474,6 +480,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
 Month,Month
+Months,Months
 more options.,more options.
 Multimedia fill description,"will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -819,17 +826,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Threshold
 Time,Time
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Title
+To,To
 "To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,to learn more about the components.
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
+Today,Today
 Tools,Tools
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Translate

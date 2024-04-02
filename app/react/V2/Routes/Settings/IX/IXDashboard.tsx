@@ -183,7 +183,7 @@ const IXDashboard = () => {
   );
 };
 
-const dashboardLoader =
+const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
     const extractors = await extractorsAPI.get(headers);
@@ -191,4 +191,4 @@ const dashboardLoader =
     return { extractors, templates };
   };
 
-export { IXDashboard, dashboardLoader };
+export { IXDashboard, IXdashboardLoader };

@@ -18,7 +18,9 @@ Action,Action
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activité
 Activity log,Journal d'activité
+Activity Log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -129,6 +132,7 @@ Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
 Collaborator,Collaborateur
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
@@ -274,6 +278,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Éditeur
 editor,Éditeur
+Editors,Editors
 Email,E-mail
 Email address,Adresse e-mail
 Email is required,L'email est obligatoire
@@ -334,6 +339,7 @@ Flag,Drapeau
 for,for
 Forgot Password?,Mot de passe oublié?
 Forms and email configuration,Configuration des formulaires et des e-mails
+From,From
 From all templates,From all templates
 Full edit mode,Mode d'édition complet
 Full width,Full width
@@ -471,6 +477,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
 Month,Month
+Months,Months
 more options.,plus d'options.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -816,17 +823,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Seuil
 Time,Temps
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Titre
+To,To
 "To bring you a better experience, this site uses cookies.","Pour vous apporter une meilleure expérience, ce site utilise des cookies."
 "To complete the account creation process, please create a password for your account","Pour compléter le processus de création de compte, veuillez créer un mot de passe pour votre compte."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,Pour en savoir plus sur les composants.
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
+Today,Today
 Tools,Outils
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Traduire
