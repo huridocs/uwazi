@@ -12,6 +12,7 @@ module.exports = {
     '@storybook/addon-interactions',
     '@storybook/addon-viewport',
     '@storybook/addon-actions',
+    '@storybook/addon-webpack5-compiler-babel'
   ],
   framework: {
     name: '@storybook/react-webpack5',

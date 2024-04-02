@@ -280,7 +280,7 @@ describe('Information Extraction', () => {
     });
 
     it('should clear the existing selection', () => {
-      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('[data-testid="ix-clear-button-container"] button', 'Clear').click();
       cy.get('div.highlight-rectangle').should('have.length', 0);
     });
 
@@ -296,7 +296,7 @@ describe('Information Extraction', () => {
         cy.get('input').clear();
       });
       cy.get('#pdf-container').scrollTo(0, 0);
-      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
         //@ts-ignore

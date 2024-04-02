@@ -18,7 +18,9 @@ Action,Action
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activity
 Activity log,Activity log
+Activity Log,Activity Log
 Add,Add
 Add / remove favorite,Add / remove favorite
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -29,6 +31,7 @@ Add from URL,Add from URL
 Add from web,Add from web
 Add group,Add group
 add icon,add icon
+Add item,Add item
 Add language,Add language
 Add link,Add link
 Add page,Add page
@@ -51,9 +54,12 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Adjacent geolocation properties will render on the same map
 Admin,Admin
 Administrators and Editors,Administrators and Editors
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","All changes will be lost, are you sure you want to proceed?"
@@ -73,7 +79,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -101,7 +106,6 @@ Can view,Can view
 Cancel,Cancel
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,Captcha
 Captcha bypass,"By toggling this on you can allow users to submit to your whitelisted templates without having to fill a CAPTCHA. 
 The form will still present the captcha to end users, but API end-point will allow submissions without CAPTCHA validation if a 
@@ -131,12 +135,12 @@ Click here,Click here
 Click to fill,Click to fill
 Close,Close
 Collaborator,Collaborator
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Configure filters
-Configure suggestions,Configure suggestions
 Configure templates,Configure templates
 Confirm,Confirm
 CONFIRM,CONFIRM
@@ -150,9 +154,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Confirm new password
 Confirm publish multiple items,Confirm publish multiple items
 Connect to a document,Connect to a document
@@ -221,7 +223,6 @@ Delete,Delete
 DELETE,DELETE
 Delete entities and documents,Delete entities and documents
 Delete file,Delete file
-Delete Group,Delete Group
 Delete language,Delete language
 Delete Property,Delete Property
 Deleted attachment,Deleted attachment
@@ -240,10 +241,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Description
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Discard changes
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Display entity view from page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Document and entity types
@@ -253,12 +257,8 @@ Document Title,Document Title
 Documentation,Documentation
 documents,documents
 Documents,Documents
-documents before training (30 per topic).,documents before training (30 per topic).
 Documents for custom filter,Documents for custom filter
 Documents including suggestion:,Documents including suggestion:
-documents so far.,documents so far.
-documents to be reviewed,documents to be reviewed
-Documents to be reviewed,Documents to be reviewed
 documents.,documents.
 Download,Download
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -274,11 +274,14 @@ Duplicated username,Duplicated username
 Edit,Edit
 Edit all documents matching this criteria,Edit all documents matching this criteria
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editor
 editor,editor
+Editors,Editors
 Email,Email
 Email address,Email address
 Email is required,Email is required
@@ -299,6 +302,8 @@ Entity saved,Entity saved
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Exploration
 Export CSV,Export CSV
@@ -316,6 +321,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,File
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -336,6 +342,7 @@ Flag,Flag
 for,for
 Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
+From,From
 From all templates,From all templates
 Full edit mode,Full edit mode
 Full width,Full width
@@ -348,7 +355,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,Google Analytics ID
 Google Maps,Google Maps
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -366,6 +372,7 @@ Icon,Icon
 "If you want to continue, please type","If you want to continue, please type"
 Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
 Import,Import
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Import CSV
 Import instructions,Import instructions
@@ -394,7 +401,6 @@ Invalid csv: nested value need to be under a non-nested value,Invalid csv: neste
 Invalid form,An entry is required or has an invalid value. Please correct and try again.
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,It could also very easily break the app. Only write code here if you know exactly what you are doing.
 Item,Item
-Item name,Item name
 Items:,Items:
 Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
@@ -402,7 +408,6 @@ key,key
 Label,Label
 "Label date ""From""",From:
 "Label date ""to""",To:
-Label more documents,Label more documents
 Label your collection note,"Note: Make the sample set of documents for each topic diverse and representative. For example, use various methods to find sample documents and don't just search for the term ""education"" to find documents for the topic ""Education""."
 Labeled,Labeled
 Landing page,Landing page
@@ -426,13 +431,13 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Latitude
 Learn more,Learn more
-Learning...,Learning...
 Legend,Legend
 Lengthy reindex process,Lengthy reindex process
 Library,Library
 library list view,library list view
 library map view,library map view
 library table view,library table view
+Link,Link
 linked,linked
 Live translate,Live translate
 Loading,Loading
@@ -475,6 +480,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
 Month,Month
+Months,Months
 more options.,more options.
 Multimedia fill description,"will attempt to fill the container, using its entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -640,6 +646,7 @@ relationships,relationships
 Relationships,Relationships
 Relationships saved,Relationships saved
 RelationType saved,RelationType saved
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Remove
 remove icon,remove icon
@@ -653,12 +660,13 @@ Required property,Required property
 Reset,Reset
 Reset 2FA,Reset 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Reset Password
+Reset passwords,Reset passwords
 Restricted,Restricted
 Return to login,Return to login
 Return to the thesaurus page when you finished labeling to start learning.,Return to the thesaurus page when you finished labeling to start learning.
 Review,Review
-Review unpublished document,Review unpublished document
 Reviewed,Reviewed
 Role,Role
 Route,Route
@@ -729,7 +737,6 @@ Show cookie policy,Show cookie policy
 Show filters,Show filters
 Show in cards,Show in cards
 Show more,Show more
-Show Suggestions,Show Suggestions
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,shown of
@@ -757,7 +764,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -781,8 +787,6 @@ Template(s),Template(s)
 Templates,Templates
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,The current model was trained at
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection."
 The import process threw an error:,The import process threw an error:
 The request could not be processed.,The request could not be processed.
 The template contains errors,The template contains errors
@@ -792,7 +796,12 @@ There are no pages enabled for entity view,There are no pages enabled for entity
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Thesauri
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,Thesaurus saved
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -813,24 +822,25 @@ This property will be shown without the label.,This property will be shown witho
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,This template will be used as default for new entities.
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Threshold
 Time,Time
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Title
+To,To
 "To bring you a better experience, this site uses cookies.","To bring you a better experience, this site uses cookies."
 "To complete the account creation process, please create a password for your account","To complete the account creation process, please create a password for your account"
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,to learn more about the components.
 to view your authentication code and verify your identity.,to view your authentication code and verify your identity.
+Today,Today
 Tools,Tools
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
-Train model,Train model
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Translate
@@ -896,7 +906,6 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi is developed by
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection."
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -909,11 +918,9 @@ View in library,View in library
 View less,View less
 View more,View more
 View page,View page
-View suggestions,View suggestions
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,Warning: you are editing multiple entities. Fields marked with a
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,We recommend labeling
 Welcome to Uwazi,Welcome to Uwazi
 "Well, this is awkward...","Well, this is awkward..."
 will be updated with the same value.,will be updated with the same value.
@@ -923,12 +930,10 @@ x less,less
 x more,more
 Year,Year
 Yes,Yes
-You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","You can also embed advanced components like maps, charts and entity lists in your page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,You can also improve the model by providing more labeled documents.
 You can create metadata templates in,You can create metadata templates in
-You have labeled,You have labeled
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,You should activate this feature for enhanced account security

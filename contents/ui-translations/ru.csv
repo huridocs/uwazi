@@ -18,7 +18,9 @@ Action,Действие
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,активности
 Activity log,Журнал активности
+Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -29,6 +31,7 @@ Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
 Add group,Добавить группу
 add icon,добавить иконку
+Add item,Add item
 Add language,Добавить язык
 Add link,Добавить ссылку
 Add page,Добавить страницу
@@ -51,9 +54,12 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Смежные свойства геолокации будут отражаться на той же карте
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
+Admins,Admins
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
@@ -73,7 +79,6 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
 Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
@@ -101,7 +106,6 @@ Can view,Может просматривать
 Cancel,Отмена
 Canceling...,Canceling...
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,Captcha
 Captcha bypass,Обход Captcha
 Cards,Карточки
@@ -126,12 +130,12 @@ Click here,Нажмите сюда
 Click to fill,"Нажмите, чтобы заполнить"
 Close,Закрыть
 Collaborator,Соавтор
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Коллекция
 Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Настроить фильтры
-Configure suggestions,Настроить предлагаемые варианты
 Configure templates,Configure templates
 Confirm,Подтвердить
 CONFIRM,Подтвердить
@@ -145,9 +149,7 @@ Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Подтвердите новый пароль
 Confirm publish multiple items,Подтвердить публикацию нескольких элементов
 Connect to a document,Подключиться к документу
@@ -216,7 +218,6 @@ Delete,Удалить
 DELETE,Удалить
 Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
-Delete Group,Удалить группу
 Delete language,Удалить язык
 Delete Property,Удалить свойство
 Deleted attachment,Deleted attachment
@@ -235,10 +236,13 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
 Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
@@ -248,12 +252,8 @@ Document Title,Название документа
 Documentation,Документация
 documents,Документы
 Documents,Документы
-documents before training (30 per topic).,документы до обучения (30 на каждую тему)
 Documents for custom filter,Документы для пользовательского фильтра
 Documents including suggestion:,"Документы, включая предлагаемый вариант"
-documents so far.,документы к настоящему моменту
-documents to be reviewed,Документы на рассмотрение
-Documents to be reviewed,Документы на рассмотрение
 documents.,документы.
 Download,Скачать
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -269,11 +269,14 @@ Duplicated username,Продублированное имя пользовате
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Редактор
 editor,Редактор
+Editors,Editors
 Email,Электронная почта
 Email address,Адрес электронной почты
 Email is required,Требутся электронная почта
@@ -294,6 +297,8 @@ Entity saved,Entity saved
 Entity types,Типы объектов
 Entity updated,Entity updated
 Error,Ошибка
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Изучение
 Export CSV,Экспортировать CSV
@@ -311,6 +316,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Файл
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -331,6 +337,7 @@ Flag,Флажок
 for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
+From,From
 From all templates,From all templates
 Full edit mode,Режим полного редактирования
 Full width,Full width
@@ -343,7 +350,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -361,6 +367,7 @@ Icon,Символ
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Импортировать
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Импортировать CSV
 Import instructions,Инструкции по импорту
@@ -389,7 +396,6 @@ Invalid csv: nested value need to be under a non-nested value,Invalid csv: neste
 Invalid form,Недействительная форма
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
 Item,Item
-Item name,Item name
 Items:,Элементы
 Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
@@ -397,7 +403,6 @@ key,Russian
 Label,Метка
 "Label date ""From""","Метка даты ""от"""
 "Label date ""to""","Метка даты ""до"""
-Label more documents,Пометьте больше документов
 Label your collection note,Отметьте вашу примечание к коллекции
 Labeled,Labeled
 Landing page,Целевая страница
@@ -421,13 +426,13 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Широта
 Learn more,Узнать больше
-Learning...,Освоение...
 Legend,Подпись
 Lengthy reindex process,Lengthy reindex process
 Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 library table view,просмотр библиотеки в табличном виде
+Link,Link
 linked,связанный
 Live translate,Live translate
 Loading,Loading
@@ -470,6 +475,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Month,Месяц
+Months,Months
 more options.,больше опций.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -635,6 +641,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
@@ -648,12 +655,13 @@ Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Сбросить пароль
+Reset passwords,Reset passwords
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
 Return to the thesaurus page when you finished labeling to start learning.,"После завершения маркировки, вернитесь на страницу с предметными указателями, чтобы начать обучение."
 Review,Review
-Review unpublished document,Просмотреть неопубликованный документ
 Reviewed,Просмотрено
 Role,Роль
 Route,Маршрут
@@ -724,7 +732,6 @@ Show cookie policy,Показать политику cookie
 Show filters,Показать фильтры
 Show in cards,Показать в карточках
 Show more,Показать больше
-Show Suggestions,Показать предложения
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,показано от
@@ -752,7 +759,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -776,8 +782,6 @@ Template(s),Template(s)
 Templates,Шаблоны
 Text,Текст
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,Текущая модель была обучена в
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","Первый шаг - отметить образец ваших документов, чтобы Uwazi мог узнать о темах, которые нужно предложить вам при помощи с маркировкой вашей коллекции."
 The import process threw an error:,Процесс импорта выдал ошибку:
 The request could not be processed.,The request could not be processed.
 The template contains errors,Шаблон содержит ошибки
@@ -787,7 +791,12 @@ There are no pages enabled for entity view,"Нет страниц с возмо�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Предметный указатель
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,Предметный указатель сохранен
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -808,24 +817,25 @@ This property will be shown without the label.,Это свойство буде�
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,Этот шаблон будет использоваться по умолчанию для новых объектов.
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Порог
 Time,Время
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Заголовок
+To,To
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,"для того, чтобы узнать больше о компонентах."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
+Today,Today
 Tools,Инструменты
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
-Train model,Учебная модель
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Перевести
@@ -891,7 +901,6 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi разработан
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi учится использовать документы с метками. Это может занять до 2 часов, а после завершения процесса вы сможете просмотреть предложения, подготовленные UWAZI для вашей коллекции."
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -904,11 +913,9 @@ View in library,Просмотреть в библиотеке
 View less,View less
 View more,View more
 View page,Просмотр страницы
-View suggestions,Просмотреть предложения
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,Мы рекомендуем маркировку
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
 will be updated with the same value.,будет обновляться с тем же значением
@@ -918,12 +925,10 @@ x less,x меньше
 x more,х больше
 Year,Год
 Yes,Yes
-You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,"Вы также можете улучшить модель, предоставив больше маркированных документов."
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
-You have labeled,Вы пометили
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта

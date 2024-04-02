@@ -6,7 +6,7 @@ import {
   SortingState,
   getExpandedRowModel,
 } from '@tanstack/react-table';
-import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
+import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -100,7 +100,10 @@ const Table = <T,>({
       return;
     }
 
-    const sorted = table.getRowModel().rows.map(row => row.original);
+    const sorted = table
+      .getRowModel()
+      .rows.filter(row => !row.parentId)
+      .map(row => row.original);
     onChange(sorted);
     setSortedChanged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps

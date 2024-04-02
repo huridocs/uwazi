@@ -6,7 +6,6 @@ import { selectSingleDocument } from 'app/Library/actions/libraryActions';
 import * as metadata from 'app/Metadata';
 import * as types from 'app/Uploads/actions/actionTypes';
 import * as libraryTypes from 'app/Library/actions/actionTypes';
-import uniqueID from 'shared/uniqueID';
 import { RequestParams } from 'app/utils/RequestParams';
 import { t } from 'app/I18N';
 
@@ -163,26 +162,6 @@ export function publicSubmit(data, remote = false) {
           );
         })
         .end();
-    });
-}
-
-export function uploadCustom(file) {
-  return dispatch => {
-    const id = `customUpload_${uniqueID()}`;
-    return upload(
-      id,
-      file,
-      'files/upload/custom'
-    )(dispatch).then(response => {
-      dispatch(basicActions.push('customUploads', response));
-    });
-  };
-}
-
-export function deleteCustomUpload(_id) {
-  return dispatch =>
-    api.delete('files', new RequestParams({ _id })).then(response => {
-      dispatch(basicActions.remove('customUploads', response.json[0]));
     });
 }
 

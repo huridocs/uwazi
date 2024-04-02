@@ -22,52 +22,6 @@ describe('Metadata', () => {
     expect(page.url()).toBe(`${host}/en/settings/account`);
   });
 
-  describe('Thesauri tests', () => {
-    it('should create a new thesaurus with two values', async () => {
-      await expect(page).toClick('a', { text: 'Thesauri' });
-      await expect(page).toClick('a', { text: 'Add thesaurus' });
-      await expect(page).toFill('input[name="thesauri.data.name"', 'New thesaurus');
-      await expect(page).toFill('input[name="thesauri.data.values[0].label"', 'Value 1');
-      await expect(page).toFill('input[name="thesauri.data.values[1].label"', 'Value 2');
-      await expect(page).toClick('button', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
-    });
-
-    it('should go back to thesauri then edit the created thesaurus', async () => {
-      await expect(page).toClick('a', { text: 'Thesauri' });
-      await expect(page).toClick(
-        'div.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > a'
-      );
-      await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toFill('input[name="thesauri.data.values[2].label"', 'Group');
-      await expect(page).toFill(
-        'input[name="thesauri.data.values[2].values[0].label"',
-        'Sub value 1'
-      );
-      await expect(page).toFill(
-        'input[name="thesauri.data.values[2].values[1].label"',
-        'Sub value 2'
-      );
-      await expect(page).toClick('button', { text: 'Save' });
-      await expect(page).toClick('.alert.alert-success');
-    });
-
-    it('should go back to thesauri then delete the created thesaurus', async () => {
-      await expect(page).toClick('a', { text: 'Thesauri' });
-      await page.waitForSelector(
-        '.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > button'
-      );
-      await expect(page).toClick(
-        '.thesauri-list > table > tbody > tr:nth-child(4) > td:nth-child(3) > div > button'
-      );
-      await page.waitForSelector('div.modal-content');
-      await expect(page).toMatchElement('div.modal-body > h4', {
-        text: 'Confirm deletion of thesaurus: New thesaurus',
-      });
-      await expect(page).toClick('button', { text: 'Accept' });
-    });
-  });
-
   describe('Templates tests', () => {
     const createFromModal = async (button: string, inputSelector: string, newIntem: string) => {
       await expect(page).toClick('a', { text: 'Templates' });
