@@ -250,6 +250,18 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 1 Entity a, Entity b', 'Entity 2', 'Entity 3']);
     });
 
+    it('should sort an expanded row by the header', () => {
+      mount(<NestedDnD />);
+      cy.contains('children').click();
+      cy.get('[data-testid="created_false"]').click();
+      cy.contains('children').click();
+      checkRowContent(1, ['Entity 3', data[2].description, '3']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Entity 1', data[1].description, '1']);
+      checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
+      checkRowContent(5, ['Entity b', data[1].children![1].description, '5']);
+    });
+
     it('should sort children of a group', () => {
       mount(<NestedDnD />);
 

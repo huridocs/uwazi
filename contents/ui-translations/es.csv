@@ -29,6 +29,7 @@ Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
 Add group,Añadir grupo
 add icon,Añadir ícono
+Add item,Add item
 Add language,Añadir idioma
 Add link,Añadir enlace
 Add page,Añadir página
@@ -51,6 +52,8 @@ Added language,Idioma añadido
 Added new user,Nuevo usuario añadido
 added to hub with the following errors:,añadido al nodo con los siguientes errores:
 added to hub.,añadido al nodo.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
@@ -73,7 +76,6 @@ Are you sure you want to delete this connection?,Estás seguro que quieres elimi
 Are you sure you want to delete this entity?,Estás seguro que quieres eliminar esta entidad?
 Are you sure you want to delete this file?,Estás seguro que quieres eliminar este archivo?
 Are you sure you want to delete this item?,Estás seguro que quieres eliminar este elemento?
-Are you sure you want to delete this thesaurus?,Estás seguro que quieres eliminar este tesauro?
 Are you sure?,Estás seguro?
 Attachment deleted,Archivo adjunto eliminado
 Attachment renamed,Archivo adjunto renombrado
@@ -101,7 +103,6 @@ Can view,Puede visualizar
 Cancel,Cancelar
 Canceling...,Cancelando
 Cannot delete template:,No se puede eliminar la plantilla:
-Cannot delete thesaurus:,No se puede eliminar el tesauro:
 Captcha,Captcha
 Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus plantillas incluidas en la lista blanca sin tener que ingresar un CAPTCHA.
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
@@ -132,7 +133,6 @@ Collection,Colección
 Collection Name,Collection Name
 Configuration,Configuración
 Configure filters,Configurar filtros
-Configure suggestions,Configurar sugerencias
 Configure templates,Configurar plantillas
 Confirm,Confirmar
 CONFIRM,CONFIRMAR
@@ -146,9 +146,7 @@ Confirm deletion of,Confirmar la eliminación de
 Confirm deletion of entity,Confirmar eliminación de entidad
 Confirm deletion of file,Confirmar eliminación de archivo
 Confirm deletion of template:,Confirmar eliminación de plantilla:
-Confirm deletion of thesaurus:,Confirmar eliminación de tesauro:
 Confirm discard changes,Confirmar descartar cambios
-Confirm edit suggestion-enabled Thesaurus,Confirmar editar Tesauro sugerencia-habilitada
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
 Connect to a document,Conectar a un documento
@@ -217,7 +215,6 @@ Delete,Eliminar
 DELETE,Eliminar
 Delete entities and documents,Eliminar entidades y documentos
 Delete file,Eliminar archivo
-Delete Group,Eliminar grupo
 Delete language,Eliminar idioma
 Delete Property,Eliminar propiedad
 Deleted attachment,Archivo adjunto eliminado
@@ -241,6 +238,8 @@ Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
 Display entity view from page,Mostrar entidad de visualización desde la página
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Documento
 Document and entity types,Tipos de documento y entidad
@@ -250,12 +249,8 @@ Document Title,Título del documento
 Documentation,Documentación
 documents,Documentos
 Documents,Documentos
-documents before training (30 per topic).,documentos antes del entrenamiento (30 por tema).
 Documents for custom filter,Documentos para filtro personalizado
 Documents including suggestion:,Documentos que incluyen sugerencias:
-documents so far.,documentos hasta el momento.
-documents to be reviewed,Documentos a revisar
-Documents to be reviewed,Documentos a revisar
 documents.,documentos.
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -271,7 +266,9 @@ Duplicated username,Nombre de usuario duplicado
 Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
 Edit user,Edit user
 Editor,Editor
@@ -296,6 +293,8 @@ Entity saved,Entidad grabada
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expandir todo
 Exploration,Exploración
 Export CSV,Exportar CSV
@@ -313,6 +312,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
+File name,File name
 File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
@@ -345,7 +345,6 @@ Google Analytics,Google Analytics
 Google Analytics ID,ID de Google Analytics
 Google Maps,Google Maps
 Group,Grupo
-Group name,Nombre del grupo
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Grupo actualizado
@@ -363,6 +362,7 @@ Icon,Icono
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
 Import,Importar
+Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
 Import instructions,Instrucciones de importación
@@ -391,7 +391,6 @@ Invalid csv: nested value need to be under a non-nested value,CSV no válido: lo
 Invalid form,Formulario no válido
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,La aplicación incluso podría dejar de funcionar. Escribe código aquí únicamente si sabes exactamente lo que estás haciendo.
 Item,Elemento
-Item name,Nombre del elemento
 Items:,Elementos:
 Javascript,Javascript
 Keep this in mind if you want to edit:,Ten en cuenta esto si quieres editar:
@@ -399,7 +398,6 @@ key,clave
 Label,Etiqueta
 "Label date ""From""",De:
 "Label date ""to""",A:
-Label more documents,Etiquetar más documentos
 Label your collection note,"Nota: Haz el conjunto de muestra de documentos para cada tema diverso y representativo. Por ejemplo, usa varios métodos para buscar documentos de muestra y no busques sólo el término “educación” para encontrar documentos para el tema “Educación”"
 Labeled,Labeled
 Landing page,Página de inicio
@@ -423,7 +421,6 @@ Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
 Latitude,Latitud
 Learn more,Aprender más
-Learning...,Aprendiendo...
 Legend,Leyenda
 Lengthy reindex process,Proceso de reindexación largo
 Library,Colección
@@ -638,6 +635,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
 remove icon,eliminar ícono
@@ -653,11 +651,11 @@ Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
 Reset language,Reset language
 Reset Password,Restablecer contraseña
+Reset passwords,Reset passwords
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
 Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
 Review,Revisar
-Review unpublished document,Revisar el documento no publicado
 Reviewed,Revisados
 Role,Rol
 Route,Ruta
@@ -728,7 +726,6 @@ Show cookie policy,Mostrar política de cookies
 Show filters,Mostrar filtros
 Show in cards,Mostrar en tarjetas
 Show more,Mostrar más
-Show Suggestions,Mostrar sugerencias
 Show toolbar,Mostrar la barra de herramientas
 Showing,Showing
 shown of,listados de
@@ -756,7 +753,6 @@ Submitted entity to a remote instance,Entidad enviada a una instancia remota
 Submitting,Enviando
 Success,Exito
 "Success, Upload another?","Exito, cargar otro?"
-Suggested labels description,"Uwazi tiene etiquetas sugeridas para tu colección. Revísalas usando el botón ""Ver sugerencias"" junto a cada tema. Deshabilita las sugerencias desactivando  ""Mostrar sugerencias""."
 Suggestion,Sugerencia
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -779,8 +775,6 @@ Template(s),Template(s)
 Templates,Plantillas
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
-The current model was trained at,El modelo de datos actual fue entrenado en
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","El primer paso es etiquetar una muestra de tus documentos, para que Uwazi pueda aprender los temas a sugerir al momento de etiquetar una colección."
 The import process threw an error:,El proceso de importación tiene un error.
 The request could not be processed.,La petición no pudo ser procesada.
 The template contains errors,La plantilla contiene errores
@@ -790,7 +784,12 @@ There are no pages enabled for entity view,No hay páginas habilitadas para la v
 There are no untranslated terms,No hay términos sin traducir
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,Hay cambios sin guardar. Estas seguro que quieres descartarlos y cambiar a un documento diferente?
 Thesauri,Tesauros
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Nombre del Tesauro
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Tesauro
 Thesaurus saved,Tesauro guardado
 This action may take some time while we add the extra language to the entire collection.,Esta acción puede tomar algún tiempo mientras añadimos el idioma a la colección.
@@ -811,7 +810,6 @@ This property will be shown without the label.,Esta propiedad se mostrará sin s
 this template,esta plantilla
 This template has associated entities,Esta plantilla tiene entidades asociadas
 This template will be used as default for new entities.,Esta plantilla se utilizará como predeterminada para nuevas entidades
-This thesaurus is being used in document types and cannot be deleted.,Este tesauro está siendo utilizado en plantillas y no puede ser eliminado.
 This will delete the template and all relationship properties from other templates pointing to this one.,Esto eliminará la plantilla y todas las propiedades de relación desde otras plantillas que apunten hacia ella.
 Threshold,Límite
 Time,Tiempo
@@ -823,12 +821,10 @@ to learn how to add and configure a contact form on a webpage.,para aprender a a
 to learn more about the components.,para aprender más sobre los componentes.
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
 Tools,Herramientas
-topic suggestions tip,"Mejora la calidad de las sugerencias de temas, encontrando más ejemplos de documentos con esta etiqueta."
 Total entities,Total de entidades
 Total files,Total de archivos
 "Total files from main documents, supporting files and custom uploads","Total de archivos de documentos primarios, archivos adjuntos y archivos personalizados subidos"
 Total users,Total de usuarios
-Train model,Entrenar al modelo
 Training,Entrenando
 Training model...,Entrenando el modelo…
 Translate,Traducir
@@ -894,7 +890,6 @@ Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi es desarrollado por
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi está aprendiendo a utilizar documentos con etiquetas. Este proceso puede tomar hasta 2 horas y una vez completo, podrás revisar las sugerencias realizadas por Uwazi para tu colección."
 Uwazi UI,Uwazi UI
 Value,valor
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -907,11 +902,9 @@ View in library,Ver en la colección
 View less,Ver menos
 View more,Ver más
 View page,Ver página
-View suggestions,Ver sugerencias
 WARNING,ADVERTENCIA
 Warning: you are editing multiple entities. Fields marked with a,ADVERTENCIA: Estás editando múltiples entidades. Los campos marcados con un
 We can't find the page you're looking for.,No podemos hallar la página que buscas.
-We recommend labeling,Recomendamos etiquetar
 Welcome to Uwazi,Bienvenido a Uwazi
 "Well, this is awkward...","Bueno, esto es incómodo..."
 will be updated with the same value.,se actualizará con el mismo valor
@@ -921,12 +914,10 @@ x less,menos
 x more,más
 Year,Año
 Yes,Sí
-You are about to delete a page,You are about to delete a page
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,Puedes mejorar el modelo proporcionando más documentos con etiquetas.
 You can create metadata templates in,Puedes crear plantillas de metadatos en
-You have labeled,Has etiquetado
 "You have not connected an Uwazi instance, yet","No has conectado una instancia Uwazi, todavía"
 You have unsaved changes. Do you want to continue?,Tienes cambios sin guardar. Quieres continuar??
 You should activate this feature for enhanced account security,Activa esta función para mejorar la seguridad de la cuenta.
