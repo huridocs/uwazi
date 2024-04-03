@@ -18,7 +18,9 @@ Action,Acción
 Activate,Activate
 Activated,Activated
 Active languages,Idiomas activos
+Activity,Actividad
 Activity log,Registro de actividad
+Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -336,6 +338,7 @@ Flag,Bandera
 for,for
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
+From,From
 From all templates,From all templates
 Full edit mode,Modo de edición completa
 Full width,Ancho completo
@@ -473,6 +476,7 @@ mismatched passwords,Las contraseñas no coinciden
 Mixed access,Acceso mixto
 ML TOC,ML TdC
 Month,Mes
+Months,Months
 more options.,más opciones.
 Multimedia fill description,"intentará llenar el contenedor, utilizando todo su ancho. En las tarjetas, es probable que se produzcan recortes."
 Multimedia fit description,mostrará todo el contenido multimedia dentro del contenedor.
@@ -817,12 +821,15 @@ This will delete the template and all relationship properties from other templat
 Threshold,Límite
 Time,Tiempo
 Timelinks,Líneas de tiempo
+Timestamp,Timestamp
 Title,Título
+To,To
 "To bring you a better experience, this site uses cookies.","Para una mejor experiencia de usuario, este sitio utiliza cookies."
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to learn how to add and configure a contact form on a webpage.,para aprender a añadir y configurar un contacto desde una página web.
 to learn more about the components.,para aprender más sobre los componentes.
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
+Today,Today
 Tools,Herramientas
 total entities,total entities
 Total files,Total de archivos

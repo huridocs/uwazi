@@ -18,7 +18,9 @@ Action,เริ่มทำ
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,กิจกรรม
 Activity log,บันทึกกิจกรรม
+Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -338,6 +340,7 @@ Flag,แฟล็ก
 for,for
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
+From,From
 From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
@@ -475,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
 Month,เดือน
+Months,Months
 more options.,ตัวเลือกเพิ่มเติม
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -820,12 +824,15 @@ This will delete the template and all relationship properties from other templat
 Threshold,เกณฑ์
 Time,เวลา
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,ชื่อหัวข้อ
+To,To
 "To bring you a better experience, this site uses cookies.",เพื่อประสบการณ์ที่ดีของคุณ เว็บไซต์ของเราจะทำการเก็บคุกกี้
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,ในกรณีที่ต้องการเรียนรู้เพิ่มเติมเกี่ยวกับส่วนประกอบ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
+Today,Today
 Tools,เครื่องมือ
 total entities,total entities
 Total files,Total files

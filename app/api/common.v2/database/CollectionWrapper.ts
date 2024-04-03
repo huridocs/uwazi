@@ -13,8 +13,6 @@ import {
   ChangeStream,
   ChangeStreamDocument,
   ChangeStreamOptions,
-  CollStats,
-  CollStatsOptions,
   CommandOperationOptions,
   CountOptions,
   CreateIndexesOptions,
@@ -114,7 +112,7 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
     throw new Error('Method not implemented.');
   }
 
-  async dropIndexes(_options?: CommandOperationOptions | undefined): Promise<Document> {
+  async dropIndexes(_options?: CommandOperationOptions | undefined): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 
@@ -140,10 +138,6 @@ export abstract class CollectionWrapper<TSchema extends Document = Document> {
   }
 
   async indexes(_options?: IndexInformationOptions | undefined): Promise<Document[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  async stats(_options?: CollStatsOptions | undefined): Promise<CollStats> {
     throw new Error('Method not implemented.');
   }
 

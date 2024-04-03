@@ -18,7 +18,9 @@ Action,လုပ်ဆောင်ချက်
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,လုပ်ဆောင်မှု
 Activity log,လုပ်ဆောင်မှု မှတ်တမ်း
+Activity Log,လုပ်ဆောင်မှု မှတ်တမ်း
 Add,ထည့်ရန်
 Add / remove favorite,အကြိုက်ဆုံးကို ထည့်ရန် / ဖယ်ရှားရန်
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -338,6 +340,7 @@ Flag,အလံ
 for,for
 Forgot Password?,စကားဝှက် မေ့နေပါသလား။
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
+From,From
 From all templates,From all templates
 Full edit mode,အပြည့်အဝ တည်းဖြတ် မုဒ်
 Full width,Full width
@@ -475,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,ရောထားသော ဝင်ရောက်သုံးစွဲမှု
 ML TOC,ML TOC
 Month,လ
+Months,Months
 more options.,နောက်ထပ် ရွေးချယ်စရာများ။
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -820,12 +824,15 @@ This will delete the template and all relationship properties from other templat
 Threshold,အနိမ့်ဆုံးသတ်မှတ်ချက်
 Time,အချိန်
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,ခေါင်းစဉ်
+To,To
 "To bring you a better experience, this site uses cookies.",သင့်အား ပိုမိုကောင်းမွန်သော အတွေ့အကြုံ ရရှိစေရန် ဤဝက်ဘ်ဆိုက်တွင် ကွတ်ကီးများ အသုံးပြုသည်။
 "To complete the account creation process, please create a password for your account",အကောင့်ဖန်တီးခြင်း လုပ်ငန်းစဉ် ပြီးမြောက်စေရန် ကျေးဇူးပြု၍ သင့်အကောင့်အတွက် စကားဝှက် ဖန်တီးပါ
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,အစိတ်အပိုင်းများအကြောင်း ပိုမိုလေ့လာရန်။
 to view your authentication code and verify your identity.,သင်၏ စစ်မှန်ကြောင်း အတည်ပြုကုဒ်ကို ကြည့်ရန်နှင့် သင့်ကိုယ်ပိုင်သင်္ကေတကို မှန်ကန်ကြောင်း စစ်ဆေးရန်။
+Today,Today
 Tools,ကိရိယာများ
 total entities,total entities
 Total files,Total files

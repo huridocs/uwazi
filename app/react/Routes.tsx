@@ -3,7 +3,6 @@ import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
-import Activitylog from 'app/Activitylog/Activitylog';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
 import { PreserveSettings, EntityTypesList, FiltersForm, Settings } from 'app/Settings';
@@ -40,6 +39,7 @@ import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboar
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
+import { activityLogLoader, ActivityLog } from 'V2/Routes/Settings/ActivityLog/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
@@ -165,11 +165,15 @@ const getRoutesLayout = (
         loader={customisationLoader(headers)}
       />
       <Route
+        path="activitylog"
+        element={adminsOnlyRoute(<ActivityLog />)}
+        loader={activityLogLoader(headers)}
+      />
+      <Route
         path="custom-uploads"
         element={adminsOnlyRoute(<CustomUploads />)}
         loader={customUploadsLoader(headers)}
       />
-      <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
       <Route
         path="newrelmigration"
         element={
