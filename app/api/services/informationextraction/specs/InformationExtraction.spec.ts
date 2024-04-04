@@ -5,11 +5,10 @@ import fs from 'fs/promises';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
-import { ResultsMessage } from 'api/services/tasksmanager/TaskManager';
 import * as setupSockets from 'api/socketio/setupSockets';
 
 import { factory, fixtures } from './fixtures';
-import { InformationExtraction } from '../InformationExtraction';
+import { IXResultsMessage, InformationExtraction } from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
@@ -215,7 +214,7 @@ describe('InformationExtraction', () => {
         .mockImplementation(async () => Promise.resolve());
 
       await informationExtraction.processResults({
-        params: { id: factory.id('prop1extractor') },
+        params: { id: factory.id('prop1extractor').toString() },
         tenant: 'tenant1',
         task: 'create_model',
         success: true,
@@ -330,12 +329,12 @@ describe('InformationExtraction', () => {
       model.findingSuggestions = false;
       await IXModelsModel.save(model);
 
-      const message: ResultsMessage = {
+      const message: IXResultsMessage = {
         task: 'create_model',
         data_url: 'some/url',
         error_message: '',
         params: {
-          id: factory.id('prop2extractor'),
+          id: factory.id('prop2extractor').toString(),
         },
         tenant: 'tenant1',
         file_url: '',
