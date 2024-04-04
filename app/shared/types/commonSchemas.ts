@@ -411,19 +411,21 @@ export const extractedMetadataSchema = {
   },
 };
 
+export const propertyTypeSchema = { type: 'string', enum: Object.values(propertyTypes) };
+
 export const propertySchema = {
   type: 'object',
   required: ['label', 'type', 'name'],
   additionalProperties: false,
   requireOrInvalidContentForSelectFields: true,
   requireRelationTypeForRelationship: true,
-  definitions: { objectIdSchema },
+  definitions: { objectIdSchema, propertyTypeSchema },
   properties: {
     _id: objectIdSchema,
     label: { type: 'string', minLength: 1 },
     name: { type: 'string', minLength: 1 },
     isCommonProperty: { type: 'boolean' },
-    type: { type: 'string', enum: Object.values(propertyTypes) },
+    type: propertyTypeSchema,
     prioritySorting: { type: 'boolean' },
     generatedId: { type: 'boolean' },
     content: { type: 'string' },
@@ -433,7 +435,7 @@ export const propertySchema = {
       additionalProperties: false,
       properties: {
         property: { type: 'string' },
-        type: { type: 'string', enum: Object.values(propertyTypes) },
+        type: propertyTypeSchema,
       },
     },
     filter: { type: 'boolean' },

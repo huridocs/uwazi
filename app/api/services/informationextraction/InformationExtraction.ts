@@ -28,6 +28,7 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
+  propertyTypeIsSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -59,7 +60,7 @@ interface TextSelectionSuggestion extends CommonSuggestion {
 }
 
 interface ValuesSelectionSuggestion extends CommonSuggestion {
-  values: { value: string; label: string }[];
+  values: { id: string; label: string }[];
 }
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
@@ -196,10 +197,13 @@ class InformationExtraction {
         const propertyLabeledData = file.extractedMetadata?.find(
           labeledData => labeledData.name === extractor.property
         );
+        const { propertyValue, propertyType } = file;
 
-        if (!xmlExists || (type === 'labeled_data' && !propertyLabeledData)) {
-          return;
-        }
+        const missingData = propertyTypeIsSelect(propertyType)
+          ? !propertyValue
+          : type === 'labeled_data' && !propertyLabeledData;
+
+        if (!xmlExists || missingData) return;
 
         await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
 
@@ -382,15 +386,21 @@ class InformationExtraction {
   };
 
   trainModel = async (extractorId: ObjectIdSchema) => {
+    console.log('trainModel');
+    console.log('extractorId', extractorId);
     const [model] = await IXModelsModel.get({ extractorId });
+    console.log('model', model);
     if (model && !model.findingSuggestions) {
       model.findingSuggestions = true;
       await IXModelsModel.save(model);
     }
 
     const [extractor] = await Extractors.get({ _id: extractorId });
+    console.log('extractor', extractor);
     const serviceUrl = await this.serviceUrl();
+    console.log('serviceUrl', serviceUrl);
     const materialsSent = await this.materialsForModel(extractor, serviceUrl);
+    console.log('materialsSent', materialsSent);
     if (!materialsSent) {
       if (model) {
         model.findingSuggestions = false;
@@ -460,6 +470,7 @@ class InformationExtraction {
 
   materialsForModel = async (extractor: IXExtractorType, serviceUrl: string) => {
     const files = await getFilesForTraining(extractor.templates, extractor.property);
+    console.log('files', files);
     if (!files.length) {
       return false;
     }

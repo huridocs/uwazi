@@ -137,6 +137,25 @@ describe('InformationExtraction', () => {
       );
     });
 
+    it('should send xmls (multiselect)', async () => {
+      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+
+      const xmlG = await fs.readFile(
+        'app/api/services/informationextraction/specs/uploads/segmentation/documentG.xml'
+      );
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_train/tenant1/${factory.id('extractorWithMultiselect')}`,
+        id: factory.id('extractorWithMultiselect').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.files).toEqual([xmlG, xmlG]);
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentG.xml', 'documentG.xml'].sort()
+      );
+    });
+
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 

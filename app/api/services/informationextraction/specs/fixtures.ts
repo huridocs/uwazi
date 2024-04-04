@@ -9,6 +9,7 @@ const fixturesPdfNameC = 'documentC.pdf';
 const fixturesPdfNameD = 'documentD.pdf';
 const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
+const fixturesPdfNameG = 'documentG.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -34,6 +35,7 @@ const fixtures: DBFixture = {
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('prop4extractor', 'property4', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
+    factory.ixExtractor('extractorWithMultiselect', 'property_multiselect', ['templateToSegmentD']),
   ],
   entities: [
     factory.entity(
@@ -75,6 +77,15 @@ const fixtures: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
     factory.entity('A15', 'templateToSegmentC'),
     factory.entity('A16', 'templateToSegmentC'),
+    factory.entity('A17', 'templateToSegmentD', {
+      property_multiselect: [{ value: 'A', label: 'A' }],
+    }),
+    factory.entity('A18', 'templateToSegmentD', {
+      property_multiselect: [
+        { value: 'B', label: 'B' },
+        { value: 'C', label: 'C' },
+      ],
+    }),
   ],
   files: [
     factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -124,6 +135,8 @@ const fixtures: DBFixture = {
     factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
     factory.file('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
     factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
+    factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
+    factory.file('F18', 'A18', 'document', fixturesPdfNameG, 'eng'),
   ],
   segmentations: [
     {
@@ -185,6 +198,20 @@ const fixtures: DBFixture = {
       xmlname: 'documentF.xml',
       fileID: factory.id('F6'),
       status: 'processing',
+    },
+    {
+      _id: factory.id('S7'),
+      filename: fixturesPdfNameG,
+      xmlname: 'documentG.xml',
+      fileID: factory.id('F17'),
+      status: 'ready',
+    },
+    {
+      _id: factory.id('S8'),
+      filename: fixturesPdfNameG,
+      xmlname: 'documentG.xml',
+      fileID: factory.id('F18'),
+      status: 'ready',
     },
   ],
   ixsuggestions: [
@@ -355,6 +382,12 @@ const fixtures: DBFixture = {
       status: 'processing',
       findingSuggestions: true,
     },
+    {
+      extractorId: factory.id('extractorWithMultiselect'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
   ],
   templates: [
     factory.template('templateToSegmentA', [
@@ -365,7 +398,13 @@ const fixtures: DBFixture = {
     ]),
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
     factory.template('templateToSegmentC', [factory.property('property15', 'text')]),
+    factory.template('templateToSegmentD', [
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('thesauri1').toString(),
+      }),
+    ]),
   ],
+  dictionaries: [factory.thesauri('thesauri1', ['A', 'B', 'C'])],
 };
 
 export { fixtures, factory };
