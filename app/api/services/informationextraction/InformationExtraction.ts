@@ -159,7 +159,7 @@ class InformationExtraction {
 
     const isSelect = propertyTypeIsSelect(propertyType);
 
-    if (!isSelect) {
+    if (!isSelect && propertyLabeledData) {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
@@ -218,7 +218,13 @@ class InformationExtraction {
         };
 
         if (type === 'labeled_data' && !missingData) {
-          data = this.extendMaterialsWithLabeledData(propertyLabeledData, propertyValue, propertyType, file, data);
+          data = this.extendMaterialsWithLabeledData(
+            propertyLabeledData,
+            propertyValue,
+            propertyType,
+            file,
+            data
+          );
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {

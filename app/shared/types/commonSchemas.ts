@@ -380,33 +380,12 @@ export const extractedMetadataSchema = {
     timestamp: { type: 'string' },
     deleteSelection: { type: 'boolean' },
     selection: {
-      oneOf: [
-        {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            text: { type: 'string' },
-            selectionRectangles: selectionRectanglesSchema,
-          },
-        },
-        {
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            values: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  value: { type: 'string' },
-                  label: { type: 'string' },
-                },
-              },
-            },
-            selectionRectangles: selectionRectanglesSchema,
-          },
-        },
-      ],
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        text: { type: 'string' },
+        selectionRectangles: selectionRectanglesSchema,
+      },
     },
   },
 };
