@@ -143,6 +143,9 @@ describe('InformationExtraction', () => {
       const xmlG = await fs.readFile(
         'app/api/services/informationextraction/specs/uploads/segmentation/documentG.xml'
       );
+      const xmlH = await fs.readFile(
+        'app/api/services/informationextraction/specs/uploads/segmentation/documentH.xml'
+      );
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('extractorWithMultiselect')}`,
@@ -150,9 +153,10 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
       });
 
-      expect(IXExternalService.files).toEqual([xmlG, xmlG]);
+      expect(IXExternalService.files.length).toBe(2);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlH]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentG.xml', 'documentG.xml'].sort()
+        ['documentG.xml', 'documentH.xml'].sort()
       );
     });
 
@@ -182,7 +186,7 @@ describe('InformationExtraction', () => {
       });
     });
 
-    fit('should send labeled data (multiselect)', async () => {
+    it('should send labeled data (multiselect)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       expect(IXExternalService.materials.length).toBe(2);

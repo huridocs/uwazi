@@ -191,7 +191,6 @@ class InformationExtraction {
   ) => {
     await Promise.all(
       files.map(async file => {
-        console.log('file', file);
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
