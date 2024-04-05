@@ -11,6 +11,7 @@ const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
 const fixturesPdfNameG = 'documentG.pdf';
 const fixturesPdfNameH = 'documentH.pdf';
+const fixturesPdfNameI = 'documentI.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -87,6 +88,9 @@ const fixtures: DBFixture = {
         { value: 'C', label: 'C' },
       ],
     }),
+    factory.entity('A19', 'templateToSegmentD', {
+      property_multiselect: [],
+    }),
   ],
   files: [
     factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -138,6 +142,7 @@ const fixtures: DBFixture = {
     factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
     factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
     factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
+    factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
   ],
   segmentations: [
     {
@@ -248,6 +253,18 @@ const fixtures: DBFixture = {
             text: 'C',
           },
         ],
+      },
+    },
+    {
+      _id: factory.id('S9'),
+      filename: fixturesPdfNameI,
+      xmlname: 'documentI.xml',
+      fileID: factory.id('F19'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [],
       },
     },
   ],
