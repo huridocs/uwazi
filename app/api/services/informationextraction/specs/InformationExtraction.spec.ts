@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
@@ -6,6 +7,7 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import * as setupSockets from 'api/socketio/setupSockets';
+import { sortByStrings } from 'shared/data_utils/objectSorting';
 
 import { factory, fixtures } from './fixtures';
 import { IXResultsMessage, InformationExtraction } from '../InformationExtraction';
@@ -16,10 +18,14 @@ import { Extractors } from '../ixextractors';
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
 
+const readDocument = async (letter: string) =>
+  fs.readFile(
+    `app/api/services/informationextraction/specs/uploads/segmentation/document${letter}.xml`
+  );
+
 let informationExtraction: InformationExtraction;
 describe('InformationExtraction', () => {
   let IXExternalService: ExternalDummyService;
-  let xmlA: Buffer;
 
   const setIXServiceResults = (results: any[]) => {
     const IXResults = results.map((result: any) => ({
@@ -117,13 +123,9 @@ describe('InformationExtraction', () => {
     it('should send xmls', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
-      xmlA = await fs.readFile(
-        'app/api/services/informationextraction/specs/uploads/segmentation/documentA.xml'
-      );
+      const xmlA = await readDocument('A');
 
-      const xmlC = await fs.readFile(
-        'app/api/services/informationextraction/specs/uploads/segmentation/documentC.xml'
-      );
+      const xmlC = await readDocument('C');
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('prop1extractor')}`,
@@ -140,12 +142,8 @@ describe('InformationExtraction', () => {
     it('should send xmls (multiselect)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
-      const xmlG = await fs.readFile(
-        'app/api/services/informationextraction/specs/uploads/segmentation/documentG.xml'
-      );
-      const xmlH = await fs.readFile(
-        'app/api/services/informationextraction/specs/uploads/segmentation/documentH.xml'
-      );
+      const xmlG = await readDocument('G');
+      const xmlH = await readDocument('H');
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('extractorWithMultiselect')}`,
@@ -314,9 +312,7 @@ describe('InformationExtraction', () => {
     it('should send the materials for the suggestions', async () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
-      xmlA = await fs.readFile(
-        'app/api/services/informationextraction/specs/uploads/segmentation/documentA.xml'
-      );
+      const xmlA = await readDocument('A');
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('prop1extractor')}`,
@@ -348,6 +344,83 @@ describe('InformationExtraction', () => {
           },
         ],
       });
+    });
+
+    it('should send the materials for the suggestions (multiselect)', async () => {
+      await informationExtraction.getSuggestions(factory.id('extractorWithMultiselect'));
+
+      const [xmlG, xmlH, xmlI] = await Promise.all(['G', 'H', 'I'].map(readDocument));
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_predict/tenant1/${factory.id('extractorWithMultiselect')}`,
+        id: factory.id('extractorWithMultiselect').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.filesNames.sort()).toEqual([
+        'documentG.xml',
+        'documentH.xml',
+        'documentI.xml',
+      ]);
+      expect(IXExternalService.files.length).toBe(3);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlH, xmlI]));
+
+      expect(IXExternalService.materials.length).toBe(3);
+      const sortedMaterials = sortByStrings(IXExternalService.materials, [
+        (m: any) => m.xml_file_name,
+      ]);
+      expect(sortedMaterials).toEqual([
+        {
+          xml_file_name: 'documentG.xml',
+          id: factory.id('extractorWithMultiselect').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'A',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentH.xml',
+          id: factory.id('extractorWithMultiselect').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'B',
+              top: 1,
+              width: 1,
+            },
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'C',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentI.xml',
+          id: factory.id('extractorWithMultiselect').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [],
+        },
+      ]);
     });
 
     it('should avoid sending materials for failed suggestions because no segmentation for instance', async () => {
