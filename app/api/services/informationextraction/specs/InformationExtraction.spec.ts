@@ -280,7 +280,7 @@ describe('InformationExtraction', () => {
 
   describe('when model is trained', () => {
     it('should call getSuggestions', async () => {
-      jest
+      const getSuggestionsSpy = jest
         .spyOn(informationExtraction, 'getSuggestions')
         .mockImplementation(async () => Promise.resolve());
 
@@ -293,6 +293,19 @@ describe('InformationExtraction', () => {
       expect(informationExtraction.getSuggestions).toHaveBeenCalledWith(
         factory.id('prop1extractor')
       );
+
+      getSuggestionsSpy.mockClear();
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('extractorWithMultiselect').toString() },
+        tenant: 'tenant1',
+        task: 'create_model',
+        success: true,
+      });
+      expect(informationExtraction.getSuggestions).toHaveBeenCalledWith(
+        factory.id('extractorWithMultiselect')
+      );
+
       jest.clearAllMocks();
     });
   });

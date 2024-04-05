@@ -460,7 +460,7 @@ const fixtures: DBFixture = {
       extractorId: factory.id('extractorWithMultiselect'),
       creationDate: 200,
       status: 'ready',
-      findingSuggestions: false,
+      findingSuggestions: true,
     },
     {
       extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
