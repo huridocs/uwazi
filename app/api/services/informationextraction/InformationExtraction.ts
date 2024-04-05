@@ -147,36 +147,36 @@ class InformationExtraction {
   };
 
   extendMaterialsWithLabeledData = (
-    propertyLabeledData: ExtractedMetadataSchema,
+    propertyLabeledData: ExtractedMetadataSchema | undefined,
+    propertyValue: FileWithAggregation['propertyValue'],
+    propertyType: FileWithAggregation['propertyType'],
     file: FileWithAggregation,
     _data: CommonMaterialsData
   ): MaterialsData => {
-    const { selection } = propertyLabeledData;
     const language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
 
-    let data: MaterialsData = { ..._data };
+    let data: MaterialsData = { ..._data, language_iso };
 
-    if (selection && 'text' in selection) {
+    const isSelect = propertyTypeIsSelect(propertyType);
+
+    if (!isSelect) {
       data = {
         ...data,
-        language_iso,
-        label_text: file.propertyValue || selection?.text,
-        label_segments_boxes: selection?.selectionRectangles?.map(r => {
+        label_text: propertyValue || propertyLabeledData?.selection?.text,
+        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
           const { page, ...rectangle } = r;
           return { ...rectangle, page_number: page };
         }),
       };
     }
 
-    if (selection && 'values' in selection) {
-      const values = (
-        (file.propertyValue as { value: string; label: string }[]) ||
-        selection?.values ||
-        []
-      ).map(({ value, label }) => ({ id: value, label }));
+    if (isSelect) {
+      if (!Array.isArray(propertyValue)) {
+        throw new Error('Property value should be an array');
+      }
       data = {
         ...data,
-        values,
+        values: propertyValue.map(({ value, label }) => ({ id: value, label })),
       };
     }
 
@@ -191,6 +191,7 @@ class InformationExtraction {
   ) => {
     await Promise.all(
       files.map(async file => {
+        console.log('file', file);
         const xmlName = file.segmentation.xmlname!;
         const xmlExists = await storage.fileExists(xmlName, 'segmentation');
 
@@ -216,8 +217,8 @@ class InformationExtraction {
           page_height: file.segmentation.segmentation?.page_height,
         };
 
-        if (type === 'labeled_data' && propertyLabeledData) {
-          data = this.extendMaterialsWithLabeledData(propertyLabeledData, file, data);
+        if (type === 'labeled_data' && !missingData) {
+          data = this.extendMaterialsWithLabeledData(propertyLabeledData, propertyValue, propertyType, file, data);
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
@@ -386,21 +387,15 @@ class InformationExtraction {
   };
 
   trainModel = async (extractorId: ObjectIdSchema) => {
-    console.log('trainModel');
-    console.log('extractorId', extractorId);
     const [model] = await IXModelsModel.get({ extractorId });
-    console.log('model', model);
     if (model && !model.findingSuggestions) {
       model.findingSuggestions = true;
       await IXModelsModel.save(model);
     }
 
     const [extractor] = await Extractors.get({ _id: extractorId });
-    console.log('extractor', extractor);
     const serviceUrl = await this.serviceUrl();
-    console.log('serviceUrl', serviceUrl);
     const materialsSent = await this.materialsForModel(extractor, serviceUrl);
-    console.log('materialsSent', materialsSent);
     if (!materialsSent) {
       if (model) {
         model.findingSuggestions = false;
@@ -470,7 +465,6 @@ class InformationExtraction {
 
   materialsForModel = async (extractor: IXExtractorType, serviceUrl: string) => {
     const files = await getFilesForTraining(extractor.templates, extractor.property);
-    console.log('files', files);
     if (!files.length) {
       return false;
     }

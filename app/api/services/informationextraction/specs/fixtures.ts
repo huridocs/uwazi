@@ -10,6 +10,7 @@ const fixturesPdfNameD = 'documentD.pdf';
 const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
 const fixturesPdfNameG = 'documentG.pdf';
+const fixturesPdfNameH = 'documentH.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -136,7 +137,7 @@ const fixtures: DBFixture = {
     factory.file('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
     factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
     factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
-    factory.file('F18', 'A18', 'document', fixturesPdfNameG, 'eng'),
+    factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
   ],
   segmentations: [
     {
@@ -205,13 +206,49 @@ const fixtures: DBFixture = {
       xmlname: 'documentG.xml',
       fileID: factory.id('F17'),
       status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'A',
+          },
+        ],
+      },
     },
     {
       _id: factory.id('S8'),
-      filename: fixturesPdfNameG,
-      xmlname: 'documentG.xml',
+      filename: fixturesPdfNameH,
+      xmlname: 'documentH.xml',
       fileID: factory.id('F18'),
       status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'B',
+          },
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'C',
+          },
+        ],
+      },
     },
   ],
   ixsuggestions: [

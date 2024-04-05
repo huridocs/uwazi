@@ -182,6 +182,36 @@ describe('InformationExtraction', () => {
       });
     });
 
+    fit('should send labeled data (multiselect)', async () => {
+      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentG.xml')).toEqual({
+        xml_file_name: 'documentG.xml',
+        id: factory.id('extractorWithMultiselect').toString(),
+        tenant: 'tenant1',
+        xml_segments_boxes: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'A',
+          },
+        ],
+        page_width: 13,
+        page_height: 13,
+        language_iso: 'en',
+        values: [
+          {
+            id: 'A',
+            label: 'A',
+          },
+        ],
+      });
+    });
+
     it('should sanitize dates before sending', async () => {
       await informationExtraction.trainModel(factory.id('prop2extractor'));
 
