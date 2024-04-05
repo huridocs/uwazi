@@ -249,14 +249,32 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
         task: 'create_model',
       });
+
+      await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: { id: factory.id('extractorWithMultiselect').toString() },
+        tenant: 'tenant1',
+        task: 'create_model',
+      });
     });
 
     it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
+      const expectedError = { status: 'error', message: 'No labeled data' };
       const result = await informationExtraction.trainModel(factory.id('prop3extractor'));
 
-      expect(result).toMatchObject({ status: 'error', message: 'No labeled data' });
+      expect(result).toMatchObject(expectedError);
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
+
+      const multiSelectResult = await informationExtraction.trainModel(
+        factory.id('extractorWithMultiselectWithoutTrainingData')
+      );
+      expect(multiSelectResult).toMatchObject(expectedError);
+      const [multiSelectModel] = await IXModelsModel.get({
+        extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
+      });
+      expect(multiSelectModel.findingSuggestions).toBe(false);
     });
   });
 

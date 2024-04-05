@@ -12,6 +12,7 @@ const fixturesPdfNameF = 'documentF.pdf';
 const fixturesPdfNameG = 'documentG.pdf';
 const fixturesPdfNameH = 'documentH.pdf';
 const fixturesPdfNameI = 'documentI.pdf';
+const ficturesPdfNameJ = 'documentJ.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -38,6 +39,9 @@ const fixtures: DBFixture = {
     factory.ixExtractor('prop4extractor', 'property4', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
     factory.ixExtractor('extractorWithMultiselect', 'property_multiselect', ['templateToSegmentD']),
+    factory.ixExtractor('extractorWithMultiselectWithoutTrainingData', 'property_multiselect', [
+      'templateToSegmentE',
+    ]),
   ],
   entities: [
     factory.entity(
@@ -89,6 +93,9 @@ const fixtures: DBFixture = {
       ],
     }),
     factory.entity('A19', 'templateToSegmentD', {
+      property_multiselect: [],
+    }),
+    factory.entity('A20', 'templateToSegmentE', {
       property_multiselect: [],
     }),
   ],
@@ -143,6 +150,7 @@ const fixtures: DBFixture = {
     factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
     factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
     factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
+    factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
   ],
   segmentations: [
     {
@@ -260,6 +268,18 @@ const fixtures: DBFixture = {
       filename: fixturesPdfNameI,
       xmlname: 'documentI.xml',
       fileID: factory.id('F19'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [],
+      },
+    },
+    {
+      _id: factory.id('S10'),
+      filename: ficturesPdfNameJ,
+      xmlname: 'documentJ.xml',
+      fileID: factory.id('F20'),
       status: 'ready',
       segmentation: {
         page_height: 13,
@@ -442,6 +462,12 @@ const fixtures: DBFixture = {
       status: 'ready',
       findingSuggestions: false,
     },
+    {
+      extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
   ],
   templates: [
     factory.template('templateToSegmentA', [
@@ -453,6 +479,11 @@ const fixtures: DBFixture = {
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
     factory.template('templateToSegmentC', [factory.property('property15', 'text')]),
     factory.template('templateToSegmentD', [
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('thesauri1').toString(),
+      }),
+    ]),
+    factory.template('templateToSegmentE', [
       factory.property('property_multiselect', 'multiselect', {
         content: factory.id('thesauri1').toString(),
       }),
