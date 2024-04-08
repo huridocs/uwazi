@@ -46,7 +46,7 @@ type FileEnforcedNotUndefined = {
 
 const selectProperties: Set<string> = new Set([propertyTypes.select, propertyTypes.multiselect]);
 
-const propertyTypeIsSelect = (type: string) => selectProperties.has(type);
+const propertyTypeIsSelectOrMultiSelect = (type: string) => selectProperties.has(type);
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
@@ -98,7 +98,7 @@ async function fileQuery(
   propertyType: string,
   entitiesFromTrainingTemplatesIds: string[]
 ) {
-  const needsExtractedMetadata = !propertyTypeIsSelect(propertyType);
+  const needsExtractedMetadata = !propertyTypeIsSelectOrMultiSelect(propertyType);
   const query: {
     type: string;
     filename: { $exists: Boolean };
@@ -125,7 +125,7 @@ function entityForTrainingQuery(
   const query: {
     [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
   } = { template: { $in: templates } };
-  if (propertyTypeIsSelect(propertyType)) {
+  if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
     query[`metadata.${property}`] = { $exists: true, $ne: [] };
   }
   return query;
@@ -163,7 +163,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
       return { ...file, propertyType };
     }
 
-    if (propertyTypeIsSelect(propertyType)) {
+    if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
       const propertyValue = (entity.metadata[property] || []).map(({ value, label }) => ({
         value: ensure<string>(value),
         label: ensure<string>(label),
@@ -217,5 +217,10 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   return getFilesWithAggregations(files);
 }
 
-export { getFilesForTraining, getFilesForSuggestions, getSegmentedFilesIds, propertyTypeIsSelect };
+export {
+  getFilesForTraining,
+  getFilesForSuggestions,
+  getSegmentedFilesIds,
+  propertyTypeIsSelectOrMultiSelect,
+};
 export type { FileWithAggregation };

@@ -45,7 +45,15 @@ export const IXSuggestionSchema = {
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: propertyValueSchema,
+    suggestedValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
     suggestedText: { type: 'string' },
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
@@ -62,7 +70,6 @@ export const IXSuggestionSchema = {
     'extractorId',
     'entityTemplate',
     'suggestedValue',
-    'segment',
     'language',
   ],
 };

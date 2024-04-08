@@ -425,6 +425,7 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
+      _id: factory.id('SUG17'),
       fileId: factory.id('F17'),
       entityId: 'A17',
       entityTemplate: factory.id('templateToSegmentD').toString(),
@@ -437,6 +438,7 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
+      _id: factory.id('SUG18'),
       fileId: factory.id('F18'),
       entityId: 'A18',
       entityTemplate: factory.id('templateToSegmentD').toString(),
@@ -452,6 +454,7 @@ const fixtures: DBFixture = {
       date: 100,
     },
     {
+      _id: factory.id('SUG19'),
       fileId: factory.id('F19'),
       entityId: 'A19',
       entityTemplate: factory.id('templateToSegmentD').toString(),

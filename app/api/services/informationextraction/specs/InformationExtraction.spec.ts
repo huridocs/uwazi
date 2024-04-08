@@ -8,12 +8,23 @@ import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import * as setupSockets from 'api/socketio/setupSockets';
 import { sortByStrings } from 'shared/data_utils/objectSorting';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
 
 import { factory, fixtures } from './fixtures';
-import { IXResultsMessage, InformationExtraction } from '../InformationExtraction';
+import {
+  CommonSuggestion,
+  IXResultsMessage,
+  InformationExtraction,
+  RawSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+} from '../InformationExtraction';
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
+import { ObjectId } from 'mongodb';
+import { extractorId } from 'api/activitylog/specs/fixturesParser';
+import { SuggestedValue } from 'app/V2/Routes/Settings/IX/components/SuggestedValue';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -27,22 +38,40 @@ let informationExtraction: InformationExtraction;
 describe('InformationExtraction', () => {
   let IXExternalService: ExternalDummyService;
 
-  const setIXServiceResults = (results: any[]) => {
-    const IXResults = results.map((result: any) => ({
+  const setIXServiceResults = (
+    results: Partial<RawSuggestion>[],
+    suggestionType: 'text' | 'value' = 'text'
+  ) => {
+    const commonSuggestionData: CommonSuggestion = {
       tenant: 'tenant1',
       id: factory.id('prop1extractor').toString(),
       xml_file_name: 'documentA.xml',
-      text: 'suggestion_text_1',
-      segment_text: 'segment_text_1',
-      segments_boxes: [
-        {
-          left: 1,
-          top: 2,
-          width: 3,
-          height: 4,
-          page_number: 1,
-        },
-      ],
+    };
+    let specificSuggestionData: Partial<RawSuggestion>;
+    if (suggestionType === 'text') {
+      const textSuggestionData: Partial<TextSelectionSuggestion> = {
+        text: 'suggestion_text_1',
+        segment_text: 'segment_text_1',
+        segments_boxes: [
+          {
+            left: 1,
+            top: 2,
+            width: 3,
+            height: 4,
+            page_number: 1,
+          },
+        ],
+      };
+      specificSuggestionData = textSuggestionData;
+    } else {
+      const valueSuggestionData: Partial<ValuesSelectionSuggestion> = {
+        values: [{ id: 'A', label: 'A' }],
+      };
+      specificSuggestionData = valueSuggestionData;
+    }
+    const IXResults = results.map(result => ({
+      ...commonSuggestionData,
+      ...specificSuggestionData,
       ...result,
     }));
     IXExternalService.setResults(IXResults);
@@ -81,7 +110,8 @@ describe('InformationExtraction', () => {
     id: string,
     entity: string,
     language: string,
-    extractorName: string
+    extractorName: string,
+    propertyType?: PropertyTypeSchema
   ) => {
     const extractorId = factory.id(extractorName);
     const [extractor] = await Extractors.get({ _id: extractorId });
@@ -92,6 +122,7 @@ describe('InformationExtraction', () => {
         language,
         segmentation: {},
         extractedMetadata: [],
+        propertyType: propertyType || 'text',
       },
       extractor
     );
@@ -652,6 +683,32 @@ describe('InformationExtraction', () => {
       );
     });
 
+    it('should store non-configured languages as default language suggestion', async () => {
+      setIXServiceResults([
+        {
+          xml_file_name: 'documentE.xml',
+          text: 'Esto es una prueba',
+        },
+      ]);
+
+      await saveSuggestionProcess('F5', 'A5', 'eng', 'prop1extractor');
+
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        extractorId: factory.id('prop1extractor'),
+      });
+      expect(suggestions.length).toBe(1);
+      expect(suggestions[0].language).toBe('en');
+    });
+
     it('should store failed suggestions', async () => {
       setIXServiceResults([
         {
@@ -727,105 +784,186 @@ describe('InformationExtraction', () => {
       expect(suggestions.length).toBe(4);
     });
 
-    it('should store empty suggestions when they are of type text', async () => {
-      setIXServiceResults([
-        {
-          text: '',
-          segment_text: '',
-        },
-        {
-          property_name: 'property4',
-          text: '',
-          segment_text: '',
-        },
-      ]);
+    describe('text', () => {
+      it('should store empty suggestions when they are of type text', async () => {
+        setIXServiceResults([
+          {
+            text: '',
+            segment_text: '',
+          },
+          {
+            property_name: 'property4',
+            text: '',
+            segment_text: '',
+          },
+        ]);
 
-      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop4extractor');
+        await saveSuggestionProcess('F1', 'A1', 'eng', 'prop4extractor');
 
-      await informationExtraction.processResults({
-        params: { id: factory.id('prop1extractor').toString() },
-        tenant: 'tenant1',
-        task: 'suggestions',
-        success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        await informationExtraction.processResults({
+          params: { id: factory.id('prop1extractor').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        await informationExtraction.processResults({
+          params: { id: factory.id('prop4extractor').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestionsText = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('prop1extractor'),
+        });
+        expect(suggestionsText.length).toBe(1);
+
+        const suggestionsMarkdown = await IXSuggestionsModel.get({
+          status: 'ready',
+          propertyName: 'property4',
+        });
+        expect(suggestionsMarkdown.length).toBe(1);
       });
-
-      await informationExtraction.processResults({
-        params: { id: factory.id('prop4extractor').toString() },
-        tenant: 'tenant1',
-        task: 'suggestions',
-        success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
-      });
-
-      const suggestionsText = await IXSuggestionsModel.get({
-        status: 'ready',
-        extractorId: factory.id('prop1extractor'),
-      });
-      expect(suggestionsText.length).toBe(1);
-
-      const suggestionsMarkdown = await IXSuggestionsModel.get({
-        status: 'ready',
-        propertyName: 'property4',
-      });
-      expect(suggestionsMarkdown.length).toBe(1);
     });
 
-    it('should store the suggestion text and suggestion value for dates', async () => {
-      setIXServiceResults([
-        {
-          property_name: 'property2',
-          xml_file_name: 'documentC.xml',
-          text: '2019-10-12',
-          segment_text: 'Birthday of John Doe is October 12, 2019',
-        },
-      ]);
+    describe('dates', () => {
+      it('should store the suggestion text and suggestion value for dates', async () => {
+        setIXServiceResults([
+          {
+            property_name: 'property2',
+            xml_file_name: 'documentC.xml',
+            text: '2019-10-12',
+            segment_text: 'Birthday of John Doe is October 12, 2019',
+          },
+        ]);
 
-      await saveSuggestionProcess('F3', 'A3', 'eng', 'prop2extractor');
+        await saveSuggestionProcess('F3', 'A3', 'eng', 'prop2extractor');
 
-      await informationExtraction.processResults({
-        params: { id: factory.id('prop2extractor').toString() },
-        tenant: 'tenant1',
-        task: 'suggestions',
-        success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        await informationExtraction.processResults({
+          params: { id: factory.id('prop2extractor').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestions = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('prop2extractor'),
+          entityId: 'A3',
+        });
+
+        expect(suggestions).toMatchObject([
+          { suggestedValue: 1570838400, suggestedText: '2019-10-12' },
+        ]);
       });
-
-      const suggestions = await IXSuggestionsModel.get({
-        status: 'ready',
-        extractorId: factory.id('prop2extractor'),
-        entityId: 'A3',
-      });
-
-      expect(suggestions).toMatchObject([
-        { suggestedValue: 1570838400, suggestedText: '2019-10-12' },
-      ]);
     });
 
-    it('should store non-configured languages as default language suggestion', async () => {
-      setIXServiceResults([
-        {
-          xml_file_name: 'documentE.xml',
-          text: 'Esto es una prueba',
-        },
-      ]);
+    describe('select/multiselect', () => {
+      fit('should request and store the suggestions', async () => {
+        setIXServiceResults(
+          [
+            {
+              id: factory.id('extractorWithMultiselect').toString(),
+              xml_file_name: 'documentG.xml',
+              values: [{ id: 'A', label: 'A' }],
+            },
+            {
+              id: factory.id('extractorWithMultiselect').toString(),
+              xml_file_name: 'documentH.xml',
+              values: [
+                { id: 'B', label: 'B' },
+                { id: 'C', label: 'C' },
+              ],
+            },
+            {
+              id: factory.id('extractorWithMultiselect').toString(),
+              xml_file_name: 'documentI.xml',
+              values: [
+                { id: 'A', label: 'A' },
+                { id: 'C', label: 'C' },
+              ],
+            },
+          ],
+          'value'
+        );
 
-      await saveSuggestionProcess('F5', 'A5', 'eng', 'prop1extractor');
+        await saveSuggestionProcess('SUG17', 'A17', 'eng', 'extractorWithMultiselect');
+        await saveSuggestionProcess('SUG18', 'A18', 'eng', 'extractorWithMultiselect');
+        await saveSuggestionProcess('SUG19', 'A19', 'eng', 'extractorWithMultiselect');
 
-      await informationExtraction.processResults({
-        params: { id: factory.id('prop1extractor').toString() },
-        tenant: 'tenant1',
-        task: 'suggestions',
-        success: true,
-        data_url: 'http://localhost:1234/suggestions_results',
+        await informationExtraction.processResults({
+          params: { id: factory.id('extractorWithMultiselect').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestions = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('extractorWithMultiselect'),
+        });
+
+        const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+
+        const expectedBase = {
+          _id: expect.any(ObjectId),
+          entityTemplate: factory.id('templateToSegmentD').toString(),
+          language: 'en',
+          propertyName: 'property_multiselect',
+          extractorId: factory.id('extractorWithMultiselect'),
+          status: 'ready',
+          page: 1,
+          date: expect.any(Number),
+          error: '',
+          state: {
+            labeled: false,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: false,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        };
+
+        expect(sorted).toEqual([
+          {
+            ...expectedBase,
+            fileId: factory.id('F17'),
+            entityId: 'A17',
+            suggestedValue: [{ value: 'A', label: 'A' }],
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F18'),
+            entityId: 'A18',
+            suggestedValue: [
+              { value: 'B', label: 'B' },
+              { value: 'C', label: 'C' },
+            ],
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F19'),
+            entityId: 'A19',
+            suggestedValue: [
+              { value: 'A', label: 'A' },
+              { value: 'C', label: 'C' },
+            ],
+            state: {
+              ...expectedBase.state,
+              withValue: false,
+            },
+          },
+        ]);
       });
-
-      const suggestions = await IXSuggestionsModel.get({
-        status: 'ready',
-        extractorId: factory.id('prop1extractor'),
-      });
-      expect(suggestions.length).toBe(1);
-      expect(suggestions[0].language).toBe('en');
     });
   });
 });

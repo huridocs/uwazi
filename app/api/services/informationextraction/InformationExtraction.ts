@@ -28,42 +28,24 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
-  propertyTypeIsSelect,
+  propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
-import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
+import {
+  CommonSuggestion,
+  RawSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  formatSuggestion,
+} from './suggestionFormatting';
 
 const defaultTrainingLanguage = 'en';
-
-interface CommonSuggestion {
-  tenant: string;
-  id: string;
-  xml_file_name: string;
-}
-
-interface TextSelectionSuggestion extends CommonSuggestion {
-  text: string;
-  segment_text: string;
-  segments_boxes: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    page_number: number;
-  }[];
-}
-
-interface ValuesSelectionSuggestion extends CommonSuggestion {
-  values: { id: string; label: string }[];
-}
-
-type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 
 type TaskTypes = 'suggestions' | 'create_model';
 
@@ -157,7 +139,7 @@ class InformationExtraction {
 
     let data: MaterialsData = { ..._data, language_iso };
 
-    const isSelect = propertyTypeIsSelect(propertyType);
+    const isSelect = propertyTypeIsSelectOrMultiSelect(propertyType);
 
     if (!isSelect && propertyLabeledData) {
       data = {
@@ -199,7 +181,7 @@ class InformationExtraction {
         );
         const { propertyValue, propertyType } = file;
 
-        const missingData = propertyTypeIsSelect(propertyType)
+        const missingData = propertyTypeIsSelectOrMultiSelect(propertyType)
           ? !propertyValue
           : type === 'labeled_data' && !propertyLabeledData;
 
@@ -292,45 +274,19 @@ class InformationExtraction {
           fileId: segmentation.fileID,
         });
 
-        let status: 'ready' | 'failed' = 'ready';
-        let error = '';
-
         const allProps: PropertySchema[] = _.flatMap(
           templates,
           template => template.properties || []
         );
         const property = allProps.find(p => p.name === extractor.property);
 
-        const suggestedValue = stringToTypeOfProperty(
-          rawSuggestion.text,
-          property?.type,
-          currentSuggestion?.language || entity.language
+        const suggestion = await formatSuggestion(
+          property,
+          rawSuggestion,
+          currentSuggestion,
+          entity,
+          message
         );
-
-        if (suggestedValue === null) {
-          status = 'failed';
-          error = 'Invalid value for property type';
-        }
-
-        if (!message.success) {
-          status = 'failed';
-          error = message.error_message ? message.error_message : 'Unknown error';
-        }
-
-        const suggestion: IXSuggestionType = {
-          ...currentSuggestion,
-          suggestedValue,
-          ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
-          segment: rawSuggestion.segment_text,
-          status,
-          error,
-          date: new Date().getTime(),
-          selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
-            const rect = { ...box, page: box.page_number.toString() };
-            delete rect.page_number;
-            return rect;
-          }),
-        };
 
         return Suggestions.save(suggestion);
       })
@@ -551,4 +507,11 @@ class InformationExtraction {
 }
 
 export { InformationExtraction };
-export type { IXResultsMessage };
+export type {
+  IXResultsMessage,
+  InternalIXResultsMessage,
+  CommonSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  RawSuggestion,
+};
