@@ -5095,10 +5095,10 @@
     "@types/express" "^4.7.0"
     file-system-cache "2.3.0"
 
-"@supercharge/promise-pool@^3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@supercharge/promise-pool/-/promise-pool-3.1.1.tgz#237d4e151b8591e2ff4f0ae388f7d6b4741bacc0"
-  integrity sha512-TgCm6jVqMPv+OgD5uBNND/CkCwNDdXPQlcprtnXsWSBpTCy0q5CI6vRj+jsUiXE1xeRaKIX4UeaYJqzZBL92sg==
+"@supercharge/promise-pool@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@supercharge/promise-pool/-/promise-pool-3.2.0.tgz#a6ab4afdf798e453a6bb51c4ae340852e1266af8"
+  integrity sha512-pj0cAALblTZBPtMltWOlZTQSLT07jIaFNeM8TWoJD1cQMgDB9mcMlVMoetiB35OzNJpqQ2b+QEtwiR9f20mADg==
 
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"
