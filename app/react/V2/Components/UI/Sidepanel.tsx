@@ -16,7 +16,7 @@ interface SidePanelProps {
 }
 
 const sidepanelHeader = (closeSidepanelFunction: () => any, title?: React.ReactNode) => (
-  <div className="flex mb-2 text-gray-500">
+  <div className="flex p-4 mb-2 text-gray-500">
     <h1 className="text-base font-bold grow">{title}</h1>
     <button
       type="button"
@@ -80,7 +80,7 @@ const Sidepanel = ({
         />
         <Transition.Child
           as="aside"
-          className={`p-4 w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
+          className={`w-full h-full top-0 right-0 fixed bg-white border-l-2 transition duration-200 ease-in transform ${width}`}
           enterFrom={transition}
           enterTo="translate-x-0"
           leaveTo={transition}
@@ -98,7 +98,7 @@ const Sidepanel = ({
     <Transition
       show={isOpen}
       as="aside"
-      className={`fixed top-0 right-0 z-10 p-4 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
+      className={`fixed top-0 right-0 z-10 w-full h-full bg-white border-l-2 shadow-lg transition duration-200 ease-in transform ${width}`}
       enterFrom={transition}
       enterTo="translate-x-0"
       leaveTo={transition}
@@ -112,13 +112,11 @@ const Sidepanel = ({
 };
 
 Sidepanel.Body = ({ children, className }: { children: React.ReactNode; className?: String }) => (
-  <div className={`flex-grow ${className}`}>{children}</div>
+  <div className={`flex-grow p-4 ${className}`}>{children}</div>
 );
 
 Sidepanel.Footer = ({ children, className }: { children: React.ReactNode; className?: String }) => (
-  <div className={`sticky bottom-0 left-0 w-full px-4 py-3 bg-white z-1 ${className}`}>
-    {children}
-  </div>
+  <div className={`sticky bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>
 );
 
 export type { SidePanelProps };

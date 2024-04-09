@@ -18,7 +18,9 @@ Action,Eylem
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activity
 Activity log,Sistem Günlüğü
+Activity Log,Sistem Günlüğü
 Add,Ekle
 Add / remove favorite,Favoriye ekle / Favoriden çıkarı
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -130,6 +133,7 @@ Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
 Collaborator,Katkı Sunan
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Koleksiyon
 Collection Name,Collection Name
@@ -275,6 +279,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editör
 editor,Editör
+Editors,Editors
 Email,E-posta
 Email address,E-posta adresi
 Email is required,E-posta gerekli
@@ -335,6 +340,7 @@ Flag,İşaretle
 for,for
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
+From,From
 From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
@@ -472,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Karma erişim
 ML TOC,ML TOC
 Month,Ay
+Months,Months
 more options.,daha fazla seçenek.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -817,17 +824,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Eşik
 Time,Saat
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Başlık
+To,To
 "To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
 "To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,bileşenleri hakkında daha fazla bilgi edinmek için.
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
+Today,Today
 Tools,Araçlar
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Çevir

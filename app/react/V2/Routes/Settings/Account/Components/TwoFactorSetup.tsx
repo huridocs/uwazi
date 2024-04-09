@@ -156,7 +156,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           </Card>
         </div>
       </Sidepanel.Body>
-      <Sidepanel.Footer>
+      <Sidepanel.Footer className="px-4 py-3">
         <div className="flex w-full gap-2">
           <Button styling="light" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>

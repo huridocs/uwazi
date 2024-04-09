@@ -18,7 +18,9 @@ Action,활동
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,활동
 Activity log,활동 로그
+Activity Log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
+Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
@@ -130,6 +133,7 @@ Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
 Collaborator,협업자
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,컬렉션
 Collection Name,Collection Name
@@ -275,6 +279,7 @@ Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,편집자
 editor,편집자
+Editors,Editors
 Email,이메일
 Email address,이메일 주소
 Email is required,이메일이 필요합니다.
@@ -335,6 +340,7 @@ Flag,깃발
 for,for
 Forgot Password?,비밀번호를 잊으셨나요?
 Forms and email configuration,양식 및 이메일 구성
+From,From
 From all templates,From all templates
 Full edit mode,전체 편집 모드
 Full width,Full width
@@ -472,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,혼합 접근
 ML TOC,ML TOC
 Month,월
+Months,Months
 more options.,옵션 더보기
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -817,17 +824,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,임계점
 Time,시간
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,제목
+To,To
 "To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,구성 요소에 대해 더 자세히 알기
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
+Today,Today
 Tools,도구
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,번역
