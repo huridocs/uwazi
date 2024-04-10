@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { translationsAtom, inlineEditAtom } from 'V2/atoms';
 
 const parseMarkdownMarker = (
