@@ -11,7 +11,7 @@ import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
-import { upsertTranslationEntries } from './v2_support';
+import { getTranslationsEntriesV2, upsertTranslationEntries } from './v2_support';
 
 const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);
@@ -81,6 +81,14 @@ export default (app: Application) => {
       res.json({ rows: response });
     }
   );
+
+  app.get('/api/translationsV2', async (req: TranslationsRequest, res) => {
+    const translationsV2 = await getTranslationsEntriesV2();
+
+    const translationList = await translationsV2.all();
+
+    res.json(translationList);
+  });
 
   app.get('/api/languages', async (_req, res) => {
     res.json(await translations.availableLanguages());

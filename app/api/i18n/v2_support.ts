@@ -162,10 +162,11 @@ export const getTranslationsV2ByLanguage = async (language: LanguageISO6391) =>
     language
   );
 
+export const getTranslationsEntriesV2 = async () =>
+  new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll();
+
 export const getTranslationsV2 = async () =>
-  resultsToV1TranslationType(
-    new GetTranslationsService(DefaultTranslationsDataSource(DefaultTransactionManager())).getAll()
-  );
+  resultsToV1TranslationType(await getTranslationsEntriesV2());
 
 export const updateContextV2 = async (
   context: CreateTranslationsData['context'],

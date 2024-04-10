@@ -1,5 +1,6 @@
 import { Params } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
+import api from 'app/utils/api';
 import { I18NApi } from 'app/I18N';
 import { ClientTranslationSchema } from 'app/istore';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -21,6 +22,15 @@ const get = async (
 ): Promise<ClientTranslationSchema[]> => {
   const requestParams = new RequestParams({ ...params }, headers);
   const response = I18NApi.get(requestParams);
+  return response;
+};
+
+const getV2 = async (
+  headers?: IncomingHttpHeaders,
+  parameters?: Params
+): Promise<ClientTranslationSchema[]> => {
+  const params = new RequestParams(parameters, headers);
+  const response = api.get('translationsV2', params);
   return response;
 };
 
@@ -60,4 +70,4 @@ const importTranslations = async (
 
 const { getLanguages } = I18NApi;
 
-export { get, post, importTranslations, getLanguages };
+export { get, getV2, post, importTranslations, getLanguages };
