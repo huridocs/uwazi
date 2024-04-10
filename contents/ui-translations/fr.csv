@@ -18,7 +18,9 @@ Action,Action
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activité
 Activity log,Journal d'activité
+Activity Log,Journal d'activité
 Add,Ajouter
 Add / remove favorite,Ajouter / supprimer un favori
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Les propriétés de géolocalisation adjacentes seront rendues sur la même carte
 Admin,Administrateur
 Administrators and Editors,Administrateurs et éditeurs
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tous les changements seront perdus, êtes-vous sûr de vouloir continuer ?"
@@ -129,6 +132,7 @@ Click here,Cliquez ici
 Click to fill,Cliquez pour remplir
 Close,Fermer
 Collaborator,Collaborateur
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
@@ -239,6 +243,8 @@ Discard changes,Annuler les modifications
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Afficher la vue de l'entité depuis la page
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Document
 Document and entity types,Types de documents et d'entités
@@ -265,12 +271,14 @@ Duplicated username,Nom d'utilisateur en double
 Edit,Éditer
 Edit all documents matching this criteria,Modifier tous les documents correspondant à ce critère
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Éditeur
 editor,Éditeur
+Editors,Editors
 Email,E-mail
 Email address,Adresse e-mail
 Email is required,L'email est obligatoire
@@ -310,6 +318,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Fichier
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -330,6 +339,7 @@ Flag,Drapeau
 for,for
 Forgot Password?,Mot de passe oublié?
 Forms and email configuration,Configuration des formulaires et des e-mails
+From,From
 From all templates,From all templates
 Full edit mode,Mode d'édition complet
 Full width,Full width
@@ -359,6 +369,7 @@ Icon,Icône
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Importer
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Importer CSV
 Import instructions,Instructions d'importation
@@ -466,6 +477,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Mixed access
 ML TOC,ML TOC
 Month,Month
+Months,Months
 more options.,plus d'options.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -631,6 +643,7 @@ relationships,Relations
 Relationships,Relations
 Relationships saved,Relationships saved
 RelationType saved,Type de relation sauvegardé
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Supprimer
 remove icon,Supprimer l'icône
@@ -646,6 +659,7 @@ Reset 2FA,Réinitialiser 2FA
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Réinitialiser le mot de passe
+Reset passwords,Reset passwords
 Restricted,Limité
 Return to login,Retourner à la connexion
 Return to the thesaurus page when you finished labeling to start learning.,Revenez à la page du thésaurus lorsque vous avez terminé l'étiquetage pour commencer à apprendre.
@@ -809,17 +823,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Seuil
 Time,Temps
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Titre
+To,To
 "To bring you a better experience, this site uses cookies.","Pour vous apporter une meilleure expérience, ce site utilise des cookies."
 "To complete the account creation process, please create a password for your account","Pour compléter le processus de création de compte, veuillez créer un mot de passe pour votre compte."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,Pour en savoir plus sur les composants.
 to view your authentication code and verify your identity.,Pour afficher votre code d'authentification et vérifier votre identité.
+Today,Today
 Tools,Outils
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Traduire
@@ -909,7 +927,6 @@ x less,x en moins
 x more,x en plus
 Year,Année
 Yes,Oui
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Vous pouvez également intégrer des composants avancés tels que des cartes, des graphiques et des listes d'entités dans votre page."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

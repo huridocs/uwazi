@@ -18,7 +18,9 @@ Action,Acción
 Activate,Activate
 Activated,Activated
 Active languages,Idiomas activos
+Activity,Actividad
 Activity log,Registro de actividad
+Activity Log,Registro de Actividad
 Add,Añadir
 Add / remove favorite,Añadir / eliminar favorito
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Las propiedades de geolocalización se presentarán en el mismo mapa
 Admin,Administración
 Administrators and Editors,Administradores y Editores.
+Admins,Admins
 ALL,TODOS
 All,TODOS
 "All changes will be lost, are you sure you want to proceed?","Se perderán todos los cambios, ¿estás seguro de que quieres continuar?"
@@ -128,6 +131,7 @@ Click here,Haz click aquí
 Click to fill,Click para completar
 Close,Cerrar
 Collaborator,Colaboradora
+Collaborators,Collaborators
 Collapse all,Colapsar todo
 Collection,Colección
 Collection Name,Collection Name
@@ -238,6 +242,8 @@ Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
 Dismiss,Descartar
 Display entity view from page,Mostrar entidad de visualización desde la página
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Documento
 Document and entity types,Tipos de documento y entidad
@@ -264,12 +270,14 @@ Duplicated username,Nombre de usuario duplicado
 Edit,Editar
 Edit all documents matching this criteria,Editar todos los documentos que coinciden con este criterio
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Editar metadatos de entidades
 Edit user,Edit user
 Editor,Editor
 editor,Editor
+Editors,Editors
 Email,Correo electrónico
 Email address,Dirección de correo electrónico
 Email is required,La dirección de correo electrónico es obligatorio
@@ -309,6 +317,7 @@ Favicon description,"Un favicon es un pequeño ícono que representa a tu colecc
 FEATURED,DESTACADO
 File,Archivo
 File deleted,Archivo eliminado
+File name,File name
 File updated,Archivo actualizado
 Files,Archivos
 Files and database usage,Uso de archivos y base de datos
@@ -329,6 +338,7 @@ Flag,Bandera
 for,for
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
+From,From
 From all templates,From all templates
 Full edit mode,Modo de edición completa
 Full width,Ancho completo
@@ -358,6 +368,7 @@ Icon,Icono
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
 Import,Importar
+Import asset,Import asset
 Import completed,Importación completada. Número de entidades creadas:
 Import CSV,Importar CSV
 Import instructions,Instrucciones de importación
@@ -465,6 +476,7 @@ mismatched passwords,Las contraseñas no coinciden
 Mixed access,Acceso mixto
 ML TOC,ML TdC
 Month,Mes
+Months,Months
 more options.,más opciones.
 Multimedia fill description,"intentará llenar el contenedor, utilizando todo su ancho. En las tarjetas, es probable que se produzcan recortes."
 Multimedia fit description,mostrará todo el contenido multimedia dentro del contenedor.
@@ -630,6 +642,7 @@ relationships,relaciones
 Relationships,relaciones
 Relationships saved,Relaciones guardadas
 RelationType saved,Tipo de Relación guardada
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Eliminar
 remove icon,eliminar ícono
@@ -645,6 +658,7 @@ Reset 2FA,Resetear 2FA
 Reset default translation,Resetear traducción predeterminada
 Reset language,Reset language
 Reset Password,Restablecer contraseña
+Reset passwords,Reset passwords
 Restricted,Restringido
 Return to login,Regresar al inicio de sesión
 Return to the thesaurus page when you finished labeling to start learning.,Regresa a la página del tesauro cuando termines de etiquetar para comenzar el aprendizaje.
@@ -807,17 +821,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Límite
 Time,Tiempo
 Timelinks,Líneas de tiempo
+Timestamp,Timestamp
 Title,Título
+To,To
 "To bring you a better experience, this site uses cookies.","Para una mejor experiencia de usuario, este sitio utiliza cookies."
 "To complete the account creation process, please create a password for your account","Para completar este proceso de creación de cuenta, por favor crea una contraseña."
 to learn how to add and configure a contact form on a webpage.,para aprender a añadir y configurar un contacto desde una página web.
 to learn more about the components.,para aprender más sobre los componentes.
 to view your authentication code and verify your identity.,para ver el código de autenticación y verificar tu identidad.
+Today,Today
 Tools,Herramientas
-Total entities,Total de entidades
+total entities,total entities
 Total files,Total de archivos
-"Total files from main documents, supporting files and custom uploads","Total de archivos de documentos primarios, archivos adjuntos y archivos personalizados subidos"
-Total users,Total de usuarios
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Entrenando
 Training model...,Entrenando el modelo…
 Translate,Traducir
@@ -907,7 +925,6 @@ x less,menos
 x more,más
 Year,Año
 Yes,Sí
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Puedes incrustar componentes avanzados como mapas, gráficos y listas de entidades en tu página."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

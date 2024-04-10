@@ -18,7 +18,9 @@ Action,เริ่มทำ
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,กิจกรรม
 Activity log,บันทึกกิจกรรม
+Activity Log,บันทึกกิจกรรม
 Add,เพิ่ม
 Add / remove favorite,เพิ่ม / ลบรายการโปรด
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,คุณสมบัติของตำแหน่งทางภูมิศาสตร์ที่อยู่ติดกันจะแสดงบนแผนที่เดียวกัน
 Admin,ผู้ดูแลระบบ
 Administrators and Editors,ผู้ดูแลระบบและผู้แก้ไขข้อมูล
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",การเปลี่ยนแปลงทั้งหมดจะหายไปคุณแน่ใจหรือว่าต้องการดำเนินการต่อ?
@@ -130,6 +133,7 @@ Click here,คลิกที่นี่
 Click to fill,คลิกเพื่อใส่ค่า
 Close,ปิด
 Collaborator,ผู้ประสานงาน
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
 Collection Name,Collection Name
@@ -240,6 +244,8 @@ Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,แสดงมุมมองรายการจากหน้า
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
@@ -266,12 +272,14 @@ Duplicated username,ชื่อผู้ใช้ที่ซ้ำกัน
 Edit,แก้ไข
 Edit all documents matching this criteria,แก้ไขเอกสารทั้งหมดที่ตรงตามเกณฑ์นี้
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,บรรณาธิการ
 editor,บรรณาธิการ
+Editors,Editors
 Email,อีเมล
 Email address,ที่อยู่อีเมล
 Email is required,จำเป็นต้องใช้อีเมล
@@ -311,6 +319,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ไฟล์
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -331,6 +340,7 @@ Flag,แฟล็ก
 for,for
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
+From,From
 From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
@@ -360,6 +370,7 @@ Icon,ไอคอน
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,นำเข้า
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,นำเข้า CSV
 Import instructions,คำแนะนำการนำเข้าข้อมูล
@@ -467,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
 Month,เดือน
+Months,Months
 more options.,ตัวเลือกเพิ่มเติม
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -632,6 +644,7 @@ relationships,ความสัมพันธ์
 Relationships,ความสัมพันธ์
 Relationships saved,Relationships saved
 RelationType saved,บันทึกประเภทความสัมพันธ์
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,ลบ
 remove icon,ลบไอคอน
@@ -647,6 +660,7 @@ Reset 2FA,สร้าง 2FA ใหม่
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,สร้าง รหัสผ่าน ใหม่
+Reset passwords,Reset passwords
 Restricted,ถูก จำกัด
 Return to login,กลับไปที่การเข้าสู่ระบบ
 Return to the thesaurus page when you finished labeling to start learning.,กลับไปที่หน้าคำอธิบายกลุ่มคำเมื่อคุณแยกประเภทเสร็จสิ้นเพื่อเริ่มการเรียนรู้
@@ -810,17 +824,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,เกณฑ์
 Time,เวลา
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,ชื่อหัวข้อ
+To,To
 "To bring you a better experience, this site uses cookies.",เพื่อประสบการณ์ที่ดีของคุณ เว็บไซต์ของเราจะทำการเก็บคุกกี้
 "To complete the account creation process, please create a password for your account",เพื่อให้การสร้างบัญชีเสร็จสมบูรณ์กรุณาสร้างรหัสผ่านสำหรับบัญชีของคุณ
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,ในกรณีที่ต้องการเรียนรู้เพิ่มเติมเกี่ยวกับส่วนประกอบ
 to view your authentication code and verify your identity.,ในกรณีที่ต้องการดูรหัสผ่านและยืนยันตัวตน
+Today,Today
 Tools,เครื่องมือ
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,แปลภาษา
@@ -910,7 +928,6 @@ x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",นอกจากนี้คุณยังสามารถฝังส่วนประกอบที่ซับซ้อนเช่น แผนที่ แผนภูมิ และลิสต์รายการได้ในหน้าของคุณ
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

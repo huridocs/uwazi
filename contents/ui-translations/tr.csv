@@ -18,7 +18,9 @@ Action,Eylem
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,Activity
 Activity log,Sistem Günlüğü
+Activity Log,Sistem Günlüğü
 Add,Ekle
 Add / remove favorite,Favoriye ekle / Favoriden çıkarı
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Bitişik coğrafi konum özellikleri aynı haritada işlenecek
 Admin,Yönetici
 Administrators and Editors,Yöneticiler ve Editörler
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?","Tüm değişiklikler kaybolacak, devam etmek istediğinizden emin misiniz?"
@@ -130,6 +133,7 @@ Click here,Buraya tıklayın
 Click to fill,Doldurmak için tıklayın
 Close,Kapat
 Collaborator,Katkı Sunan
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Koleksiyon
 Collection Name,Collection Name
@@ -240,6 +244,8 @@ Discard changes,Değişiklikleri göz ardı et
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Sayfadan varlık görünümünü görüntüle
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Belge
 Document and entity types,Belge ve varlık türü
@@ -266,12 +272,14 @@ Duplicated username,Mükerrer kullanıcı adı
 Edit,Düzenle
 Edit all documents matching this criteria,Bu kriterlere uyan tüm belgeleri düzenleyin
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Editör
 editor,Editör
+Editors,Editors
 Email,E-posta
 Email address,E-posta adresi
 Email is required,E-posta gerekli
@@ -311,6 +319,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Dosya
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -331,6 +340,7 @@ Flag,İşaretle
 for,for
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
+From,From
 From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
@@ -360,6 +370,7 @@ Icon,Simge
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,İçe aktar
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV'yi içe aktar
 Import instructions,Talimatları içe aktar
@@ -467,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Karma erişim
 ML TOC,ML TOC
 Month,Ay
+Months,Months
 more options.,daha fazla seçenek.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -632,6 +644,7 @@ relationships,İlişkiler
 Relationships,İlişkiler
 Relationships saved,Relationships saved
 RelationType saved,İlişki türü kaydedildi
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Kaldır
 remove icon,simgeyi kaldır
@@ -647,6 +660,7 @@ Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Parolayı sıfırla
+Reset passwords,Reset passwords
 Restricted,Kısıtlanmış
 Return to login,Girişe dön
 Return to the thesaurus page when you finished labeling to start learning.,Öğrenmeye başlamak için etiketlemeyi bitirdiğinizde Thesaurus sayfasına dönün.
@@ -810,17 +824,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Eşik
 Time,Saat
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Başlık
+To,To
 "To bring you a better experience, this site uses cookies.",Size daha iyi bir deneyim sunmak için bu site çerezleri kullanır.
 "To complete the account creation process, please create a password for your account",Hesap oluşturma işlemini tamamlamak için lütfen hesabınız için bir parola oluşturun
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,bileşenleri hakkında daha fazla bilgi edinmek için.
 to view your authentication code and verify your identity.,kimlik doğrulama kodunuzu görüntülemek ve kimliğinizi doğrulamak için.
+Today,Today
 Tools,Araçlar
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Çevir
@@ -910,7 +928,6 @@ x less,daha az
 x more,daha az
 Year,Yıl
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Sayfanıza haritalar, çizelgeler ve varlık listeleri gibi gelişmiş bileşenleri de yerleştirebilirsiniz."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

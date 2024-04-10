@@ -19,7 +19,7 @@ const router = createBrowserRouter(getRoutes(settings, reduxState?.user.get('_id
 const recoilGlobalState = ({ set }: MutableSnapshot) => {
   set(settingsAtom, settings);
   set(templatesAtom, templates);
-  set(translationsAtom, { translations, locale, inlineEdit: false });
+  set(translationsAtom, { locale, translations });
 };
 
 const App = () => (

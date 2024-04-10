@@ -18,7 +18,9 @@ Action,عمل/ إجراء
 Activate,Activate
 Activated,Activated
 Active languages,اللغات النشطة
+Activity,Activity
 Activity log,سجل النشاطات
+Activity Log,سجل النشاطات
 Add,ضف
 Add / remove favorite,إضافة/ إزالة المفضلة
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,ستتوافر الخصائص المجاورة لتحديد الموقع الجغرافي على الخريطة نفسها
 Admin,مشرف
 Administrators and Editors,المشرفون (أو المسؤولون) والمحررون
+Admins,Admins
 ALL,ALL
 All,All
 "All changes will be lost, are you sure you want to proceed?",ستحذف جميع التغييرات، هل أنت متأكد أنك تريد المتابعة؟
@@ -129,6 +132,7 @@ Click here,انقر هنا
 Click to fill,انقر للتعبئة
 Close,غلق
 Collaborator,متعاون/ مساهم
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,المجموعة
 Collection Name,Collection Name
@@ -239,6 +243,8 @@ Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,عرض معاينة الكيان (الإدخال) من الصفحة
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,مستند
 Document and entity types,انواع الوثائق والكيانات
@@ -265,12 +271,14 @@ Duplicated username,اسم المستخدم مكرر
 Edit,تحرير
 Edit all documents matching this criteria,حرر جميع المستندات المستوفية لهذه المعايير
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,محرر
 editor,محرر
+Editors,Editors
 Email,بريد إلكتروني
 Email address,عنوان البريد الإلكتروني
 Email is required,البريد الإلكتروني مطلوب
@@ -310,6 +318,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,ملف
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -330,6 +339,7 @@ Flag,علم
 for,for
 Forgot Password?,هل نسيت كلمة المرور؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
+From,From
 From all templates,From all templates
 Full edit mode,وضع التحرير الكامل
 Full width,Full width
@@ -359,6 +369,7 @@ Icon,أيقونة
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,استيراد
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,استيراد ملف القيم المفصولة بفواصل
 Import instructions,استيراد التعليمات
@@ -466,6 +477,7 @@ mismatched passwords,Passwords don't match
 Mixed access,وصول مختلط
 ML TOC,ML TOC
 Month,شهر
+Months,Months
 more options.,مزيد من الخيارات
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -631,6 +643,7 @@ relationships,العلاقات
 Relationships,العلاقات
 Relationships saved,Relationships saved
 RelationType saved,تم حفظ نوع العلاقة
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,إزالة
 remove icon,إزالة الأيقونة
@@ -646,6 +659,7 @@ Reset 2FA,إعادة تعيين المصادقة الثنائية
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,إعادة تعيين كلمة المرور
+Reset passwords,Reset passwords
 Restricted,مُقَيَّد
 Return to login,العودة لتسجيل الدخول
 Return to the thesaurus page when you finished labeling to start learning.,عد إلى صفحة قائمة المفردات عند انتهائك من التسمية للبدء في التعلم
@@ -809,17 +823,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,حد
 Time,زمن
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,عنوان
+To,To
 "To bring you a better experience, this site uses cookies.",لكي تستمتع بتجربة أفضل، يستخدم هذا الموقع ملفات تعريف الارتباط
 "To complete the account creation process, please create a password for your account",لإكمال عملية إنشاء الحساب، يرجى إنشاء كلمة مرور لحسابك
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,لمعرفة المزيد حول المكونات
 to view your authentication code and verify your identity.,لمعاينة رمز المصادقة الخاص بك والتحقق من هويتك.
+Today,Today
 Tools,الأدوات
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,ترجم
@@ -909,7 +927,6 @@ x less,X أقل
 x more,X أكثر
 Year,سنة
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.",يمكنك ادخال خاصيات كالخرائط، الرسوم البيانية، أو قوائم للكيانات في صفحتك
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

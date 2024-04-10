@@ -18,7 +18,9 @@ Action,Действие
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,активности
 Activity log,Журнал активности
+Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Смежные свойства геолокации будут отражаться на той же карте
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
+Admins,Admins
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
@@ -127,6 +130,7 @@ Click here,Нажмите сюда
 Click to fill,"Нажмите, чтобы заполнить"
 Close,Закрыть
 Collaborator,Соавтор
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Коллекция
 Collection Name,Collection Name
@@ -237,6 +241,8 @@ Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
@@ -263,12 +269,14 @@ Duplicated username,Продублированное имя пользовате
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Редактор
 editor,Редактор
+Editors,Editors
 Email,Электронная почта
 Email address,Адрес электронной почты
 Email is required,Требутся электронная почта
@@ -308,6 +316,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Файл
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -328,6 +337,7 @@ Flag,Флажок
 for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
+From,From
 From all templates,From all templates
 Full edit mode,Режим полного редактирования
 Full width,Full width
@@ -357,6 +367,7 @@ Icon,Символ
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Импортировать
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Импортировать CSV
 Import instructions,Инструкции по импорту
@@ -464,6 +475,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Month,Месяц
+Months,Months
 more options.,больше опций.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -629,6 +641,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
@@ -644,6 +657,7 @@ Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,Сбросить пароль
+Reset passwords,Reset passwords
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
 Return to the thesaurus page when you finished labeling to start learning.,"После завершения маркировки, вернитесь на страницу с предметными указателями, чтобы начать обучение."
@@ -807,17 +821,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,Порог
 Time,Время
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Заголовок
+To,To
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,"для того, чтобы узнать больше о компонентах."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
+Today,Today
 Tools,Инструменты
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Перевести
@@ -907,7 +925,6 @@ x less,x меньше
 x more,х больше
 Year,Год
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

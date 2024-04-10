@@ -18,7 +18,9 @@ Action,활동
 Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,활동
 Activity log,활동 로그
+Activity Log,활동 로그
 Add,추가
 Add / remove favorite,즐겨찾기 추가/제거
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
@@ -57,6 +59,7 @@ Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,인접한 위치는 동일한 지도에 표시됩니다.
 Admin,관리자
 Administrators and Editors,관리자 및 편집자
+Admins,Admins
 ALL,전체 필터
 All,전체 필터
 "All changes will be lost, are you sure you want to proceed?",모든 변경 사항이 손실됩니다. 계속 진행하시겠습니까?
@@ -130,6 +133,7 @@ Click here,여기를 클릭하십시오
 Click to fill,텍스트 자동 채우기
 Close,닫기
 Collaborator,협업자
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,컬렉션
 Collection Name,Collection Name
@@ -240,6 +244,8 @@ Discard changes,변경 취소
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,페이지에서 엔티티 뷰 표시
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
 Do you want to delete the following items?,Do you want to delete the following items?
 Document,문서
 Document and entity types,문서 및 엔티티 유형
@@ -266,12 +272,14 @@ Duplicated username,사용자 이름 중복
 Edit,편집
 Edit all documents matching this criteria,이 기준과 일치하는 모든 문서 편집
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
 Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,편집자
 editor,편집자
+Editors,Editors
 Email,이메일
 Email address,이메일 주소
 Email is required,이메일이 필요합니다.
@@ -311,6 +319,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,선택 필터
 File,파일
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -331,6 +340,7 @@ Flag,깃발
 for,for
 Forgot Password?,비밀번호를 잊으셨나요?
 Forms and email configuration,양식 및 이메일 구성
+From,From
 From all templates,From all templates
 Full edit mode,전체 편집 모드
 Full width,Full width
@@ -360,6 +370,7 @@ Icon,아이콘
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,업로드
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,CSV 업로드
 Import instructions,업로드 가이드라인
@@ -467,6 +478,7 @@ mismatched passwords,Passwords don't match
 Mixed access,혼합 접근
 ML TOC,ML TOC
 Month,월
+Months,Months
 more options.,옵션 더보기
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -632,6 +644,7 @@ relationships,연결
 Relationships,연결
 Relationships saved,Relationships saved
 RelationType saved,연결 유형 저장 완료
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,제거
 remove icon,아이콘 제거
@@ -647,6 +660,7 @@ Reset 2FA,이중 인증 절차 재설정
 Reset default translation,Reset default translation
 Reset language,Reset language
 Reset Password,암호 재설정
+Reset passwords,Reset passwords
 Restricted,비공개 게시물
 Return to login,로그인으로 돌아가기
 Return to the thesaurus page when you finished labeling to start learning.,라벨링을 마치면 학습 시작을 위해 시소러스 페이지로 돌아가십시오.
@@ -810,17 +824,21 @@ This will delete the template and all relationship properties from other templat
 Threshold,임계점
 Time,시간
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,제목
+To,To
 "To bring you a better experience, this site uses cookies.",이 사이트는 사용자 편의를 위해 쿠키를 사용합니다.
 "To complete the account creation process, please create a password for your account",계정 생성을 마치려면 계정 비밀번호를 설정하십시오.
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,구성 요소에 대해 더 자세히 알기
 to view your authentication code and verify your identity.,코드 확인하고 인증하기
+Today,Today
 Tools,도구
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,번역
@@ -910,7 +928,6 @@ x less,덜 보기
 x more,더 보기
 Year,연도
 Yes,Yes
-You are about to delete a page,You are about to delete a page
 You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","지도, 차트, 엔티티 리스트 등 고급 구성 요소를 페이지에 삽입할 수 있습니다."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.

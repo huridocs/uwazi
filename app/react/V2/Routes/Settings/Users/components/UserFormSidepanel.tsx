@@ -272,7 +272,7 @@ const UserFormSidepanel = ({
               </div>
             </div>
           </Sidepanel.Body>
-          <Sidepanel.Footer>
+          <Sidepanel.Footer className="px-4 py-3">
             <div className="flex gap-2">
               <Button
                 className="flex-grow"

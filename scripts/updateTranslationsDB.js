@@ -6,8 +6,8 @@
 import csvtojson from 'csvtojson';
 import fs from 'fs';
 import { exit } from 'process';
-import { DB } from '../app/api/odm/DB.ts';
-import { config } from '../app/api/config.ts';
+import { DB } from '../app/api/odm/DB';
+import { config } from '../app/api/config';
 
 const TRANSLATIONS_DIR = `${__dirname}/../contents/ui-translations`;
 const logger = new console.Console(process.stdout, process.stderr);
@@ -166,7 +166,7 @@ const checkCSVsIntegrity = async availableCSVs => {
 
 // eslint-disable-next-line max-statements
 const run = async () => {
-  const url = process.env.DBHOST ? `mongodb://${process.env.DBHOST}/` : 'mongodb://127.0.0.1/';
+  const url = config.DBHOST;
   await DB.connect(url, auth);
   const { db } = DB.connectionForDB(config.defaultTenant.dbName);
 
