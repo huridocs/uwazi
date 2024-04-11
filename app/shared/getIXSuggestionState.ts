@@ -2,7 +2,8 @@ import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionStateType } from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
-import { propertyIsSelectOrMultiSelect } from './propertyTypes';
+import { propertyIsMultiselect, propertyIsSelectOrMultiSelect } from './propertyTypes';
+import { property } from 'lodash';
 
 interface SuggestionValues {
   currentValue: (string | number | null)[];
@@ -45,7 +46,7 @@ class IXSuggestionState implements IXSuggestionStateType {
 
   constructor(values: SuggestionValues, propertyType: PropertySchema['type']) {
     this.setLabeled(values, propertyType);
-    this.setWithValue(values);
+    this.setWithValue(values, propertyType);
     this.setWithSuggestion(values);
     this.setMatch(values, propertyType);
     this.setHasContext(values, propertyType);
@@ -66,8 +67,10 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setWithValue({ currentValue }: SuggestionValues) {
-    if (currentValue) {
+  setWithValue({ currentValue }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (propertyIsMultiselect(propertyType)) {
+      this.withValue = currentValue?.length > 0;
+    } else if (currentValue) {
       this.withValue = true;
     }
   }

@@ -270,7 +270,7 @@ const stateUpdateCases: {
       entityId: 'entityWithSelects3',
       propertyName: 'property_multiselect',
     },
-    state: { labeled: false },
+    state: { labeled: false, withValue: false },
   },
   {
     reason: 'multiselects labeled, if the entity has a value',

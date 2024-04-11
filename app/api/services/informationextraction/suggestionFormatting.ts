@@ -11,8 +11,6 @@ interface CommonSuggestion {
   xml_file_name: string;
 }
 
-type SuggestionTypes = 'text' | 'values';
-
 interface TextSelectionSuggestion extends CommonSuggestion {
   text: string;
   segment_text: string;
@@ -31,29 +29,18 @@ interface ValuesSelectionSuggestion extends CommonSuggestion {
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 
-const SUGGESTIONTYPES: { [key: string]: SuggestionTypes } = {
-  select: 'values',
-  multiselect: 'values',
-};
-
-const readSuggestionType = (property: PropertySchema | undefined) => {
-  if (!property) {
-    throw new Error('Property does not exist');
-  }
-
-  return SUGGESTIONTYPES[property.type] ? SUGGESTIONTYPES[property.type] : 'text';
-};
-
 const VALIDATORS = {
   text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => 'text' in suggestion,
-  values: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
+  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
+    'values' in suggestion && suggestion.values.length === 1,
+  multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
     'values' in suggestion,
 };
 
 const FORMATTERS = {
   text: (
-    property: PropertySchema | undefined,
     rawSuggestion: RawSuggestion,
+    property: PropertySchema | undefined,
     currentSuggestion: IXSuggestionType,
     entity: EntitySchema
   ) => {
@@ -80,19 +67,12 @@ const FORMATTERS = {
 
     return suggestion;
   },
-  values: (
-    property: PropertySchema | undefined,
-    rawSuggestion: RawSuggestion,
-    currentSuggestion: IXSuggestionType,
-  ) => {
-    if (!VALIDATORS.values(rawSuggestion)) {
-      throw new Error('Values suggestion is not valid.');
+  select: (rawSuggestion: RawSuggestion) => {
+    if (!VALIDATORS.select(rawSuggestion)) {
+      throw new Error('Select suggestion is not valid.');
     }
 
-    const suggestedValue = rawSuggestion.values.map(value => ({
-      value: value.id,
-      label: value.label,
-    }));
+    const suggestedValue = rawSuggestion.values[0].id;
 
     const suggestion: Partial<IXSuggestionType> = {
       suggestedValue,
@@ -100,6 +80,32 @@ const FORMATTERS = {
 
     return suggestion;
   },
+  multiselect: (rawSuggestion: RawSuggestion) => {
+    if (!VALIDATORS.multiselect(rawSuggestion)) {
+      throw new Error('Multiselect suggestion is not valid.');
+    }
+
+    const suggestedValue = rawSuggestion.values.map(value => value.id);
+
+    const suggestion: Partial<IXSuggestionType> = {
+      suggestedValue,
+    };
+
+    return suggestion;
+  },
+};
+
+const DEFAULTFORMATTER = FORMATTERS.text;
+
+const formatRawSuggestion = (
+  rawSuggestion: RawSuggestion,
+  property: PropertySchema | undefined,
+  currentSuggestion: IXSuggestionType,
+  entity: EntitySchema
+) => {
+  const formatter =
+    (property?.type || '') in FORMATTERS ? FORMATTERS[property.type] : DEFAULTFORMATTER;
+  return formatter(rawSuggestion, property, currentSuggestion, entity);
 };
 
 const readMessageSuccess = (message: InternalIXResultsMessage) =>
@@ -117,12 +123,11 @@ const formatSuggestion = async (
   entity: EntitySchema,
   message: InternalIXResultsMessage
 ) => {
-  const suggestionType = readSuggestionType(property);
   const suggestion: IXSuggestionType = {
     ...currentSuggestion,
     status: 'ready' as 'ready',
     error: '',
-    ...FORMATTERS[suggestionType](property, rawSuggestion, currentSuggestion, entity),
+    ...formatRawSuggestion(rawSuggestion, property, currentSuggestion, entity),
     ...readMessageSuccess(message),
     date: new Date().getTime(),
   };

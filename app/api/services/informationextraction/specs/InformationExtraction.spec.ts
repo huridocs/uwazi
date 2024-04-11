@@ -3,6 +3,8 @@
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 
+import { ObjectId } from 'mongodb';
+
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { testingTenants } from 'api/utils/testingTenants';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
@@ -22,7 +24,6 @@ import {
 import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyService';
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
-import { ObjectId } from 'mongodb';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -862,7 +863,98 @@ describe('InformationExtraction', () => {
     });
 
     describe('select/multiselect', () => {
-      fit('should request and store the suggestions for', async () => {
+      it('should request and store the suggestions (select)', async () => {
+        setIXServiceResults(
+          [
+            {
+              id: factory.id('extractorWithSelect').toString(),
+              xml_file_name: 'documentG.xml',
+              values: [{ id: 'A', label: 'A' }],
+            },
+            {
+              id: factory.id('extractorWithSelect').toString(),
+              xml_file_name: 'documentH.xml',
+              values: [{ id: 'B', label: 'B' }],
+            },
+            {
+              id: factory.id('extractorWithSelect').toString(),
+              xml_file_name: 'documentI.xml',
+              values: [{ id: 'A', label: 'A' }],
+            },
+          ],
+          'value'
+        );
+
+        await saveSuggestionProcess('SUG17B', 'A17', 'eng', 'extractorWithSelect');
+        await saveSuggestionProcess('SUG18B', 'A18', 'eng', 'extractorWithSelect');
+        await saveSuggestionProcess('SUG19B', 'A19', 'eng', 'extractorWithSelect');
+
+        await informationExtraction.processResults({
+          params: { id: factory.id('extractorWithSelect').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestions = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('extractorWithSelect'),
+        });
+
+        const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+
+        const expectedBase = {
+          _id: expect.any(ObjectId),
+          entityTemplate: factory.id('templateToSegmentD').toString(),
+          language: 'en',
+          propertyName: 'property_select',
+          extractorId: factory.id('extractorWithSelect'),
+          status: 'ready',
+          page: 1,
+          date: expect.any(Number),
+          error: '',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        };
+
+        expect(sorted).toEqual([
+          {
+            ...expectedBase,
+            fileId: factory.id('F17'),
+            entityId: 'A17',
+            suggestedValue: 'A',
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F18'),
+            entityId: 'A18',
+            suggestedValue: 'B',
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F19'),
+            entityId: 'A19',
+            suggestedValue: 'A',
+            state: {
+              ...expectedBase.state,
+              withValue: false,
+              labeled: false,
+              match: false,
+            },
+          },
+        ]);
+      });
+
+      it('should request and store the suggestions (multiselect)', async () => {
         setIXServiceResults(
           [
             {
@@ -920,11 +1012,11 @@ describe('InformationExtraction', () => {
           date: expect.any(Number),
           error: '',
           state: {
-            labeled: false,
+            labeled: true,
             withValue: true,
             withSuggestion: true,
             match: true,
-            hasContext: false,
+            hasContext: true,
             processing: false,
             obsolete: false,
             error: false,
@@ -936,28 +1028,24 @@ describe('InformationExtraction', () => {
             ...expectedBase,
             fileId: factory.id('F17'),
             entityId: 'A17',
-            suggestedValue: [{ value: 'A', label: 'A' }],
+            suggestedValue: ['A'],
           },
           {
             ...expectedBase,
             fileId: factory.id('F18'),
             entityId: 'A18',
-            suggestedValue: [
-              { value: 'B', label: 'B' },
-              { value: 'C', label: 'C' },
-            ],
+            suggestedValue: ['B', 'C'],
           },
           {
             ...expectedBase,
             fileId: factory.id('F19'),
             entityId: 'A19',
-            suggestedValue: [
-              { value: 'A', label: 'A' },
-              { value: 'C', label: 'C' },
-            ],
+            suggestedValue: ['A', 'C'],
             state: {
               ...expectedBase.state,
               withValue: false,
+              labeled: false,
+              match: false,
             },
           },
         ]);
