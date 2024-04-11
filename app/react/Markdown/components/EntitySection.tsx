@@ -43,9 +43,7 @@ const getPropertyValue = (property: any, metadataProperty: any) => {
     case 'generatedid':
       return typeof metadataProperty === 'string' ? metadataProperty : metadataProperty[0].value;
     default:
-      return Array.isArray(metadataProperty) && metadataProperty.length > 0
-        ? metadataProperty[0].label || metadataProperty[0].value
-        : undefined;
+      return metadataProperty[0].label || metadataProperty[0].value;
   }
 };
 
