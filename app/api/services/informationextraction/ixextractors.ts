@@ -78,6 +78,7 @@ const handleTemplateUpdate = async (
 
 export const Extractors = {
   get: model.get.bind(model),
+  getById: model.getById.bind(model),
   get_all: async () => model.get({}),
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));

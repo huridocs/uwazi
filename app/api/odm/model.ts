@@ -5,9 +5,6 @@ import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';
 import { ModelBulkWriteStream } from './modelBulkWriteStream';
-import { SuggestedValue } from 'app/V2/Routes/Settings/IX/components/SuggestedValue';
-import { entityId } from 'api/files/specs/fixtures';
-import { sortByStrings } from 'shared/data_utils/objectSorting';
 
 /** Ideas!
  *  T is the actual model-specific document Schema!

@@ -33,7 +33,8 @@ import {
   getMatchStage,
   groupByAndCount,
 } from './pipelineStages';
-import { updateStates } from './updateState';
+import { postProcessCurrentValues, updateStates } from './updateState';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -230,6 +231,18 @@ const readFilter = (filter: IXSuggestionsFilter) => {
   return { customFilter, extractorId };
 };
 
+const postProcessSuggestions = async (_suggestions: any, extractorId: ObjectId) => {
+  let suggestions = _suggestions;
+  if (suggestions.length > 0) {
+    const extractor = await Extractors.getById(extractorId);
+    const propertyName = extractor?.property;
+    const property = await templates.getPropertyByName(propertyName!);
+    const propertyType = property.type;
+    suggestions = postProcessCurrentValues(suggestions, propertyType);
+  }
+  return suggestions;
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -252,9 +265,10 @@ const Suggestions = {
       .aggregate(getMatchStage(extractorId, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
-    const suggestions = await IXSuggestionsModel.db.aggregate(
+    let suggestions = await IXSuggestionsModel.db.aggregate(
       buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
     );
+    suggestions = await postProcessSuggestions(suggestions, extractorId);
 
     return {
       suggestions,

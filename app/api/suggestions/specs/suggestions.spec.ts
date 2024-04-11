@@ -468,6 +468,48 @@ describe('suggestions', () => {
       ]);
     });
 
+    it('should return suggestion and extra entity information (multiselects)', async () => {
+      const { suggestions } = await Suggestions.get(
+        { extractorId: factory.id('multiselect_extractor').toString() },
+        { page: { size: 50, number: 1 } }
+      );
+      expect(suggestions).toMatchObject([
+        {
+          fileId: factory.id('fileForentityWithSelects'),
+          sharedId: 'entityWithSelects',
+          propertyName: 'property_multiselect',
+          extractorId: factory.id('multiselect_extractor'),
+          suggestedValue: ['A', '1A'],
+          language: 'en',
+          date: 5,
+          currentValue: ['A', '1A'],
+          entityTitle: 'entityWithSelects',
+        },
+        {
+          fileId: factory.id('fileForentityWithSelects2'),
+          sharedId: 'entityWithSelects2',
+          propertyName: 'property_multiselect',
+          extractorId: factory.id('multiselect_extractor'),
+          suggestedValue: ['A', '1B'],
+          language: 'en',
+          date: 5,
+          currentValue: ['A', '1A'],
+          entityTitle: 'entityWithSelects2',
+        },
+        {
+          fileId: factory.id('fileForentityWithSelects3'),
+          sharedId: 'entityWithSelects3',
+          propertyName: 'property_multiselect',
+          extractorId: factory.id('multiselect_extractor'),
+          suggestedValue: ['A', '1A'],
+          language: 'en',
+          date: 5,
+          currentValue: [],
+          entityTitle: 'entityWithSelects3',
+        },
+      ]);
+    });
+
     it('should return match status', async () => {
       const { suggestions: superPowersSuggestions } = await getSuggestions({
         extractorId: factory.id('super_powers_extractor').toString(),

@@ -92,6 +92,11 @@ const postProcessCurrentValue = (
   };
 };
 
+export const postProcessCurrentValues = (
+  suggestions: SuggestionsAggregationResult[],
+  propertyType: PropertyTypeSchema
+) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
+
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
