@@ -2,6 +2,7 @@ import {
   objectIdSchema,
   propertyValueSchema,
   selectionRectanglesSchema,
+  selectParentSchema,
 } from 'shared/types/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 
@@ -37,7 +38,13 @@ export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: {
+    objectIdSchema,
+    propertyTypes,
+    propertyValueSchema,
+    IXSuggestionStateSchema,
+    selectParentSchema,
+  },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -50,7 +57,7 @@ export const IXSuggestionSchema = {
         propertyValueSchema,
         {
           type: 'array',
-          items: propertyValueSchema,
+          items: selectParentSchema,
         },
       ],
     },

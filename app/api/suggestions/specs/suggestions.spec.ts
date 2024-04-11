@@ -224,6 +224,86 @@ const stateUpdateCases: {
       language: 'en',
     },
   },
+  {
+    reason: 'selects not labeled, if the entity does not have a value',
+    suggestionQuery: {
+      entityId: 'entityWithSelects3',
+      propertyName: 'property_select',
+    },
+    state: { labeled: false },
+  },
+  {
+    reason: 'selects labeled, if the entity has a value',
+    suggestionQuery: {
+      entityId: 'entityWithSelects',
+      propertyName: 'property_select',
+    },
+    state: { labeled: true },
+  },
+  {
+    reason: 'selects always with context',
+    suggestionQuery: {
+      entityId: 'entityWithSelects3',
+      propertyName: 'property_select',
+    },
+    state: { hasContext: true },
+  },
+  {
+    reason: 'selects as match if the value matches the suggestion',
+    suggestionQuery: {
+      entityId: 'entityWithSelects',
+      propertyName: 'property_select',
+    },
+    state: { match: true },
+  },
+  {
+    reason: 'selects as not match if the value does not match the suggestion',
+    suggestionQuery: {
+      entityId: 'entityWithSelects2',
+      propertyName: 'property_select',
+    },
+    state: { match: false },
+  },
+  {
+    reason: 'multiselects not labeled, if the entity does not have a value',
+    suggestionQuery: {
+      entityId: 'entityWithSelects3',
+      propertyName: 'property_multiselect',
+    },
+    state: { labeled: false },
+  },
+  {
+    reason: 'multiselects labeled, if the entity has a value',
+    suggestionQuery: {
+      entityId: 'entityWithSelects',
+      propertyName: 'property_multiselect',
+    },
+    state: { labeled: true },
+  },
+  {
+    reason: 'multiselects always with context',
+    suggestionQuery: {
+      entityId: 'entityWithSelects3',
+      propertyName: 'property_multiselect',
+    },
+    state: { hasContext: true },
+  },
+  {
+    reason: 'multiselects as match if the set of values strictly matches the suggestion',
+    suggestionQuery: {
+      entityId: 'entityWithSelects',
+      propertyName: 'property_multiselect',
+    },
+    state: { match: true },
+  },
+  {
+    reason: 'multiselects as not match if the set of values does not strictly match the suggestion',
+    suggestionQuery: {
+      entityId: 'entityWithSelects2',
+      propertyName: 'property_multiselect',
+    },
+    state: { match: false },
+  },
 ];
 
 const newProcessingSuggestion: IXSuggestionType = {
@@ -763,11 +843,15 @@ describe('suggestions', () => {
 
   describe('saveMultiple()', () => {
     it('should handle everything at once', async () => {
+      const all: IXSuggestionType[] = (await db.mongodb
+        ?.collection('ixsuggestions')
+        .find({})
+        .toArray()) as IXSuggestionType[];
       const originals = await Promise.all(
         stateUpdateCases.map(async ({ suggestionQuery }) => findOneSuggestion(suggestionQuery))
       );
       const newSuggestions = [newErroringSuggestion, newProcessingSuggestion];
-      const toSave = originals.concat(newSuggestions);
+      const toSave = all.concat(newSuggestions);
 
       await Suggestions.saveMultiple(toSave);
 

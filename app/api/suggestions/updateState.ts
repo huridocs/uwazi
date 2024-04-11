@@ -2,7 +2,7 @@ import settings from 'api/settings';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -10,6 +10,7 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
+import { propertyIsMultiselect } from 'shared/propertyTypes';
 
 type SuggestionsAggregationResult = SuggestionValues & { _id: any; propertyName: string };
 
@@ -80,6 +81,17 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
     ])
     .cursor();
 
+const postProcessCurrentValue = (
+  suggestion: SuggestionsAggregationResult,
+  propertyType: PropertyTypeSchema
+) => {
+  if (propertyIsMultiselect(propertyType)) return suggestion;
+  return {
+    ...suggestion,
+    currentValue: suggestion.currentValue.length > 0 ? suggestion.currentValue[0] : '',
+  };
+};
+
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
@@ -92,10 +104,11 @@ export const updateStates = async (query: any) => {
   let suggestion: SuggestionsAggregationResult = await cursor.next();
   while (suggestion) {
     const propertyType = propertyTypes[suggestion.propertyName];
+    const _suggestion = postProcessCurrentValue(suggestion, propertyType);
     // eslint-disable-next-line no-await-in-loop
     await writeStream.update(
-      { _id: suggestion._id },
-      { $set: { state: getSuggestionState(suggestion, propertyType) } }
+      { _id: _suggestion._id },
+      { $set: { state: getSuggestionState(_suggestion, propertyType) } }
     );
     // eslint-disable-next-line no-await-in-loop
     suggestion = await cursor.next();

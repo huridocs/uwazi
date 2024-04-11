@@ -1,9 +1,11 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionStateType } from './types/suggestionType';
+import { setsEqual } from './data_utils/setUtils';
+import { propertyIsSelectOrMultiSelect } from './propertyTypes';
 
 interface SuggestionValues {
-  currentValue: string | number | null;
+  currentValue: (string | number | null)[];
   labeledValue: string | null;
   suggestedValue: string | null;
   modelCreationDate: number;
@@ -14,8 +16,15 @@ interface SuggestionValues {
   status: string | null;
 }
 
+const sameValueSet = (first: any, second: any) => setsEqual(first || [], second || []);
+
+const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
+  date: isSameDate,
+  multiselect: sameValueSet,
+};
+
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
-  type === 'date' ? isSameDate(first, second) : first === second;
+  EQUALITIES[type] ? EQUALITIES[type](first, second) : first === second;
 
 class IXSuggestionState implements IXSuggestionStateType {
   labeled = false;
@@ -35,18 +44,24 @@ class IXSuggestionState implements IXSuggestionStateType {
   error = false;
 
   constructor(values: SuggestionValues, propertyType: PropertySchema['type']) {
-    this.setLabeled(values);
+    this.setLabeled(values, propertyType);
     this.setWithValue(values);
     this.setWithSuggestion(values);
     this.setMatch(values, propertyType);
-    this.setHasContext(values);
+    this.setHasContext(values, propertyType);
     this.setObsolete(values);
     this.setProcessing(values);
     this.setError(values);
   }
 
-  setLabeled({ labeledValue }: SuggestionValues) {
-    if (labeledValue) {
+  setLabeled(
+    { labeledValue, currentValue }: SuggestionValues,
+    propertyType: PropertySchema['type']
+  ) {
+    if (
+      labeledValue ||
+      (propertyIsSelectOrMultiSelect(propertyType) && currentValue && currentValue.length > 0)
+    ) {
       this.labeled = true;
     }
   }
@@ -76,8 +91,8 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setHasContext({ segment }: SuggestionValues) {
-    if (segment) {
+  setHasContext({ segment }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (segment || propertyIsSelectOrMultiSelect(propertyType)) {
       this.hasContext = true;
     }
   }

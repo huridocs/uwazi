@@ -53,6 +53,8 @@ const fixtures: DBFixture = {
     factory.ixExtractor('super_powers_extractor', 'super_powers', ['personTemplate', 'template1']),
     factory.ixExtractor('enemy_extractor', 'enemy', ['personTemplate', 'heroTemplate']),
     factory.ixExtractor('first_encountered_extractor', 'first_encountered', ['heroTemplate']),
+    factory.ixExtractor('select_extractor', 'property_select', ['templateWithSelects']),
+    factory.ixExtractor('multiselect_extractor', 'property_multiselect', ['templateWithSelects']),
   ],
   ixmodels: [
     {
@@ -84,6 +86,18 @@ const fixtures: DBFixture = {
       status: 'ready',
       creationDate: 1,
       extractorId: factory.id('first_encountered_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('select_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('multiselect_extractor'),
     },
   ],
   ixsuggestions: [
@@ -452,6 +466,78 @@ const fixtures: DBFixture = {
       status: 'ready',
       error: '',
     },
+    {
+      fileId: factory.id('fileForentityWithSelects'),
+      entityId: 'entityWithSelects',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: '1B',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects'),
+      entityId: 'entityWithSelects',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1A'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects2'),
+      entityId: 'entityWithSelects2',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: 'A',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects2'),
+      entityId: 'entityWithSelects2',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1B'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects3'),
+      entityId: 'entityWithSelects3',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: 'A',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects3'),
+      entityId: 'entityWithSelects3',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1A'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
   ],
   entities: [
     {
@@ -583,6 +669,45 @@ const fixtures: DBFixture = {
       metadata: {},
       template: heroTemplateId,
     },
+    {
+      _id: testingDB.id(),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelects',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+    },
+    {
+      _id: testingDB.id(),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects2',
+      title: 'entityWithSelects2',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+    },
+    {
+      _id: testingDB.id(),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects3',
+      title: 'entityWithSelects3',
+      language: 'en',
+      metadata: {
+        property_select: [],
+        property_multiselect: [],
+      },
+    },
   ],
   files: [
     factory.file('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
@@ -672,7 +797,32 @@ const fixtures: DBFixture = {
         },
       },
     ]),
+    factory.file(
+      'fileForentityWithSelects',
+      'entityWithSelects',
+      'document',
+      'documentWithSelects.pdf',
+      'eng',
+      'documentWithSelects.pdf'
+    ),
+    factory.file(
+      'fileForentityWithSelects2',
+      'entityWithSelects2',
+      'document',
+      'documentWithSelects2.pdf',
+      'eng',
+      'documentWithSelects2.pdf'
+    ),
+    factory.file(
+      'fileForentityWithSelects3',
+      'entityWithSelects3',
+      'document',
+      'documentWithSelects3.pdf',
+      'eng',
+      'documentWithSelects3.pdf'
+    ),
   ],
+  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
   templates: [
     {
       _id: personTemplateId,
@@ -730,6 +880,14 @@ const fixtures: DBFixture = {
         },
       ],
     },
+    factory.template('templateWithSelects', [
+      factory.property('property_select', 'select', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+    ]),
   ],
   segmentations: [
     {

@@ -23,8 +23,6 @@ import { ExternalDummyService } from '../../tasksmanager/specs/ExternalDummyServ
 import { IXModelsModel } from '../IXModelsModel';
 import { Extractors } from '../ixextractors';
 import { ObjectId } from 'mongodb';
-import { extractorId } from 'api/activitylog/specs/fixturesParser';
-import { SuggestedValue } from 'app/V2/Routes/Settings/IX/components/SuggestedValue';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
 jest.mock('api/socketio/setupSockets');
@@ -864,7 +862,7 @@ describe('InformationExtraction', () => {
     });
 
     describe('select/multiselect', () => {
-      fit('should request and store the suggestions', async () => {
+      fit('should request and store the suggestions for', async () => {
         setIXServiceResults(
           [
             {
