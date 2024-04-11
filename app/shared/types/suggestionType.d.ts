@@ -5,7 +5,6 @@ import {
   ObjectIdSchema,
   PropertyValueSchema,
   SelectionRectanglesSchema,
-  SelectParentSchema,
 } from 'shared/types/commonTypes';
 
 export interface EntitySuggestionType {
@@ -62,7 +61,7 @@ export interface IXSuggestionType {
   entityTemplate: string;
   fileId?: ObjectIdSchema;
   propertyName: string;
-  suggestedValue: PropertyValueSchema | SelectParentSchema[];
+  suggestedValue: PropertyValueSchema | PropertyValueSchema[];
   suggestedText?: string;
   segment?: string;
   language: string;

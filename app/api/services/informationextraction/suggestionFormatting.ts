@@ -104,6 +104,7 @@ const formatRawSuggestion = (
   entity: EntitySchema
 ) => {
   const formatter =
+    // @ts-ignore
     (property?.type || '') in FORMATTERS ? FORMATTERS[property.type] : DEFAULTFORMATTER;
   return formatter(rawSuggestion, property, currentSuggestion, entity);
 };

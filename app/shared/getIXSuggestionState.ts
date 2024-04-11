@@ -2,11 +2,16 @@ import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionStateType } from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
-import { propertyIsMultiselect, propertyIsSelectOrMultiSelect } from './propertyTypes';
-import { property } from 'lodash';
+import {
+  propertyIsMultiselect,
+  propertyIsSelect,
+  propertyIsSelectOrMultiSelect,
+} from './propertyTypes';
+
+type CurrentValue = string | number | null;
 
 interface SuggestionValues {
-  currentValue: (string | number | null)[];
+  currentValue: CurrentValue | CurrentValue[];
   labeledValue: string | null;
   suggestedValue: string | null;
   modelCreationDate: number;
@@ -61,14 +66,17 @@ class IXSuggestionState implements IXSuggestionStateType {
   ) {
     if (
       labeledValue ||
-      (propertyIsSelectOrMultiSelect(propertyType) && currentValue && currentValue.length > 0)
+      (propertyIsSelect(propertyType) && currentValue) ||
+      (propertyIsMultiselect(propertyType) &&
+        Array.isArray(currentValue) &&
+        currentValue.length > 0)
     ) {
       this.labeled = true;
     }
   }
 
   setWithValue({ currentValue }: SuggestionValues, propertyType: PropertySchema['type']) {
-    if (propertyIsMultiselect(propertyType)) {
+    if (propertyIsMultiselect(propertyType) && Array.isArray(currentValue)) {
       this.withValue = currentValue?.length > 0;
     } else if (currentValue) {
       this.withValue = true;
@@ -129,4 +137,4 @@ const getSuggestionState = (
 };
 
 export { getSuggestionState };
-export type { SuggestionValues };
+export type { CurrentValue, SuggestionValues };

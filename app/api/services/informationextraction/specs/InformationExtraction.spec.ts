@@ -791,7 +791,6 @@ describe('InformationExtraction', () => {
             segment_text: '',
           },
           {
-            property_name: 'property4',
             text: '',
             segment_text: '',
           },
@@ -833,7 +832,6 @@ describe('InformationExtraction', () => {
       it('should store the suggestion text and suggestion value for dates', async () => {
         setIXServiceResults([
           {
-            property_name: 'property2',
             xml_file_name: 'documentC.xml',
             text: '2019-10-12',
             segment_text: 'Birthday of John Doe is October 12, 2019',

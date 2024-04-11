@@ -1,7 +1,8 @@
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
+import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
+import { propertyIsMultiselect } from 'shared/propertyTypes';
 import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
@@ -10,9 +11,18 @@ import {
   getFileStage,
   getLabeledValueStage,
 } from './pipelineStages';
-import { propertyIsMultiselect } from 'shared/propertyTypes';
 
-type SuggestionsAggregationResult = SuggestionValues & { _id: any; propertyName: string };
+type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
+  _id: any;
+  propertyName: string;
+  currentValue: CurrentValue[];
+};
+
+type PostProcessedAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
+  _id: any;
+  propertyName: string;
+  currentValue: SuggestionValues['currentValue'];
+};
 
 const getModelCreationDateStage = () => [
   {
@@ -84,7 +94,7 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
 const postProcessCurrentValue = (
   suggestion: SuggestionsAggregationResult,
   propertyType: PropertyTypeSchema
-) => {
+): PostProcessedAggregationResult => {
   if (propertyIsMultiselect(propertyType)) return suggestion;
   return {
     ...suggestion,
