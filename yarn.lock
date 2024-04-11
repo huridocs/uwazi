@@ -5609,12 +5609,14 @@
     "@types/puppeteer" "*"
     jest-environment-node ">=24 <=27"
 
-"@types/jest-image-snapshot@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.npmjs.org/@types/jest-image-snapshot/-/jest-image-snapshot-3.1.0.tgz"
-  integrity sha512-Sggiz7SOsXrGY6QoD/2XthyFu0erpqD39KZ82JCK4m6KN6WqKVB8W7ZvR0+0VbVsTLLhX1wRkqgOwG2Gnbyeww==
+"@types/jest-image-snapshot@^6.4.0":
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/@types/jest-image-snapshot/-/jest-image-snapshot-6.4.0.tgz#641054d2fa2ff130a49c844ee7a9a68f281b6017"
+  integrity sha512-8TQ/EgqFCX0UWSpH488zAc21fCkJNpZPnnp3xWFMqElxApoJV5QOoqajnVRV7AhfF0rbQWTVyc04KG7tXnzCPA==
   dependencies:
     "@types/jest" "*"
+    "@types/pixelmatch" "*"
+    ssim.js "^3.1.1"
 
 "@types/jest@*", "@types/jest@29.0.0":
   version "29.0.0"
@@ -5794,6 +5796,13 @@
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/@types/parse5/-/parse5-6.0.3.tgz#705bb349e789efa06f43f128cef51240753424cb"
   integrity sha512-SuT16Q1K51EAVPz1K29DJ/sXjhSQ0zjvsypYJ6tlwVsRV9jwW5Adq2ch8Dq8kDBCkYnELS7N7VNCSB5nC56t/g==
+
+"@types/pixelmatch@*":
+  version "5.2.6"
+  resolved "https://registry.yarnpkg.com/@types/pixelmatch/-/pixelmatch-5.2.6.tgz#fba6de304ac958495f27d85989f5c6bb7499a686"
+  integrity sha512-wC83uexE5KGuUODn6zkm9gMzTwdY5L0chiK+VrKcDfEjzxh1uadlWTvOmAbCpnM9zx/Ww3f8uKlYQVnO/TrqVg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/prettier@^2.6.1":
   version "2.6.3"
@@ -13145,16 +13154,15 @@ jest-haste-map@^29.0.1, jest-haste-map@^29.7.0:
   optionalDependencies:
     fsevents "^2.3.2"
 
-jest-image-snapshot@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/jest-image-snapshot/-/jest-image-snapshot-6.0.0.tgz#e3c9df49bda8d5b05bda4b91d67cf99b790f7b99"
-  integrity sha512-1oD6XRBXHcQ8ranC/mpJmvofgIqB5L4CEObhQ5lpXPP3nPtruJJxjQlbvk/Zv9Io0/qDj5ZXFujNCNfeC/r/wg==
+jest-image-snapshot@^6.4.0:
+  version "6.4.0"
+  resolved "https://registry.yarnpkg.com/jest-image-snapshot/-/jest-image-snapshot-6.4.0.tgz#65831d13beb1680f3bba9fb28230fa53d76939be"
+  integrity sha512-IWGtSOnelwaVPd09STbJuLmnAwlBC/roJtTLGLb8M3TA0vfku3MRNEXmljTa1EMXqdRbA0oIWiqHFB1ttTGazQ==
   dependencies:
     chalk "^4.0.0"
     get-stdin "^5.0.1"
     glur "^1.1.2"
     lodash "^4.17.4"
-    mkdirp "^0.5.1"
     pixelmatch "^5.1.0"
     pngjs "^3.4.0"
     rimraf "^2.6.2"
