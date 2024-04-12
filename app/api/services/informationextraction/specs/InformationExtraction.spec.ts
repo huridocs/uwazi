@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';

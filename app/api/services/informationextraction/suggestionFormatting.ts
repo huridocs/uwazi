@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';

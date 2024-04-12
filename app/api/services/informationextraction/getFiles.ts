@@ -131,7 +131,6 @@ function entityForTrainingQuery(
   return query;
 }
 
-// eslint-disable-next-line max-statements
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
   const propertyType = await getPropertyType(templates, property);
   const entities = await entitiesModel.getUnrestricted(
