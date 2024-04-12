@@ -1,15 +1,19 @@
 import { ObjectId } from 'mongodb';
 import entities from 'api/entities/entities';
 import { files } from 'api/files/files';
+import translations from 'api/i18n/translations';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
+import thesauri from 'api/thesauri';
+import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import {
   ExtractedMetadataSchema,
   LanguagesListSchema,
   ObjectIdSchema,
+  PropertySchema,
 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
@@ -20,8 +24,12 @@ import {
   IXSuggestionType,
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
-import { objectIndex } from 'shared/data_utils/objectIndex';
-import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
+import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
+import {
+  getSegmentedFilesIds,
+  propertyTypeIsSelectOrMultiSelect,
+} from 'api/services/informationextraction/getFiles';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {
   baseQueryFragment,
@@ -34,7 +42,8 @@ import {
   groupByAndCount,
 } from './pipelineStages';
 import { postProcessCurrentValues, updateStates } from './updateState';
-import { Extractors } from 'api/services/informationextraction/ixextractors';
+
+class SuggestionAcceptanceError extends Error {}
 
 interface AcceptedSuggestion {
   _id: ObjectIdSchema;
@@ -42,10 +51,102 @@ interface AcceptedSuggestion {
   entityId: string;
 }
 
+const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
+  const dict = await thesauri.getById(thesaurusId);
+  const thesaurusName = dict!.name;
+  const flat = flatThesaurusValues(dict);
+  const indexedlabels = objectIndex(
+    flat,
+    v => v.id,
+    v => v.label
+  );
+  return { name: thesaurusName, id: thesaurusId, indexedlabels };
+};
+
+const fetchTranslations = async (property: PropertySchema) => {
+  const trs = await translations.get({ context: property.content });
+  const indexed = objectIndex(
+    trs,
+    t => t.locale || '',
+    t => t.contexts?.[0].values
+  );
+  return indexed;
+};
+
+const fetchSelectResources = async (property: PropertySchema) => {
+  const thesaurus = await fetchThesaurus(property.content);
+  const labelTranslations = await fetchTranslations(property);
+  return { thesaurus, translations: labelTranslations };
+};
+
+const resourceFetchers = {
+  _default: async () => ({}),
+  select: fetchSelectResources,
+  multiselect: fetchSelectResources,
+};
+
+const fetchResources = async (property: PropertySchema) => {
+  // @ts-ignore
+  const fetcher = resourceFetchers[property.type] || resourceFetchers._default;
+  return fetcher(property);
+};
+
+const getRawValue = (
+  entity: EntitySchema,
+  suggestionsById: Record<IndexTypes, IXSuggestionType>,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+) =>
+  suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
+    .suggestedValue;
+
+const valueGetters = {
+  _default: (
+    entity: EntitySchema,
+    suggestionsById: Record<IndexTypes, IXSuggestionType>,
+    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+  ) => [
+    {
+      value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
+    },
+  ],
+  title: getRawValue,
+  select: (
+    entity: EntitySchema,
+    suggestionsById: Record<IndexTypes, IXSuggestionType>,
+    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    resources: any
+  ) => {
+    const { thesaurus, translations: translation } = resources;
+    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
+
+    if (!(value in thesaurus.indexedlabels)) {
+      throw new SuggestionAcceptanceError(`Id is invalid: ${value} (${thesaurus.name}).`);
+    }
+
+    const label = thesaurus.indexedlabels[value];
+    const translatedLabel = translation[entity.language || '']?.[label];
+    return [{ value, label: translatedLabel }];
+  },
+};
+
+const getValue = (
+  property: PropertySchema,
+  entity: EntitySchema,
+  suggestionsById: Record<IndexTypes, IXSuggestionType>,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+  resources: any
+) => {
+  // @ts-ignore
+  const getter = valueGetters[property.type] || valueGetters._default;
+  return getter(entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
+};
+
+// eslint-disable-next-line max-statements
 const updateEntitiesWithSuggestion = async (
   allLanguages: boolean,
   acceptedSuggestions: AcceptedSuggestion[],
-  suggestions: IXSuggestionType[]
+  suggestions: IXSuggestionType[],
+  property: PropertySchema
 ) => {
   const sharedIds = acceptedSuggestions.map(s => s.sharedId);
   const entityIds = acceptedSuggestions.map(s => s.entityId);
@@ -66,9 +167,7 @@ const updateEntitiesWithSuggestion = async (
     s => s
   );
 
-  const getValue = (entity: EntitySchema) =>
-    suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
-      .suggestedValue;
+  const resources = await fetchResources(property);
 
   const entitiesToUpdate =
     propertyName !== 'title'
@@ -76,23 +175,36 @@ const updateEntitiesWithSuggestion = async (
           ...entity,
           metadata: {
             ...entity.metadata,
-            [propertyName]: [
-              {
-                value: getValue(entity),
-              },
-            ],
+            [propertyName]: getValue(
+              property,
+              entity,
+              suggestionsById,
+              acceptedSuggestionsBySharedId,
+              resources
+            ),
           },
           permissions: entity.permissions || [],
         }))
       : storedEntities.map((entity: EntitySchema) => ({
           ...entity,
-          title: getValue(entity),
+          title: getValue(
+            property,
+            entity,
+            suggestionsById,
+            acceptedSuggestionsBySharedId,
+            resources
+          ),
         }));
 
   await entities.saveMultiple(entitiesToUpdate);
 };
 
-const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
+const updateExtractedMetadata = async (
+  suggestions: IXSuggestionType[],
+  property: PropertySchema
+) => {
+  if (propertyTypeIsSelectOrMultiSelect(property.type)) return;
+
   const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
   const suggestionsByFileId = objectIndex(
     suggestions,
@@ -243,6 +355,11 @@ const postProcessSuggestions = async (_suggestions: any, extractorId: ObjectId) 
   return suggestions;
 };
 
+const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
+
+const needsAllLanguages = (propertyType: PropertySchema['type']) =>
+  propertyTypesWithAllLanguages.has(propertyType);
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -339,10 +456,10 @@ const Suggestions = {
 
     const { propertyName } = suggestions[0];
     const property = await templates.getPropertyByName(propertyName);
-    const allLanguage = property.type === 'numeric' || property.type === 'date';
+    const allLanguage = needsAllLanguages(property.type);
 
-    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions);
-    await updateExtractedMetadata(suggestions);
+    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
+    await updateExtractedMetadata(suggestions, property);
     await Suggestions.updateStates({ _id: { $in: acceptedIds.map(id => new ObjectId(id)) } });
   },
 

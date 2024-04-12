@@ -17,6 +17,7 @@ import {
   shared2esId,
   suggestionId,
   shared2AgeSuggestionId,
+  selectAcceptanceFixtureBase,
 } from './fixtures';
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
@@ -335,16 +336,13 @@ const newErroringSuggestion: IXSuggestionType = {
 };
 
 describe('suggestions', () => {
-  beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
-  });
-
   afterAll(async () => {
     await db.disconnect();
   });
 
   describe('get()', () => {
     beforeEach(async () => {
+      await db.setupFixturesAndContext(fixtures);
       await Suggestions.updateStates({});
     });
 
@@ -661,29 +659,145 @@ describe('suggestions', () => {
   });
 
   describe('accept()', () => {
-    beforeEach(async () => {
-      await Suggestions.updateStates({});
+    describe('general', () => {
+      beforeAll(async () => {
+        await db.setupFixturesAndContext(fixtures);
+        await Suggestions.updateStates({});
+      });
+
+      it('should accept suggestions', async () => {
+        const { suggestions } = await getSuggestions({
+          extractorId: factory.id('super_powers_extractor').toString(),
+        });
+        const labelMismatchedSuggestions = suggestions.filter(
+          (sug: any) => sug.state.labeled && !sug.state.match
+        );
+        const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
+        await Suggestions.accept(
+          labelMismatchedSuggestions.map((sug: any) => ({
+            _id: sug._id,
+            sharedId: sug.sharedId,
+            entityId: sug.entityId,
+          }))
+        );
+        const { suggestions: newSuggestions } = await getSuggestions({
+          extractorId: factory.id('super_powers_extractor').toString(),
+        });
+        const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
+        const matchState = {
+          labeled: true,
+          withValue: true,
+          withSuggestion: true,
+          match: true,
+          hasContext: true,
+          obsolete: false,
+          processing: false,
+          error: false,
+        };
+        expect(changedSuggestions).toMatchObject([
+          {
+            _id: labelMismatchedSuggestions[0]._id,
+            state: matchState,
+            suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
+            labeledValue: labelMismatchedSuggestions[0].suggestedValue,
+          },
+          {
+            _id: labelMismatchedSuggestions[1]._id,
+            state: matchState,
+            suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
+            labeledValue: labelMismatchedSuggestions[1].suggestedValue,
+          },
+        ]);
+      });
+
+      it('should require all suggestions to come from the same extractor', async () => {
+        const [ageSuggestion] = (await getSuggestions({ extractorId: factory.id('age_extractor') }))
+          .suggestions;
+        const [superPowersSuggestion] = (
+          await getSuggestions({
+            extractorId: factory.id('super_powers_extractor'),
+          })
+        ).suggestions;
+        await expect(
+          Suggestions.accept([
+            {
+              _id: ageSuggestion._id,
+              sharedId: ageSuggestion.sharedId,
+              entityId: ageSuggestion.entityId,
+            },
+            {
+              _id: superPowersSuggestion._id,
+              sharedId: superPowersSuggestion.sharedId,
+              entityId: superPowersSuggestion.entityId,
+            },
+          ])
+        ).rejects.toThrow('All suggestions must come from the same extractor');
+      });
+
+      it('should not accept a suggestion with an error', async () => {
+        const { suggestions } = await getSuggestions({
+          extractorId: factory.id('age_extractor').toString(),
+        });
+        const errorSuggestion = suggestions.find(
+          (s: EntitySuggestionType) => s.sharedId === 'shared4'
+        );
+        try {
+          await Suggestions.accept([
+            {
+              _id: errorSuggestion._id,
+              sharedId: errorSuggestion.sharedId,
+              entityId: errorSuggestion.entityId,
+            },
+          ]);
+        } catch (e: any) {
+          expect(e?.message).toBe('Some Suggestions have an error.');
+        }
+      });
     });
 
-    it('should accept suggestions', async () => {
-      const { suggestions } = await getSuggestions({
-        extractorId: factory.id('super_powers_extractor').toString(),
+    describe('numeric/date', () => {
+      beforeAll(async () => {
+        await db.setupFixturesAndContext(fixtures);
+        await Suggestions.updateStates({});
       });
-      const labelMismatchedSuggestions = suggestions.filter(
-        (sug: any) => sug.state.labeled && !sug.state.match
-      );
-      const ids = new Set(labelMismatchedSuggestions.map((sug: any) => sug._id.toString()));
-      await Suggestions.accept(
-        labelMismatchedSuggestions.map((sug: any) => ({
-          _id: sug._id,
-          sharedId: sug.sharedId,
-          entityId: sug.entityId,
-        }))
-      );
-      const { suggestions: newSuggestions } = await getSuggestions({
-        extractorId: factory.id('super_powers_extractor').toString(),
+
+      it('should update entities of all languages if property name is numeric or date', async () => {
+        const { suggestions } = await getSuggestions({
+          extractorId: factory.id('age_extractor').toString(),
+        });
+        const suggestionsToAccept = suggestions.filter(
+          sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
+        );
+        await Suggestions.accept([
+          {
+            _id: suggestionsToAccept[0]._id,
+            sharedId: suggestionsToAccept[0].sharedId,
+            entityId: suggestionsToAccept[0].entityId,
+          },
+          {
+            _id: suggestionsToAccept[1]._id,
+            sharedId: suggestionsToAccept[1].sharedId,
+            entityId: suggestionsToAccept[1].entityId,
+          },
+        ]);
+
+        const entities1 = await db.mongodb
+          ?.collection('entities')
+          .find({ sharedId: 'shared1' })
+          .toArray();
+        const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
+        expect(ages1).toEqual(['17', '17']);
+
+        const entities2 = await db.mongodb
+          ?.collection('entities')
+          .find({ sharedId: 'shared2' })
+          .toArray();
+        const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
+        expect(ages2).toEqual(['20', '20', '20']);
       });
-      const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
+    });
+
+    fdescribe('select', () => {
       const matchState = {
         labeled: true,
         withValue: true,
@@ -694,103 +808,92 @@ describe('suggestions', () => {
         processing: false,
         error: false,
       };
-      expect(changedSuggestions).toMatchObject([
-        {
-          _id: labelMismatchedSuggestions[0]._id,
-          state: matchState,
-          suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
-          labeledValue: labelMismatchedSuggestions[0].suggestedValue,
-        },
-        {
-          _id: labelMismatchedSuggestions[1]._id,
-          state: matchState,
-          suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
-          labeledValue: labelMismatchedSuggestions[1].suggestedValue,
-        },
-      ]);
-    });
 
-    it('should require all suggestions to come from the same extractor', async () => {
-      const [ageSuggestion] = (await getSuggestions({ extractorId: factory.id('age_extractor') }))
-        .suggestions;
-      const [superPowersSuggestion] = (
-        await getSuggestions({
-          extractorId: factory.id('super_powers_extractor'),
-        })
-      ).suggestions;
-      await expect(
-        Suggestions.accept([
-          {
-            _id: ageSuggestion._id,
-            sharedId: ageSuggestion.sharedId,
-            entityId: ageSuggestion.entityId,
-          },
-          {
-            _id: superPowersSuggestion._id,
-            sharedId: superPowersSuggestion.sharedId,
-            entityId: superPowersSuggestion.entityId,
-          },
-        ])
-      ).rejects.toThrow('All suggestions must come from the same extractor');
-    });
+      const suggestionBase = {
+        fileId: factory.id('fileForentityWithSelects'),
+        entityId: 'entityWithSelects',
+        entityTemplate: factory.id('templateWithSelects').toString(),
+        propertyName: 'property_select',
+        extractorId: factory.id('select_extractor'),
+        date: 5,
+        status: 'ready' as 'ready',
+        error: '',
+      };
 
-    it('should not accept a suggestion with an error', async () => {
-      const { suggestions } = await getSuggestions({
-        extractorId: factory.id('age_extractor').toString(),
+      beforeEach(async () => {
+        await db.setupFixturesAndContext(selectAcceptanceFixtureBase);
       });
-      const errorSuggestion = suggestions.find(
-        (s: EntitySuggestionType) => s.sharedId === 'shared4'
-      );
-      try {
-        await Suggestions.accept([
-          {
-            _id: errorSuggestion._id,
-            sharedId: errorSuggestion.sharedId,
-            entityId: errorSuggestion.entityId,
-          },
+
+      const prepareAndAcceptSuggestion = async (suggestedValue: string, language: string) => {
+        const suggestion = {
+          ...suggestionBase,
+          suggestedValue,
+          language,
+        };
+        await Suggestions.save(suggestion);
+
+        const savedSuggestion = (
+          await Suggestions.get({ extractorId: factory.id('select_extractor') }, {})
+        ).suggestions[0];
+        const { _id, sharedId, entityId } = savedSuggestion;
+
+        await Suggestions.accept([{ _id, sharedId, entityId }]);
+        const acceptedSuggestion = (
+          await Suggestions.get({ extractorId: factory.id('select_extractor') }, {})
+        ).suggestions[0];
+        const entities = await db.mongodb?.collection('entities').find({ sharedId }).toArray();
+        const metadataValues = entities?.map(entity => entity.metadata.property_select);
+        const allFiles = await db.mongodb?.collection('files').find({}).toArray();
+        return { acceptedSuggestion, metadataValues, allFiles };
+      };
+
+      it('should validate that the id exists in the dictionary', async () => {
+        const action = async () => {
+          await prepareAndAcceptSuggestion('Z', 'en');
+        };
+        await expect(action()).rejects.toThrow('Id is invalid: Z (Nested Thesaurus).');
+      });
+
+      it('should update entities of all languages, with the properly translated labels', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
+          'A',
+          'en'
+        );
+        expect(acceptedSuggestion.state).toEqual(matchState);
+        expect(metadataValues).toMatchObject([
+          [{ value: 'A', label: 'A' }],
+          [{ value: 'A', label: 'Aes' }],
         ]);
-      } catch (e: any) {
-        expect(e?.message).toBe('Some Suggestions have an error.');
-      }
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
     });
 
-    it('should update entities of all languages if property name is numeric or date', async () => {
-      const { suggestions } = await getSuggestions({
-        extractorId: factory.id('age_extractor').toString(),
-      });
-      const suggestionsToAccept = suggestions.filter(
-        sug => sug.sharedId === 'shared2' || sug.sharedId === 'shared1'
-      );
-      await Suggestions.accept([
-        {
-          _id: suggestionsToAccept[0]._id,
-          sharedId: suggestionsToAccept[0].sharedId,
-          entityId: suggestionsToAccept[0].entityId,
-        },
-        {
-          _id: suggestionsToAccept[1]._id,
-          sharedId: suggestionsToAccept[1].sharedId,
-          entityId: suggestionsToAccept[1].entityId,
-        },
-      ]);
+    describe('multiselect', () => {
+      it('should validate that the ids exist in the dictionary', async () => {});
 
-      const entities1 = await db.mongodb
-        ?.collection('entities')
-        .find({ sharedId: 'shared1' })
-        .toArray();
-      const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
-      expect(ages1).toEqual(['17', '17']);
+      it('should validate that partial acceptance is allowed only for multiselects', async () => {});
 
-      const entities2 = await db.mongodb
-        ?.collection('entities')
-        .find({ sharedId: 'shared2' })
-        .toArray();
-      const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
-      expect(ages2).toEqual(['20', '20', '20']);
+      it("should validate that the accepted id's through partial acceptance do exist on the suggestion", async () => {});
+
+      it("should validate that the id's to remove through partial acceptance do not exist on the suggestion", async () => {});
+
+      it('should allow full acceptance, and update entites of all languages, with the properly translated labels', async () => {});
+
+      it('should allow partial acceptance, and update entites of all languages, with the properly translated labels', async () => {});
+
+      it('should do nothing on partial acceptance if the id is already in the entity metadata', async () => {});
+
+      it('should allow removal through partial acceptance, and update entities of all languages', async () => {});
+
+      it('should do nothing on removal through partial acceptance if the id is not in the entity metadata', async () => {});
     });
   });
 
   describe('save()', () => {
+    beforeEach(async () => {
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     describe('on suggestion status error', () => {
       it('should mark error in state as well', async () => {
         await Suggestions.save(newErroringSuggestion);
@@ -835,6 +938,10 @@ describe('suggestions', () => {
   });
 
   describe('updateStates()', () => {
+    beforeAll(async () => {
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     it.each(stateUpdateCases)('should mark $reason', async ({ state, suggestionQuery }) => {
       const original = await findOneSuggestion(suggestionQuery);
       const idQuery = { _id: original._id };
@@ -848,6 +955,10 @@ describe('suggestions', () => {
   });
 
   describe('setObsolete()', () => {
+    beforeEach(async () => {
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     it('should set the queried suggestions to obsolete state', async () => {
       const query = { entityId: 'shared1' };
       await Suggestions.setObsolete(query);
@@ -858,6 +969,10 @@ describe('suggestions', () => {
   });
 
   describe('markSuggestionsWithoutSegmentation()', () => {
+    beforeEach(async () => {
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     it('should mark the suggestions without segmentation to error state', async () => {
       const query = { entityId: 'shared1' };
       await Suggestions.markSuggestionsWithoutSegmentation(query);
@@ -884,6 +999,10 @@ describe('suggestions', () => {
   });
 
   describe('saveMultiple()', () => {
+    beforeEach(async () => {
+      await db.setupFixturesAndContext(fixtures);
+    });
+
     it('should handle everything at once', async () => {
       const all: IXSuggestionType[] = (await db.mongodb
         ?.collection('ixsuggestions')

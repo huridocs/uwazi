@@ -1285,6 +1285,105 @@ const stateFilterFixtures: DBFixture = {
   ],
 };
 
+const dictionaryTranslationContext = factory.v2.database.nestedTranslationContextDBO(
+  'Nested Thesaurus',
+  'Thesaurus'
+);
+
+const selectAcceptanceFixtureBase: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
+  ixextractors: [
+    factory.ixExtractor('select_extractor', 'property_select', ['templateWithSelects']),
+    factory.ixExtractor('multiselect_extractor', 'property_multiselect', ['templateWithSelects']),
+  ],
+  ixsuggestions: [],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('select_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('multiselect_extractor'),
+    },
+  ],
+  entities: [
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelects',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+      template: factory.id('templateWithSelects'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelectsEs',
+      language: 'es',
+      metadata: {
+        property_select: [{ value: '1B', label: '1Bes' }],
+        property_multiselect: [
+          { value: 'A', label: 'Aes' },
+          { value: '1A', label: '1Aes' },
+        ],
+      },
+      template: factory.id('templateWithSelects'),
+    },
+  ],
+  files: [
+    factory.file(
+      'fileForentityWithSelects',
+      'entityWithSelects',
+      'document',
+      'documentWithSelects.pdf',
+      'eng',
+      'documentWithSelects.pdf'
+    ),
+  ],
+  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
+  templates: [
+    factory.template('templateWithSelects', [
+      factory.property('property_select', 'select', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+    ]),
+  ],
+  translationsV2: [
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus',
+      'en',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus Es',
+      'es',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO('A', 'A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('A', 'Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1Bes', 'es', dictionaryTranslationContext),
+  ],
+};
+
 export {
   factory,
   file2Id,
@@ -1300,4 +1399,5 @@ export {
   heroTemplateId,
   suggestionId,
   shared2AgeSuggestionId,
+  selectAcceptanceFixtureBase,
 };
