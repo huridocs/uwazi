@@ -221,12 +221,9 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
-    //react-hooks && recoil
+    //react-hooks
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': [
-      'warn',
-      { additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)' },
-    ],
+    'react-hooks/exhaustive-deps': ['warn'],
   },
   overrides: [
     { files: ['app/**/*spec.js'], rules: { 'max-lines-per-function': 'off' } },
