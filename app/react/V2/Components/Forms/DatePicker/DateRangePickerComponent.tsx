@@ -91,6 +91,21 @@ const DateRangePickerComponent = React.forwardRef(
       }
     }, [from, to]);
 
+    const handleFromChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const empty = (e.target.value || from) === undefined;
+      if (from !== e.target.value && !empty) {
+        return onFromDateSelected(e);
+      }
+      return () => {};
+    };
+    const handleToChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const empty = (e.target.value || to) === undefined;
+      if (to !== e.target.value && !empty) {
+        return onToDateSelected(e);
+      }
+      return () => {};
+    };
+
     return (
       <div className="tw-content">
         <div id="tw-container" className="relative tw-datepicker" data-test-id={id} />
@@ -130,7 +145,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="start"
                 name="start"
                 type="text"
-                onSelect={onFromDateSelected}
+                onSelect={handleFromChanged}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={from}
@@ -168,7 +183,7 @@ const DateRangePickerComponent = React.forwardRef(
                 id="end"
                 name="end"
                 type="text"
-                onSelect={onToDateSelected}
+                onSelect={handleToChanged}
                 onBlur={onBlur}
                 disabled={disabled}
                 value={to}
