@@ -12,7 +12,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
-import { ColumnDef, Row, SortingState } from '@tanstack/react-table';
+import { Row, SortingState } from '@tanstack/react-table';
 import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -127,15 +127,14 @@ const ActivityLog = () => {
   const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
-  const columns = useRef<ColumnDef<ActivityLogEntryType, any>[]>();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
   const {
-    from,
-    to,
     sort,
     order,
+    from = '',
+    to = '',
     page = 1,
     limit = ITEMS_PER_PAGE,
     username,
@@ -146,6 +145,7 @@ const ActivityLog = () => {
     watch,
     setValue,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
@@ -153,6 +153,8 @@ const ActivityLog = () => {
     defaultValues: {
       username,
       search,
+      from,
+      to,
     },
   });
 
@@ -162,15 +164,15 @@ const ActivityLog = () => {
     setSelectedEntry(null);
   };
 
-  const changedParams = (filters: any) => {
-    const filterPairs = _(filters).toPairs().sortBy(0).value();
+  const changedParams = (filterPairs: [string, any][]) => {
     const newFilters = createSearchParams(filterPairs);
     return Array.from(newFilters).filter(([_key, value]) => value !== '');
   };
 
   const updateSearch = (filters: any) => {
-    const filterPairs = changedParams(filters);
-    if (!_.isEqual(filterPairs, Array.from(searchParams))) {
+    const filterPairs = _(filters).toPairs().sortBy(0).value();
+    const changedPairs = changedParams(filterPairs);
+    if (!_.isEqual(changedPairs, Array.from(searchParams))) {
       setSearchParams((prev: URLSearchParams) => {
         filterPairs.forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
@@ -221,14 +223,12 @@ const ActivityLog = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleSubmit]);
 
-  useEffect(() => {
-    columns.current = getActivityLogColumns(setSelectedEntry, dateFormat);
-  }, [dateFormat]);
+  const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
 
   return (
     <div
       className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
+      style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
       data-testid="settings-activity-log"
     >
       <SettingsContent>
@@ -274,10 +274,10 @@ const ActivityLog = () => {
               />
 
               <DateRangePicker
+                key="activity-log-range"
                 dateFormat={dateFormat}
                 language={locale}
-                from={from}
-                to={to}
+                register={register}
                 placeholderStart={t('System', 'From', null, false)}
                 placeholderEnd={t('System', 'To', null, false)}
                 labelToday={t('System', 'Today', null, false)}
@@ -288,9 +288,6 @@ const ActivityLog = () => {
                   const fromChanged = !_.isEqual(e.target.value, from || '');
                   if (fromChanged) {
                     setValue('from', e.target.value);
-                    if (to === undefined || to === '') {
-                      setValue('to', e.target.value);
-                    }
                   }
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
@@ -298,18 +295,20 @@ const ActivityLog = () => {
                   const toChanged = !_.isEqual(e.target.value, to || '');
                   if (toChanged) {
                     setValue('to', e.target.value);
-                    if (from === undefined || from === '') {
-                      setValue('from', e.target.value);
-                    }
                     debouncedChangeHandler(handleSubmit(onSubmit));
                   }
+                }}
+                onClear={() => {
+                  reset();
+                  setValue('from', '');
+                  setValue('to', '');
                 }}
               />
             </div>
           </form>
-          {error === undefined && columns.current && (
+          {error === undefined && (
             <Table<ActivityLogEntryType>
-              columns={columns.current}
+              columns={columns}
               data={activityLogData}
               sorting={sorting}
               setSorting={setSorting}
