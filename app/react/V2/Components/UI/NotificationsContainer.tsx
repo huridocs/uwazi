@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { useRecoilValue, useResetRecoilState } from 'recoil';
+import { useAtomValue } from 'jotai';
+import { useResetAtom } from 'jotai/utils';
 import { notificationAtom } from 'V2/atoms';
 import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationsContainer = () => {
   const timeout = 6000;
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();
-  const notification = useRecoilValue(notificationAtom);
-  const resetRecoilAtom = useResetRecoilState(notificationAtom);
+  const notification = useAtomValue(notificationAtom);
+  const resetAtom = useResetAtom(notificationAtom);
   const notificationIsSet = Boolean(notification.text && notification.type);
 
   useEffect(() => {
     if (notificationIsSet && !timerId) {
       const timer = setTimeout(() => {
-        resetRecoilAtom();
+        resetAtom();
       }, timeout);
 
       setTimerId(timer);
@@ -25,10 +26,10 @@ const NotificationsContainer = () => {
         setTimerId(undefined);
       }
     };
-  }, [resetRecoilAtom, notificationIsSet, timerId]);
+  }, [resetAtom, notificationIsSet, timerId]);
 
   const onClickHandler = () => {
-    resetRecoilAtom();
+    resetAtom();
   };
 
   const handleMouseEnter = () => timerId && clearTimeout(timerId);
@@ -37,7 +38,7 @@ const NotificationsContainer = () => {
     if (timerId) clearTimeout(timerId);
 
     const timer = setTimeout(() => {
-      resetRecoilAtom();
+      resetAtom();
     }, timeout);
 
     setTimerId(timer);
@@ -52,7 +53,7 @@ const NotificationsContainer = () => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed bottom-1 left-2 md:w-2/5 w-4/5 z-10"
+        className="fixed bottom-1 left-2 z-10 w-4/5 md:w-2/5"
       >
         <div className="shadow-lg" role="alert">
           <Notification

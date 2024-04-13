@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -21,7 +21,7 @@ type EditFileSidepanelProps = {
 const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSidepanelProps) => {
   const { name, extension } = getFileNameAndExtension(file?.originalname);
   const revalidator = useRevalidator();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const notify = (response: FileType | FetchResponseError) => {
     const hasErrors = response instanceof FetchResponseError;

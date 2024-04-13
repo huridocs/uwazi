@@ -2,8 +2,7 @@
  * @jest-environment jsdom
  */
 import { act, renderHook } from '@testing-library/react';
-import * as recoil from 'recoil';
-import { RecoilRoot, RecoilState } from 'recoil';
+import * as jotai from 'jotai/react';
 import { RequestParams } from 'app/utils/RequestParams';
 import { Translate } from 'app/I18N';
 import React from 'react';
@@ -19,14 +18,13 @@ describe('describe useApiCaller', () => {
       ) => any;
     };
   };
+
   const setNotificationMock = jest.fn();
 
   beforeEach(() => {
-    jest
-      .spyOn(recoil, 'useSetRecoilState')
-      .mockImplementation((_state: RecoilState<any>) => setNotificationMock);
+    jest.spyOn(jotai, 'useSetAtom').mockImplementation((_state: any) => setNotificationMock);
 
-    ({ result: apiCallerHook } = renderHook(() => useApiCaller(), { wrapper: RecoilRoot }));
+    ({ result: apiCallerHook } = renderHook(() => useApiCaller(), { wrapper: jotai.Provider }));
   });
 
   afterEach(() => {

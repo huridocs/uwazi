@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { uploadProgressAtom } from './uploadProgressAtom';
 
 type UploadProgressProps = {
@@ -8,7 +8,7 @@ type UploadProgressProps = {
 };
 
 const UploadProgress = ({ queueLength }: UploadProgressProps) => {
-  const { filename, progress } = useRecoilValue(uploadProgressAtom);
+  const { filename, progress } = useAtomValue(uploadProgressAtom);
 
   return filename ? (
     <div className="flex grow">
