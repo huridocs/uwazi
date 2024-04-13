@@ -272,16 +272,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   resetTranslations();
 
-  const atomsGlobalState = () => {
-    const myStore = createStore();
-    myStore.set(settingsAtom, settings);
-    return myStore;
-  };
+  const atomStore = createStore();
+  atomStore.set(settingsAtom, settings);
 
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <Provider store={atomsGlobalState()}>
+        <Provider store={atomStore}>
           <React.StrictMode>
             <StaticRouterProvider
               router={router}
