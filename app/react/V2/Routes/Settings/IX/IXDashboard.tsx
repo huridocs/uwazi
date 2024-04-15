@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -61,7 +61,7 @@ const IXDashboard = () => {
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const formmatedExtractors = useMemo(
     () => formatExtractors(extractors, templates),
