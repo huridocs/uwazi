@@ -54,7 +54,7 @@ describe('MultiselectList.cy.tsx', () => {
     cy.contains('Buffalo Chicken').should('be.visible');
     cy.contains('Chicken Bacon Ranch').should('be.visible');
     cy.contains('Chicken Alfredo').should('be.visible');
-    cy.contains('Margherita').should('not.be.visible');
+    cy.contains('Margherita').should('not.exist');
   });
 
   it('should select options', () => {
