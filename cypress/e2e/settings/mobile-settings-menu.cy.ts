@@ -2,11 +2,6 @@ import { clearCookiesAndLogin } from '../helpers';
 import 'cypress-axe';
 
 describe('Settings mobile menu', () => {
-  before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn blank-state --force', { env });
-  });
-
   beforeEach(() => {
     cy.viewport(384, 768);
   });

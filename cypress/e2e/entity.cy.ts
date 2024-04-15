@@ -46,8 +46,6 @@ const goToRestrictedEntities = () => {
 
 describe('Entities', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 

@@ -53,8 +53,6 @@ const testChart = (chart: string, name: string) => {
 
 describe('Graphs in Page ', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 

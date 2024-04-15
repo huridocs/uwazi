@@ -4,8 +4,6 @@ import { contents, script } from '../helpers/entityViewPageFixtures';
 
 describe('Pages', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.injectAxe();
     cy.contains('a', 'Settings').click();

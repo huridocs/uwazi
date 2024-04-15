@@ -183,4 +183,9 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
   cy.get(timeLinkSelector).type(label);
 });
 
+before(() => {
+  const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
+  cy.exec('yarn e2e-fixtures', { env });
+});
+
 export {};
