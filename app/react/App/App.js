@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
-
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
@@ -27,7 +26,7 @@ import 'flowbite';
 const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
-  const setSettings = useSetRecoilState(settingsAtom);
+  const setSettings = useSetAtom(settingsAtom);
 
   const location = useLocation();
   const params = useParams();
