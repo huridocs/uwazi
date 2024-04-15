@@ -3,21 +3,17 @@
 import React, { useEffect, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
-
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
-
+import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
-
+import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
 import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
 import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-
 import { columns, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
-import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -30,9 +26,9 @@ const RelationshipTypes = () => {
 
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const setRelationshipTypes = useSetRecoilState(relationshipTypesAtom);
-  const templates = useRecoilValue(templatesAtom);
+  const setNotifications = useSetAtom(notificationAtom);
+  const setRelationshipTypes = useSetAtom(relationshipTypesAtom);
+  const templates = useAtomValue(templatesAtom);
 
   interface formType extends Omit<ClientRelationshipType, '_id'> {
     _id?: string;
@@ -128,7 +124,7 @@ const RelationshipTypes = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedItems.length ? 'bg-primary-50' : ''}>
           {selectedItems.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
@@ -176,7 +172,7 @@ const RelationshipTypes = () => {
           header={<Translate>Delete</Translate>}
           warningText={<Translate>Do you want to delete the following items?</Translate>}
           body={
-            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+            <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
               {selectedItems.map(item => (
                 <li key={item.original.name}>{item.original.name}</li>
               ))}

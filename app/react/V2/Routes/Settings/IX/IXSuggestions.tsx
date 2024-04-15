@@ -11,7 +11,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
@@ -72,7 +72,7 @@ const IXSuggestions = () => {
   const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
@@ -231,7 +231,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -259,7 +259,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"

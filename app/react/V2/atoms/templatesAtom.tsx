@@ -1,18 +1,6 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 import { Template } from 'app/apiResponseTypes';
-import { store } from 'app/store';
 
-const templatesAtom = atom({
-  key: 'templates',
-  default: [] as Template[],
-  //sync deprecated redux store
-  effects: [
-    ({ onSet }) => {
-      onSet(newValue => {
-        store?.dispatch({ type: 'templates/SET', value: newValue });
-      });
-    },
-  ],
-});
+const templatesAtom = atom([] as Template[]);
 
 export { templatesAtom };

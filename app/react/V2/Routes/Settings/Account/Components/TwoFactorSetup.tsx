@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from 'app/utils/api';
 import { useRevalidator } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -28,7 +28,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const [token, setToken] = useState('');
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
@@ -122,7 +122,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           <Card className="mb-4 sm:col-span-3" title={<Translate>Secret keys</Translate>}>
             <CopyValueInput
               value={_secret}
-              className="w-full mb-4"
+              className="mb-4 w-full"
               label={
                 <>
                   <Translate className="block">
@@ -157,7 +157,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
         </div>
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3">
-        <div className="flex w-full gap-2">
+        <div className="flex gap-2 w-full">
           <Button styling="light" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>
