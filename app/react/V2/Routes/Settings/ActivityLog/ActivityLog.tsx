@@ -22,7 +22,7 @@ import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, translationsAtom } from 'app/V2/atoms';
 import { getActivityLogColumns } from './components/TableElements';
@@ -123,8 +123,8 @@ interface ActivityLogSearch {
 
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
-  const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
-  const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
+  const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -230,8 +230,8 @@ const ActivityLog = () => {
             id="activity-filters-form mr-10"
             onSubmit={handleSubmit(async data => onSubmit(data))}
           >
-            <div className="flex flex-row items-center gap-4 justify-items-stretch">
-              <h2 className="w-40 p-4 text-base font-semibold text-left">
+            <div className="flex flex-row gap-4 justify-items-stretch items-center">
+              <h2 className="p-4 w-40 text-base font-semibold text-left">
                 <Translate>Activity Log</Translate>
               </h2>
               <InputField

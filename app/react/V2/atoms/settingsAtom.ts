@@ -1,18 +1,6 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { store } from 'app/store';
 
-const settingsAtom = atom({
-  key: 'settings',
-  default: {} as ClientSettings,
-  //sync deprecated redux store
-  effects: [
-    ({ onSet }) => {
-      onSet(newValue => {
-        store?.dispatch({ type: 'settings/collection/SET', value: newValue });
-      });
-    },
-  ],
-});
+const settingsAtom = atom({} as ClientSettings);
 
 export { settingsAtom };

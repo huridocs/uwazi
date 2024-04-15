@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRevalidator } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
@@ -19,7 +19,7 @@ type DropzoneModalProps = {
 const DropzoneModal = ({ notify, isOpen, setIsOpen, uploadService }: DropzoneModalProps) => {
   const revalidator = useRevalidator();
   const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
-  const updateProgress = useSetRecoilState(uploadProgressAtom);
+  const updateProgress = useSetAtom(uploadProgressAtom);
 
   const handleCancel = () => {
     setIsOpen(false);

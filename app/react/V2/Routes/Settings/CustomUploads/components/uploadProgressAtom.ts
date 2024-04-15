@@ -1,8 +1,8 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-const uploadProgressAtom = atom({
-  key: 'uploadProgress',
-  default: { filename: '', progress: undefined } as { filename?: string; progress?: number },
+const uploadProgressAtom = atom({ filename: '', progress: undefined } as {
+  filename?: string;
+  progress?: number;
 });
 
 export { uploadProgressAtom };

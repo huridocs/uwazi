@@ -1,8 +1,5 @@
-import { atom } from 'recoil';
+import { atom } from 'jotai';
 
-const translationsAtom = atom({
-  key: 'translations',
-  default: { locale: '' },
-});
+const translationsAtom = atom({ locale: '' });
 
 export { translationsAtom };
