@@ -1,13 +1,10 @@
 import { ObjectId } from 'mongodb';
-import entities from 'api/entities/entities';
+
 import { files } from 'api/files/files';
-import translations from 'api/i18n/translations';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import templates from 'api/templates';
-import thesauri from 'api/thesauri';
-import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import {
   ExtractedMetadataSchema,
@@ -15,7 +12,6 @@ import {
   ObjectIdSchema,
   PropertySchema,
 } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import {
   IXSuggestionAggregation,
@@ -24,7 +20,7 @@ import {
   IXSuggestionType,
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
-import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
   propertyTypeIsSelectOrMultiSelect,
@@ -42,190 +38,11 @@ import {
   groupByAndCount,
 } from './pipelineStages';
 import { postProcessCurrentValues, updateStates } from './updateState';
-
-class SuggestionAcceptanceError extends Error {}
-
-interface AcceptedSuggestion {
-  _id: ObjectIdSchema;
-  sharedId: string;
-  entityId: string;
-}
-
-const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
-  const dict = await thesauri.getById(thesaurusId);
-  const thesaurusName = dict!.name;
-  const flat = flatThesaurusValues(dict);
-  const indexedlabels = objectIndex(
-    flat,
-    v => v.id,
-    v => v.label
-  );
-  return { name: thesaurusName, id: thesaurusId, indexedlabels };
-};
-
-const fetchTranslations = async (property: PropertySchema) => {
-  const trs = await translations.get({ context: property.content });
-  const indexed = objectIndex(
-    trs,
-    t => t.locale || '',
-    t => t.contexts?.[0].values
-  );
-  return indexed;
-};
-
-const fetchSelectResources = async (property: PropertySchema) => {
-  const thesaurus = await fetchThesaurus(property.content);
-  const labelTranslations = await fetchTranslations(property);
-  return { thesaurus, translations: labelTranslations };
-};
-
-const resourceFetchers = {
-  _default: async () => ({}),
-  select: fetchSelectResources,
-  multiselect: fetchSelectResources,
-};
-
-const fetchResources = async (property: PropertySchema) => {
-  // @ts-ignore
-  const fetcher = resourceFetchers[property.type] || resourceFetchers._default;
-  return fetcher(property);
-};
-
-const getRawValue = (
-  entity: EntitySchema,
-  suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-) =>
-  suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
-    .suggestedValue;
-
-const checkValuesInThesaurus = (
-  values: string[],
-  thesaurusName: string,
-  indexedlabels: Record<IndexTypes, string>
-) => {
-  const missingValues = values.filter(v => !(v in indexedlabels));
-
-  if (missingValues.length === 1) {
-    throw new SuggestionAcceptanceError(`Id is invalid: ${missingValues[0]} (${thesaurusName}).`);
-  }
-  if (missingValues.length > 1) {
-    throw new SuggestionAcceptanceError(
-      `Ids are invalid: ${missingValues.join(', ')} (${thesaurusName}).`
-    );
-  }
-};
-
-const valueGetters = {
-  _default: (
-    entity: EntitySchema,
-    suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-  ) => [
-    {
-      value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
-    },
-  ],
-  title: getRawValue,
-  select: (
-    entity: EntitySchema,
-    suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
-    resources: any
-  ) => {
-    const { thesaurus, translations: translation } = resources;
-    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
-    checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
-
-    const label = thesaurus.indexedlabels[value];
-    const translatedLabel = translation[entity.language || '']?.[label];
-    return [{ value, label: translatedLabel }];
-  },
-  multiselect: (
-    entity: EntitySchema,
-    suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
-    resources: any
-  ) => {
-    const { thesaurus, translations: translation } = resources;
-    const values = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string[];
-    checkValuesInThesaurus(values, thesaurus.name, thesaurus.indexedlabels);
-
-    const labels = values.map(v => thesaurus.indexedlabels[v]);
-    const translatedLabels = labels.map(l => translation[entity.language || '']?.[l]);
-    return values.map((value, index) => ({ value, label: translatedLabels[index] }));
-  },
-};
-
-const getValue = (
-  property: PropertySchema,
-  entity: EntitySchema,
-  suggestionsById: Record<IndexTypes, IXSuggestionType>,
-  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
-  resources: any
-) => {
-  // @ts-ignore
-  const getter = valueGetters[property.type] || valueGetters._default;
-  return getter(entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
-};
-
-// eslint-disable-next-line max-statements
-const updateEntitiesWithSuggestion = async (
-  allLanguages: boolean,
-  acceptedSuggestions: AcceptedSuggestion[],
-  suggestions: IXSuggestionType[],
-  property: PropertySchema
-) => {
-  const sharedIds = acceptedSuggestions.map(s => s.sharedId);
-  const entityIds = acceptedSuggestions.map(s => s.entityId);
-  const { propertyName } = suggestions[0];
-  const query = allLanguages
-    ? { sharedId: { $in: sharedIds } }
-    : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
-  const storedEntities = await entities.get(query, '+permissions');
-
-  const acceptedSuggestionsBySharedId = objectIndex(
-    acceptedSuggestions,
-    as => as.sharedId,
-    as => as
-  );
-  const suggestionsById = objectIndex(
-    suggestions,
-    s => s._id?.toString() || '',
-    s => s
-  );
-
-  const resources = await fetchResources(property);
-
-  const entitiesToUpdate =
-    propertyName !== 'title'
-      ? storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            [propertyName]: getValue(
-              property,
-              entity,
-              suggestionsById,
-              acceptedSuggestionsBySharedId,
-              resources
-            ),
-          },
-          permissions: entity.permissions || [],
-        }))
-      : storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          title: getValue(
-            property,
-            entity,
-            suggestionsById,
-            acceptedSuggestionsBySharedId,
-            resources
-          ),
-        }));
-
-  await entities.saveMultiple(entitiesToUpdate);
-};
+import {
+  AcceptedSuggestion,
+  SuggestionAcceptanceError,
+  updateEntitiesWithSuggestion,
+} from './updateEntities';
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
@@ -388,6 +205,18 @@ const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'mul
 const needsAllLanguages = (propertyType: PropertySchema['type']) =>
   propertyTypesWithAllLanguages.has(propertyType);
 
+const validatePartialAcceptanceTypeConstraint = (
+  acceptedSuggestions: AcceptedSuggestion[],
+  property: PropertySchema
+) => {
+  const addedValuesExist = acceptedSuggestions.some(s => s.addedValues);
+  const removedValuesExist = acceptedSuggestions.some(s => s.removedValues);
+  const multiSelectOnly = addedValuesExist || removedValuesExist;
+  if (property.type !== 'multiselect' && multiSelectOnly) {
+    throw new SuggestionAcceptanceError('Partial acceptance is only allowed for multiselects.');
+  }
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -484,6 +313,7 @@ const Suggestions = {
 
     const { propertyName } = suggestions[0];
     const property = await templates.getPropertyByName(propertyName);
+    validatePartialAcceptanceTypeConstraint(acceptedSuggestions, property);
     const allLanguage = needsAllLanguages(property.type);
 
     await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);

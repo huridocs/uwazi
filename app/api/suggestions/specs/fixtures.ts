@@ -1377,6 +1377,8 @@ const selectAcceptanceFixtureBase: DBFixture = {
     ),
     factory.v2.database.translationDBO('A', 'A', 'en', dictionaryTranslationContext),
     factory.v2.database.translationDBO('A', 'Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('B', 'B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('B', 'Bes', 'es', dictionaryTranslationContext),
     factory.v2.database.translationDBO('1A', '1A', 'en', dictionaryTranslationContext),
     factory.v2.database.translationDBO('1A', '1Aes', 'es', dictionaryTranslationContext),
     factory.v2.database.translationDBO('1B', '1B', 'en', dictionaryTranslationContext),

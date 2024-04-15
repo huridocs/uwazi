@@ -736,26 +736,16 @@ describe('suggestions', () => {
           extractorId: factory.id('super_powers_extractor').toString(),
         });
         const changedSuggestions = newSuggestions.filter((sug: any) => ids.has(sug._id.toString()));
-        const matchState = {
-          labeled: true,
-          withValue: true,
-          withSuggestion: true,
-          match: true,
-          hasContext: true,
-          obsolete: false,
-          processing: false,
-          error: false,
-        };
         expect(changedSuggestions).toMatchObject([
           {
             _id: labelMismatchedSuggestions[0]._id,
-            state: matchState,
+            state: matchState(),
             suggestedValue: labelMismatchedSuggestions[0].suggestedValue,
             labeledValue: labelMismatchedSuggestions[0].suggestedValue,
           },
           {
             _id: labelMismatchedSuggestions[1]._id,
-            state: matchState,
+            state: matchState(),
             suggestedValue: labelMismatchedSuggestions[1].suggestedValue,
             labeledValue: labelMismatchedSuggestions[1].suggestedValue,
           },
@@ -849,7 +839,7 @@ describe('suggestions', () => {
       });
     });
 
-    fdescribe('select', () => {
+    describe('select', () => {
       beforeEach(async () => {
         await db.setupFixturesAndContext(selectAcceptanceFixtureBase);
       });
@@ -877,7 +867,7 @@ describe('suggestions', () => {
       });
     });
 
-    fdescribe('multiselect', () => {
+    describe('multiselect', () => {
       beforeEach(async () => {
         await db.setupFixturesAndContext(selectAcceptanceFixtureBase);
       });
