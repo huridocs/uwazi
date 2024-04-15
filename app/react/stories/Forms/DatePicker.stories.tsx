@@ -1,10 +1,10 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { RecoilRoot } from 'recoil';
+import { Provider as ReduxProvider } from 'react-redux';
+import { Provider } from 'jotai';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 import { DatePicker } from 'app/V2/Components/Forms';
-import { LEGACY_createStore as createStore, recoilGlobalState } from 'V2/shared/testingHelpers';
+import { LEGACY_createStore as createStore, atomsGlobalState } from 'V2/shared/testingHelpers';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',
@@ -25,8 +25,8 @@ type Story = StoryObj<typeof DatePicker>;
 
 const Primary: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <RecoilRoot initializeState={recoilGlobalState()}>
+    <ReduxProvider store={createStore()}>
+      <Provider store={atomsGlobalState()}>
         <DatePicker
           name={args.name}
           label={args.label}
@@ -41,8 +41,8 @@ const Primary: Story = {
           onBlur={args.onBlur}
           clearFieldAction={args.clearFieldAction}
         />
-      </RecoilRoot>
-    </Provider>
+      </Provider>
+    </ReduxProvider>
   ),
 };
 

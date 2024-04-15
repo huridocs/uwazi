@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from 'react-router-dom';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
 import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
@@ -42,7 +42,7 @@ const PagesList = () => {
   const pages = useLoaderData() as Page[];
   const revalidator = useRevalidator();
   const params = useParams();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const columnHelper = createColumnHelper<Page>();
 
