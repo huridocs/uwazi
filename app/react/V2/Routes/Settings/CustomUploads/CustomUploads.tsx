@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
@@ -33,7 +33,7 @@ const uploadService = new UploadService('custom');
 
 const CustomUploads = () => {
   const files = useLoaderData() as FileType[];
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
   const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
   const [fileToEdit, setFileToEdit] = useState<FileType>();
