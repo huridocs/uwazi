@@ -6,6 +6,7 @@ import { MultiselectList } from 'app/V2/Components/Forms';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
+import { se } from 'date-fns/locale';
 
 type InstallLanguagesModalProps = {
   setShowModal: SetterOrUpdater<boolean>;
@@ -19,6 +20,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   const items = languages.map(l => ({
     label: `${l.translationAvailable ? ' * ' : ''}${l.label} (${l.key})`,
     value: l.key,
+    searchLabel: l.label,
   }));
 
   const install = async () => {
