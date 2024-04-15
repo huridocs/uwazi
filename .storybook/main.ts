@@ -12,7 +12,8 @@ module.exports = {
     '@storybook/addon-interactions',
     '@storybook/addon-viewport',
     '@storybook/addon-actions',
-    '@storybook/addon-webpack5-compiler-babel'
+    '@storybook/addon-webpack5-compiler-babel',
+    '@chromatic-com/storybook'
   ],
   framework: {
     name: '@storybook/react-webpack5',
