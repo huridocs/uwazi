@@ -2,11 +2,18 @@
  * @jest-environment jsdom
  */
 import { act, renderHook } from '@testing-library/react';
-import * as jotai from 'jotai/react';
+import { Provider } from 'jotai';
 import { RequestParams } from 'app/utils/RequestParams';
 import { Translate } from 'app/I18N';
 import React from 'react';
 import { useApiCaller } from '../useApiCaller';
+
+const mockSetNotification = jest.fn();
+
+jest.mock('jotai', () => ({
+  ...jest.requireActual('jotai'),
+  useSetAtom: () => mockSetNotification,
+}));
 
 describe('describe useApiCaller', () => {
   let apiCallerHook: {
@@ -19,12 +26,8 @@ describe('describe useApiCaller', () => {
     };
   };
 
-  const setNotificationMock = jest.fn();
-
   beforeEach(() => {
-    jest.spyOn(jotai, 'useSetAtom').mockImplementation((_state: any) => setNotificationMock);
-
-    ({ result: apiCallerHook } = renderHook(() => useApiCaller(), { wrapper: jotai.Provider }));
+    ({ result: apiCallerHook } = renderHook(() => useApiCaller(), { wrapper: Provider }));
   });
 
   afterEach(() => {
@@ -39,20 +42,21 @@ describe('describe useApiCaller', () => {
         new RequestParams({ data: 'paramid' }),
         <Translate>successful action</Translate>
       );
-      expect(setNotificationMock).toHaveBeenCalled();
+
+      expect(mockSetNotification).toHaveBeenCalled();
 
       if (success) {
         expect(await apiResult.data).toEqual({ data: 'result' });
         expect(await apiResult.error).toBeUndefined();
-        expect(setNotificationMock.mock.calls[0][0].type).toEqual('success');
-        expect(setNotificationMock.mock.calls[0][0].text.props.children).toEqual(
+        expect(mockSetNotification.mock.calls[0][0].type).toEqual('success');
+        expect(mockSetNotification.mock.calls[0][0].text.props.children).toEqual(
           'successful action'
         );
       } else {
         expect(await apiResult.data).toBeUndefined();
         expect(await apiResult.error).toEqual('An error occurred');
-        expect(setNotificationMock.mock.calls[0][0].type).toEqual('error');
-        expect(setNotificationMock.mock.calls[0][0].text.props.children).toEqual(
+        expect(mockSetNotification.mock.calls[0][0].type).toEqual('error');
+        expect(mockSetNotification.mock.calls[0][0].text.props.children).toEqual(
           'An error occurred'
         );
       }
