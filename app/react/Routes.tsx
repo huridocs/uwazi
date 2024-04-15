@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { PreserveSettings, EntityTypesList, FiltersForm, Settings } from 'app/Settings';
+import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
