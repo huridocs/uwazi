@@ -173,7 +173,6 @@ const valueGetters = {
       value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
     },
   ],
-  title: getRawValue,
   select: (
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
@@ -270,13 +269,7 @@ const updateEntitiesWithSuggestion = async (
         }))
       : storedEntities.map((entity: EntitySchema) => ({
           ...entity,
-          title: getValue(
-            property,
-            entity,
-            suggestionsById,
-            acceptedSuggestionsBySharedId,
-            resources
-          ),
+          title: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
         }));
 
   await entities.saveMultiple(entitiesToUpdate);
