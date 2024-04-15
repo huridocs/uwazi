@@ -99,6 +99,23 @@ const getRawValue = (
   suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
     .suggestedValue;
 
+const checkValuesInThesaurus = (
+  values: string[],
+  thesaurusName: string,
+  indexedlabels: Record<IndexTypes, string>
+) => {
+  const missingValues = values.filter(v => !(v in indexedlabels));
+
+  if (missingValues.length === 1) {
+    throw new SuggestionAcceptanceError(`Id is invalid: ${missingValues[0]} (${thesaurusName}).`);
+  }
+  if (missingValues.length > 1) {
+    throw new SuggestionAcceptanceError(
+      `Ids are invalid: ${missingValues.join(', ')} (${thesaurusName}).`
+    );
+  }
+};
+
 const valueGetters = {
   _default: (
     entity: EntitySchema,
@@ -118,14 +135,25 @@ const valueGetters = {
   ) => {
     const { thesaurus, translations: translation } = resources;
     const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
-
-    if (!(value in thesaurus.indexedlabels)) {
-      throw new SuggestionAcceptanceError(`Id is invalid: ${value} (${thesaurus.name}).`);
-    }
+    checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
 
     const label = thesaurus.indexedlabels[value];
     const translatedLabel = translation[entity.language || '']?.[label];
     return [{ value, label: translatedLabel }];
+  },
+  multiselect: (
+    entity: EntitySchema,
+    suggestionsById: Record<IndexTypes, IXSuggestionType>,
+    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    resources: any
+  ) => {
+    const { thesaurus, translations: translation } = resources;
+    const values = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string[];
+    checkValuesInThesaurus(values, thesaurus.name, thesaurus.indexedlabels);
+
+    const labels = values.map(v => thesaurus.indexedlabels[v]);
+    const translatedLabels = labels.map(l => translation[entity.language || '']?.[l]);
+    return values.map((value, index) => ({ value, label: translatedLabels[index] }));
   },
 };
 

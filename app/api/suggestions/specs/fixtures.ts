@@ -1351,7 +1351,7 @@ const selectAcceptanceFixtureBase: DBFixture = {
       'documentWithSelects.pdf'
     ),
   ],
-  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
+  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', 'B', { 1: ['1A', '1B'] }])],
   templates: [
     factory.template('templateWithSelects', [
       factory.property('property_select', 'select', {
