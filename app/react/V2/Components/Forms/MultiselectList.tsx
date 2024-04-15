@@ -3,7 +3,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState } from 'react';
 import { Translate } from 'app/I18N';
-import { EmbededButton } from 'app/V2/Components/UI';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';

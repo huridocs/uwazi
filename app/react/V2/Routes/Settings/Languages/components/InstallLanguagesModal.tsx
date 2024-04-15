@@ -6,7 +6,6 @@ import { MultiselectList } from 'app/V2/Components/Forms';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { RequestParams } from 'app/utils/RequestParams';
 import { useApiCaller } from 'app/V2/CustomHooks/useApiCaller';
-import { se } from 'date-fns/locale';
 
 type InstallLanguagesModalProps = {
   setShowModal: SetterOrUpdater<boolean>;
