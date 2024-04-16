@@ -46,7 +46,7 @@ import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Rou
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
 import { activityLogLoader, ActivityLog } from 'V2/Routes/Settings/ActivityLog/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
-import { Filters, filtersLoader } from 'V2/Routes/Settings/Filters';
+import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -165,7 +165,7 @@ const getRoutesLayout = (
       </Route>
       <Route
         path="filters"
-        element={adminsOnlyRoute(<Filters />)}
+        element={adminsOnlyRoute(<FiltersTable />)}
         loader={filtersLoader(headers)}
       />
       <Route

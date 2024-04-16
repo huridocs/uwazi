@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
@@ -47,12 +47,21 @@ const filtersLoader =
     return { filters, templates: filteredTemplates };
   };
 
-const Filters = () => {
+const FiltersTable = () => {
   const loaderData = useLoaderData() as LoaderData;
+  const [hasChanges, setHasChanges] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [filters, setFilers] = useState(loaderData.filters);
   const [templates, setTemplates] = useState(loaderData.templates);
   const [selectedFilter, setSelectedFilter] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+
+  useEffect(() => {
+    if (JSON.stringify(filters) !== JSON.stringify(loaderData.filters)) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
+  }, [filters]);
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -105,19 +114,37 @@ const Filters = () => {
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="flex gap-2 justify-start items-center">
+        <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {selectedFilter.length ? (
             <Button styling="solid" color="error" onClick={() => {}}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
             <>
-              <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
-                <Translate>Add entity type</Translate>
-              </Button>
-              <Button styling="solid" color="primary" onClick={() => {}}>
-                <Translate>Add group</Translate>
-              </Button>
+              <div className="flex gap-2 md:flex-wrap">
+                <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
+                  <Translate className="text-nowrap">Add entity type</Translate>
+                </Button>
+                <Button styling="solid" color="primary" onClick={() => {}}>
+                  <Translate className="text-nowrap">Add group</Translate>
+                </Button>
+              </div>
+
+              <div className="flex gap-2 md:flex-wrap">
+                <Button styling="solid" color="success" onClick={() => {}} disabled={!hasChanges}>
+                  <Translate>Save</Translate>
+                </Button>
+                <Button
+                  styling="outline"
+                  color="primary"
+                  onClick={() => {
+                    setFilers(loaderData.filters);
+                  }}
+                  disabled={!hasChanges}
+                >
+                  <Translate>Cancel</Translate>
+                </Button>
+              </div>
             </>
           )}
         </SettingsContent.Footer>
@@ -136,4 +163,4 @@ const Filters = () => {
   );
 };
 
-export { Filters, filtersLoader };
+export { FiltersTable, filtersLoader };

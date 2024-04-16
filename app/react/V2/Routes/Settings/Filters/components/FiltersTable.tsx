@@ -37,6 +37,10 @@ const ActionCell = ({ cell }: CellContext<ClientSettingsFilterSchema, any>) => {
     ? cell.column.columnDef.meta?.action()
     : undefined;
 
+  if (!cell.getIsAggregated()) {
+    return undefined;
+  }
+
   return (
     <Button
       styling="outline"

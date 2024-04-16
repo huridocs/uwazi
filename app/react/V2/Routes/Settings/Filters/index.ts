@@ -1,1 +1,1 @@
-export { Filters, filtersLoader } from './Filters';
+export { FiltersTable, filtersLoader } from './FiltersTable';
