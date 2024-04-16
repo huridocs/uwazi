@@ -6,7 +6,7 @@ import { ClientTemplateSchema } from 'app/istore';
 
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;
-  onAdd: React.Dispatch<React.SetStateAction<string[]>>;
+  onAdd: (templateIds: string[]) => void;
   templates: ClientTemplateSchema[];
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
@@ -10,31 +11,16 @@ import * as templatesAPI from 'V2/api/templates';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Table } from 'app/V2/Components/UI';
-import { createColumns, AddTemplatesModal } from './components';
+import {
+  createColumns,
+  AddTemplatesModal,
+  filterAvailableTemplates,
+  updateFilters,
+} from './components';
 
 type LoaderData = {
   filters: ClientSettingsFilterSchema[] | undefined;
   templates: ClientTemplateSchema[];
-};
-
-const filterAvailableTemplates = (
-  templates: ClientTemplateSchema[],
-  filters?: ClientSettingsFilterSchema[]
-) => {
-  const usedTemplatesIds: string[] = [];
-
-  filters?.forEach(filter => {
-    if (filter.items) {
-      filter.items.forEach(item => {
-        usedTemplatesIds.push(item.id!);
-      });
-    }
-    if (filter.id) {
-      usedTemplatesIds.push(filter.id);
-    }
-  });
-
-  return templates.filter(template => !usedTemplatesIds.includes(template._id));
 };
 
 const filtersLoader =
@@ -53,7 +39,7 @@ const FiltersTable = () => {
   const [showModal, setShowModal] = useState(false);
   const [filters, setFilers] = useState(loaderData.filters);
   const [templates, setTemplates] = useState(loaderData.templates);
-  const [selectedFilter, setSelectedFilter] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
 
   useEffect(() => {
     if (JSON.stringify(filters) !== JSON.stringify(loaderData.filters)) {
@@ -62,6 +48,22 @@ const FiltersTable = () => {
       setHasChanges(false);
     }
   }, [filters]);
+
+  const cancel = () => {
+    setFilers(loaderData.filters);
+    setTemplates(loaderData.templates);
+  };
+
+  const addNewFilter = (templatedIds: string[]) => {
+    const updatedFilter = updateFilters(templates, templatedIds);
+    const updatedTemplates = filterAvailableTemplates(templates, updatedFilter);
+    setTemplates(updatedTemplates);
+    setFilers([...(filters || []), ...updatedFilter]);
+  };
+
+  const deleteFilter = () => {
+    console.log(selectedFilters);
+  };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
@@ -106,7 +108,7 @@ const FiltersTable = () => {
               setFilers(updatedFilters);
             }}
             onSelection={selected => {
-              setSelectedFilter(selected);
+              setSelectedFilters(selected);
             }}
             columns={createColumns()}
             data={filters || []}
@@ -115,8 +117,8 @@ const FiltersTable = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
-          {selectedFilter.length ? (
-            <Button styling="solid" color="error" onClick={() => {}}>
+          {selectedFilters.length ? (
+            <Button styling="solid" color="error" onClick={() => deleteFilter()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
@@ -137,9 +139,7 @@ const FiltersTable = () => {
                 <Button
                   styling="outline"
                   color="primary"
-                  onClick={() => {
-                    setFilers(loaderData.filters);
-                  }}
+                  onClick={() => cancel()}
                   disabled={!hasChanges}
                 >
                   <Translate>Cancel</Translate>
@@ -154,9 +154,7 @@ const FiltersTable = () => {
         <AddTemplatesModal
           templates={templates}
           onCancel={() => setShowModal(false)}
-          onAdd={templateIds => {
-            console.log(templateIds);
-          }}
+          onAdd={templateIds => addNewFilter(templateIds)}
         />
       )}
     </div>
