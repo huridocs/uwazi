@@ -330,7 +330,7 @@ Filters,Filters
 Filters AND operator,AND
 Filters configuration,Filters
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
-Filters configuration example,"select ""Create group"" below to group filters under a label e.g (""Documents ""or ""People"")"
+Filters configuration example,"select ""Add group"" below to group filters under a label e.g (""Documents ""or ""People"")"
 Filters OR operator,OR
 Find,Find
 Find suggestions,Find suggestions
