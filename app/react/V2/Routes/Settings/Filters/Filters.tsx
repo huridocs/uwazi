@@ -3,24 +3,55 @@ import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { ClientTemplateSchema } from 'app/istore';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import * as settingsAPI from 'V2/api/settings';
+import * as templatesAPI from 'V2/api/templates';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Table } from 'app/V2/Components/UI';
-import { createColumns } from './components/FiltersTable';
+import { createColumns, AddTemplatesModal } from './components';
 
-type LoaderData = ClientSettingsFilterSchema[] | undefined;
+type LoaderData = {
+  filters: ClientSettingsFilterSchema[] | undefined;
+  templates: ClientTemplateSchema[];
+};
+
+const filterAvailableTemplates = (
+  templates: ClientTemplateSchema[],
+  filters?: ClientSettingsFilterSchema[]
+) => {
+  const usedTemplatesIds: string[] = [];
+
+  filters?.forEach(filter => {
+    if (filter.items) {
+      filter.items.forEach(item => {
+        usedTemplatesIds.push(item.id!);
+      });
+    }
+    if (filter.id) {
+      usedTemplatesIds.push(filter.id);
+    }
+  });
+
+  return templates.filter(template => !usedTemplatesIds.includes(template._id));
+};
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
   async () => {
     const { filters } = await settingsAPI.get(headers);
-    return filters;
+    const templates = await templatesAPI.get(headers);
+    const filteredTemplates = filterAvailableTemplates(templates, filters);
+
+    return { filters, templates: filteredTemplates };
   };
 
 const Filters = () => {
-  const [filters, setFilers] = useState(useLoaderData() as LoaderData);
+  const loaderData = useLoaderData() as LoaderData;
+  const [showModal, setShowModal] = useState(false);
+  const [filters, setFilers] = useState(loaderData.filters);
+  const [templates, setTemplates] = useState(loaderData.templates);
   const [selectedFilter, setSelectedFilter] = useState<Row<ClientSettingsFilterSchema>[]>([]);
 
   return (
@@ -81,16 +112,26 @@ const Filters = () => {
             </Button>
           ) : (
             <>
-              <Button styling="solid" color="primary" onClick={async () => {}}>
+              <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
                 <Translate>Add entity type</Translate>
               </Button>
-              <Button styling="solid" color="primary" onClick={async () => {}}>
+              <Button styling="solid" color="primary" onClick={() => {}}>
                 <Translate>Add group</Translate>
               </Button>
             </>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {showModal && (
+        <AddTemplatesModal
+          templates={templates}
+          onCancel={() => setShowModal(false)}
+          onAdd={templateIds => {
+            console.log(templateIds);
+          }}
+        />
+      )}
     </div>
   );
 };
