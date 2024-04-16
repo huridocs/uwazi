@@ -4,26 +4,23 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-
-import * as SettingsAPI from 'app/V2/api/settings';
-import * as TemplatesAPI from 'app/V2/api/templates';
-
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
+import { isUndefined } from 'lodash';
+import { Tooltip } from 'flowbite-react';
+import * as SettingsAPI from 'V2/api/settings';
+import * as TemplatesAPI from 'V2/api/templates';
 import { notificationAtom } from 'app/V2/atoms';
-
 import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate, t } from 'app/I18N';
 import { ClientSettings, Template } from 'app/apiResponseTypes';
-import { Tooltip } from 'flowbite-react';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
-import { isUndefined } from 'lodash';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -78,8 +75,8 @@ const Collection = () => {
   };
   const { links, custom, ...formData } = settings;
 
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const setSettings = useSetRecoilState(settingsAtom);
+  const setNotifications = useSetAtom(notificationAtom);
+  const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
   const {

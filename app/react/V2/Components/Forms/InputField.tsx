@@ -6,7 +6,7 @@ import { Label } from './Label';
 
 interface InputFieldProps {
   id: string;
-  label: string | React.ReactNode;
+  label?: string | React.ReactNode;
   disabled?: boolean;
   hideLabel?: boolean;
   placeholder?: string;
@@ -20,6 +20,7 @@ interface InputFieldProps {
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
+  onSelect?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -41,6 +42,7 @@ const InputField = React.forwardRef(
       name = '',
       clearFieldAction,
       onChange = () => {},
+      onSelect = () => {},
       onBlur = () => {},
     }: InputFieldProps,
     ref: Ref<any>
@@ -60,7 +62,11 @@ const InputField = React.forwardRef(
 
     return (
       <div className={className}>
-        <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
+        <Label
+          htmlFor={id}
+          hideLabel={!label || hideLabel}
+          hasErrors={Boolean(hasErrors || errorMessage)}
+        >
           {label}
         </Label>
         <div className="relative flex w-full">
@@ -73,6 +79,7 @@ const InputField = React.forwardRef(
             type={type}
             autoComplete={autoComplete}
             id={id}
+            onSelect={onSelect}
             onChange={onChange}
             onBlur={onBlur}
             name={name}

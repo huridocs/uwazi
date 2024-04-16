@@ -12,7 +12,7 @@ import {
   useRevalidator,
 } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
@@ -44,7 +44,7 @@ const PageEditor = () => {
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
 

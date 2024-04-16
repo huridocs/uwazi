@@ -13,8 +13,8 @@ const selectSettingsPage = async (title: string) => {
   await expect(page).toClick('span', { text: title });
 };
 
-const testSettingsContent = async () => {
-  await testSelectorShot('div.settings-content');
+const testSettingsContent = async (selector: string = 'div.settings-content') => {
+  await testSelectorShot(selector);
 };
 
 describe('Settings', () => {
@@ -71,22 +71,22 @@ describe('Settings', () => {
   describe('Thesauri', () => {
     it('should display Thesaurus page', async () => {
       await selectSettingsPage('Thesauri');
-      await testSettingsContent();
+      await testSettingsContent('[data-testid="settings-thesauri"]');
     });
 
     it('should display new Thesaurus page', async () => {
       await selectSettingsPage('Thesauri');
-      await expect(page).toClick('div.settings-footer > a');
-      await testSettingsContent();
+      await expect(page).toClick('a', { text: 'Add thesaurus' });
+      await testSettingsContent('[data-testid="settings-thesauri"]');
     });
 
     it('should display new Thesaurus with groups page', async () => {
       await selectSettingsPage('Thesauri');
       await expect(page).toClick('a', { text: 'Add thesaurus' });
       await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toClick('button', { text: 'Add group' });
-      await testSettingsContent();
+      await expect(page).toFill('input#group-name', 'Group 1');
+
+      await testSettingsContent('aside');
     });
   });
 
