@@ -45,6 +45,11 @@ const ixSettings = [
   },
 ];
 
+const dictionaryTranslationContext = factory.v2.database.nestedTranslationContextDBO(
+  'Nested Thesaurus',
+  'Thesaurus'
+);
+
 const fixtures: DBFixture = {
   settings: _.cloneDeep(ixSettings),
   ixextractors: [
@@ -503,6 +508,7 @@ const fixtures: DBFixture = {
       error: '',
     },
     {
+      _id: factory.id('multiSelectSuggestion2'),
       fileId: factory.id('fileForentityWithSelects2'),
       entityId: 'entityWithSelects2',
       entityTemplate: factory.id('templateWithSelects').toString(),
@@ -670,7 +676,7 @@ const fixtures: DBFixture = {
       template: heroTemplateId,
     },
     {
-      _id: testingDB.id(),
+      _id: factory.id('entityWithSelects'),
       template: factory.id('templateWithSelects'),
       sharedId: 'entityWithSelects',
       title: 'entityWithSelects',
@@ -684,7 +690,7 @@ const fixtures: DBFixture = {
       },
     },
     {
-      _id: testingDB.id(),
+      _id: factory.id('entityWithSelects2'),
       template: factory.id('templateWithSelects'),
       sharedId: 'entityWithSelects2',
       title: 'entityWithSelects2',
@@ -902,6 +908,26 @@ const fixtures: DBFixture = {
       filename: 'documentC.pdf',
       status: 'ready',
     },
+  ],
+  translationsV2: [
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus',
+      'en',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus Es',
+      'es',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO('A', 'A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('A', 'Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1Bes', 'es', dictionaryTranslationContext),
   ],
 };
 
@@ -1284,11 +1310,6 @@ const stateFilterFixtures: DBFixture = {
     ),
   ],
 };
-
-const dictionaryTranslationContext = factory.v2.database.nestedTranslationContextDBO(
-  'Nested Thesaurus',
-  'Thesaurus'
-);
 
 const selectAcceptanceFixtureBase: DBFixture = {
   settings: _.cloneDeep(ixSettings),
