@@ -40,10 +40,10 @@ export class MongoQueueAdapter extends MongoDataSource<JobDBO> implements QueueA
       { sort: { createdAt: 1 }, returnDocument: 'after' }
     );
 
-    if (result.value) {
-      const { _id, ...withoutId } = result.value;
+    if (result) {
+      const { _id, ...withoutId } = result;
       return {
-        id: result.value._id.toHexString(),
+        id: result._id.toHexString(),
         ...withoutId,
       };
     }
