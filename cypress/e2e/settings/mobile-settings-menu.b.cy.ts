@@ -7,6 +7,8 @@ describe('Settings mobile menu', () => {
   });
 
   it('should login', () => {
+    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
+    cy.exec('yarn blank-state --force', { env });
     clearCookiesAndLogin('admin', 'change this password now');
   });
 
