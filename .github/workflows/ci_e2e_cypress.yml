@@ -81,7 +81,7 @@ jobs:
       - name: Log on failure
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
-      - run: yarn blank-state
+      - run: yarn e2e-fixtures
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}

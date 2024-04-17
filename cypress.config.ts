@@ -13,7 +13,10 @@ export default defineConfig({
     video: true,
     screenshotOnRunFailure: false,
     testIsolation: false,
-    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    specPattern: [
+      'cypress/e2e/**/*[!(.b)].cy.{js,jsx,ts,tsx}',
+      'cypress/e2e/**/*.b.cy.{js,jsx,ts,tsx}',
+    ],
     setupNodeEvents(on, config) {
       // implement node event listeners here
       initPlugin(on, config);
