@@ -166,7 +166,7 @@
     "lodash": "^4.17.21",
     "luxon": "^3.4.3",
     "mark.js": "^8.11.1",
-    "markdown-it": "14.0.0",
+    "markdown-it": "14.1.0",
     "markdown-it-container": "4.0.0",
     "mime-types": "^2.1.35",
     "moment": "^2.30.1",
