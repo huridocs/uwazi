@@ -11,6 +11,5 @@ export default {
 
   async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
-    return Promise.reject(new Error('error! change this, recently created migration'));
   },
 };

@@ -1,31 +1,25 @@
 import { ObjectId } from 'mongodb';
 
-type PropertyType =
-  | 'date'
-  | 'daterange'
-  | 'geolocation'
-  | 'image'
-  | 'link'
-  | 'markdown'
-  | 'media'
-  | 'multidate'
-  | 'multidaterange'
-  | 'multiselect'
-  | 'nested'
-  | 'numeric'
-  | 'preview'
-  | 'relationship'
-  | 'select'
-  | 'text'
-  | 'generatedid'
-  | 'newRelationship';
+type LanguageKey = 'en' | 'es';
+
+type Language = {
+  _id?: ObjectId;
+  label: string;
+  key: LanguageKey;
+  default?: boolean;
+};
+interface Settings {
+  _id?: ObjectId;
+  languages?: Language[];
+}
+
+type PropertyType = 'relationship' | 'select' | 'text';
 
 interface PropertySchema {
   _id?: ObjectId;
   label: string;
   name: string;
   type: PropertyType;
-  generatedId?: boolean;
   content?: string;
   relationType?: string;
   inherit?: {
@@ -41,31 +35,7 @@ interface Template {
   [k: string]: unknown | undefined;
 }
 
-interface DateRangeSchema {
-  from?: number | null;
-  to?: number | null;
-}
-
-interface LatLonSchema {
-  label?: string;
-  lat: number;
-  lon: number;
-}
-
-interface LinkSchema {
-  label?: string | null;
-  url?: string | null;
-}
-
-type PropertyValueSchema =
-  | null
-  | string
-  | number
-  | boolean
-  | LinkSchema
-  | DateRangeSchema
-  | LatLonSchema
-  | LatLonSchema[];
+type PropertyValueSchema = null | string;
 
 interface SelectParentSchema {
   label: string;
@@ -81,21 +51,20 @@ interface InheritedValueSchema {
 
 interface MetadataObject {
   value: PropertyValueSchema;
-  attachment?: number;
   label?: string;
   inheritedValue?: InheritedValueSchema[];
   inheritedType?: string;
-  timeLinks?: string;
   parent?: SelectParentSchema;
   [k: string]: unknown | undefined;
 }
 
 interface Metadata {
-  [k: string]: MetadataObject[] | undefined;
+  [k: string]: MetadataObject[];
 }
 
 interface Entity {
   _id?: ObjectId;
+  template?: ObjectId;
   sharedId?: string;
   language?: string;
   title?: string;
@@ -104,8 +73,9 @@ interface Entity {
 }
 
 interface Fixture {
+  settings: Settings[];
   templates: Template[];
   entities: Entity[];
 }
 
-export type { Entity, Fixture };
+export type { Entity, Fixture, Template };
