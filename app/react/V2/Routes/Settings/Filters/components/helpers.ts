@@ -21,9 +21,9 @@ const filterAvailableTemplates = (
   return templates.filter(template => !usedTemplatesIds.includes(template._id));
 };
 
-const updateFilters = (templates: ClientTemplateSchema[], selectedTemplatesIds: string[]) => {
+const updateFilters = (selectedTemplatesIds: string[], templates?: ClientTemplateSchema[]) => {
   const newFilters = selectedTemplatesIds.map(templateId => {
-    const template = templates.find(templ => templ._id === templateId);
+    const template = templates?.find(templ => templ._id === templateId);
     return { id: templateId, name: template?.name };
   });
   return newFilters;

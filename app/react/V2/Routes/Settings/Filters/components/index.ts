@@ -1,3 +1,3 @@
 export { AddTemplatesModal } from './AddTemplatesModal';
-export { createColumns } from './FiltersTable';
+export { createColumns } from './TableComponents';
 export { filterAvailableTemplates, updateFilters } from './helpers';

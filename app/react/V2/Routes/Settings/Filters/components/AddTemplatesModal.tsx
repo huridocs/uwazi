@@ -7,13 +7,13 @@ import { ClientTemplateSchema } from 'app/istore';
 type AddTemplateModalProps = {
   onCancel: React.Dispatch<React.SetStateAction<boolean>>;
   onAdd: (templateIds: string[]) => void;
-  templates: ClientTemplateSchema[];
+  templates?: ClientTemplateSchema[];
 };
 
 const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps) => {
   const [selected, setSelected] = useState<string[]>([]);
 
-  const items = templates.map(template => ({
+  const items = templates?.map(template => ({
     label: template.name,
     value: template._id,
     searchLabel: template.name,
@@ -28,7 +28,11 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
         <Modal.CloseButton onClick={() => onCancel(false)} />
       </Modal.Header>
       <Modal.Body className="pt-4">
-        <MultiselectList className="pt-4 max-h-96" items={items} onChange={s => setSelected(s)} />
+        <MultiselectList
+          className="pt-4 max-h-96"
+          items={items || []}
+          onChange={s => setSelected(s)}
+        />
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">

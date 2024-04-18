@@ -1,16 +1,17 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema } from 'app/istore';
-import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { Translate } from 'app/I18N';
 import * as settingsAPI from 'V2/api/settings';
 import * as templatesAPI from 'V2/api/templates';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { Button, Table } from 'app/V2/Components/UI';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { Button, Table } from 'V2/Components/UI';
+import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import {
   createColumns,
   AddTemplatesModal,
@@ -28,18 +29,23 @@ const filtersLoader =
   async () => {
     const { filters } = await settingsAPI.get(headers);
     const templates = await templatesAPI.get(headers);
-    const filteredTemplates = filterAvailableTemplates(templates, filters);
 
-    return { filters, templates: filteredTemplates };
+    return { filters, templates };
   };
 
 const FiltersTable = () => {
   const loaderData = useLoaderData() as LoaderData;
   const [hasChanges, setHasChanges] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [filters, setFilers] = useState(loaderData.filters);
-  const [templates, setTemplates] = useState(loaderData.templates);
   const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+  const blocker = useBlocker(hasChanges);
+
+  const templates = useMemo(
+    () => filterAvailableTemplates(loaderData.templates, filters),
+    [filters, loaderData.templates]
+  );
 
   useEffect(() => {
     if (JSON.stringify(filters) !== JSON.stringify(loaderData.filters)) {
@@ -49,20 +55,25 @@ const FiltersTable = () => {
     }
   }, [filters]);
 
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setConfirmNavigationModal(true);
+    }
+  }, [blocker, setConfirmNavigationModal]);
+
   const cancel = () => {
     setFilers(loaderData.filters);
-    setTemplates(loaderData.templates);
   };
 
   const addNewFilter = (templatedIds: string[]) => {
-    const updatedFilter = updateFilters(templates, templatedIds);
-    const updatedTemplates = filterAvailableTemplates(templates, updatedFilter);
-    setTemplates(updatedTemplates);
-    setFilers([...(filters || []), ...updatedFilter]);
+    const updatedFilters = updateFilters(templatedIds, templates);
+    setFilers([...(filters || []), ...updatedFilters]);
   };
 
   const deleteFilter = () => {
-    console.log(selectedFilters);
+    const idsToRemove = selectedFilters.map(selectedFilter => selectedFilter.original.id);
+    const updatedFilters = filters?.filter(filter => !idsToRemove.includes(filter.id));
+    setFilers(updatedFilters);
   };
 
   return (
@@ -155,6 +166,17 @@ const FiltersTable = () => {
           templates={templates}
           onCancel={() => setShowModal(false)}
           onAdd={templateIds => addNewFilter(templateIds)}
+        />
+      )}
+
+      {confirmNavigationModal && (
+        <ConfirmNavigationModal
+          setShowModal={setConfirmNavigationModal}
+          onConfirm={async () => {
+            if (blocker.proceed) {
+              blocker.proceed();
+            }
+          }}
         />
       )}
     </div>
