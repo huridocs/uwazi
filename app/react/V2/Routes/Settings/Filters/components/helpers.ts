@@ -29,4 +29,36 @@ const updateFilters = (selectedTemplatesIds: string[], templates?: ClientTemplat
   return newFilters;
 };
 
-export { filterAvailableTemplates, updateFilters };
+const deleteFilters = (
+  originalFilters?: ClientSettingsFilterSchema[],
+  filtersToRemove?: (string | undefined)[]
+) => {
+  if (!filtersToRemove) {
+    return originalFilters;
+  }
+
+  return originalFilters
+    ?.map(filter => {
+      if (filtersToRemove.includes(filter.id!)) {
+        return {};
+      }
+
+      if (filter.items) {
+        const nestedFilters = filter.items.filter(item => !filtersToRemove.includes(item.id!));
+        return { ...filter, items: nestedFilters };
+      }
+
+      return { ...filter };
+    })
+    .filter(filter => {
+      if (!filter.id) {
+        return false;
+      }
+      if (filter.items && filter.items.length === 0) {
+        return false;
+      }
+      return true;
+    });
+};
+
+export { filterAvailableTemplates, updateFilters, deleteFilters };

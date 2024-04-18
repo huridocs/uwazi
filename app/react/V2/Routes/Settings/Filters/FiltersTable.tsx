@@ -1,12 +1,15 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
+import { notificationAtom, settingsAtom } from 'V2/atoms';
 import * as settingsAPI from 'V2/api/settings';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -17,6 +20,7 @@ import {
   AddTemplatesModal,
   filterAvailableTemplates,
   updateFilters,
+  deleteFilters,
 } from './components';
 
 type LoaderData = {
@@ -36,10 +40,13 @@ const filtersLoader =
 const FiltersTable = () => {
   const loaderData = useLoaderData() as LoaderData;
   const [hasChanges, setHasChanges] = useState(false);
+  const [disabled, setDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [filters, setFilers] = useState(loaderData.filters);
   const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+  const setNotifications = useSetAtom(notificationAtom);
+  const setSettings = useSetAtom(settingsAtom);
   const blocker = useBlocker(hasChanges);
 
   const templates = useMemo(
@@ -53,7 +60,7 @@ const FiltersTable = () => {
     } else {
       setHasChanges(false);
     }
-  }, [filters]);
+  }, [filters, loaderData.filters]);
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -70,33 +77,27 @@ const FiltersTable = () => {
     setFilers([...(filters || []), ...updatedFilters]);
   };
 
-  const deleteFilters = () => {
-    const filtersToRemove = selectedFilters.map(sf => sf.original.id);
-
-    const updatedFilters = filters
-      ?.map(filter => {
-        if (filtersToRemove.includes(filter.id!)) {
-          return {};
-        }
-
-        if (filter.items) {
-          const nestedFilters = filter.items.filter(item => !filtersToRemove.includes(item.id));
-          return { ...filter, items: nestedFilters };
-        }
-
-        return { ...filter };
-      })
-      .filter(filter => {
-        if (!filter.id) {
-          return false;
-        }
-        if (filter.items && filter.items.length === 0) {
-          return false;
-        }
-        return true;
-      });
-
+  const handleDelete = () => {
+    const idsToRemove = selectedFilters.map(selected => selected.original.id);
+    const updatedFilters = deleteFilters(filters, idsToRemove);
     setFilers(updatedFilters);
+  };
+
+  const handleSave = async () => {
+    setDisabled(true);
+    const response = await settingsAPI.save({ filters });
+
+    if (response instanceof FetchResponseError) {
+      return setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        ...(response.message && { details: response.message }),
+      });
+    }
+
+    setSettings(response);
+    setDisabled(false);
+    return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
   };
 
   return (
@@ -152,7 +153,7 @@ const FiltersTable = () => {
 
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {selectedFilters.length ? (
-            <Button styling="solid" color="error" onClick={() => deleteFilters()}>
+            <Button styling="solid" color="error" onClick={() => handleDelete()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
@@ -167,14 +168,19 @@ const FiltersTable = () => {
               </div>
 
               <div className="flex gap-2 md:flex-wrap">
-                <Button styling="solid" color="success" onClick={() => {}} disabled={!hasChanges}>
+                <Button
+                  styling="solid"
+                  color="success"
+                  onClick={async () => handleSave()}
+                  disabled={!hasChanges || disabled}
+                >
                   <Translate>Save</Translate>
                 </Button>
                 <Button
                   styling="outline"
                   color="primary"
                   onClick={() => cancel()}
-                  disabled={!hasChanges}
+                  disabled={!hasChanges || disabled}
                 >
                   <Translate>Cancel</Translate>
                 </Button>
