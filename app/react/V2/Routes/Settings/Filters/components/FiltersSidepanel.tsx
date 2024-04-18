@@ -39,29 +39,23 @@ const FiltersSidepanel = ({
     value: template._id,
   }));
 
-  const validate = () => {
-    if (newFilter?.items?.length) {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value.toString().trim();
+    if (value.length) {
+      setNewFiter({ ...newFilter, name: value });
       setInputError(false);
     } else {
       setInputError(true);
     }
+  };
 
-    if (selected?.length) {
+  const handleSelectChange = (ids: string[]) => {
+    if (ids.length) {
+      setSelected(ids);
       setSelectError(false);
     } else {
       setSelectError(true);
     }
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.toString().trim();
-    setNewFiter({ ...newFilter, name: value });
-    validate();
-  };
-
-  const handleSelectChange = (ids: string[]) => {
-    setSelected(ids);
-    validate();
   };
 
   const handleSave = () => {
@@ -71,8 +65,18 @@ const FiltersSidepanel = ({
       name: selectedTemplate.name,
     }));
 
-    onSave({ id: uniqueID(), name: newFilter?.name, items });
-    setShowSidepanel(false);
+    if (!newFilter?.name) {
+      setInputError(true);
+    }
+
+    if (!items?.length) {
+      setSelectError(true);
+    }
+
+    if (newFilter?.name && items?.length) {
+      onSave({ id: uniqueID(), name: newFilter?.name, items });
+      setShowSidepanel(false);
+    }
   };
 
   return (
