@@ -21,6 +21,7 @@ import {
   filterAvailableTemplates,
   updateFilters,
   deleteFilters,
+  FiltersSidepanel,
 } from './components';
 
 type LoaderData = {
@@ -43,6 +44,7 @@ const FiltersTable = () => {
   const [disabled, setDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
+  const [showSidepanel, setShowSidepanel] = useState(false);
   const [filters, setFilers] = useState(loaderData.filters);
   const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
   const setNotifications = useSetAtom(notificationAtom);
@@ -163,7 +165,7 @@ const FiltersTable = () => {
                 <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
                   <Translate className="text-nowrap">Add entity type</Translate>
                 </Button>
-                <Button styling="solid" color="primary" onClick={() => {}}>
+                <Button styling="solid" color="primary" onClick={() => setShowSidepanel(true)}>
                   <Translate className="text-nowrap">Add group</Translate>
                 </Button>
               </div>
@@ -209,6 +211,17 @@ const FiltersTable = () => {
           }}
         />
       )}
+
+      <FiltersSidepanel
+        showSidepanel={showSidepanel}
+        setShowSidepanel={setShowSidepanel}
+        onSave={newFilter => {
+          if (newFilter) {
+            setFilers([...(filters || []), newFilter]);
+          }
+        }}
+        templates={templates}
+      />
     </div>
   );
 };
