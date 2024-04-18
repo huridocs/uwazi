@@ -172,13 +172,15 @@ const IXDashboard = () => {
         />
       )}
 
-      <ExtractorModal
-        isOpen={extractorModal}
-        onClose={() => setExtractorModal(false)}
-        onAccept={async extractor => handleSave(extractor)}
-        templates={templates}
-        extractor={selected.length ? selected[0].original : undefined}
-      />
+      {extractorModal && (
+        <ExtractorModal
+          setShowModal={setExtractorModal}
+          onClose={() => setExtractorModal(false)}
+          onAccept={async extractor => handleSave(extractor)}
+          templates={templates}
+          extractor={selected.length ? selected[0].original : undefined}
+        />
+      )}
     </div>
   );
 };
