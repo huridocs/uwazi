@@ -22,10 +22,6 @@ interface PropertySchema {
   type: PropertyType;
   content?: string;
   relationType?: string;
-  inherit?: {
-    property?: string;
-    type?: PropertyType;
-  };
 }
 
 interface Template {
@@ -78,4 +74,4 @@ interface Fixture {
   entities: Entity[];
 }
 
-export type { Entity, Fixture, Template };
+export type { Entity, Fixture, Template, Settings };
