@@ -97,6 +97,7 @@ const FiltersTable = () => {
 
     setSettings(response);
     setDisabled(false);
+    setHasChanges(false);
     return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
   };
 
