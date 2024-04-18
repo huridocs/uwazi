@@ -70,9 +70,32 @@ const FiltersTable = () => {
     setFilers([...(filters || []), ...updatedFilters]);
   };
 
-  const deleteFilter = () => {
-    const idsToRemove = selectedFilters.map(selectedFilter => selectedFilter.original.id);
-    const updatedFilters = filters?.filter(filter => !idsToRemove.includes(filter.id));
+  const deleteFilters = () => {
+    const filtersToRemove = selectedFilters.map(sf => sf.original.id);
+
+    const updatedFilters = filters
+      ?.map(filter => {
+        if (filtersToRemove.includes(filter.id!)) {
+          return {};
+        }
+
+        if (filter.items) {
+          const nestedFilters = filter.items.filter(item => !filtersToRemove.includes(item.id));
+          return { ...filter, items: nestedFilters };
+        }
+
+        return { ...filter };
+      })
+      .filter(filter => {
+        if (!filter.id) {
+          return false;
+        }
+        if (filter.items && filter.items.length === 0) {
+          return false;
+        }
+        return true;
+      });
+
     setFilers(updatedFilters);
   };
 
@@ -129,7 +152,7 @@ const FiltersTable = () => {
 
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
           {selectedFilters.length ? (
-            <Button styling="solid" color="error" onClick={() => deleteFilter()}>
+            <Button styling="solid" color="error" onClick={() => deleteFilters()}>
               <Translate>Delete</Translate>
             </Button>
           ) : (
