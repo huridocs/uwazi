@@ -244,3 +244,4 @@ const MultiselectList = ({
 };
 
 export { MultiselectList };
+export type { Option as MultiselectListOption };
