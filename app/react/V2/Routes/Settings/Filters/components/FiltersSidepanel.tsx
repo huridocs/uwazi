@@ -106,7 +106,7 @@ const FiltersSidepanel = ({
               onChange={handleSelectChange}
             />
             {selectError && (
-              <Translate className="text-error-700">Entity types cannot be empty</Translate>
+              <Translate className="text-error-700">This field is required</Translate>
             )}
           </div>
         </Card>
