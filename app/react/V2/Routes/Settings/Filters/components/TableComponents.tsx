@@ -3,8 +3,10 @@ import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { Button, EmbededButton } from 'V2/Components/UI';
+import { sidepanelAtom } from './sidepanelAtom';
 
 const columnHelper = createColumnHelper<ClientSettingsFilterSchema>();
 
@@ -32,10 +34,9 @@ const Filters = ({ row, getValue }: CellContext<ClientSettingsFilterSchema, stri
   </div>
 );
 
-const ActionCell = ({ cell }: CellContext<ClientSettingsFilterSchema, any>) => {
-  const actions = cell.column.columnDef.meta?.action
-    ? cell.column.columnDef.meta?.action()
-    : undefined;
+const ActionCell = ({ cell, row }: CellContext<ClientSettingsFilterSchema, any>) => {
+  const action = cell.column.columnDef.meta?.action;
+  const setAtom = useSetAtom(sidepanelAtom);
 
   if (!cell.getIsAggregated()) {
     return undefined;
@@ -46,14 +47,19 @@ const ActionCell = ({ cell }: CellContext<ClientSettingsFilterSchema, any>) => {
       styling="outline"
       color="primary"
       className="leading-3"
-      onClick={() => actions.edit(cell.row.original)}
+      onClick={() => {
+        if (action) {
+          setAtom(row.original);
+          action(true);
+        }
+      }}
     >
       <Translate>Edit</Translate>
     </Button>
   );
 };
 
-const createColumns = () => [
+const createColumns = (setSidepanel: React.Dispatch<React.SetStateAction<boolean>>) => [
   columnHelper.accessor('name', {
     id: 'name',
     header: TitleHeader,
@@ -66,7 +72,7 @@ const createColumns = () => [
     cell: ActionCell,
     enableSorting: false,
     meta: {
-      //   action: () => ({ delete: handleDelete, edit: editFile }),
+      action: setSidepanel,
       headerClassName: 'w-0 sr-only',
     },
   }),

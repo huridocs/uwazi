@@ -1,6 +1,11 @@
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema } from 'app/istore';
 
+type LoaderData = {
+  filters: ClientSettingsFilterSchema[] | undefined;
+  templates: ClientTemplateSchema[];
+};
+
 const filterAvailableTemplates = (
   templates: ClientTemplateSchema[],
   filters?: ClientSettingsFilterSchema[]
@@ -61,4 +66,5 @@ const deleteFilters = (
     });
 };
 
+export type { LoaderData };
 export { filterAvailableTemplates, updateFilters, deleteFilters };

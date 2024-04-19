@@ -3,11 +3,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
+import { uniqBy } from 'lodash';
 import { IncomingHttpHeaders } from 'http';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
-import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { notificationAtom, settingsAtom } from 'V2/atoms';
 import * as settingsAPI from 'V2/api/settings';
@@ -22,12 +22,9 @@ import {
   updateFilters,
   deleteFilters,
   FiltersSidepanel,
+  sidepanelAtom,
+  LoaderData,
 } from './components';
-
-type LoaderData = {
-  filters: ClientSettingsFilterSchema[] | undefined;
-  templates: ClientTemplateSchema[];
-};
 
 const filtersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction<LoaderData> =>
@@ -45,11 +42,12 @@ const FiltersTable = () => {
   const [showModal, setShowModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [showSidepanel, setShowSidepanel] = useState(false);
-  const [filters, setFilers] = useState(loaderData.filters);
+  const [filters, setFilters] = useState(loaderData.filters);
   const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+  const blocker = useBlocker(hasChanges);
+  const setAtom = useSetAtom(sidepanelAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSettings = useSetAtom(settingsAtom);
-  const blocker = useBlocker(hasChanges);
 
   const templates = useMemo(
     () => filterAvailableTemplates(loaderData.templates, filters),
@@ -71,18 +69,18 @@ const FiltersTable = () => {
   }, [blocker, setConfirmNavigationModal]);
 
   const cancel = () => {
-    setFilers(loaderData.filters);
+    setFilters(loaderData.filters);
   };
 
   const addNewFilter = (templatedIds: string[]) => {
     const updatedFilters = updateFilters(templatedIds, templates);
-    setFilers([...(filters || []), ...updatedFilters]);
+    setFilters([...(filters || []), ...updatedFilters]);
   };
 
   const handleDelete = () => {
     const idsToRemove = selectedFilters.map(selected => selected.original.id);
     const updatedFilters = deleteFilters(filters, idsToRemove);
-    setFilers(updatedFilters);
+    setFilters(updatedFilters);
   };
 
   const handleSave = async () => {
@@ -143,14 +141,14 @@ const FiltersTable = () => {
             enableSelection
             subRowsKey="items"
             onChange={updatedFilters => {
-              setFilers(updatedFilters);
+              setFilters(updatedFilters);
             }}
             onSelection={selected => {
               setSelectedFilters(selected);
             }}
-            columns={createColumns()}
+            columns={createColumns(setShowSidepanel)}
             data={filters || []}
-            title={<Translate>Custom Uploads</Translate>}
+            title={<Translate>Filters</Translate>}
           />
         </SettingsContent.Body>
 
@@ -165,7 +163,14 @@ const FiltersTable = () => {
                 <Button styling="solid" color="primary" onClick={() => setShowModal(true)}>
                   <Translate className="text-nowrap">Add entity type</Translate>
                 </Button>
-                <Button styling="solid" color="primary" onClick={() => setShowSidepanel(true)}>
+                <Button
+                  styling="solid"
+                  color="primary"
+                  onClick={() => {
+                    setShowSidepanel(true);
+                    setAtom(undefined);
+                  }}
+                >
                   <Translate className="text-nowrap">Add group</Translate>
                 </Button>
               </div>
@@ -217,10 +222,10 @@ const FiltersTable = () => {
         setShowSidepanel={setShowSidepanel}
         onSave={newFilter => {
           if (newFilter) {
-            setFilers([...(filters || []), newFilter]);
+            setFilters(uniqBy([newFilter, ...(filters || [])], 'id'));
           }
         }}
-        templates={templates}
+        availableTemplates={templates}
       />
     </div>
   );
