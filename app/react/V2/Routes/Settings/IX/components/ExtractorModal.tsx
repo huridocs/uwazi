@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, MultiselectList, MultiselectListOption } from 'V2/Components/UI';
+import { Modal, Button, MultiselectList } from 'V2/Components/UI';
+import Icons from 'app/Templates/components/Icons';
 import { Translate } from 'app/I18N';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
+import { CalculatorIcon, CalendarIcon } from '@heroicons/react/20/solid';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
@@ -15,6 +17,30 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
+const renderPropertyLabel = (property: ClientPropertySchema) => {
+  let icon = <></>;
+  switch (property.type) {
+    case 'numeric':
+      icon = <CalculatorIcon className="w-5" />;
+      break;
+    case 'date':
+      icon = <CalendarIcon className="w-5" />;
+      break;
+    case 'text':
+      icon = <CalendarIcon className="w-5" />;
+      break;
+  }
+
+  return (
+    <div className="flex gap-2">
+      <span>{icon}</span>
+      <span>
+        {property.label} {'(' + property.type + ')'}
+      </span>
+    </div>
+  );
+};
+
 const ExtractorModal = ({
   setShowModal,
   onClose,
@@ -22,81 +48,64 @@ const ExtractorModal = ({
   templates,
   extractor,
 }: ExtractorModalProps) => {
-  const [extractorName, setExtractorName] = useState('');
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState('');
+  const [values, setValues] = useState<string[]>([]);
   const [isEditing, setEditing] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState(false);
+  const [_isDisabled, setIsDisabled] = useState(false);
   const [hasNameError, setNameError] = useState(false);
-  const [displayableItems, setDisplayableItems] = useState<MultiselectListOption[]>([]);
+  const [options, setOptions] = useState<any[]>([]);
 
   useEffect(() => {
     if (extractor) {
       setEditing(true);
-      setExtractorName(extractor.name);
+      setName(extractor.name);
       const initialValues = extractor.templates.map(
         template => `${template}-${extractor.property}`
       );
-      setSelectedValues(initialValues);
+      setValues(initialValues);
     } else {
       setEditing(false);
-      setExtractorName('');
-      setSelectedValues([]);
+      setName('');
+      setValues([]);
     }
   }, [extractor]);
 
   useEffect(() => {
-    const temps = templates.map<MultiselectListOption>(template => {
-      const commonProperties = template.commonProperties ? template.commonProperties : [];
-      const items = [...commonProperties, ...template.properties]
+    const filter = values.length ? values[0].split('-', 2)[1] : null;
+    const options = templates.map(template => ({
+      label: template.name,
+      id: template._id,
+      searchLabel: template.name,
+      value: template._id,
+      items: template.properties
+        ?.filter(prop => !filter || prop.name === filter)
         .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
         .map(prop => ({
-          label: prop.label,
+          label: renderPropertyLabel(prop),
           value: `${template._id?.toString()}-${prop.name}`,
           searchLabel: prop.label,
-        }));
+        }))
+        .concat(
+          !filter || filter === 'title'
+            ? [
+                {
+                  label: renderPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
+                  value: `${template._id?.toString()}-title`,
+                  searchLabel: 'Title',
+                },
+              ]
+            : []
+        ),
+    }));
 
-      return {
-        label: template.name,
-        value: template._id as string,
-        searchLabel: template.name,
-        items,
-      };
-    });
-    setDisplayableItems(temps);
-  }, []);
-
-  // const filter = selectedValues.length ? selectedValues[0].split('-', 2)[1] : null;
-  // const options = templates.map(template => ({
-  //   label: template.name,
-  //   id: template._id,
-  //   value: template._id,
-  //   options: template.properties
-  //     ?.filter(prop => !filter || prop.name === filter)
-  //     .map(prop => ({
-  //       label: prop.label,
-  //       value: `${template._id?.toString()}-${prop.name}`,
-  //       type: prop.type,
-  //       icon: { type: 'Icons', _id: Icons[prop.type] },
-  //     }))
-  //     .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
-  //     .concat(
-  //       !filter || filter === 'title'
-  //         ? [
-  //             {
-  //               label: 'Title',
-  //               value: `${template._id?.toString()}-title`,
-  //               type: 'text',
-  //               icon: { type: 'Icons', _id: Icons.text },
-  //             },
-  //           ]
-  //         : []
-  //     ),
-  // }));
+    setOptions(options);
+  }, [values, step]);
 
   const handleClose = () => {
     setEditing(false);
-    setExtractorName('');
-    setSelectedValues([]);
+    setName('');
+    setValues([]);
     setIsDisabled(false);
     onClose();
   };
@@ -134,7 +143,7 @@ const ExtractorModal = ({
     const properties = new Set();
     const newValues: string[] = [];
 
-    selectedValues.forEach(value => {
+    values.forEach(value => {
       properties.add(value.split('-')[1]);
     });
 
@@ -159,7 +168,40 @@ const ExtractorModal = ({
       });
     });
 
-    setSelectedValues(newValues);
+    setValues(newValues);
+  };
+
+  const renderSteps = () => {
+    switch (step) {
+      case 1:
+        return (
+          <MultiselectList
+            className="pt-4 max-h-96"
+            value={values}
+            items={options}
+            onChange={(s: any) => {
+              setValues(s);
+            }}
+            checkboxes
+            foldableGroups
+          />
+        );
+      case 2:
+        return (
+          <div>
+            <div>{values[0]?.split('-', 2)[1]}</div>
+            <div>
+              {values.map(value => {
+                const templateId = value?.split('-', 2)[0];
+                const template = templates.find(temp => temp._id === templateId);
+                return <div>{template?.name}</div>;
+              })}
+            </div>
+          </div>
+        );
+      default:
+        return;
+    }
   };
 
   return (
@@ -177,22 +219,13 @@ const ExtractorModal = ({
           placeholder="Extractor name"
           className="mb-2"
           hasErrors={hasNameError}
-          value={extractorName}
+          value={name}
           onChange={event => {
-            setExtractorName(event.target.value);
+            setName(event.target.value);
             setNameError(false);
           }}
         />
-        <MultiselectList
-          className="pt-4 max-h-96"
-          items={displayableItems}
-          onChange={(s: any) => {
-            console.log(s);
-            setSelectedValues(s);
-          }}
-          checkboxes
-          foldableGroups
-        />
+        {renderSteps()}
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">
@@ -200,12 +233,25 @@ const ExtractorModal = ({
             * <Translate>We're adding more properties support, soon!</Translate>
           </p>
           <div className="flex gap-2">
-            <Button styling="light" onClick={() => setShowModal(false)} className="grow">
-              <Translate>Cancel</Translate>
-            </Button>
-            <Button className="grow" onClick={handleSubmit}>
-              <Translate>Next</Translate>
-            </Button>
+            {step === 1 ? (
+              <>
+                <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button className="grow" onClick={() => setStep(2)}>
+                  <Translate>Next</Translate>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button styling="light" onClick={() => setStep(1)} className="grow">
+                  <Translate>Back</Translate>
+                </Button>
+                <Button className="grow" onClick={() => handleSubmit(name, values)}>
+                  <Translate>Create</Translate>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </Modal.Footer>
