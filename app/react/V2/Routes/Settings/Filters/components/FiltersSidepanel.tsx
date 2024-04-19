@@ -27,6 +27,7 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const { templates: allTemplates } = useLoaderData() as LoaderData;
   const filter = useAtomValue(sidepanelAtom);
+  const defaultValues: ClientSettingsFilterSchema | undefined = { name: '', items: [] };
 
   const multiselectValues = filter?.items?.map(item => item.id).filter(v => v) as
     | string[]
@@ -50,19 +51,20 @@ const FiltersSidepanel = ({
     handleSubmit,
     setValue,
     setError,
+    clearErrors,
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: filter,
+    defaultValues,
   });
 
   useEffect(() => {
-    reset(filter);
+    reset(filter || defaultValues);
   }, [filter, reset]);
 
   const closeSidepanel = () => {
     setShowSidepanel(false);
-    reset();
+    reset(undefined);
   };
 
   const formatSelected = (selected: string[] | undefined) =>
@@ -118,6 +120,7 @@ const FiltersSidepanel = ({
                 value={multiselectValues || []}
                 onChange={selected => {
                   setValue('items', formatSelected(selected));
+                  clearErrors('items');
                 }}
               />
               {errors.items?.type === 'required' && (
@@ -140,7 +143,7 @@ const FiltersSidepanel = ({
             <Translate>Cancel</Translate>
           </Button>
           <Button className="flex-grow" type="submit" form="group-edit-form">
-            <Translate>Add</Translate>
+            {filter?.id ? <Translate>Update</Translate> : <Translate>Add</Translate>}
           </Button>
         </div>
       </Sidepanel.Footer>
