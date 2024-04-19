@@ -26,6 +26,7 @@ Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
+Add entity type,Add entity type
 Add file,Добавить файл
 Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
@@ -295,6 +296,7 @@ Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,Типы объектов
+Entity types cannot be empty,Entity types cannot be empty
 Entity updated,Entity updated
 Error,Ошибка
 Error adding thesauri.,Error adding thesauri.
@@ -327,6 +329,7 @@ Filters configuration,Конфигурация фильтров
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Пример конфигураций фильтров
 Filters OR operator,ИЛИ
+Filters saved,Filters saved
 Find,Найти
 Find suggestions,Найти предложения
 Finding suggestions,Finding suggestions

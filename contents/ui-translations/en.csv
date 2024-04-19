@@ -26,6 +26,7 @@ Add / remove favorite,Add / remove favorite
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Add date
 Add entities / documents,Add entities / documents
+Add entity type,Add entity type
 Add file,Add file
 Add from URL,Add from URL
 Add from web,Add from web
@@ -300,6 +301,7 @@ Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,Entity types
+Entity types cannot be empty,Entity types cannot be empty
 Entity updated,Entity updated
 Error,Error
 Error adding thesauri.,Error adding thesauri.
@@ -332,6 +334,7 @@ Filters configuration,Filters
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,"select ""Add group"" below to group filters under a label e.g (""Documents ""or ""People"")"
 Filters OR operator,OR
+Filters saved,Filters saved
 Find,Find
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions

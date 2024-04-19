@@ -26,6 +26,7 @@ Add / remove favorite,Añadir / eliminar favorito
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
+Add entity type,Add entity type
 Add file,Añadir archivo
 Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
@@ -296,6 +297,7 @@ Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
 Entity types,Tipos de entidades
+Entity types cannot be empty,Entity types cannot be empty
 Entity updated,Entidad actualizada
 Error,Error
 Error adding thesauri.,Error adding thesauri.
@@ -328,6 +330,7 @@ Filters configuration,Configuración de filtros
 Filters configuration description,"Por omisión, los usuarios pueden filtrar las entidades en la colección basados en los tipos que has definido. Sin embargo, puedes configurar cómo estos tipos de entidades se mostrarán."
 Filters configuration example,"selecciona Crear grupo"" a continuación, para agrupar filtros bajo una etiqueta, por ejemplo (""Documentos"" o ""Personas"")"
 Filters OR operator,OR
+Filters saved,Filters saved
 Find,Encontrar
 Find suggestions,Encontrar sugerencias
 Finding suggestions,Encontrando sugerencias
