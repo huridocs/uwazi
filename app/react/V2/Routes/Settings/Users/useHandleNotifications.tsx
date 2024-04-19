@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useFetchers } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { last } from 'lodash';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -9,7 +9,7 @@ import { FormIntent } from './types';
 
 const useHandleNotifications = () => {
   const fetchers = useFetchers();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const lastFetcherCall = last(fetchers) || fetchers[0];
   const intent = lastFetcherCall?.formData?.get('intent') as FormIntent;
