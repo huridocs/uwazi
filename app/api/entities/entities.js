@@ -29,6 +29,7 @@ import {
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
@@ -534,8 +535,17 @@ export default {
   },
 
   async saveMultiple(docs) {
-    await docs.reduce(async (prev, doc) => {
+    const templateIds = Array.from(new Set(docs.map(d => d.template)));
+    const indexedTemplates = objectIndex(
+      await templates.get({ _id: { $in: templateIds } }),
+      t => t._id.toString(),
+      t => t
+    );
+
+    await docs.reduce(async (prev, _doc) => {
       await prev;
+      const template = indexedTemplates[_doc.template];
+      const doc = this.sanitize(_doc, template);
       await validateEntity(doc);
     }, Promise.resolve());
 

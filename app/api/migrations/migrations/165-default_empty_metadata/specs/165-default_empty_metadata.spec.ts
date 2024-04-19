@@ -18,7 +18,7 @@ const initTest = async (fixture: Fixture) => {
 
 beforeAll(async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
+  jest.spyOn(process.stdout, 'write').mockImplementation((str: string | Uint8Array) => true);
 });
 
 afterAll(async () => {
