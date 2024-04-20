@@ -313,7 +313,7 @@ describe('Entities', () => {
         delay: 0,
       });
       cy.contains('button', 'Save').click();
-      cy.contains('Update success').should('exist');
+      cy.contains('Entity updated');
       cy.contains('.item-document', 'Test title').click();
       cy.contains('.metadata-type-text > dd', 'Brief in English').should('exist');
       cy.contains('.multiline > .item-value > a', 'Argentina').should('exist');
