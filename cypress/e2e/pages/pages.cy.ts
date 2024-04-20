@@ -10,7 +10,7 @@ describe('Pages', () => {
   });
 
   describe('accessibility', () => {
-    it('should check for accissibility violations', () => {
+    it('should check for accessibility violations', () => {
       cy.contains('a', 'Pages').click();
       cy.checkA11y();
       cy.contains('a', 'Add page').click();
@@ -192,7 +192,7 @@ describe('Pages', () => {
 
     it('should run the scripts of a page', () => {
       cy.contains('a', 'Library').click();
-      cy.get('closeSidepanel').click();
+      cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
       cy.contains('.multiselectItem-name > span', 'País').click();
       cy.contains('Brazil');
       cy.get('.item-document:nth-child(2) > .item-info').click();

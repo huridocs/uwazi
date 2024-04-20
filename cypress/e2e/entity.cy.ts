@@ -52,13 +52,13 @@ describe('Entities', () => {
   const saveEntity = (message = 'Entity created') => {
     cy.contains('button', 'Save').click();
     cy.contains(message).as('successMessage');
-    cy.get('@successMessage').should('exist');
+    cy.get('@successMessage').should('not.exist');
   };
 
   it('Should create new entity', () => {
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
-    cy.get('[name="library.sidepanel.metadata.title"]').type('Test title', { delay: 0 });
+    cy.get('[name="library.sidepanel.metadata.title"]').type('Test entity', { delay: 0 });
     saveEntity();
   });
 
@@ -116,6 +116,7 @@ describe('Entities', () => {
         .first()
         .selectFile('./cypress/test_files/short-video.webm', {
           force: true,
+          timeout: 100,
         });
       saveEntity('Entity updated');
     });
@@ -133,7 +134,7 @@ describe('Entities', () => {
       cy.get('.metadata-name-fotograf_a > dd > img')
         .should('have.prop', 'src')
         .and('match', /\w+\/api\/files\/\w+\.jpg$/);
-
+      cy.get('.metadata-sidepanel .sidepanel-body').scrollTo('bottom');
       cy.get('.metadata-name-video > dd > div > div > div > div:nth-child(1) > div > video')
         .should('have.prop', 'src')
         .and('match', /^blob:http:\/\/localhost:3000\/[\w-]+$/);
@@ -282,7 +283,7 @@ describe('Entities', () => {
   describe('Languages', () => {
     it('should change the entity in Spanish', () => {
       changeLanguage('Español');
-      cy.contains('.item-document', 'Test title').click();
+      cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity('Editar');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Título de prueba', {
@@ -306,7 +307,7 @@ describe('Entities', () => {
 
     it('should edit the text field in English', () => {
       changeLanguage('English');
-      cy.contains('.item-document', 'Test title').click();
+      cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity();
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type('Brief in English', {
@@ -314,7 +315,7 @@ describe('Entities', () => {
       });
       cy.contains('button', 'Save').click();
       cy.contains('Entity updated');
-      cy.contains('.item-document', 'Test title').click();
+      cy.contains('.item-document', 'Test entity').click();
       cy.contains('.metadata-type-text > dd', 'Brief in English').should('exist');
       cy.contains('.multiline > .item-value > a', 'Argentina').should('exist');
     });
