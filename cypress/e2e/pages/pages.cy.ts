@@ -24,7 +24,8 @@ describe('Pages', () => {
       cy.contains('a', 'Collection').click();
       cy.clearAndType('input[id="landing-page"]', pageURL);
       cy.contains('button', 'Save').click();
-      cy.contains('Settings updated');
+      cy.contains('Settings updated').as('successMessage');
+      cy.get('@successMessage').should('exist');
     };
 
     it('should create a page to be used as home', () => {
@@ -74,7 +75,7 @@ describe('Pages', () => {
 
     it('should allow using a complex library query as a landing page', () => {
       setLandingPage(
-        '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
+        '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!f,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
       );
     });
 
@@ -190,11 +191,13 @@ describe('Pages', () => {
     });
 
     it('should run the scripts of a page', () => {
-      cy.visit('localhost:3000');
+      cy.contains('a', 'Library').click();
+      cy.get('closeSidepanel').click();
       cy.contains('.multiselectItem-name > span', 'País').click();
+      cy.contains('Brazil');
       cy.get('.item-document:nth-child(2) > .item-info').click();
       cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
-      cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
+      cy.get('.page-viewer.document-viewer ').toMatchImageSnapshot();
     });
   });
 

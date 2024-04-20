@@ -27,7 +27,7 @@ const webAttachments = {
 };
 
 const goToRestrictedEntities = () => {
-  cy.visit(host);
+  cy.contains('a', 'Library').click();
   cy.get('#publishedStatuspublished').then(element => {
     const publishedStatus = element.val();
     cy.get('#publishedStatusrestricted').then(restrictedElement => {
@@ -52,13 +52,13 @@ describe('Entities', () => {
   const saveEntity = (message = 'Entity created') => {
     cy.contains('button', 'Save').click();
     cy.contains(message).as('successMessage');
-    cy.get('@successMessage').should('not.exist');
+    cy.get('@successMessage').should('exist');
   };
 
   it('Should create new entity', () => {
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
-    cy.get('[name="library.sidepanel.metadata.title"]').type('Test title', { force: true });
+    cy.get('[name="library.sidepanel.metadata.title"]').type('Test title', { delay: 0 });
     saveEntity();
   });
 
@@ -66,10 +66,10 @@ describe('Entities', () => {
     it('should create an entity with HTML on a rich text field', () => {
       clickOnCreateEntity();
       cy.get('[name="library.sidepanel.metadata.title"]').click();
-      cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with HTML', { force: true });
+      cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with HTML', { delay: 0 });
       cy.get('#metadataForm').find('select').select('Reporte', { timeout: 100 });
 
-      cy.get('#tabpanel-edit > textarea').type(textWithHtml);
+      cy.get('#tabpanel-edit > textarea').type(textWithHtml, { delay: 0 });
       saveEntity();
     });
 
@@ -92,10 +92,10 @@ describe('Entities', () => {
       clickOnCreateEntity();
       cy.get('[name="library.sidepanel.metadata.title"]').click();
       cy.get('[name="library.sidepanel.metadata.title"]').type('Entity with media files', {
-        force: true,
+        delay: 0,
       });
       cy.get('#metadataForm').find('select').select('Reporte', { force: true });
-      cy.get('#tabpanel-edit > textarea').type('A description of the report');
+      cy.get('#tabpanel-edit > textarea').type('A description of the report', { delay: 0 });
       cy.get(
         '#metadataForm > div:nth-child(3) > div:nth-child(4) > ul > li.wide > div > div > div > button'
       ).click();
@@ -111,6 +111,7 @@ describe('Entities', () => {
       cy.get(
         '#metadataForm > div:nth-child(3) > div.form-group.media > ul > li.wide > div > div > div > button'
       ).click();
+      cy.contains('Select from computer');
       cy.get('input[aria-label=fileInput]')
         .first()
         .selectFile('./cypress/test_files/short-video.webm', {
@@ -120,7 +121,8 @@ describe('Entities', () => {
     });
 
     it('should check the entity', () => {
-      cy.visit(`${host}/library`);
+      cy.get('.sidepanel-body.scrollable').scrollTo('top');
+      cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
       goToRestrictedEntities();
       cy.contains('.item-name span', 'Entity with media files').click();
       cy.get('.metadata-name-descripci_n > dd > div > p').should(
@@ -146,6 +148,7 @@ describe('Entities', () => {
   describe('supporting files and main documents', () => {
     describe('Entity with supporting files', () => {
       it('Should create a new entity with supporting files', () => {
+        cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
         goToRestrictedEntities();
         clickOnCreateEntity();
         cy.contains('button', 'Add file').click();
@@ -161,7 +164,7 @@ describe('Entities', () => {
         clickOnCreateEntity();
         cy.get('[name="library.sidepanel.metadata.title"]').click();
         cy.get('[name="library.sidepanel.metadata.title"]').type(entityTitle, {
-          force: true,
+          delay: 0,
         });
         cy.contains('button', 'Add file').click();
         cy.get('#tab-uploadComputer').click();
@@ -176,9 +179,9 @@ describe('Entities', () => {
         cy.contains('button', 'Add file').click();
         cy.contains('.tab-link', 'Add from web').click();
         cy.get('.web-attachment-url').click();
-        cy.get('.web-attachment-url').type(webAttachments.url, { force: true });
+        cy.get('.web-attachment-url').type(webAttachments.url, { delay: 0 });
         cy.get('.web-attachment-name').click();
-        cy.get('.web-attachment-name').type(webAttachments.name, { force: true });
+        cy.get('.web-attachment-name').type(webAttachments.name, { delay: 0 });
         cy.contains('button', 'Add from URL').click();
 
         cy.contains('button', 'Save').click();
@@ -196,7 +199,7 @@ describe('Entities', () => {
         cy.get('input[name="library.sidepanel.metadata.attachments.2.originalname"]').clear();
         cy.get('input[name="library.sidepanel.metadata.attachments.2.originalname"]').type(
           'My PDF.pdf',
-          { force: true }
+          { delay: 0 }
         );
         cy.contains('button', 'Save').click();
         cy.contains('.item-document', entityTitle).click();
@@ -223,17 +226,18 @@ describe('Entities', () => {
 
     describe('Entity with main documents', () => {
       it('Should create a new entity with a main documents', () => {
+        cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
         goToRestrictedEntities();
         clickOnCreateEntity();
         cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
         cy.get('textarea[name="library.sidepanel.metadata.title"]').type(
           'Entity with main documents',
-          { force: true }
+          { delay: 0 }
         );
         cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
         cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
           'An entity with main documents',
-          { force: true }
+          { delay: 0 }
         );
         cy.get('.document-list-parent > input')
           .first()
@@ -251,7 +255,7 @@ describe('Entities', () => {
         cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').clear();
         cy.get('input[name="library.sidepanel.metadata.documents.0.originalname"]').type(
           'Renamed file.pdf',
-          { force: true }
+          { delay: 0 }
         );
         cy.get('.document-list-parent > input')
           .first()
@@ -282,12 +286,12 @@ describe('Entities', () => {
       clickOnEditEntity('Editar');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
       cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Título de prueba', {
-        force: true,
+        delay: 0,
       });
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
         'Resumen en español',
-        { force: true }
+        { delay: 0 }
       );
       cy.contains('.multiselectItem-name', 'Argentina').click();
       cy.contains('button', 'Guardar').click();
@@ -306,9 +310,10 @@ describe('Entities', () => {
       clickOnEditEntity();
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type('Brief in English', {
-        force: true,
+        delay: 0,
       });
       cy.contains('button', 'Save').click();
+      cy.contains('Update success').should('exist');
       cy.contains('.item-document', 'Test title').click();
       cy.contains('.metadata-type-text > dd', 'Brief in English').should('exist');
       cy.contains('.multiline > .item-value > a', 'Argentina').should('exist');
@@ -325,26 +330,27 @@ describe('Entities', () => {
     before(() => {
       changeLanguage('English');
       cy.get('li[title=Published]').click();
-      cy.contains('span', 'Ordenes de la corte').should('exist');
-      cy.contains('span', 'Ordenes de la corte').click();
       cy.contains(
-        '.item-document',
         'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
       ).click();
       clickOnEditEntity();
     });
 
     it('should add a thesauri value on a multiselect field and select it', () => {
+      cy.get(
+        '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span'
+      ).scrollIntoView();
       cy.contains(
         '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > div > button > span',
         'add value'
-      ).click();
-      cy.get('input[name=value]#newThesauriValue').click();
-      cy.get('input[name=value]#newThesauriValue').clear();
+      )
+        .parent()
+        .click();
+      cy.contains('.modal-content', 'Add thesaurus value');
       cy.get('input[name=value]#newThesauriValue').type('New Value', {
-        timeout: 100,
+        delay: 0,
       });
-      cy.contains('button.confirm-button', 'Save').click();
+      cy.contains('.file-form button.confirm-button', 'Save').click();
       cy.contains(
         '#metadataForm > div:nth-child(3) > .form-group.multiselect > ul > .wide > div > ul > li:nth-child(4) > label > .multiselectItem-name',
         'New Value'
@@ -371,7 +377,7 @@ describe('Entities', () => {
       ).click();
       cy.get('input[name=value]#newThesauriValue').click();
       cy.get('input[name=value]#newThesauriValue').type('New Value', {
-        force: true,
+        delay: 0,
       });
       cy.contains('.confirm-button', 'Save').click();
     });

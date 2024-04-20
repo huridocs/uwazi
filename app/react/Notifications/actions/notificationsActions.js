@@ -8,7 +8,9 @@ export function removeNotification(id) {
   };
 }
 
-export function notify(message, type, delay = 6000) {
+const NOTIFICATION_DELAY = process.env.NOTIFICATION_DELAY || 6000;
+
+export function notify(message, type, delay = NOTIFICATION_DELAY) {
   return dispatch => {
     const id = ID();
     dispatch({ type: actions.NOTIFY, notification: { message, type, id } });

@@ -9,8 +9,6 @@ Cypress.on('window:before:load', win => {
 
 describe('customization', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn blank-state --force', { env });
     clearCookiesAndLogin('admin', 'change this password now');
     cy.injectAxe();
     cy.contains('a', 'Settings').click();

@@ -12,12 +12,12 @@ describe('Permisions system', () => {
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
-    cy.get('[data-testid=modal] input').type('colla');
+    cy.get('[data-testid=modal] input').type('colla', { delay: 0 });
     cy.get('ul[role=listbox]').contains('span', 'colla').click();
     cy.contains('[data-testid=modal] td', 'colla').siblings().find('select').select('write');
     cy.contains('button', 'Save changes').click();
     cy.contains('Update success').as('successMessage');
-    cy.get('@successMessage').should('not.exist');
+    cy.get('@successMessage').should('exist');
   });
 
   describe('make entities private', () => {
@@ -27,7 +27,7 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] select').eq(1).select('delete');
       cy.contains('button', 'Save changes').click();
       cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
@@ -46,7 +46,7 @@ describe('Permisions system', () => {
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.contains('button', 'Save changes').click();
       cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
@@ -73,7 +73,7 @@ describe('Permisions system', () => {
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('Entity created').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
@@ -92,7 +92,7 @@ describe('Permisions system', () => {
   describe('mixed permissions', () => {
     it('should login as admin and perform a search', () => {
       clearCookiesAndLogin('admin', 'admin');
-      cy.get('.search-box input').type('test 2016');
+      cy.get('.search-box input').type('test 2016', { delay: 0 });
       cy.get('[aria-label="Search button"]').click();
       cy.get('.item-document').should('have.length', 9);
     });
@@ -112,7 +112,7 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
       cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.item-document').should('have.length', 9);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();

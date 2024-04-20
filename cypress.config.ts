@@ -9,12 +9,16 @@ export default defineConfig({
   defaultCommandTimeout: 10000,
   requestTimeout: 12000,
   e2e: {
+    env: {
+      "local": true
+    },
     baseUrl: 'http://localhost:3000',
     video: true,
     screenshotOnRunFailure: false,
     testIsolation: false,
     specPattern: [
       'cypress/e2e/**/*[!(.b)].cy.{js,jsx,ts,tsx}',
+      'cypress/e2e/blank-state.b.cy.{js,jsx,ts,tsx}',
       'cypress/e2e/**/*.b.cy.{js,jsx,ts,tsx}',
     ],
     setupNodeEvents(on, config) {

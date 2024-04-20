@@ -4,8 +4,6 @@ import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Account', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn blank-state --force', { env });
     clearCookiesAndLogin('admin', 'change this password now');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();

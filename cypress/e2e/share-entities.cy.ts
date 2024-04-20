@@ -31,7 +31,7 @@ describe('Share Entities', () => {
   it('Should update the permissions of an entity', () => {
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('editor');
+    cy.get('[data-testid=modal] input').type('editor', { delay: 0 });
     cy.get('ul[role=listbox]').contains('span', 'editor').click();
     cy.get('[data-testid=modal] input').clear();
     cy.get('[data-testid=modal] input').type('Ase');
@@ -78,7 +78,7 @@ describe('Share Entities', () => {
     cy.contains('div[data-testid=modal] td', 'Asesores legales')
       .siblings()
       .find('select')
-      .select('write');
+      .select('write', { force: true });
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
     cy.contains('Update success').as('successMessage');
     cy.get('@successMessage').should('not.exist');
@@ -109,7 +109,7 @@ describe('Share Entities', () => {
     clickOnEditEntity();
     cy.contains('Edit');
     cy.get('aside.is-active textarea').eq(0).clear();
-    cy.get('aside.is-active textarea').eq(0).type('Edited title');
+    cy.get('aside.is-active textarea').eq(0).type('Edited title', { delay: 0 });
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
@@ -119,7 +119,7 @@ describe('Share Entities', () => {
   it('should be able to see only published entities', () => {
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
-    cy.get('.search-box input').type('"Resolución de la Corte IDH."', { force: true });
+    cy.get('.search-box input').type('"Resolución de la Corte IDH."', { delay: 0 });
     cy.get('[aria-label="Search button"]').click();
     cy.contains(
       '.item-name',
