@@ -72,7 +72,7 @@ describe('Activity log', () => {
   it('should filter by method', () => {
     cy.clearAndType('input[name=search]', 'DELETE');
     cy.contains('editor');
-    cy.get('tr').should('have.length.at.most', 5);
+    cy.get('tr').should('have.length.at.most', 3);
   });
 
   it('should filter by dates', () => {
