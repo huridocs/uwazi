@@ -74,7 +74,7 @@ describe('Information Extraction', () => {
     it('Should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1');
+        cy.get('input').type('Extractor 1', { delay: 0 });
       });
 
       editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
@@ -89,7 +89,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Titles from all templates');
+        cy.get('input').type('Titles from all templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
@@ -115,7 +115,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Fechas from relevant templates');
+        cy.get('input').type('Fechas from relevant templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');

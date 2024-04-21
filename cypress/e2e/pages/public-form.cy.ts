@@ -46,8 +46,8 @@ describe('Public Form', () => {
         cy.contains('a', 'Menu').click();
         cy.contains('button', 'Add link').click();
         cy.get('#link-title').click();
-        cy.get('#link-title').type('Public Form Link');
-        cy.get('#link-url').type(url.val() as string);
+        cy.get('#link-title').type('Public Form Link', { delay: 0 });
+        cy.get('#link-url').type(url.val() as string, { delay: 0 });
         cy.getByTestId('menu-form-submit').click();
         cy.intercept('GET', 'api/settings/links').as('fetchLinks');
         cy.getByTestId('menu-save').click();
@@ -61,10 +61,13 @@ describe('Public Form', () => {
       cy.contains('a', 'Public Form Link').click();
       cy.contains('h1', 'Public form submition');
       cy.get('body').toMatchImageSnapshot();
-      cy.get('input[name="publicform.title"]').type('Test public submit entity', { force: true });
+      cy.get('input[name="publicform.title"]').type('Test public submit entity', {
+        force: true,
+        delay: 0,
+      });
       cy.get('input[name="publicform.metadata.resumen"]').type(
         'This was submited via public form',
-        { force: true }
+        { force: true, delay: 0 }
       );
       cy.contains('span', 'Bahamas').click();
       cy.get('.captcha input').type('42hf');
@@ -86,7 +89,7 @@ describe('Public Form', () => {
       cy.get('div[data-mode-id="html"]').type('{selectAll}{del}');
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Public form submition</h1><PublicForm template="624b29b432bdcda07b3854b9" />',
-        { parseSpecialCharSequences: false }
+        { parseSpecialCharSequences: false, delay: 0 }
       );
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
@@ -100,10 +103,11 @@ describe('Public Form', () => {
       cy.get('body').toMatchImageSnapshot();
       cy.get('input[name="publicform.title"]').type('Entity with image and media fields', {
         force: true,
+        delay: 0,
       });
       cy.get('select').select('505e38c8-210f-45b1-a81f-aa34d933cbae');
       cy.get('.react-datepicker-wrapper input').type('2022/02/10');
-      cy.get('textarea').type('A description for the report');
+      cy.get('textarea').type('A description for the report', { delay: 0 });
     });
 
     it('should fill the Fotografía field', () => {

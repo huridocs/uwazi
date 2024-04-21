@@ -77,9 +77,9 @@ describe('Activity log', () => {
 
   it('should filter by dates', () => {
     cy.get('input[name=search]').clear();
-    cy.get('input[name=start]').type('2023-06-22', { delay: 0 });
+    cy.get('input[name=start]').type('2023-06-21', { delay: 0 });
     cy.get('input[name=end]').clear();
-    cy.get('input[name=end]').type('2023-06-23', { delay: 0 });
+    cy.get('input[name=end]').type('2023-06-24', { delay: 0 });
     cy.contains('admin');
     cy.get('tr').should('have.length.at.most', 2);
   });

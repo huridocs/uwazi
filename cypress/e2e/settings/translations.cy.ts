@@ -119,7 +119,7 @@ describe('Translations', () => {
       it('Should discard changes', () => {
         //this reload is needed to clear several legacy notifications
         cy.reload();
-        cy.get('input[type=text]').eq(0).type('unwanted change');
+        cy.get('input[type=text]').eq(0).type('unwanted change', { delay: 0 });
         cy.contains('button', 'Cancel').click();
         cy.contains('button', 'Discard changes').click();
         cy.get('[data-testid=settings-translations]').should('be.visible');

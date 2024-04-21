@@ -192,7 +192,7 @@ describe('Pages', () => {
 
     it('should run the scripts of a page', () => {
       cy.contains('a', 'Library').click();
-      cy.get('.metadata-sidepanel.is-active .closeSidepanel').click();
+      cy.get('.metadata-sidepanel.is-active .closeSidepanel').eq(0).click();
       cy.contains('.multiselectItem-name > span', 'País').click();
       cy.contains('Brazil');
       cy.get('.item-document:nth-child(2) > .item-info').click();
@@ -235,7 +235,15 @@ describe('Pages', () => {
     });
 
     it('should not delete a page used as entity view', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      cy.get('tr:nth-child(1) > th > div > label > input').click();
+      cy.get('tr:nth-child(1) > th > div > label > input').click();
+      cy.contains('Country page')
+        .parent()
+        .within(() => {
+          cy.get('input').check();
+        });
+      cy.contains('Delete').click();
+      cy.contains('Accept').click();
       cy.contains('An error occurred');
       cy.contains('Country page');
     });

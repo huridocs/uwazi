@@ -12,13 +12,15 @@ export default defineConfig({
     env: {
       "local": true
     },
+    retries: 3,
     baseUrl: 'http://localhost:3000',
     video: true,
     screenshotOnRunFailure: false,
     testIsolation: false,
     specPattern: [
       'cypress/e2e/**/*[!(.b)].cy.{js,jsx,ts,tsx}',
-      'cypress/e2e/blank-state.b.cy.{js,jsx,ts,tsx}',
+      'cypress/e2e/settings/collection.b.cy.ts}',
+      'cypress/e2e/blank-state.b.cy.ts}',
       'cypress/e2e/**/*.b.cy.{js,jsx,ts,tsx}',
     ],
     setupNodeEvents(on, config) {

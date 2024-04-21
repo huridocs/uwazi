@@ -22,14 +22,14 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Link 1');
-    cy.get('#link-url').type('www.example.com');
+    cy.get('#link-url').type('www.example.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Link 2');
     cy.get('#link-url').click();
-    cy.get('#link-url').type('www.example.com');
+    cy.get('#link-url').type('www.example.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-add-link').click();
@@ -38,7 +38,7 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Link 3');
-    cy.get('#link-url').type('www.exmple.com');
+    cy.get('#link-url').type('www.exmple.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-save').click();

@@ -108,14 +108,18 @@ describe('Users', () => {
         cy.get('#username').type('Al');
         cy.contains('span', 'Username is too short').should('exist');
         cy.get('#username').clear();
-        cy.get('#username').type('LongNameForAUserWhatIsTheAdminThinkingWhenCreatingIt');
+        cy.get('#username').type('LongNameForAUserWhatIsTheAdminThinkingWhenCreatingIt', {
+          delay: 0,
+        });
         cy.contains('span', 'Username is too long').should('exist');
       });
     });
 
     it('should not allow very long passwords', () => {
       cy.get('aside').within(() => {
-        cy.get('#password').type('This passwords has more then 50 chatacters, it should fail.');
+        cy.get('#password').type('This passwords has more then 50 chatacters, it should fail.', {
+          delay: 0,
+        });
         cy.contains('span', 'Password is too long').should('exist');
       });
     });

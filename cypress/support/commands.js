@@ -151,9 +151,9 @@ Cypress.on('window:before:load', window => {
   );
 });
 
-Cypress.Commands.add('clearAndType', (selector, value) => {
+Cypress.Commands.add('clearAndType', (selector, value, options = {}) => {
   cy.get(selector).clear();
-  cy.get(selector).type(value);
+  cy.get(selector).type(value, options);
 });
 
 Cypress.Commands.add('waitForNotification', message => {
@@ -183,11 +183,11 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
   cy.get(timeLinkSelector).type(label);
 });
 
-before(() => {
-  if (Cypress.env('local') === true) {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-fixtures', { env, log: true });
-  }
-});
+//before(() => {
+//  if (Cypress.env('local') === true) {
+//    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
+//    cy.exec('yarn e2e-fixtures', { env, log: true });
+//  }
+//});
 
 export {};

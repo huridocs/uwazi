@@ -26,7 +26,7 @@ describe('Account', () => {
 
   describe('Update user', () => {
     it('should change the password to a new one', () => {
-      cy.get('input[name=email]').type('admin@uwazi.io');
+      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
       cy.get('input[name=password]').type('1234');
       cy.get('input[name=passwordConfirm]').type('123');
       cy.contains('button', 'Update').click();

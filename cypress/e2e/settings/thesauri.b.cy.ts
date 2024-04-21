@@ -44,7 +44,7 @@ describe('Thesauri configuration', () => {
   it('should add groups', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.contains('a', 'Add thesaurus').click();
-    cy.get('#thesauri-name').type('New Thesauri with groups');
+    cy.get('#thesauri-name').type('New Thesauri with groups', { delay: 0 });
     cy.contains('button', 'Add group').click();
     cy.get('input#group-name').type('First group');
     cy.getByTestId('thesaurus-form-submit').click();
