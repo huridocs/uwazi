@@ -72,14 +72,14 @@ describe('Activity log', () => {
   it('should filter by method', () => {
     cy.clearAndType('input[name=search]', 'DELETE');
     cy.contains('editor');
-    cy.get('tr').should('have.length.at.most', 5);
+    cy.get('tr').should('have.length.at.most', 3);
   });
 
   it('should filter by dates', () => {
     cy.get('input[name=search]').clear();
-    cy.get('input[name=start]').type('2023-06-22', { delay: 0 });
-    cy.get('input[name=end]').clear();
-    cy.get('input[name=end]').type('2023-06-23', { delay: 0 });
+    cy.get('input[name=from]').type('2023-06-22', { delay: 0 });
+    cy.get('input[name=to]').clear();
+    cy.get('input[name=to]').type('2023-06-23', { delay: 0 });
     cy.contains('admin');
     cy.get('tr').should('have.length.at.most', 2);
   });
