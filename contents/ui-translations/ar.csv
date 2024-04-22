@@ -26,6 +26,7 @@ Add / remove favorite,إضافة/ إزالة المفضلة
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
+Add entity type,Add entity type
 Add file,اضف ملف
 Add from URL,إضافة من عنوان URL
 Add from web,أضف من الويب
@@ -329,6 +330,7 @@ Filters configuration,ضبط قوائم تصفية البيانات
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,مثال على تكوين عامل التصفية
 Filters OR operator,او
+Filters saved,Filters saved
 Find,بحث
 Find suggestions,العثور على اقتراحات
 Finding suggestions,Finding suggestions
