@@ -23,7 +23,7 @@ const AddTemplatesModal = ({ onCancel, onAdd, templates }: AddTemplateModalProps
     <Modal size="lg">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          <Translate>Install Language(s)</Translate>
+          <Translate>Add entity type</Translate>
         </h1>
         <Modal.CloseButton onClick={() => onCancel(false)} />
       </Modal.Header>
