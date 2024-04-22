@@ -115,6 +115,7 @@ describe('Pages', () => {
 
     it('should allow to edit and get a preview of the page', () => {
       cy.contains('a', 'Pages').click();
+      cy.contains('Page with error').scrollIntoView();
       cy.contains('Page with error')
         .parent()
         .within(() => {

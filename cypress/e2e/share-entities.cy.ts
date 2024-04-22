@@ -108,6 +108,7 @@ describe('Share Entities', () => {
     cy.contains('h2', titleEntity4).click();
     clickOnEditEntity();
     cy.contains('Edit');
+    cy.get('.sidepanel-body.scrollable').scrollTo('top');
     cy.get('aside.is-active textarea').eq(0).clear();
     cy.get('aside.is-active textarea').eq(0).type('Edited title', { delay: 0 });
     cy.get('aside.is-active').contains('button', 'Save').click();

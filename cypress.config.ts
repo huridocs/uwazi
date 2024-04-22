@@ -18,8 +18,8 @@ export default defineConfig({
     screenshotOnRunFailure: false,
     testIsolation: false,
     specPattern: [
-      'cypress/e2e/**/*[!(.b)].cy.{js,jsx,ts,tsx}',
-      'cypress/e2e/settings/collection.b.cy.ts}',
+      'cypress/e2e/**/*[!(.b)!().c)].cy.{js,jsx,ts,tsx}',
+      'cypress/e2e/settings/collection.c.cy.ts}',
       'cypress/e2e/blank-state.b.cy.ts}',
       'cypress/e2e/**/*.b.cy.{js,jsx,ts,tsx}',
     ],

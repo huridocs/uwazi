@@ -94,7 +94,7 @@ describe('Permisions system', () => {
       clearCookiesAndLogin('admin', 'admin');
       cy.get('.search-box input').type('test 2016', { delay: 0 });
       cy.get('[aria-label="Search button"]').click();
-      cy.get('.item-document').should('be.at.least', 9).should('be.at.most', 10);
+      cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
     });
 
     it('should show mixed access', () => {
@@ -114,7 +114,7 @@ describe('Permisions system', () => {
       cy.contains('Update success').as('successMessage');
       cy.get('@successMessage').should('exist');
       cy.get('[data-testid=modal]').should('not.exist');
-      cy.get('.item-document').should('be.at.least', 9).should('be.at.most', 10);
+      cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });
   });

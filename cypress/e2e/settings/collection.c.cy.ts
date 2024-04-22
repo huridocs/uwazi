@@ -50,6 +50,14 @@ describe('Collection', () => {
     cy.get('[data-testid="multiselect"]')
       .eq(0)
       .within(() => {
+        cy.get('[type="checkbox"]').each($el => {
+          cy.wrap($el).should('have.attr', 'checked', false);
+        });
+      });
+
+    cy.get('[data-testid="multiselect"]')
+      .eq(0)
+      .within(() => {
         cy.get('button').eq(0).click();
         cy.contains('[data-testid="multiselect-popover"] label', 'Mecanismo').click();
         cy.contains('[data-testid="multiselect-popover"] label', 'Causa').click();
