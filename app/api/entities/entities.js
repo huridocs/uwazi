@@ -11,6 +11,7 @@ import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
@@ -29,7 +30,6 @@ import {
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
-import { objectIndex } from 'shared/data_utils/objectIndex';
 
 const FIELD_TYPES_TO_SYNC = [
   propertyTypes.select,
