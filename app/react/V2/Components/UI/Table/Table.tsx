@@ -122,7 +122,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
+    <div className="relative w-full rounded-md border border-gray-50 shadow-sm">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">

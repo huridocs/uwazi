@@ -118,7 +118,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white border rounded bg-primary-600"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -126,7 +126,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white border rounded bg-primary-600"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -137,7 +137,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 };
 
 const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
-  <div className="flex items-center gap-2">
+  <div className="flex gap-2 items-center">
     <span className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}>
       {getValue()}
     </span>
@@ -153,9 +153,9 @@ const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
     )}
   </div>
 );
+
 const basicColumns = [
   columnHelper.accessor('title', { header: 'Title', id: 'title', cell: TitleCell }),
-
   columnHelper.accessor('description', { header: 'Description' }),
   columnHelper.accessor('created', {
     header: 'Date added',
@@ -165,23 +165,27 @@ const basicColumns = [
 ];
 
 const withActionsColumns = [
-  columnHelper.accessor('title', { id: 'title', header: 'Title' }),
-  columnHelper.accessor('created', {
-    id: 'created',
-    header: 'Date added',
-    meta: { headerClassName: 'w-1/3' },
+  columnHelper.accessor('title', {
+    id: 'title',
+    header: 'Title',
+    meta: { headerClassName: 'w-full' },
   }),
-  columnHelper.accessor('description', {
-    id: 'description',
-    header: 'Description',
-    enableSorting: false,
-    meta: { headerClassName: 'w-1/3 bg-error-100 text-blue-600' },
-  }),
+  // columnHelper.accessor('created', {
+  //   id: 'created',
+  //   header: 'Date added',
+  //   meta: { headerClassName: 'w-1/3' },
+  // }),
+  // columnHelper.accessor('description', {
+  //   id: 'description',
+  //   header: 'Description',
+  //   enableSorting: false,
+  //   meta: { headerClassName: 'w-1/3 bg-error-100 text-blue-600' },
+  // }),
   columnHelper.display({
     id: 'action',
     header: 'Actions',
     cell: ActionsCell,
-    meta: { headerClassName: 'text-center' },
+    meta: { headerClassName: 'sr-only w-1' },
   }),
 ];
 
