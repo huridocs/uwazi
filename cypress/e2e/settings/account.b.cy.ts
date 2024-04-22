@@ -60,7 +60,10 @@ describe('Account', () => {
     it('should enable 2FA', () => {
       cy.getByTestId('copy-value-button').click();
       cy.window()
-        .then(async win => win.navigator.clipboard.readText())
+        .then(async win => {
+          win.focus();
+          return win.navigator.clipboard.readText();
+        })
         .then(value => {
           secret = value;
           const token = authenticator.generate(value);
