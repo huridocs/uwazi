@@ -563,6 +563,25 @@ describe('entities', () => {
       });
     });
 
+    it('should sanitize the entities', async () => {
+      const sanitizationSpy = jest.spyOn(entities, 'sanitize');
+      await entities.updateMetdataFromRelationships(['shared'], 'en');
+
+      expect(sanitizationSpy.mock.calls).toMatchObject([
+        [
+          {
+            sharedId: 'shared',
+            language: 'en',
+            title: 'Batman finishes',
+          },
+          {
+            name: 'template_test',
+          },
+        ],
+      ]);
+      sanitizationSpy.mockRestore();
+    });
+
     describe('unrestricted for collaborator', () => {
       it('should save the entity with unrestricted access', async () => {
         userFactory.mock({
@@ -1108,7 +1127,7 @@ describe('entities', () => {
     });
   });
 
-  fdescribe('saveMultiple()', () => {
+  describe('saveMultiple()', () => {
     it('should allow partial saveMultiple with correct full indexing', done => {
       const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
       const partialDoc2 = {
