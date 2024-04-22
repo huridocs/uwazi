@@ -1,7 +1,11 @@
 /* eslint-disable camelcase */
 import moment from 'moment';
 
-import { ExtractedMetadataSchema, ObjectIdSchema } from 'shared/types/commonTypes';
+import {
+  ExtractedMetadataSchema,
+  ObjectIdSchema,
+  PropertyTypeSchema,
+} from 'shared/types/commonTypes';
 import { filesModel } from 'api/files/filesModel';
 import { SegmentationType } from 'shared/types/segmentationType';
 import entitiesModel from 'api/entities/entitiesModel';
@@ -14,9 +18,12 @@ import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
 import { propertyTypes } from 'shared/propertyTypes';
 import languages from 'shared/languages';
+import { ensure } from 'shared/tsUtils';
 
 const BATCH_SIZE = 50;
 const MAX_TRAINING_FILES_NUMBER = 500;
+
+type PropertyValue = string | Array<{ value: string; label: string }>;
 
 interface FileWithAggregation {
   _id: ObjectIdSchema;
@@ -24,7 +31,8 @@ interface FileWithAggregation {
   entity: string;
   language: string;
   extractedMetadata: ExtractedMetadataSchema[];
-  propertyValue?: string;
+  propertyType: PropertyTypeSchema;
+  propertyValue?: PropertyValue;
 }
 
 type FileEnforcedNotUndefined = {
@@ -32,8 +40,13 @@ type FileEnforcedNotUndefined = {
   filename: string;
   language: string;
   entity: string;
-  propertyValue?: string;
+  propertyType: PropertyTypeSchema;
+  propertyValue?: PropertyValue;
 };
+
+const selectProperties: Set<string> = new Set([propertyTypes.select, propertyTypes.multiselect]);
+
+const propertyTypeIsSelectOrMultiSelect = (type: string) => selectProperties.has(type);
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
@@ -54,31 +67,82 @@ async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefi
     extractedMetadata: file.extractedMetadata ? file.extractedMetadata : [],
     entity: file.entity,
     segmentation: segmentationDictionary[file.filename ? file.filename : 'no value'],
+    propertyType: file.propertyType,
     propertyValue: file.propertyValue,
   }));
 }
 
 async function getSegmentedFilesIds() {
   const segmentations = await SegmentationModel.get({ status: 'ready' }, 'fileID');
-  return segmentations.filter(x => x.fileID).map(x => x.fileID);
+  return segmentations.filter(x => x.fileID).map(x => x.fileID) as ObjectIdSchema[];
+}
+
+async function getPropertyType(templates: ObjectIdSchema[], property: string) {
+  const template = await templatesModel.getById(templates[0]);
+
+  let type: PropertyTypeSchema | undefined = 'text';
+  if (property !== 'title') {
+    const prop = template?.properties?.find(p => p.name === property);
+    type = prop?.type;
+  }
+
+  if (!type) {
+    throw new Error(`Property "${property}" does not exists`);
+  }
+
+  return type;
+}
+
+async function fileQuery(
+  property: string,
+  propertyType: string,
+  entitiesFromTrainingTemplatesIds: string[]
+) {
+  const needsExtractedMetadata = !propertyTypeIsSelectOrMultiSelect(propertyType);
+  const query: {
+    type: string;
+    filename: { $exists: Boolean };
+    language: { $exists: Boolean };
+    _id: { $in: ObjectIdSchema[] };
+    'extractedMetadata.name'?: string;
+    entity: { $in: string[] };
+  } = {
+    type: 'document',
+    filename: { $exists: true },
+    language: { $exists: true },
+    _id: { $in: await getSegmentedFilesIds() },
+    entity: { $in: entitiesFromTrainingTemplatesIds },
+  };
+  if (needsExtractedMetadata) query['extractedMetadata.name'] = property;
+  return query;
+}
+
+function entityForTrainingQuery(
+  templates: ObjectIdSchema[],
+  property: string,
+  propertyType: PropertyTypeSchema
+) {
+  const query: {
+    [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
+  } = { template: { $in: templates } };
+  if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
+    query[`metadata.${property}`] = { $exists: true, $ne: [] };
+  }
+  return query;
 }
 
 async function getFilesForTraining(templates: ObjectIdSchema[], property: string) {
+  const propertyType = await getPropertyType(templates, property);
   const entities = await entitiesModel.getUnrestricted(
-    { template: { $in: templates } },
+    entityForTrainingQuery(templates, property, propertyType),
     `sharedId metadata.${property} language`
   );
-  const entitiesFromTrainingTemplatesIds = entities.filter(x => x.sharedId).map(x => x.sharedId);
+  const entitiesFromTrainingTemplatesIds = entities
+    .filter(x => x.sharedId)
+    .map(x => x.sharedId) as string[];
 
   const files = (await filesModel.get(
-    {
-      type: 'document',
-      filename: { $exists: true },
-      language: { $exists: true },
-      'extractedMetadata.name': property,
-      _id: { $in: await getSegmentedFilesIds() },
-      entity: { $in: entitiesFromTrainingTemplatesIds },
-    },
+    await fileQuery(property, propertyType, entitiesFromTrainingTemplatesIds),
     'extractedMetadata entity language filename',
     { limit: MAX_TRAINING_FILES_NUMBER }
   )) as (FileType & FileEnforcedNotUndefined)[];
@@ -88,35 +152,33 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     e => e.sharedId! + e.language!,
     objectIndex.NoTransform
   );
-  const template = await templatesModel.getById(templates[0]);
 
-  let type: string | undefined = 'text';
-  if (property !== 'title') {
-    const prop = template?.properties?.find(p => p.name === property);
-    type = prop?.type;
-  }
-
-  if (!type) {
-    throw new Error(`Property "${property}" does not exists`);
-  }
   const defaultLang = (await settings.getDefaultLanguage())?.key;
 
   const filesWithEntityValue = files.map(file => {
     const fileLang = languages.get(file.language, 'ISO639_1') || defaultLang;
     const entity = indexedEntities[file.entity + fileLang];
     if (!entity?.metadata || !entity?.metadata[property]?.length) {
-      return file;
+      return { ...file, propertyType };
+    }
+
+    if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
+      const propertyValue = (entity.metadata[property] || []).map(({ value, label }) => ({
+        value: ensure<string>(value),
+        label: ensure<string>(label),
+      }));
+      return { ...file, propertyValue, propertyType };
     }
 
     const [{ value }] = entity.metadata[property] || [{}];
     let stringValue: string;
-    if (type === propertyTypes.date) {
+    if (propertyType === propertyTypes.date) {
       stringValue = moment(<number>value * 1000).format('YYYY-MM-DD');
     } else {
       stringValue = <string>value;
     }
 
-    return { ...file, propertyValue: stringValue };
+    return { ...file, propertyValue: stringValue, propertyType };
   });
 
   return getFilesWithAggregations(filesWithEntityValue);
@@ -154,5 +216,10 @@ async function getFilesForSuggestions(extractorId: ObjectIdSchema) {
   return getFilesWithAggregations(files);
 }
 
-export { getFilesForTraining, getFilesForSuggestions, getSegmentedFilesIds };
+export {
+  getFilesForTraining,
+  getFilesForSuggestions,
+  getSegmentedFilesIds,
+  propertyTypeIsSelectOrMultiSelect,
+};
 export type { FileWithAggregation };
