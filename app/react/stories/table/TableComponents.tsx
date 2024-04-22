@@ -168,24 +168,24 @@ const withActionsColumns = [
   columnHelper.accessor('title', {
     id: 'title',
     header: 'Title',
-    meta: { headerClassName: 'w-full' },
+    meta: { headerClassName: 'w-2/4' },
   }),
-  // columnHelper.accessor('created', {
-  //   id: 'created',
-  //   header: 'Date added',
-  //   meta: { headerClassName: 'w-1/3' },
-  // }),
-  // columnHelper.accessor('description', {
-  //   id: 'description',
-  //   header: 'Description',
-  //   enableSorting: false,
-  //   meta: { headerClassName: 'w-1/3 bg-error-100 text-blue-600' },
-  // }),
+  columnHelper.accessor('created', {
+    id: 'created',
+    header: 'Date added',
+    meta: { headerClassName: 'w-1/4' },
+  }),
+  columnHelper.accessor('description', {
+    id: 'description',
+    header: 'Description',
+    enableSorting: false,
+    meta: { headerClassName: 'w-1/4 bg-error-100 text-blue-600' },
+  }),
   columnHelper.display({
     id: 'action',
     header: 'Actions',
     cell: ActionsCell,
-    meta: { headerClassName: 'sr-only w-1' },
+    meta: { headerClassName: 'sr-only' },
   }),
 ];
 
