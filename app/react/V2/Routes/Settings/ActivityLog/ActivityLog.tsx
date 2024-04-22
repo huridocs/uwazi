@@ -131,10 +131,10 @@ const ActivityLog = () => {
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
   const {
-    from,
-    to,
     sort,
     order,
+    from = '',
+    to = '',
     page = 1,
     limit = ITEMS_PER_PAGE,
     username,
@@ -145,6 +145,7 @@ const ActivityLog = () => {
     watch,
     setValue,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
@@ -152,6 +153,8 @@ const ActivityLog = () => {
     defaultValues: {
       username,
       search,
+      from,
+      to,
     },
   });
 
@@ -161,10 +164,15 @@ const ActivityLog = () => {
     setSelectedEntry(null);
   };
 
+  const changedParams = (filterPairs: [string, any][]) => {
+    const newFilters = createSearchParams(filterPairs);
+    return Array.from(newFilters).filter(([_key, value]) => value !== '');
+  };
+
   const updateSearch = (filters: any) => {
     const filterPairs = _(filters).toPairs().sortBy(0).value();
-    const newFilters = createSearchParams(filterPairs);
-    if (newFilters.toString() !== searchParams.toString()) {
+    const changedPairs = changedParams(filterPairs);
+    if (!_.isEqual(changedPairs, Array.from(searchParams))) {
       setSearchParams((prev: URLSearchParams) => {
         filterPairs.forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
@@ -213,14 +221,14 @@ const ActivityLog = () => {
     });
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit, watch]);
+  }, [handleSubmit]);
 
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
 
   return (
     <div
       className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
+      style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
       data-testid="settings-activity-log"
     >
       <SettingsContent>
@@ -266,10 +274,10 @@ const ActivityLog = () => {
               />
 
               <DateRangePicker
+                key="activity-log-range"
                 dateFormat={dateFormat}
                 language={locale}
-                from={from}
-                to={to}
+                register={register}
                 placeholderStart={t('System', 'From', null, false)}
                 placeholderEnd={t('System', 'To', null, false)}
                 labelToday={t('System', 'Today', null, false)}
@@ -277,18 +285,23 @@ const ActivityLog = () => {
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear={t('System', 'Clear', null, false)}
                 onFromDateSelected={e => {
-                  setValue('from', e.target.value);
-                  if (to === undefined || to === '') {
-                    setValue('to', e.target.value);
+                  const fromChanged = !_.isEqual(e.target.value, from || '');
+                  if (fromChanged) {
+                    setValue('from', e.target.value);
                   }
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onToDateSelected={e => {
-                  setValue('to', e.target.value);
-                  if (from === undefined || from === '') {
-                    setValue('from', e.target.value);
+                  const toChanged = !_.isEqual(e.target.value, to || '');
+                  if (toChanged) {
+                    setValue('to', e.target.value);
+                    debouncedChangeHandler(handleSubmit(onSubmit));
                   }
-                  debouncedChangeHandler(handleSubmit(onSubmit));
+                }}
+                onClear={() => {
+                  reset();
+                  setValue('from', '');
+                  setValue('to', '');
                 }}
               />
             </div>
