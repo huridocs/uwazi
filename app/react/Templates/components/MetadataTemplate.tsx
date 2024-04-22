@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field } from 'react-redux-form';
+import { useSetAtom } from 'jotai';
 import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
 import { FormGroup } from 'app/Forms';
@@ -16,7 +17,6 @@ import { I18NLink, t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { templatesAtom } from 'app/V2/atoms';
-import { useSetRecoilState } from 'recoil';
 import api from 'app/Templates/TemplatesAPI';
 import {
   addProperty,
@@ -329,7 +329,7 @@ const target = {
 const withTemplatesAtom =
   <T,>(Comp: React.ComponentClass<T, any>) =>
   (props: T) => {
-    const updateTemplatesAtom = useSetRecoilState(templatesAtom);
+    const updateTemplatesAtom = useSetAtom(templatesAtom);
     return <Comp {...props} updateTemplatesAtom={updateTemplatesAtom} />;
   };
 

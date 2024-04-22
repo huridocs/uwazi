@@ -1,26 +1,8 @@
+import { atom } from 'jotai';
 import { ClientTranslationSchema } from 'app/istore';
-import { atom } from 'recoil';
 
-const translationsAtom = atom({
-  key: 'translations',
-  default: { translations: [] as ClientTranslationSchema[], locale: '' },
-  //sync deprecated redux store
-  //   effects: [
-  //     ({ onSet }) => {
-  //       onSet(newValue => {
-  //         store?.dispatch({ type: 'templates/SET', value: newValue });
-  //       });
-  //     },
-  //   ],
-});
+const translationsAtom = atom({ translations: [] as ClientTranslationSchema[], locale: '' });
 
-const inlineEditAtom = atom({
-  key: 'inlineEdit',
-  default: { inlineEdit: false, context: '', translationKey: '' } as {
-    inlineEdit: boolean;
-    context?: string;
-    translationKey?: string;
-  },
-});
+const inlineEditAtom = atom({ inlineEdit: false, context: '', translationKey: '' });
 
 export { translationsAtom, inlineEditAtom };

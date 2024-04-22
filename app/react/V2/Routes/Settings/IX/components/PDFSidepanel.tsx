@@ -4,7 +4,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
@@ -20,7 +21,6 @@ import { InputField } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom } from 'V2/atoms';
 import { Highlights } from '../types';
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 
 interface PDFSidepanelProps {
   showSidepanel: boolean;
@@ -164,7 +164,7 @@ const PDFSidepanel = ({
   const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [labelInputIsOpen, setLabelInputIsOpen] = useState(true);
   const [entity, setEntity] = useState<ClientEntitySchema>();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
   const { propertyLabel, propertyType, isRequired, propertyId } = getPropertyData(
@@ -367,7 +367,7 @@ const PDFSidepanel = ({
       <Sidepanel.Body>
         <form
           id="ixpdfform"
-          className="flex flex-col h-full gap-4 pb-0"
+          className="flex flex-col gap-4 pb-0 h-full"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
@@ -393,9 +393,9 @@ const PDFSidepanel = ({
           </div>
         </form>{' '}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+      <Sidepanel.Footer className="py-0 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
         <div className="flex px-4 py-2">
-          <p className={selectionError ? 'grow text-pink-600' : 'grow'}>
+          <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
             <span className="uppercase">{propertyLabel}</span>{' '}
             {selectionError && <span>{selectionError}</span>}
           </p>
@@ -404,7 +404,7 @@ const PDFSidepanel = ({
           </span>
         </div>
         {labelInputIsOpen && renderLabel()}
-        <div className="flex justify-end gap-2 px-4 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+        <div className="flex gap-2 justify-end px-4 py-2 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
           <Button
             type="button"
             styling="outline"

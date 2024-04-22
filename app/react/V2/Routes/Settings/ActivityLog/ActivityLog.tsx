@@ -22,7 +22,7 @@ import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, translationsAtom } from 'app/V2/atoms';
 import { getActivityLogColumns } from './components/TableElements';
@@ -123,18 +123,18 @@ interface ActivityLogSearch {
 
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
-  const { dateFormat = 'yyyy-mm-dd' } = useRecoilValue<ClientSettings>(settingsAtom);
-  const { locale } = useRecoilValue<{ locale: string }>(translationsAtom);
+  const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
   const {
-    from,
-    to,
     sort,
     order,
+    from = '',
+    to = '',
     page = 1,
     limit = ITEMS_PER_PAGE,
     username,
@@ -145,6 +145,7 @@ const ActivityLog = () => {
     watch,
     setValue,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
@@ -152,6 +153,8 @@ const ActivityLog = () => {
     defaultValues: {
       username,
       search,
+      from,
+      to,
     },
   });
 
@@ -161,10 +164,15 @@ const ActivityLog = () => {
     setSelectedEntry(null);
   };
 
+  const changedParams = (filterPairs: [string, any][]) => {
+    const newFilters = createSearchParams(filterPairs);
+    return Array.from(newFilters).filter(([_key, value]) => value !== '');
+  };
+
   const updateSearch = (filters: any) => {
     const filterPairs = _(filters).toPairs().sortBy(0).value();
-    const newFilters = createSearchParams(filterPairs);
-    if (newFilters.toString() !== searchParams.toString()) {
+    const changedPairs = changedParams(filterPairs);
+    if (!_.isEqual(changedPairs, Array.from(searchParams))) {
       setSearchParams((prev: URLSearchParams) => {
         filterPairs.forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
@@ -213,14 +221,14 @@ const ActivityLog = () => {
     });
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit, watch]);
+  }, [handleSubmit]);
 
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
 
   return (
     <div
       className="tw-content"
-      style={{ width: '100%', overflowY: 'auto' }}
+      style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
       data-testid="settings-activity-log"
     >
       <SettingsContent>
@@ -230,8 +238,8 @@ const ActivityLog = () => {
             id="activity-filters-form mr-10"
             onSubmit={handleSubmit(async data => onSubmit(data))}
           >
-            <div className="flex flex-row items-center gap-4 justify-items-stretch">
-              <h2 className="w-40 p-4 text-base font-semibold text-left">
+            <div className="flex flex-row gap-4 justify-items-stretch items-center">
+              <h2 className="p-4 w-40 text-base font-semibold text-left">
                 <Translate>Activity Log</Translate>
               </h2>
               <InputField
@@ -266,10 +274,10 @@ const ActivityLog = () => {
               />
 
               <DateRangePicker
+                key="activity-log-range"
                 dateFormat={dateFormat}
                 language={locale}
-                from={from}
-                to={to}
+                register={register}
                 placeholderStart={t('System', 'From', null, false)}
                 placeholderEnd={t('System', 'To', null, false)}
                 labelToday={t('System', 'Today', null, false)}
@@ -277,18 +285,23 @@ const ActivityLog = () => {
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear={t('System', 'Clear', null, false)}
                 onFromDateSelected={e => {
-                  setValue('from', e.target.value);
-                  if (to === undefined || to === '') {
-                    setValue('to', e.target.value);
+                  const fromChanged = !_.isEqual(e.target.value, from || '');
+                  if (fromChanged) {
+                    setValue('from', e.target.value);
                   }
                   debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onToDateSelected={e => {
-                  setValue('to', e.target.value);
-                  if (from === undefined || from === '') {
-                    setValue('from', e.target.value);
+                  const toChanged = !_.isEqual(e.target.value, to || '');
+                  if (toChanged) {
+                    setValue('to', e.target.value);
+                    debouncedChangeHandler(handleSubmit(onSubmit));
                   }
-                  debouncedChangeHandler(handleSubmit(onSubmit));
+                }}
+                onClear={() => {
+                  reset();
+                  setValue('from', '');
+                  setValue('to', '');
                 }}
               />
             </div>

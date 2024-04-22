@@ -7,7 +7,7 @@ import { UserSchema } from 'shared/types/userType';
 
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'app/V2/atoms';
 
 import { InputField } from 'app/V2/Components/Forms';
@@ -24,7 +24,7 @@ const accountLoader =
 const Account = () => {
   const userAccount = useLoaderData() as UserSchema;
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
 
   type AccountForm = UserSchema & { passwordConfirm?: string };
@@ -125,7 +125,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="default"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button color="success" disabled className="flex-none">
                     <Translate>Activated</Translate>
                   </Button>
@@ -142,7 +142,7 @@ const Account = () => {
                 title={<Translate>Two-Factor Authentication</Translate>}
                 color="yellow"
               >
-                <div className="flex items-center gap-6">
+                <div className="flex gap-6 items-center">
                   <Button
                     styling="outline"
                     className="flex-none"
@@ -165,7 +165,7 @@ const Account = () => {
             <a
               href="/logout"
               data-testid="account-logout"
-              className="px-3 py-2 text-xs font-medium bg-white border rounded-lg hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
+              className="px-3 py-2 text-xs font-medium bg-white rounded-lg border hover:text-white text-error-600 border-error-600 hover:bg-error-800 hover:border-error-800 focus:outline-none focus:ring-4 focus:ring-indigo-200"
             >
               <Translate>Logout</Translate>
             </a>

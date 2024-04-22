@@ -1,7 +1,7 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { MutableSnapshot, RecoilRoot } from 'recoil';
-import { Provider } from 'react-redux';
+import { createStore, Provider } from 'jotai';
+import { Provider as ReduxProvider } from 'react-redux';
 import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
 import { settingsAtom, templatesAtom, translationsAtom } from './V2/atoms';
@@ -11,25 +11,22 @@ const reduxState = store?.getState();
 
 const settings = reduxState?.settings.collection.toJS() || {};
 const templates = reduxState?.templates.toJS() || [];
-const translations = reduxState?.translations.toJS() || [];
-const locale = reduxState?.locale || 'en';
 
 const router = createBrowserRouter(getRoutes(settings, reduxState?.user.get('_id')));
 
-const recoilGlobalState = ({ set }: MutableSnapshot) => {
-  set(settingsAtom, settings);
-  set(templatesAtom, templates);
-  set(translationsAtom, { locale, translations });
-};
+const atomStore = createStore();
+atomStore.set(settingsAtom, settings);
+atomStore.set(templatesAtom, templates);
+atomStore.set(translationsAtom, { translations: [], locale: reduxState?.locale || 'en' });
 
 const App = () => (
-  <Provider store={store as any}>
+  <ReduxProvider store={store as any}>
     <CustomProvider>
-      <RecoilRoot initializeState={recoilGlobalState}>
+      <Provider store={atomStore}>
         <RouterProvider router={router} fallbackElement={null} />
-      </RecoilRoot>
+      </Provider>
     </CustomProvider>
-  </Provider>
+  </ReduxProvider>
 );
 
 export { App };
