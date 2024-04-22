@@ -104,7 +104,7 @@ describe('Translations', () => {
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.get('.tw-content').scrollTo('top');
+        cy.get('div[data-testid="settings-translations"]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });
