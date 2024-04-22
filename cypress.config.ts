@@ -10,7 +10,7 @@ export default defineConfig({
   requestTimeout: 12000,
   e2e: {
     env: {
-      "local": true
+      "local": false
     },
     retries: 3,
     baseUrl: 'http://localhost:3000',
