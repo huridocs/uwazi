@@ -55,7 +55,7 @@ describe('Translations', () => {
     });
 
     const checkEditResults = () => {
-      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
+      cy.get('[data-testid=settings-translations]').scrollTo('top');
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
