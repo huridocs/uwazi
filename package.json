@@ -374,7 +374,7 @@
     "redux-mock-store": "^1.5.4",
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "^1.74.1",
-    "sass-loader": "14.1.0",
+    "sass-loader": "14.2.0",
     "sharp": "^0.33.2",
     "storybook": "^8.0.8",
     "stream-mock": "^2.0.5",
