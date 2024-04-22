@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Button, MultiselectList } from 'V2/Components/UI';
+import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import Icons from 'app/Templates/components/Icons';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { CalculatorIcon, CalendarIcon } from '@heroicons/react/20/solid';
+import { RadioSelect } from 'app/V2/Components/Forms';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
 
@@ -188,14 +189,45 @@ const ExtractorModal = ({
         );
       case 2:
         return (
-          <div>
-            <div>{values[0]?.split('-', 2)[1]}</div>
-            <div>
+          <div className="px-2 py-4">
+            <h6 className="text-sm font-medium">
+              <Translate>Input</Translate>
+            </h6>
+            <div className="p-3">
+              {renderPropertyLabel({
+                name: values[0]?.split('-', 2)[1],
+                label: values[0]?.split('-', 2)[1],
+                type: 'text',
+              })}
+            </div>
+            <h6 className="text-sm font-medium">
+              <Translate>Selected templates</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
               {values.map(value => {
                 const templateId = value?.split('-', 2)[0];
                 const template = templates.find(temp => temp._id === templateId);
-                return <div>{template?.name}</div>;
+                return (
+                  <Pill color="gray" className="m-1">
+                    {template?.name}
+                  </Pill>
+                );
               })}
+            </div>
+            <h6 className="text-sm font-medium">
+              <Translate>Common sources</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
+              <RadioSelect
+                name="pdf"
+                options={[
+                  {
+                    label: <Translate>PDF</Translate>,
+                    value: 'true',
+                    defaultChecked: false,
+                  },
+                ]}
+              />
             </div>
           </div>
         );
@@ -212,12 +244,12 @@ const ExtractorModal = ({
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
-      <Modal.Body className="pt-4">
+      <Modal.Body className="px-3 pt-4">
         <InputField
           clearFieldAction={() => {}}
           id="extractor-name"
           placeholder="Extractor name"
-          className="mb-2"
+          className="px-2 mb-2"
           hasErrors={hasNameError}
           value={name}
           onChange={event => {
@@ -226,12 +258,22 @@ const ExtractorModal = ({
           }}
         />
         {renderSteps()}
+        <div className="flex flex-col w-full">
+          <div className="flex justify-center w-full h-4 gap-2">
+            <div
+              className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`}
+            ></div>
+            <div
+              className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`}
+            ></div>
+          </div>
+          <p className="w-full pt-0 text-sm font-normal text-gray-500 dark:text-gray-400">
+            * <Translate>We're adding more properties support, soon!</Translate>
+          </p>
+        </div>
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">
-          <p className="w-full pt-0 pb-3 text-sm font-normal text-gray-500 dark:text-gray-400">
-            * <Translate>We're adding more properties support, soon!</Translate>
-          </p>
           <div className="flex gap-2">
             {step === 1 ? (
               <>

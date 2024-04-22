@@ -8,6 +8,7 @@ import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
+// import { isEmpty, xor } from 'lodash';
 
 interface Option {
   label: string | React.ReactNode;
@@ -48,8 +49,11 @@ const MultiselectList = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [allSelected, setAllSelected] = useState(false);
 
   useEffect(() => {
+    // const selectionHasChanged = isEmpty(xor(selectedItems, value));
+    // console.log('Selection has changed: ', selectionHasChanged);
     if (onChange) onChange(selectedItems);
   }, [onChange, selectedItems]);
 
@@ -108,6 +112,28 @@ const MultiselectList = ({
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     setShowAll(target.value === 'true');
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedItems([]);
+      setAllSelected(false);
+    } else {
+      const allItems = filteredItems
+        .reduce((all: Option[], current) => {
+          if (current.items) {
+            return [...all, ...current.items] as Option[];
+          } else {
+            return [...all, current] as Option[];
+          }
+        }, [])
+        .filter(f => f)
+        .map((item: Option) => item.value);
+      const groupsToOpen = filteredItems.filter(item => item.items).map(group => group.value);
+      setSelectedItems(allItems);
+      setOpenGroups(oldValue => [...oldValue, ...groupsToOpen]);
+      setAllSelected(true);
+    }
   };
 
   const renderButtonItem = (item: Option) => {
@@ -234,6 +260,9 @@ const MultiselectList = ({
           onChange={applyFilter}
           className="px-1 pt-4"
         />
+        <span className="underline cursor-pointer" onClick={toggleSelectAll}>
+          {allSelected ? <Translate>Unselect all</Translate> : <Translate>Select all</Translate>}
+        </span>
       </div>
 
       <ul className="px-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
