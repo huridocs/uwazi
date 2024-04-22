@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
@@ -28,7 +28,7 @@ const Customisation = () => {
   const [showModal, setShowModal] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const blocker = useBlocker(hasChanges);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   useEffect(() => {
     if (blocker.state === 'blocked') {

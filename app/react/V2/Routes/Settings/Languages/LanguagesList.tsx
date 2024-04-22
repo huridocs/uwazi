@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from 'app/I18N';
@@ -12,7 +12,6 @@ import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
-import { ClientSettings } from 'app/apiResponseTypes';
 import { InstallLanguagesModal } from './components/InstallLanguagesModal';
 import {
   DefaultHeader,
@@ -31,7 +30,7 @@ const languagesListLoader =
     I18NApi.getLanguages(new RequestParams({}, headers));
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
-  const { languages: collectionLanguages = [] } = useRecoilValue<ClientSettings>(settingsAtom);
+  const { languages: collectionLanguages = [] } = useAtomValue(settingsAtom);
   const { requestAction } = useApiCaller();
   const [modalProps, setModalProps] = useState({});
   const [showModal, setShowModal] = useState(false);
