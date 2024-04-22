@@ -55,7 +55,7 @@ describe('Translations', () => {
     });
 
     const checkEditResults = () => {
-      cy.get('[data-testid=settings-translations]').scrollTo('top');
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
@@ -64,6 +64,7 @@ describe('Translations', () => {
 
     it('Should edit a translation', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.get('input[type=text]').should('be.visible');
       cy.contains('caption', 'Fecha');
       cy.get('input[type=text]').eq(0).siblings('button').click();
@@ -104,7 +105,7 @@ describe('Translations', () => {
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.get('div[data-testid="settings-translations"]').scrollTo('top');
+        cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });

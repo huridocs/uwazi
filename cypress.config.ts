@@ -12,7 +12,6 @@ export default defineConfig({
     env: {
       "local": false
     },
-    retries: 3,
     baseUrl: 'http://localhost:3000',
     video: true,
     screenshotOnRunFailure: false,
