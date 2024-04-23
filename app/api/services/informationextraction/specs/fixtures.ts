@@ -9,6 +9,10 @@ const fixturesPdfNameC = 'documentC.pdf';
 const fixturesPdfNameD = 'documentD.pdf';
 const fixturesPdfNameE = 'documentE.pdf';
 const fixturesPdfNameF = 'documentF.pdf';
+const fixturesPdfNameG = 'documentG.pdf';
+const fixturesPdfNameH = 'documentH.pdf';
+const fixturesPdfNameI = 'documentI.pdf';
+const ficturesPdfNameJ = 'documentJ.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -34,6 +38,11 @@ const fixtures: DBFixture = {
     factory.ixExtractor('prop3extractor', 'property3', ['templateToSegmentA']),
     factory.ixExtractor('prop4extractor', 'property4', ['templateToSegmentA']),
     factory.ixExtractor('extractorWithOneFailedSegmentation', 'property15', ['templateToSegmentC']),
+    factory.ixExtractor('extractorWithSelect', 'property_select', ['templateToSegmentD']),
+    factory.ixExtractor('extractorWithMultiselect', 'property_multiselect', ['templateToSegmentD']),
+    factory.ixExtractor('extractorWithMultiselectWithoutTrainingData', 'property_multiselect', [
+      'templateToSegmentE',
+    ]),
   ],
   entities: [
     factory.entity(
@@ -75,6 +84,24 @@ const fixtures: DBFixture = {
     factory.entity('A14', 'templateToSegmentA'),
     factory.entity('A15', 'templateToSegmentC'),
     factory.entity('A16', 'templateToSegmentC'),
+    factory.entity('A17', 'templateToSegmentD', {
+      property_select: [{ value: 'A', label: 'A' }],
+      property_multiselect: [{ value: 'A', label: 'A' }],
+    }),
+    factory.entity('A18', 'templateToSegmentD', {
+      property_select: [{ value: 'B', label: 'B' }],
+      property_multiselect: [
+        { value: 'B', label: 'B' },
+        { value: 'C', label: 'C' },
+      ],
+    }),
+    factory.entity('A19', 'templateToSegmentD', {
+      property_select: [],
+      property_multiselect: [],
+    }),
+    factory.entity('A20', 'templateToSegmentE', {
+      property_multiselect: [],
+    }),
   ],
   files: [
     factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -124,6 +151,10 @@ const fixtures: DBFixture = {
     factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
     factory.file('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
     factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
+    factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
+    factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
+    factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
+    factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
   ],
   segmentations: [
     {
@@ -185,6 +216,80 @@ const fixtures: DBFixture = {
       xmlname: 'documentF.xml',
       fileID: factory.id('F6'),
       status: 'processing',
+    },
+    {
+      _id: factory.id('S7'),
+      filename: fixturesPdfNameG,
+      xmlname: 'documentG.xml',
+      fileID: factory.id('F17'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'A',
+          },
+        ],
+      },
+    },
+    {
+      _id: factory.id('S8'),
+      filename: fixturesPdfNameH,
+      xmlname: 'documentH.xml',
+      fileID: factory.id('F18'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'B',
+          },
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'C',
+          },
+        ],
+      },
+    },
+    {
+      _id: factory.id('S9'),
+      filename: fixturesPdfNameI,
+      xmlname: 'documentI.xml',
+      fileID: factory.id('F19'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [],
+      },
+    },
+    {
+      _id: factory.id('S10'),
+      filename: ficturesPdfNameJ,
+      xmlname: 'documentJ.xml',
+      fileID: factory.id('F20'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [],
+      },
     },
   ],
   ixsuggestions: [
@@ -323,6 +428,84 @@ const fixtures: DBFixture = {
       },
       date: 100,
     },
+    {
+      _id: factory.id('SUG17'),
+      fileId: factory.id('F17'),
+      entityId: 'A17',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('extractorWithMultiselect'),
+      suggestedValue: ['A'],
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG18'),
+      fileId: factory.id('F18'),
+      entityId: 'A18',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('extractorWithMultiselect'),
+      suggestedValue: ['B', 'C'],
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG19'),
+      fileId: factory.id('F19'),
+      entityId: 'A19',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('extractorWithMultiselect'),
+      suggestedValue: [],
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG17B'),
+      fileId: factory.id('F17'),
+      entityId: 'A17',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_select',
+      extractorId: factory.id('extractorWithSelect'),
+      suggestedValue: 'A',
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG18B'),
+      fileId: factory.id('F18'),
+      entityId: 'A18',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_select',
+      extractorId: factory.id('extractorWithSelect'),
+      suggestedValue: 'B',
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG19B'),
+      fileId: factory.id('F19'),
+      entityId: 'A19',
+      entityTemplate: factory.id('templateToSegmentD').toString(),
+      language: 'en',
+      propertyName: 'property_select',
+      extractorId: factory.id('extractorWithSelect'),
+      suggestedValue: '',
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
   ],
   ixmodels: [
     {
@@ -355,6 +538,24 @@ const fixtures: DBFixture = {
       status: 'processing',
       findingSuggestions: true,
     },
+    {
+      extractorId: factory.id('extractorWithSelect'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractorWithMultiselect'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: false,
+    },
   ],
   templates: [
     factory.template('templateToSegmentA', [
@@ -365,7 +566,21 @@ const fixtures: DBFixture = {
     ]),
     factory.template('templateToSegmentB', [factory.property('property1', 'text')]),
     factory.template('templateToSegmentC', [factory.property('property15', 'text')]),
+    factory.template('templateToSegmentD', [
+      factory.property('property_select', 'select', {
+        content: factory.id('thesauri1').toString(),
+      }),
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('thesauri1').toString(),
+      }),
+    ]),
+    factory.template('templateToSegmentE', [
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('thesauri1').toString(),
+      }),
+    ]),
   ],
+  dictionaries: [factory.thesauri('thesauri1', ['A', 'B', 'C'])],
 };
 
 export { fixtures, factory };

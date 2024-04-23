@@ -34,10 +34,14 @@ const fixtures: DBFixture = {
     fixtureFactory.template('personTemplate', [
       fixtureFactory.property('age', 'numeric'),
       fixtureFactory.property('enemy', 'text'),
+      fixtureFactory.property('location', 'geolocation'),
     ]),
     fixtureFactory.template('animalTemplate', [fixtureFactory.property('kind', 'text')]),
     fixtureFactory.template('plantTemplate', [fixtureFactory.property('kind', 'text')]),
-    fixtureFactory.template('fungusTemplate', [fixtureFactory.property('kind', 'text')]),
+    fixtureFactory.template('fungusTemplate', [
+      fixtureFactory.property('kind', 'text'),
+      fixtureFactory.property('location', 'geolocation'),
+    ]),
   ],
   entities: [
     fixtureFactory.entity('shared1', 'animalTemplate', {}, { language: 'es' }),
@@ -260,7 +264,7 @@ describe('ixextractors', () => {
         ],
       },
     ])(
-      'it should create empty suggestions for $case',
+      'should create empty suggestions for $case',
       async ({ name, property, templates, expectedSuggestions }) => {
         await Extractors.create(name, property, templates);
         const [extractor] = await Extractors.get({ name });
@@ -271,6 +275,26 @@ describe('ixextractors', () => {
         expect(suggestions).toMatchObject(expectedSuggestions);
       }
     );
+
+    it('should throw if the property does not exist', async () => {
+      await expect(async () =>
+        Extractors.create('invalid extractor', 'invalid_property', [
+          fixtureFactory.id('personTemplate').toString(),
+        ])
+      ).rejects.toEqual(new Error('Missing property.'));
+      const [extractor] = await Extractors.get({ name: 'invalid extractor' });
+      expect(extractor).toBe(undefined);
+    });
+
+    it('should throw if the property is not of an allowed type', async () => {
+      await expect(async () =>
+        Extractors.create('invalid extractor', 'location', [
+          fixtureFactory.id('personTemplate').toString(),
+        ])
+      ).rejects.toEqual(new Error('Property type not allowed.'));
+      const [extractor] = await Extractors.get({ name: 'invalid extractor' });
+      expect(extractor).toBe(undefined);
+    });
   });
 
   describe('update()', () => {
@@ -385,6 +409,34 @@ describe('ixextractors', () => {
           propertyName: 'title',
         },
       ]);
+    });
+
+    it('should throw if the property does not exist', async () => {
+      const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
+      await expect(async () =>
+        Extractors.update(
+          existing._id.toString(),
+          'existingExtractor',
+          'missing_property',
+          existing.templates.map(t => t.toString())
+        )
+      ).rejects.toEqual(new Error('Missing property.'));
+      const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
+      expect(extractor).toEqual(existing);
+    });
+
+    it('should throw if the property is not of an allowed type', async () => {
+      const [existing] = await Extractors.get({ name: 'fungusKindExtractor' });
+      await expect(async () =>
+        Extractors.update(
+          existing._id.toString(),
+          'existingExtractor',
+          'location',
+          existing.templates.map(t => t.toString())
+        )
+      ).rejects.toEqual(new Error('Property type not allowed.'));
+      const [extractor] = await Extractors.get({ name: 'fungusKindExtractor' });
+      expect(extractor).toEqual(existing);
     });
   });
 
