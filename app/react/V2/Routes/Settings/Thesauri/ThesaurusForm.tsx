@@ -132,9 +132,7 @@ const ThesaurusForm = () => {
       if (singleThesaurus.values) {
         const newValues = singleThesaurus.values?.filter(
           currentGroupItem =>
-            !selectedThesaurusValue.find(
-              selected => selected.original.label === currentGroupItem.label
-            )
+            !selectedThesaurusValue.find(selected => selected.original._id === currentGroupItem._id)
         );
         singleThesaurus.values = newValues;
       }
