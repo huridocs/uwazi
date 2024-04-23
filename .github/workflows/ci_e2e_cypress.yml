@@ -94,6 +94,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
+          NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e

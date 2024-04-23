@@ -66,12 +66,13 @@ describe('Translations', () => {
 
     it('Should edit a translation', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.get('input[type=text]').should('be.visible');
       cy.contains('caption', 'Fecha');
       cy.get('input[type=text]').eq(0).siblings('button').click();
-      cy.get('input[type=text]').eq(0).type('Date');
+      cy.get('input[type=text]').eq(0).type('Date', { delay: 0 });
       cy.get('input[type=text]').eq(2).siblings('button').click();
-      cy.get('input[type=text]').eq(2).type('تاريخ');
+      cy.get('input[type=text]').eq(2).type('تاريخ', { delay: 0 });
       cy.contains('button', 'Save').click();
       checkEditResults();
     });
@@ -106,7 +107,7 @@ describe('Translations', () => {
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.get('.tw-content').scrollTo('top');
+        cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });
@@ -121,7 +122,7 @@ describe('Translations', () => {
       it('Should discard changes', () => {
         //this reload is needed to clear several legacy notifications
         cy.reload();
-        cy.get('input[type=text]').eq(0).type('unwanted change');
+        cy.get('input[type=text]').eq(0).type('unwanted change', { delay: 0 });
         cy.contains('button', 'Cancel').click();
         cy.contains('button', 'Discard changes').click();
         cy.get('[data-testid=settings-translations]').should('be.visible');
@@ -143,9 +144,9 @@ describe('Translations', () => {
     it('should translate a text', () => {
       cy.contains('span', 'Filters').click();
       cy.get('input[id=es]').clear();
-      cy.get('input[id=es]').type('Filtros');
+      cy.get('input[id=es]').type('Filtros', { delay: 0 });
       cy.get('input[id=en]').clear();
-      cy.get('input[id=en]').type('Filtering');
+      cy.get('input[id=en]').type('Filtering', { delay: 0 });
       cy.contains('button', 'Submit').click();
       cy.get('[data-testid=modal]').should('not.exist');
     });
