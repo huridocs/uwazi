@@ -7,12 +7,12 @@ const sanitizeThesaurusValues = (
   values: ClientThesaurusValue[]
 ): ThesaurusSchema => {
   const sanitizedThesaurus = { ...thesaurus, values };
-  // @ts-ignore
   sanitizedThesaurus.values =
     values?.map(sValue => {
-      delete sValue.id;
       // @ts-ignore
       delete sValue.groupId;
+      // @ts-ignore
+      delete sValue._id;
       if (sValue.values) {
         sValue.values = sValue.values.map((ssValue: any) => {
           delete ssValue._id;

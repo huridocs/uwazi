@@ -6,23 +6,23 @@ import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'app/V2/Components/UI';
-import { columns, TableThesaurusValue } from './components/TableComponents';
 import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
 import { Link, LoaderFunction, useBlocker, useLoaderData, useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
+import { ClientThesaurusValue, ClientThesaurus } from 'app/apiResponseTypes';
+import { notificationAtom } from 'app/V2/atoms/notificationAtom';
+import ThesauriAPI from 'app/V2/api/thesauri';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import uniqueID from 'shared/uniqueID';
+import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { ImportButton } from './components/ImportButton';
+import { sanitizeThesaurusValues } from './helpers';
+import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
 import {
   ThesauriValueFormSidepanel,
   FormThesauriValue,
 } from './components/ThesauriValueFormSidepanel';
-import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
-import { ClientThesaurusValue, ClientThesaurus } from 'app/apiResponseTypes';
-import { sanitizeThesaurusValues } from './helpers';
-import { notificationAtom } from 'app/V2/atoms/notificationAtom';
-import ThesauriAPI from 'app/V2/api/thesauri';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { ImportButton } from './components/ImportButton';
-import uniqueID from 'shared/uniqueID';
-import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { columns, TableThesaurusValue } from './components/TableComponents';
 
 const editTheasaurusLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -123,17 +123,17 @@ const ThesaurusForm = () => {
   };
 
   const deleteSelected = () => {
-    const parentsDeleted = thesaurusValues.filter(currentValue => {
-      return !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id);
-    });
+    const parentsDeleted = thesaurusValues.filter(
+      currentValue =>
+        !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id)
+    );
 
     const childrenDeleted = parentsDeleted.map(singleThesaurus => {
       if (singleThesaurus.values) {
-        const newValues = singleThesaurus.values?.filter(currentGroupItem => {
-          return !selectedThesaurusValue.find(
-            selected => selected.original.label === currentGroupItem.label
-          );
-        });
+        const newValues = singleThesaurus.values?.filter(
+          currentGroupItem =>
+            !selectedThesaurusValue.find(selected => selected.original._id === currentGroupItem._id)
+        );
         singleThesaurus.values = newValues;
       }
       return singleThesaurus;
@@ -245,7 +245,7 @@ const ThesaurusForm = () => {
         />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-            <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
+            <div data-testid="thesauri" className="rounded-md border border-gray-50 shadow-sm">
               <div className="p-4">
                 <InputField
                   clearFieldAction={() => {}}
@@ -271,7 +271,7 @@ const ThesaurusForm = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="bottom-0 bg-indigo-50">
           {selectedThesaurusValue.length ? (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}
@@ -310,7 +310,7 @@ const ThesaurusForm = () => {
                       text: <Translate>Error adding thesauri.</Translate>,
                     });
                   }}
-                ></ImportButton>
+                />
               </div>
               <div className="flex gap-2">
                 <Link to="/settings/thesauri">
