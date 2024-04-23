@@ -828,14 +828,14 @@ describe('suggestions', () => {
           .find({ sharedId: 'shared1' })
           .toArray();
         const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
-        expect(ages1).toEqual(['17', '17']);
+        expect(ages1).toEqual([17, 17]);
 
         const entities2 = await db.mongodb
           ?.collection('entities')
           .find({ sharedId: 'shared2' })
           .toArray();
         const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
-        expect(ages2).toEqual(['20', '20', '20']);
+        expect(ages2).toEqual([20, 20, 20]);
       });
     });
 
