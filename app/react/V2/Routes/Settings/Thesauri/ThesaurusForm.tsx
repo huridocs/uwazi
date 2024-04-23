@@ -123,17 +123,17 @@ const ThesaurusForm = () => {
   };
 
   const deleteSelected = () => {
-    const parentsDeleted = thesaurusValues.filter(currentValue => {
-      return !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id);
-    });
+    const parentsDeleted = thesaurusValues.filter(
+      currentValue =>
+        !selectedThesaurusValue.find(selected => selected.original._id === currentValue._id)
+    );
 
     const childrenDeleted = parentsDeleted.map(singleThesaurus => {
       if (singleThesaurus.values) {
-        const newValues = singleThesaurus.values?.filter(currentGroupItem => {
-          return !selectedThesaurusValue.find(
-            selected => selected.original.label === currentGroupItem.label
-          );
-        });
+        const newValues = singleThesaurus.values?.filter(
+          currentGroupItem =>
+            !selectedThesaurusValue.find(selected => selected.original._id === currentGroupItem._id)
+        );
         singleThesaurus.values = newValues;
       }
       return singleThesaurus;
@@ -245,7 +245,7 @@ const ThesaurusForm = () => {
         />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-            <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
+            <div data-testid="thesauri" className="rounded-md border border-gray-50 shadow-sm">
               <div className="p-4">
                 <InputField
                   clearFieldAction={() => {}}
@@ -271,7 +271,7 @@ const ThesaurusForm = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="bottom-0 bg-indigo-50">
           {selectedThesaurusValue.length ? (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}
