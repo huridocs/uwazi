@@ -52,6 +52,7 @@ describe('Homepage entities', () => {
     await disableTransitions();
     await page.waitForSelector('div.page-wrapper');
     await expect(page).toClick('div[aria-label="Relationships"]');
+    await page.waitForSelector('.relationships-graph');
     await testSelectorShot('main.app-content', { threshold: 0.08 });
   });
 
