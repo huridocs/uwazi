@@ -41,3 +41,4 @@ function objectIndexToSets<T, U>(
 objectIndex.NoTransform = <T>(elem: T) => elem;
 
 export { objectIndex, objectIndexToArrays, objectIndexToSets };
+export type { IndexTypes };
