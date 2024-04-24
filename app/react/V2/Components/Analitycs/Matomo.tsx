@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAtomValue } from 'jotai';
 import { settingsAtom } from 'V2/atoms';
 
@@ -71,7 +71,7 @@ const Matomo = () => {
     }
   }, [id, secondaryTracker, secondaryWebsiteId, url]);
 
-  return undefined;
+  return <> </>;
 };
 
 export { Matomo };
