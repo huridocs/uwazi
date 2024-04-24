@@ -262,7 +262,7 @@ describe('Table', () => {
       checkRowContent(5, ['Entity b', data[1].children![1].description, '5']);
     });
 
-    const checkChildrenSorting = (from, to, target) => {
+    const checkChildrenSorting = (from: string, to: string, target: { x: number; y: number }) => {
       mount(<NestedDnD />);
 
       cy.contains('children').click();
