@@ -262,7 +262,15 @@ describe('Table', () => {
       checkRowContent(5, ['Entity b', data[1].children![1].description, '5']);
     });
 
-    const checkChildrenSorting = () => {
+    const checkChildrenSorting = (from, to) => {
+      mount(<NestedDnD />);
+
+      cy.contains('children').click();
+      cy.get(from).drag(to, {
+        target: { x: 5, y: 30 },
+        force: true,
+      });
+
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
       checkRowContent(2, ['Entity 1', data[1].description, '1']);
       checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
@@ -275,26 +283,13 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b, Entity a', 'Entity 3']);
     };
 
+    
     it('should sort children of a group from top to bottom', () => {
-      mount(<NestedDnD />);
-
-      cy.contains('children').click();
-      cy.get('[data-testid="group_1-draggable-item-0"]').drag('[data-testid="group_1.1"]', {
-        target: { x: 5, y: 30 },
-        force: true,
-      });
-      checkChildrenSorting();
+      checkChildrenSorting('[data-testid="group_1-draggable-item-0"]', '[data-testid="group_1.1"]');
     });
 
     it('should sort children of a group from bottom to top', () => {
-      mount(<NestedDnD />);
-
-      cy.contains('children').click();
-      cy.get('[data-testid="group_1-draggable-item-1"]').drag('[data-testid="group_1.0"]', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
-      checkChildrenSorting();
+      checkChildrenSorting('[data-testid="group_1-draggable-item-1"]', '[data-testid="group_1.0"]');
     });
 
     it('should move a parent into a group', () => {
