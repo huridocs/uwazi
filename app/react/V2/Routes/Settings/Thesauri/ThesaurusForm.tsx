@@ -48,6 +48,7 @@ const ThesaurusForm = () => {
   useEffect(() => {
     if (thesaurus) {
       const values = thesaurus.values || [];
+      console.log('values', values);
       const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
         ...value,
         _id: `temp_${uniqueID()}`,
@@ -247,7 +248,7 @@ const ThesaurusForm = () => {
         />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-            <div data-testid="thesauri" className="rounded-md border border-gray-50 shadow-sm">
+            <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
               <div className="p-4">
                 <InputField
                   clearFieldAction={() => {}}
@@ -273,7 +274,7 @@ const ThesaurusForm = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="bottom-0 bg-indigo-50">
           {selectedThesaurusValue.length ? (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={deleteSelected}

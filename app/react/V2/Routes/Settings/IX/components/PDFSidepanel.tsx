@@ -4,14 +4,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { ExtractedMetadataSchema, PropertyValueSchema } from 'shared/types/commonTypes';
+import {
+  ExtractedMetadataSchema,
+  PropertyValueSchema,
+  MetadataObjectSchema,
+} from 'shared/types/commonTypes';
 import { FileType } from 'shared/types/fileType';
 import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
@@ -19,7 +23,8 @@ import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
-import { notificationAtom } from 'V2/atoms';
+import { notificationAtom, thesaurisAtom } from 'V2/atoms';
+import { MultiselectList } from 'V2/Components/Forms';
 import { Highlights } from '../types';
 
 interface PDFSidepanelProps {
@@ -34,10 +39,18 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
+enum PropertyTypes {
+  TEXT = 'text',
+  NUMBER = 'number',
+  DATE = 'date',
+  SELECT = 'select',
+  MULTISELECT = 'multiselect',
+}
+
 const getFormValue = (
   suggestion?: EntitySuggestionType,
   entity?: ClientEntitySchema,
-  type?: 'text' | 'number' | 'date'
+  type?: string
 ) => {
   let value;
 
@@ -57,34 +70,31 @@ const getFormValue = (
       const dateString = secondsToISODate(value as number);
       value = dateString;
     }
+
+    if (type === 'select' || type === 'multiselect') {
+      value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
+    }
   }
 
   return value;
 };
 
 const getPropertyData = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
-  let propertyLabel = template?._id ? t(template._id, 'Title', 'Title', false) : 'Title';
-  let propertyType: 'text' | 'number' | 'date' = 'text';
-  let propertyId;
-  let isRequired = true;
-
-  if (suggestion && suggestion?.propertyName !== 'title') {
-    const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
-
-    propertyLabel = t(template?._id, property?.label, property?.label, false);
-    propertyId = property?._id?.toString();
-    isRequired = property?.required || false;
-
-    if (property?.type === 'numeric') {
-      propertyType = 'number';
-    }
-
-    if (property?.type === 'date') {
-      propertyType = 'date';
-    }
+  if (!suggestion) {
+    return { label: '', type: PropertyTypes.TEXT, isRequired: true };
   }
 
-  return { propertyLabel, propertyType, isRequired, propertyId };
+  if (suggestion.propertyName === 'title') {
+    return { label: 'Title', type: PropertyTypes.TEXT, isRequired: true };
+  }
+
+  const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
+
+  if (!property) {
+    throw new Error('Property not found');
+  }
+
+  return property;
 };
 
 const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
@@ -165,13 +175,14 @@ const PDFSidepanel = ({
   const [labelInputIsOpen, setLabelInputIsOpen] = useState(true);
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const setNotifications = useSetAtom(notificationAtom);
+  const thesauris = useAtomValue(thesaurisAtom);
 
   const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  const { propertyLabel, propertyType, isRequired, propertyId } = getPropertyData(
-    suggestion,
-    entityTemplate
-  );
+  const property = getPropertyData(suggestion, entityTemplate);
 
+  const thesaurus = thesauris.find(thes => thes._id === property.content);
+  const propertyValue = getFormValue(suggestion, entity, property.type);
+  const templateId = suggestion?.entityTemplateId;
   const {
     register,
     handleSubmit,
@@ -180,7 +191,7 @@ const PDFSidepanel = ({
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     values: {
-      field: getFormValue(suggestion, entity, propertyType),
+      field: propertyValue,
     },
   });
 
@@ -190,6 +201,8 @@ const PDFSidepanel = ({
         .then(({ file, entity: suggestionEntity }) => {
           setPdf(file);
           setEntity(suggestionEntity);
+          const value = getFormValue(suggestion, suggestionEntity, property?.type);
+          setValue('field', propertyValue, { shouldDirty: false });
         })
         .catch(e => {
           throw e;
@@ -231,7 +244,7 @@ const PDFSidepanel = ({
   const onSubmit = async (value: { field: PropertyValueSchema | undefined }) => {
     let metadata = value.field;
 
-    if (propertyType === 'date' && isDirty && metadata) {
+    if (property.type === 'date' && isDirty && metadata) {
       metadata = (await coerceValue('date', metadata as string, pdf?.language || 'en'))?.value;
     }
 
@@ -269,14 +282,14 @@ const PDFSidepanel = ({
       );
       setSelections(
         selectionHandlers.updateFileSelection(
-          { name: suggestion?.propertyName || '', id: propertyId },
+          { name: suggestion?.propertyName || '', id: property._id },
           pdf?.extractedMetadata,
           selectedText
         )
       );
 
-      if (propertyType === 'date' || propertyType === 'number') {
-        const coercedValue = await coerceValue(propertyType, selectedText.text, pdf?.language);
+      if (property.type === 'date' || property.type === 'number') {
+        const coercedValue = await coerceValue(property.type, selectedText.text, pdf?.language);
 
         if (!coercedValue?.success) {
           setSelectionError('Value cannot be transformed to the correct type');
@@ -292,65 +305,95 @@ const PDFSidepanel = ({
     }
   };
 
-  const renderInputTextLabel = (
-    type: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file'
-  ) => {
-    return (
-      <div className="flex gap-2 p-4">
-        <div className="grow">
-          <InputField
-            clearFieldAction={() => {
-              setValue('field', '');
-            }}
-            id={propertyLabel}
-            label={propertyLabel}
-            hideLabel
-            type={type}
-            hasErrors={errors.field?.type === 'required' || !!selectionError}
-            {...register('field', {
-              required: isRequired,
-              valueAsDate: propertyType === 'date' || undefined,
-            })}
-          />
-        </div>
-        <div>
-          <Button
-            type="button"
-            styling="outline"
-            onClick={async () => handleClickToFill()}
-            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
-          >
-            <Translate className="">Click to fill</Translate>
-          </Button>
-        </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+  const renderInputText = (type: 'text' | 'date' | 'number') => (
+    <div className="flex gap-2 p-4">
+      <div className="grow">
+        <InputField
+          clearFieldAction={() => {
+            setValue('field', '');
+          }}
+          id={property.label}
+          label={<Translate context={templateId}>{property.label}</Translate>}
+          hideLabel
+          type={type}
+          hasErrors={errors.field?.type === 'required' || !!selectionError}
+          {...register('field', {
+            required: property.required,
+            valueAsDate: property.type === 'date' || undefined,
+          })}
+        />
       </div>
+      <div>
+        <Button
+          type="button"
+          styling="outline"
+          onClick={async () => handleClickToFill()}
+          disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+        >
+          <Translate className="">Click to fill</Translate>
+        </Button>
+      </div>
+      <div className="sm:text-right" data-testid="ix-clear-button-container">
+        <Button
+          type="button"
+          styling="outline"
+          disabled={Boolean(!highlights) || isSubmitting}
+          onClick={() => {
+            setHighlights(undefined);
+            setSelections(
+              selectionHandlers.deleteFileSelection(
+                { name: suggestion?.propertyName || '' },
+                pdf?.extractedMetadata
+              )
+            );
+          }}
+        >
+          <Translate>Clear</Translate>
+        </Button>
+      </div>
+    </div>
+  );
+
+  interface Option {
+    label: string | React.ReactNode;
+    searchLabel: string;
+    value: string;
+    items?: Option[];
+  }
+
+  const renderSelect = (type: 'select' | 'multiselect') => {
+    const options: Option[] = [];
+    thesaurus?.values.forEach((value: any) => {
+      options.push({
+        label: value.label,
+        searchLabel: value.label.toLowerCase(),
+        value: value.id,
+      });
+    });
+    if (!propertyValue) {
+      return null;
+    }
+    return (
+      <MultiselectList
+        onChange={values => {
+          setValue('field', values, { shouldDirty: false });
+        }}
+        value={propertyValue as string[]}
+        items={options}
+        checkboxes
+      />
     );
   };
 
   const renderLabel = () => {
-    switch (propertyType) {
+    switch (property.type) {
       case 'text':
       case 'date':
       case 'number':
-        return renderInputTextLabel(propertyType);
+        return renderInputText(property.type);
+      case 'select':
+      case 'multiselect':
+        return renderSelect(property.type);
       default:
         return '';
     }
@@ -367,7 +410,7 @@ const PDFSidepanel = ({
       <Sidepanel.Body>
         <form
           id="ixpdfform"
-          className="flex flex-col gap-4 pb-0 h-full"
+          className="flex flex-col h-full gap-4 pb-0"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
@@ -393,10 +436,12 @@ const PDFSidepanel = ({
           </div>
         </form>{' '}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="py-0 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
+      <Sidepanel.Footer className="py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
         <div className="flex px-4 py-2">
           <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
-            <span className="uppercase">{propertyLabel}</span>{' '}
+            <Translate className="uppercase" context={templateId}>
+              {property.label}
+            </Translate>{' '}
             {selectionError && <span>{selectionError}</span>}
           </p>
           <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
@@ -404,7 +449,7 @@ const PDFSidepanel = ({
           </span>
         </div>
         {labelInputIsOpen && renderLabel()}
-        <div className="flex gap-2 justify-end px-4 py-2 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
+        <div className="flex justify-end gap-2 px-4 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
           <Button
             type="button"
             styling="outline"
