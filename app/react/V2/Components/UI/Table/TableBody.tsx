@@ -91,7 +91,7 @@ const TableBodyComponent = <T,>({
                     );
                   })
                 : [];
-            return (
+            return row !== undefined ? (
               <React.Fragment key={item.dndId}>
                 <TableRow
                   draggableRow
@@ -102,6 +102,8 @@ const TableBodyComponent = <T,>({
                 />
                 {children}
               </React.Fragment>
+            ) : (
+              row
             );
           })
           .filter(row => row !== undefined)}
