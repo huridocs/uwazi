@@ -1,4 +1,4 @@
-import superagent from 'superagent';
+import superagent, { MultipartValueSingle } from 'superagent';
 import { Dispatch } from 'redux';
 import { groupBy } from 'lodash';
 import { ClientBlobFile, ClientEntitySchema, ClientFile } from 'app/istore';
@@ -82,14 +82,14 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
 
     supportingFiles.forEach((file, index) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.attach(`attachments[${index}]`, file);
+      request.attach(`attachments[${index}]`, file as unknown as MultipartValueSingle);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.field(`attachments_originalname[${index}]`, file.name);
     });
 
     addedDocuments.forEach((file, index) => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      request.attach(`documents[${index}]`, file);
+      request.attach(`documents[${index}]`, file as unknown as MultipartValueSingle);
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       request.field(`documents_originalname[${index}]`, file.name);
     });

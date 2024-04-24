@@ -319,6 +319,7 @@
     "@types/sharp": "^0.29.2",
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^1.4.33",
+    "@types/superagent": "^8.1.6",
     "@types/supertest": "6.0.2",
     "@types/webpack-env": "^1.18.1",
     "@types/yargs-parser": "^20.2.1",
