@@ -31,7 +31,36 @@ const readTenants = async client => {
   return tenants;
 };
 
-const handleTenant = async (tenant, logStream, client) => {
+const estimateAffectedCounts = async (tenant, client, activityLogs) => {
+  const { dbName } = tenant;
+  const tenantDB = client.db(dbName);
+
+  const bodies = activityLogs.map(log => JSON.parse(log.body));
+  const thesaurusNames = Array.from(new Set(bodies.map(body => body.name)));
+  const thesauri = await tenantDB
+    .collection('dictionaries')
+    .find({ name: { $in: thesaurusNames } })
+    .toArray();
+  const thesauriIds = thesauri.map(thesaurus => thesaurus._id.toString());
+
+  const templates = await tenantDB
+    .collection('templates')
+    .find({ 'properties.content': { $in: thesauriIds } })
+    .toArray();
+  const templateIds = templates.map(template => template._id);
+
+  const entityCount = await tenantDB.collection('entities').countDocuments({
+    template: { $in: templateIds },
+  });
+
+  return {
+    estimatedAffectedThesaurusCount: thesauriIds.length,
+    estimatedAffectedTemplateCount: templateIds.length,
+    estimatedAffectedEntityCount: entityCount,
+  };
+};
+
+const handleTenant = async (tenant, client) => {
   const { name, dbName } = tenant;
 
   const tenantDB = client.db(dbName);
@@ -42,21 +71,31 @@ const handleTenant = async (tenant, logStream, client) => {
     time: { $gt: cutOffDateTimeStamp },
   });
 
-  const activityLogCount = await activityLogCursor.count();
+  const activityLogs = await activityLogCursor.toArray();
+  const {
+    estimatedAffectedThesaurusCount,
+    estimatedAffectedTemplateCount,
+    estimatedAffectedEntityCount,
+  } = await estimateAffectedCounts(tenant, client, activityLogs);
 
   const logObject = {
     name,
     dbName,
-    activityLogCount,
+    affectedLogCount: activityLogs.length,
+    estimatedAffectedThesaurusCount,
+    estimatedAffectedTemplateCount,
+    estimatedAffectedEntityCount,
   };
-  logStream.write(`${JSON.stringify(logObject, null, 2)}\n`);
+  return logObject;
 };
 
 const handleTenants = async (tenants, logStream, client) => {
+  const logs = [];
   for (let i = 0; i < tenants.length; i += 1) {
     const tenant = tenants[i];
-    await handleTenant(tenant, logStream, client);
+    logs.push(await handleTenant(tenant, client));
   }
+  logStream.write(JSON.stringify(logs, null, 2));
 };
 
 const main = async () => {
