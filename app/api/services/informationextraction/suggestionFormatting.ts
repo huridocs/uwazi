@@ -31,7 +31,7 @@ type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 const VALIDATORS = {
   text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => 'text' in suggestion,
   select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion && suggestion.values.length === 1,
+    'values' in suggestion && (suggestion.values.length === 1 || suggestion.values.length === 0),
   multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
     'values' in suggestion,
 };
@@ -71,10 +71,10 @@ const FORMATTERS = {
       throw new Error('Select suggestion is not valid.');
     }
 
-    const suggestedValue = rawSuggestion.values[0].id;
+    const suggestedValue = rawSuggestion.values[0]?.id;
 
     const suggestion: Partial<IXSuggestionType> = {
-      suggestedValue,
+      suggestedValue: suggestedValue || '',
     };
 
     return suggestion;
