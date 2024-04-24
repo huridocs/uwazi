@@ -25,6 +25,7 @@ interface MultiselectListProps {
   checkboxes?: boolean;
   value?: string[];
   foldableGroups?: boolean;
+  singleSelect?: boolean;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -42,6 +43,7 @@ const MultiselectList = ({
   value = [],
   checkboxes = false,
   foldableGroups = false,
+  singleSelect = false,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value);
   const [showAll, setShowAll] = useState<boolean>(true);
@@ -99,11 +101,16 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
-    if (selectedItems.includes(_value)) {
-      setSelectedItems(selectedItems.filter(item => item !== _value));
+    let newValue;
+    if (singleSelect) {
+      newValue = selectedItems.includes(_value) ? [] : [_value];
     } else {
-      setSelectedItems([...selectedItems, _value]);
+      newValue = selectedItems.includes(_value)
+        ? selectedItems.filter(item => item !== _value)
+        : [...selectedItems, _value];
     }
+
+    setSelectedItems(newValue);
   };
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +210,7 @@ const MultiselectList = ({
 
   return (
     <div className={`flex flex-col relative ${className}`}>
-      <div className="sticky top-0 w-full px-2 mb-4">
+      <div className="sticky top-0 w-full px-2 mb-2">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -236,7 +243,7 @@ const MultiselectList = ({
         />
       </div>
 
-      <ul className="px-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
+      <ul className="px-2 pt-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
         {filteredItems.map(renderItem)}
       </ul>
     </div>

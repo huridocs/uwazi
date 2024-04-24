@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -119,7 +119,7 @@ const handleFileSave = async (file?: FileType, newSelections?: ExtractedMetadata
 const handleEntitySave = async (
   entity?: ClientEntitySchema,
   propertyName?: string,
-  metadata?: PropertyValueSchema,
+  metadata?: PropertyValueSchema | PropertyValueSchema[] | undefined,
   fieldHasChanged?: boolean
 ) => {
   if (!fieldHasChanged || !entity || !propertyName) {
@@ -181,8 +181,8 @@ const PDFSidepanel = ({
   const property = getPropertyData(suggestion, entityTemplate);
 
   const thesaurus = thesauris.find(thes => thes._id === property.content);
-  const propertyValue = getFormValue(suggestion, entity, property.type);
   const templateId = suggestion?.entityTemplateId;
+  const propertyValue = getFormValue(suggestion, entity, property.type);
   const {
     register,
     handleSubmit,
@@ -201,8 +201,6 @@ const PDFSidepanel = ({
         .then(({ file, entity: suggestionEntity }) => {
           setPdf(file);
           setEntity(suggestionEntity);
-          const value = getFormValue(suggestion, suggestionEntity, property?.type);
-          setValue('field', propertyValue, { shouldDirty: false });
         })
         .catch(e => {
           throw e;
@@ -241,7 +239,9 @@ const PDFSidepanel = ({
     };
   }, [pdf, setValue, showSidepanel, suggestion]);
 
-  const onSubmit = async (value: { field: PropertyValueSchema | undefined }) => {
+  const onSubmit = async (value: {
+    field: PropertyValueSchema | PropertyValueSchema[] | undefined;
+  }) => {
     let metadata = value.field;
 
     if (property.type === 'date' && isDirty && metadata) {
@@ -250,7 +250,7 @@ const PDFSidepanel = ({
 
     const [savedFile, savedEntity] = await Promise.all([
       handleFileSave(pdf, selections),
-      handleEntitySave(entity, suggestion?.propertyName, metadata, isDirty),
+      handleEntitySave(entity, property.name, metadata, isDirty),
     ]);
 
     if (savedFile instanceof FetchResponseError || savedEntity instanceof FetchResponseError) {
@@ -365,7 +365,7 @@ const PDFSidepanel = ({
     const options: Option[] = [];
     thesaurus?.values.forEach((value: any) => {
       options.push({
-        label: value.label,
+        label: <Translate context={property.content}>{value.label}</Translate>,
         searchLabel: value.label.toLowerCase(),
         value: value.id,
       });
@@ -376,11 +376,12 @@ const PDFSidepanel = ({
     return (
       <MultiselectList
         onChange={values => {
-          setValue('field', values, { shouldDirty: false });
+          setValue('field', values, { shouldDirty: true });
         }}
         value={propertyValue as string[]}
         items={options}
         checkboxes
+        singleSelect={type === 'select'}
       />
     );
   };

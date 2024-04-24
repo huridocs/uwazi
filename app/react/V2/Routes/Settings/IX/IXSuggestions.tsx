@@ -11,7 +11,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, useAtomValue } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
@@ -21,7 +21,7 @@ import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { ClientTemplateSchema } from 'app/istore';
-import { notificationAtom } from 'app/V2/atoms';
+import { notificationAtom, thesaurisAtom } from 'app/V2/atoms';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
@@ -182,7 +182,6 @@ const IXSuggestions = () => {
           path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}
           title={extractor.name}
         />
-
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={currentSuggestions}
@@ -231,7 +230,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -259,7 +258,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
