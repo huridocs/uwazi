@@ -81,6 +81,7 @@ const handleTenant = async (tenant, client) => {
   const logObject = {
     name,
     dbName,
+    affected: activityLogs.length > 0,
     affectedLogCount: activityLogs.length,
     estimatedAffectedThesaurusCount,
     estimatedAffectedTemplateCount,
