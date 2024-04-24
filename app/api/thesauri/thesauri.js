@@ -95,6 +95,9 @@ async function updateOptionsInEntities(current, thesauri) {
   const currentProperties = current.values;
   const newProperties = thesauri.values;
   const deletedPropertiesById = getDeletedProperties(currentProperties, newProperties, 'id', 'id');
+  console.log('currentProperties', JSON.stringify(currentProperties, null, 2));
+  console.log('newProperties', JSON.stringify(newProperties, null, 2));
+  console.log('deletedPropertiesById', JSON.stringify(deletedPropertiesById, null, 2));
   await Promise.all(
     deletedPropertiesById.map(deletedId =>
       entities.deleteThesaurusFromMetadata(deletedId, thesauri._id)

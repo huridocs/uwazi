@@ -223,6 +223,9 @@ const uniqueMetadataObject = (elem, pos, arr) =>
   elem.value && arr.findIndex(e => e.value === elem.value) === pos;
 
 function sanitize(doc, template) {
+  console.log('here')
+  console.log('template', template)
+  console.log('doc', doc)
   if (!doc.metadata || !template) {
     return doc;
   }
@@ -764,6 +767,7 @@ export default {
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
+    console.log('deleteFromMetadata', deletedId, propertyContent, propTypes)
     const allTemplates = await templates.get({
       'properties.content': { $in: [propertyContent, ''] },
     });
@@ -785,6 +789,7 @@ export default {
       return;
     }
     const entities = await this.get(query, { _id: 1 });
+    console.log(changes)
     await model.updateMany(query, { $pull: changes });
     if (entities.length > 0) {
       await search.indexEntities({ _id: { $in: entities.map(e => e._id.toString()) } }, null, 1000);
