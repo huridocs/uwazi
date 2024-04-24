@@ -8,7 +8,7 @@ import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
-import { Matomo } from 'V2/Components/Matomo';
+import { Matomo } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
