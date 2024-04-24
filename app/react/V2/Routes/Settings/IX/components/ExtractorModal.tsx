@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { uniq } from 'lodash';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import Icons from 'app/Templates/components/Icons';
 import { Translate } from 'app/I18N';
@@ -57,14 +58,13 @@ const ExtractorModal = ({
   const [hasNameError, setNameError] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
 
+  const initialValues = extractor?.templates.map(template => `${template}-${extractor.property}`);
+
   useEffect(() => {
     if (extractor) {
       setEditing(true);
       setName(extractor.name);
-      const initialValues = extractor.templates.map(
-        template => `${template}-${extractor.property}`
-      );
-      setValues(initialValues);
+      setValues(initialValues || []);
     } else {
       setEditing(false);
       setName('');
@@ -124,7 +124,7 @@ const ExtractorModal = ({
       ? ({
           name: submittedName,
           property: submitedValues[0].split('-', 2)[1],
-          templates: submitedValues.map(value => value.split('-', 2)[0]),
+          templates: uniq(submitedValues.map(value => value.split('-', 2)[0])),
         } as IXExtractorInfo)
       : null;
 
@@ -178,9 +178,10 @@ const ExtractorModal = ({
         return (
           <MultiselectList
             className="pt-4 max-h-96"
-            value={values}
+            value={initialValues || []}
             items={options}
             onChange={(s: any) => {
+              console.log('onChange: ', s);
               setValues(s);
             }}
             checkboxes
@@ -236,11 +237,27 @@ const ExtractorModal = ({
     }
   };
 
+  const renderStepsButton = () => (
+    <div className="flex flex-col w-full">
+      <div className="flex justify-center w-full h-4 gap-2 py-4">
+        <div
+          className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`}
+        ></div>
+        <div
+          className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`}
+        ></div>
+      </div>
+      <p className="w-full pt-0 text-sm font-normal text-gray-500 dark:text-gray-400">
+        * <Translate>We're adding more properties support, soon!</Translate>
+      </p>
+    </div>
+  );
+
   return (
     <Modal size="xl">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          <Translate>Add extractor</Translate>
+          {extractor ? <Translate>Edit extractor</Translate> : <Translate>Add extractor</Translate>}
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
@@ -258,19 +275,7 @@ const ExtractorModal = ({
           }}
         />
         {renderSteps()}
-        <div className="flex flex-col w-full">
-          <div className="flex justify-center w-full h-4 gap-2">
-            <div
-              className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`}
-            ></div>
-            <div
-              className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`}
-            ></div>
-          </div>
-          <p className="w-full pt-0 text-sm font-normal text-gray-500 dark:text-gray-400">
-            * <Translate>We're adding more properties support, soon!</Translate>
-          </p>
-        </div>
+        {renderStepsButton()}
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">

@@ -8,6 +8,7 @@ import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
+import { setgroups } from 'process';
 // import { isEmpty, xor } from 'lodash';
 
 interface Option {
@@ -36,7 +37,7 @@ const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
 
 const MultiselectList = ({
   items,
-  onChange,
+  onChange = () => {},
   className,
   label,
   hasErrors,
@@ -52,10 +53,19 @@ const MultiselectList = ({
   const [allSelected, setAllSelected] = useState(false);
 
   useEffect(() => {
-    // const selectionHasChanged = isEmpty(xor(selectedItems, value));
-    // console.log('Selection has changed: ', selectionHasChanged);
-    if (onChange) onChange(selectedItems);
-  }, [onChange, selectedItems]);
+    if (value) {
+      const groups = filteredItems.filter(item => item.items);
+      const groupsToOpen = groups
+        .filter(group => {
+          if (group.items?.find(item => selectedItems.includes(item.value))) {
+            return true;
+          }
+          return false;
+        })
+        .map(group => group.value);
+      setOpenGroups(groupsToOpen);
+    }
+  }, [value]);
 
   useEffect(() => {
     let filtered = [...items];
@@ -103,11 +113,14 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
+    let updatedSelections = [];
     if (selectedItems.includes(_value)) {
-      setSelectedItems(selectedItems.filter(item => item !== _value));
+      updatedSelections = selectedItems.filter(item => item !== _value);
     } else {
-      setSelectedItems([...selectedItems, _value]);
+      updatedSelections = [...selectedItems, _value];
     }
+    setSelectedItems(updatedSelections);
+    onChange(updatedSelections);
   };
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,19 +131,17 @@ const MultiselectList = ({
     if (allSelected) {
       setSelectedItems([]);
       setAllSelected(false);
+      onChange([]);
     } else {
       const allItems = filteredItems
         .reduce((all: Option[], current) => {
-          if (current.items) {
-            return [...all, ...current.items] as Option[];
-          } else {
-            return [...all, current] as Option[];
-          }
+          return current.items ? [...all, ...current.items] : [...all, current];
         }, [])
         .filter(f => f)
         .map((item: Option) => item.value);
       const groupsToOpen = filteredItems.filter(item => item.items).map(group => group.value);
       setSelectedItems(allItems);
+      onChange(allItems);
       setOpenGroups(oldValue => [...oldValue, ...groupsToOpen]);
       setAllSelected(true);
     }
@@ -229,7 +240,7 @@ const MultiselectList = ({
 
   return (
     <div className={`flex flex-col relative ${className}`}>
-      <div className="sticky top-0 w-full px-2 mb-4">
+      <div className="relative top-0 w-full px-2 mb-4">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -260,7 +271,10 @@ const MultiselectList = ({
           onChange={applyFilter}
           className="px-1 pt-4"
         />
-        <span className="underline cursor-pointer" onClick={toggleSelectAll}>
+        <span
+          className="absolute right-0 float-right mt-2 mr-3 font-normal text-gray-900 underline cursor-pointer bottom-1"
+          onClick={toggleSelectAll}
+        >
           {allSelected ? <Translate>Unselect all</Translate> : <Translate>Select all</Translate>}
         </span>
       </div>
