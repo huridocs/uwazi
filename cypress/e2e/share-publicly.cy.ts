@@ -29,6 +29,7 @@ describe('Permisions system', () => {
     });
 
     it('should display the entitiy as restricted', () => {
+      selectPublishedEntities();
       selectRestrictedEntities();
       cy.contains('h2', entityTitle).should('exist');
     });
@@ -49,6 +50,7 @@ describe('Permisions system', () => {
     });
 
     it('should display the entity as public', () => {
+      selectRestrictedEntities();
       selectPublishedEntities();
       cy.contains('h2', entityTitle);
     });
