@@ -69,7 +69,7 @@ const Matomo = () => {
     }
   }, [id, secondaryUrl, secondaryWebsiteId, url]);
 
-  return <> </>;
+  return <div className="hidden" />;
 };
 
 export { Matomo };
