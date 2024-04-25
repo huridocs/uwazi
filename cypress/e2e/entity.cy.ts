@@ -3,8 +3,6 @@ import { clearCookiesAndLogin } from './helpers/login';
 import { changeLanguage } from './helpers/language';
 import { clickOnCreateEntity, clickOnEditEntity } from './helpers/entities';
 
-const host = 'http://localhost:3000';
-
 const filesAttachments = ['./cypress/test_files/valid.pdf', './cypress/test_files/batman.jpg'];
 
 const entityTitle = 'Entity with supporting files';

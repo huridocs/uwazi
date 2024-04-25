@@ -55,7 +55,7 @@ describe('Permisions system', () => {
 
     it('should display the entity as public', () => {
       selectPublishedEntities();
-      cy.contains('h2', entityTitle).should('exist');
+      cy.contains('h2', entityTitle);
     });
   });
 

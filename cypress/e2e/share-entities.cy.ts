@@ -30,15 +30,19 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal]').should('not.exist');
   });
 
+  const searchTerm = (term: string, expectedTerm?: string) => {
+    cy.intercept('GET', `/api/collaborators?filterTerm=${term}`).as(`inlinesearch${term}`);
+    cy.clearAndType('[data-testid=modal] input', term);
+    cy.get('[data-testid=modal] input').click();
+    cy.wait(`@inlinesearch${term}`);
+    cy.contains('.userGroupsLookupField span', expectedTerm || term).click({ force: true });
+  };
   it('Should update the permissions of an entity', () => {
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('editor', { delay: 0 });
-    cy.get('ul[role=listbox]').contains('span', 'editor').click();
-    cy.get('[data-testid=modal] input').clear();
-    cy.get('[data-testid=modal] input').type('Ase');
-    cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
+    searchTerm('editor');
+    searchTerm('Ase', 'Asesores legales');
+    cy.contains('Mixed access', { timeout: 200 }).parent().select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
     cy.get('.alert.alert-success').click();
   });
@@ -63,26 +67,27 @@ describe('Share Entities', () => {
     cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
+  const grantWritePermission = () => {
+    cy.contains('tr:nth-child(3)', 'Can see').within(() => {
+      cy.get('select').select('write', { force: true });
+    });
+    cy.intercept('POST', '/api/entities/permissions').as('savePermissions');
+    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    cy.wait('@savePermissions');
+    cy.contains('Update success');
+  };
   it('should share other entities with the collaborator', () => {
     cy.contains('h2', titleEntity3).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('colla');
-    cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.contains('div[data-testid=modal] td', 'colla').siblings().find('select').select('write');
-    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    searchTerm('colla');
+    grantWritePermission();
   });
 
   it('should share other entities with the collaborator via the group', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('Ase');
-    cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.contains('div[data-testid=modal] td', 'Asesores legales')
-      .siblings()
-      .find('select')
-      .select('write', { force: true });
-    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.contains('Update success');
+    searchTerm('Ase');
+    grantWritePermission();
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -110,8 +115,9 @@ describe('Share Entities', () => {
     clickOnEditEntity();
     cy.contains('Edit');
     cy.get('.sidepanel-body.scrollable').scrollTo('top');
-    cy.get('aside.is-active textarea').eq(0).clear();
-    cy.get('aside.is-active textarea').eq(0).type('Edited title', { delay: 0 });
+    cy.clearAndType('[name="library.sidepanel.metadata.title"]', 'Edited title', {
+      delay: 0,
+    });
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
@@ -121,7 +127,7 @@ describe('Share Entities', () => {
   it('should be able to see only published entities', () => {
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
-    cy.get('.search-box input').type('"Resolución de la Corte IDH."', { delay: 0 });
+    cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
     cy.contains(
       '.item-name',
