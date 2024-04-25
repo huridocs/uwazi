@@ -60,14 +60,11 @@ describe('Account', () => {
     });
 
     it('should enable 2FA', () => {
-      cy.window().focus();
       // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.getByTestId('copy-value-button').focus().dblclick();
+      cy.getByTestId('copy-value-button').focus();
+      cy.getByTestId('copy-value-button').realClick();
       cy.window()
-        .then(async win => {
-          win.focus();
-          return win.navigator.clipboard.readText();
-        })
+        .then(async win => win.navigator.clipboard.readText())
         .then(value => {
           secret = value;
           const token = authenticator.generate(value);
