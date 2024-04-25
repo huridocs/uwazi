@@ -172,6 +172,7 @@ describe('Public Form', () => {
     });
 
     it('should check the second entity with files', () => {
+      cy.get('.library-viewer').scrollTo('top');
       cy.contains('h2', 'Entity with image and media fields').click();
       cy.contains('aside.is-active a', 'View').click();
       cy.get('.attachments-list-parent').eq(0).scrollIntoView();
