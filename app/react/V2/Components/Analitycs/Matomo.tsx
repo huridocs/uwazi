@@ -7,8 +7,17 @@ const Matomo = () => {
   // '{"url":"https://matomo.huridata.org","id":"123"}'.
   // The global one could be just a json with url and id
 
+  let id: string | undefined;
+  let url: string | undefined;
+
   const { matomoConfig, globalMatomo } = useAtomValue(settingsAtom);
-  const { id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string };
+
+  try {
+    ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
+    //silent fail
+    // eslint-disable-next-line no-empty
+  } catch (e) {}
+
   const { id: secondaryWebsiteId, url: secondaryUrl } = globalMatomo || {};
 
   useEffect(() => {

@@ -120,4 +120,23 @@ describe('Matomo', () => {
       ['addTracker', 'https://global.org', '5'],
     ]);
   });
+
+  it('should not break when the users configuration is malformed', () => {
+    store.set(settingsAtom, {
+      matomoConfig: '{ malformed: "3",  }',
+      globalMatomo: { url: 'https://global.org', id: '3' },
+    });
+
+    render(
+      <Provider store={store}>
+        <Matomo />
+      </Provider>
+    );
+
+    expect(window._paq).toStrictEqual([
+      ['trackPageView'],
+      ['enableLinkTracking'],
+      ['addTracker', 'https://global.org', '3'],
+    ]);
+  });
 });
