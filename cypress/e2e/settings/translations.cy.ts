@@ -61,6 +61,7 @@ describe('Translations', () => {
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
+      cy.get('table').eq(0).scrollIntoView();
       cy.get('table').eq(0).toMatchImageSnapshot();
     };
 
@@ -69,11 +70,11 @@ describe('Translations', () => {
       cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.get('input[type=text]').should('be.visible');
       cy.contains('caption', 'Fecha');
-      cy.get('input[type=text]').eq(0).siblings('button').click();
-      cy.get('input[type=text]').eq(0).type('Date', { delay: 0 });
-      cy.get('input[type=text]').eq(2).siblings('button').click();
-      cy.get('input[type=text]').eq(2).type('تاريخ', { delay: 0 });
+      cy.intercept('POST', '/api/translations').as('saveTranslations');
+      cy.clearAndType('input[name="formValues.0.values.0.value"]', 'Date', { delay: 0 });
+      cy.clearAndType('input[name="formValues.2.values.0.value"]', 'تاريخ', { delay: 0 });
       cy.contains('button', 'Save').click();
+      cy.wait('@saveTranslations');
       checkEditResults();
     });
 
