@@ -154,7 +154,9 @@ describe('Public Form', () => {
 
     it('should fill the captcha and save', () => {
       cy.get('.captcha input').type('42hf');
+      cy.intercept('POST', '/api/public').as('publish');
       cy.contains('button', 'Submit').click();
+      cy.wait('@publish');
       cy.contains('Success');
     });
   });
