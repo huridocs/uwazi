@@ -15,7 +15,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
   const [copied, setCopied] = useState<boolean>(false);
 
   const copyToClipboard = async () => {
-    await window.navigator.clipboard.writeText(value);
+    await navigator.clipboard.writeText(value);
     setCopied(true);
   };
 
