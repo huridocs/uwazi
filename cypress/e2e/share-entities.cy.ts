@@ -1,5 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities } from './helpers';
-import { clickOnEditEntity } from './helpers/entities';
+import { clickOnEditEntity, grantPermission, shareSearchTerm } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
@@ -30,18 +30,11 @@ describe('Share Entities', () => {
     cy.get('[data-testid=modal]').should('not.exist');
   });
 
-  const searchTerm = (term: string, expectedTerm?: string) => {
-    cy.intercept('GET', `/api/collaborators?filterTerm=${term}`).as(`inlinesearch${term}`);
-    cy.clearAndType('[data-testid=modal] input', term);
-    cy.get('[data-testid=modal] input').click();
-    cy.wait(`@inlinesearch${term}`);
-    cy.contains('.userGroupsLookupField span', expectedTerm || term).click({ force: true });
-  };
   it('Should update the permissions of an entity', () => {
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
-    searchTerm('editor');
-    searchTerm('Ase', 'Asesores legales');
+    shareSearchTerm('editor');
+    shareSearchTerm('Ase', 'Asesores legales');
     cy.contains('Mixed access', { timeout: 200 }).parent().select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
     cy.get('.alert.alert-success').click();
@@ -67,27 +60,18 @@ describe('Share Entities', () => {
     cy.contains('[data-testid=modal] button', 'Close').click();
   });
 
-  const grantWritePermission = () => {
-    cy.contains('tr:nth-child(3)', 'Can see').within(() => {
-      cy.get('select').select('write', { force: true });
-    });
-    cy.intercept('POST', '/api/entities/permissions').as('savePermissions');
-    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.wait('@savePermissions');
-    cy.contains('Update success');
-  };
   it('should share other entities with the collaborator', () => {
     cy.contains('h2', titleEntity3).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    searchTerm('colla');
-    grantWritePermission();
+    shareSearchTerm('colla');
+    grantPermission(3, 'Can see', 'write');
   });
 
   it('should share other entities with the collaborator via the group', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    searchTerm('Ase');
-    grantWritePermission();
+    shareSearchTerm('Ase');
+    grantPermission(3, 'Can see', 'write');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -115,6 +99,7 @@ describe('Share Entities', () => {
     clickOnEditEntity();
     cy.contains('Edit');
     cy.get('.sidepanel-body.scrollable').scrollTo('top');
+    cy.get('[name="library.sidepanel.metadata.title"]').focus();
     cy.clearAndType('[name="library.sidepanel.metadata.title"]', 'Edited title', {
       delay: 0,
     });

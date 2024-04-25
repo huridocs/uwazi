@@ -60,7 +60,9 @@ describe('Account', () => {
     });
 
     it('should enable 2FA', () => {
-      cy.getByTestId('copy-value-button').click();
+      cy.window().focus();
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
+      cy.getByTestId('copy-value-button').focus().dblclick();
       cy.window()
         .then(async win => {
           win.focus();

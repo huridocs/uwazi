@@ -1,4 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities, clearCookiesAndLogin } from './helpers';
+import { grantPermission, shareSearchTerm } from './helpers/entities';
 
 describe('Permisions system', () => {
   const entityTitle =
@@ -14,22 +15,15 @@ describe('Permisions system', () => {
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
-    cy.get('[data-testid=modal] input').type('colla', { delay: 0 });
-    cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.contains('[data-testid=modal] td', 'colla').siblings().find('select').select('write');
-    cy.contains('button', 'Save changes').click();
-    cy.contains('Update success').as('successMessage');
-    cy.get('@successMessage').should('exist');
+    shareSearchTerm('colla');
+    grantPermission(4, 'Can see', 'write');
   });
 
   describe('make entities private', () => {
     it('should unshare entities publicly', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
-      cy.get('[data-testid=modal] select').eq(1).select('delete');
-      cy.contains('button', 'Save changes').click();
-      cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('exist');
+      grantPermission(2, 'Can see', 'delete');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
@@ -45,10 +39,11 @@ describe('Permisions system', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
+      cy.intercept('POST', '/api/entities/permissions').as('savePermissions');
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.contains('button', 'Save changes').click();
-      cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('exist');
+      cy.wait('@savePermissions');
+      cy.contains('Update success');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });

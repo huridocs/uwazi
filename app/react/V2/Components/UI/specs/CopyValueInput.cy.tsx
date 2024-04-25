@@ -37,9 +37,14 @@ describe('CopyValueInput', () => {
   });
 
   it('Should copy the value to clipboard when clicking the button', () => {
-    cy.get('[data-testid="copy-value-button"]').click();
+    cy.window().focus();
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.get('[data-testid="copy-value-button"]').focus().dblclick();
     cy.window()
-      .then(async win => win.navigator.clipboard.readText())
+      .then(async win => {
+        win.focus();
+        return win.navigator.clipboard.readText();
+      })
       .should('equal', 'some testing value');
   });
 });
