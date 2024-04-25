@@ -21,7 +21,7 @@ describe('CopyValueInput', () => {
         command: 'Browser.grantPermissions',
         params: {
           permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
-          // origin: window.location.origin,
+          origin: window.location.origin,
         },
       })
     );
@@ -37,9 +37,10 @@ describe('CopyValueInput', () => {
   });
 
   it('Should copy the value to clipboard when clicking the button', () => {
-    cy.get('[data-testid="copy-value-button"]').click();
-    cy.window()
-      .then(async win => win.navigator.clipboard.readText())
-      .should('equal', 'some testing value');
+    cy.window().then(async win => {
+      cy.stub(win.navigator.clipboard, 'writeText').as('copy');
+      cy.get('[data-testid="copy-value-button"]').click();
+      cy.get('@copy').should('have.been.calledOnceWith', 'some testing value');
+    });
   });
 });
