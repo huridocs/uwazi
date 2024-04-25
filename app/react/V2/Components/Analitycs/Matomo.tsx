@@ -9,15 +9,12 @@ const Matomo = () => {
 
   const { matomoConfig, globalMatomo } = useAtomValue(settingsAtom);
   const { id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string };
-  const { id: secondaryWebsiteId, url: secondaryTracker } = globalMatomo || {
-    id: '1',
-    secondaryUrl: 'wip.huridata.org',
-  };
+  const { id: secondaryWebsiteId, url: secondaryUrl } = globalMatomo || {};
 
   useEffect(() => {
     const script = document.createElement('script');
     const hasUserMatomo = Boolean(id && url);
-    const hasGlobalMatomo = Boolean(secondaryWebsiteId && secondaryTracker);
+    const hasGlobalMatomo = Boolean(secondaryWebsiteId && secondaryUrl);
     const matomoUrl = url?.replace(/\/?$/, '/');
 
     switch (true) {
@@ -27,7 +24,8 @@ const Matomo = () => {
         _paq.push(['trackPageView']);
         _paq.push(['enableLinkTracking']);
         (function() {
-          _paq.push(['addTracker', ${secondaryTracker}, ${secondaryWebsiteId}]);
+          var u="${secondaryUrl}";
+          _paq.push(['addTracker', '${secondaryUrl}', '${secondaryWebsiteId}']);
           var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
           g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
         })();`;
@@ -56,7 +54,7 @@ const Matomo = () => {
               var u="${matomoUrl}";
               _paq.push(['setTrackerUrl', u+'piwik.php']);
               _paq.push(['setSiteId', '${id}']);
-              _paq.push(['addTracker', ${secondaryTracker}, ${secondaryWebsiteId}]);
+              _paq.push(['addTracker', '${secondaryUrl}', '${secondaryWebsiteId}']);
               var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
               g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
             })();`;
@@ -69,7 +67,7 @@ const Matomo = () => {
     if (hasUserMatomo || hasGlobalMatomo) {
       document.body.appendChild(script);
     }
-  }, [id, secondaryTracker, secondaryWebsiteId, url]);
+  }, [id, secondaryUrl, secondaryWebsiteId, url]);
 
   return <> </>;
 };
