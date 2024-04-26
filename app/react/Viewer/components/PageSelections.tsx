@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { uniqBy } from 'lodash';
-import { Highlight } from 'react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { IStore } from 'app/istore';
 import { ExtractedMetadataSchema, SelectionRectangleSchema } from 'shared/types/commonTypes';
 

@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useRef, useState } from 'react';
 import { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
-import { Highlight } from 'react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { EventBus, PDFJSViewer } from './pdfjs';
 import { TextHighlight } from './types';
 

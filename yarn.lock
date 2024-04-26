@@ -2484,6 +2484,11 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.1.tgz#e5211452df060fa8522b55c7b3c0c4d1981cb044"
   integrity sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==
 
+"@huridocs/react-text-selection-handler@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.2.0.tgz#93af5fc2fe6818388ae5ec7fef689002c8453486"
+  integrity sha512-9lEK39coUY5OJSI8wCLUB6spRbmcG3UVP6vwWPQdr7EmqEO3FBx2V0TXZ70KQI9hhekBBBw66v1PVwzDlupOdQ==
+
 "@icons/material@^0.2.4":
   version "0.2.4"
   resolved "https://registry.npmjs.org/@icons/material/-/material-0.2.4.tgz"
@@ -17234,11 +17239,6 @@ react-test-renderer@^18.2.0:
     react-is "^18.2.0"
     react-shallow-renderer "^16.15.0"
     scheduler "^0.23.0"
-
-react-text-selection-handler@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.npmjs.org/react-text-selection-handler/-/react-text-selection-handler-0.1.0.tgz"
-  integrity sha512-FRBo3rZPZfu2aMKSvB1TGtcFS9pb+C1z+FRLb55PdAYnSgMDUvLqjym2KZmVpb/oQpa5ceMt625qMBqzZSO/0A==
 
 react-transition-group@^2.4.0:
   version "2.9.0"
