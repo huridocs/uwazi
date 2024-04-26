@@ -20,7 +20,7 @@ jobs:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6-amd64
         ports:
           - 9200/tcp
-        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=30s --health-retries=10
       redis:
         image: redis:5.0.14
         ports:
@@ -94,6 +94,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
       - name: start Uwazi
         env:
+          NOTIFICATION_DELAY: 50
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
@@ -102,7 +103,7 @@ jobs:
         run: yarn run-production > output.txt &
       - name: wait for uwazi to be ready
         run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:3000/
-        timeout-minutes: 2
+        timeout-minutes: 3
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
