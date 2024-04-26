@@ -28,9 +28,9 @@ describe('Account', () => {
 
   describe('Update user', () => {
     it('should change the password to a new one', () => {
-      cy.get('input[name=email]').type('admin@uwazi.io');
-      cy.get('input[name=password]').type('1234');
-      cy.get('input[name=passwordConfirm]').type('123');
+      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
+      cy.get('input[name=password]').type('1234', { delay: 0 });
+      cy.get('input[name=passwordConfirm]').type('123', { delay: 0 });
       cy.contains('button', 'Update').click();
       cy.contains('Passwords do not match');
       cy.get('input[name=passwordConfirm]').type('4');
@@ -60,7 +60,9 @@ describe('Account', () => {
     });
 
     it('should enable 2FA', () => {
-      cy.getByTestId('copy-value-button').click();
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
+      cy.getByTestId('copy-value-button').focus();
+      cy.getByTestId('copy-value-button').realClick();
       cy.window()
         .then(async win => win.navigator.clipboard.readText())
         .then(value => {
