@@ -20,7 +20,7 @@ describe('Collection', () => {
 
   it('should change collection Name', () => {
     cy.get('#collection-name').clear();
-    cy.get('#collection-name').type('New Collection Name');
+    cy.get('#collection-name').type('New Collection Name', { delay: 0 });
   });
 
   it('should change default library view', () => {
@@ -35,14 +35,14 @@ describe('Collection', () => {
 
   it('should save Analytics google and matomo successfully', () => {
     cy.contains('span', 'Forms and email configuration').scrollIntoView();
-    cy.get('#google-analytics').type('google-analytics-key');
-    cy.get('#matomo-analytics').type('matomo-analytics-key');
+    cy.get('#google-analytics').type('google-analytics-key', { delay: 0 });
+    cy.get('#matomo-analytics').type('matomo-analytics-key', { delay: 0 });
   });
 
   it('should save Forms and email configurations successfully', () => {
-    cy.get('#sending-email').type('email@mailer.com');
-    cy.get('#receiving-email').type('reciever@mailer.com');
-    cy.get('#public-form-destination').type('/public/form/url');
+    cy.get('#sending-email').type('email@mailer.com', { delay: 0 });
+    cy.get('#receiving-email').type('reciever@mailer.com', { delay: 0 });
+    cy.get('#public-form-destination').type('/public/form/url', { delay: 0 });
     cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
   });
 

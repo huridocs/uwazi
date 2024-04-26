@@ -75,7 +75,7 @@ describe('Information Extraction', () => {
     it('Should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1');
+        cy.get('input').type('Extractor 1', { delay: 0 });
       });
 
       editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
@@ -90,7 +90,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Titles from all templates');
+        cy.get('input').type('Titles from all templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
@@ -116,7 +116,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Fechas from relevant templates');
+        cy.get('input').type('Fechas from relevant templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');
@@ -135,7 +135,7 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Edit Extractor').click();
 
       cy.getByTestId('modal').within(() => {
-        cy.get('input').eq(0).type(' edited');
+        cy.get('input').eq(0).type(' edited', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
@@ -185,7 +185,7 @@ describe('Information Extraction', () => {
 
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1');
+        cy.get('input').type('Extractor 1', { delay: 0 });
       });
       editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
       cy.contains('button', 'Add').click();
@@ -312,7 +312,7 @@ describe('Information Extraction', () => {
     it('should manually edit the field and save', () => {
       cy.get('aside').within(() => {
         cy.get('input').clear();
-        cy.get('input').type('A title');
+        cy.get('input').type('A title', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');
