@@ -1,19 +1,19 @@
 import { Application, Request, Response, NextFunction } from 'express';
 
-import { validation } from 'api/utils';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { documents } from './documents';
 
 export const documentRoutes = (app: Application) => {
   app.get(
     '/api/documents/page',
-    validation.validateRequest({
+    validateAndCoerceRequest({
       type: 'object',
       properties: {
         query: {
           type: 'object',
           properties: {
             _id: { type: 'string' },
-            page: { type: 'string' },
+            page: { type: 'number' },
           },
         },
       },
