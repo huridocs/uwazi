@@ -66,5 +66,24 @@ const deleteFilters = (
     });
 };
 
+const sanitizeFilters = (filters?: ClientSettingsFilterSchema[]) => {
+  const sanitizedFilters = filters?.map(filter => {
+    const sanitizedFilter = { ...filter };
+
+    if (filter.items) {
+      sanitizedFilter.items = filter.items.map(item => {
+        if (item._id) {
+          delete item._id;
+        }
+        return item;
+      });
+    }
+
+    return sanitizedFilter;
+  });
+
+  return sanitizedFilters;
+};
+
 export type { LoaderData };
-export { filterAvailableTemplates, updateFilters, deleteFilters };
+export { filterAvailableTemplates, updateFilters, deleteFilters, sanitizeFilters };

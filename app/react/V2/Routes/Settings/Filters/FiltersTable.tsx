@@ -24,6 +24,7 @@ import {
   FiltersSidepanel,
   sidepanelAtom,
   LoaderData,
+  sanitizeFilters,
 } from './components';
 
 const filtersLoader =
@@ -85,7 +86,7 @@ const FiltersTable = () => {
 
   const handleSave = async () => {
     setDisabled(true);
-    const response = await settingsAPI.save({ filters });
+    const response = await settingsAPI.save({ filters: sanitizeFilters(filters) });
 
     if (response instanceof FetchResponseError) {
       return setNotifications({
