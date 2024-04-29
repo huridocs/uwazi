@@ -12,7 +12,7 @@ describe('Pages', () => {
   });
 
   describe('accessibility', () => {
-    it('should check for accissibility violations', () => {
+    it('should check for accessibility violations', () => {
       cy.contains('a', 'Pages').click();
       cy.checkA11y();
       cy.contains('a', 'Add page').click();
@@ -24,7 +24,7 @@ describe('Pages', () => {
     const setLandingPage = (pageURL: string) => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Collection').click();
-      cy.clearAndType('input[id="landing-page"]', pageURL);
+      cy.clearAndType('input[id="landing-page"]', pageURL, { delay: 0 });
       cy.contains('button', 'Save').click();
       cy.contains('Settings updated');
     };
@@ -32,7 +32,7 @@ describe('Pages', () => {
     it('should create a page to be used as home', () => {
       cy.contains('a', 'Pages').click();
       cy.contains('Add page').click();
-      cy.clearAndType('input[name="title"]', 'Custom home page');
+      cy.clearAndType('input[name="title"]', 'Custom home page', { delay: 0 });
       cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type(
         '<h1>Custom HomePage header</h1><div class="myDiv">contents</div>',
@@ -152,7 +152,7 @@ describe('Pages', () => {
   describe('entity view', () => {
     it('should create a page as an entity view', () => {
       cy.contains('Add page').click();
-      cy.clearAndType('input[name="title"]', 'My entity view page');
+      cy.clearAndType('input[name="title"]', 'My entity view page', { delay: 0 });
       cy.contains('Activate').click();
       cy.contains('Markdown').click();
       cy.get('div[data-mode-id="html"]').type(contents, {
@@ -167,7 +167,8 @@ describe('Pages', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1000);
       cy.contains('button.bg-success-700', 'Save').click();
-      cy.waitForNotification('Saved successfully');
+      cy.contains('Saved successfully').as('expectedMessage');
+      cy.get('@expectedMessage').should('not.exist');
     });
 
     it('should set the entity as entity view', () => {
@@ -192,10 +193,7 @@ describe('Pages', () => {
     });
 
     it('should run the scripts of a page', () => {
-      cy.visit('localhost:3000');
-      cy.contains('.multiselectItem-name > span', 'País').click();
-      cy.get('.item-document:nth-child(2) > .item-info').click();
-      cy.contains('.side-panel.is-active > .sidepanel-footer > div > a', 'View').click();
+      cy.visit('http://localhost:3000/en/entity/t8plml296d23mcxr');
       cy.get('.page-viewer.document-viewer').toMatchImageSnapshot();
     });
   });
@@ -230,6 +228,7 @@ describe('Pages', () => {
     it('should delete a page with confirmation', () => {
       deletePage('table > tbody > tr:nth-child(4) > td > label > input');
       cy.contains('Deleted successfully');
+      cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
     });
 

@@ -26,7 +26,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .find('select')
       .select('Reporte');
     cy.contains('Descriptor').parentsUntil('.form-group').find('select').select('Familia');
-    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { force: true });
+    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { delay: 0 });
   };
 
   const addVideo = (local: boolean = true) => {
@@ -39,7 +39,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
         });
     } else {
       cy.get('input[name="urlForm.url"]').type(
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+        { delay: 0 }
       );
       cy.contains('button', 'Add from URL').click();
     }
