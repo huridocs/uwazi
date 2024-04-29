@@ -73,16 +73,12 @@ const hoverSortable =
     const dragIndex = currentItem.index;
     const hoverIndex = index;
     const draggingDown = monitor.getDifferenceFromInitialOffset().y > 0;
-    const invalidSort = draggingDown && dragIndex > hoverIndex && hoverIndex === 0;
-
-    if (
-      !ref.current ||
+    const invalidSort =
       isNotSortableItem(currentItem, target) ||
-      !sortFunction ||
-      !monitor.isOver({ shallow: false }) ||
-      isOutOfSortArea(ref, monitor, dragIndex, hoverIndex) ||
-      invalidSort
-    ) {
+      (draggingDown && dragIndex > hoverIndex && hoverIndex === 0) ||
+      isOutOfSortArea(ref, monitor, dragIndex, hoverIndex);
+
+    if (!ref.current || !sortFunction || !monitor.isOver({ shallow: false }) || invalidSort) {
       return;
     }
     // Time to actually perform the action
