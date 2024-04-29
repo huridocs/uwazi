@@ -6,8 +6,8 @@ import { StackedDualBarChart, arrayUtils } from 'app/Charts';
 import { Loader } from 'app/components/Elements/Loader';
 import { t } from 'app/I18N';
 
-export const countriesTemplate = '58b2f3a35d59f31e1345b480';
-export const countryKey = 'pa_s';
+const countriesTemplate = '58b2f3a35d59f31e1345b480';
+const countryKey = 'pa_s';
 
 class CejilChart extends Component {
   componentDidMount() {
@@ -69,3 +69,4 @@ CejilChart.propTypes = {
 };
 
 export default CejilChart;
+export { countriesTemplate, countryKey };
