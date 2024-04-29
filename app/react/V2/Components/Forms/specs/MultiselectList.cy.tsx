@@ -3,21 +3,21 @@ import 'cypress-axe';
 import { Provider } from 'react-redux';
 import { mount } from '@cypress/react18';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-import { SearchMultiselect } from '../SearchMultiSelect';
+import { MultiselectList } from '../MultiselectList';
 
-describe('SearchMultiSelect.cy.tsx', () => {
+describe('MultiselectList.cy.tsx', () => {
   const pizzas = [
-    { label: 'Margherita', value: 'MGT' },
-    { label: 'Pepperoni', value: 'PPR' },
-    { label: 'Hawaiian', value: 'HWN' },
-    { label: 'Vegetarian', value: 'VGT' },
-    { label: 'Meat Lovers', value: 'MLV' },
-    { label: 'BBQ Chicken', value: 'BQC' },
-    { label: 'Mushroom', value: 'MSH' },
-    { label: 'Four Cheese', value: 'FC' },
-    { label: 'Buffalo Chicken', value: 'BFC' },
-    { label: 'Chicken Bacon Ranch', value: 'CBR' },
-    { label: 'Chicken Alfredo', value: 'CAF' },
+    { label: 'Margherita', value: 'MGT', searchLabel: 'Margherita' },
+    { label: 'Pepperoni', value: 'PPR', searchLabel: 'Pepperoni' },
+    { label: 'Hawaiian', value: 'HWN', searchLabel: 'Hawaiian' },
+    { label: 'Vegetarian', value: 'VGT', searchLabel: 'Vegetarian' },
+    { label: 'Meat Lovers', value: 'MLV', searchLabel: 'Meat Lovers' },
+    { label: 'BBQ Chicken', value: 'BQC', searchLabel: 'BBQ Chicken' },
+    { label: 'Mushroom', value: 'MSH', searchLabel: 'Mushroom' },
+    { label: 'Four Cheese', value: 'FC', searchLabel: 'Four Cheese' },
+    { label: 'Buffalo Chicken', value: 'BFC', searchLabel: 'Buffalo Chicken' },
+    { label: 'Chicken Bacon Ranch', value: 'CBR', searchLabel: 'Chicken Bacon Ranch' },
+    { label: 'Chicken Alfredo', value: 'CAF', searchLabel: 'Chicken Alfredo' },
   ];
   let selected: string[] = [];
 
@@ -26,7 +26,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
     mount(
       <Provider store={createStore()}>
         <div className="p-2 tw-content">
-          <SearchMultiselect
+          <MultiselectList
             items={pizzas}
             onChange={selectedItems => {
               selected = selectedItems;
@@ -54,7 +54,7 @@ describe('SearchMultiSelect.cy.tsx', () => {
     cy.contains('Buffalo Chicken').should('be.visible');
     cy.contains('Chicken Bacon Ranch').should('be.visible');
     cy.contains('Chicken Alfredo').should('be.visible');
-    cy.contains('Margherita').should('not.be.visible');
+    cy.contains('Margherita').should('not.exist');
   });
 
   it('should select options', () => {

@@ -1,27 +1,27 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link, LoaderFunction, useBlocker, useLoaderData, useNavigate } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'app/V2/Components/UI';
-import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
-import { Link, LoaderFunction, useBlocker, useLoaderData, useNavigate } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
+import { Button, Table } from 'V2/Components/UI';
+import { ConfirmNavigationModal, InputField } from 'V2/Components/Forms';
 import { ClientThesaurusValue, ClientThesaurus } from 'app/apiResponseTypes';
-import { notificationAtom } from 'app/V2/atoms/notificationAtom';
-import ThesauriAPI from 'app/V2/api/thesauri';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { notificationAtom } from 'V2/atoms/notificationAtom';
+import ThesauriAPI from 'V2/api/thesauri';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
-import { ImportButton } from './components/ImportButton';
-import { sanitizeThesaurusValues } from './helpers';
-import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
 import {
   ThesauriValueFormSidepanel,
   FormThesauriValue,
 } from './components/ThesauriValueFormSidepanel';
+import { ThesauriGroupFormSidepanel } from './components/ThesauriGroupFormSidepanel';
+import { sanitizeThesaurusValues } from './helpers';
+import { ImportButton } from './components/ImportButton';
 import { columns, TableThesaurusValue } from './components/TableComponents';
 
 const editTheasaurusLoader =
@@ -43,7 +43,7 @@ const ThesaurusForm = () => {
     []
   );
   const [thesaurusValues, setThesaurusValues] = useState<TableThesaurusValue[]>([]);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   useEffect(() => {
     if (thesaurus) {

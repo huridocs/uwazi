@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 
 import { Translate } from 'app/I18N';
 import { isEqual } from 'lodash';
@@ -30,7 +30,7 @@ const menuConfigloader =
 const MenuConfig = () => {
   const links = useLoaderData() as ClientSettingsLinkSchema[];
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
   const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
   const [formValues, setFormValues] = useState<ClientSettingsLinkSchema & { groupId?: string }>(
@@ -38,7 +38,7 @@ const MenuConfig = () => {
   );
   const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const setSettings = useSetRecoilState(settingsAtom);
+  const setSettings = useSetAtom(settingsAtom);
 
   useEffect(() => {
     const linksWIthid = links?.map(link => {
@@ -154,7 +154,7 @@ const MenuConfig = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
           {selectedLinks.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}

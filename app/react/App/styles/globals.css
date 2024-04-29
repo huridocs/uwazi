@@ -2978,6 +2978,10 @@ input:checked + .toggle-bg {
   border-radius: 4px;
 }
 
+.rounded-\[6px\] {
+  border-radius: 6px;
+}
+
 .rounded-full {
   border-radius: 9999px;
 }

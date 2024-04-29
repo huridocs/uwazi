@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import ThesauriAPI from 'app/V2/api/thesauri';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
@@ -7,6 +8,8 @@ import { Button, Table, ConfirmationModal } from 'app/V2/Components/UI';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
+import { notificationAtom, templatesAtom } from 'app/V2/atoms';
+import { ClientThesaurus, Template } from 'app/apiResponseTypes';
 import {
   EditButton,
   LabelHeader,
@@ -15,9 +18,6 @@ import {
   ThesaurusLabel,
   templatesCells,
 } from './components/TableComponents';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { ClientThesaurus, Template } from 'app/apiResponseTypes';
 
 const theasauriListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -28,8 +28,8 @@ const ThesauriList = () => {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
   const thesauri = useLoaderData() as ClientThesaurus[];
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const templates = useRecoilValue(templatesAtom);
+  const setNotifications = useSetAtom(notificationAtom);
+  const templates = useAtomValue(templatesAtom);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [tableThesauri, setTableThesauri] = useState<ClientThesaurus[]>([]);
   const [selectedThesauri, setSelectedThesauri] = useState<Row<ClientThesaurus>[]>([]);
@@ -124,7 +124,7 @@ const ThesauriList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className="bg-indigo-50" highlighted>
           {selectedThesauri.length ? (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
@@ -155,7 +155,7 @@ const ThesauriList = () => {
           header={<Translate>Delete</Translate>}
           warningText={<Translate>Are you sure you want to delete this item?</Translate>}
           body={
-            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
+            <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
               {selectedThesauri.map(item => (
                 <li key={item.original.name}>{item.original.name}</li>
               ))}
