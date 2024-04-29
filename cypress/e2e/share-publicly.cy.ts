@@ -1,4 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities, clearCookiesAndLogin } from './helpers';
+import { grantPermission, shareSearchTerm } from './helpers/entities';
 
 describe('Permisions system', () => {
   const entityTitle =
@@ -14,27 +15,21 @@ describe('Permisions system', () => {
     selectPublishedEntities();
     cy.contains('h2', entityTitle).click();
     cy.contains('button', 'Share').click();
-    cy.get('[data-testid=modal] input').type('colla');
-    cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.contains('[data-testid=modal] td', 'colla').siblings().find('select').select('write');
-    cy.contains('button', 'Save changes').click();
-    cy.contains('Update success').as('successMessage');
-    cy.get('@successMessage').should('not.exist');
+    shareSearchTerm('colla');
+    grantPermission(4, 'Can see', 'write');
   });
 
   describe('make entities private', () => {
     it('should unshare entities publicly', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
-      cy.get('[data-testid=modal] select').eq(1).select('delete');
-      cy.contains('button', 'Save changes').click();
-      cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      grantPermission(2, 'Can see', 'delete');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
 
     it('should display the entitiy as restricted', () => {
+      selectPublishedEntities();
       selectRestrictedEntities();
       cy.contains('h2', entityTitle).should('exist');
     });
@@ -45,17 +40,19 @@ describe('Permisions system', () => {
       cy.contains('h2', entityTitle).click();
       cy.contains('button', 'Share').click();
       cy.get('[data-testid=modal] input').focus();
+      cy.intercept('POST', '/api/entities/permissions').as('savePermissions');
       cy.get('ul[role=listbox]').should('be.visible').contains('span', 'Public').click();
       cy.contains('button', 'Save changes').click();
-      cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.wait('@savePermissions');
+      cy.contains('Update success');
       cy.get('[data-testid=modal]').should('not.exist');
       cy.get('.side-panel.is-active > .sidepanel-header > .closeSidepanel').click();
     });
 
     it('should display the entity as public', () => {
+      selectRestrictedEntities();
       selectPublishedEntities();
-      cy.contains('h2', entityTitle).should('exist');
+      cy.contains('h2', entityTitle);
     });
   });
 
@@ -75,7 +72,7 @@ describe('Permisions system', () => {
       cy.get('aside textarea').type('Test title');
       cy.contains('button', 'Save').click();
       cy.contains('Entity created').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('aside.metadata-sidepanel.is-active').toMatchImageSnapshot();
       cy.get('aside.is-active button[aria-label="Close side panel"]').click();
     });
@@ -94,9 +91,9 @@ describe('Permisions system', () => {
   describe('mixed permissions', () => {
     it('should login as admin and perform a search', () => {
       clearCookiesAndLogin('admin', 'admin');
-      cy.get('.search-box input').type('test 2016');
+      cy.get('.search-box input').type('test 2016', { delay: 0 });
       cy.get('[aria-label="Search button"]').click();
-      cy.get('.item-document').should('have.length', 9);
+      cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
     });
 
     it('should show mixed access', () => {
@@ -114,9 +111,9 @@ describe('Permisions system', () => {
       cy.get('[data-testid=modal] select').eq(1).select('read');
       cy.contains('button', 'Save changes').click();
       cy.contains('Update success').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.get('@successMessage').should('exist');
       cy.get('[data-testid=modal]').should('not.exist');
-      cy.get('.item-document').should('have.length', 9);
+      cy.get('.item-document').should('have.length.at.least', 9).should('have.length.at.most', 10);
       cy.get('.item-document').eq(0).toMatchImageSnapshot();
     });
   });

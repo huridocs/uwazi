@@ -82,7 +82,14 @@ const prepareIndex = async () => {
 
   process.stdout.write(`Creating index ${config.defaultTenant.indexName}...\r\n`);
   process.stdout.write(' - Base properties mapping\r\n');
-  await request.put(getIndexUrl(), elasticMapping);
+
+  try {
+    await request.put(getIndexUrl(), elasticMapping);
+  } catch (_e) {
+    setTimeout(async () => {
+      await request.put(getIndexUrl(), elasticMapping);
+    }, 1000);
+  }
   process.stdout.write(' - Custom templates mapping\r\n');
   const templates = await templatesModel.get();
   const dictionaries = await dictionariesModel.get({ enable_classification: true });
@@ -110,7 +117,7 @@ const processErrors = async err => {
   } else {
     const errorMsg =
       err instanceof Error
-        ? err.message + '\r\n' + JSON.stringify(err, null, ' ')
+        ? `${err.message}\r\n${JSON.stringify(err, null, ' ')}`
         : JSON.stringify(err, null, ' ');
     errorLog.error(`Uncaught Reindex error.\r\n${errorMsg}\r\nWill exit with (1)\r\n`);
     await endScriptProcedures();

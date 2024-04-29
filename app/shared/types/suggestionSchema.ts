@@ -37,7 +37,12 @@ export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: {
+    objectIdSchema,
+    propertyTypes,
+    propertyValueSchema,
+    IXSuggestionStateSchema,
+  },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -45,7 +50,15 @@ export const IXSuggestionSchema = {
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: propertyValueSchema,
+    suggestedValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
     suggestedText: { type: 'string' },
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
@@ -62,7 +75,6 @@ export const IXSuggestionSchema = {
     'extractorId',
     'entityTemplate',
     'suggestedValue',
-    'segment',
     'language',
   ],
 };

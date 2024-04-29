@@ -1,5 +1,5 @@
 import '@4tw/cypress-drag-drop';
-
+import 'cypress-real-events';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -154,11 +154,6 @@ Cypress.on('window:before:load', window => {
 Cypress.Commands.add('clearAndType', (selector, value) => {
   cy.get(selector).clear();
   cy.get(selector).type(value);
-});
-
-Cypress.Commands.add('waitForNotification', message => {
-  cy.contains(message).as('expectedMessage');
-  cy.get('@expectedMessage').should('not.exist');
 });
 
 // eslint-disable-next-line prefer-arrow-callback
