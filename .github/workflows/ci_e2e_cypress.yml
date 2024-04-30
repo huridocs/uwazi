@@ -33,13 +33,13 @@ jobs:
           mongodb-version: 4.2.6
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Checkout submodules
         run: git submodule update --init --recursive
       - name: Setup Nodejs
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: 20
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: 3.11
       - name: Clone dummy services
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: huridocs/dummy_extractor_services
           path: dummy_extractor_services

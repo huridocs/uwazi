@@ -27,11 +27,11 @@ jobs:
         with:
           mongodb-version: 4.2.6
           mongodb-replica-set: test-rs
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version: 20
       - name: Cache node modules
         uses: actions/cache@v2
         with:
