@@ -11,7 +11,7 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
-import { useSetAtom, useAtomValue } from 'jotai';
+import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
@@ -20,15 +20,16 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
-import { ClientTemplateSchema } from 'app/istore';
-import { notificationAtom, thesaurisAtom } from 'app/V2/atoms';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
+import { notificationAtom } from 'app/V2/atoms';
+import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import { updateSuggestions, updateSuggestionsByEntity } from './components/helpers';
+import { se } from 'date-fns/locale';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -50,6 +51,17 @@ const ixmessages = {
   error: 'Error',
 };
 
+interface ChildrenSuggestion {
+  suggestedValue?: PropertyValueSchema;
+  currentValue?: PropertyValueSchema;
+  propertyName: string;
+  disableRowSelection?: boolean;
+}
+
+interface TableSuggestion extends EntitySuggestionType {
+  children?: ChildrenSuggestion[];
+}
+
 const IXSuggestions = () => {
   const { suggestions, extractor, templates, aggregation, currentStatus, totalPages } =
     useLoaderData() as {
@@ -61,8 +73,60 @@ const IXSuggestions = () => {
       currentStatus: ixStatus;
     };
 
-  const [currentSuggestions, setCurrentSuggestions] = useState(suggestions);
-  useMemo(() => setCurrentSuggestions(suggestions), [suggestions]);
+  const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
+  const [property, setProperty] = useState<ClientPropertySchema>();
+
+  useEffect(() => {
+    const template = templates.find(t => t._id === extractor.templates[0]);
+    const _property = template?.properties.find(prop => prop.name === extractor.property);
+    setProperty(_property);
+  }, [templates, extractor]);
+
+  useMemo(() => {
+    if (property?.type === 'multiselect') {
+      const flatenedSuggestions = suggestions.map(_suggestion => {
+        const suggestion: TableSuggestion = { ..._suggestion };
+
+        const currentValues = [
+          ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
+        ];
+
+        const suggestedValues = [
+          ...(Array.isArray(suggestion.suggestedValue) ? suggestion.suggestedValue : []),
+        ];
+
+        suggestion.children = [];
+
+        suggestedValues.forEach(suggestedValue => {
+          const valuePresent = currentValues.find(v => v === suggestedValue);
+          if (valuePresent) {
+            currentValues.splice(currentValues.indexOf(valuePresent), 1);
+          }
+
+          suggestion.children?.push({
+            suggestedValue,
+            currentValue: valuePresent,
+            propertyName: suggestion.propertyName,
+            disableRowSelection: true,
+          });
+        });
+
+        currentValues.forEach(currentValue => {
+          suggestion.children?.push({
+            suggestedValue: '',
+            currentValue,
+            propertyName: suggestion.propertyName,
+            disableRowSelection: true,
+          });
+        });
+
+        return suggestion;
+      });
+      setCurrentSuggestions(flatenedSuggestions);
+      return;
+    }
+    setCurrentSuggestions(suggestions);
+  }, [suggestions, property]);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -185,6 +249,7 @@ const IXSuggestions = () => {
         <SettingsContent.Body>
           <Table<EntitySuggestionType>
             data={currentSuggestions}
+            subRowsKey="children"
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,

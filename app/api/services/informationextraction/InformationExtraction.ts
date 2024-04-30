@@ -17,6 +17,7 @@ import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
@@ -51,6 +52,8 @@ type TaskTypes = 'suggestions' | 'create_model';
 
 interface TaskParameters {
   id: string;
+  multi_value?: boolean;
+  options?: { label: string; id: string }[];
 }
 
 type ResultParameters = TaskParameters;
@@ -365,10 +368,30 @@ class InformationExtraction {
       return { status: 'error', message: 'No labeled data' };
     }
 
+    const [template] = await templatesModel.get({ _id: extractor.templates[0] });
+    const property = template?.properties?.find(p => p.name === extractor.property);
+
+    if (!property) {
+      return { status: 'error', message: 'Property not found' };
+    }
+
+    const params: TaskParameters = {
+      id: extractorId.toString(),
+      multi_value: property.type === 'multiselect',
+    };
+
+    if (property.type === 'select' || property.type === 'multiselect') {
+      const [thesauri] = await dictionatiesModel.get({ _id: property.content });
+
+      params.options =
+        thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
+    }
+
+    console.log(params);
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
-      params: { id: extractorId.toString() },
+      params,
     });
 
     await this.saveModelProcess(extractorId);

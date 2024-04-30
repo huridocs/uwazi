@@ -16,8 +16,8 @@ export interface EntitySuggestionType {
   fileId: string;
   entityTitle: string;
   propertyName: string;
-  suggestedValue: PropertyValueSchema;
-  currentValue?: PropertyValueSchema;
+  suggestedValue: PropertyValueSchema | PropertyValueSchema[];
+  currentValue?: PropertyValueSchema | PropertyValueSchema[];
   labeledValue?: PropertyValueSchema;
   selectionRectangles?: {
     top?: number;
