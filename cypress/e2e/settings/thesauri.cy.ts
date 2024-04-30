@@ -23,13 +23,13 @@ describe('Thesauri configuration', () => {
 
   it('should add thesauri', () => {
     cy.contains('a', 'Add thesaurus').click();
-    cy.get('#thesauri-name').type('New Thesauri');
+    cy.get('#thesauri-name').type('New Thesauri', { delay: 0 });
     cy.contains('button', 'Add item').click();
-    cy.get('input#item-name').type('First Item');
+    cy.get('input#item-name').type('First Item', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
 
     cy.contains('button', 'Add item').click();
-    cy.get('input#item-name').type('Second Item');
+    cy.get('input#item-name').type('Second Item', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
 
     cy.get('tbody tr').should('have.length', 2);
@@ -46,13 +46,13 @@ describe('Thesauri configuration', () => {
   it('should add groups', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.contains('a', 'Add thesaurus').click();
-    cy.get('#thesauri-name').type('New Thesauri with groups');
+    cy.get('#thesauri-name').type('New Thesauri with groups', { delay: 0 });
     cy.contains('button', 'Add group').click();
-    cy.get('input#group-name').type('First group');
+    cy.get('input#group-name').type('First group', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.contains('button', 'Add group').click();
     cy.get('input#group-name').clear();
-    cy.get('input#group-name').type('Second group');
+    cy.get('input#group-name').type('Second group', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 2);
     cy.get('tbody tr:nth-of-type(1) td:nth-of-type(2)').should('have.text', 'First group');
@@ -70,9 +70,9 @@ describe('Thesauri configuration', () => {
     cy.intercept('GET', '/api/stats').as('fetchStats');
     cy.contains('button', 'Edit').click();
     cy.wait('@fetchStats');
-    cy.get('#thesauri-name').type(' edited');
+    cy.get('#thesauri-name').type(' edited', { delay: 0 });
     cy.contains('button', 'Edit').eq(0).click();
-    cy.get('input#item-name').type(' edited');
+    cy.get('input#item-name').type(' edited', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.contains('button', 'Save').click();
     cy.wait('@fetchThesauri');
@@ -86,13 +86,15 @@ describe('Thesauri configuration', () => {
     cy.wait('@fetchThesauri');
     cy.wait('@fetchTemplates');
     cy.contains('tr:nth-child(2) button', 'Edit').click();
-    cy.get('#thesauri-name').type(' edited');
+    cy.get('#thesauri-name').type(' edited', { delay: 0 });
     cy.contains('button', 'Edit').eq(0).click();
-    cy.get('input#group-name').type(' edited');
+    cy.get('input#group-name').type(' edited', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr:nth-of-type(2) td:nth-of-type(2)').should('have.text', 'First group edited');
+    cy.intercept('GET', '/api/dictionaries?_id=*').as('editThesauri');
     cy.contains('button', 'Save').click();
     cy.wait('@editThesauri');
+    cy.contains('Thesauri updated.');
   });
 
   it('should delete', () => {
@@ -103,6 +105,7 @@ describe('Thesauri configuration', () => {
     cy.get('input[type=checkbox]').eq(1).click();
     cy.contains('button', 'Delete').click();
     cy.contains('button', 'Accept').click();
+    cy.contains('Thesauri deleted');
     cy.get('tbody tr').should('have.length', 1);
   });
 

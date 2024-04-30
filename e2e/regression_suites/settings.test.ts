@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-/*global page*/
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
@@ -29,19 +28,6 @@ describe('Settings', () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.leafletmap');
     await testSelectorShot('[data-testid="settings-collection"]');
-  });
-
-  describe('Filters', () => {
-    it('should display filters page with filters', async () => {
-      await selectSettingsPage('Filters');
-      await testSettingsContent();
-    });
-
-    it('should display filter groups', async () => {
-      await selectSettingsPage('Filters');
-      await expect(page).toClick('button', { text: 'Create group' });
-      await testSettingsContent();
-    });
   });
 
   describe('Templates', () => {

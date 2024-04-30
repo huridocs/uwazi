@@ -51,7 +51,7 @@ describe('Languages', () => {
     it('should allow to cancel an action', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
       cy.contains('tr', 'Spanish').contains('Uninstall').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'No, cancel').click();
       cy.contains('Spanish').should('exist');
     });
@@ -61,7 +61,7 @@ describe('Languages', () => {
     it('should uninstall the language and remove it from the list', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
       cy.contains('tr', 'French').contains('Uninstall').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
@@ -87,7 +87,10 @@ describe('Languages', () => {
       cy.contains('span', 'Translations').click();
       cy.contains('tr', 'User Interface').contains('button', 'Translate').click();
       cy.contains('table', stringToTranslate).contains('tr', 'Español').find('input').clear();
-      cy.contains('table', stringToTranslate).contains('tr', 'Español').find('input').type('test');
+      cy.contains('table', stringToTranslate)
+        .contains('tr', 'Español')
+        .find('input')
+        .type('test', { delay: 0 });
       cy.contains('button', 'Save').click();
       cy.contains('Translations saved');
     });
@@ -96,7 +99,7 @@ describe('Languages', () => {
       cy.intercept('POST', 'api/translations/populate').as('resetLanguage');
       cy.contains('a span', 'Languages').click();
       cy.contains('tr', 'Spanish').contains('button', 'Reset').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'Reset').click();
       cy.wait('@resetLanguage');
     });

@@ -40,9 +40,9 @@ describe('Users', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
       cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
-        cy.get('#username').type('User_1');
-        cy.get('#email').type('user@mailer.com');
-        cy.get('#password').type('secret');
+        cy.get('#username').type('User_1', { delay: 0 });
+        cy.get('#email').type('user@mailer.com', { delay: 0 });
+        cy.get('#password').type('secret', { delay: 0 });
         cy.getByTestId('multiselect').scrollIntoView();
         cy.getByTestId('multiselect').within(() => {
           cy.get('button').click();
@@ -60,8 +60,8 @@ describe('Users', () => {
       cy.get('aside').within(() => {
         cy.get('#username').should('have.value', 'Carmen');
         cy.get('#email').should('have.value', 'carmen@huridocs.org');
-        cy.get('#username').type('_edited');
-        cy.get('#password').type('secret');
+        cy.get('#username').type('_edited', { delay: 0 });
+        cy.get('#password').type('secret', { delay: 0 });
       });
       cy.contains('button', 'Save').click();
       cy.contains('span', 'Carmen_edited');
@@ -88,8 +88,8 @@ describe('Users', () => {
     it('check for unique name and email', () => {
       cy.contains('button', 'Add user').click();
       cy.get('aside').within(() => {
-        cy.get('#username').type('admin');
-        cy.get('#email').type('admin@uwazi.com');
+        cy.get('#username').type('admin', { delay: 0 });
+        cy.get('#email').type('admin@uwazi.com', { delay: 0 });
         cy.contains('button', 'Save').click();
         cy.contains('span', 'Duplicated username').should('exist');
         cy.contains('span', 'Duplicated email').should('exist');
@@ -98,7 +98,7 @@ describe('Users', () => {
 
     it('should check for spaces in the username', () => {
       cy.get('aside').within(() => {
-        cy.get('#username').type(' some spaces');
+        cy.get('#username').type(' some spaces', { delay: 0 });
         cy.contains('button', 'Save').click();
         cy.contains('span', 'Usernames cannot have spaces').should('exist');
       });
@@ -110,14 +110,18 @@ describe('Users', () => {
         cy.get('#username').type('Al');
         cy.contains('span', 'Username is too short').should('exist');
         cy.get('#username').clear();
-        cy.get('#username').type('LongNameForAUserWhatIsTheAdminThinkingWhenCreatingIt');
+        cy.get('#username').type('LongNameForAUserWhatIsTheAdminThinkingWhenCreatingIt', {
+          delay: 0,
+        });
         cy.contains('span', 'Username is too long').should('exist');
       });
     });
 
     it('should not allow very long passwords', () => {
       cy.get('aside').within(() => {
-        cy.get('#password').type('This passwords has more then 50 chatacters, it should fail.');
+        cy.get('#password').type('This passwords has more then 50 chatacters, it should fail.', {
+          delay: 0,
+        });
         cy.contains('span', 'Password is too long').should('exist');
       });
     });

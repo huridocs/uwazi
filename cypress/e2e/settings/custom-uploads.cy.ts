@@ -62,7 +62,7 @@ describe('customization', () => {
     cy.checkA11y();
     cy.get('aside').within(() => {
       cy.get('#filename').clear();
-      cy.get('#filename').type('Batman - superhero pic');
+      cy.get('#filename').type('Batman - superhero pic', { delay: 0 });
       cy.contains('button', 'Save').click();
     });
     cy.contains('td', 'Batman - superhero pic.jpg');
