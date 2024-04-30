@@ -18,6 +18,7 @@ const filterAvailableTemplates = (
         usedTemplatesIds.push(item.id!);
       });
     }
+
     if (filter.id) {
       usedTemplatesIds.push(filter.id);
     }
@@ -26,11 +27,15 @@ const filterAvailableTemplates = (
   return templates.filter(template => !usedTemplatesIds.includes(template._id));
 };
 
-const updateFilters = (selectedTemplatesIds: string[], templates?: ClientTemplateSchema[]) => {
+const updateFilters = (
+  selectedTemplatesIds: string[],
+  templates?: ClientTemplateSchema[]
+): ClientSettingsFilterSchema[] => {
   const newFilters = selectedTemplatesIds.map(templateId => {
     const template = templates?.find(templ => templ._id === templateId);
     return { id: templateId, name: template?.name };
   });
+
   return newFilters;
 };
 
