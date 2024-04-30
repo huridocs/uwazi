@@ -1,4 +1,4 @@
-import { selectRestrictedEntities } from '../helpers';
+import { selectPublishedEntities, selectRestrictedEntities } from '../helpers';
 import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Public Form', () => {
@@ -165,6 +165,7 @@ describe('Public Form', () => {
     before(() => {
       cy.get('a[aria-label="Library"]').click();
       cy.contains('Published', { timeout: 100 });
+      selectPublishedEntities();
       selectRestrictedEntities();
     });
 
