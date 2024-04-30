@@ -71,12 +71,15 @@ const sanitizeFilters = (filters?: ClientSettingsFilterSchema[]) => {
     const sanitizedFilter = { ...filter };
 
     if (filter.items) {
-      sanitizedFilter.items = filter.items.map(item => {
-        if (item._id) {
-          delete item._id;
+      sanitizedFilter.items = filter.items.map(
+        (item: { id?: string; label?: string; _id?: string }) => {
+          const sanitizedItem = { ...item };
+          if (sanitizedItem._id) {
+            delete sanitizedItem._id;
+          }
+          return sanitizedItem;
         }
-        return item;
-      });
+      );
     }
 
     return sanitizedFilter;
