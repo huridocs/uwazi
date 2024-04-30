@@ -156,7 +156,11 @@ describe('entities', () => {
       expect(createdDocument.user.equals(user._id)).toBe(true);
       expect(createdDocument.language).toEqual('en');
       expect(createdDocument.fullText).not.toBeDefined();
-      expect(createdDocument.metadata).toEqual({});
+      expect(createdDocument.metadata).toEqual({
+        property1: [],
+        property2: [],
+        property3: [],
+      });
       expect(createdDocument.template).toBeDefined();
     });
 
@@ -544,14 +548,18 @@ describe('entities', () => {
       expect(updatedEntity.metadata).toEqual({
         date: [],
         daterange: [],
+        description: [],
         enemies: [],
         field_nested: [],
         friends: [],
         multidate: [],
         multidaterange: [],
         multiselect: [],
-        select: [],
         numeric: [],
+        property1: [],
+        property2: [],
+        select: [],
+        text: [],
       });
     });
 
@@ -724,6 +732,38 @@ describe('entities', () => {
       const doc = await entities.getById('shared', 'en');
       expect(doc.metadata.numeric).toEqual(undefined);
     });
+
+    it('should supply empty arrays for missing metadata, for all languages', async () => {
+      const user = { _id: db.id() };
+      const doc1 = {
+        title: 'newEntity',
+        metadata: { text: [{ value: 'text' }], numeric: [{ value: 1 }] },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { user, language: 'en' });
+      const docs = await entities.get({ title: 'newEntity' });
+      expect(docs.length).toBe(3);
+      expect(docs.map(d => d.language).sort()).toEqual(['en', 'es', 'pt']);
+      docs.forEach(doc => {
+        expect(doc.metadata).toEqual({
+          text: [{ value: 'text' }],
+          property1: [],
+          property2: [],
+          description: [],
+          select: [],
+          multiselect: [],
+          date: [],
+          multidate: [],
+          multidaterange: [],
+          daterange: [],
+          friends: [],
+          enemies: [],
+          field_nested: [],
+          numeric: [{ value: 1 }],
+        });
+      });
+    });
   });
 
   describe('get', () => {
@@ -797,6 +837,28 @@ describe('entities', () => {
         entitesModelGet.mockRestore();
       }
     );
+  });
+
+  describe('getWithRelationships', () => {
+    it('should return the entities with its permitted relationships when no user', async () => {
+      userFactory.mock(undefined);
+      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
+      expect(result.relations).toEqual([
+        expect.objectContaining({ entity: 'getWithRelRoot' }),
+        expect.objectContaining({ entity: 'getWithRelPublic' }),
+      ]);
+      userFactory.mockEditorUser();
+    });
+
+    it('should return the entities with its permitted relationships when the user has permissions', async () => {
+      userFactory.mockEditorUser();
+      const [result] = await entities.getWithRelationships({ sharedId: 'getWithRelRoot' });
+      expect(result.relations).toEqual([
+        expect.objectContaining({ entity: 'getWithRelRoot' }),
+        expect.objectContaining({ entity: 'getWithRelPublic' }),
+        expect.objectContaining({ entity: 'getWithRelPrivate' }),
+      ]);
+    });
   });
 
   describe('denormalize', () => {
@@ -1367,7 +1429,7 @@ describe('entities', () => {
 
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+permissions');
-      expect(newEntities.length).toBe(12);
+      expect(newEntities.length).toBe(15);
 
       const fromCheckPermissions = fixtures.entities.find(e => e.title === 'Unpublished entity ES');
       const toCheckPermissions = newEntities.find(e => e.title === 'Unpublished entity ES');

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Provider } from 'react-redux';
@@ -16,18 +17,7 @@ const InputFieldStory: Story = {
     <Provider store={createStore()}>
       <div className="tw-content">
         <div className="md:w-1/2">
-          <InputField
-            id={args.id}
-            label={args.label}
-            disabled={args.disabled}
-            hideLabel={args.hideLabel}
-            hasErrors={args.hasErrors}
-            clearFieldAction={args.clearFieldAction}
-            placeholder={args.placeholder}
-            value={args.value}
-            errorMessage={args.errorMessage}
-            type={args.type}
-          />
+          <InputField {...args} />
         </div>
       </div>
     </Provider>
@@ -76,6 +66,16 @@ const WithErrorMessage = {
   },
 };
 
-export { Basic, WithClearFieldButton, WithError, WithErrorMessage };
+const WithPreText = {
+  ...InputFieldStory,
+  args: {
+    ...Basic.args,
+    value: 'example.com',
+    preText: 'https://',
+    clearFieldAction: () => {},
+  },
+};
+
+export { Basic, WithClearFieldButton, WithError, WithErrorMessage, WithPreText };
 
 export default meta;

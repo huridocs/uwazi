@@ -10,20 +10,22 @@ const graphs = {
 };
 
 const insertChart = (chart: string, chartName: string) => {
-  cy.get('input[name="page.data.title"]').type(chartName);
-  cy.get('.tab-content > textarea').type('<Dataset />');
-  cy.get('.tab-content > textarea').type(chart);
+  cy.clearAndType('input[name="title"]', chartName, { delay: 0 });
+  cy.contains('Markdown').click();
+  cy.get('div[data-mode-id="html"]').type(`<Dataset />\n${chart}`, {
+    parseSpecialCharSequences: false,
+  });
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(501);
 };
 
 const savePage = () => {
-  cy.intercept('POST', '/api/pages').as('savePage');
-  cy.contains('button', 'Save').click();
-  cy.wait('@savePage');
-  cy.contains('Saved successfully.').click();
+  cy.contains('button.bg-success-700', 'Save').click();
+  cy.contains('Saved successfully');
 };
 
 const visitPage = () => {
-  cy.contains('a', '(view page)').then(a => {
+  cy.contains('a', 'View page').then(a => {
     const href = a.attr('href') || '';
     cy.visit(href);
   });
@@ -52,7 +54,7 @@ const testChart = (chart: string, name: string) => {
 describe('Graphs in Page ', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 

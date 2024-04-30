@@ -1,3 +1,5 @@
+/* eslint-disable react/no-multi-comp */
+/* eslint-disable comma-spacing */
 /* eslint-disable max-lines */
 import React, { Component } from 'react';
 import { DropTarget } from 'react-dnd-old';
@@ -6,6 +8,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { actions as formActions, Control, Field } from 'react-redux-form';
+import { useSetAtom } from 'jotai';
 import { Icon } from 'UI';
 import { withContext } from 'app/componentWrappers';
 import { FormGroup } from 'app/Forms';
@@ -13,6 +16,8 @@ import ColorPicker from 'app/Forms/components/ColorPicker';
 import { I18NLink, t, Translate } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { notify } from 'app/Notifications/actions/notificationsActions';
+import { templatesAtom } from 'app/V2/atoms';
+import api from 'app/Templates/TemplatesAPI';
 import {
   addProperty,
   inserted,
@@ -47,6 +52,7 @@ interface MetadataTemplateProps {
   syncedTemplate?: boolean;
   _id?: string;
   mainContext: { confirm: Function };
+  updateTemplatesAtom: Function;
 }
 
 const getTemplateDefaultColor = (allTemplates: List<TemplateSchema>, template: any) =>
@@ -65,6 +71,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     defaultColor: null,
     properties: [],
     mainContext: { confirm: (_props: {}) => {} },
+    updateTemplatesAtom: (_templates: any) => {},
   };
 
   confirmation = {
@@ -111,6 +118,9 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     }
     try {
       await this.props.saveTemplate(template);
+      const templates = await api.get('templates');
+      console.log('templates', templates);
+      this.props.updateTemplatesAtom(templates);
     } catch (e) {
       if (e.status === 409) return this.confirmAndSaveTemplate(template, 'templateConflict');
     }
@@ -292,6 +302,7 @@ MetadataTemplate.propTypes = {
   defaultColor: PropTypes.string,
   entityViewPage: PropTypes.string,
   environment: PropTypes.string.isRequired,
+  updateTemplatesAtom: PropTypes.func.isRequired,
 };
 /* eslint-enable react/forbid-prop-types, react/require-default-props */
 
@@ -315,9 +326,16 @@ const target = {
   },
 };
 
+const withTemplatesAtom =
+  <T,>(Comp: React.ComponentClass<T, any>) =>
+  (props: T) => {
+    const updateTemplatesAtom = useSetAtom(templatesAtom);
+    return <Comp {...props} updateTemplatesAtom={updateTemplatesAtom} />;
+  };
+
 const dropTarget = DropTarget('METADATA_OPTION', target, (connector: any) => ({
   connectDropTarget: connector.dropTarget(),
-}))(MetadataTemplate);
+}))(withTemplatesAtom(MetadataTemplate));
 
 const mapStateToProps = (
   {

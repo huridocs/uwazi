@@ -2,35 +2,29 @@
 
 exports[`Auth Routes /login should have a validation schema 1`] = `
 Object {
-  "children": Object {
-    "password": Object {
-      "flags": Object {
-        "presence": "required",
+  "properties": Object {
+    "body": Object {
+      "properties": Object {
+        "password": Object {
+          "type": "string",
+        },
+        "token": Object {
+          "type": "string",
+        },
+        "username": Object {
+          "type": "string",
+        },
       },
-      "invalids": Array [
-        "",
+      "required": Array [
+        "username",
+        "password",
       ],
-      "type": "string",
-    },
-    "token": Object {
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
-    },
-    "username": Object {
-      "flags": Object {
-        "presence": "required",
-      },
-      "invalids": Array [
-        "",
-      ],
-      "type": "string",
+      "type": "object",
     },
   },
-  "flags": Object {
-    "presence": "required",
-  },
+  "required": Array [
+    "body",
+  ],
   "type": "object",
 }
 `;

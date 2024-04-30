@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { CheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
+import { Label } from '../Forms';
 
 interface CopyValueInputProps {
   value: string;
   className?: string;
   label: string | JSX.Element;
   hideLabel?: boolean;
-  id?: string;
+  id: string;
 }
 
 const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInputProps) => {
@@ -29,10 +30,10 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
   }, [copied]);
 
   return (
-    <div className={`${className}`}>
-      <label htmlFor={id} className={hideLabel ? 'sr-only' : ''}>
+    <div className={`${className || ''}`}>
+      <Label htmlFor={id} hideLabel={hideLabel}>
         {label}
-      </label>
+      </Label>
       <div className="relative w-full">
         <input
           type="text"
@@ -41,7 +42,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           id={id}
           className="disabled:text-gray-500 rounded-lg bg-gray-50 block flex-1 w-full text-sm p-2.5"
         />
-        <div className="flex absolute right-0 top-px items-center">
+        <div className="absolute right-0 flex items-center top-px">
           <button
             type="button"
             onClick={copyToClipboard}
@@ -60,7 +61,7 @@ const CopyValueInput = ({ value, className, label, id, hideLabel }: CopyValueInp
           {copied && (
             <div
               role="tooltip"
-              className="inline-block absolute right-0 -top-11 z-10 px-3 py-2 w-max text-sm font-medium bg-white rounded-lg border-gray-50 shadow-sm"
+              className="absolute right-0 z-10 inline-block px-3 py-2 text-sm font-medium bg-white rounded-lg shadow-sm -top-11 w-max border-gray-50"
             >
               <Translate>Copied to clipboard</Translate>
             </div>

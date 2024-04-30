@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import date from 'api/utils/date';
-import propertiesHelper from 'shared/comonProperties';
+import propertiesHelper from 'shared/commonProperties';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
 import { createError } from 'api/utils';
 import { filterOptions } from 'shared/optionsUtils';
@@ -493,17 +493,21 @@ const _denormalizeAndLimitAggregations = async (
   return denormalizedAggregations;
 };
 
+const _sanitizeGroupedSelectAggregationStructure = aggregation => {
+  const parentBuckets = aggregation.parent.buckets.filter(b => b.key !== 'missing');
+  const valueBuckets = aggregation.self.buckets;
+  const newBuckets = parentBuckets.concat(valueBuckets);
+  return newBuckets;
+};
+
 const _sanitizeAggregationsStructure = aggregations => {
   const result = {};
   Object.keys(aggregations).forEach(aggregationKey => {
     const aggregation = aggregations[aggregationKey];
 
     //grouped dictionary
-    if (aggregation.buckets && !Array.isArray(aggregation.buckets)) {
-      aggregation.buckets = Object.keys(aggregation.buckets).map(key => ({
-        key,
-        ...aggregation.buckets[key],
-      }));
+    if (aggregation.parent && aggregation.self) {
+      aggregation.buckets = _sanitizeGroupedSelectAggregationStructure(aggregation);
     }
 
     //permissions
@@ -760,7 +764,7 @@ const buildQuery = async (query, language, user, resources, includeReviewAggrega
   queryBuilder.filterMetadata(filters);
   queryBuilder.customFilters(query.customFilters);
   // this is where the query aggregations are built
-  queryBuilder.aggregations(aggregations, dictionaries, includeReviewAggregations);
+  queryBuilder.aggregations(aggregations, includeReviewAggregations);
 
   return queryBuilder;
 };
@@ -799,7 +803,16 @@ const search = {
 
     return elastic
       .search({ body: queryBuilder.query() })
-      .then(response => processResponse(response, templates, dictionaries, language, query.filters))
+      .then(async response => {
+        const processed = await processResponse(
+          response,
+          templates,
+          dictionaries,
+          language,
+          query.filters
+        );
+        return processed;
+      })
       .catch(e => {
         throw createError(e, 400);
       });
@@ -879,6 +892,19 @@ const search = {
     return elastic.deleteByQuery({ body: query });
   },
 
+  appendAutoCompleteFilters(property, searchTerm, aggregation) {
+    const aggregationObjectsToUpdate = propertiesHelper.isOrInheritsSelect(property)
+      ? [aggregation.aggregations.self, aggregation.aggregations.parent]
+      : [aggregation];
+    aggregationObjectsToUpdate.forEach(aggregationObject => {
+      aggregationObject.aggregations.filtered.filter.bool.filter.push({
+        wildcard: {
+          [`metadata.${property.name}.label`]: { value: `*${searchTerm.toLowerCase()}*` },
+        },
+      });
+    });
+  },
+
   async autocompleteAggregations(query, language, propertyName, searchTerm, user) {
     const [templates, dictionaries] = await Promise.all([
       templatesModel.get(),
@@ -902,9 +928,7 @@ const search = {
 
     const aggregation = body.aggregations.all.aggregations[`${propertyName}.value`];
 
-    aggregation.aggregations.filtered.filter.bool.filter.push({
-      wildcard: { [`metadata.${propertyName}.label`]: { value: `*${searchTerm.toLowerCase()}*` } },
-    });
+    this.appendAutoCompleteFilters(property, searchTerm, aggregation);
 
     const response = await elastic.search({
       body,

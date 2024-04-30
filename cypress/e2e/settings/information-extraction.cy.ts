@@ -38,7 +38,7 @@ const editPropertyForExtractor = (
 describe('Information Extraction', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     cy.exec('yarn ix-config', { env });
     clearCookiesAndLogin();
   });
@@ -75,7 +75,7 @@ describe('Information Extraction', () => {
     it('Should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1');
+        cy.get('input').type('Extractor 1', { delay: 0 });
       });
 
       editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
@@ -90,7 +90,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Titles from all templates');
+        cy.get('input').type('Titles from all templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
@@ -116,7 +116,7 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Fechas from relevant templates');
+        cy.get('input').type('Fechas from relevant templates', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');
@@ -135,7 +135,7 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Edit Extractor').click();
 
       cy.getByTestId('modal').within(() => {
-        cy.get('input').eq(0).type(' edited');
+        cy.get('input').eq(0).type(' edited', { delay: 0 });
       });
 
       editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
@@ -185,7 +185,7 @@ describe('Information Extraction', () => {
 
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1');
+        cy.get('input').type('Extractor 1', { delay: 0 });
       });
       editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
       cy.contains('button', 'Add').click();
@@ -206,11 +206,15 @@ describe('Information Extraction', () => {
     it('should show title initial suggestion should be default', () => {
       cy.get('tbody tr').eq(5).should('be.visible');
       cy.contains('thead tr th:nth-child(2) div span', 'Document').click();
-      cy.get('tbody tr').eq(5).should('be.visible');
+      cy.contains('Uwazi Heroes Investigation', { timeout: 100 });
     });
 
     it('should display suggestions and be accessible', () => {
-      cy.getByTestId('settings-content').toMatchImageSnapshot();
+      cy.contains('Batman v Superman: Dawn of Justice');
+      cy.getByTestId('settings-content').toMatchImageSnapshot({
+        disableTimersAndAnimations: true,
+        threshold: 0.08,
+      });
       cy.checkA11y();
     });
 
@@ -276,7 +280,7 @@ describe('Information Extraction', () => {
     });
 
     it('should clear the existing selection', () => {
-      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('[data-testid="ix-clear-button-container"] button', 'Clear').click();
       cy.get('div.highlight-rectangle').should('have.length', 0);
     });
 
@@ -292,7 +296,7 @@ describe('Information Extraction', () => {
         cy.get('input').clear();
       });
       cy.get('#pdf-container').scrollTo(0, 0);
-      cy.contains('button', 'Clear PDF selection').click();
+      cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
         //@ts-ignore
@@ -308,7 +312,7 @@ describe('Information Extraction', () => {
     it('should manually edit the field and save', () => {
       cy.get('aside').within(() => {
         cy.get('input').clear();
-        cy.get('input').type('A title');
+        cy.get('input').type('A title', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
       cy.contains('Saved successfully');

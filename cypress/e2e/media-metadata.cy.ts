@@ -5,7 +5,7 @@ import { clearCookiesAndLogin } from './helpers/login';
 describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -26,7 +26,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .find('select')
       .select('Reporte');
     cy.contains('Descriptor').parentsUntil('.form-group').find('select').select('Familia');
-    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { force: true });
+    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { delay: 0 });
   };
 
   const addVideo = (local: boolean = true) => {
@@ -39,7 +39,8 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
         });
     } else {
       cy.get('input[name="urlForm.url"]').type(
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+        { delay: 0 }
       );
       cy.contains('button', 'Add from URL').click();
     }
@@ -91,20 +92,20 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     cy.wait(2000);
 
     // waiting for video
-    cy.get('aside video', { timeout: 5000 }).then(
-      async $video =>
-        new Promise(resolve => {
-          $video[0].removeAttribute('controls');
-          const interval = setInterval(() => {
-            const videoElement = $video[0] as HTMLVideoElement;
-            if (videoElement.readyState >= 3) {
-              clearInterval(interval);
-              resolve($video);
-            }
-          }, 10);
-          cy.get('@successMessage').should('not.exist');
-        })
-    );
+    cy.get('aside video', { timeout: 5000 }).then(async $video => {
+      const readyState = new Promise(resolve => {
+        $video[0].removeAttribute('controls');
+        const interval = setInterval(() => {
+          const videoElement = $video[0] as HTMLVideoElement;
+          if (videoElement.readyState >= 3) {
+            clearInterval(interval);
+            resolve($video);
+          }
+        }, 10);
+        cy.get('@successMessage').should('not.exist');
+      });
+      await readyState;
+    });
   };
 
   it('should allow media selection on entity creation', () => {

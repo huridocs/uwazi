@@ -66,17 +66,13 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           return _link;
         }
 
-        console.log(_link._id, groupId);
         if (_link._id !== groupId) {
-          console.log('not the same');
           const toBeReturned = {
             ..._link,
             sublinks: _link.sublinks.filter(sublink => sublink._id !== linkData._id),
           };
-          console.log(toBeReturned);
           return toBeReturned;
         }
-        console.log('the same');
         let sublinkIndex = _link.sublinks.findIndex(sublink => sublink._id === linkData._id);
         sublinkIndex = sublinkIndex === -1 ? _link.sublinks.length : sublinkIndex;
         const sublinks = [..._link.sublinks];
@@ -164,7 +160,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           </div>
         </Card>
       </form>
-      <div className="absolute bottom-0 flex w-full gap-2">
+      <div className="absolute bottom-0 flex w-full gap-2 px-4 py-3">
         <Button
           styling="light"
           onClick={closePanel}

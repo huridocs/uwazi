@@ -144,12 +144,12 @@ export const getCurrentValueStage = () => [
   },
   {
     $addFields: {
-      currentValue: { $arrayElemAt: ['$currentValue.v', 0] },
+      currentValue: '$currentValue.v',
     },
   },
   {
     $addFields: {
-      currentValue: { $ifNull: ['$currentValue.value', ''] },
+      currentValue: { $ifNull: ['$currentValue.value', []] },
     },
   },
 ];

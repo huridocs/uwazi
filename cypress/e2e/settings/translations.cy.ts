@@ -4,7 +4,7 @@ import 'cypress-axe';
 describe('Translations', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Translations').click();
@@ -61,18 +61,20 @@ describe('Translations', () => {
       cy.contains('.bg-gray-100', 'ES');
       cy.contains('caption', 'Fecha');
       cy.contains('caption', 'Informe de admisibilidad');
+      cy.get('table').eq(0).scrollIntoView();
       cy.get('table').eq(0).toMatchImageSnapshot();
     };
 
     it('Should edit a translation', () => {
       cy.contains('td', 'Informe de admisibilidad').siblings().find('a').click();
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.get('input[type=text]').should('be.visible');
       cy.contains('caption', 'Fecha');
-      cy.get('input[type=text]').eq(0).siblings('button').click();
-      cy.get('input[type=text]').eq(0).type('Date');
-      cy.get('input[type=text]').eq(2).siblings('button').click();
-      cy.get('input[type=text]').eq(2).type('تاريخ');
+      cy.intercept('POST', '/api/translations').as('saveTranslations');
+      cy.clearAndType('input[name="formValues.0.values.0.value"]', 'Date', { delay: 0 });
+      cy.clearAndType('input[name="formValues.2.values.0.value"]', 'تاريخ', { delay: 0 });
       cy.contains('button', 'Save').click();
+      cy.wait('@saveTranslations');
       checkEditResults();
     });
 
@@ -106,7 +108,7 @@ describe('Translations', () => {
 
     describe('discard changes', () => {
       it('should unfilter the from and clear the first field', () => {
-        cy.get('.tw-content').scrollTo('top');
+        cy.get('div[data-testid=settings-translations-edit]').scrollTo('top');
         cy.get('[type="checkbox"]').check();
         cy.get('input[type=text]').eq(0).siblings('button').click();
       });
@@ -121,7 +123,7 @@ describe('Translations', () => {
       it('Should discard changes', () => {
         //this reload is needed to clear several legacy notifications
         cy.reload();
-        cy.get('input[type=text]').eq(0).type('unwanted change');
+        cy.get('input[type=text]').eq(0).type('unwanted change', { delay: 0 });
         cy.contains('button', 'Cancel').click();
         cy.contains('button', 'Discard changes').click();
         cy.get('[data-testid=settings-translations]').should('be.visible');
@@ -143,9 +145,9 @@ describe('Translations', () => {
     it('should translate a text', () => {
       cy.contains('span', 'Filters').click();
       cy.get('input[id=es]').clear();
-      cy.get('input[id=es]').type('Filtros');
+      cy.get('input[id=es]').type('Filtros', { delay: 0 });
       cy.get('input[id=en]').clear();
-      cy.get('input[id=en]').type('Filtering');
+      cy.get('input[id=en]').type('Filtering', { delay: 0 });
       cy.contains('button', 'Submit').click();
       cy.get('[data-testid=modal]').should('not.exist');
     });

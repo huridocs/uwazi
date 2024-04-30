@@ -295,50 +295,14 @@ export interface PropertySchema {
   label: string;
   name: string;
   isCommonProperty?: boolean;
-  type:
-    | 'date'
-    | 'daterange'
-    | 'geolocation'
-    | 'image'
-    | 'link'
-    | 'markdown'
-    | 'media'
-    | 'multidate'
-    | 'multidaterange'
-    | 'multiselect'
-    | 'nested'
-    | 'numeric'
-    | 'preview'
-    | 'relationship'
-    | 'select'
-    | 'text'
-    | 'generatedid'
-    | 'newRelationship';
+  type: PropertyTypeSchema;
   prioritySorting?: boolean;
   generatedId?: boolean;
   content?: string;
   relationType?: string;
   inherit?: {
     property?: string;
-    type?:
-      | 'date'
-      | 'daterange'
-      | 'geolocation'
-      | 'image'
-      | 'link'
-      | 'markdown'
-      | 'media'
-      | 'multidate'
-      | 'multidaterange'
-      | 'multiselect'
-      | 'nested'
-      | 'numeric'
-      | 'preview'
-      | 'relationship'
-      | 'select'
-      | 'text'
-      | 'generatedid'
-      | 'newRelationship';
+    type?: PropertyTypeSchema;
   };
   filter?: boolean;
   noLabel?: boolean;
@@ -351,7 +315,28 @@ export interface PropertySchema {
   nestedProperties?: string[];
   query?: unknown[];
   denormalizedProperty?: string;
+  targetTemplates?: false | string[];
 }
+
+export type PropertyTypeSchema =
+  | 'date'
+  | 'daterange'
+  | 'geolocation'
+  | 'image'
+  | 'link'
+  | 'markdown'
+  | 'media'
+  | 'multidate'
+  | 'multidaterange'
+  | 'multiselect'
+  | 'nested'
+  | 'numeric'
+  | 'preview'
+  | 'relationship'
+  | 'select'
+  | 'text'
+  | 'generatedid'
+  | 'newRelationship';
 
 export type PropertyValueSchema =
   | null

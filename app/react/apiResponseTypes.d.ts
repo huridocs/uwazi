@@ -7,6 +7,8 @@ import {
   SettingsLinkSchema,
 } from 'shared/types/settingsType';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
+import { TemplateSchema } from 'shared/types/templateType';
 
 export interface GroupMemberSchema {
   refId: string;
@@ -49,6 +51,10 @@ export interface ClientLanguageSchema extends Omit<LanguageSchema, '_id'> {
   _id?: string;
 }
 
+export interface Template extends TemplateSchema, Omit<TemplateSchema, '_id'> {
+  _id: string;
+}
+
 export interface ClientSettings
   extends Omit<Settings, '_id | filters | links | features | languages'> {
   _id?: string;
@@ -57,6 +63,7 @@ export interface ClientSettings
   links?: ClientSettingsLinkSchema[];
   features?: Omit<Settings['features'], 'preserve | metadataExtraction'> & {
     preserve?: ClientPreserveConfig;
+    ocr?: { url: string };
     metadataExtraction?: {
       url: string;
       templates?: {
@@ -66,4 +73,27 @@ export interface ClientSettings
     };
     [k: string]: unknown | undefined;
   };
+}
+
+export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {
+  _id: string;
+  values: ClientThesaurusValue[];
+}
+
+export interface ClientThesaurusValue
+  extends ThesaurusValueSchema,
+    Omit<ThesaurusValueSchema, '_id'> {
+  _id: string;
+  id?: string;
+  label: string;
+  values?: {
+    id?: string;
+    label: string;
+    name?: string;
+  }[];
+}
+
+export interface ClientRelationshipType {
+  _id: string;
+  name: string;
 }

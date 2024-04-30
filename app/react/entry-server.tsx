@@ -4,16 +4,16 @@ import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
-import api from 'app/utils/api';
-import { RequestParams } from 'app/utils/RequestParams';
-import { omit } from 'lodash';
+import { matchRoutes, RouteObject } from 'react-router-dom';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
-import { Provider } from 'react-redux';
-import { matchRoutes, RouteObject } from 'react-router-dom';
+import { Provider, createStore } from 'jotai';
+import { omit, isEmpty } from 'lodash';
+import { Provider as ReduxProvider } from 'react-redux';
+import api from 'app/utils/api';
+import { RequestParams } from 'app/utils/RequestParams';
 import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
-import { MutableSnapshot, RecoilRoot } from 'recoil';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
@@ -25,7 +25,7 @@ import { settingsAtom } from './V2/atoms/settingsAtom';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
-import createStore from './store';
+import createReduxStore from './store';
 
 class ServerRenderingFetchError extends Error {
   constructor(message: string) {
@@ -149,7 +149,7 @@ const prepareStore = async (req: ExpressRequest, settings: ClientSettings, langu
     },
   };
 
-  const reduxStore = createStore({
+  const reduxStore = createReduxStore({
     ...globalResources,
     locale,
   });
@@ -181,17 +181,21 @@ const setReduxState = async (
       return null;
     })
     .filter(v => v);
-  const initialStore = createStore(reduxState);
+  const initialStore = createReduxStore(reduxState);
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
       Cookie: `connect.sid=${req.cookies['connect.sid']}`,
       tenant: req.get('tenant'),
     };
-    const requestParams = new RequestParams(
+    const requestParams = new RequestParams<{ q?: string }>(
       { ...req.query, ...omit(routeParams, 'lang') },
       headers
     );
+
+    if (requestParams.data && !isEmpty(requestParams.data) && requestParams.data.q) {
+      requestParams.data.q = decodeURI(requestParams.data.q);
+    }
 
     try {
       await Promise.all(
@@ -255,6 +259,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
   const language = matched ? matched[0].params.lang : req.language;
+  const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, staticHandleContext, router } = await getSSRProperties(
     req,
@@ -267,14 +272,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   resetTranslations();
 
-  const recoilGlobalState = ({ set }: MutableSnapshot) => {
-    set(settingsAtom, settings);
-  };
+  const atomStore = createStore();
+  atomStore.set(settingsAtom, settings);
 
   const componentHtml = ReactDOMServer.renderToString(
-    <Provider store={initialStore as any}>
+    <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
-        <RecoilRoot initializeState={recoilGlobalState}>
+        <Provider store={atomStore}>
           <React.StrictMode>
             <StaticRouterProvider
               router={router}
@@ -282,9 +286,9 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
               nonce="the-nonce"
             />
           </React.StrictMode>
-        </RecoilRoot>
+        </Provider>
       </CustomProvider>
-    </Provider>
+    </ReduxProvider>
   );
 
   const html = ReactDOMServer.renderToString(
@@ -298,7 +302,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     />
   );
 
-  res.send(`<!DOCTYPE html>${html}`);
+  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };

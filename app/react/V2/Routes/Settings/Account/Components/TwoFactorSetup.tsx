@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from 'app/utils/api';
 import { useRevalidator } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 
 import { RequestParams } from 'app/utils/RequestParams';
 
@@ -28,22 +28,24 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const [token, setToken] = useState('');
   const [_secret, setSecret] = useState('');
   const [_otpauth, setOtpauth] = useState('');
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
   const [tokenError, setTokenError] = useState(false);
 
   useEffect(() => {
-    api
-      .post('auth2fa-secret')
-      .then((resp: Response) => resp.json)
-      .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
-        setSecret(secret);
-        setOtpauth(otpauth);
-      })
-      .catch((error: Error) => {
-        throw error;
-      });
-  }, []);
+    if (isOpen && !_secret) {
+      api
+        .post('auth2fa-secret')
+        .then((resp: Response) => resp.json)
+        .then(({ otpauth, secret }: { otpauth: string; secret: string }) => {
+          setSecret(secret);
+          setOtpauth(otpauth);
+        })
+        .catch((error: Error) => {
+          throw error;
+        });
+    }
+  }, [isOpen, _secret]);
 
   const tokenChange = (value: string) => {
     setToken(value);
@@ -120,7 +122,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           <Card className="mb-4 sm:col-span-3" title={<Translate>Secret keys</Translate>}>
             <CopyValueInput
               value={_secret}
-              className="w-full mb-4"
+              className="mb-4 w-full"
               label={
                 <>
                   <Translate className="block">
@@ -154,8 +156,8 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
           </Card>
         </div>
       </Sidepanel.Body>
-      <Sidepanel.Footer>
-        <div className="flex w-full gap-2">
+      <Sidepanel.Footer className="px-4 py-3">
+        <div className="flex gap-2 w-full">
           <Button styling="light" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>

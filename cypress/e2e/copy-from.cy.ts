@@ -4,38 +4,37 @@ import { clearCookiesAndLogin } from './helpers/login';
 describe('Copy from entity', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 
   describe('Creating a new entity', () => {
+    // eslint-disable-next-line max-statements
     it('should copy the metadata from an existing entity to create a new one', () => {
       clickOnCreateEntity();
       cy.get('#metadataForm').find('select').select('Ordenes de la corte');
       cy.get('#metadataForm').find('.form-group.select').find('select').select('d3b1s0w3lzi');
       cy.get('[name="library.sidepanel.metadata.title"]').type('New orden de la corte', {
-        force: true,
+        delay: 0,
       });
 
       cy.contains('button', 'Copy From').click();
-      cy.get('div.copy-from').within(() => {
-        cy.get('input').type(
-          'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
-        );
-        cy.contains(
-          '.item-name',
-          'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
-        ).click();
-        cy.contains('button', 'Copy Highlighted').click();
-      });
-      cy.get('div.copy-from').should('not.exist');
-      cy.intercept('GET', 'api/references/search*').as('searchRequest');
-      cy.contains('button', 'Save').click();
+      cy.intercept('GET', 'api/search?searchTerm=%2226%20de%20febrero%22*').as('searchRequest');
+      cy.get('.copy-from div.search-box > div > input').type('"26 de febrero"', { delay: 0 });
       cy.wait('@searchRequest');
+      cy.get('.sidepanel-body.scrollable').scrollTo('top');
+      cy.contains(
+        '.copy-from div:nth-child(1) > div.item-info',
+        'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
+      ).click();
+      cy.contains('button', 'Copy Highlighted').click();
+      cy.get('div.copy-from').should('not.exist');
+      cy.contains('button', 'Save').click();
+      cy.contains('Entity created').as('successMessage');
+      cy.get('@successMessage').should('not.exist', { timeout: 200 });
     });
 
     it('should view the new entity', () => {
-      cy.contains('Entity created').click();
       cy.contains('h2', 'New orden de la corte').click();
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('a', 'View').click();
@@ -79,18 +78,18 @@ describe('Copy from entity', () => {
 
   describe('editing an existing entity', () => {
     it('should edit an entity by using copy from', () => {
-      cy.intercept('GET', 'api/references/search*').as('lastRequest');
       cy.contains('a', 'Library').click();
       cy.contains(
         'h2',
-        'Artavia Murillo y otros. Resolución de la CorteIDH de 26 de febrero de 2016'
+        'Apitz Barbera y otros. Resolución de la CorteIDH de 29 de noviembre de 2007'
       ).click();
       clickOnEditEntity();
       cy.contains('button', 'Copy From').click({ force: true });
 
       cy.get('div.copy-from').within(() => {
         cy.get('input').type(
-          'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+          'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
+          { delay: 0 }
         );
         cy.contains(
           '.item-name',
@@ -101,12 +100,13 @@ describe('Copy from entity', () => {
       cy.get('div.copy-from').should('not.exist');
 
       cy.get('[name="library.sidepanel.metadata.title"]').clear();
-      cy.get('[name="library.sidepanel.metadata.title"]').type('Edited orden de la corte');
+      cy.get('[name="library.sidepanel.metadata.title"]').type('Edited orden de la corte', {
+        delay: 0,
+      });
       cy.get('#metadataForm')
         .contains('.multiselectItem-name', 'Comisión Interamericana de Derechos Humanos')
         .click();
       cy.contains('button', 'Save').click();
-      cy.wait('@lastRequest');
     });
 
     it('should view the edited entity', () => {

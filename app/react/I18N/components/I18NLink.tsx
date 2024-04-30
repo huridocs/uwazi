@@ -8,6 +8,7 @@ const defaultProps = {
   onClick: (_e: any) => {},
   confirmTitle: '',
   confirmMessage: '',
+  replaceNavigationHistory: false,
 };
 
 type I18NLinkProps = typeof defaultProps & {
@@ -18,10 +19,18 @@ type I18NLinkProps = typeof defaultProps & {
   confirmMessage: string;
   mainContext: { confirm: Function };
   activeclassname: string;
+  replaceNavigationHistory: boolean;
 };
 
 const I18NLink = (props: I18NLinkProps) => {
-  const { to = '/', disabled, confirmTitle, confirmMessage, onClick } = props;
+  const {
+    to = '/',
+    disabled,
+    confirmTitle,
+    confirmMessage,
+    onClick,
+    replaceNavigationHistory: replace,
+  } = props;
 
   const navigate = useNavigate();
 
@@ -34,7 +43,7 @@ const I18NLink = (props: I18NLinkProps) => {
       props.mainContext.confirm({
         accept: () => {
           onClick(e);
-          navigate(to);
+          navigate(to, { replace });
         },
         title: confirmTitle,
         message: confirmMessage,
@@ -44,11 +53,11 @@ const I18NLink = (props: I18NLinkProps) => {
 
     if (onClick) {
       onClick(e);
-      navigate(to);
+      navigate(to, { replace });
       return;
     }
 
-    navigate(to);
+    navigate(to, { replace });
   };
 
   const newProps = omit(props, [

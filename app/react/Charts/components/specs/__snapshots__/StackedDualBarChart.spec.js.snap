@@ -76,18 +76,10 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       yAxisId={0}
     />
     <CartesianGrid
-      fill="none"
-      horizontal={true}
-      horizontalFill={Array []}
-      horizontalPoints={Array []}
-      stroke="#ccc"
       strokeDasharray="2 4"
-      vertical={true}
-      verticalFill={Array []}
-      verticalPoints={Array []}
     />
     <Tooltip
-      active={false}
+      accessibilityLayer={false}
       allowEscapeViewBox={
         Object {
           "x": false,
@@ -147,6 +139,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       wrapperStyle={Object {}}
     />
     <Bar
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -169,6 +162,7 @@ exports[`StackedDualBarChart should allow overriding default data and label and 
       yAxisId={0}
     />
     <Bar
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -283,18 +277,10 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       yAxisId={0}
     />
     <CartesianGrid
-      fill="none"
-      horizontal={true}
-      horizontalFill={Array []}
-      horizontalPoints={Array []}
-      stroke="#ccc"
       strokeDasharray="2 4"
-      vertical={true}
-      verticalFill={Array []}
-      verticalPoints={Array []}
     />
     <Tooltip
-      active={false}
+      accessibilityLayer={false}
       allowEscapeViewBox={
         Object {
           "x": false,
@@ -345,6 +331,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       wrapperStyle={Object {}}
     />
     <Bar
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"
@@ -367,6 +354,7 @@ exports[`StackedDualBarChart should render a BarChart with default values 1`] = 
       yAxisId={0}
     />
     <Bar
+      activeBar={false}
       animationBegin={0}
       animationDuration={400}
       animationEasing="ease"

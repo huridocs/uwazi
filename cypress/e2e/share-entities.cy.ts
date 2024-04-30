@@ -1,5 +1,5 @@
 import { selectPublishedEntities, selectRestrictedEntities } from './helpers';
-import { clickOnEditEntity } from './helpers/entities';
+import { clickOnEditEntity, grantPermission, shareSearchTerm } from './helpers/entities';
 import { clearCookiesAndLogin } from './helpers/login';
 
 describe('Share Entities', () => {
@@ -11,7 +11,7 @@ describe('Share Entities', () => {
 
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn e2e-puppeteer-fixtures', { env });
+    cy.exec('yarn e2e-fixtures', { env });
     clearCookiesAndLogin();
   });
 
@@ -33,12 +33,9 @@ describe('Share Entities', () => {
   it('Should update the permissions of an entity', () => {
     cy.contains('h2', titleEntity1).click();
     cy.contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('editor');
-    cy.get('ul[role=listbox]').contains('span', 'editor').click();
-    cy.get('[data-testid=modal] input').clear();
-    cy.get('[data-testid=modal] input').type('Ase');
-    cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.get('div[data-testid=modal] select').eq(1).select('write');
+    shareSearchTerm('editor');
+    shareSearchTerm('Ase', 'Asesores legales');
+    cy.contains('Mixed access', { timeout: 200 }).parent().select('write');
     cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
     cy.get('.alert.alert-success').click();
   });
@@ -66,24 +63,15 @@ describe('Share Entities', () => {
   it('should share other entities with the collaborator', () => {
     cy.contains('h2', titleEntity3).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('colla');
-    cy.get('ul[role=listbox]').contains('span', 'colla').click();
-    cy.contains('div[data-testid=modal] td', 'colla').siblings().find('select').select('write');
-    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
+    shareSearchTerm('colla');
+    grantPermission(3, 'Can see', 'write');
   });
 
   it('should share other entities with the collaborator via the group', () => {
     cy.contains('h2', titleEntity4).click();
     cy.get('aside.is-active').contains('button', 'Share').should('be.visible').click();
-    cy.get('[data-testid=modal] input').type('Ase');
-    cy.get('ul[role=listbox]').contains('span', 'Asesores legales').click();
-    cy.contains('div[data-testid=modal] td', 'Asesores legales')
-      .siblings()
-      .find('select')
-      .select('write');
-    cy.get('[data-testid=modal]').contains('button', 'Save changes').click();
-    cy.contains('Update success').as('successMessage');
-    cy.get('@successMessage').should('not.exist');
+    shareSearchTerm('Ase');
+    grantPermission(3, 'Can see', 'write');
   });
 
   const checkCanEdit = (title: string, canEdit: boolean = true) => {
@@ -110,8 +98,11 @@ describe('Share Entities', () => {
     cy.contains('h2', titleEntity4).click();
     clickOnEditEntity();
     cy.contains('Edit');
-    cy.get('aside.is-active textarea').eq(0).clear();
-    cy.get('aside.is-active textarea').eq(0).type('Edited title');
+    cy.get('.sidepanel-body.scrollable').scrollTo('top');
+    cy.get('[name="library.sidepanel.metadata.title"]').focus();
+    cy.clearAndType('[name="library.sidepanel.metadata.title"]', 'Edited title', {
+      delay: 0,
+    });
     cy.get('aside.is-active').contains('button', 'Save').click();
     cy.get('div.alert').click();
     cy.contains('h2', 'Edited title').should('exist');
@@ -121,7 +112,7 @@ describe('Share Entities', () => {
   it('should be able to see only published entities', () => {
     selectPublishedEntities();
     cy.get('.item-document').should('have.length', 30);
-    cy.get('.search-box input').type('"Resolución de la Corte IDH."', { force: true });
+    cy.get('.search-box input').type('"Resolución de la Corte IDH."');
     cy.get('[aria-label="Search button"]').click();
     cy.contains(
       '.item-name',

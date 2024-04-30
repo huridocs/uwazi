@@ -1,13 +1,9 @@
 Key,Russian
 % of sentences above threshold,% предложений выше порога
-(view page),(Просмотр страницы)
 *please keep this key secret and don't share it.,*please keep this key secret and don't share it.
 + click to select multiple cards.,+ click to select multiple cards.
-// Javascript - With great power comes great responsibility!,// Javascript - With great power comes great responsibility!
 2FA,2FA
-2fa add account tip,"Open the app and select ""Add Account"" (usually a plus symbol)"
 2FA Enabled,2FA Enabled
-2fa QA scan tip,"Scan the following QR code selecting the ""scan barcode"" option:"
 A generated ID will be the default title.,Сгенерированный идентификатор будет назначен заголовком по умолчанию
 Accept,Принять
 Accept suggestion,Accept suggestion
@@ -19,20 +15,24 @@ Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
 Action,Действие
-Activate this feature for enhanced account security,"Активируйте эту функцию, чтобы укрепить безопасность учетной записи"
+Activate,Activate
 Activated,Activated
 Active languages,Active languages
+Activity,активности
 Activity log,Журнал активности
+Activity Log,Журнал активности
 Add,Добавить
 Add / remove favorite,Добавить/удалить избранное
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
+Add entity type,Add entity type
 Add file,Добавить файл
 Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
 Add group,Добавить группу
 add icon,добавить иконку
+Add item,Add item
 Add language,Добавить язык
 Add link,Добавить ссылку
 Add page,Добавить страницу
@@ -55,17 +55,22 @@ Added language,Added language
 Added new user,Added new user
 added to hub with the following errors:,added to hub with the following errors:
 added to hub.,added to hub.
+Adding a group and its items.,Adding a group and its items.
+Adding items to the thesauri,Adding items to the thesauri
 Adjacent geolocation properties will render on the same map,Смежные свойства геолокации будут отражаться на той же карте
 Admin,Админ
 Administrators and Editors,Администраторы и Редакторы
+Admins,Admins
 ALL,ВСЕ
 All,ВСЕ
 "All changes will be lost, are you sure you want to proceed?","Все изменения будут потеряны, вы уверены, что хотите продолжить?"
 Allow captcha bypass,Allow captcha bypass
+Already exists,Already exists
 An error has occured while deleting a language:,An error has occured while deleting a language:
 An error has occured while installing languages:,An error has occured while installing languages:
 An error has occurred during data export,An error has occurred during data export
 An error occurred,An error occurred
+Analytics,Analytics
 Analytics description,"If you want to track analytics related to your collection visits, Uwazi supports both Google Analytics and Matomo."
 Any entity or document,Any entity or document
 Apply,Apply
@@ -75,9 +80,7 @@ Are you sure you want to delete this connection?,Are you sure you want to delete
 Are you sure you want to delete this entity?,Are you sure you want to delete this entity?
 Are you sure you want to delete this file?,Are you sure you want to delete this file?
 Are you sure you want to delete this item?,Are you sure you want to delete this item?
-Are you sure you want to delete this page?,Are you sure you want to delete this page?
-Are you sure you want to delete this relationship type?,Are you sure you want to delete this relationship type?
-Are you sure you want to delete this thesaurus?,Are you sure you want to delete this thesaurus?
+Are you sure?,Are you sure?
 Attachment deleted,Attachment deleted
 Attachment renamed,Attachment renamed
 Attachment uploaded,Attachment uploaded
@@ -94,6 +97,7 @@ Back to search,Назад к поиску
 Back to thesauri,Назад к предметным указателям
 Back to thesaurus,Назад к предметному указателю
 Bad Request,Bad Request
+Basic,Basic
 Body,Основная часть
 Browse files to upload,Просмотрите файлы для загрузки
 "by ids, methods, keywords, etc.","by ids, methods, keywords, etc."
@@ -102,9 +106,7 @@ Can see,Может видеть
 Can view,Может просматривать
 Cancel,Отмена
 Canceling...,Canceling...
-Cannot delete relationship type:,Cannot delete relationship type:
 Cannot delete template:,Cannot delete template:
-Cannot delete thesaurus:,Cannot delete thesaurus:
 Captcha,Captcha
 Captcha bypass,Обход Captcha
 Cards,Карточки
@@ -117,7 +119,7 @@ Changing the type will erase all relationships to this entity.,Changing the type
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
 Character support revert warning,"After selecting this option, you will not be able to revert back to using legacy property naming. If you are not facing issues with your template property names, we recommend leaving this unchecked."
-Check to make this instance private (only logged-in users can access the data),"Пометьте для того, чтобы сделать эту базу данных приватной для просмотра (только зарегистрированные пользователи смогут получить доступ к данным)"
+Check to make this instance public (non-logged in users can see public documents and entities),Check to make this instance public (non-logged in users can see public documents and entities)
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
@@ -129,12 +131,12 @@ Click here,Нажмите сюда
 Click to fill,"Нажмите, чтобы заполнить"
 Close,Закрыть
 Collaborator,Соавтор
+Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Коллекция
-Collection name,Название коллекции
+Collection Name,Collection Name
 Configuration,Configuration
 Configure filters,Настроить фильтры
-Configure suggestions,Настроить предлагаемые варианты
 Configure templates,Configure templates
 Confirm,Подтвердить
 CONFIRM,Подтвердить
@@ -147,12 +149,8 @@ Confirm deletion,Подтвердить удаление
 Confirm deletion of,Confirm deletion of
 Confirm deletion of entity,Confirm deletion of entity
 Confirm deletion of file,Confirm deletion of file
-Confirm deletion of page:,Confirm deletion of page:
-Confirm deletion of relationship type:,Confirm deletion of relationship type:
 Confirm deletion of template:,Confirm deletion of template:
-Confirm deletion of thesaurus:,Confirm deletion of thesaurus:
 Confirm discard changes,Confirm discard changes
-Confirm edit suggestion-enabled Thesaurus,Confirm edit suggestion-enabled Thesaurus
 Confirm new password,Подтвердите новый пароль
 Confirm publish multiple items,Подтвердить публикацию нескольких элементов
 Connect to a document,Подключиться к документу
@@ -198,14 +196,11 @@ Created thesaurus,Created thesaurus
 Created user group,Created user group
 Current value,Current value
 Current Value/Suggestion,Current Value/Suggestion
-Current value:,Current value:
-Currently connections only need a title.,В настоящий момент для подключений только требуется заголовок
 Custom component error,Ошибка пользовательского компонента
 Custom CSS,Персональные CSS
-Custom favicon,Пользовательский значок для вебсайта
+Custom Favicon,Custom Favicon
 Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
-Custom starting location,Пользовательское стартовое положение
 Custom Uploads,Пользовательские загрузки
 Dashboard,Dashboard
 Data imported,Данные импортированы
@@ -214,16 +209,16 @@ Date format,Формат даты
 Date modified,Дата изменена
 Day,День
 Default,Default
+Default date format,Default date format
 Default filter,Default filter
 Default language,Default language
 Default language change success,Изменение языка по умолчанию прошло успешно
 Default template,Шаблон по умолчанию
-Default view,Default view
+Default View,Default View
 Delete,Удалить
 DELETE,Удалить
 Delete entities and documents,Delete entities and documents
 Delete file,Удалить файл
-Delete Group,Удалить группу
 Delete language,Удалить язык
 Delete Property,Удалить свойство
 Deleted attachment,Deleted attachment
@@ -241,10 +236,15 @@ Deleted user,Deleted user
 Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
+Disable,Disable
+Disabled 2FA,Disabled 2FA
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
 Dismiss,Dismiss
 Display entity view from page,Показывать просматриваемый объект со страницы
+Do you want disable 2FA for the following users?,Do you want disable 2FA for the following users?
+Do you want reset the password for the following users?,Do you want reset the password for the following users?
+Do you want to delete the following items?,Do you want to delete the following items?
 Document,Документ
 Document and entity types,Типы документов и объектов
 Document contents,Содержание документа
@@ -253,12 +253,8 @@ Document Title,Название документа
 Documentation,Документация
 documents,Документы
 Documents,Документы
-documents before training (30 per topic).,документы до обучения (30 на каждую тему)
 Documents for custom filter,Документы для пользовательского фильтра
 Documents including suggestion:,"Документы, включая предлагаемый вариант"
-documents so far.,документы к настоящему моменту
-documents to be reviewed,Документы на рассмотрение
-Documents to be reviewed,Документы на рассмотрение
 documents.,документы.
 Download,Скачать
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
@@ -274,11 +270,14 @@ Duplicated username,Продублированное имя пользовате
 Edit,Редактировать
 Edit all documents matching this criteria,"Отредактируйте все документы, соответствующие этим критериям"
 Edit Extractor,Edit Extractor
+Edit File,Edit File
 Edit group,Edit group
+Edit item,Edit item
 Edit metadata of entities,Edit metadata of entities
 Edit user,Edit user
 Editor,Редактор
 editor,Редактор
+Editors,Editors
 Email,Электронная почта
 Email address,Адрес электронной почты
 Email is required,Требутся электронная почта
@@ -288,17 +287,19 @@ empty property tip,You won't be able to save an entity if this property is empty
 Enable,Enable
 Enable this page to be used as an entity view page:,Сделайте эту страницу доступной для использования в качестве страницы для просмотра объекта:
 Enter the 6-digit verification code generated by your Authenticator app,Enter the 6-digit verification code generated by your Authenticator app
-Enter the 6-digit verification code generated by your Authenticator app:,"Введите 6-значный код подтверждения, сгенерированный вашим приложением Authenticator:"
 Entities,Объекты
 entities,Объекты
 Entities across all languages,Entities across all languages
 "Entities can be displayed in a custom page. For that, a custom page needs to be created in Pages, and then selected here.","Объекты могут быть отображены на пользовательской странице. Для этого пользовательская страница должна быть создана в Страницах, а затем выбрана здесь."
 Entity,Объект
 Entity deleted,Entity deleted
+Entity Page,Entity Page
 Entity saved,Entity saved
 Entity types,Типы объектов
 Entity updated,Entity updated
 Error,Ошибка
+Error adding thesauri.,Error adding thesauri.
+Error updating thesauri.,Error updating thesauri.
 Expand all,Expand all
 Exploration,Изучение
 Export CSV,Экспортировать CSV
@@ -316,6 +317,7 @@ Favicon description,"A favicon is a small icon that represents your collection i
 FEATURED,FEATURED
 File,Файл
 File deleted,File deleted
+File name,File name
 File updated,File updated
 Files,Files
 Files and database usage,Files and database usage
@@ -326,6 +328,7 @@ Filters configuration,Конфигурация фильтров
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Пример конфигураций фильтров
 Filters OR operator,ИЛИ
+Filters saved,Filters saved
 Find,Найти
 Find suggestions,Найти предложения
 Finding suggestions,Finding suggestions
@@ -336,6 +339,7 @@ Flag,Флажок
 for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
+From,From
 From all templates,From all templates
 Full edit mode,Режим полного редактирования
 Full width,Full width
@@ -343,11 +347,11 @@ General,Общий
 General Information,General Information
 Global CSS,Глобальные CSS
 Global CSS & JS,Global CSS & JS
+Google,Google
 Google Analytics,Google Analytics
 Google Analytics ID,ID Google Аналитики
 Google Maps,Google Карты
 Group,Group
-Group name,Group name
 Group Options,Group Options
 Group saved,Group saved
 Group updated,Group updated
@@ -365,6 +369,7 @@ Icon,Символ
 "If you want to continue, please type","Если вы хотите продолжить, пожалуйста, введите"
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
 Import,Импортировать
+Import asset,Import asset
 Import completed,Import completed. Number of entities created:
 Import CSV,Импортировать CSV
 Import instructions,Инструкции по импорту
@@ -384,7 +389,6 @@ Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
-Install the Google Authenticator app on your mobile device,Установите приложение Google Authenticator на своем мобильном устройстве
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
 Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
@@ -392,17 +396,15 @@ Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
 Invalid csv: nested value need to be under a non-nested value,Invalid csv: nested value need to be under a non-nested value
 Invalid form,Недействительная форма
-Invalid home page url,Invalid home page url
 It could also very easily break the app. Only write code here if you know exactly what you are doing.,"Это также может с легкостью нарушить работу приложения. Введите код только в случае, если точно знаете, что делаете."
 Item,Item
-Item name,Item name
 Items:,Элементы
+Javascript,Javascript
 Keep this in mind if you want to edit:,Keep this in mind if you want to edit:
 key,Russian
 Label,Метка
 "Label date ""From""","Метка даты ""от"""
 "Label date ""to""","Метка даты ""до"""
-Label more documents,Пометьте больше документов
 Label your collection note,Отметьте вашу примечание к коллекции
 Labeled,Labeled
 Landing page,Целевая страница
@@ -426,13 +428,13 @@ Languages installed successfully,Languages installed successfully
 Last updated,Last updated
 Latitude,Широта
 Learn more,Узнать больше
-Learning...,Освоение...
 Legend,Подпись
 Lengthy reindex process,Lengthy reindex process
 Library,Библиотека
 library list view,просмотр библиотеки в виде списка
 library map view,просмотр библиотеки в виде карты
 library table view,просмотр библиотеки в табличном виде
+Link,Link
 linked,связанный
 Live translate,Live translate
 Loading,Loading
@@ -447,9 +449,9 @@ Manage site settings and configuration,Управление сайтом и ко
 Map,Карта
 Map api key,Map api key
 Map api key tooltip,An API key is required to use Mapbox or Google Maps.
-Map provider,Map provider
+Map layers description,Map layers description
+Map Provider,Map Provider
 Map view,Просмотр карты
-MapBox,MapBox
 Mapping conflict error,"A reindex of your collection is necessary. The reason may vary 
         -- from certain changes made to a template's property to new fields
         that need to be populated across entities. 
@@ -460,7 +462,7 @@ Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
 Markdown,Markdown
 Matching,Matching
-Matomo Analytics,Matomo Analytics
+Matomo,Matomo
 Members,Участники
 Menu,Меню
 Message,Сообщение
@@ -475,6 +477,7 @@ mismatched passwords,Passwords don't match
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Month,Месяц
+Months,Months
 more options.,больше опций.
 Multimedia fill description,"will attempt to fill the container, using it's entire width. In cards, cropping is likely to occur."
 Multimedia fit description,will show the entire media inside the container.
@@ -495,6 +498,7 @@ Navigation menu tool tip part 2,leaving only a relative URL starting with a slas
 New entity,Новый объект
 New group,New group
 New language added,Добавлен новый язык
+New page,New page
 New password,Новый пароль
 New relationship type,New relationship type
 New relationships group,Группа новых взаимосвязей
@@ -526,6 +530,7 @@ No text match description,You can type something different in the search box to 
 No type,Нет типа
 No value,Нет значения
 No Value,Нет значения
+"No, cancel","No, cancel"
 Non-labeled,Non-labeled
 Normal view,Нормальный вид
 Not Found,Not Found
@@ -551,14 +556,12 @@ Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Откройте приложение для двухфакторной аутентификации на вашем устройстве
 or,или
 or drop your files here.,или опустите свои файлы сюда.
-Or enter this secret key into your Authenticator app,Или введите этот секретный ключ в вашем приложении для аутентификации
 Order,Последовательность
 Other,Другой
 other,Другой
+Other users will be affected by this action!,Other users will be affected by this action!
 out of,из
 Page,Страница
-Page Javascript,Страница Javascript
-Page name,Page name
 Pages,Страницы
 Password,Пароль
 Password + 2fa,Password + 2fa
@@ -615,7 +618,6 @@ property select,Select
 property text,Text
 Protection,Защита
 ProTip!,Профессиональная подсказка!
-Public Endpoints,Общедоступные конечные точки
 Public entities description,Caution: the selected entities will be **public**. Anyone will be able to see them.
 Public form settings description,Here you can configure the public form destination and the whitelisted templates
 Public Form submit URL,Public Form submit URL
@@ -641,6 +643,7 @@ relationships,Взаимосвязи
 Relationships,Взаимосвязи
 Relationships saved,Relationships saved
 RelationType saved,Тип взаимосвязи сохранен
+remaining files,remaining files
 Remote Server Unreachable,Remote Server Unreachable
 Remove,Удалить
 remove icon,удалить иконку
@@ -654,18 +657,20 @@ Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
 Reset default translation,Reset default translation
+Reset language,Reset language
 Reset Password,Сбросить пароль
+Reset passwords,Reset passwords
 Restricted,Для ограниченного круга лиц
 Return to login,Вернуться к авторизации
 Return to the thesaurus page when you finished labeling to start learning.,"После завершения маркировки, вернитесь на страницу с предметными указателями, чтобы начать обучение."
 Review,Review
-Review unpublished document,Просмотреть неопубликованный документ
 Reviewed,Просмотрено
 Role,Роль
 Route,Маршрут
 Sample,Образец
 Satellite,Satellite
 Save,Сохранить
+Save & Preview,Save & Preview
 Save and go to next,Сохранить и перейти к следующему
 Save changes,Сохранить изменения
 Save document,Сохранить документ
@@ -686,7 +691,6 @@ Search Tips: exact term,Советы по поиску: точный терми�
 Search Tips: one char wildcard,Советы по поиску: использование одного подстановочного знака
 Search Tips: proximity,Советы по поиску: близость
 Search Tips: wildcard,Советы по поиску: подстановочный знак
-secret key recommendation,(please keep this key secret and don't share it):
 Secret keys,Secret keys
 Security,Security
 Select,Select
@@ -730,7 +734,6 @@ Show cookie policy,Показать политику cookie
 Show filters,Показать фильтры
 Show in cards,Показать в карточках
 Show more,Показать больше
-Show Suggestions,Показать предложения
 Show toolbar,Show toolbar
 Showing,Showing
 shown of,показано от
@@ -758,7 +761,6 @@ Submitted entity to a remote instance,Submitted entity to a remote instance
 Submitting,Submitting
 Success,Success
 "Success, Upload another?","Success, Upload another?"
-Suggested labels description,"Uwazi has suggested labels for your collection. Review them using the ""View suggestions"" button next to each topic. Disable suggestions with the ""Show suggestions"" toggle."
 Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
@@ -782,8 +784,6 @@ Template(s),Template(s)
 Templates,Шаблоны
 Text,Текст
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
-The current model was trained at,Текущая модель была обучена в
-"The first step is to label a sample of your documents, so Uwazi can learn which topics to suggest when helping you label your collection.","Первый шаг - отметить образец ваших документов, чтобы Uwazi мог узнать о темах, которые нужно предложить вам при помощи с маркировкой вашей коллекции."
 The import process threw an error:,Процесс импорта выдал ошибку:
 The request could not be processed.,The request could not be processed.
 The template contains errors,Шаблон содержит ошибки
@@ -793,7 +793,12 @@ There are no pages enabled for entity view,"Нет страниц с возмо�
 There are no untranslated terms,There are no untranslated terms
 There are unsaved changes. Are you sure you want to discard them and switch to a different document?,There are unsaved changes. Are you sure you want to discard them and switch to a different document?
 Thesauri,Предметный указатель
+Thesauri added.,Thesauri added.
+Thesauri deleted,Thesauri deleted
 Thesauri name,Thesauri name
+thesauri new group desc,thesauri new group desc
+thesauri new item desc,thesauri new item desc
+Thesauri updated.,Thesauri updated.
 Thesaurus,Thesaurus
 Thesaurus saved,Предметный указатель сохранен
 This action may take some time while we add the extra language to the entire collection.,This action may take some time while we add the extra language to the entire collection.
@@ -811,28 +816,28 @@ This property will appear in the library cards as part of the basic info.,Это
 This property will be inherited from the related entities and shown as metadata of this type of entities.,Это свойство будет приобретено от взаимосвязанных объектов и отображаться как метаданные для этого типа объектов.
 This property will be shown using all the width available.,Это свойство будет отображаться с использованием всей доступной ширины.
 This property will be shown without the label.,Это свойство будет отображаться без метки.
-This relationship type is being used and cannot be deleted.,This relationship type is being used and cannot be deleted.
 this template,this template
 This template has associated entities,This template has associated entities
 This template will be used as default for new entities.,Этот шаблон будет использоваться по умолчанию для новых объектов.
-This thesaurus is being used in document types and cannot be deleted.,This thesaurus is being used in document types and cannot be deleted.
 This will delete the template and all relationship properties from other templates pointing to this one.,This will delete the template and all relationship properties from other templates pointing to this one.
 Threshold,Порог
 Time,Время
 Timelinks,Timelinks
+Timestamp,Timestamp
 Title,Заголовок
+To,To
 "To bring you a better experience, this site uses cookies.","Этот сайт использует файлы cookie для того, чтобы улучшить ваш опыт взаимодействия с сайтом."
 "To complete the account creation process, please create a password for your account","Пожалуйста, создайте пароль для того, чтобы завершить процесс создания своей учетной записи."
 to learn how to add and configure a contact form on a webpage.,to learn how to add and configure a contact form on a webpage.
 to learn more about the components.,"для того, чтобы узнать больше о компонентах."
 to view your authentication code and verify your identity.,чтобы просмотреть свой код аутентификации и подтвердить свою личность.
+Today,Today
 Tools,Инструменты
-topic suggestions tip,Improve the quality of this topic's suggestions by finding more sample documents with this label.
-Total entities,Total entities
+total entities,total entities
 Total files,Total files
-"Total files from main documents, supporting files and custom uploads","Total files from main documents, supporting files and custom uploads"
-Total users,Total users
-Train model,Учебная модель
+total files,total files
+"Total files from main documents, supporting files and uploads","Total files from main documents, supporting files and uploads"
+total users,total users
 Training,Training
 Training model...,Training model...
 Translate,Перевести
@@ -848,8 +853,6 @@ Two-factor authentication failed.,Two-factor authentication failed.
 Two-factor authentication secret,Two-factor authentication secret
 Two-factor verification failed,Двухфакторная верификация не удалась.
 Two-step verification,Двухфакторная верификация
-Two-step verification successfully,"Congratulations!
-You have successfully configured two-step verification."
 Two-step verification token required,Two-step verification token required
 Type,Тип
 Unexpected error,Unexpected error
@@ -886,10 +889,10 @@ Uploads,Загрузки
 URL,URL
 Use,Использовать
 Use as filter,Use as filter
-Use custom landing page,Использовать пользовательскую целевую страницу
 User,Пользователь
 User Action,User Action
 User Role,User Role
+User updated,User updated
 Username,Имя пользователя
 Username is required,Требуется имя пользователя
 Username is too long,Имя пользователя слишком длинное
@@ -898,10 +901,8 @@ Usernames cannot have spaces,Usernames cannot have spaces
 Users,Пользователи
 Users & Groups,Users & Groups
 Using Authenticator,Using Authenticator
-Using Google Authenticator,Использовать Google Authenticator
 Using URLs,Using URLs
 Uwazi is developed by,Uwazi разработан
-"Uwazi is learning using the labelled documents. This may take up to 2 hours, and once completed you can review suggestions made by Uwazi for your collection.","Uwazi учится использовать документы с метками. Это может занять до 2 часов, а после завершения процесса вы сможете просмотреть предложения, подготовленные UWAZI для вашей коллекции."
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
@@ -913,26 +914,23 @@ View entities,View entities
 View in library,Просмотреть в библиотеке
 View less,View less
 View more,View more
-View suggestions,Просмотреть предложения
+View page,Просмотр страницы
 WARNING,WARNING
 Warning: you are editing multiple entities. Fields marked with a,"Предупреждения: вы редактируете несколько объектов. Поля, отмеченные"
 We can't find the page you're looking for.,We can't find the page you're looking for.
-We recommend labeling,Мы рекомендуем маркировку
-Website analytics,Аналитические характеристики веб-сайта
 Welcome to Uwazi,Добро пожаловать в Uwazi
 "Well, this is awkward...","Что ж, это неловко..."
-Whitelisted Templates,Whitelisted Templates
 will be updated with the same value.,будет обновляться с тем же значением
 with,с
 With great power comes great responsibility!,С большой силой приходит большая ответственность!
 x less,x меньше
 x more,х больше
 Year,Год
+Yes,Yes
+You can add one or many items in this form.,You can add one or many items in this form.
 "You can also embed advanced components like maps, charts and entity lists in your page.","Вы также можете встроить такие продвинутые компоненты как карты, графики и списки объектов на вашей странице."
 You can also enter this secret key into your Authenticator app.,You can also enter this secret key into your Authenticator app.
-You can also improve the model by providing more labeled documents.,"Вы также можете улучшить модель, предоставив больше маркированных документов."
 You can create metadata templates in,Вы можете создавать шаблоны метаданных в
-You have labeled,Вы пометили
 "You have not connected an Uwazi instance, yet","You have not connected an Uwazi instance, yet"
 You have unsaved changes. Do you want to continue?,You have unsaved changes. Do you want to continue?
 You should activate this feature for enhanced account security,Вам следует активировать эту функцию для усиления безопасности аккаунта

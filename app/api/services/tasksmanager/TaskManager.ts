@@ -5,21 +5,21 @@ import { Repeater } from 'api/utils/Repeater';
 import { config } from 'api/config';
 import { handleError } from 'api/utils';
 
-export interface TaskMessage {
+type DefaultTaskType = string;
+
+type DefaultMessageParameters = Record<string, any>;
+
+export type TaskMessage<T = DefaultTaskType, P = DefaultMessageParameters> = {
   tenant: string;
-  task: string;
-  params?: {
-    [key: string]: any;
-  };
-}
+  task: T;
+  params?: P;
+};
 
 /* eslint-disable camelcase */
-export interface ResultsMessage {
+export interface ResultsMessage<T = DefaultTaskType, P = DefaultMessageParameters> {
   tenant: string;
-  task: string;
-  params?: {
-    [key: string]: any;
-  };
+  task: T;
+  params?: P;
   data_url?: string;
   file_url?: string;
   success?: boolean;
@@ -27,16 +27,20 @@ export interface ResultsMessage {
 }
 /* eslint-enable camelcase */
 
-export interface Service {
+export interface Service<T = DefaultTaskType, P = DefaultMessageParameters> {
   serviceName: string;
-  processResults?: (results: ResultsMessage) => Promise<void>;
+  processResults?: (results: ResultsMessage<T, P>) => Promise<void>;
   processResultsMessageHiddenTime?: number;
 }
 
-export class TaskManager {
+export class TaskManager<
+  T = DefaultTaskType,
+  S = DefaultMessageParameters,
+  R = DefaultMessageParameters,
+> {
   redisSMQ: RedisSMQ;
 
-  readonly service: Service;
+  readonly service: Service<T, R>;
 
   readonly taskQueue: string;
 
@@ -46,7 +50,7 @@ export class TaskManager {
 
   redisClient: RedisClient;
 
-  constructor(service: Service) {
+  constructor(service: Service<T, R>) {
     this.service = service;
     this.taskQueue = `${service.serviceName}_tasks`;
     this.resultsQueue = `${service.serviceName}_results`;
@@ -117,7 +121,7 @@ export class TaskManager {
     }
   }
 
-  async startTask(taskMessage: TaskMessage) {
+  async startTask(taskMessage: TaskMessage<T, S>) {
     if (!this.redisClient.connected) {
       throw new Error('Redis is not connected');
     }

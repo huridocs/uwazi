@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, Suspense } from 'react';
 
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
@@ -71,38 +71,47 @@ class PageViewer extends Component {
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
     const parsedPageError = parseSSRError(error);
+
     return (
-      <div className="row">
-        {!parsedPageError && (
-          <>
-            {setBrowserTitle && (
-              <Helmet>
-                <title>{page.get('title') ? page.get('title') : 'Page'}</title>
-              </Helmet>
-            )}
-            <main className="page-viewer document-viewer">
-              <div className="main-wrapper">
-                {this.state.customPageError && this.renderErrorWarning()}
-                <Context.Provider value={datasets}>
-                  <ErrorBoundary>
-                    <MarkdownViewer html markdown={originalText} lists={lists} />
-                  </ErrorBoundary>
-                </Context.Provider>
-                <Footer />
-              </div>
-            </main>
-            <Script scriptRendered={scriptRendered} onError={e => this.warningPageError(e)}>
-              {scriptCode}
-            </Script>
-          </>
-        )}
-        {parsedPageError && (
-          <div className="main-wrapper">
-            <ErrorFallback error={parsedPageError} />
-            <Footer />
+      <Suspense
+        fallback={
+          <div>
+            <Translate>Loading</Translate>...
           </div>
-        )}
-      </div>
+        }
+      >
+        <div className="row">
+          {!parsedPageError && (
+            <>
+              {setBrowserTitle && (
+                <Helmet>
+                  <title>{page.get('title') ? page.get('title') : 'Page'}</title>
+                </Helmet>
+              )}
+              <main className="page-viewer document-viewer">
+                <div className="main-wrapper">
+                  {this.state.customPageError && this.renderErrorWarning()}
+                  <Context.Provider value={datasets}>
+                    <ErrorBoundary>
+                      <MarkdownViewer html markdown={originalText} lists={lists} />
+                    </ErrorBoundary>
+                  </Context.Provider>
+                  <Footer />
+                </div>
+              </main>
+              <Script scriptRendered={scriptRendered} onError={e => this.warningPageError(e)}>
+                {scriptCode}
+              </Script>
+            </>
+          )}
+          {parsedPageError && (
+            <div className="main-wrapper">
+              <ErrorFallback error={parsedPageError} />
+              <Footer />
+            </div>
+          )}
+        </div>
+      </Suspense>
     );
   }
 }

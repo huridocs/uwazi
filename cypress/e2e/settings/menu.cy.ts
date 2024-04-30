@@ -5,7 +5,7 @@ import { clearCookiesAndLogin } from '../helpers/login';
 describe('Menu configuration', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn blank-state', { env });
+    cy.exec('yarn blank-state --force', { env });
     clearCookiesAndLogin('admin', 'change this password now');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
@@ -23,15 +23,15 @@ describe('Menu configuration', () => {
   it('tests add links', () => {
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
-    cy.get('#link-title').type('Link 1');
-    cy.get('#link-url').type('www.example.com');
+    cy.get('#link-title').type('Link 1', { delay: 0 });
+    cy.get('#link-url').type('www.example.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
-    cy.get('#link-title').type('Link 2');
+    cy.get('#link-title').type('Link 2', { delay: 0 });
     cy.get('#link-url').click();
-    cy.get('#link-url').type('www.example.com');
+    cy.get('#link-url').type('www.example.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-add-link').click();
@@ -39,8 +39,8 @@ describe('Menu configuration', () => {
 
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
-    cy.get('#link-title').type('Link 3');
-    cy.get('#link-url').type('www.exmple.com');
+    cy.get('#link-title').type('Link 3', { delay: 0 });
+    cy.get('#link-url').type('www.exmple.com', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
 
     cy.getByTestId('menu-save').click();
@@ -51,11 +51,11 @@ describe('Menu configuration', () => {
   it('tests Add groups', () => {
     cy.getByTestId('menu-add-group').click();
     cy.get('#link-title').click();
-    cy.get('#link-title').type('Group 1');
+    cy.get('#link-title').type('Group 1', { delay: 0 });
     cy.get("[data-testid='menu-form-submit'] > span").click();
     cy.getByTestId('menu-add-group').click();
     cy.get('#link-title').click();
-    cy.get('#link-title').type('Group 2');
+    cy.get('#link-title').type('Group 2', { delay: 0 });
     cy.getByTestId('menu-form-submit').click();
     cy.getByTestId('menu-save').click();
     cy.contains('Dismiss').click();
@@ -64,7 +64,7 @@ describe('Menu configuration', () => {
 
   it('tests Edit', () => {
     cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
-    cy.get('#link-title').type(' edited');
+    cy.get('#link-title').type(' edited', { delay: 0 });
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
     cy.get('tbody td:nth-of-type(2) button span').click();

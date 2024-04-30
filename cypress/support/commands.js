@@ -1,5 +1,5 @@
 import '@4tw/cypress-drag-drop';
-
+import 'cypress-real-events';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite

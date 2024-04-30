@@ -25,6 +25,7 @@ import {
   denormalizeAfterEntityUpdate,
   ignoreNewRelationshipsMetadata,
   denormalizeAfterEntityCreation,
+  updateNewRelationships,
 } from './v2_support';
 import { validateEntity } from './validateEntity';
 import settings from '../settings';
@@ -89,14 +90,22 @@ async function updateEntity(entity, _template, unrestricted = false) {
           );
         }
 
-        ignoreNewRelationshipsMetadata(currentDoc, toSave, template);
+        const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
+          currentDoc,
+          toSave,
+          template
+        );
 
         const fullEntity = { ...currentDoc, ...toSave };
 
         if (template._id) {
           await denormalizeRelated(fullEntity, template, currentDoc);
         }
-        return saveFunc(toSave);
+        const saveResult = await saveFunc(toSave);
+
+        await updateNewRelationships(v2RelationshipsUpdates);
+
+        return saveResult;
       }
 
       const toSave = { ...d };
@@ -105,9 +114,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
         await prev;
         if (entity[metadataParent]) {
           toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
-          toSyncProperties.forEach(p => {
-            toSave[metadataParent][p] = entity[metadataParent][p] || [];
-          });
+          toSyncProperties
+            .filter(p => entity[metadataParent][p])
+            .forEach(p => {
+              toSave[metadataParent][p] = entity[metadataParent][p];
+            });
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
             toSave.language,
@@ -149,6 +160,19 @@ async function updateEntity(entity, _template, unrestricted = false) {
 async function createEntity(doc, languages, sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
+
+  const emptyEntity = {
+    sharedId,
+    language: languages[0].key,
+    template: docTemplate._id,
+    metadata: {},
+  };
+  const v2RelationshipsUpdates = await ignoreNewRelationshipsMetadata(
+    emptyEntity,
+    doc,
+    docTemplate
+  );
+
   const result = await Promise.all(
     languages.map(async lang => {
       const langDoc = { ...doc };
@@ -176,6 +200,8 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
     })
   );
 
+  await updateNewRelationships(v2RelationshipsUpdates);
+
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
   return result;
 }
@@ -202,6 +228,10 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
+    if (!sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, { [name]: [] });
+    }
+
     if (
       [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
       sanitizedMetadata[name]
