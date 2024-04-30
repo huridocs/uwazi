@@ -80,7 +80,6 @@ const PDF = ({
   }
 
   return (
-    //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
       <div
         id="pdf-container"
@@ -102,7 +101,6 @@ const PDF = ({
                 id={`page-${regionId}-container`}
                 ref={shouldScrollToPage ? scrollToRef : undefined}
               >
-                {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
                 <SelectionRegion regionId={regionId}>
                   <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
                 </SelectionRegion>

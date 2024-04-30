@@ -23,6 +23,8 @@ module.exports = {
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
     '^uuid$': require.resolve('uuid'),
   },
-  transformIgnorePatterns: ['/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd|@huridocs/react-text-selection-handler)',
+  ],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 };
