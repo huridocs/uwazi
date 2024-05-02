@@ -4,7 +4,7 @@ export { FiltersSidepanel } from './FiltersSidepanel';
 export {
   filterAvailableTemplates,
   updateFilters,
-  addFilter,
+  createNewFilters,
   deleteFilters,
   sanitizeFilters,
 } from './helpers';

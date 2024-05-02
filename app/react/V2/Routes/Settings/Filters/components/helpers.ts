@@ -27,7 +27,7 @@ const filterAvailableTemplates = (
   return templates.filter(template => !usedTemplatesIds.includes(template._id));
 };
 
-const addFilter = (
+const createNewFilters = (
   selectedTemplatesIds: string[],
   templates?: ClientTemplateSchema[]
 ): ClientSettingsFilterSchema[] => {
@@ -115,4 +115,10 @@ const sanitizeFilters = (filters?: ClientSettingsFilterSchema[]) => {
 };
 
 export type { LoaderData };
-export { filterAvailableTemplates, addFilter, updateFilters, deleteFilters, sanitizeFilters };
+export {
+  filterAvailableTemplates,
+  createNewFilters,
+  updateFilters,
+  deleteFilters,
+  sanitizeFilters,
+};

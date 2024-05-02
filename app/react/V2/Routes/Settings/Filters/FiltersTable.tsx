@@ -18,7 +18,7 @@ import {
   createColumns,
   AddTemplatesModal,
   filterAvailableTemplates,
-  addFilter,
+  createNewFilters,
   updateFilters,
   deleteFilters,
   FiltersSidepanel,
@@ -73,9 +73,9 @@ const FiltersTable = () => {
     setFilters(loaderData.filters);
   };
 
-  const addNewFilter = (templatedIds: string[]) => {
-    const updatedFilters = addFilter(templatedIds, templates);
-    setFilters([...(filters || []), ...updatedFilters]);
+  const addNewFilters = (templatedIds: string[]) => {
+    const newFilters = createNewFilters(templatedIds, templates);
+    setFilters([...(filters || []), ...newFilters]);
   };
 
   const handleDelete = () => {
@@ -203,7 +203,7 @@ const FiltersTable = () => {
         <AddTemplatesModal
           templates={templates}
           onCancel={() => setShowModal(false)}
-          onAdd={templateIds => addNewFilter(templateIds)}
+          onAdd={templateIds => addNewFilters(templateIds)}
         />
       )}
 
