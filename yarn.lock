@@ -2484,10 +2484,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-2.0.1.tgz#e5211452df060fa8522b55c7b3c0c4d1981cb044"
   integrity sha512-dvuCeX5fC9dXgJn9t+X5atfmgQAzUOWqS1254Gh0m6i8wKd10ebXkfNKiRK+1GWi/yTvvLDHpoxLr0xxxeslWw==
 
-"@huridocs/react-text-selection-handler@^0.2.9":
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.2.9.tgz#a16bf5f38c1c7c414d688db932231b69878fe9d3"
-  integrity sha512-h7wt1PdSkmhHSEEwj904T7dw2b8l5cvo35sg8s1k/gPoMib5YIWVZyIenc7Ocw3FDskTdx96TE8VnbxPhfEF2w==
+"@huridocs/react-text-selection-handler@^0.2.10":
+  version "0.2.10"
+  resolved "https://registry.yarnpkg.com/@huridocs/react-text-selection-handler/-/react-text-selection-handler-0.2.10.tgz#c23600bcd656968d926e6e6a64eed5f9ce9cd635"
+  integrity sha512-aMrhNPy6D1RmYDivWqHbxiBFdcCqNHPhgiGuk/U+1iyMjQ/626nJxBENT5o3VnSTsXtPQ+y9InMrwVXrJxzAIA==
 
 "@icons/material@^0.2.4":
   version "0.2.4"
