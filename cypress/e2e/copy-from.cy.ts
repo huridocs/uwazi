@@ -9,6 +9,7 @@ describe('Copy from entity', () => {
   });
 
   describe('Creating a new entity', () => {
+    // eslint-disable-next-line max-statements
     it('should copy the metadata from an existing entity to create a new one', () => {
       clickOnCreateEntity();
       cy.get('#metadataForm').find('select').select('Ordenes de la corte');
@@ -29,10 +30,11 @@ describe('Copy from entity', () => {
       cy.contains('button', 'Copy Highlighted').click();
       cy.get('div.copy-from').should('not.exist');
       cy.contains('button', 'Save').click();
+      cy.contains('Entity created').as('successMessage');
+      cy.get('@successMessage').should('not.exist', { timeout: 200 });
     });
 
     it('should view the new entity', () => {
-      cy.contains('Entity created').click();
       cy.contains('h2', 'New orden de la corte').click();
       cy.get('.side-panel.metadata-sidepanel.is-active').within(() => {
         cy.contains('a', 'View').click();
