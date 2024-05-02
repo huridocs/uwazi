@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { uniqBy } from 'lodash';
 import { IncomingHttpHeaders } from 'http';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -19,6 +18,7 @@ import {
   createColumns,
   AddTemplatesModal,
   filterAvailableTemplates,
+  addFilter,
   updateFilters,
   deleteFilters,
   FiltersSidepanel,
@@ -74,7 +74,7 @@ const FiltersTable = () => {
   };
 
   const addNewFilter = (templatedIds: string[]) => {
-    const updatedFilters = updateFilters(templatedIds, templates);
+    const updatedFilters = addFilter(templatedIds, templates);
     setFilters([...(filters || []), ...updatedFilters]);
   };
 
@@ -223,7 +223,7 @@ const FiltersTable = () => {
         setShowSidepanel={setShowSidepanel}
         onSave={newFilter => {
           if (newFilter) {
-            setFilters(uniqBy([newFilter, ...(filters || [])], 'id'));
+            setFilters(updateFilters(newFilter, filters));
           }
         }}
         availableTemplates={templates}

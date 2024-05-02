@@ -27,7 +27,7 @@ const filterAvailableTemplates = (
   return templates.filter(template => !usedTemplatesIds.includes(template._id));
 };
 
-const updateFilters = (
+const addFilter = (
   selectedTemplatesIds: string[],
   templates?: ClientTemplateSchema[]
 ): ClientSettingsFilterSchema[] => {
@@ -37,6 +37,27 @@ const updateFilters = (
   });
 
   return newFilters;
+};
+
+const updateFilters = (
+  newFilter: ClientSettingsFilterSchema,
+  filters?: ClientSettingsFilterSchema[]
+) => {
+  let isNewFilter = true;
+
+  const updatedFilters = filters?.map(filter => {
+    if (filter.id === newFilter.id) {
+      isNewFilter = false;
+      return newFilter;
+    }
+    return filter;
+  });
+
+  if (isNewFilter) {
+    return [...(updatedFilters || []), newFilter];
+  }
+
+  return updatedFilters;
 };
 
 const deleteFilters = (
@@ -94,4 +115,4 @@ const sanitizeFilters = (filters?: ClientSettingsFilterSchema[]) => {
 };
 
 export type { LoaderData };
-export { filterAvailableTemplates, updateFilters, deleteFilters, sanitizeFilters };
+export { filterAvailableTemplates, addFilter, updateFilters, deleteFilters, sanitizeFilters };

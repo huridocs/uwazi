@@ -1,4 +1,9 @@
-import { filterAvailableTemplates, deleteFilters, sanitizeFilters } from '../helpers';
+import {
+  filterAvailableTemplates,
+  deleteFilters,
+  updateFilters,
+  sanitizeFilters,
+} from '../helpers';
 
 const templates = [
   {
@@ -43,6 +48,17 @@ const filters = [
     id: 'template_id1',
     _id: '2',
     name: 'Template 1',
+  },
+  {
+    id: 'randomGroupId2',
+    _id: '4',
+    name: 'Group 2',
+    items: [
+      {
+        id: 'template_id5',
+        name: 'Template 5',
+      },
+    ],
   },
   {
     id: 'template_id4',
@@ -120,6 +136,17 @@ describe('Filters helpers', () => {
           ],
         },
         {
+          id: 'randomGroupId2',
+          _id: '4',
+          name: 'Group 2',
+          items: [
+            {
+              id: 'template_id5',
+              name: 'Template 5',
+            },
+          ],
+        },
+        {
           id: 'template_id4',
           _id: '3',
           name: 'Template 4',
@@ -179,6 +206,160 @@ describe('Filters helpers', () => {
           id: 'template_id1',
           _id: '1',
           name: 'Template 1',
+        },
+      ]);
+    });
+  });
+
+  describe('updateFilters', () => {
+    it('should return the filters updated', () => {
+      let result = updateFilters(
+        {
+          id: 'template_id4',
+          _id: '3',
+          name: 'Template 4',
+        },
+        filters
+      );
+      expect(result).toEqual(filters);
+
+      result = updateFilters({
+        id: 'a new filter group id',
+        name: 'A new group',
+        items: [{ name: 'new', id: 'new' }],
+      });
+      expect(result).toEqual([
+        {
+          id: 'a new filter group id',
+          name: 'A new group',
+          items: [{ name: 'new', id: 'new' }],
+        },
+      ]);
+
+      result = updateFilters(
+        {
+          id: 'a new filter group id',
+          name: 'A new group',
+          items: [{ name: 'new', id: 'new' }],
+        },
+        filters
+      );
+      expect(result).toEqual([
+        ...filters,
+        {
+          id: 'a new filter group id',
+          name: 'A new group',
+          items: [{ name: 'new', id: 'new' }],
+        },
+      ]);
+
+      result = updateFilters(
+        {
+          id: 'randomGroupId2',
+          _id: '4',
+          name: 'Group 2',
+          items: [
+            {
+              id: 'template_id5',
+              name: 'Template 5',
+            },
+            {
+              id: 'template_id6',
+              name: 'Template 6',
+            },
+          ],
+        },
+        filters
+      );
+      expect(result).toEqual([
+        {
+          id: 'randomGroupId',
+          _id: '1',
+          name: 'Group 1',
+          items: [
+            {
+              id: 'template_id2',
+              name: 'Template 2',
+            },
+            {
+              id: 'template_id3',
+              name: 'Template 3',
+            },
+          ],
+        },
+        {
+          id: 'template_id1',
+          _id: '2',
+          name: 'Template 1',
+        },
+        {
+          id: 'randomGroupId2',
+          _id: '4',
+          name: 'Group 2',
+          items: [
+            {
+              id: 'template_id5',
+              name: 'Template 5',
+            },
+            {
+              id: 'template_id6',
+              name: 'Template 6',
+            },
+          ],
+        },
+        {
+          id: 'template_id4',
+          _id: '3',
+          name: 'Template 4',
+        },
+      ]);
+
+      result = updateFilters(
+        {
+          id: 'randomGroupId',
+          _id: '1',
+          name: 'Group 1',
+          items: [
+            {
+              id: 'template_id3',
+              name: 'Template 3',
+            },
+          ],
+        },
+        filters
+      );
+      expect(result).toEqual([
+        {
+          id: 'randomGroupId',
+          _id: '1',
+          name: 'Group 1',
+          items: [
+            {
+              id: 'template_id3',
+              name: 'Template 3',
+            },
+          ],
+        },
+        {
+          id: 'template_id1',
+          _id: '2',
+          name: 'Template 1',
+        },
+        {
+          id: 'randomGroupId2',
+          _id: '4',
+          name: 'Group 2',
+          items: [
+            {
+              id: 'template_id5',
+              name: 'Template 5',
+            },
+          ],
+        },
+        {
+          id: 'template_id4',
+          _id: '3',
+          name: 'Template 4',
         },
       ]);
     });
