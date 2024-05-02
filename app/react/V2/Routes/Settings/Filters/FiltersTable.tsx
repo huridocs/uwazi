@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
-import { uniqBy } from 'lodash';
 import { IncomingHttpHeaders } from 'http';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -19,11 +18,13 @@ import {
   createColumns,
   AddTemplatesModal,
   filterAvailableTemplates,
+  createNewFilters,
   updateFilters,
   deleteFilters,
   FiltersSidepanel,
   sidepanelAtom,
   LoaderData,
+  sanitizeFilters,
 } from './components';
 
 const filtersLoader =
@@ -72,9 +73,9 @@ const FiltersTable = () => {
     setFilters(loaderData.filters);
   };
 
-  const addNewFilter = (templatedIds: string[]) => {
-    const updatedFilters = updateFilters(templatedIds, templates);
-    setFilters([...(filters || []), ...updatedFilters]);
+  const addNewFilters = (templatedIds: string[]) => {
+    const newFilters = createNewFilters(templatedIds, templates);
+    setFilters([...(filters || []), ...newFilters]);
   };
 
   const handleDelete = () => {
@@ -85,7 +86,7 @@ const FiltersTable = () => {
 
   const handleSave = async () => {
     setDisabled(true);
-    const response = await settingsAPI.save({ filters });
+    const response = await settingsAPI.save({ filters: sanitizeFilters(filters) });
 
     if (response instanceof FetchResponseError) {
       return setNotifications({
@@ -202,7 +203,7 @@ const FiltersTable = () => {
         <AddTemplatesModal
           templates={templates}
           onCancel={() => setShowModal(false)}
-          onAdd={templateIds => addNewFilter(templateIds)}
+          onAdd={templateIds => addNewFilters(templateIds)}
         />
       )}
 
@@ -222,7 +223,7 @@ const FiltersTable = () => {
         setShowSidepanel={setShowSidepanel}
         onSave={newFilter => {
           if (newFilter) {
-            setFilters(uniqBy([newFilter, ...(filters || [])], 'id'));
+            setFilters(updateFilters(newFilter, filters));
           }
         }}
         availableTemplates={templates}
