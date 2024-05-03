@@ -32,7 +32,12 @@ import {
   updateSuggestionsByEntity,
   generateChildrenRows,
 } from './components/helpers';
-import { ChildrenSuggestion, SuggestionValue, TableSuggestion } from './types';
+import {
+  SuggestionValue,
+  TableSuggestion,
+  SingleValueSuggestion,
+  MultiValueSuggestion,
+} from './types';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -142,9 +147,7 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const acceptSuggestions = async (
-    acceptedSuggestions: TableSuggestion[] | ChildrenSuggestion[]
-  ) => {
+  const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
     try {
       const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
         let addedValues: SuggestionValue[] | undefined;

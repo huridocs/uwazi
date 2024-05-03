@@ -93,9 +93,6 @@ const Table = <T,>({
       return [];
     },
   });
-  useEffect(() => {
-    table.toggleAllRowsExpanded(true);
-  }, [table]);
 
   useEffect(() => {
     if (isFirstRender) {

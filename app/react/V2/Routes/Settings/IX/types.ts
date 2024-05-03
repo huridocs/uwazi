@@ -17,22 +17,28 @@ type Highlights = { [page: string]: TextHighlight[] };
 
 type SuggestionValue = string | number;
 
-interface ChildrenSuggestion {
-  suggestedValue?: SuggestionValue;
+interface SingleValueSuggestion extends EntitySuggestionType {
+  isChild?: boolean;
+  suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
-  propertyName: string;
   disableRowSelection?: boolean;
-  entityId: ObjectIdSchema;
-  sharedId: string;
-  _id: ObjectIdSchema;
-  isChild?: boolean;
 }
 
-interface TableSuggestion extends EntitySuggestionType {
-  children?: ChildrenSuggestion[];
+interface MultiValueSuggestion extends EntitySuggestionType {
   isChild?: boolean;
-  suggestedValue: SuggestionValue | SuggestionValue[];
-  currentValue?: SuggestionValue | SuggestionValue[];
+  suggestedValue: SuggestionValue[];
+  currentValue: SuggestionValue[];
+  children: SingleValueSuggestion[];
+  disableRowSelection?: boolean;
 }
 
-export type { Extractor, Highlights, ChildrenSuggestion, TableSuggestion, SuggestionValue };
+type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
+
+export type {
+  Extractor,
+  Highlights,
+  TableSuggestion,
+  SuggestionValue,
+  SingleValueSuggestion,
+  MultiValueSuggestion,
+};

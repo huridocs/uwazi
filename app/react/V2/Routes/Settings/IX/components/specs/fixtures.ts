@@ -1,3 +1,5 @@
+import { extractorId } from 'api/activitylog/specs/fixturesParser';
+import { entityTemplateId } from 'api/i18n/specs/fixtures';
 import meta from 'app/stories/Card.stories';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { child } from 'winston';
@@ -178,22 +180,24 @@ const entity3 = {
   },
 };
 
+const state = {
+  match: false,
+  labeled: true,
+  withValue: true,
+  withSuggestion: true,
+  hasContext: true,
+  obsolete: false,
+  processing: false,
+  error: false,
+};
+
 const suggestion5 = {
   _id: '5',
   language: 'es',
   propertyName: 'multiselect',
   segment: 'value1',
   suggestedValue: ['value3', 'value2'],
-  state: {
-    match: false,
-    labeled: true,
-    withValue: true,
-    withSuggestion: true,
-    hasContext: true,
-    obsolete: false,
-    processing: false,
-    error: false,
-  },
+  state,
   currentValue: ['value1', 'value2'],
   entityTitle: 'Entity 3',
   entityId: 'entity3',
@@ -204,16 +208,32 @@ const suggestion5 = {
   date: 1,
   children: [
     {
+      _id: '5',
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: 'Entity 3',
+      fileId: '3',
+      date: 1,
+      state,
+      propertyName: 'multiselect',
       suggestedValue: 'value3',
       currentValue: '',
-      propertyName: 'multiselect',
       entityId: 'entity3',
       sharedId: '3',
-      _id: '5',
       isChild: true,
       disableRowSelection: true,
     },
     {
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: 'Entity 3',
+      fileId: '3',
+      date: 1,
+      state,
       suggestedValue: 'value2',
       currentValue: 'value2',
       propertyName: 'multiselect',
@@ -224,6 +244,14 @@ const suggestion5 = {
       disableRowSelection: true,
     },
     {
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: 'Entity 3',
+      fileId: '3',
+      date: 1,
+      state,
       suggestedValue: '',
       currentValue: 'value1',
       propertyName: 'multiselect',

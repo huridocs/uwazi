@@ -1,10 +1,15 @@
 /* eslint-disable max-statements */
 import { ClientEntitySchema } from 'app/istore';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { ChildrenSuggestion, SuggestionValue, TableSuggestion } from '../types';
+import {
+  SuggestionValue,
+  TableSuggestion,
+  SingleValueSuggestion,
+  MultiValueSuggestion,
+} from '../types';
 
-const generateChildrenRows = (_suggestion: TableSuggestion) => {
-  const suggestion: TableSuggestion = { ..._suggestion };
+const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
+  const suggestion: MultiValueSuggestion = { ..._suggestion };
 
   const currentValues = [
     ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
@@ -23,27 +28,22 @@ const generateChildrenRows = (_suggestion: TableSuggestion) => {
     }
 
     suggestion.children?.push({
+      ...suggestion,
       suggestedValue,
       currentValue: valuePresent || '',
       propertyName: suggestion.propertyName,
       disableRowSelection: true,
-      entityId: suggestion.entityId,
-      _id: suggestion._id,
       isChild: true,
-      sharedId: suggestion.sharedId,
     });
   });
 
   currentValues.forEach(currentValue => {
     suggestion.children?.push({
+      ...suggestion,
       suggestedValue: '',
       currentValue,
-      propertyName: suggestion.propertyName,
       disableRowSelection: true,
-      entityId: suggestion.entityId,
-      _id: suggestion._id,
       isChild: true,
-      sharedId: suggestion.sharedId,
     });
   });
 
@@ -117,16 +117,16 @@ const updateSuggestionsByEntity = (
   }
 
   if (property?.type === 'multiselect') {
-    suggestionToUpdate = generateChildrenRows(suggestionToUpdate);
+    suggestionToUpdate = generateChildrenRows(suggestionToUpdate as MultiValueSuggestion);
   }
 
   return _replaceSuggestion(suggestionToUpdate, currentSuggestions);
 };
 
 const updateMultiValueSuggestions = (
-  _parentSuggestion: TableSuggestion,
-  acceptedSuggestion: ChildrenSuggestion
-): TableSuggestion => {
+  _parentSuggestion: MultiValueSuggestion,
+  acceptedSuggestion: SingleValueSuggestion
+): MultiValueSuggestion => {
   let parentSuggestion = { ..._parentSuggestion };
 
   const shouldAddValue = acceptedSuggestion.suggestedValue !== '';
@@ -135,6 +135,7 @@ const updateMultiValueSuggestions = (
     : acceptedSuggestion.currentValue || '';
 
   parentSuggestion.currentValue = (_parentSuggestion.currentValue as SuggestionValue[]) || [];
+
   parentSuggestion.currentValue = shouldAddValue
     ? parentSuggestion.currentValue.concat(value)
     : parentSuggestion.currentValue.filter(v => v !== value);
@@ -149,7 +150,7 @@ const updateMultiValueSuggestions = (
 
 const updateSuggestions = (
   currentSuggestions: TableSuggestion[],
-  suggestionsToAccept: TableSuggestion[] | ChildrenSuggestion[]
+  suggestionsToAccept: TableSuggestion[]
 ): TableSuggestion[] => {
   if (!suggestionsToAccept.length) {
     return currentSuggestions;
@@ -162,8 +163,8 @@ const updateSuggestions = (
 
     if (acceptedSuggestion.isChild) {
       suggestion = updateMultiValueSuggestions(
-        suggestion,
-        acceptedSuggestion as ChildrenSuggestion
+        suggestion as MultiValueSuggestion,
+        acceptedSuggestion as SingleValueSuggestion
       );
     } else {
       suggestion.state.match = true;
