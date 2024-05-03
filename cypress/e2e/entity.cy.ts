@@ -247,7 +247,26 @@ describe('Entities', () => {
         saveEntity();
       });
 
+      it('should create a reference from main document', () => {
+        cy.contains('.item-document', 'Entity with main documents').within(() => {
+          cy.get('.view-doc').click();
+        });
+        cy.contains('span', 'La Sentencia de fondo');
+        cy.get('#p3R_mc24 > span:nth-child(2)').realClick({ clickCount: 3 });
+        cy.get('.ContextMenu [data-icon="file"]').click();
+        cy.contains('.create-reference li:nth-child(1) span:nth-child(2)', 'Relacionado a').click();
+        cy.get('aside.create-reference input').type('Patrick Robinson');
+        cy.contains('Tracy Robinson');
+        cy.contains('.item-name', 'Patrick Robinson').click();
+        cy.contains('aside.create-reference .btn-success', 'Save').click();
+        cy.contains('Saved successfully.');
+        cy.get('#p3R_mc0').scrollIntoView();
+        cy.get('#p3R_mc24 > span:nth-child(2)').toMatchImageSnapshot();
+        cy.get('.relationship-active').toMatchImageSnapshot();
+      });
+
       it('should edit the entity and the documents', () => {
+        cy.contains('a', 'Library').click();
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.metadata-type-text', 'An entity with main documents').click();
         clickOnEditEntity();
