@@ -14,7 +14,7 @@ exports[`CejilChart002 When data loaded should allow changing the filter propert
     className="item item-chart"
   >
     <p />
-    <ForwardRef
+    <Loadable
       chartLabel={null}
       data={
         Array [
@@ -78,7 +78,7 @@ exports[`CejilChart002 When data loaded should sort and format the results appro
     className="item item-chart"
   >
     <p />
-    <ForwardRef
+    <Loadable
       chartLabel={null}
       data={
         Array [

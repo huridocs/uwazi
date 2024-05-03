@@ -26,6 +26,7 @@ Add / remove favorite,Ajouter / supprimer un favori
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
+Add entity type,Add entity type
 Add file,Ajouter le fichier
 Add from URL,Ajouter à partir d'une url
 Add from web,Ajouter à partir du web
@@ -329,6 +330,7 @@ Filters configuration,Configuration des filtres
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Exemple de configuration des filtres
 Filters OR operator,OU
+Filters saved,Filters saved
 Find,Trouver
 Find suggestions,Trouver des suggestions
 Finding suggestions,Finding suggestions

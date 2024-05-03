@@ -11,7 +11,7 @@ describe('Activity log', () => {
     cy.contains('span', 'Account').click();
     cy.contains('button', 'Enable').click();
     cy.contains('button', 'Cancel').click();
-    cy.clearAndType('input[name=email]', 'editor@uwazi.com');
+    cy.clearAndType('input[name=email]', 'editor@uwazi.com', { delay: 0 });
     cy.contains('button', 'Update').click();
 
     clearCookiesAndLogin();
@@ -40,7 +40,7 @@ describe('Activity log', () => {
   });
 
   it('should filter by user', () => {
-    cy.clearAndType('input[name=username]', 'editor');
+    cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     cy.contains('Updated user');
     cy.get('tr').should('have.length.at.most', 5);
   });
@@ -72,16 +72,17 @@ describe('Activity log', () => {
   });
 
   it('should filter by method', () => {
-    cy.clearAndType('input[name=search]', 'DELETE');
+    cy.clearAndType('input[name=search]', 'DELETE', { delay: 0 });
     cy.contains('editor');
     cy.get('tr').should('have.length.at.most', 3);
   });
 
   it('should filter by dates', () => {
-    cy.get('input[name=search]').clear();
-    cy.get('input[name=from]').type('2023-06-22', { delay: 0 });
+    cy.get('button[data-testid=clear-field-button]').eq(1).click();
+    cy.contains('admin');
+    cy.get('input[name=from]').type('2023-06-21', { delay: 0 });
     cy.get('input[name=to]').clear();
-    cy.get('input[name=to]').type('2023-06-23', { delay: 0 });
+    cy.get('input[name=to]').type('2023-06-24', { delay: 0 });
     cy.contains('admin');
     cy.get('tr').should('have.length.at.most', 2);
   });

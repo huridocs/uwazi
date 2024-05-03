@@ -5,7 +5,7 @@ import { notificationAtom } from 'V2/atoms';
 import { Notification } from 'V2/Components/UI/Notification';
 
 const NotificationsContainer = () => {
-  const timeout = 6000;
+  const timeout: number = Number.parseFloat(process.env.NOTIFICATION_DELAY || '6000');
   const [timerId, setTimerId] = useState<NodeJS.Timeout>();
   const notification = useAtomValue(notificationAtom);
   const resetAtom = useResetAtom(notificationAtom);
@@ -53,7 +53,7 @@ const NotificationsContainer = () => {
       <div
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className="fixed bottom-1 left-2 z-10 w-4/5 md:w-2/5"
+        className="fixed z-10 w-4/5 bottom-1 left-2 md:w-2/5"
       >
         <div className="shadow-lg" role="alert">
           <Notification

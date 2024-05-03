@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { PreserveSettings, EntityTypesList, FiltersForm, Settings } from 'app/Settings';
+import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
 import { Login } from 'app/Users/Login';
@@ -26,7 +26,12 @@ import {
 } from 'V2/Routes/Settings/Translations/EditTranslations';
 import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
 
-import { ThesaurusForm, theasauriListLoader, ThesauriList } from 'app/V2/Routes/Settings/Thesauri';
+import {
+  ThesaurusForm,
+  theasauriListLoader,
+  ThesauriList,
+  editTheasaurusLoader,
+} from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
 import {
@@ -41,6 +46,7 @@ import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Rou
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
 import { activityLogLoader, ActivityLog } from 'V2/Routes/Settings/ActivityLog/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
+import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
@@ -49,7 +55,6 @@ import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
 import { NewRelMigrationDashboard } from './Settings/components/relV2MigrationDashboard';
-import { editTheasaurusLoader } from './V2/Routes/Settings/Thesauri/ThesaurusForm';
 
 const getRoutesLayout = (
   settings: ClientSettings | undefined,
@@ -158,7 +163,11 @@ const getRoutesLayout = (
           action={editTranslationsAction()}
         />
       </Route>
-      <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
+      <Route
+        path="filters"
+        element={adminsOnlyRoute(<FiltersTable />)}
+        loader={filtersLoader(headers)}
+      />
       <Route
         path="customisation"
         element={adminsOnlyRoute(<Customisation />)}

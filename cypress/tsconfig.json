@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress", "cypress-plugin-snapshots", "webpack-env", "@4tw/cypress-drag-drop"],
+    "types": ["cypress", "cypress-plugin-snapshots", "webpack-env", "@4tw/cypress-drag-drop", "cypress-real-events"],
   },
   "include": ["./**/*", "./**/*.d.ts", "../app/react/V2/**/*.cy.tsx", "../app/shared/types/react-table-config.d.ts"],
   "exclude": []
