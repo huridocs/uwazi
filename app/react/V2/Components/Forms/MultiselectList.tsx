@@ -210,7 +210,7 @@ const MultiselectList = ({
 
   return (
     <div className={`flex flex-col relative ${className}`}>
-      <div className="sticky top-0 w-full px-2 mb-2">
+      <div className="sticky top-0 w-full mb-2">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>

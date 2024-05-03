@@ -4,8 +4,6 @@ import {
   selectionRectanglesSchema,
 } from 'shared/types/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
-import { s } from 'src/data/unitShortcuts';
-import { child } from 'winston';
 
 export const emitSchemaTypes = true;
 
@@ -72,6 +70,7 @@ export const IXSuggestionSchema = {
     selectionRectangles: selectionRectanglesSchema,
   },
   required: [
+    '_id',
     'propertyName',
     'entityId',
     'extractorId',
@@ -123,6 +122,7 @@ export const EntitySuggestionSchema = {
     date: { type: 'number' },
   },
   required: [
+    '_id',
     'propertyName',
     'entityTitle',
     'entityId',

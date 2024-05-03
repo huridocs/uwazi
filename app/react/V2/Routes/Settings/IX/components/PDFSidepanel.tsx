@@ -374,15 +374,17 @@ const PDFSidepanel = ({
       return null;
     }
     return (
-      <MultiselectList
-        onChange={values => {
-          setValue('field', values, { shouldDirty: true });
-        }}
-        value={propertyValue as string[]}
-        items={options}
-        checkboxes
-        singleSelect={type === 'select'}
-      />
+      <div className="p-4">
+        <MultiselectList
+          onChange={values => {
+            setValue('field', values, { shouldDirty: true });
+          }}
+          value={propertyValue as string[]}
+          items={options}
+          checkboxes
+          singleSelect={type === 'select'}
+        />
+      </div>
     );
   };
 

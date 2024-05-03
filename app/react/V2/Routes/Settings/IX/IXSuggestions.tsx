@@ -22,14 +22,17 @@ import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
-import { ObjectIdSchema, PropertyValueSchema } from 'shared/types/commonTypes';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
-import { updateSuggestions, updateSuggestionsByEntity } from './components/helpers';
-import { se } from 'date-fns/locale';
+import {
+  updateSuggestions,
+  updateSuggestionsByEntity,
+  generateChildrenRows,
+} from './components/helpers';
+import { ChildrenSuggestion, SuggestionValue, TableSuggestion } from './types';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -51,26 +54,16 @@ const ixmessages = {
   error: 'Error',
 };
 
-interface ChildrenSuggestion {
-  suggestedValue?: PropertyValueSchema;
-  currentValue?: PropertyValueSchema;
-  propertyName: string;
-  disableRowSelection?: boolean;
-}
-
-interface TableSuggestion extends EntitySuggestionType {
-  children?: ChildrenSuggestion[];
-}
-
 const IXSuggestions = () => {
   const { suggestions, extractor, templates, aggregation, currentStatus, totalPages } =
     useLoaderData() as {
       totalPages: number;
-      suggestions: EntitySuggestionType[];
+      suggestions: TableSuggestion[];
       extractor: IXExtractorInfo;
       templates: ClientTemplateSchema[];
       aggregation: any;
       currentStatus: ixStatus;
+      _id: string;
     };
 
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
@@ -84,47 +77,11 @@ const IXSuggestions = () => {
 
   useMemo(() => {
     if (property?.type === 'multiselect') {
-      const flatenedSuggestions = suggestions.map(_suggestion => {
-        const suggestion: TableSuggestion = { ..._suggestion };
-
-        const currentValues = [
-          ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
-        ];
-
-        const suggestedValues = [
-          ...(Array.isArray(suggestion.suggestedValue) ? suggestion.suggestedValue : []),
-        ];
-
-        suggestion.children = [];
-
-        suggestedValues.forEach(suggestedValue => {
-          const valuePresent = currentValues.find(v => v === suggestedValue);
-          if (valuePresent) {
-            currentValues.splice(currentValues.indexOf(valuePresent), 1);
-          }
-
-          suggestion.children?.push({
-            suggestedValue,
-            currentValue: valuePresent,
-            propertyName: suggestion.propertyName,
-            disableRowSelection: true,
-          });
-        });
-
-        currentValues.forEach(currentValue => {
-          suggestion.children?.push({
-            suggestedValue: '',
-            currentValue,
-            propertyName: suggestion.propertyName,
-            disableRowSelection: true,
-          });
-        });
-
-        return suggestion;
-      });
+      const flatenedSuggestions = suggestions.map(generateChildrenRows);
       setCurrentSuggestions(flatenedSuggestions);
       return;
     }
+
     setCurrentSuggestions(suggestions);
   }, [suggestions, property]);
 
@@ -132,8 +89,8 @@ const IXSuggestions = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
-  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<EntitySuggestionType>();
-  const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
+  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
+  const [selected, setSelected] = useState<Row<TableSuggestion>[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
@@ -168,15 +125,15 @@ const IXSuggestions = () => {
     }
 
     if (sorting.length && sorting[0].id) {
-      const property = sorting[0].id;
+      const _property = sorting[0].id;
 
-      if (!SORTABLE_PROPERTIES.includes(property)) {
+      if (!SORTABLE_PROPERTIES.includes(_property)) {
         return;
       }
 
       const order = sorting[0].desc ? 'desc' : 'asc';
 
-      navigate(`${location.pathname}?sort={"property":"${property}","order":"${order}"}`, {
+      navigate(`${location.pathname}?sort={"property":"${_property}","order":"${order}"}`, {
         replace: true,
       });
     }
@@ -185,15 +142,33 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const acceptSuggestions = async (acceptedSuggestions: EntitySuggestionType[]) => {
+  const acceptSuggestions = async (
+    acceptedSuggestions: TableSuggestion[] | ChildrenSuggestion[]
+  ) => {
     try {
-      await suggestionsAPI.accept(
-        acceptedSuggestions.map(acceptedSuggestion => ({
-          _id: acceptedSuggestion._id as ObjectIdSchema,
+      const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
+        let addedValues: SuggestionValue[] | undefined;
+        let removedValues: SuggestionValue[] | undefined;
+
+        if (acceptedSuggestion.isChild) {
+          addedValues = acceptedSuggestion.suggestedValue
+            ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
+            : undefined;
+          removedValues = acceptedSuggestion.currentValue
+            ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
+            : undefined;
+        }
+
+        return {
+          _id: acceptedSuggestion._id,
           sharedId: acceptedSuggestion.sharedId,
           entityId: acceptedSuggestion.entityId,
-        }))
-      );
+          addedValues,
+          removedValues,
+        };
+      });
+
+      await suggestionsAPI.accept(preparedSuggestions);
       setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
       setNotifications({
         type: 'success',
@@ -226,7 +201,7 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
-  const openPDFSidepanel = (selectedSuggestion: EntitySuggestionType) => {
+  const openPDFSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     setSidepanel('pdf');
   };
@@ -247,7 +222,7 @@ const IXSuggestions = () => {
           title={extractor.name}
         />
         <SettingsContent.Body>
-          <Table<EntitySuggestionType>
+          <Table<TableSuggestion>
             data={currentSuggestions}
             subRowsKey="children"
             columns={suggestionsTableColumnsBuilder(
@@ -364,7 +339,9 @@ const IXSuggestions = () => {
         setShowSidepanel={closeSidepanel}
         suggestion={sidepanelSuggestion}
         onEntitySave={updatedEntity =>
-          setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity))
+          setCurrentSuggestions(
+            updateSuggestionsByEntity(currentSuggestions, updatedEntity, property)
+          )
         }
       />
     </div>

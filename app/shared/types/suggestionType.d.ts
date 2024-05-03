@@ -8,7 +8,7 @@ import {
 } from 'shared/types/commonTypes';
 
 export interface EntitySuggestionType {
-  _id?: ObjectIdSchema;
+  _id: ObjectIdSchema;
   entityId: string;
   extractorId: string;
   entityTemplateId: string;
@@ -55,7 +55,7 @@ export interface IXSuggestionAggregation {
 }
 
 export interface IXSuggestionType {
-  _id?: ObjectIdSchema;
+  _id: ObjectIdSchema;
   entityId: string;
   extractorId: ObjectIdSchema;
   entityTemplate: string;

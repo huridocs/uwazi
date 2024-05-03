@@ -1,12 +1,27 @@
 import { updateSuggestionsByEntity } from '../helpers';
-import { suggestion1, suggestion2, suggestion3, entity1, entity2 } from './fixtures';
+import {
+  suggestion1,
+  suggestion2,
+  suggestion3,
+  suggestion5,
+  entity1,
+  entity2,
+  entity3,
+  propertyTitle,
+  propertyDocumentDate,
+  propertyMultiselect,
+} from './fixtures';
 
 describe('updateSuggestionsByEntity', () => {
   it('should update the suggestions current value', () => {
-    const result = updateSuggestionsByEntity([suggestion1, suggestion2], {
-      ...entity1,
-      title: 'New title for entity 1',
-    });
+    const result = updateSuggestionsByEntity(
+      [suggestion1, suggestion2],
+      {
+        ...entity1,
+        title: 'New title for entity 1',
+      },
+      propertyTitle
+    );
 
     expect(result).toEqual([
       {
@@ -19,10 +34,14 @@ describe('updateSuggestionsByEntity', () => {
   });
 
   it('should update the match status', () => {
-    const result = updateSuggestionsByEntity([suggestion1, suggestion2], {
-      ...entity1,
-      title: 'suggested value',
-    });
+    const result = updateSuggestionsByEntity(
+      [suggestion1, suggestion2],
+      {
+        ...entity1,
+        title: 'suggested value',
+      },
+      propertyTitle
+    );
 
     expect(result).toEqual([
       {
@@ -36,16 +55,20 @@ describe('updateSuggestionsByEntity', () => {
   });
 
   it('should work with metadata properties', () => {
-    const result = updateSuggestionsByEntity([suggestion1, suggestion3], {
-      ...entity2,
-      metadata: {
-        document_date: [
-          {
-            value: 200,
-          },
-        ],
+    const result = updateSuggestionsByEntity(
+      [suggestion1, suggestion3],
+      {
+        ...entity2,
+        metadata: {
+          document_date: [
+            {
+              value: 200,
+            },
+          ],
+        },
       },
-    });
+      propertyDocumentDate
+    );
 
     expect(result).toEqual([
       suggestion1,
@@ -59,5 +82,57 @@ describe('updateSuggestionsByEntity', () => {
         },
       },
     ]);
+  });
+
+  describe('Multiselect property', () => {
+    it('should update the suggestions current value', () => {
+      const result = updateSuggestionsByEntity(
+        [suggestion5],
+        {
+          ...entity3,
+          metadata: {
+            multiselect: [
+              {
+                value: 'value3',
+              },
+              {
+                value: 'value2',
+              },
+            ],
+          },
+        },
+        propertyMultiselect
+      );
+
+      expect(result![0].children?.length).toBe(2);
+      expect(result).toEqual([
+        {
+          ...suggestion5,
+          currentValue: ['value3', 'value2'],
+          children: [
+            {
+              suggestedValue: 'value3',
+              currentValue: 'value3',
+              propertyName: 'multiselect',
+              entityId: 'entity3',
+              sharedId: '3',
+              _id: '5',
+              isChild: true,
+              disableRowSelection: true,
+            },
+            {
+              suggestedValue: 'value2',
+              currentValue: 'value2',
+              propertyName: 'multiselect',
+              entityId: 'entity3',
+              sharedId: '3',
+              _id: '5',
+              isChild: true,
+              disableRowSelection: true,
+            },
+          ],
+        },
+      ]);
+    });
   });
 });
