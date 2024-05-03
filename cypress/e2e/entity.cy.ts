@@ -248,6 +248,7 @@ describe('Entities', () => {
       });
 
       it('should create a reference from main document', () => {
+        cy.contains('a', 'Library').click();
         cy.contains('.item-document', 'Entity with main documents').within(() => {
           cy.get('.view-doc').click();
         });
