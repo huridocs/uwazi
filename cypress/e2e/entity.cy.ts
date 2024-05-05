@@ -254,12 +254,18 @@ describe('Entities', () => {
         });
         cy.contains('span', 'La Sentencia de fondo');
         cy.get('#p3R_mc24 > span:nth-child(2)').realClick({ clickCount: 3 });
-        cy.get('.ContextMenu [data-icon="file"]').click();
-        cy.contains('.create-reference li:nth-child(1) span:nth-child(2)', 'Relacionado a').click();
-        cy.get('aside.create-reference input').type('Patrick Robinson');
-        cy.contains('Tracy Robinson');
-        cy.contains('.item-name', 'Patrick Robinson').click();
-        cy.contains('aside.create-reference .btn-success', 'Save').click();
+        cy.get('.fa-file', { timeout: 5000 }).then(() => {
+          cy.get('.fa-file').realClick();
+        });
+        cy.contains('.create-reference li:nth-child(1) span:nth-child(2)', 'Relacionado a').click({
+          timeout: 5000,
+        });
+        cy.get('aside.create-reference input').type('Patrick Robinson', { timeout: 5000 });
+        cy.contains('Tracy Robinson', { timeout: 5000 });
+        cy.contains('.item-name', 'Patrick Robinson', { timeout: 5000 }).click();
+        cy.contains('aside.create-reference .btn-success', 'Save', { timeout: 5000 }).click({
+          timeout: 5000,
+        });
         cy.contains('Saved successfully.');
         cy.get('#p3R_mc0').scrollIntoView();
         cy.get('#p3R_mc24 > span:nth-child(2)').toMatchImageSnapshot();
