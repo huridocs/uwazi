@@ -6,7 +6,7 @@ import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
@@ -377,16 +377,46 @@ const PDFSidepanel = ({
       return null;
     }
     return (
-      <div className="p-4">
-        <MultiselectList
-          onChange={values => {
-            setValue('field', values, { shouldDirty: true });
-          }}
-          value={propertyValue as string[]}
-          items={options}
-          checkboxes
-          singleSelect={type === 'select'}
-        />
+      <div>
+        <div className="p-4">
+          <MultiselectList
+            onChange={values => {
+              setValue('field', values, { shouldDirty: true });
+            }}
+            value={propertyValue as string[]}
+            items={options}
+            checkboxes
+            singleSelect={type === 'select'}
+          />
+        </div>
+        <div>
+          <Button
+            type="button"
+            styling="outline"
+            onClick={async () => handleClickToFill()}
+            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+          >
+            <Translate className="">Click to fill</Translate>
+          </Button>
+        </div>
+        <div className="sm:text-right" data-testid="ix-clear-button-container">
+          <Button
+            type="button"
+            styling="outline"
+            disabled={Boolean(!highlights) || isSubmitting}
+            onClick={() => {
+              setHighlights(undefined);
+              setSelections(
+                selectionHandlers.deleteFileSelection(
+                  { name: suggestion?.propertyName || '' },
+                  pdf?.extractedMetadata
+                )
+              );
+            }}
+          >
+            <Translate>Clear</Translate>
+          </Button>
+        </div>
       </div>
     );
   };
