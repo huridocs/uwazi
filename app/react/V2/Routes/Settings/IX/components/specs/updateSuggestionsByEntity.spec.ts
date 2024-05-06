@@ -1,3 +1,4 @@
+import { MultiValueSuggestion } from '../../types';
 import { updateSuggestionsByEntity } from '../helpers';
 import {
   suggestion1,
@@ -102,7 +103,7 @@ describe('updateSuggestionsByEntity', () => {
           },
         },
         propertyMultiselect
-      );
+      ) as MultiValueSuggestion[];
 
       expect(result![0].children?.length).toBe(2);
       expect(result).toEqual([

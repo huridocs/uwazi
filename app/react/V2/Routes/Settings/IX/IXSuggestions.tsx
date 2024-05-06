@@ -32,12 +32,7 @@ import {
   updateSuggestionsByEntity,
   generateChildrenRows,
 } from './components/helpers';
-import {
-  SuggestionValue,
-  TableSuggestion,
-  SingleValueSuggestion,
-  MultiValueSuggestion,
-} from './types';
+import { SuggestionValue, TableSuggestion, MultiValueSuggestion } from './types';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -82,7 +77,9 @@ const IXSuggestions = () => {
 
   useMemo(() => {
     if (property?.type === 'multiselect') {
-      const flatenedSuggestions = suggestions.map(generateChildrenRows);
+      const flatenedSuggestions = suggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
       setCurrentSuggestions(flatenedSuggestions);
       return;
     }
@@ -340,7 +337,7 @@ const IXSuggestions = () => {
       <PDFSidepanel
         showSidepanel={sidepanel === 'pdf'}
         setShowSidepanel={closeSidepanel}
-        suggestion={sidepanelSuggestion}
+        suggestion={sidepanelSuggestion as EntitySuggestionType}
         onEntitySave={updatedEntity =>
           setCurrentSuggestions(
             updateSuggestionsByEntity(currentSuggestions, updatedEntity, property)

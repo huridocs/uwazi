@@ -122,7 +122,6 @@ export const EntitySuggestionSchema = {
     date: { type: 'number' },
   },
   required: [
-    '_id',
     'propertyName',
     'entityTitle',
     'entityId',

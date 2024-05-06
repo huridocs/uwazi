@@ -18,6 +18,7 @@ type Highlights = { [page: string]: TextHighlight[] };
 type SuggestionValue = string | number;
 
 interface SingleValueSuggestion extends EntitySuggestionType {
+  _id: ObjectIdSchema;
   isChild?: boolean;
   suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
@@ -25,6 +26,7 @@ interface SingleValueSuggestion extends EntitySuggestionType {
 }
 
 interface MultiValueSuggestion extends EntitySuggestionType {
+  _id: ObjectIdSchema;
   isChild?: boolean;
   suggestedValue: SuggestionValue[];
   currentValue: SuggestionValue[];

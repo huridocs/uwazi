@@ -30,7 +30,7 @@ import { Highlights } from '../types';
 interface PDFSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  suggestion: EntitySuggestionType | undefined;
+  suggestion: EntitySuggestionType;
   onEntitySave: (entity: ClientEntitySchema) => any;
 }
 
@@ -48,7 +48,7 @@ enum PropertyTypes {
 }
 
 const getFormValue = (
-  suggestion?: EntitySuggestionType,
+  suggestion: EntitySuggestionType,
   entity?: ClientEntitySchema,
   type?: string
 ) => {
@@ -79,13 +79,16 @@ const getFormValue = (
   return value;
 };
 
-const getPropertyData = (suggestion?: EntitySuggestionType, template?: ClientTemplateSchema) => {
-  if (!suggestion) {
-    return { label: '', type: PropertyTypes.TEXT, isRequired: true };
-  }
-
+const getPropertyData = (suggestion: EntitySuggestionType, template?: ClientTemplateSchema) => {
   if (suggestion.propertyName === 'title') {
-    return { label: 'Title', type: PropertyTypes.TEXT, isRequired: true };
+    return {
+      _id: 'title',
+      label: 'Title',
+      type: PropertyTypes.TEXT,
+      required: true,
+      name: 'title',
+      content: null,
+    };
   }
 
   const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
@@ -282,7 +285,7 @@ const PDFSidepanel = ({
       );
       setSelections(
         selectionHandlers.updateFileSelection(
-          { name: suggestion?.propertyName || '', id: property._id },
+          { name: suggestion?.propertyName || '', id: property._id as string },
           pdf?.extractedMetadata,
           selectedText
         )

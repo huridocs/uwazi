@@ -14,7 +14,7 @@ const SuggestedValue = ({
   suggestion,
   templateProperties,
 }: {
-  value: string;
+  value: string | number | undefined;
   suggestion: EntitySuggestionType;
   templateProperties: ClientTemplateSchema['properties'];
 }) => {
@@ -45,7 +45,7 @@ const SuggestedValue = ({
   const thesaurus = thesauris.find(t => t._id === content);
 
   const getCurrentValue = () => {
-    if (value === '') {
+    if (value === '' || value === undefined) {
       return '-';
     }
     if (type === 'date') {

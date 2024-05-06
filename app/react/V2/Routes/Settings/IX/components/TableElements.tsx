@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Cell, CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
@@ -10,10 +11,11 @@ import {
   DatePropertyIcon,
   MarkdownPropertyIcon,
   NumericPropertyIcon,
+  SelectPropertyIcon,
   TextPropertyIcon,
 } from 'V2/Components/CustomIcons';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Extractor, TableSuggestion, ChildrenSuggestion } from '../types';
+import { Extractor, SingleValueSuggestion, TableSuggestion } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 
@@ -22,13 +24,15 @@ const propertyIcons = {
   date: <DatePropertyIcon className="w-4" />,
   numeric: <NumericPropertyIcon className="w-4" />,
   markdown: <MarkdownPropertyIcon className="w-4" />,
+  select: <SelectPropertyIcon className="w-4" />,
+  multiselect: <SelectPropertyIcon className="w-4" />,
 };
 
 const extractorColumnHelper = createColumnHelper<Extractor>();
 // Helper typed as any because of https://github.com/TanStack/table/issues/4224
 const suggestionColumnHelper = createColumnHelper<any>();
 
-const statusColor = (suggestion: TableSuggestion | ChildrenSuggestion): Color => {
+const statusColor = (suggestion: TableSuggestion): Color => {
   if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
     return 'red';
   }
@@ -75,7 +79,7 @@ const CurrentValueCell = ({
   cell,
   allProperties,
 }: {
-  cell: CellContext<TableSuggestion, TableSuggestion['segment']>;
+  cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
 }) => (
   <SuggestedValue
@@ -89,7 +93,7 @@ const AcceptButton = ({
   cell,
   action,
 }: {
-  cell: Cell<TableSuggestion, string>;
+  cell: Cell<SingleValueSuggestion, string>;
   action: Function;
 }) => {
   const color = statusColor(cell.row.original);
@@ -135,7 +139,7 @@ const OpenPDFButton = ({
   cell,
   action,
 }: {
-  cell: Cell<TableSuggestion, string>;
+  cell: Cell<SingleValueSuggestion, string>;
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
@@ -192,15 +196,20 @@ const extractorsTableColumns = [
   }),
 ];
 
-const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
-  <EmbededButton
-    icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-    onClick={() => row.toggleExpanded()}
-    color="indigo"
-  >
-    <Translate>Group</Translate>
-  </EmbededButton>
-);
+const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => {
+  if (!row.getCanExpand()) {
+    return null;
+  }
+  return (
+    <EmbededButton
+      icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+      onClick={() => row.toggleExpanded()}
+      color="indigo"
+    >
+      <Translate>Group</Translate>
+    </EmbededButton>
+  );
+};
 
 type Color = 'red' | 'green' | 'orange';
 
@@ -216,22 +225,21 @@ const suggestionsTableColumnsBuilder: Function = (
       header: TitleHeader,
       cell: TitleCell,
       meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<TableSuggestion, 'entityTitle'>,
+    }) as ColumnDef<SingleValueSuggestion, 'entityTitle'>,
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
       meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<TableSuggestion, 'segment'>,
+    }) as ColumnDef<SingleValueSuggestion, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<TableSuggestion, 'currentValue'>,
+    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
-      cell: ({ row }: CellContext<TableSuggestion, string>) =>
-        row.original.isChild ? null : <GroupButton row={row} />,
+      cell: GroupButton,
       meta: {
         headerClassName: 'sr-only w-1/12 text-center',
         contentClassName: 'text-center',
@@ -240,7 +248,13 @@ const suggestionsTableColumnsBuilder: Function = (
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
       header: ActionHeader,
-      cell: ({ cell, row }: CellContext<TableSuggestion, string>) =>
+      cell: ({
+        cell,
+        row,
+      }: {
+        row: Row<TableSuggestion>;
+        cell: Cell<SingleValueSuggestion, any>;
+      }) =>
         row.original.isChild ? (
           <AcceptButton action={acceptSuggestions} cell={cell} />
         ) : (
@@ -250,7 +264,7 @@ const suggestionsTableColumnsBuilder: Function = (
         headerClassName: 'sr-only invisible bg-gray-50',
         contentClassName: 'text-center',
       },
-    }),
+    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
   ];
 };
 
