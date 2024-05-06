@@ -47,7 +47,7 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
           draggableRows={props.draggableRows === true}
           onChange={onChangeHandler}
           subRowsKey={props.subRowsKey}
-          editableGroups={props.editableGroups}
+          allowEditGroupsWithDnD={props.allowEditGroupsWithDnD}
         />
       </div>
       {props.showUpdates === true && !firstLoad && (

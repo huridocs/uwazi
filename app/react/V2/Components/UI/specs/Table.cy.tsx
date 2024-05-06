@@ -348,7 +348,7 @@ describe('Table', () => {
 
     describe('Fixed groups', () => {
       it('should not move a child outsides a group if editableGroups is false', () => {
-        mount(<NestedDnD editableGroups={false} />);
+        mount(<NestedDnD allowEditGroupsWithDnD={false} />);
         cy.contains('children').click();
 
         cy.get('[data-testid="group_1-draggable-item-0"]').drag(
