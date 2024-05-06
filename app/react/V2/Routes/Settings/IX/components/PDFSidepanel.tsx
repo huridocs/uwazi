@@ -8,7 +8,7 @@ import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate } from 'app/I18N';
-import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
+import { ClientEntitySchema, ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { FetchResponseError } from 'shared/JSONRequest';
 import {
@@ -30,7 +30,7 @@ import { Highlights } from '../types';
 interface PDFSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  suggestion: EntitySuggestionType;
+  suggestion?: EntitySuggestionType;
   onEntitySave: (entity: ClientEntitySchema) => any;
 }
 
@@ -48,7 +48,7 @@ enum PropertyTypes {
 }
 
 const getFormValue = (
-  suggestion: EntitySuggestionType,
+  suggestion?: EntitySuggestionType,
   entity?: ClientEntitySchema,
   type?: string
 ) => {
@@ -87,8 +87,8 @@ const getPropertyData = (suggestion: EntitySuggestionType, template?: ClientTemp
       type: PropertyTypes.TEXT,
       required: true,
       name: 'title',
-      content: null,
-    };
+      content: undefined,
+    } as ClientPropertySchema;
   }
 
   const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
@@ -143,7 +143,7 @@ const handleEntitySave = async (
 };
 
 const coerceValue = async (
-  propertyType: 'date' | 'number',
+  propertyType: 'date' | 'numeric',
   text: string | Date | undefined,
   documentLanguage: string = 'en'
 ) => {
@@ -151,7 +151,7 @@ const coerceValue = async (
     return entitiesAPI.coerceValue(text!, 'date', documentLanguage);
   }
 
-  if (propertyType === 'number' && typeof text === 'string') {
+  if (propertyType === 'numeric' && typeof text === 'string') {
     return entitiesAPI.coerceValue(text.trim(), 'numeric', documentLanguage);
   }
 
@@ -177,15 +177,13 @@ const PDFSidepanel = ({
   const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [labelInputIsOpen, setLabelInputIsOpen] = useState(true);
   const [entity, setEntity] = useState<ClientEntitySchema>();
+  const [property, setProperty] = useState<ClientPropertySchema>();
+  const [thesaurus, setThesaurus] = useState<any>();
   const setNotifications = useSetAtom(notificationAtom);
   const thesauris = useAtomValue(thesaurisAtom);
 
-  const entityTemplate = templates.find(template => template._id === suggestion?.entityTemplateId);
-  const property = getPropertyData(suggestion, entityTemplate);
-
-  const thesaurus = thesauris.find(thes => thes._id === property.content);
   const templateId = suggestion?.entityTemplateId;
-  const propertyValue = getFormValue(suggestion, entity, property.type);
+  const propertyValue = getFormValue(suggestion, entity, property?.type);
   const {
     register,
     handleSubmit,
@@ -208,6 +206,11 @@ const PDFSidepanel = ({
         .catch(e => {
           throw e;
         });
+
+      const template = templates.find(t => t._id === suggestion?.entityTemplateId);
+      const _property = getPropertyData(suggestion, template);
+      setProperty(_property);
+      setThesaurus(thesauris.find(thes => thes._id === _property.content));
     }
 
     return () => {
@@ -245,6 +248,10 @@ const PDFSidepanel = ({
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
+    if (!property) {
+      throw new Error('Property not found');
+    }
+
     let metadata = value.field;
 
     if (property.type === 'date' && isDirty && metadata) {
@@ -279,6 +286,10 @@ const PDFSidepanel = ({
   };
 
   const handleClickToFill = async () => {
+    if (!property) {
+      throw new Error('Property not found');
+    }
+
     if (selectedText) {
       setHighlights(
         selectionHandlers.getHighlightsFromSelection(selectedText, HighlightColors.NEW)
@@ -291,7 +302,7 @@ const PDFSidepanel = ({
         )
       );
 
-      if (property.type === 'date' || property.type === 'number') {
+      if (property.type === 'date' || property.type === 'numeric') {
         const coercedValue = await coerceValue(property.type, selectedText.text, pdf?.language);
 
         if (!coercedValue?.success) {
@@ -308,54 +319,60 @@ const PDFSidepanel = ({
     }
   };
 
-  const renderInputText = (type: 'text' | 'date' | 'number') => (
-    <div className="flex gap-2 p-4">
-      <div className="grow">
-        <InputField
-          clearFieldAction={() => {
-            setValue('field', '');
-          }}
-          id={property.label}
-          label={<Translate context={templateId}>{property.label}</Translate>}
-          hideLabel
-          type={type}
-          hasErrors={errors.field?.type === 'required' || !!selectionError}
-          {...register('field', {
-            required: property.required,
-            valueAsDate: property.type === 'date' || undefined,
-          })}
-        />
+  const renderInputText = (type: 'text' | 'date' | 'numeric') => {
+    if (!property) {
+      return null;
+    }
+    const inputType = type === 'numeric' ? 'number' : type;
+    return (
+      <div className="flex gap-2 p-4">
+        <div className="grow">
+          <InputField
+            clearFieldAction={() => {
+              setValue('field', '');
+            }}
+            id={property.label}
+            label={<Translate context={templateId}>{property.label}</Translate>}
+            hideLabel
+            type={inputType}
+            hasErrors={errors.field?.type === 'required' || !!selectionError}
+            {...register('field', {
+              required: property.required,
+              valueAsDate: property.type === 'date' || undefined,
+            })}
+          />
+        </div>
+        <div>
+          <Button
+            type="button"
+            styling="outline"
+            onClick={async () => handleClickToFill()}
+            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+          >
+            <Translate className="">Click to fill</Translate>
+          </Button>
+        </div>
+        <div className="sm:text-right" data-testid="ix-clear-button-container">
+          <Button
+            type="button"
+            styling="outline"
+            disabled={Boolean(!highlights) || isSubmitting}
+            onClick={() => {
+              setHighlights(undefined);
+              setSelections(
+                selectionHandlers.deleteFileSelection(
+                  { name: suggestion?.propertyName || '' },
+                  pdf?.extractedMetadata
+                )
+              );
+            }}
+          >
+            <Translate>Clear</Translate>
+          </Button>
+        </div>
       </div>
-      <div>
-        <Button
-          type="button"
-          styling="outline"
-          onClick={async () => handleClickToFill()}
-          disabled={!selectedText?.selectionRectangles.length || isSubmitting}
-        >
-          <Translate className="">Click to fill</Translate>
-        </Button>
-      </div>
-      <div className="sm:text-right" data-testid="ix-clear-button-container">
-        <Button
-          type="button"
-          styling="outline"
-          disabled={Boolean(!highlights) || isSubmitting}
-          onClick={() => {
-            setHighlights(undefined);
-            setSelections(
-              selectionHandlers.deleteFileSelection(
-                { name: suggestion?.propertyName || '' },
-                pdf?.extractedMetadata
-              )
-            );
-          }}
-        >
-          <Translate>Clear</Translate>
-        </Button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   interface Option {
     label: string | React.ReactNode;
@@ -368,7 +385,7 @@ const PDFSidepanel = ({
     const options: Option[] = [];
     thesaurus?.values.forEach((value: any) => {
       options.push({
-        label: <Translate context={property.content}>{value.label}</Translate>,
+        label: <Translate context={property?.content}>{value.label}</Translate>,
         searchLabel: value.label.toLowerCase(),
         value: value.id,
       });
@@ -422,14 +439,14 @@ const PDFSidepanel = ({
   };
 
   const renderLabel = () => {
-    switch (property.type) {
+    switch (property?.type) {
       case 'text':
       case 'date':
-      case 'number':
-        return renderInputText(property.type);
+      case 'numeric':
+        return renderInputText(property?.type);
       case 'select':
       case 'multiselect':
-        return renderSelect(property.type);
+        return renderSelect(property?.type);
       default:
         return '';
     }
@@ -476,7 +493,7 @@ const PDFSidepanel = ({
         <div className="flex px-4 py-2">
           <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
             <Translate className="uppercase" context={templateId}>
-              {property.label}
+              {property?.label}
             </Translate>{' '}
             {selectionError && <span>{selectionError}</span>}
           </p>
