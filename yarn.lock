@@ -9908,10 +9908,10 @@ eslint-module-utils@^2.8.0:
   dependencies:
     debug "^3.2.7"
 
-eslint-plugin-cypress@^2.15.1:
-  version "2.15.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-2.15.1.tgz#336afa7e8e27451afaf65aa359c9509e0a4f3a7b"
-  integrity sha512-eLHLWP5Q+I4j2AWepYq0PgFEei9/s5LvjuSqWrxurkg1YZ8ltxdvMNmdSf0drnsNo57CTgYY/NIHHLRSWejR7w==
+eslint-plugin-cypress@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-3.1.1.tgz#d85aabad02ca4fad80a30d73a240ca64b4de224d"
+  integrity sha512-rsP/72X99KNOAq26o5VAb6SICvdfjwvvWjs9n5a9UD14B5kCzzE45NJR/yJYw3fsGXUUKiwkv6eU5wRthM8kPw==
   dependencies:
     globals "^13.20.0"
 
