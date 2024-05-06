@@ -7,9 +7,10 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
 } from '../types';
+import { child } from 'winston';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
-  const suggestion: MultiValueSuggestion = { ..._suggestion };
+  const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };
 
   const currentValues = [
     ...(Array.isArray(suggestion.currentValue) ? suggestion.currentValue : []),
@@ -21,6 +22,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   suggestion.children = [];
 
+  const { children, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
     const valuePresent = currentValues.find(v => v === suggestedValue);
     if (valuePresent) {
@@ -28,7 +30,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
     }
 
     suggestion.children?.push({
-      ...suggestion,
+      ...suggestionWithoutChildren,
       suggestedValue,
       currentValue: valuePresent || '',
       propertyName: suggestion.propertyName,
@@ -39,7 +41,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
 
   currentValues.forEach(currentValue => {
     suggestion.children?.push({
-      ...suggestion,
+      ...suggestionWithoutChildren,
       suggestedValue: '',
       currentValue,
       disableRowSelection: true,

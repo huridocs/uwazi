@@ -61,9 +61,9 @@ const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Document</Translate>;
 const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
-const AcceptHeader = () => <Translate>Accept</Translate>;
+const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
@@ -196,20 +196,15 @@ const extractorsTableColumns = [
   }),
 ];
 
-const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => {
-  if (!row.getCanExpand()) {
-    return null;
-  }
-  return (
-    <EmbededButton
-      icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-      onClick={() => row.toggleExpanded()}
-      color="indigo"
-    >
-      <Translate>Group</Translate>
-    </EmbededButton>
-  );
-};
+const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
+  <EmbededButton
+    icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+    onClick={() => row.toggleExpanded()}
+    color="indigo"
+  >
+    <Translate>Group</Translate>
+  </EmbededButton>
+);
 
 type Color = 'red' | 'green' | 'orange';
 
@@ -224,24 +219,38 @@ const suggestionsTableColumnsBuilder: Function = (
     suggestionColumnHelper.accessor('entityTitle', {
       header: TitleHeader,
       cell: TitleCell,
-      meta: { headerClassName: 'w-3/12' },
+      meta: { headerClassName: 'w-1/4' },
     }) as ColumnDef<SingleValueSuggestion, 'entityTitle'>,
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
-      meta: { headerClassName: 'w-3/12' },
+      meta: { headerClassName: 'w-1/4' },
     }) as ColumnDef<SingleValueSuggestion, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
-      meta: { headerClassName: 'w-3/12' },
+      meta: { headerClassName: 'w-1/4' },
     }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
-      cell: GroupButton,
+      cell: ({
+        cell,
+        row,
+      }: {
+        row: Row<TableSuggestion>;
+        cell: Cell<SingleValueSuggestion, any>;
+      }) => {
+        if (row.getCanExpand()) {
+          return <GroupButton row={row} />;
+        }
+        if (!row.original.isChild) {
+          return <AcceptButton action={acceptSuggestions} cell={cell} />;
+        }
+        return null;
+      },
       meta: {
-        headerClassName: 'sr-only w-1/12 text-center',
+        headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
     }),
@@ -255,13 +264,13 @@ const suggestionsTableColumnsBuilder: Function = (
         row: Row<TableSuggestion>;
         cell: Cell<SingleValueSuggestion, any>;
       }) =>
-        row.original.isChild ? (
-          <AcceptButton action={acceptSuggestions} cell={cell} />
-        ) : (
+        !row.original.isChild ? (
           <OpenPDFButton action={openPdfSidepanel} cell={cell} />
+        ) : (
+          <AcceptButton action={acceptSuggestions} cell={cell} />
         ),
       meta: {
-        headerClassName: 'sr-only invisible bg-gray-50',
+        headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
     }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,

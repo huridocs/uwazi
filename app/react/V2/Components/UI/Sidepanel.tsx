@@ -112,7 +112,7 @@ const Sidepanel = ({
 };
 
 Sidepanel.Body = ({ children, className }: { children: React.ReactNode; className?: String }) => (
-  <div className={`flex-grow p-4 ${className}`}>{children}</div>
+  <div className={`flex-grow ${className}`}>{children}</div>
 );
 
 Sidepanel.Footer = ({ children, className }: { children: React.ReactNode; className?: String }) => (

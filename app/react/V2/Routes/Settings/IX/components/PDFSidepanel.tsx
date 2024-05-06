@@ -32,6 +32,7 @@ interface PDFSidepanelProps {
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   suggestion?: EntitySuggestionType;
   onEntitySave: (entity: ClientEntitySchema) => any;
+  property?: ClientPropertySchema;
 }
 
 enum HighlightColors {
@@ -163,6 +164,7 @@ const PDFSidepanel = ({
   setShowSidepanel,
   suggestion,
   onEntitySave,
+  property,
 }: PDFSidepanelProps) => {
   const { templates } = useLoaderData() as {
     templates: ClientTemplateSchema[];
@@ -177,7 +179,6 @@ const PDFSidepanel = ({
   const [selections, setSelections] = useState<ExtractedMetadataSchema[] | undefined>(undefined);
   const [labelInputIsOpen, setLabelInputIsOpen] = useState(true);
   const [entity, setEntity] = useState<ClientEntitySchema>();
-  const [property, setProperty] = useState<ClientPropertySchema>();
   const [thesaurus, setThesaurus] = useState<any>();
   const setNotifications = useSetAtom(notificationAtom);
   const thesauris = useAtomValue(thesaurisAtom);
@@ -197,6 +198,17 @@ const PDFSidepanel = ({
   });
 
   useEffect(() => {
+    if (property?.content) {
+      const _thesaurus = thesauris.find(thes => thes._id === property.content);
+      setThesaurus(_thesaurus);
+    }
+
+    return () => {
+      setThesaurus(undefined);
+    };
+  }, [property]);
+
+  useEffect(() => {
     if (suggestion) {
       loadSidepanelData(suggestion)
         .then(({ file, entity: suggestionEntity }) => {
@@ -206,11 +218,6 @@ const PDFSidepanel = ({
         .catch(e => {
           throw e;
         });
-
-      const template = templates.find(t => t._id === suggestion?.entityTemplateId);
-      const _property = getPropertyData(suggestion, template);
-      setProperty(_property);
-      setThesaurus(thesauris.find(thes => thes._id === _property.content));
     }
 
     return () => {
@@ -394,46 +401,16 @@ const PDFSidepanel = ({
       return null;
     }
     return (
-      <div>
-        <div className="p-4">
-          <MultiselectList
-            onChange={values => {
-              setValue('field', values, { shouldDirty: true });
-            }}
-            value={propertyValue as string[]}
-            items={options}
-            checkboxes
-            singleSelect={type === 'select'}
-          />
-        </div>
-        <div>
-          <Button
-            type="button"
-            styling="outline"
-            onClick={async () => handleClickToFill()}
-            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
-          >
-            <Translate className="">Click to fill</Translate>
-          </Button>
-        </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+      <div className="p-4">
+        <MultiselectList
+          onChange={values => {
+            setValue('field', values, { shouldDirty: true });
+          }}
+          value={propertyValue as string[]}
+          items={options}
+          checkboxes
+          singleSelect={type === 'select'}
+        />
       </div>
     );
   };
