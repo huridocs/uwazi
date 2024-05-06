@@ -26,6 +26,7 @@ Add / remove favorite,เพิ่ม / ลบรายการโปรด
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
+Add entity type,Add entity type
 Add file,เพิ่มไฟล์
 Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
@@ -330,6 +331,7 @@ Filters configuration,การกำหนดค่าตัวกรอง
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,ตัวอย่างการกำหนดค่าตัวกรอง
 Filters OR operator,ตัวกรอง ประเภท หรือ
+Filters saved,Filters saved
 Find,หา
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions

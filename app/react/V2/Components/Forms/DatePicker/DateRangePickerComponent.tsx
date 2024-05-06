@@ -1,4 +1,5 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
+import { UseFormRegister } from 'react-hook-form';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -11,12 +12,12 @@ import { InputField } from '../InputField';
 import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 
 interface DateRangePickerProps extends DatePickerProps {
-  from?: string | number;
-  to?: string | number;
+  register?: UseFormRegister<any> | (() => {});
   placeholderStart?: string;
   placeholderEnd?: string;
   onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
   onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
+  onClear?: () => void;
 }
 const DateRangePickerComponent = React.forwardRef(
   (
@@ -29,16 +30,16 @@ const DateRangePickerComponent = React.forwardRef(
       placeholderEnd,
       hasErrors,
       errorMessage,
-      from,
-      to,
       id = uniqueID(),
       language = 'en',
       dateFormat = 'yyyy-mm-dd',
       hideLabel = true,
       className = '',
+      register = () => ({}),
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
       onBlur = () => {},
+      onClear = () => {},
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
@@ -79,18 +80,6 @@ const DateRangePickerComponent = React.forwardRef(
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [locale, labelToday, labelClear, dateFormat]);
 
-    useEffect(() => {
-      instance.current.setDates(from, to);
-      if (instance.current?.inputs?.length > 0) {
-        if (from === undefined || from === '') {
-          instance.current.inputs[0].value = '';
-        }
-        if (to === undefined || to === '') {
-          instance.current.inputs[1].value = '';
-        }
-      }
-    }, [from, to]);
-
     return (
       <div className="tw-content">
         <div id="tw-container" className="relative tw-datepicker" data-test-id={id} />
@@ -127,24 +116,17 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                id="start"
-                name="start"
+                name="from"
+                {...register('from')}
                 type="text"
                 onSelect={onFromDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
-                value={from}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderStart}
                 ref={fromRef}
-                clearFieldAction={() => {
-                  instance.current?.setDates({ clear: true }, { clear: false });
-                  const event = new Event('change');
-                  instance.current.inputs[0].dispatchEvent(event);
-                  // @ts-ignore
-                  onFromDateSelected(event);
-                }}
+                clearFieldAction={onClear}
               />
             </div>
             <div className="relative">
@@ -165,23 +147,17 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                id="end"
-                name="end"
+                id="to"
+                name="to"
+                {...register('to')}
                 type="text"
                 onSelect={onToDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
-                value={to}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderEnd}
-                clearFieldAction={() => {
-                  instance.current?.setDates({ clear: false }, { clear: true });
-                  const event = new Event('change');
-                  instance.current.inputs[1].dispatchEvent(event);
-                  // @ts-ignore
-                  onToDateSelected(event);
-                }}
+                clearFieldAction={onClear}
                 ref={toRef}
               />
             </div>
@@ -194,12 +170,12 @@ const DateRangePickerComponent = React.forwardRef(
 );
 
 DateRangePickerComponent.defaultProps = {
-  from: undefined,
-  to: undefined,
+  register: () => ({}),
   placeholderStart: 'Select start',
   placeholderEnd: 'Select end',
   onFromDateSelected: () => {},
   onToDateSelected: () => {},
+  onClear: () => {},
 };
 
 export type { DateRangePickerProps };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { APIURL } from 'app/config';
-import superagent from 'superagent';
+import superagent, { MultipartValueSingle } from 'superagent';
 
 interface Fields {
   [key: string]: string;
@@ -24,7 +24,7 @@ export async function httpRequest(
     });
 
     if (file) {
-      req.attach('file', file, file.name);
+      req.attach('file', file as unknown as MultipartValueSingle, file.name);
     }
 
     req

@@ -26,6 +26,7 @@ Add / remove favorite,အကြိုက်ဆုံးကို ထည့်ရ
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,ရက်စွဲ ထည့်ရန်
 Add entities / documents,ဖြည့်သွင်းချက်များ / စာရွက်စာတမ်းများ ထည့်ရန်
+Add entity type,Add entity type
 Add file,ဖိုင် ထည့်ရန်
 Add from URL,url မှ ထည့်ရန်
 Add from web,ဝက်ဘ်မှ ထည့်ရန်
@@ -330,6 +331,7 @@ Filters configuration,စစ်ထုတ်မှုများ စနစ်ဖ
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,စစ်ထုတ်မှုများ စနစ်ဖွဲ့စည်းပုံ ဥပမာ
 Filters OR operator,စစ်ထုတ်မှုများ သို့မဟုတ် အော်ပရေတာ
+Filters saved,Filters saved
 Find,ရှာရန်
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions

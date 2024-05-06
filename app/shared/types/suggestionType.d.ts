@@ -61,9 +61,9 @@ export interface IXSuggestionType {
   entityTemplate: string;
   fileId?: ObjectIdSchema;
   propertyName: string;
-  suggestedValue: PropertyValueSchema;
+  suggestedValue: PropertyValueSchema | PropertyValueSchema[];
   suggestedText?: string;
-  segment: string;
+  segment?: string;
   language: string;
   page?: number;
   status?: 'processing' | 'failed' | 'ready';

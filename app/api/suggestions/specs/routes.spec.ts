@@ -414,6 +414,33 @@ describe('suggestions routes', () => {
         .expect(401);
       expect(response.unauthorized).toBe(true);
     });
+
+    it('should handle partial acceptance parameters for multiselects', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          suggestions: [
+            {
+              _id: factory.idString('multiSelectSuggestion2'),
+              sharedId: 'entityWithSelects2',
+              entityId: factory.idString('entityWithSelects2'),
+              addedValues: ['1B'],
+              removedValues: ['1A'],
+            },
+          ],
+        })
+        .expect(200);
+
+      const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
+      expect(entity.metadata.property_multiselect).toEqual([
+        { value: 'A', label: 'A' },
+        { value: '1B', label: '1B' },
+      ]);
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        { _id: { $in: [factory.id('entityWithSelects2')] } },
+        '+fullText'
+      );
+    });
   });
 });
 

@@ -1,8 +1,9 @@
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
-import { LanguagesListSchema } from 'shared/types/commonTypes';
+import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
+import { propertyIsMultiselect } from 'shared/propertyTypes';
+import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
   getCurrentValueStage,
@@ -11,7 +12,17 @@ import {
   getLabeledValueStage,
 } from './pipelineStages';
 
-type SuggestionsAggregationResult = SuggestionValues & { _id: any; propertyName: string };
+type SuggestionsAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
+  _id: any;
+  propertyName: string;
+  currentValue: CurrentValue[];
+};
+
+type PostProcessedAggregationResult = Omit<SuggestionValues, 'currentValue'> & {
+  _id: any;
+  propertyName: string;
+  currentValue: SuggestionValues['currentValue'];
+};
 
 const getModelCreationDateStage = () => [
   {
@@ -80,6 +91,22 @@ const findSuggestions = (query: any, languages: LanguagesListSchema) =>
     ])
     .cursor();
 
+const postProcessCurrentValue = (
+  suggestion: SuggestionsAggregationResult,
+  propertyType: PropertyTypeSchema
+): PostProcessedAggregationResult => {
+  if (propertyIsMultiselect(propertyType)) return suggestion;
+  return {
+    ...suggestion,
+    currentValue: suggestion.currentValue.length > 0 ? suggestion.currentValue[0] : '',
+  };
+};
+
+export const postProcessCurrentValues = (
+  suggestions: SuggestionsAggregationResult[],
+  propertyType: PropertyTypeSchema
+) => suggestions.map(s => postProcessCurrentValue(s, propertyType));
+
 export const updateStates = async (query: any) => {
   const { languages } = await settings.get();
   const propertyTypes = objectIndex(
@@ -92,10 +119,11 @@ export const updateStates = async (query: any) => {
   let suggestion: SuggestionsAggregationResult = await cursor.next();
   while (suggestion) {
     const propertyType = propertyTypes[suggestion.propertyName];
+    const _suggestion = postProcessCurrentValue(suggestion, propertyType);
     // eslint-disable-next-line no-await-in-loop
     await writeStream.update(
-      { _id: suggestion._id },
-      { $set: { state: getSuggestionState(suggestion, propertyType) } }
+      { _id: _suggestion._id },
+      { $set: { state: getSuggestionState(_suggestion, propertyType) } }
     );
     // eslint-disable-next-line no-await-in-loop
     suggestion = await cursor.next();

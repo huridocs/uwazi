@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import entities from 'api/entities/entities';
+
 import { files } from 'api/files/files';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings/settings';
@@ -10,8 +10,8 @@ import {
   ExtractedMetadataSchema,
   LanguagesListSchema,
   ObjectIdSchema,
+  PropertySchema,
 } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import {
   IXSuggestionAggregation,
@@ -21,7 +21,11 @@ import {
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
+import {
+  getSegmentedFilesIds,
+  propertyTypeIsSelectOrMultiSelect,
+} from 'api/services/informationextraction/getFiles';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {
   baseQueryFragment,
@@ -33,65 +37,19 @@ import {
   getMatchStage,
   groupByAndCount,
 } from './pipelineStages';
-import { updateStates } from './updateState';
+import { postProcessCurrentValues, updateStates } from './updateState';
+import {
+  AcceptedSuggestion,
+  SuggestionAcceptanceError,
+  updateEntitiesWithSuggestion,
+} from './updateEntities';
 
-interface AcceptedSuggestion {
-  _id: ObjectIdSchema;
-  sharedId: string;
-  entityId: string;
-}
-
-const updateEntitiesWithSuggestion = async (
-  allLanguages: boolean,
-  acceptedSuggestions: AcceptedSuggestion[],
-  suggestions: IXSuggestionType[]
+const updateExtractedMetadata = async (
+  suggestions: IXSuggestionType[],
+  property: PropertySchema
 ) => {
-  const sharedIds = acceptedSuggestions.map(s => s.sharedId);
-  const entityIds = acceptedSuggestions.map(s => s.entityId);
-  const { propertyName } = suggestions[0];
-  const query = allLanguages
-    ? { sharedId: { $in: sharedIds } }
-    : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
-  const storedEntities = await entities.get(query, '+permissions');
+  if (propertyTypeIsSelectOrMultiSelect(property.type)) return;
 
-  const acceptedSuggestionsBySharedId = objectIndex(
-    acceptedSuggestions,
-    as => as.sharedId,
-    as => as
-  );
-  const suggestionsById = objectIndex(
-    suggestions,
-    s => s._id?.toString() || '',
-    s => s
-  );
-
-  const getValue = (entity: EntitySchema) =>
-    suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
-      .suggestedValue;
-
-  const entitiesToUpdate =
-    propertyName !== 'title'
-      ? storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            [propertyName]: [
-              {
-                value: getValue(entity),
-              },
-            ],
-          },
-          permissions: entity.permissions || [],
-        }))
-      : storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          title: getValue(entity),
-        }));
-
-  await entities.saveMultiple(entitiesToUpdate);
-};
-
-const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
   const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
   const suggestionsByFileId = objectIndex(
     suggestions,
@@ -230,6 +188,35 @@ const readFilter = (filter: IXSuggestionsFilter) => {
   return { customFilter, extractorId };
 };
 
+const postProcessSuggestions = async (_suggestions: any, extractorId: ObjectId) => {
+  let suggestions = _suggestions;
+  if (suggestions.length > 0) {
+    const extractor = await Extractors.getById(extractorId);
+    const propertyName = extractor?.property;
+    const property = await templates.getPropertyByName(propertyName!);
+    const propertyType = property.type;
+    suggestions = postProcessCurrentValues(suggestions, propertyType);
+  }
+  return suggestions;
+};
+
+const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
+
+const needsAllLanguages = (propertyType: PropertySchema['type']) =>
+  propertyTypesWithAllLanguages.has(propertyType);
+
+const validatePartialAcceptanceTypeConstraint = (
+  acceptedSuggestions: AcceptedSuggestion[],
+  property: PropertySchema
+) => {
+  const addedValuesExist = acceptedSuggestions.some(s => s.addedValues);
+  const removedValuesExist = acceptedSuggestions.some(s => s.removedValues);
+  const multiSelectOnly = addedValuesExist || removedValuesExist;
+  if (property.type !== 'multiselect' && multiSelectOnly) {
+    throw new SuggestionAcceptanceError('Partial acceptance is only allowed for multiselects.');
+  }
+};
+
 const Suggestions = {
   getById: async (id: ObjectIdSchema) => IXSuggestionsModel.getById(id),
   getByEntityId: async (sharedId: string) => IXSuggestionsModel.get({ entityId: sharedId }),
@@ -252,9 +239,10 @@ const Suggestions = {
       .aggregate(getMatchStage(extractorId, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
-    const suggestions = await IXSuggestionsModel.db.aggregate(
+    let suggestions = await IXSuggestionsModel.db.aggregate(
       buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
     );
+    suggestions = await postProcessSuggestions(suggestions, extractorId);
 
     return {
       suggestions,
@@ -325,10 +313,11 @@ const Suggestions = {
 
     const { propertyName } = suggestions[0];
     const property = await templates.getPropertyByName(propertyName);
-    const allLanguage = property.type === 'numeric' || property.type === 'date';
+    validatePartialAcceptanceTypeConstraint(acceptedSuggestions, property);
+    const allLanguage = needsAllLanguages(property.type);
 
-    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions);
-    await updateExtractedMetadata(suggestions);
+    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
+    await updateExtractedMetadata(suggestions, property);
     await Suggestions.updateStates({ _id: { $in: acceptedIds.map(id => new ObjectId(id)) } });
   },
 

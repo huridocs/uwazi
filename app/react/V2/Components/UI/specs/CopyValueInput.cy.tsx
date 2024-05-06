@@ -37,9 +37,13 @@ describe('CopyValueInput', () => {
   });
 
   it('Should copy the value to clipboard when clicking the button', () => {
-    cy.get('[data-testid="copy-value-button"]').click();
-    cy.window()
+    cy.contains('name');
+    cy.get('input').should('have.value', 'some testing value');
+    cy.get('[data-testid="copy-value-button"]').focus();
+    cy.get('[data-testid="copy-value-button"]').realClick();
+    cy.window() //
       .then(async win => win.navigator.clipboard.readText())
+
       .should('equal', 'some testing value');
   });
 });

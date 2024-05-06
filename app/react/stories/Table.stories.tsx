@@ -23,6 +23,7 @@ const Primary: Story = {
 const Checkboxes: Story = {
   render: CheckboxesTableComponent,
 };
+
 const Basic: Story = {
   ...Primary,
   args: {
@@ -58,6 +59,7 @@ const Basic: Story = {
     setSorting: undefined,
   },
 };
+
 const WithInitialState: Story = {
   ...Primary,
   args: {
@@ -65,6 +67,7 @@ const WithInitialState: Story = {
     initialState: { sorting: [{ id: 'description', desc: true }] },
   },
 };
+
 const WithActions: Story = {
   ...Primary,
   args: {
@@ -89,6 +92,7 @@ const WithDnD: Story = {
     showUpdates: true,
   },
 };
+
 const NestedDnD: Story = {
   ...Primary,
   args: {

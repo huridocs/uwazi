@@ -26,6 +26,7 @@ Add / remove favorite,Favoriye ekle / Favoriden çıkarı
 Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.,Add an account to the app by scanning the provided QR code with your mobile device or by inserting the provided key.
 Add date,Tarih ekle
 Add entities / documents,Varlık/Döküman ekle
+Add entity type,Add entity type
 Add file,Dosya ekle
 Add from URL,URL'den ekle
 Add from web,WEB'ten ekle
@@ -330,6 +331,7 @@ Filters configuration,Filtreler
 Filters configuration description,"By default, users can filter the entities in the library based on the types you have defined. However, you can configure how these entity types will be displayed:"
 Filters configuration example,Filtreler Yapılandırma Örneği
 Filters OR operator,YA DA
+Filters saved,Filters saved
 Find,Bul
 Find suggestions,Find suggestions
 Finding suggestions,Finding suggestions

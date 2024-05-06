@@ -1,5 +1,4 @@
 import { Response } from 'supertest';
-// @ts-ignore
 import Test from 'supertest/lib/test';
 
 function extractStatusDebugInfo(res: Response): string {
@@ -11,8 +10,10 @@ function extractStatusDebugInfo(res: Response): string {
 }
 
 export function extendSupertest() {
+  //@ts-ignore
   const { _assertStatus } = Test.prototype;
 
+  //@ts-ignore
   Test.prototype._assertStatus = function extendedAssertStatus(status: number, res: Response) {
     const err: Error = _assertStatus(status, res);
     if (err) {

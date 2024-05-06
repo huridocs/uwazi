@@ -20,7 +20,7 @@ import templatesModel from 'api/templates/templates';
 import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
@@ -28,34 +28,74 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
+  propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
-import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
+import { ParagraphSchema } from 'shared/types/segmentationType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
+import {
+  CommonSuggestion,
+  RawSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  formatSuggestion,
+} from './suggestionFormatting';
 
-type RawSuggestion = {
-  tenant: string;
+const defaultTrainingLanguage = 'en';
+
+type TaskTypes = 'suggestions' | 'create_model';
+
+interface TaskParameters {
   id: string;
+}
+
+type ResultParameters = TaskParameters;
+
+interface InternalResultParameters {
+  id: ObjectId;
+}
+
+type IXResultsMessage = ResultsMessage<TaskTypes, ResultParameters>;
+
+type InternalIXResultsMessage = ResultsMessage<TaskTypes, InternalResultParameters>;
+
+interface CommonMaterialsData {
   xml_file_name: string;
-  text: string;
-  segment_text: string;
-  segments_boxes: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    page_number: number;
-  }[];
-};
+  id: string;
+  tenant: string;
+  xml_segments_boxes?: ParagraphSchema[];
+  page_width?: number;
+  page_height?: number;
+}
+
+interface LabeledMaterialsData extends CommonMaterialsData {
+  language_iso: string;
+}
+
+interface TextSelectionMaterialsData extends LabeledMaterialsData {
+  label_text: FileWithAggregation['propertyValue'];
+  label_segments_boxes:
+    | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
+    | undefined;
+}
+
+interface ValuesSelectionMaterialsData extends LabeledMaterialsData {
+  values: { id: string; label: string }[];
+}
+
+type MaterialsData =
+  | CommonMaterialsData
+  | TextSelectionMaterialsData
+  | ValuesSelectionMaterialsData;
 
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: TaskManager;
+  public taskManager: TaskManager<TaskTypes, TaskParameters, ResultParameters>;
 
   static mock: any;
 
@@ -70,7 +110,7 @@ class InformationExtraction {
     this.taskManager.subscribeToResults();
   }
 
-  requestResults = async (message: ResultsMessage) => {
+  requestResults = async (message: InternalIXResultsMessage) => {
     const response = await request.get(message.data_url);
 
     return JSON.parse(response.json);
@@ -88,6 +128,43 @@ class InformationExtraction {
     return request.uploadFile(url, xmlName, fileContent);
   };
 
+  extendMaterialsWithLabeledData = (
+    propertyLabeledData: ExtractedMetadataSchema | undefined,
+    propertyValue: FileWithAggregation['propertyValue'],
+    propertyType: FileWithAggregation['propertyType'],
+    file: FileWithAggregation,
+    _data: CommonMaterialsData
+  ): MaterialsData => {
+    const language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
+
+    let data: MaterialsData = { ..._data, language_iso };
+
+    const isSelect = propertyTypeIsSelectOrMultiSelect(propertyType);
+
+    if (!isSelect && propertyLabeledData) {
+      data = {
+        ...data,
+        label_text: propertyValue || propertyLabeledData?.selection?.text,
+        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
+          const { page, ...rectangle } = r;
+          return { ...rectangle, page_number: page };
+        }),
+      };
+    }
+
+    if (isSelect) {
+      if (!Array.isArray(propertyValue)) {
+        throw new Error('Property value should be an array');
+      }
+      data = {
+        ...data,
+        values: propertyValue.map(({ value, label }) => ({ id: value, label })),
+      };
+    }
+
+    return data;
+  };
+
   sendMaterials = async (
     files: FileWithAggregation[],
     extractor: IXExtractorType,
@@ -102,14 +179,17 @@ class InformationExtraction {
         const propertyLabeledData = file.extractedMetadata?.find(
           labeledData => labeledData.name === extractor.property
         );
+        const { propertyValue, propertyType } = file;
 
-        if (!xmlExists || (type === 'labeled_data' && !propertyLabeledData)) {
-          return;
-        }
+        const missingData = propertyTypeIsSelectOrMultiSelect(propertyType)
+          ? !propertyValue
+          : type === 'labeled_data' && !propertyLabeledData;
+
+        if (!xmlExists || missingData) return;
 
         await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
 
-        let data: any = {
+        let data: MaterialsData = {
           xml_file_name: xmlName,
           id: extractor._id.toString(),
           tenant: tenants.current().name,
@@ -118,17 +198,14 @@ class InformationExtraction {
           page_height: file.segmentation.segmentation?.page_height,
         };
 
-        if (type === 'labeled_data' && propertyLabeledData) {
-          const defaultTrainingLanguage = 'en';
-          data = {
-            ...data,
-            language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: file.propertyValue || propertyLabeledData.selection?.text,
-            label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
-              const { page, ...selection } = r;
-              return { ...selection, page_number: page };
-            }),
-          };
+        if (type === 'labeled_data' && !missingData) {
+          data = this.extendMaterialsWithLabeledData(
+            propertyLabeledData,
+            propertyValue,
+            propertyType,
+            file,
+            data
+          );
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
@@ -171,7 +248,7 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  saveSuggestions = async (message: ResultsMessage) => {
+  saveSuggestions = async (message: InternalIXResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
     const [extractor] = await Extractors.get({ _id: message.params?.id });
@@ -197,45 +274,19 @@ class InformationExtraction {
           fileId: segmentation.fileID,
         });
 
-        let status: 'ready' | 'failed' = 'ready';
-        let error = '';
-
         const allProps: PropertySchema[] = _.flatMap(
           templates,
           template => template.properties || []
         );
         const property = allProps.find(p => p.name === extractor.property);
 
-        const suggestedValue = stringToTypeOfProperty(
-          rawSuggestion.text,
-          property?.type,
-          currentSuggestion?.language || entity.language
+        const suggestion = await formatSuggestion(
+          property,
+          rawSuggestion,
+          currentSuggestion,
+          entity,
+          message
         );
-
-        if (suggestedValue === null) {
-          status = 'failed';
-          error = 'Invalid value for property type';
-        }
-
-        if (!message.success) {
-          status = 'failed';
-          error = message.error_message ? message.error_message : 'Unknown error';
-        }
-
-        const suggestion: IXSuggestionType = {
-          ...currentSuggestion,
-          suggestedValue,
-          ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
-          segment: rawSuggestion.segment_text,
-          status,
-          error,
-          date: new Date().getTime(),
-          selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
-            const rect = { ...box, page: box.page_number.toString() };
-            delete rect.page_number;
-            return rect;
-          }),
-        };
 
         return Suggestions.save(suggestion);
       })
@@ -398,9 +449,9 @@ class InformationExtraction {
     });
   };
 
-  processResults = async (_message: ResultsMessage): Promise<void> => {
+  processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
-      const message = {
+      const message: InternalIXResultsMessage = {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
@@ -439,7 +490,7 @@ class InformationExtraction {
     };
   };
 
-  updateSuggestionStatus = async (message: ResultsMessage, currentModel: IXModelType) => {
+  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
     const suggestionsStatus = await this.getSuggestionsStatus(
       message.params!.id,
       currentModel.creationDate
@@ -456,3 +507,11 @@ class InformationExtraction {
 }
 
 export { InformationExtraction };
+export type {
+  IXResultsMessage,
+  InternalIXResultsMessage,
+  CommonSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  RawSuggestion,
+};
