@@ -345,5 +345,26 @@ describe('Table', () => {
         .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b', 'Entity 3', 'Entity a']);
     });
+
+    describe('Fixed groups', () => {
+      it('should not move a child outsides a group if editableGroups is false', () => {
+        mount(<NestedDnD editableGroups={false} />);
+        cy.contains('children').click();
+
+        cy.get('[data-testid="group_1-draggable-item-0"]').drag(
+          '[data-testid="root-draggable-item-1"]',
+          {
+            target: { x: 5, y: 0 },
+            force: true,
+          }
+        );
+        cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
+        checkRowContent(1, ['Entity 2', data[0].description, '2']);
+        checkRowContent(2, ['Entity 1', data[1].description, '1']);
+        checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
+        checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
+        checkRowContent(5, ['Entity 3', data[2].description, '3']);
+      });
+    });
   });
 });
