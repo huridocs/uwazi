@@ -368,7 +368,7 @@ class InformationExtraction {
       return { status: 'error', message: 'No labeled data' };
     }
 
-    const [template] = await templatesModel.get({ _id: extractor.templates[0] });
+    const template = await templatesModel.getById(extractor.templates[0]);
     const property = template?.properties?.find(p => p.name === extractor.property);
 
     if (!property) {
@@ -381,13 +381,12 @@ class InformationExtraction {
     };
 
     if (property.type === 'select' || property.type === 'multiselect') {
-      const [thesauri] = await dictionatiesModel.get({ _id: property.content });
+      const thesauri = await dictionatiesModel.getById(property.content);
 
       params.options =
         thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
     }
 
-    console.log(params);
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
