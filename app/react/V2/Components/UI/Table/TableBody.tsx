@@ -50,7 +50,6 @@ const setRowId: <T>(
 const TableBodyComponent = <T,>({
   draggableRows,
   allowEditGroupsWithDnD,
-  // eslint-disable-next-line react/jsx-no-useless-fragment
   DndProvider,
   HTML5Backend,
   items,
