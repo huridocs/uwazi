@@ -91,8 +91,10 @@ describe('Thesauri configuration', () => {
     cy.get('input#group-name').type(' edited', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr:nth-of-type(2) td:nth-of-type(2)').should('have.text', 'First group edited');
+    cy.intercept('GET', '/api/dictionaries?_id=*').as('editThesauri');
     cy.contains('button', 'Save').click();
     cy.wait('@editThesauri');
+    cy.contains('Thesauri updated.');
   });
 
   it('should delete', () => {
@@ -103,6 +105,7 @@ describe('Thesauri configuration', () => {
     cy.get('input[type=checkbox]').eq(1).click();
     cy.contains('button', 'Delete').click();
     cy.contains('button', 'Accept').click();
+    cy.contains('Thesauri deleted');
     cy.get('tbody tr').should('have.length', 1);
   });
 
