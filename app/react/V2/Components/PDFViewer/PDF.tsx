@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import loadable from '@loadable/component';
-import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
-import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
+import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { PDFDocumentProxy } from 'pdfjs-dist';
 import { Translate } from 'app/I18N';
 import { PDFJS, CMAP_URL } from './pdfjs';
@@ -80,7 +80,6 @@ const PDF = ({
   }
 
   return (
-    //@ts-ignore https://github.com/huridocs/uwazi/issues/6067
     <HandleTextSelection onSelect={onSelect} onDeselect={onDeselect}>
       <div
         id="pdf-container"
@@ -102,7 +101,6 @@ const PDF = ({
                 id={`page-${regionId}-container`}
                 ref={shouldScrollToPage ? scrollToRef : undefined}
               >
-                {/* @ts-ignore https://github.com/huridocs/uwazi/issues/6067 */}
                 <SelectionRegion regionId={regionId}>
                   <PDFPage pdf={pdf} page={number} highlights={pageHighlights} />
                 </SelectionRegion>

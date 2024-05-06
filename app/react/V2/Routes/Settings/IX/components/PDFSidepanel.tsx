@@ -6,7 +6,7 @@ import { useLoaderData } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { TextSelection } from 'react-text-selection-handler/dist/TextSelection';
+import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
 import { Translate, t } from 'app/I18N';
 import { ClientEntitySchema, ClientTemplateSchema } from 'app/istore';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
@@ -294,56 +294,54 @@ const PDFSidepanel = ({
 
   const renderInputTextLabel = (
     type: 'text' | 'email' | 'password' | 'number' | 'date' | 'datetime-local' | 'search' | 'file'
-  ) => {
-    return (
-      <div className="flex gap-2 p-4">
-        <div className="grow">
-          <InputField
-            clearFieldAction={() => {
-              setValue('field', '');
-            }}
-            id={propertyLabel}
-            label={propertyLabel}
-            hideLabel
-            type={type}
-            hasErrors={errors.field?.type === 'required' || !!selectionError}
-            {...register('field', {
-              required: isRequired,
-              valueAsDate: propertyType === 'date' || undefined,
-            })}
-          />
-        </div>
-        <div>
-          <Button
-            type="button"
-            styling="outline"
-            onClick={async () => handleClickToFill()}
-            disabled={!selectedText?.selectionRectangles.length || isSubmitting}
-          >
-            <Translate className="">Click to fill</Translate>
-          </Button>
-        </div>
-        <div className="sm:text-right" data-testid="ix-clear-button-container">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={Boolean(!highlights) || isSubmitting}
-            onClick={() => {
-              setHighlights(undefined);
-              setSelections(
-                selectionHandlers.deleteFileSelection(
-                  { name: suggestion?.propertyName || '' },
-                  pdf?.extractedMetadata
-                )
-              );
-            }}
-          >
-            <Translate>Clear</Translate>
-          </Button>
-        </div>
+  ) => (
+    <div className="flex gap-2 p-4">
+      <div className="grow">
+        <InputField
+          clearFieldAction={() => {
+            setValue('field', '');
+          }}
+          id={propertyLabel}
+          label={propertyLabel}
+          hideLabel
+          type={type}
+          hasErrors={errors.field?.type === 'required' || !!selectionError}
+          {...register('field', {
+            required: isRequired,
+            valueAsDate: propertyType === 'date' || undefined,
+          })}
+        />
       </div>
-    );
-  };
+      <div>
+        <Button
+          type="button"
+          styling="outline"
+          onClick={async () => handleClickToFill()}
+          disabled={!selectedText?.selectionRectangles.length || isSubmitting}
+        >
+          <Translate className="">Click to fill</Translate>
+        </Button>
+      </div>
+      <div className="sm:text-right" data-testid="ix-clear-button-container">
+        <Button
+          type="button"
+          styling="outline"
+          disabled={Boolean(!highlights) || isSubmitting}
+          onClick={() => {
+            setHighlights(undefined);
+            setSelections(
+              selectionHandlers.deleteFileSelection(
+                { name: suggestion?.propertyName || '' },
+                pdf?.extractedMetadata
+              )
+            );
+          }}
+        >
+          <Translate>Clear</Translate>
+        </Button>
+      </div>
+    </div>
+  );
 
   const renderLabel = () => {
     switch (propertyType) {
@@ -367,7 +365,7 @@ const PDFSidepanel = ({
       <Sidepanel.Body>
         <form
           id="ixpdfform"
-          className="flex flex-col gap-4 pb-0 h-full"
+          className="flex flex-col h-full gap-4 pb-0"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
@@ -393,7 +391,7 @@ const PDFSidepanel = ({
           </div>
         </form>{' '}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="py-0 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
+      <Sidepanel.Footer className="py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
         <div className="flex px-4 py-2">
           <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
             <span className="uppercase">{propertyLabel}</span>{' '}
@@ -404,7 +402,7 @@ const PDFSidepanel = ({
           </span>
         </div>
         {labelInputIsOpen && renderLabel()}
-        <div className="flex gap-2 justify-end px-4 py-2 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
+        <div className="flex justify-end gap-2 px-4 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
           <Button
             type="button"
             styling="outline"
