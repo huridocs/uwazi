@@ -24,7 +24,7 @@ interface TableProps<T> {
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
   subRowsKey?: string;
   draggableRows?: boolean;
-  editableGroups?: boolean;
+  allowEditGroupsWithDnD?: boolean;
   onChange?: (rows: T[]) => void;
 }
 

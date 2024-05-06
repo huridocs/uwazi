@@ -248,7 +248,7 @@ const ThesaurusForm = () => {
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
                 onSelection={setSelectedThesaurusValue}
-                editableGroups={false}
+                allowEditGroupsWithDnD={false}
               />
             </div>
           </form>

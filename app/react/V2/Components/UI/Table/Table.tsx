@@ -30,7 +30,7 @@ const Table = <T,>({
   onSelection,
   subRowsKey,
   draggableRows = false,
-  editableGroups = true,
+  allowEditGroupsWithDnD = true,
   onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
@@ -143,7 +143,7 @@ const Table = <T,>({
         </thead>
         <TableBody
           draggableRows={draggableRows}
-          editableGroups={editableGroups}
+          allowEditGroupsWithDnD={allowEditGroupsWithDnD}
           items={data}
           table={table}
           subRowsKey={subRowsKey}
