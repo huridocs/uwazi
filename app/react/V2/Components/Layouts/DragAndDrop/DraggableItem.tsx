@@ -96,7 +96,8 @@ const DraggableItemComponent = <T,>({
       if (
         hasValidContext(dropContext) &&
         isNotAutoContained(draggedItem, draggedResult, dropParent) &&
-        hasNoItems(item)
+        hasNoItems(item) &&
+        !draggedResult.item.fixed
       ) {
         context.addItem(draggedResult.item, dropParent);
       }
@@ -121,7 +122,7 @@ const DraggableItemComponent = <T,>({
   }
 
   drag(drop(ref));
-  drop(previewReference);
+  drag(drop(previewReference));
 
   const TagName = wrapperType;
 

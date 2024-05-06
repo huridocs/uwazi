@@ -100,6 +100,7 @@ const NestedDnD: Story = {
     subRowsKey: 'children',
     showUpdates: true,
     draggableRows: true,
+    editableGroups: true,
   },
 };
 

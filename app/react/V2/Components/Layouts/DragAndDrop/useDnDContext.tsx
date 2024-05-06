@@ -20,7 +20,7 @@ const useDnDContext = <T,>(
   sourceItems: IDraggable<T>[] = []
 ) => {
   const [activeItems, setActiveItems] = useState<IDraggable<T>[]>(
-    mapWithParent(initialItems, undefined, operations.itemsProperty)
+    mapWithParent(initialItems, undefined, operations.itemsProperty, operations.editableGroups)
   );
   const [internalChange, setInternalChange] = useState(false);
   const [dragging, setDragging] = useState(false);
