@@ -34,7 +34,7 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://url.org/piwik.php'],
+      ['setTrackerUrl', 'https://url.org/matomo.php'],
       ['setSiteId', '1'],
     ]);
   });
@@ -51,7 +51,8 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['addTracker', 'https://global.org', '1'],
+      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setSiteId', '1'],
     ]);
   });
 
@@ -70,9 +71,9 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://url.org/piwik.php'],
-      ['setSiteId', '1'],
-      ['addTracker', 'https://global.org', '2'],
+      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setSiteId', '2'],
+      ['addTracker', 'https://url.org/', '1'],
     ]);
   });
 
@@ -115,9 +116,9 @@ describe('Matomo', () => {
       ['googleTracker', 'idForTracker'],
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://url.org/piwik.php'],
-      ['setSiteId', '10'],
-      ['addTracker', 'https://global.org', '5'],
+      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setSiteId', '5'],
+      ['addTracker', 'https://url.org/', '10'],
     ]);
   });
 
@@ -136,7 +137,8 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['addTracker', 'https://global.org', '3'],
+      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setSiteId', '3'],
     ]);
   });
 });
