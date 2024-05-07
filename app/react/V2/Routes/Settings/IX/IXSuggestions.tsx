@@ -85,7 +85,6 @@ const IXSuggestions = () => {
       const flatenedSuggestions = suggestions.map(suggestion =>
         generateChildrenRows(suggestion as MultiValueSuggestion)
       );
-      console.log(flatenedSuggestions);
       setCurrentSuggestions(flatenedSuggestions);
       return;
     }

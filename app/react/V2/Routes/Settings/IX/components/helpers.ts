@@ -7,7 +7,6 @@ import {
   SingleValueSuggestion,
   MultiValueSuggestion,
 } from '../types';
-import { child } from 'winston';
 
 const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
   const suggestion: MultiValueSuggestion = { ..._suggestion, isChild: false };

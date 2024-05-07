@@ -40,14 +40,6 @@ enum HighlightColors {
   NEW = '#F27DA5',
 }
 
-enum PropertyTypes {
-  TEXT = 'text',
-  NUMBER = 'number',
-  DATE = 'date',
-  SELECT = 'select',
-  MULTISELECT = 'multiselect',
-}
-
 const getFormValue = (
   suggestion?: EntitySuggestionType,
   entity?: ClientEntitySchema,
@@ -78,27 +70,6 @@ const getFormValue = (
   }
 
   return value;
-};
-
-const getPropertyData = (suggestion: EntitySuggestionType, template?: ClientTemplateSchema) => {
-  if (suggestion.propertyName === 'title') {
-    return {
-      _id: 'title',
-      label: 'Title',
-      type: PropertyTypes.TEXT,
-      required: true,
-      name: 'title',
-      content: undefined,
-    } as ClientPropertySchema;
-  }
-
-  const property = template?.properties.find(prop => prop.name === suggestion?.propertyName);
-
-  if (!property) {
-    throw new Error('Property not found');
-  }
-
-  return property;
 };
 
 const loadSidepanelData = async ({ fileId, entityId, language }: EntitySuggestionType) => {
@@ -166,10 +137,6 @@ const PDFSidepanel = ({
   onEntitySave,
   property,
 }: PDFSidepanelProps) => {
-  const { templates } = useLoaderData() as {
-    templates: ClientTemplateSchema[];
-  };
-
   const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<FileType>();
   const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
@@ -206,7 +173,7 @@ const PDFSidepanel = ({
     return () => {
       setThesaurus(undefined);
     };
-  }, [property]);
+  }, [property, thesauris]);
 
   useEffect(() => {
     if (suggestion) {

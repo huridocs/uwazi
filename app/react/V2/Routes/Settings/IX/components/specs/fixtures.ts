@@ -1,8 +1,4 @@
-import { extractorId } from 'api/activitylog/specs/fixturesParser';
-import { entityTemplateId } from 'api/i18n/specs/fixtures';
-import meta from 'app/stories/Card.stories';
 import { PropertySchema } from 'shared/types/commonTypes';
-import { child } from 'winston';
 
 const suggestion1 = {
   _id: '1',
