@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
@@ -272,7 +273,7 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { id: factory.id('prop1extractor').toString(), multi_value: false},
+        params: { id: factory.id('prop1extractor').toString(), multi_value: false },
         tenant: 'tenant1',
         task: 'create_model',
       });
@@ -280,7 +281,24 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { id: factory.id('extractorWithMultiselect').toString() },
+        params: {
+          id: factory.id('extractorWithMultiselect').toString(),
+          multi_value: true,
+          options: [
+            {
+              id: 'A',
+              label: 'A',
+            },
+            {
+              id: 'B',
+              label: 'B',
+            },
+            {
+              id: 'C',
+              label: 'C',
+            },
+          ],
+        },
         tenant: 'tenant1',
         task: 'create_model',
       });

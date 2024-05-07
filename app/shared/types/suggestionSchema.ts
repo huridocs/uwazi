@@ -70,7 +70,6 @@ export const IXSuggestionSchema = {
     selectionRectangles: selectionRectanglesSchema,
   },
   required: [
-    '_id',
     'propertyName',
     'entityId',
     'extractorId',
