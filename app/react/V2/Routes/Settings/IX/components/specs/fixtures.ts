@@ -1,3 +1,5 @@
+import { PropertySchema } from 'shared/types/commonTypes';
+
 const suggestion1 = {
   _id: '1',
   language: 'es',
@@ -161,4 +163,132 @@ const entity2 = {
   },
 };
 
-export { suggestion1, suggestion2, suggestion3, suggestion4, entity1, entity2 };
+//multi value
+const entity3 = {
+  _id: 'entity3',
+  language: 'es',
+  sharedId: '3',
+  title: 'Entity 3',
+  metadata: {
+    multiselect: {
+      value: ['value1', 'value2'],
+    },
+  },
+};
+
+const state = {
+  match: false,
+  labeled: true,
+  withValue: true,
+  withSuggestion: true,
+  hasContext: true,
+  obsolete: false,
+  processing: false,
+  error: false,
+};
+
+const suggestion5 = {
+  _id: '5',
+  language: 'es',
+  propertyName: 'multiselect',
+  segment: 'value1',
+  suggestedValue: ['value3', 'value2'],
+  state,
+  currentValue: ['value1', 'value2'],
+  entityTitle: 'Entity 3',
+  entityId: 'entity3',
+  extractorId: '3',
+  entityTemplateId: '3',
+  sharedId: '3',
+  fileId: '3',
+  date: 1,
+  isChild: false,
+  children: [
+    {
+      _id: '5',
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: '',
+      fileId: '3',
+      date: 1,
+      state,
+      propertyName: 'multiselect',
+      suggestedValue: 'value3',
+      currentValue: '',
+      entityId: 'entity3',
+      sharedId: '3',
+      isChild: true,
+      disableRowSelection: true,
+    },
+    {
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: '',
+      fileId: '3',
+      date: 1,
+      state,
+      suggestedValue: 'value2',
+      currentValue: 'value2',
+      propertyName: 'multiselect',
+      entityId: 'entity3',
+      sharedId: '3',
+      _id: '5',
+      isChild: true,
+      disableRowSelection: true,
+    },
+    {
+      language: 'es',
+      segment: 'value1',
+      extractorId: '3',
+      entityTemplateId: '3',
+      entityTitle: '',
+      fileId: '3',
+      date: 1,
+      state,
+      suggestedValue: '',
+      currentValue: 'value1',
+      propertyName: 'multiselect',
+      entityId: 'entity3',
+      sharedId: '3',
+      _id: '5',
+      isChild: true,
+      disableRowSelection: true,
+    },
+  ],
+};
+
+const propertyTitle: PropertySchema = {
+  type: 'text',
+  name: 'title',
+  label: 'Title',
+};
+
+const propertyDocumentDate: PropertySchema = {
+  type: 'date',
+  name: 'document_date',
+  label: 'Document date',
+};
+
+const propertyMultiselect: PropertySchema = {
+  type: 'multiselect',
+  name: 'multiselect',
+  label: 'Multiselect',
+};
+
+export {
+  suggestion1,
+  suggestion2,
+  suggestion3,
+  suggestion4,
+  suggestion5,
+  entity1,
+  entity2,
+  entity3,
+  propertyTitle,
+  propertyDocumentDate,
+  propertyMultiselect,
+};

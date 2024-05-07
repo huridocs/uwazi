@@ -93,8 +93,24 @@ export const EntitySuggestionSchema = {
     fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: propertyValueSchema,
-    currentValue: propertyValueSchema,
+    suggestedValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
+    currentValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
     labeledValue: propertyValueSchema,
     selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },

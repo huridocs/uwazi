@@ -9,7 +9,7 @@ import { InputField } from 'app/V2/Components/Forms/InputField';
 import { CalculatorIcon, CalendarIcon } from '@heroicons/react/20/solid';
 import { RadioSelect } from 'app/V2/Components/Forms';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
