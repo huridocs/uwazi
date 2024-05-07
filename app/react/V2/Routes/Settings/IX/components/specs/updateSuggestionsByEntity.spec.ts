@@ -112,6 +112,7 @@ describe('updateSuggestionsByEntity', () => {
           currentValue: ['value3', 'value2'],
           children: [
             {
+              ...suggestion5,
               suggestedValue: 'value3',
               currentValue: 'value3',
               propertyName: 'multiselect',
@@ -120,8 +121,10 @@ describe('updateSuggestionsByEntity', () => {
               _id: '5',
               isChild: true,
               disableRowSelection: true,
+              children: undefined,
             },
             {
+              ...suggestion5,
               suggestedValue: 'value2',
               currentValue: 'value2',
               propertyName: 'multiselect',
@@ -130,6 +133,7 @@ describe('updateSuggestionsByEntity', () => {
               _id: '5',
               isChild: true,
               disableRowSelection: true,
+              children: undefined,
             },
           ],
         },

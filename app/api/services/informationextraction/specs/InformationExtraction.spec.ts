@@ -272,7 +272,7 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { id: factory.id('prop1extractor').toString() },
+        params: { id: factory.id('prop1extractor').toString(), multi_value: false},
         tenant: 'tenant1',
         task: 'create_model',
       });

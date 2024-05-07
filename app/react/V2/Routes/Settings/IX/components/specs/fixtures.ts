@@ -206,6 +206,7 @@ const suggestion5 = {
   sharedId: '3',
   fileId: '3',
   date: 1,
+  isChild: false,
   children: [
     {
       _id: '5',
