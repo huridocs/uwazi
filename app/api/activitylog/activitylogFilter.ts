@@ -1,149 +1,55 @@
-import { isEmpty } from 'lodash';
+import { isEmpty, uniq } from 'lodash';
 import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
-import moment from 'moment';
 import { ParsedActions } from './activitylogParser';
-import { EntryValue } from './activityLogBuilder';
-
-type ActivityLogQuery = ActivityLogGetRequest['query'];
 
 const prepareToFromRanges = (sanitizedTime: any) => {
-  const fromDate = sanitizedTime.from && moment.unix(parseInt(sanitizedTime.from, 10));
-  const toDate = sanitizedTime.to && moment.unix(parseInt(sanitizedTime.to, 10)).add(1, 'days');
-  return {
-    ...(fromDate && { $gte: fromDate }),
-    ...(toDate && fromDate !== toDate && { $lte: toDate }),
-    ...(toDate && fromDate === toDate && { $lt: toDate }),
-  };
+  const time: { $gte?: number; $lte?: number } = {};
+
+  if (sanitizedTime.from) {
+    time.$gte = parseInt(sanitizedTime.from, 10) * 1000;
+  }
+
+  if (sanitizedTime.to) {
+    time.$lte = parseInt(sanitizedTime.to, 10) * 1000;
+  }
+
+  return time;
 };
 
-const parsedActionsEntries = Object.entries(ParsedActions);
+const timeQuery = ({ time, before = -1 }: ActivityLogGetRequest['query']) => {
+  const sanitizedTime = Object.keys(time).reduce(
+    (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
+    {}
+  );
 
-const queryURL = (matchedEntries: [string, EntryValue][]) =>
-  matchedEntries.map(([key]) => {
-    const entries = key.split(/\/(.*)/s);
-    return {
-      $and: [
-        {
-          url: {
-            $regex: `^\\/${entries[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$`,
-          },
-        },
-        {
-          method: entries[0],
-        },
-      ],
-    };
-  });
+  if (before === -1 && !Object.keys(sanitizedTime).length) {
+    return {};
+  }
+
+  const result = { time: prepareToFromRanges(sanitizedTime) };
+
+  if (before !== -1) {
+    result.time.$lt = before;
+  }
+
+  return result;
+};
 
 class ActivityLogFilter {
   andQuery: {}[] = [];
 
   searchQuery: {}[] = [];
 
-  query: ActivityLogQuery;
+  query: ActivityLogGetRequest['query'];
 
-  constructor(requestQuery: ActivityLogQuery) {
+  constructor(requestQuery: ActivityLogGetRequest['query']) {
     this.query = requestQuery;
   }
-
-  timeQuery() {
-    const time = this.query?.time || {};
-    const before = this.query?.before || -1;
-
-    const sanitizedTime = Object.keys(time).reduce(
-      (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
-      {}
-    );
-
-    if (before === -1 && isEmpty(sanitizedTime)) {
-      return;
-    }
-
-    const timeFilter = {
-      ...(!isEmpty(sanitizedTime) ? { time: prepareToFromRanges(sanitizedTime) } : {}),
-      ...(before !== -1 ? { time: { $lt: before } } : {}),
-    };
-
-    this.andQuery.push(timeFilter);
-  }
-
-  setRequestFilter(property: 'url' | 'query' | 'body' | 'params', exact = false) {
-    if (this.query?.[property] !== undefined) {
-      const exp = this.query?.[property]!.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&');
-
-      this.andQuery.push({
-        [property]: {
-          $regex: exact ? `^${exp}$` : exp,
-        },
-      });
-    }
-  }
-
-  prepareRegexpQueries = () => {
-    this.setRequestFilter('url', true);
-    this.setRequestFilter('query');
-    this.setRequestFilter('body');
-    this.setRequestFilter('params');
-  };
 
   searchFilter() {
     if (this.query?.search) {
       const regex = { $regex: `.*${this.query?.search}.*`, $options: 'si' };
       this.searchQuery.push({
-        $or: [
-          { method: regex },
-          { url: { $regex: `^${this.query?.search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$` } },
-          { query: regex },
-          { body: regex },
-          { params: regex },
-        ],
-      });
-    }
-  }
-
-  methodFilter() {
-    const methods = this.query?.method;
-    if (methods && methods.length > 0) {
-      const queryMethods =
-        methods.map(method =>
-          ['CREATE', 'UPDATE'].includes(method.toUpperCase()) ? 'POST' : method.toUpperCase()
-        ) || [];
-
-      const matchedEntries = parsedActionsEntries.filter(
-        ([key, value]) =>
-          key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
-          value.method?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`)
-      );
-      this.andQuery.push({ method: { $in: queryMethods } });
-      if (matchedEntries.length > 0) {
-        const orUrlItems = queryURL(matchedEntries);
-        this.andQuery.push({ $or: orUrlItems });
-      }
-    }
-  }
-
-  endPointFilter() {
-    if (this.query?.search === undefined) {
-      return;
-    }
-    const matchedURLs = parsedActionsEntries.filter(([_key, value]) =>
-      value.desc.toLowerCase().includes(this.query?.search?.toLocaleLowerCase() || '')
-    );
-    const orUrlItems = queryURL(matchedURLs);
-
-    this.searchFilter();
-    if (orUrlItems.length > 0) {
-      this.searchQuery.push({ $or: orUrlItems });
-    }
-    if (this.searchQuery.length > 0) {
-      this.andQuery.push({ $or: this.searchQuery });
-    }
-  }
-
-  findFilter() {
-    if (this.query?.find) {
-      const regex = { $regex: `.*${this.query?.find}.*`, $options: 'si' };
-      this.andQuery.push({
         $or: [
           { method: regex },
           { url: regex },
@@ -155,25 +61,76 @@ class ActivityLogFilter {
     }
   }
 
+  // eslint-disable-next-line max-statements
+  endPointFilter() {
+    if (this.query?.search === undefined && this.query?.method === undefined) {
+      return;
+    }
+    const queryMethods = this.query?.method?.map(method => method.toUpperCase()) || [];
+    const parsedActionsEntries = Object.entries(ParsedActions);
+    const matchedURLs = parsedActionsEntries.filter(([_key, value]) =>
+      value.desc.toLowerCase().includes(this.query?.search?.toLocaleLowerCase() || '')
+    );
+    const matchedMethods = parsedActionsEntries.filter(
+      ([_key, value]) =>
+        this.query?.method?.length === 0 || queryMethods.includes(value.method || '')
+    );
+    const orUrlItems = uniq(
+      matchedURLs.map(([key]) => ({
+        url: {
+          $regex: key.split(/\/(.*)/s)[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&'),
+        },
+      }))
+    );
+    this.searchFilter();
+    if (orUrlItems.length > 0) {
+      this.searchQuery.push({ $or: orUrlItems });
+    }
+    if (this.searchQuery.length > 0) {
+      this.andQuery.push({ $or: this.searchQuery });
+    }
+    const matchedHttpMethods = uniq(matchedMethods.map(([key]) => key.split(/\/(.*)/s)[0]));
+    if (matchedHttpMethods.length > 0 || queryMethods.length > 0) {
+      this.andQuery.push({
+        $or: [
+          ...(matchedHttpMethods.length > 0 ? [{ method: { $in: matchedHttpMethods } }] : []),
+          ...(queryMethods.length > 0 ? [{ method: { $in: queryMethods } }] : []),
+        ],
+      });
+    }
+  }
+
+  findFilter() {
+    if (this.query?.find) {
+      this.andQuery.push({
+        $or: [
+          { method: this.query?.find },
+          { url: this.query?.find },
+          { query: this.query?.find },
+          { body: this.query?.find },
+          { params: this.query?.find },
+        ],
+      });
+    }
+  }
+
+  timeFilter() {
+    if (this.query?.time) {
+      this.andQuery.push(timeQuery(this.query));
+    }
+  }
+
   userFilter() {
     if (this.query?.username) {
-      const orUser: {}[] = [
-        { username: { $regex: `.*${this.query?.username}.*`, $options: 'si' } },
-      ];
-      if (this.query.username === 'anonymous') {
-        orUser.push({ username: null });
-      }
-      this.andQuery.push({ $or: orUser });
+      this.andQuery.push({ username: { $regex: `.*${this.query?.username}.*`, $options: 'si' } });
     }
   }
 
   prepareQuery() {
-    this.prepareRegexpQueries();
-    this.methodFilter();
     this.endPointFilter();
     this.findFilter();
     this.userFilter();
-    this.timeQuery();
+    this.timeFilter();
     return !isEmpty(this.andQuery) ? { $and: this.andQuery } : {};
   }
 }
