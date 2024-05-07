@@ -76,7 +76,10 @@ const IXSuggestions = () => {
 
   useEffect(() => {
     const template = templates.find(t => t._id === extractor.templates[0]);
-    const _property = template?.properties.find(prop => prop.name === extractor.property);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties.find(prop => prop.name === extractor.property);
     setProperty(_property);
   }, [templates, extractor]);
 

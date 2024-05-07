@@ -369,7 +369,10 @@ class InformationExtraction {
     }
 
     const template = await templatesModel.getById(extractor.templates[0]);
-    const property = template?.properties?.find(p => p.name === extractor.property);
+    const property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(p => p.name === extractor.property)
+        : template?.properties?.find(p => p.name === extractor.property);
 
     if (!property) {
       return { status: 'error', message: 'Property not found' };
