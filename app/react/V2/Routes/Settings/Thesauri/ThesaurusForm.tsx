@@ -48,6 +48,7 @@ const ThesaurusForm = () => {
   useEffect(() => {
     if (thesaurus) {
       const values = thesaurus.values || [];
+      console.log('values', values);
       const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
         ...value,
         _id: `temp_${uniqueID()}`,

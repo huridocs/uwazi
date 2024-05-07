@@ -57,7 +57,6 @@ const Table = <T,>({
               header: CheckBoxHeader,
               cell: CheckBoxCell,
             },
-            meta: { headerClassName: 'w-0' },
           },
         ],
         [],
