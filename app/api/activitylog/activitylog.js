@@ -1,6 +1,7 @@
 import { sortingParams } from 'shared/types/activityLogApiSchemas';
 import model from './activitylogModel';
 import { getSemanticData } from './activitylogParser';
+import { ActivityLogFilter } from './activitylogFilter';
 
 const sortingParamsAsSet = new Set(sortingParams);
 
@@ -10,68 +11,6 @@ const validateSortingParam = param => {
   if (!isValidSortingParam(param)) {
     throw new Error(`Invalid sorting parameter: ${param}`);
   }
-};
-
-const prepareRegexpQueries = query => {
-  const result = {};
-
-  if (query.url) {
-    result.url = new RegExp(query.url);
-  }
-  if (query.query) {
-    result.query = new RegExp(query.query);
-  }
-  if (query.body) {
-    result.body = new RegExp(query.body);
-  }
-  if (query.params) {
-    result.params = new RegExp(query.params);
-  }
-
-  return result;
-};
-
-const prepareQuery = query => {
-  if (!query.find) {
-    return prepareRegexpQueries(query);
-  }
-  const term = new RegExp(query.find);
-  return {
-    $or: [{ method: term }, { url: term }, { query: term }, { body: term }, { params: term }],
-  };
-};
-
-const prepareToFromRanges = sanitizedTime => {
-  const time = {};
-
-  if (sanitizedTime.from) {
-    time.$gte = parseInt(sanitizedTime.from, 10) * 1000;
-  }
-
-  if (sanitizedTime.to) {
-    time.$lte = parseInt(sanitizedTime.to, 10) * 1000;
-  }
-
-  return time;
-};
-
-const timeQuery = ({ time = {}, before = null }) => {
-  const sanitizedTime = Object.keys(time).reduce(
-    (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
-    {}
-  );
-
-  if (before === null && !Object.keys(sanitizedTime).length) {
-    return {};
-  }
-
-  const result = { time: prepareToFromRanges(sanitizedTime) };
-
-  if (before !== null) {
-    result.time.$lt = parseInt(before, 10);
-  }
-
-  return result;
 };
 
 const getPagination = query => {
@@ -112,12 +51,7 @@ export default {
   isValidSortingParam,
 
   async get(query = {}) {
-    const mongoQuery = Object.assign(prepareQuery(query), timeQuery(query));
-
-    if (query.method && query.method.length) {
-      mongoQuery.method = { $in: query.method };
-    }
-
+    const mongoQuery = new ActivityLogFilter(query).prepareQuery();
     if (query.username) {
       mongoQuery.username =
         query.username !== 'anonymous' ? query.username : { $in: [null, query.username] };

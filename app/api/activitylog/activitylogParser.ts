@@ -245,4 +245,4 @@ const getSemanticData = async (data: any) => {
   return { ...activityEntry };
 };
 
-export { getSemanticData };
+export { getSemanticData, entryValues as ParsedActions };
