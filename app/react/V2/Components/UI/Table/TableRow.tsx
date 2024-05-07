@@ -26,8 +26,7 @@ const TableRow = <T,>({
       ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
       : [];
   const isSubGroup = row.depth > 0;
-  let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : '';
-  bg = row.getCanExpand() && row.getIsExpanded() ? 'bg-primary-100' : bg;
+  const bg = row.getIsExpanded() ? 'bg-primary-100' : '';
 
   return (
     <RowWrapper
@@ -40,8 +39,7 @@ const TableRow = <T,>({
     >
       {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
-        const firstColumnClass =
-          isSelect || (draggableRow && columnIndex === 0) ? 'flex items-center gap-3' : '';
+        const firstColumnClass = draggableRow && columnIndex === 0 ? 'flex items-center gap-3' : '';
 
         let border = '';
         if (
@@ -55,7 +53,7 @@ const TableRow = <T,>({
         return (
           <td
             key={cell.id}
-            className={`${firstColumnClass} ${isSelect ? 'px-2' : 'px-6'} ${border} py-2 ${
+            className={`${firstColumnClass} ${isSelect ? 'px-4' : 'px-6'} ${border} py-2 ${
               cell.column.columnDef.meta?.contentClassName || ''
             }`}
           >

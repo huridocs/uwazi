@@ -1,5 +1,5 @@
 import { updateSuggestions } from '../helpers';
-import { suggestion1, suggestion2, suggestion3, suggestion4 } from './fixtures';
+import { suggestion1, suggestion2, suggestion3, suggestion4, suggestion5 } from './fixtures';
 
 describe('updateSuggestions', () => {
   beforeAll(() => {
@@ -29,6 +29,57 @@ describe('updateSuggestions', () => {
         state: { ...suggestion4.state, match: true },
         currentValue: 500,
         entityTitle: 'Entity 5',
+      },
+    ]);
+  });
+
+  it('should work with multi value suggestions', () => {
+    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.children[0]]);
+    expect(accepted).toEqual([
+      suggestion3,
+      {
+        ...suggestion5,
+        state: { ...suggestion5.state, match: false },
+        currentValue: ['value1', 'value2', 'value3'],
+        children: [
+          {
+            ...suggestion5.children[0],
+            currentValue: 'value3',
+          },
+          suggestion5.children[1],
+          suggestion5.children[2],
+        ],
+      },
+    ]);
+  });
+
+  it('should work with multi value suggestions removing values', () => {
+    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.children[2]]);
+    expect(accepted).toEqual([
+      suggestion3,
+      {
+        ...suggestion5,
+        state: { ...suggestion5.state, match: true },
+        currentValue: ['value2'],
+        children: [suggestion5.children[0], suggestion5.children[1]],
+      },
+    ]);
+  });
+
+  it('should work with accepting parent suggestion', () => {
+    const accepted = updateSuggestions([suggestion5], [suggestion5]);
+    expect(accepted).toEqual([
+      {
+        ...suggestion5,
+        state: { ...suggestion5.state, match: true },
+        currentValue: ['value3', 'value2'],
+        children: [
+          {
+            ...suggestion5.children[0],
+            currentValue: 'value3',
+          },
+          suggestion5.children[1],
+        ],
       },
     ]);
   });
