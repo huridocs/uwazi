@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   LoaderFunction,
   useLoaderData,
@@ -17,7 +17,7 @@ import { Translate, t } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { InputField, DateRangePicker } from 'app/V2/Components/Forms';
-import { PaginationState, Paginator, Table } from 'app/V2/Components/UI';
+import { PaginationState, Paginator, Table, Button } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
@@ -74,8 +74,6 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     : { prop: 'time', asc: 0 };
   const params = {
     ...(username !== undefined ? { username } : {}),
-    ...(search !== undefined ? { method: [search] } : {}),
-    ...(search !== undefined ? { find: search } : {}),
     ...(search !== undefined ? { search } : {}),
     ...time,
     page,
@@ -142,7 +140,6 @@ const ActivityLog = () => {
   } = searchedParams;
   const {
     register,
-    watch,
     setValue,
     handleSubmit,
     reset,
@@ -205,23 +202,10 @@ const ActivityLog = () => {
     []
   );
 
-  const de = useRef<any>(null);
-
   const handleInputSubmit =
     (field: 'username' | 'search') => (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(field, e.target.value);
-      handleSubmit(onSubmit);
     };
-
-  useEffect(() => {
-    de.current?.cancel();
-    const subscription = watch(async () => {
-      de.current = debouncedChangeHandler(handleSubmit(onSubmit))();
-      return de.current;
-    });
-    return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleSubmit]);
 
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
 
@@ -235,11 +219,12 @@ const ActivityLog = () => {
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body className="space-y-3">
           <form
+            className="flex flex-col"
             id="activity-filters-form mr-10"
             onSubmit={handleSubmit(async data => onSubmit(data))}
           >
-            <div className="flex flex-row gap-4 justify-items-stretch items-center">
-              <h2 className="p-4 w-40 text-base font-semibold text-left">
+            <div className="flex flex-row items-center gap-4 justify-items-stretch">
+              <h2 className="w-40 p-4 text-base font-semibold text-left">
                 <Translate>Activity Log</Translate>
               </h2>
               <InputField
@@ -252,7 +237,6 @@ const ActivityLog = () => {
                 {...register('username')}
                 clearFieldAction={() => {
                   setValue('username', '');
-                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onChange={debouncedChangeHandler(handleInputSubmit('username'))}
                 onBlur={() => {}}
@@ -266,7 +250,6 @@ const ActivityLog = () => {
                 {...register('search')}
                 clearFieldAction={() => {
                   setValue('search', '');
-                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onChange={debouncedChangeHandler(handleInputSubmit('search'))}
                 hasErrors={!!errors.search}
@@ -289,13 +272,11 @@ const ActivityLog = () => {
                   if (fromChanged) {
                     setValue('from', e.target.value);
                   }
-                  debouncedChangeHandler(handleSubmit(onSubmit));
                 }}
                 onToDateSelected={e => {
                   const toChanged = !_.isEqual(e.target.value, to || '');
                   if (toChanged) {
                     setValue('to', e.target.value);
-                    debouncedChangeHandler(handleSubmit(onSubmit));
                   }
                 }}
                 onClear={() => {
@@ -304,6 +285,11 @@ const ActivityLog = () => {
                   setValue('to', '');
                 }}
               />
+            </div>
+            <div className="flex justify-end">
+              <Button type="submit" className="mr-0">
+                <Translate>Search</Translate>
+              </Button>
             </div>
           </form>
           {error === undefined && (
