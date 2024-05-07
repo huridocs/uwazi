@@ -92,20 +92,22 @@ const CheckBoxHeader = <T,>({ table }: { table: TableDef<T> }) => (
 
 // eslint-disable-next-line comma-spacing
 const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
-  <IndeterminateCheckbox
-    {...{
-      checked: row.getCanExpand()
-        ? row.getIsAllSubRowsSelected() && row.getIsSelected()
-        : row.getIsSelected(),
-      disabled: !row.getCanSelect(),
-      indeterminate: row.getIsSomeSelected() || row.getIsAllSubRowsSelected(),
-      onChange: e => {
-        row.getToggleSelectedHandler()(e);
-        row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
-      },
-      id: row.id,
-    }}
-  />
+  <div className="h-full">
+    <IndeterminateCheckbox
+      {...{
+        checked: row.getCanExpand()
+          ? row.getIsAllSubRowsSelected() && row.getIsSelected()
+          : row.getIsSelected(),
+        disabled: !row.getCanSelect(),
+        indeterminate: row.getIsSomeSelected(),
+        onChange: e => {
+          row.getToggleSelectedHandler()(e);
+          row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
+        },
+        id: row.id,
+      }}
+    />
+  </div>
 );
 
 export type { TableProps };

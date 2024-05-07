@@ -5,7 +5,9 @@ const update = (
   entity: EntitySchema,
   data?: {
     title?: EntitySchema['title'];
-    properties?: { [propertyName: string]: PropertyValueSchema | undefined }[];
+    properties?: {
+      [propertyName: string]: PropertyValueSchema | PropertyValueSchema[] | undefined;
+    }[];
   }
 ): EntitySchema => {
   const updatedEntity = { ...entity };
@@ -21,24 +23,19 @@ const update = (
   if (properties?.length) {
     properties.forEach(property => {
       const [propertyName] = Object.keys(property);
+      const propertyValue = property[propertyName];
 
-      const hasProperty = updatedEntity.metadata
-        ? updatedEntity.metadata[propertyName]?.length
-        : false;
-
-      if (hasProperty) {
-        if (property[propertyName]) {
-          updatedEntity.metadata![propertyName]![0].value = property[propertyName]!;
-        }
-
-        if (!property[propertyName]) {
-          delete updatedEntity.metadata![propertyName];
-        }
+      if (!propertyValue) {
+        delete updatedEntity.metadata![propertyName];
+        return;
       }
 
-      if (!hasProperty && property[propertyName]) {
-        updatedEntity.metadata![propertyName] = [];
-        updatedEntity.metadata![propertyName]?.push({ value: property[propertyName]! });
+      if (!Array.isArray(propertyValue)) {
+        updatedEntity.metadata![propertyName] = [{ value: propertyValue! }];
+      }
+
+      if (Array.isArray(propertyValue)) {
+        updatedEntity.metadata![propertyName] = propertyValue.map(value => ({ value }));
       }
     });
   }

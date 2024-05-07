@@ -6,7 +6,7 @@ import { ClientTemplateSchema } from 'app/istore';
 import Icons from 'app/Templates/components/Icons';
 import { IXExtractorInfo } from 'V2/shared/types';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
 
 interface ExtractorModalProps {
   isOpen: boolean;
