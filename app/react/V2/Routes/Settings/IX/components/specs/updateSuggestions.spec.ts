@@ -65,4 +65,22 @@ describe('updateSuggestions', () => {
       },
     ]);
   });
+
+  it('should work with accepting parent suggestion', () => {
+    const accepted = updateSuggestions([suggestion5], [suggestion5]);
+    expect(accepted).toEqual([
+      {
+        ...suggestion5,
+        state: { ...suggestion5.state, match: true },
+        currentValue: ['value3', 'value2'],
+        children: [
+          {
+            ...suggestion5.children[0],
+            currentValue: 'value3',
+          },
+          suggestion5.children[1],
+        ],
+      },
+    ]);
+  });
 });

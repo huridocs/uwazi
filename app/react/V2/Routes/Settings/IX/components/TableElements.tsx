@@ -160,8 +160,11 @@ const TitleCell = ({ cell }: CellContext<TableSuggestion, TableSuggestion['fileI
   <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>
 );
 
-const SegmentCell = ({ cell }: CellContext<TableSuggestion, TableSuggestion['segment']>) => {
+const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['segment']>) => {
   const segment = cell.getValue();
+  if (row.getCanExpand()) {
+    return null;
+  }
   if (segment === '') {
     return (
       <span className="text-xs font-normal text-orange-600">

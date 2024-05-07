@@ -26,7 +26,7 @@ const TableRow = <T,>({
       ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
       : [];
   const isSubGroup = row.depth > 0;
-  const bg = row.getCanExpand() ? 'bg-primary-100' : '';
+  const bg = row.getIsExpanded() ? 'bg-primary-100' : '';
 
   return (
     <RowWrapper

@@ -35,6 +35,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       propertyName: suggestion.propertyName,
       disableRowSelection: true,
       isChild: true,
+      entityTitle: '',
     });
   });
 
@@ -45,6 +46,7 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       currentValue,
       disableRowSelection: true,
       isChild: true,
+      entityTitle: '',
     });
   });
 
@@ -158,9 +160,11 @@ const updateSuggestions = (
   }
 
   const acceptedSuggestions = suggestionsToAccept.map(acceptedSuggestion => {
-    let suggestion = acceptedSuggestion.isChild
-      ? { ...(currentSuggestions.find(s => s._id === acceptedSuggestion._id) as TableSuggestion) }
-      : { ...(acceptedSuggestion as TableSuggestion) };
+    let suggestion = (
+      acceptedSuggestion.isChild
+        ? { ...currentSuggestions.find(s => s._id === acceptedSuggestion._id) }
+        : { ...acceptedSuggestion }
+    ) as TableSuggestion;
 
     if (acceptedSuggestion.isChild) {
       suggestion = updateMultiValueSuggestions(
@@ -170,6 +174,10 @@ const updateSuggestions = (
     } else {
       suggestion.state.match = true;
       suggestion.currentValue = acceptedSuggestion.suggestedValue;
+    }
+
+    if ('children' in suggestion && suggestion.children?.length) {
+      suggestion = generateChildrenRows(suggestion as MultiValueSuggestion);
     }
 
     if (
