@@ -8,6 +8,7 @@ import { useDnDContext } from '../../Layouts/DragAndDrop';
 
 interface TableBodyProps extends PropsWithChildren {
   draggableRows: boolean;
+  allowEditGroupsWithDnD?: boolean;
   DndProvider?: React.FC<any>;
   HTML5Backend?: any;
   items: any;
@@ -48,7 +49,7 @@ const setRowId: <T>(
 // eslint-disable-next-line comma-spacing
 const TableBodyComponent = <T,>({
   draggableRows,
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+  allowEditGroupsWithDnD,
   DndProvider,
   HTML5Backend,
   items,
@@ -62,6 +63,7 @@ const TableBodyComponent = <T,>({
       getDisplayName: item => item.dndId!,
       itemsProperty: subRowsKey,
       onChange,
+      allowEditGroupsWithDnD,
     },
     items,
     []

@@ -16,6 +16,7 @@ interface IDraggable<T> {
   iconHandle?: boolean;
   parent?: IDraggable<T>;
   container?: string;
+  fixed?: boolean;
 }
 
 type ISublink = {
