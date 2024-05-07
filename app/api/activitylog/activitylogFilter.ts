@@ -52,7 +52,7 @@ class ActivityLogFilter {
       this.searchQuery.push({
         $or: [
           { method: regex },
-          { url: regex },
+          { url: { $regex: `^${this.query?.search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$` } },
           { query: regex },
           { body: regex },
           { params: regex },
@@ -75,13 +75,22 @@ class ActivityLogFilter {
       ([_key, value]) =>
         this.query?.method?.length === 0 || queryMethods.includes(value.method || '')
     );
-    const orUrlItems = uniq(
-      matchedURLs.map(([key]) => ({
-        url: {
-          $regex: key.split(/\/(.*)/s)[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&'),
-        },
-      }))
-    );
+    const orUrlItems = matchedURLs.map(([key]) => {
+      const entries = key.split(/\/(.*)/s);
+      return {
+        $and: [
+          {
+            url: {
+              $regex: `^\\/${entries[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$`,
+            },
+          },
+          {
+            method: entries[0],
+          },
+        ],
+      };
+    });
+
     this.searchFilter();
     if (orUrlItems.length > 0) {
       this.searchQuery.push({ $or: orUrlItems });
