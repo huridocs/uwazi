@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { IStore } from 'app/istore';
 import { ConnectionSchema } from 'shared/types/connectionType';
 import { createSelector } from 'reselect';
-import { Highlight } from 'react-text-selection-handler';
+import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
 
 export interface PageReferencesProps {
