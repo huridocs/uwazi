@@ -8,8 +8,6 @@ import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
-import { setgroups } from 'process';
-// import { isEmpty, xor } from 'lodash';
 
 interface Option {
   label: string | React.ReactNode;
@@ -138,9 +136,11 @@ const MultiselectList = ({
       onChange([]);
     } else {
       const allItems = filteredItems
-        .reduce((all: Option[], current) => {
-          return current.items ? [...all, ...current.items] : [...all, current];
-        }, [])
+        .reduce(
+          (all: Option[], current) =>
+            current.items ? [...all, ...current.items] : [...all, current],
+          []
+        )
         .filter(f => f)
         .map((item: Option) => item.value);
       const groupsToOpen = filteredItems.filter(item => item.items).map(group => group.value);
