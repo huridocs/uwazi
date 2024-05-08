@@ -79,8 +79,8 @@ describe('activitylog', () => {
       });
 
       it('should filter by url', async () => {
-        const { rows: entries } = await activitylog.get({ url: 'entities' });
-        expect(entries.length).toBe(4);
+        const { rows: entries } = await activitylog.get({ url: '/api/entities' });
+        expect(entries.length).toBe(3);
       });
 
       it('should filter by query', async () => {
@@ -112,6 +112,33 @@ describe('activitylog', () => {
         expect(entries[0].time).toBe(8000);
         expect(entries[1].time).toBe(6000);
         expect(entries[2].time).toBe(5000);
+      });
+
+      it('should filter by semantic text', async () => {
+        const { rows: entries } = await activitylog.get({ search: 'Deleted entity' });
+        expect(entries).toEqual([
+          expect.objectContaining({
+            method: 'DELETE',
+            url: '/api/entities',
+            query: '{"sharedId":"123"}',
+            time: 2000,
+            username: 'admin',
+          }),
+        ]);
+      });
+
+      it('should filter by semantic method ', async () => {
+        const { rows: entries } = await activitylog.get({ search: 'create' });
+        expect(entries).toEqual([
+          expect.objectContaining({
+            method: 'POST',
+            url: '/api/entities',
+            body: '{"_id":"123","title":"Hello"}',
+            query: '{}',
+            time: 5000,
+            username: 'admin',
+          }),
+        ]);
       });
     });
 
