@@ -14,7 +14,7 @@ const TableHeader = <T,>({ headerGroup, draggableRows, sortedChanged }: RowProps
       const isSortable = header.column.getCanSort();
       const isSelect = header.column.id === 'checkbox-select';
       const commonHeaderClassName = `${draggableRows ? 'pl-7' : ''} ${
-        isSelect ? 'px-2 py-3' : 'px-6 py-3'
+        isSelect ? 'w-0 px-4 py-3' : 'px-6 py-3'
       }`;
 
       const headerClassName = `${!header.column.columnDef.meta?.headerClassName?.includes('invisible') ? commonHeaderClassName : ''} ${header.column.columnDef.meta?.headerClassName || ''}`;
