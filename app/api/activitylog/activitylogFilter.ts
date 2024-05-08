@@ -46,6 +46,25 @@ class ActivityLogFilter {
     this.query = requestQuery;
   }
 
+  setRequestFilter(property: 'url' | 'query' | 'body' | 'params', exact = false) {
+    if (this.query?.[property] !== undefined) {
+      const exp = this.query?.[property]!.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&');
+
+      this.andQuery.push({
+        [property]: {
+          $regex: exact ? `^${exp}$` : exp,
+        },
+      });
+    }
+  }
+
+  prepareRegexpQueries = () => {
+    this.setRequestFilter('url', true);
+    this.setRequestFilter('query');
+    this.setRequestFilter('body');
+    this.setRequestFilter('params');
+  };
+
   searchFilter() {
     if (this.query?.search) {
       const regex = { $regex: `.*${this.query?.search}.*`, $options: 'si' };
@@ -90,7 +109,6 @@ class ActivityLogFilter {
         ],
       };
     });
-
     this.searchFilter();
     if (orUrlItems.length > 0) {
       this.searchQuery.push({ $or: orUrlItems });
@@ -111,13 +129,14 @@ class ActivityLogFilter {
 
   findFilter() {
     if (this.query?.find) {
+      const regex = { $regex: `.*${this.query?.find}.*`, $options: 'si' };
       this.andQuery.push({
         $or: [
-          { method: this.query?.find },
-          { url: this.query?.find },
-          { query: this.query?.find },
-          { body: this.query?.find },
-          { params: this.query?.find },
+          { method: regex },
+          { url: regex },
+          { query: regex },
+          { body: regex },
+          { params: regex },
         ],
       });
     }
@@ -131,11 +150,18 @@ class ActivityLogFilter {
 
   userFilter() {
     if (this.query?.username) {
-      this.andQuery.push({ username: { $regex: `.*${this.query?.username}.*`, $options: 'si' } });
+      const orUser: {}[] = [
+        { username: { $regex: `.*${this.query?.username}.*`, $options: 'si' } },
+      ];
+      if (this.query.username === 'anonymous') {
+        orUser.push({ username: null });
+      }
+      this.andQuery.push({ $or: orUser });
     }
   }
 
   prepareQuery() {
+    this.prepareRegexpQueries();
     this.endPointFilter();
     this.findFilter();
     this.userFilter();
