@@ -48,6 +48,7 @@ const ThesaurusForm = () => {
   useEffect(() => {
     if (thesaurus) {
       const values = thesaurus.values || [];
+      console.log('values', values);
       const valuesWithIds = values.map((value: ClientThesaurusValue) => ({
         ...value,
         _id: `temp_${uniqueID()}`,
@@ -215,23 +216,6 @@ const ThesaurusForm = () => {
     }
   };
 
-  const checkDNDBeforeCommit = (values: TableThesaurusValue[]) => {
-    const groups = values.filter(groupValue => Array.isArray(groupValue.values));
-    let groupsHaveChanged = false;
-    for (let i = 0; i < groups.length; i += 1) {
-      const group = groups[i];
-      const originalGroup = thesaurusValues.find(tv => tv._id === group._id);
-      if (group.values?.length !== originalGroup?.values?.length) {
-        groupsHaveChanged = true;
-        break;
-      }
-    }
-
-    if (!groupsHaveChanged) {
-      setThesaurusValues(values);
-    }
-  };
-
   return (
     <div
       className="tw-content"
@@ -245,7 +229,7 @@ const ThesaurusForm = () => {
         />
         <SettingsContent.Body>
           <form onSubmit={handleSubmit(formSubmit)} id="edit-thesaurus">
-            <div data-testid="thesauri" className="rounded-md border border-gray-50 shadow-sm">
+            <div data-testid="thesauri" className="border rounded-md shadow-sm border-gray-50">
               <div className="p-4">
                 <InputField
                   clearFieldAction={() => {}}
@@ -260,18 +244,19 @@ const ThesaurusForm = () => {
                 draggableRows
                 enableSelection
                 subRowsKey="values"
-                onChange={checkDNDBeforeCommit}
+                onChange={setThesaurusValues}
                 columns={columns({ edit })}
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
                 onSelection={setSelectedThesaurusValue}
+                allowEditGroupsWithDnD={false}
               />
             </div>
           </form>
         </SettingsContent.Body>
         <SettingsContent.Footer className="bottom-0 bg-indigo-50">
           {selectedThesaurusValue.length ? (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={deleteSelected}
