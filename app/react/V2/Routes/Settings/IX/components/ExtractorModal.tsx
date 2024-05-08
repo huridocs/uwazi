@@ -2,6 +2,7 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useState } from 'react';
 import { uniq } from 'lodash';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
@@ -125,6 +126,7 @@ const ExtractorModal = ({
     }
 
     setEditing(false);
+
     const result: null | IXExtractorInfo = submitedValues.length
       ? ({
           name: submittedName,
@@ -178,7 +180,7 @@ const ExtractorModal = ({
   };
 
   return (
-    <Modal size="xl">
+    <Modal size="xxl">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
           {extractor ? <Translate>Edit extractor</Translate> : <Translate>Add extractor</Translate>}
@@ -186,12 +188,11 @@ const ExtractorModal = ({
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
 
-      <Modal.Body className="px-3 pt-4">
+      <Modal.Body className="flex flex-col gap-4 px-3 pt-4">
         <InputField
           clearFieldAction={() => {}}
           id="extractor-name"
           placeholder="Extractor name"
-          className="px-2 mb-2"
           hasErrors={hasNameError}
           value={name}
           onChange={event => {
@@ -202,7 +203,7 @@ const ExtractorModal = ({
 
         {step === 1 ? (
           <MultiselectList
-            className="pt-4 max-h-96"
+            className="h-80"
             value={initialValues || []}
             items={options}
             onChange={selected => {
@@ -212,7 +213,7 @@ const ExtractorModal = ({
             foldableGroups
           />
         ) : (
-          <div className="px-2 py-4">
+          <div className="h-80">
             <h6 className="text-sm font-medium">
               <Translate>Input</Translate>
             </h6>
@@ -255,7 +256,7 @@ const ExtractorModal = ({
           </div>
         )}
 
-        <div className="my-4">
+        <div className="self-end">
           <Button
             type="button"
             onClick={() => onAllTemplatedCheckboxChanged()}
@@ -266,7 +267,7 @@ const ExtractorModal = ({
           </Button>
         </div>
 
-        <div className="flex gap-2 justify-center my-4 w-full">
+        <div className="flex gap-2 justify-center w-full">
           <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
           <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
         </div>
@@ -281,7 +282,10 @@ const ExtractorModal = ({
                   <Translate>Cancel</Translate>
                 </Button>
                 <Button className="grow" onClick={() => setStep(2)}>
-                  <Translate>Next</Translate>
+                  <span className="flex flex-nowrap gap-2 justify-center items-center">
+                    <Translate>Next</Translate>
+                    <ArrowRightIcon className="w-5" />
+                  </span>
                 </Button>
               </>
             ) : (
@@ -289,7 +293,7 @@ const ExtractorModal = ({
                 <Button styling="light" onClick={() => setStep(1)} className="grow">
                   <Translate>Back</Translate>
                 </Button>
-                <Button className="grow" onClick={() => handleSubmit(name, values)}>
+                <Button className="grow" onClick={() => handleSubmit(name, values)} color="success">
                   <Translate>Create</Translate>
                 </Button>
               </>
