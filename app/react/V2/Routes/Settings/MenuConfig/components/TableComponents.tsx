@@ -3,11 +3,10 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { LinkSchema } from 'shared/types/commonTypes';
 import { EmbededButton, Button } from 'app/V2/Components/UI';
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 
-const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
+const EditButton = ({ cell, column }: CellContext<ClientSettingsLinkSchema, string>) => (
   <Button
     styling="outline"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
@@ -17,7 +16,7 @@ const EditButton = ({ cell, column }: CellContext<LinkSchema, string>) => (
   </Button>
 );
 
-const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
+const TitleCell = ({ row, getValue }: CellContext<ClientSettingsLinkSchema, string>) => (
   <div className="flex items-center gap-2">
     <Translate
       context="Menu"
