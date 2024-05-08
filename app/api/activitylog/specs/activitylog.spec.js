@@ -38,12 +38,12 @@ describe('activitylog', () => {
   describe('get()', () => {
     it('should return all entries', async () => {
       const { rows: entries } = await activitylog.get();
-      expect(entries.length).toBe(5);
+      expect(entries.length).toBe(6);
     });
 
     it('should include semantic info for each result', async () => {
       const { rows: entries } = await activitylog.get();
-      expect(activityLogParser.getSemanticData.mock.calls.length).toBe(5);
+      expect(activityLogParser.getSemanticData.mock.calls.length).toBe(6);
       expect(activityLogParser.getSemanticData).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'DELETE',
@@ -57,6 +57,7 @@ describe('activitylog', () => {
       });
     });
 
+    // eslint-disable-next-line max-statements
     describe('when filtering', () => {
       it('should filter by method', async () => {
         const { rows } = await activitylog.get({ method: ['POST'] });
@@ -72,20 +73,20 @@ describe('activitylog', () => {
         expect(entries[1].time).toBe(5000);
 
         ({ rows: entries } = await activitylog.get({ time: { from: null } }));
-        expect(entries.length).toBe(5);
+        expect(entries.length).toBe(6);
 
         ({ rows: entries } = await activitylog.get({ time: { to: null } }));
-        expect(entries.length).toBe(5);
+        expect(entries.length).toBe(6);
       });
 
       it('should filter by url', async () => {
         const { rows: entries } = await activitylog.get({ url: '/api/entities' });
-        expect(entries.length).toBe(3);
+        expect(entries.length).toBe(4);
       });
 
       it('should filter by query', async () => {
         const { rows: entries } = await activitylog.get({ query: '123' });
-        expect(entries.length).toBe(1);
+        expect(entries.length).toBe(2);
         expect(entries[0].query).toBe('{"sharedId":"123"}');
       });
 
@@ -102,7 +103,7 @@ describe('activitylog', () => {
 
       it('should filter by anonymous user', async () => {
         const { rows: entries } = await activitylog.get({ username: 'anonymous' });
-        expect(entries.length).toBe(2);
+        expect(entries.length).toBe(3);
         expect(entries[0].username).toBeUndefined();
       });
 
@@ -133,6 +134,13 @@ describe('activitylog', () => {
           expect.objectContaining({
             method: 'POST',
             url: '/api/entities',
+            query: '{"sharedId":"123"}',
+            body: '{"_id":"456","title":"Entity 1"}',
+            time: 9000,
+          }),
+          expect.objectContaining({
+            method: 'POST',
+            url: '/api/entities',
             body: '{"_id":"123","title":"Hello"}',
             query: '{}',
             time: 5000,
@@ -140,12 +148,21 @@ describe('activitylog', () => {
           }),
         ]);
       });
+
+      it('should filter by a composed query ', async () => {
+        const { rows: entries } = await activitylog.get({
+          url: '/api/entities',
+          username: 'admin',
+          method: ['POST'],
+        });
+        expect(entries).toEqual([expect.objectContaining({ time: 5000 })]);
+      });
     });
 
     describe('Load More functionality', () => {
       it('should allow to load more via "before" param', async () => {
         const initialResults = await activitylog.get({ limit: 2 });
-        assessResults(initialResults, { size: 2, remainingRows: 3, limit: 2, times: [8000, 6000] });
+        assessResults(initialResults, { size: 2, remainingRows: 4, limit: 2, times: [9000, 8000] });
 
         const nextResults = await activitylog.get({ before: 6000, limit: 2 });
         assessResults(nextResults, { size: 2, remainingRows: 1, limit: 2, times: [5000, 2000] });
@@ -157,32 +174,38 @@ describe('activitylog', () => {
         let results = await activitylog.get({ limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 3,
+          remainingRows: 4,
           limit: 2,
           page: undefined,
-          times: [8000, 6000],
+          times: [9000, 8000],
         });
 
         results = await activitylog.get({ page: 1, limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 3,
+          remainingRows: 4,
           limit: 2,
           page: 1,
-          times: [8000, 6000],
+          times: [9000, 8000],
         });
 
         results = await activitylog.get({ page: 2, limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 1,
+          remainingRows: 2,
           limit: 2,
           page: 2,
-          times: [5000, 2000],
+          times: [6000, 5000],
         });
 
         results = await activitylog.get({ page: 3, limit: 2 });
-        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 3, times: [1000] });
+        assessResults(results, {
+          size: 2,
+          remainingRows: 0,
+          limit: 2,
+          page: 3,
+          times: [2000, 1000],
+        });
       });
 
       it('should return an empty array if the page is out of range', async () => {
@@ -208,39 +231,39 @@ describe('activitylog', () => {
     describe('sorting through the "sort" keyword', () => {
       it('without the "sort" keyword, it should sort by time, descending as default', async () => {
         const results = await activitylog.get();
-        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+        expect(results.rows.map(r => r.time)).toEqual([9000, 8000, 6000, 5000, 2000, 1000]);
       });
 
       it('should sort by method', async () => {
         let results = await activitylog.get({ sort: { prop: 'method', asc: 1 } });
-        expect(results.rows.map(r => r.time)).toEqual([2000, 5000, 8000, 6000, 1000]);
+        expect(results.rows.map(r => r.time)).toEqual([2000, 9000, 5000, 8000, 6000, 1000]);
 
         results = await activitylog.get({ sort: { prop: 'method', asc: 0 } });
-        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000, 5000, 2000]);
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000, 9000, 5000, 2000]);
       });
 
       it('should sort by user', async () => {
         let results = await activitylog.get({ sort: { prop: 'username', asc: 1 } });
-        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+        expect(results.rows.map(r => r.time)).toEqual([9000, 8000, 6000, 5000, 2000, 1000]);
 
         results = await activitylog.get({ sort: { prop: 'username', asc: 0 } });
-        expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 8000, 6000]);
+        expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 9000, 8000, 6000]);
       });
 
       it('should sort by url', async () => {
         let results = await activitylog.get({ sort: { prop: 'url', asc: 1 } });
-        expect(results.rows.map(r => r.time)).toEqual([8000, 5000, 2000, 6000, 1000]);
+        expect(results.rows.map(r => r.time)).toEqual([9000, 8000, 5000, 2000, 6000, 1000]);
 
         results = await activitylog.get({ sort: { prop: 'url', asc: 0 } });
-        expect(results.rows.map(r => r.time)).toEqual([1000, 6000, 8000, 5000, 2000]);
+        expect(results.rows.map(r => r.time)).toEqual([1000, 6000, 9000, 8000, 5000, 2000]);
       });
 
       it('should sort by time', async () => {
         let results = await activitylog.get({ sort: { prop: 'time', asc: 1 } });
-        expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000]);
+        expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000, 9000]);
 
         results = await activitylog.get({ sort: { prop: 'time', asc: 0 } });
-        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
+        expect(results.rows.map(r => r.time)).toEqual([9000, 8000, 6000, 5000, 2000, 1000]);
       });
 
       it('should respect filters', async () => {

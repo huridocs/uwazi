@@ -26,5 +26,12 @@ export default {
       time: 2000,
       username: 'admin',
     },
+    {
+      method: 'POST',
+      url: '/api/entities',
+      query: '{"sharedId":"123"}',
+      body: '{"_id":"456","title":"Entity 1"}',
+      time: 9000,
+    },
   ],
 };
