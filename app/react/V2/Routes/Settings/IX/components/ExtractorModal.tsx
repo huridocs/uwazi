@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { uniq } from 'lodash';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -50,37 +50,11 @@ const renderPropertyLabel = (property: ClientPropertySchema) => {
   );
 };
 
-const ExtractorModal = ({
-  setShowModal,
-  onClose,
-  onAccept,
-  templates,
-  extractor,
-}: ExtractorModalProps) => {
-  const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [values, setValues] = useState<string[]>([]);
-  const [isEditing, setEditing] = useState<boolean>(false);
-  const [hasNameError, setNameError] = useState(false);
-  const [options, setOptions] = useState<any[]>([]);
+const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
+  const filter = values.length ? values[0].split('-', 2)[1] : null;
 
-  const initialValues = extractor?.templates.map(template => `${template}-${extractor.property}`);
-
-  useEffect(() => {
-    if (extractor) {
-      setEditing(true);
-      setName(extractor.name);
-      setValues(initialValues || []);
-    } else {
-      setEditing(false);
-      setName('');
-      setValues([]);
-    }
-  }, [extractor]);
-
-  useEffect(() => {
-    const filter = values.length ? values[0].split('-', 2)[1] : null;
-    const opt = templates.map(template => ({
+  return templates
+    .map(template => ({
       label: template.name,
       id: template._id,
       searchLabel: template.name,
@@ -104,10 +78,38 @@ const ExtractorModal = ({
               ]
             : []
         ),
-    }));
+    }))
+    .filter(template => template.items.length);
+};
 
-    setOptions(opt);
-  }, [values, step]);
+const ExtractorModal = ({
+  setShowModal,
+  onClose,
+  onAccept,
+  templates,
+  extractor,
+}: ExtractorModalProps) => {
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState('');
+  const [values, setValues] = useState<string[]>([]);
+  const [isEditing, setEditing] = useState<boolean>(false);
+  const [hasNameError, setNameError] = useState(false);
+
+  const initialValues = extractor?.templates.map(template => `${template}-${extractor.property}`);
+
+  const options = useMemo(() => formatOptions(values, templates), [values, templates]);
+
+  useEffect(() => {
+    if (extractor) {
+      setEditing(true);
+      setName(extractor.name);
+      setValues(initialValues || []);
+    } else {
+      setEditing(false);
+      setName('');
+      setValues([]);
+    }
+  }, [extractor, initialValues]);
 
   const handleClose = () => {
     setEditing(false);
@@ -116,7 +118,6 @@ const ExtractorModal = ({
     onClose();
   };
 
-  // eslint-disable-next-line max-statements
   const handleSubmit = (submittedName: string, submitedValues: string[]) => {
     if (!submittedName.length) {
       setNameError(true);
@@ -176,74 +177,6 @@ const ExtractorModal = ({
     setValues(newValues);
   };
 
-  const renderSteps = () => {
-    if (step === 1) {
-      return (
-        <MultiselectList
-          className="pt-4 max-h-96"
-          value={initialValues || []}
-          items={options}
-          onChange={(s: any) => {
-            setValues(s);
-          }}
-          checkboxes
-          foldableGroups
-        />
-      );
-    }
-
-    return (
-      <div className="px-2 py-4">
-        <h6 className="text-sm font-medium">
-          <Translate>Input</Translate>
-        </h6>
-        <div className="p-3">
-          {renderPropertyLabel({
-            name: values[0]?.split('-', 2)[1],
-            label: values[0]?.split('-', 2)[1],
-            type: 'text',
-          })}
-        </div>
-        <h6 className="text-sm font-medium">
-          <Translate>Selected templates</Translate>
-        </h6>
-        <div className="flex flex-wrap p-3">
-          {values.map(value => {
-            const templateId = value?.split('-', 2)[0];
-            const template = templates.find(temp => temp._id === templateId);
-            return (
-              <Pill color="gray" className="m-1">
-                {template?.name}
-              </Pill>
-            );
-          })}
-        </div>
-        <h6 className="text-sm font-medium">
-          <Translate>Common sources</Translate>
-        </h6>
-        <div className="flex flex-wrap p-3">
-          <RadioSelect
-            name="pdf"
-            options={[
-              {
-                label: <Translate>PDF</Translate>,
-                value: 'true',
-                defaultChecked: false,
-              },
-            ]}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  const renderStepsButton = () => (
-    <div className="flex gap-2 justify-center py-4 w-full h-4">
-      <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
-      <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
-    </div>
-  );
-
   return (
     <Modal size="xl">
       <Modal.Header>
@@ -252,6 +185,7 @@ const ExtractorModal = ({
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
+
       <Modal.Body className="px-3 pt-4">
         <InputField
           clearFieldAction={() => {}}
@@ -265,9 +199,79 @@ const ExtractorModal = ({
             setNameError(false);
           }}
         />
-        {renderSteps()}
-        {renderStepsButton()}
+
+        {step === 1 ? (
+          <MultiselectList
+            className="pt-4 max-h-96"
+            value={initialValues || []}
+            items={options}
+            onChange={selected => {
+              setValues(selected);
+            }}
+            checkboxes
+            foldableGroups
+          />
+        ) : (
+          <div className="px-2 py-4">
+            <h6 className="text-sm font-medium">
+              <Translate>Input</Translate>
+            </h6>
+            <div className="p-3">
+              {renderPropertyLabel({
+                name: values[0]?.split('-', 2)[1],
+                label: values[0]?.split('-', 2)[1],
+                type: 'text',
+              })}
+            </div>
+            <h6 className="text-sm font-medium">
+              <Translate>Selected templates</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
+              {values.map(value => {
+                const templateId = value?.split('-', 2)[0];
+                const template = templates.find(temp => temp._id === templateId);
+                return (
+                  <Pill color="gray" className="m-1">
+                    {template?.name}
+                  </Pill>
+                );
+              })}
+            </div>
+            <h6 className="text-sm font-medium">
+              <Translate>Common sources</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
+              <RadioSelect
+                name="pdf"
+                options={[
+                  {
+                    label: <Translate>PDF</Translate>,
+                    value: 'true',
+                    defaultChecked: true,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="my-4">
+          <Button
+            type="button"
+            onClick={() => onAllTemplatedCheckboxChanged()}
+            styling="outline"
+            disabled={values.length === 0}
+          >
+            <Translate>Sellect all</Translate>
+          </Button>
+        </div>
+
+        <div className="flex gap-2 justify-center my-4 w-full">
+          <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+          <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+        </div>
       </Modal.Body>
+
       <Modal.Footer>
         <div className="flex flex-col w-full">
           <div className="flex gap-2">
