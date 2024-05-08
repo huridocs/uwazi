@@ -25,11 +25,12 @@ const TitleCell = ({ row, getValue }: CellContext<LinkSchema, string>) => (
     >
       {getValue()}
     </Translate>
-    {row.getCanExpand() && (
+    {row.original.type === 'group' && (
       <EmbededButton
         icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
         onClick={() => row.toggleExpanded()}
         color="indigo"
+        disabled={row.getCanExpand() === false}
       >
         <Translate>Group</Translate>
       </EmbededButton>

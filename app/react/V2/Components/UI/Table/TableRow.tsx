@@ -6,10 +6,11 @@ import { GrabIcon, RowWrapper } from './DraggableRow';
 
 interface TableRowProps<T> extends PropsWithChildren {
   row: Row<T>;
-  enableSelection: boolean | undefined;
   draggableRow?: boolean;
   dndContext?: IDnDContext<T>;
   item?: IDraggable<T>;
+  highLightGroups?: boolean;
+  subRowsKey?: string;
 }
 
 /* eslint-disable comma-spacing */
@@ -17,8 +18,9 @@ const TableRow = <T,>({
   draggableRow,
   row,
   dndContext,
-  enableSelection,
   item,
+  subRowsKey,
+  highLightGroups = true,
 }: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
   const icons =
@@ -26,7 +28,12 @@ const TableRow = <T,>({
       ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
       : [];
   const isSubGroup = row.depth > 0;
-  const bg = row.getIsExpanded() ? 'bg-primary-100' : '';
+  const bg =
+    row.getIsExpanded() ||
+    (highLightGroups && row.getCanExpand()) ||
+    (subRowsKey && highLightGroups && Array.isArray((row.original as any)[subRowsKey]))
+      ? 'bg-primary-100'
+      : '';
 
   return (
     <RowWrapper
@@ -42,11 +49,7 @@ const TableRow = <T,>({
         const firstColumnClass = draggableRow && columnIndex === 0 ? 'flex items-center gap-3' : '';
 
         let border = '';
-        if (
-          isSelect &&
-          ((isSubGroup && enableSelection && columnIndex === 1) ||
-            (isSubGroup && !enableSelection && columnIndex === 0))
-        ) {
+        if (isSelect && isSubGroup) {
           border = 'border-r-2 border-primary-300';
         }
 
