@@ -25,7 +25,16 @@ const TableRow = <T,>({
   const previewRef = useRef<HTMLTableRowElement>(null);
   const icons =
     draggableRow && dndContext && item
-      ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
+      ? [
+          <GrabIcon
+            row={row}
+            dndContext={dndContext}
+            previewRef={previewRef}
+            item={item}
+            subRowsKey={subRowsKey}
+            highLightGroups={highLightGroups}
+          />,
+        ]
       : [];
   const isSubGroup = row.depth > 0;
   const bg =
