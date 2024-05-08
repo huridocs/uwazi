@@ -24,6 +24,7 @@ interface TextSelectionSuggestion extends CommonSuggestion {
 
 interface ValuesSelectionSuggestion extends CommonSuggestion {
   values: { id: string; label: string }[];
+  segment_text: string;
 }
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
@@ -75,6 +76,7 @@ const FORMATTERS = {
 
     const suggestion: Partial<IXSuggestionType> = {
       suggestedValue: suggestedValue || '',
+      segment: rawSuggestion.segment_text,
     };
 
     return suggestion;
@@ -88,6 +90,7 @@ const FORMATTERS = {
 
     const suggestion: Partial<IXSuggestionType> = {
       suggestedValue,
+      segment: rawSuggestion.segment_text,
     };
 
     return suggestion;
