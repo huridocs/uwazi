@@ -4295,12 +4295,24 @@
     notepack.io "~3.0.1"
     socket.io-parser "~4.2.1"
 
-"@storybook/addon-actions@8.0.8", "@storybook/addon-actions@^8.0.8":
+"@storybook/addon-actions@8.0.8":
   version "8.0.8"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-8.0.8.tgz#0b625b36e738a3b02c25d7b0b0b9f28c4e68c918"
   integrity sha512-F3qpN0n53d058EroW1A2IlzrsFNR5p2srLY4FmXB80nxAKV8oqoDI4jp15zYlf8ThcJoQl36plT8gx3r1BpANA==
   dependencies:
     "@storybook/core-events" "8.0.8"
+    "@storybook/global" "^5.0.0"
+    "@types/uuid" "^9.0.1"
+    dequal "^2.0.2"
+    polished "^4.2.2"
+    uuid "^9.0.0"
+
+"@storybook/addon-actions@^8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-8.0.10.tgz#df9fde0d234174eda5eb1c7af942da8e01924b50"
+  integrity sha512-IEuc30UAFl7Ws0GwaY/whjBnGaViVEVjmPc+MXUym2wwwJbnCbI+BKJxPoYi/I7QJb5aUNToAE6pl2pDda2g3Q==
+  dependencies:
+    "@storybook/core-events" "8.0.10"
     "@storybook/global" "^5.0.0"
     "@types/uuid" "^9.0.1"
     dequal "^2.0.2"
@@ -4661,6 +4673,13 @@
     tiny-invariant "^1.3.1"
     ts-dedent "^2.0.0"
     util "^0.12.4"
+
+"@storybook/core-events@8.0.10":
+  version "8.0.10"
+  resolved "https://registry.yarnpkg.com/@storybook/core-events/-/core-events-8.0.10.tgz#03c70ca44816078e8a3479e6322a1d1f586da88a"
+  integrity sha512-TuHPS6p5ZNr4vp4butLb4R98aFx0NRYCI/7VPhJEUH5rPiqNzE3PZd8DC8rnVxavsJ+jO1/y+egNKXRYkEcoPQ==
+  dependencies:
+    ts-dedent "^2.0.0"
 
 "@storybook/core-events@8.0.8":
   version "8.0.8"

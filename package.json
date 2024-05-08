@@ -270,7 +270,7 @@
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^1",
     "@cypress/react18": "^2.0.0",
-    "@storybook/addon-actions": "^8.0.8",
+    "@storybook/addon-actions": "^8.0.10",
     "@storybook/addon-essentials": "^8.0.8",
     "@storybook/addon-interactions": "^8.0.8",
     "@storybook/addon-links": "^8.0.9",
