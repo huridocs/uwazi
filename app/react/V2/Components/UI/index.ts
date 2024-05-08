@@ -18,4 +18,3 @@ export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
 
 export type { TableProps } from './Table/TableElements';
-export type { MultiselectListOption } from '../Forms/MultiselectList';

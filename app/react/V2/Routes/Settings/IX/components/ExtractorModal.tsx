@@ -1,13 +1,14 @@
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
 import { uniq } from 'lodash';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
-import Icons from 'app/Templates/components/Icons';
 import { Translate } from 'app/I18N';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
-import { CalculatorIcon, CalendarIcon } from '@heroicons/react/20/solid';
 import { RadioSelect } from 'app/V2/Components/Forms';
+import { propertyIcons } from './Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
 
@@ -20,24 +21,30 @@ interface ExtractorModalProps {
 }
 
 const renderPropertyLabel = (property: ClientPropertySchema) => {
-  let icon = <></>;
+  let icon: React.ReactNode;
+
   switch (property.type) {
     case 'numeric':
-      icon = <CalculatorIcon className="w-5" />;
+      icon = propertyIcons.numeric;
       break;
     case 'date':
-      icon = <CalendarIcon className="w-5" />;
+      icon = propertyIcons.date;
       break;
-    case 'text':
-      icon = <CalendarIcon className="w-5" />;
+    case 'select':
+      icon = propertyIcons.select;
       break;
+    case 'multiselect':
+      icon = propertyIcons.multiselect;
+      break;
+    default:
+      icon = propertyIcons.text;
   }
 
   return (
-    <div className="flex gap-2">
-      <span>{icon}</span>
+    <div className="flex gap-2 items-center">
+      <span className="w-4">{icon}</span>
       <span>
-        {property.label} {'(' + property.type + ')'}
+        {property.label} {`( ${property.type} )`}
       </span>
     </div>
   );
@@ -54,7 +61,6 @@ const ExtractorModal = ({
   const [name, setName] = useState('');
   const [values, setValues] = useState<string[]>([]);
   const [isEditing, setEditing] = useState<boolean>(false);
-  const [_isDisabled, setIsDisabled] = useState(false);
   const [hasNameError, setNameError] = useState(false);
   const [options, setOptions] = useState<any[]>([]);
 
@@ -74,7 +80,7 @@ const ExtractorModal = ({
 
   useEffect(() => {
     const filter = values.length ? values[0].split('-', 2)[1] : null;
-    const options = templates.map(template => ({
+    const opt = templates.map(template => ({
       label: template.name,
       id: template._id,
       searchLabel: template.name,
@@ -100,14 +106,13 @@ const ExtractorModal = ({
         ),
     }));
 
-    setOptions(options);
+    setOptions(opt);
   }, [values, step]);
 
   const handleClose = () => {
     setEditing(false);
     setName('');
     setValues([]);
-    setIsDisabled(false);
     onClose();
   };
 
@@ -119,7 +124,6 @@ const ExtractorModal = ({
     }
 
     setEditing(false);
-    setIsDisabled(true);
     const result: null | IXExtractorInfo = submitedValues.length
       ? ({
           name: submittedName,
@@ -173,83 +177,70 @@ const ExtractorModal = ({
   };
 
   const renderSteps = () => {
-    switch (step) {
-      case 1:
-        return (
-          <MultiselectList
-            className="pt-4 max-h-96"
-            value={initialValues || []}
-            items={options}
-            onChange={(s: any) => {
-              console.log('onChange: ', s);
-              setValues(s);
-            }}
-            checkboxes
-            foldableGroups
-          />
-        );
-      case 2:
-        return (
-          <div className="px-2 py-4">
-            <h6 className="text-sm font-medium">
-              <Translate>Input</Translate>
-            </h6>
-            <div className="p-3">
-              {renderPropertyLabel({
-                name: values[0]?.split('-', 2)[1],
-                label: values[0]?.split('-', 2)[1],
-                type: 'text',
-              })}
-            </div>
-            <h6 className="text-sm font-medium">
-              <Translate>Selected templates</Translate>
-            </h6>
-            <div className="flex flex-wrap p-3">
-              {values.map(value => {
-                const templateId = value?.split('-', 2)[0];
-                const template = templates.find(temp => temp._id === templateId);
-                return (
-                  <Pill color="gray" className="m-1">
-                    {template?.name}
-                  </Pill>
-                );
-              })}
-            </div>
-            <h6 className="text-sm font-medium">
-              <Translate>Common sources</Translate>
-            </h6>
-            <div className="flex flex-wrap p-3">
-              <RadioSelect
-                name="pdf"
-                options={[
-                  {
-                    label: <Translate>PDF</Translate>,
-                    value: 'true',
-                    defaultChecked: false,
-                  },
-                ]}
-              />
-            </div>
-          </div>
-        );
-      default:
-        return;
+    if (step === 1) {
+      return (
+        <MultiselectList
+          className="pt-4 max-h-96"
+          value={initialValues || []}
+          items={options}
+          onChange={(s: any) => {
+            setValues(s);
+          }}
+          checkboxes
+          foldableGroups
+        />
+      );
     }
+
+    return (
+      <div className="px-2 py-4">
+        <h6 className="text-sm font-medium">
+          <Translate>Input</Translate>
+        </h6>
+        <div className="p-3">
+          {renderPropertyLabel({
+            name: values[0]?.split('-', 2)[1],
+            label: values[0]?.split('-', 2)[1],
+            type: 'text',
+          })}
+        </div>
+        <h6 className="text-sm font-medium">
+          <Translate>Selected templates</Translate>
+        </h6>
+        <div className="flex flex-wrap p-3">
+          {values.map(value => {
+            const templateId = value?.split('-', 2)[0];
+            const template = templates.find(temp => temp._id === templateId);
+            return (
+              <Pill color="gray" className="m-1">
+                {template?.name}
+              </Pill>
+            );
+          })}
+        </div>
+        <h6 className="text-sm font-medium">
+          <Translate>Common sources</Translate>
+        </h6>
+        <div className="flex flex-wrap p-3">
+          <RadioSelect
+            name="pdf"
+            options={[
+              {
+                label: <Translate>PDF</Translate>,
+                value: 'true',
+                defaultChecked: false,
+              },
+            ]}
+          />
+        </div>
+      </div>
+    );
   };
 
   const renderStepsButton = () => (
-    <div className="flex flex-col w-full">
-      <div className="flex justify-center w-full h-4 gap-2 py-4">
-        <div
-          className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`}
-        ></div>
-        <div
-          className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`}
-        ></div>
-      </div>
-      <p className="w-full pt-0 text-sm font-normal text-gray-500 dark:text-gray-400">
-        * <Translate>We're adding more properties support, soon!</Translate>
-      </p>
+    <div className="flex gap-2 justify-center py-4 w-full h-4">
+      <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+      <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
     </div>
   );
 

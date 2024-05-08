@@ -15,7 +15,6 @@ interface Option {
   value: string;
   items?: Option[];
 }
-
 interface MultiselectListProps {
   items: Option[];
   onChange: (selectedItems: string[]) => void;
@@ -33,10 +32,9 @@ const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
     <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
   </>
 );
-
 const MultiselectList = ({
   items,
-  onChange = () => {},
+  onChange,
   className,
   label,
   hasErrors,
@@ -50,22 +48,10 @@ const MultiselectList = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
-  const [allSelected, setAllSelected] = useState(false);
 
   useEffect(() => {
-    if (value) {
-      const groups = filteredItems.filter(item => item.items);
-      const groupsToOpen = groups
-        .filter(group => {
-          if (group.items?.find(item => selectedItems.includes(item.value))) {
-            return true;
-          }
-          return false;
-        })
-        .map(group => group.value);
-      setOpenGroups(groupsToOpen);
-    }
-  }, [value]);
+    if (onChange) onChange(selectedItems);
+  }, [onChange, selectedItems]);
 
   useEffect(() => {
     let filtered = [...items];
@@ -127,28 +113,6 @@ const MultiselectList = ({
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     setShowAll(target.value === 'true');
-  };
-
-  const toggleSelectAll = () => {
-    if (allSelected) {
-      setSelectedItems([]);
-      setAllSelected(false);
-      onChange([]);
-    } else {
-      const allItems = filteredItems
-        .reduce(
-          (all: Option[], current) =>
-            current.items ? [...all, ...current.items] : [...all, current],
-          []
-        )
-        .filter(f => f)
-        .map((item: Option) => item.value);
-      const groupsToOpen = filteredItems.filter(item => item.items).map(group => group.value);
-      setSelectedItems(allItems);
-      onChange(allItems);
-      setOpenGroups(oldValue => [...oldValue, ...groupsToOpen]);
-      setAllSelected(true);
-    }
   };
 
   const renderButtonItem = (item: Option) => {
@@ -275,12 +239,6 @@ const MultiselectList = ({
           onChange={applyFilter}
           className="px-1 pt-4"
         />
-        <span
-          className="float-right absolute right-0 bottom-1 mt-2 mr-3 font-normal text-gray-900 underline cursor-pointer"
-          onClick={toggleSelectAll}
-        >
-          {allSelected ? <Translate>Unselect all</Translate> : <Translate>Select all</Translate>}
-        </span>
       </div>
 
       <ul className="px-2 pt-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
@@ -289,6 +247,4 @@ const MultiselectList = ({
     </div>
   );
 };
-
 export { MultiselectList };
-export type { Option as MultiselectListOption };
