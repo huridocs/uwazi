@@ -1,6 +1,8 @@
-import { isEmpty, uniq } from 'lodash';
+import { isEmpty } from 'lodash';
 import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
 import { ParsedActions } from './activitylogParser';
+
+type ActivityLogQuery = ActivityLogGetRequest['query'];
 
 const prepareToFromRanges = (sanitizedTime: any) => {
   const time: { $gte?: number; $lte?: number } = {};
@@ -16,34 +18,36 @@ const prepareToFromRanges = (sanitizedTime: any) => {
   return time;
 };
 
-const timeQuery = ({ time, before = -1 }: ActivityLogGetRequest['query']) => {
-  const sanitizedTime = Object.keys(time).reduce(
-    (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
-    {}
-  );
-
-  if (before === -1 && !Object.keys(sanitizedTime).length) {
-    return {};
-  }
-
-  const result = { time: prepareToFromRanges(sanitizedTime) };
-
-  if (before !== -1) {
-    result.time.$lt = before;
-  }
-
-  return result;
-};
-
 class ActivityLogFilter {
   andQuery: {}[] = [];
 
   searchQuery: {}[] = [];
 
-  query: ActivityLogGetRequest['query'];
+  query: ActivityLogQuery;
 
-  constructor(requestQuery: ActivityLogGetRequest['query']) {
+  constructor(requestQuery: ActivityLogQuery) {
     this.query = requestQuery;
+  }
+
+  timeQuery() {
+    const time = this.query?.time || {};
+    const before = this.query?.before || -1;
+
+    const sanitizedTime = Object.keys(time).reduce(
+      (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
+      {}
+    );
+
+    if (before === -1 && isEmpty(sanitizedTime)) {
+      return;
+    }
+
+    const timeFilter = {
+      ...(!isEmpty(sanitizedTime) ? { time: prepareToFromRanges(sanitizedTime) } : {}),
+      ...(before !== -1 ? { time: { $lt: before } } : {}),
+    };
+
+    this.andQuery.push(timeFilter);
   }
 
   setRequestFilter(property: 'url' | 'query' | 'body' | 'params', exact = false) {
@@ -80,19 +84,20 @@ class ActivityLogFilter {
     }
   }
 
-  // eslint-disable-next-line max-statements
+  methodFilter() {
+    if (this.query?.method && this.query?.method.length > 0) {
+      const queryMethods = this.query?.method?.map(method => method.toUpperCase()) || [];
+      this.andQuery.push({ method: { $in: queryMethods } });
+    }
+  }
+
   endPointFilter() {
-    if (this.query?.search === undefined && this.query?.method === undefined) {
+    if (this.query?.search === undefined) {
       return;
     }
-    const queryMethods = this.query?.method?.map(method => method.toUpperCase()) || [];
     const parsedActionsEntries = Object.entries(ParsedActions);
     const matchedURLs = parsedActionsEntries.filter(([_key, value]) =>
       value.desc.toLowerCase().includes(this.query?.search?.toLocaleLowerCase() || '')
-    );
-    const matchedMethods = parsedActionsEntries.filter(
-      ([_key, value]) =>
-        this.query?.method?.length === 0 || queryMethods.includes(value.method || '')
     );
     const orUrlItems = matchedURLs.map(([key]) => {
       const entries = key.split(/\/(.*)/s);
@@ -116,15 +121,6 @@ class ActivityLogFilter {
     if (this.searchQuery.length > 0) {
       this.andQuery.push({ $or: this.searchQuery });
     }
-    const matchedHttpMethods = uniq(matchedMethods.map(([key]) => key.split(/\/(.*)/s)[0]));
-    if (matchedHttpMethods.length > 0 || queryMethods.length > 0) {
-      this.andQuery.push({
-        $or: [
-          ...(matchedHttpMethods.length > 0 ? [{ method: { $in: matchedHttpMethods } }] : []),
-          ...(queryMethods.length > 0 ? [{ method: { $in: queryMethods } }] : []),
-        ],
-      });
-    }
   }
 
   findFilter() {
@@ -142,12 +138,6 @@ class ActivityLogFilter {
     }
   }
 
-  timeFilter() {
-    if (this.query?.time) {
-      this.andQuery.push(timeQuery(this.query));
-    }
-  }
-
   userFilter() {
     if (this.query?.username) {
       const orUser: {}[] = [
@@ -162,10 +152,11 @@ class ActivityLogFilter {
 
   prepareQuery() {
     this.prepareRegexpQueries();
+    this.methodFilter();
     this.endPointFilter();
     this.findFilter();
     this.userFilter();
-    this.timeFilter();
+    this.timeQuery();
     return !isEmpty(this.andQuery) ? { $and: this.andQuery } : {};
   }
 }
