@@ -267,7 +267,7 @@
     "@babel/preset-typescript": "^7.24.1",
     "@babel/register": "^7.23.7",
     "@babel/traverse": "^7.24.5",
-    "@cfaester/enzyme-adapter-react-18": "^0.7.1",
+    "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^1",
     "@cypress/react18": "^2.0.0",
     "@storybook/addon-actions": "^8.0.8",
