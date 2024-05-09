@@ -172,34 +172,7 @@ const ExtractorModal = ({
   };
 
   const handleSelectAll = () => {
-    const properties = new Set();
-    const newValues: string[] = [];
-
-    values.forEach(value => {
-      properties.add(value.split('-')[1]);
-    });
-
-    const validTemplateIds: string[] = templates
-      .filter(template => {
-        const isTitle = properties.has('title');
-
-        if (isTitle) return true;
-
-        const hasMatchingProperty = template.properties.filter(property =>
-          properties.has(property.name)
-        ).length;
-
-        return hasMatchingProperty > 0;
-      })
-      .map(template => template._id);
-
-    validTemplateIds.forEach(id => {
-      const arrProps = Array.from(properties);
-      arrProps.forEach(prop => {
-        newValues.push(`${id}-${prop}`);
-      });
-    });
-
+    const newValues = options.map(option => option.items[0].value);
     setValues(newValues);
   };
 
