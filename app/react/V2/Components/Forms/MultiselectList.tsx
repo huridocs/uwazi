@@ -50,10 +50,6 @@ const MultiselectList = ({
   const [openGroups, setOpenGroups] = useState<string[]>([]);
 
   useEffect(() => {
-    if (onChange) onChange(selectedItems);
-  }, [onChange, selectedItems]);
-
-  useEffect(() => {
     let filtered = [...items];
     if (!showAll) {
       filtered = filtered
@@ -99,16 +95,17 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
-    let newValue;
+    let newValues;
     if (singleSelect) {
-      newValue = selectedItems.includes(_value) ? [] : [_value];
+      newValues = selectedItems.includes(_value) ? [] : [_value];
     } else {
-      newValue = selectedItems.includes(_value)
+      newValues = selectedItems.includes(_value)
         ? selectedItems.filter(item => item !== _value)
         : [...selectedItems, _value];
     }
 
-    setSelectedItems(newValue);
+    setSelectedItems(newValues);
+    if (onChange) onChange(newValues);
   };
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
