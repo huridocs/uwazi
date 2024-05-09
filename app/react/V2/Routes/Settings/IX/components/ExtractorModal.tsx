@@ -52,7 +52,7 @@ const getPropertyLabel = (property: ClientPropertySchema) => {
 };
 
 const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
-  const filter = values.length ? values[0].split('-', 2)[1] : null;
+  const propertyName = values.length ? values[0].split('-', 2)[1] : null;
 
   return templates
     .map(template => ({
@@ -62,7 +62,9 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
       value: template._id,
       items: template.properties
         ?.filter(
-          prop => (!filter || prop.name === filter) && SUPPORTED_PROPERTIES.includes(prop.type)
+          prop =>
+            (!propertyName || prop.name === propertyName) &&
+            SUPPORTED_PROPERTIES.includes(prop.type)
         )
         .map(prop => ({
           label: getPropertyLabel(prop),
@@ -70,7 +72,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
           searchLabel: prop.label,
         }))
         .concat(
-          !filter || filter === 'title'
+          propertyName === 'title' || !propertyName
             ? [
                 {
                   label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
