@@ -21,21 +21,26 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-const getPropertyLabel = (property: ClientPropertySchema) => {
+const getPropertyLabel = (property: ClientPropertySchema, templateId: string) => {
   let icon: React.ReactNode;
+  let propertyTypeTranslationKey = 'property text';
 
   switch (property.type) {
     case 'numeric':
       icon = propertyIcons.numeric;
+      propertyTypeTranslationKey = 'property numeric';
       break;
     case 'date':
       icon = propertyIcons.date;
+      propertyTypeTranslationKey = 'property date';
       break;
     case 'select':
       icon = propertyIcons.select;
+      propertyTypeTranslationKey = 'property select';
       break;
     case 'multiselect':
       icon = propertyIcons.multiselect;
+      propertyTypeTranslationKey = 'property multiselect';
       break;
     default:
       icon = propertyIcons.text;
@@ -44,9 +49,13 @@ const getPropertyLabel = (property: ClientPropertySchema) => {
   return (
     <div className="flex gap-2 items-center">
       <span className="w-4">{icon}</span>
-      <span>
-        {property.label} {`( ${property.type} )`}
-      </span>
+      <Translate context={templateId}>{property.label}</Translate>
+      <Translate
+        translationKey={propertyTypeTranslationKey}
+        className="lowercase before:content-['('] after:content-[')']"
+      >
+        {property.type}
+      </Translate>
     </div>
   );
 };
@@ -68,7 +77,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
               SUPPORTED_PROPERTIES.includes(prop.type)
           )
           .map(prop => ({
-            label: getPropertyLabel(prop),
+            label: getPropertyLabel(prop, template._id),
             value: `${template._id?.toString()}-${prop.name}`,
             searchLabel: prop.label,
           })),
@@ -76,7 +85,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
 
       if (propertyName === 'title' || !propertyName) {
         option.items.push({
-          label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
+          label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }, template._id),
           value: `${template._id?.toString()}-title`,
           searchLabel: 'Title',
         });
@@ -85,6 +94,33 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
       return option;
     })
     .filter(template => template.items.length);
+};
+
+const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) => {
+  const [templateId, propertyName] = value.split('-');
+
+  const matchedTemplate = templates.find(template => template._id.toString() === templateId);
+
+  if (propertyName === 'title') {
+    return getPropertyLabel(
+      {
+        name: 'title',
+        label: 'Title',
+        type: 'text',
+      },
+      matchedTemplate!._id.toString()
+    );
+  }
+
+  const matchedProperty = matchedTemplate?.properties.find(
+    property => property.name === propertyName
+  );
+
+  if (matchedProperty) {
+    return getPropertyLabel(matchedProperty, matchedTemplate!._id.toString());
+  }
+
+  return <div />;
 };
 
 const ExtractorModal = ({
@@ -206,13 +242,7 @@ const ExtractorModal = ({
             <h6 className="text-sm font-medium">
               <Translate>Input</Translate>
             </h6>
-            <div className="p-3">
-              {getPropertyLabel({
-                name: values[0]?.split('-', 2)[1],
-                label: values[0]?.split('-', 2)[1],
-                type: 'text',
-              })}
-            </div>
+            <div className="p-3">{getPropertyForValue(values[0], templates)}</div>
             <h6 className="text-sm font-medium">
               <Translate>Selected templates</Translate>
             </h6>
