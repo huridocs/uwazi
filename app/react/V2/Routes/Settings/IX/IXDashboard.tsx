@@ -41,10 +41,7 @@ const formatExtractors = (
 
       if (property) {
         propertyType = property.type as Extractor['propertyType'];
-
-        if (!propertyLabel) {
-          propertyLabel = t(template._id, property.label, null, false);
-        }
+        propertyLabel = t(template._id, property.label, null, false);
       }
     });
 
@@ -193,4 +190,4 @@ const IXdashboardLoader =
     return { extractors, templates };
   };
 
-export { IXDashboard, IXdashboardLoader };
+export { IXDashboard, IXdashboardLoader, formatExtractors };

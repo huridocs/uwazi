@@ -55,34 +55,35 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
   const propertyName = values.length ? values[0].split('-', 2)[1] : null;
 
   return templates
-    .map(template => ({
-      label: template.name,
-      id: template._id,
-      searchLabel: template.name,
-      value: template._id,
-      items: template.properties
-        ?.filter(
-          prop =>
-            (!propertyName || prop.name === propertyName) &&
-            SUPPORTED_PROPERTIES.includes(prop.type)
-        )
-        .map(prop => ({
-          label: getPropertyLabel(prop),
-          value: `${template._id?.toString()}-${prop.name}`,
-          searchLabel: prop.label,
-        }))
-        .concat(
-          propertyName === 'title' || !propertyName
-            ? [
-                {
-                  label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
-                  value: `${template._id?.toString()}-title`,
-                  searchLabel: 'Title',
-                },
-              ]
-            : []
-        ),
-    }))
+    .map(template => {
+      const option = {
+        label: template.name,
+        id: template._id,
+        searchLabel: template.name,
+        value: template._id,
+        items: template.properties
+          ?.filter(
+            prop =>
+              (!propertyName || prop.name === propertyName) &&
+              SUPPORTED_PROPERTIES.includes(prop.type)
+          )
+          .map(prop => ({
+            label: getPropertyLabel(prop),
+            value: `${template._id?.toString()}-${prop.name}`,
+            searchLabel: prop.label,
+          })),
+      };
+
+      if (propertyName === 'title' || !propertyName) {
+        option.items.push({
+          label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
+          value: `${template._id?.toString()}-title`,
+          searchLabel: 'Title',
+        });
+      }
+
+      return option;
+    })
     .filter(template => template.items.length);
 };
 
@@ -166,13 +167,6 @@ const ExtractorModal = ({
     setValues(newValues);
   };
 
-  const handleChange = (selected: string[]) => {
-    if (selected.length) {
-      setValues(selected);
-      setOptions(formatOptions(values, templates));
-    }
-  };
-
   return (
     <Modal size="xxl">
       <Modal.Header>
@@ -200,7 +194,10 @@ const ExtractorModal = ({
             className="h-80"
             value={initialValues || []}
             items={options}
-            onChange={selected => handleChange(selected)}
+            onChange={selected => {
+              setValues(selected);
+              setOptions(formatOptions(selected, templates));
+            }}
             checkboxes
             foldableGroups
           />
@@ -224,7 +221,7 @@ const ExtractorModal = ({
                 const templateId = value?.split('-', 2)[0];
                 const template = templates.find(temp => temp._id === templateId);
                 return (
-                  <Pill color="gray" className="m-1">
+                  <Pill color="gray" className="m-1" key={templateId}>
                     {template?.name}
                   </Pill>
                 );

@@ -1,6 +1,17 @@
 import { ClientTemplateSchema } from 'app/istore';
 import { PropertySchema } from 'shared/types/commonTypes';
 
+const state = {
+  match: false,
+  labeled: true,
+  withValue: true,
+  withSuggestion: true,
+  hasContext: true,
+  obsolete: false,
+  processing: false,
+  error: false,
+};
+
 const suggestion1 = {
   _id: '1',
   language: 'es',
@@ -143,51 +154,6 @@ const suggestion4 = {
   date: 1,
 };
 
-const entity1 = {
-  _id: 'entity1',
-  language: 'es',
-  sharedId: '1',
-  title: 'Entity 1',
-};
-
-const entity2 = {
-  _id: 'entity2',
-  language: 'es',
-  sharedId: '2',
-  title: 'Entity 2',
-  metadata: {
-    document_date: [
-      {
-        value: 100,
-      },
-    ],
-  },
-};
-
-//multi value
-const entity3 = {
-  _id: 'entity3',
-  language: 'es',
-  sharedId: '3',
-  title: 'Entity 3',
-  metadata: {
-    multiselect: {
-      value: ['value1', 'value2'],
-    },
-  },
-};
-
-const state = {
-  match: false,
-  labeled: true,
-  withValue: true,
-  withSuggestion: true,
-  hasContext: true,
-  obsolete: false,
-  processing: false,
-  error: false,
-};
-
 const suggestion5 = {
   _id: '5',
   language: 'es',
@@ -260,6 +226,39 @@ const suggestion5 = {
       disableRowSelection: true,
     },
   ],
+};
+
+const entity1 = {
+  _id: 'entity1',
+  language: 'es',
+  sharedId: '1',
+  title: 'Entity 1',
+};
+
+const entity2 = {
+  _id: 'entity2',
+  language: 'es',
+  sharedId: '2',
+  title: 'Entity 2',
+  metadata: {
+    document_date: [
+      {
+        value: 100,
+      },
+    ],
+  },
+};
+
+const entity3 = {
+  _id: 'entity3',
+  language: 'es',
+  sharedId: '3',
+  title: 'Entity 3',
+  metadata: {
+    multiselect: {
+      value: ['value1', 'value2'],
+    },
+  },
 };
 
 const propertyTitle: PropertySchema = {
