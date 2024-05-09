@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { uniq } from 'lodash';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
@@ -21,7 +21,7 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-const renderPropertyLabel = (property: ClientPropertySchema) => {
+const getPropertyLabel = (property: ClientPropertySchema) => {
   let icon: React.ReactNode;
 
   switch (property.type) {
@@ -61,10 +61,11 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
       searchLabel: template.name,
       value: template._id,
       items: template.properties
-        ?.filter(prop => !filter || prop.name === filter)
-        .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
+        ?.filter(
+          prop => (!filter || prop.name === filter) && SUPPORTED_PROPERTIES.includes(prop.type)
+        )
         .map(prop => ({
-          label: renderPropertyLabel(prop),
+          label: getPropertyLabel(prop),
           value: `${template._id?.toString()}-${prop.name}`,
           searchLabel: prop.label,
         }))
@@ -72,7 +73,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
           !filter || filter === 'title'
             ? [
                 {
-                  label: renderPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
+                  label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }),
                   value: `${template._id?.toString()}-title`,
                   searchLabel: 'Title',
                 },
@@ -90,30 +91,16 @@ const ExtractorModal = ({
   templates,
   extractor,
 }: ExtractorModalProps) => {
+  const initialValues =
+    extractor?.templates.map(template => `${template}-${extractor.property}`) || [];
+
   const [step, setStep] = useState(1);
-  const [name, setName] = useState('');
-  const [values, setValues] = useState<string[]>([]);
-  const [isEditing, setEditing] = useState<boolean>(false);
+  const [name, setName] = useState(extractor?.name || '');
+  const [values, setValues] = useState<string[]>(initialValues);
+  const [options, setOptions] = useState(formatOptions(initialValues, templates));
   const [hasNameError, setNameError] = useState(false);
 
-  const initialValues = extractor?.templates.map(template => `${template}-${extractor.property}`);
-
-  const options = useMemo(() => formatOptions(values, templates), [values, templates]);
-
-  useEffect(() => {
-    if (extractor) {
-      setEditing(true);
-      setName(extractor.name);
-      setValues(initialValues || []);
-    } else {
-      setEditing(false);
-      setName('');
-      setValues([]);
-    }
-  }, [extractor, initialValues]);
-
   const handleClose = () => {
-    setEditing(false);
     setName('');
     setValues([]);
     onClose();
@@ -125,8 +112,6 @@ const ExtractorModal = ({
       return;
     }
 
-    setEditing(false);
-
     const result: null | IXExtractorInfo = submitedValues.length
       ? ({
           name: submittedName,
@@ -135,7 +120,7 @@ const ExtractorModal = ({
         } as IXExtractorInfo)
       : null;
 
-    if (isEditing && result && extractor) {
+    if (result && extractor) {
       result._id = extractor._id;
     }
 
@@ -147,7 +132,7 @@ const ExtractorModal = ({
     }
   };
 
-  const onAllTemplatedCheckboxChanged = () => {
+  const handleSelectAll = () => {
     const properties = new Set();
     const newValues: string[] = [];
 
@@ -179,11 +164,18 @@ const ExtractorModal = ({
     setValues(newValues);
   };
 
+  const handleChange = (selected: string[]) => {
+    if (selected.length) {
+      setValues(selected);
+      setOptions(formatOptions(values, templates));
+    }
+  };
+
   return (
     <Modal size="xxl">
       <Modal.Header>
         <h1 className="text-xl font-medium text-gray-900">
-          {extractor ? <Translate>Edit extractor</Translate> : <Translate>Add extractor</Translate>}
+          {extractor ? <Translate>Edit Extractor</Translate> : <Translate>Add Extractor</Translate>}
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
@@ -206,9 +198,7 @@ const ExtractorModal = ({
             className="h-80"
             value={initialValues || []}
             items={options}
-            onChange={selected => {
-              setValues(selected);
-            }}
+            onChange={selected => handleChange(selected)}
             checkboxes
             foldableGroups
           />
@@ -218,7 +208,7 @@ const ExtractorModal = ({
               <Translate>Input</Translate>
             </h6>
             <div className="p-3">
-              {renderPropertyLabel({
+              {getPropertyLabel({
                 name: values[0]?.split('-', 2)[1],
                 label: values[0]?.split('-', 2)[1],
                 type: 'text',
@@ -259,7 +249,7 @@ const ExtractorModal = ({
         <div className="self-end">
           <Button
             type="button"
-            onClick={() => onAllTemplatedCheckboxChanged()}
+            onClick={() => handleSelectAll()}
             styling="outline"
             disabled={values.length === 0}
           >
@@ -294,7 +284,7 @@ const ExtractorModal = ({
                   <Translate>Back</Translate>
                 </Button>
                 <Button className="grow" onClick={() => handleSubmit(name, values)} color="success">
-                  <Translate>Create</Translate>
+                  {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
                 </Button>
               </>
             )}
@@ -305,4 +295,4 @@ const ExtractorModal = ({
   );
 };
 
-export { ExtractorModal };
+export { ExtractorModal, formatOptions };
