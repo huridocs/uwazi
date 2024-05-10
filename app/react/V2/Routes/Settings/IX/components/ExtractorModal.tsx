@@ -171,11 +171,6 @@ const ExtractorModal = ({
     }
   };
 
-  const handleSelectAll = () => {
-    const newValues = options.map(option => option.items[0].value);
-    setValues(newValues);
-  };
-
   return (
     <Modal size="xxl">
       <Modal.Header>
@@ -200,7 +195,7 @@ const ExtractorModal = ({
 
         {step === 1 ? (
           <MultiselectList
-            className="h-80"
+            className="h-96"
             value={initialValues || []}
             items={options}
             onChange={selected => {
@@ -209,9 +204,10 @@ const ExtractorModal = ({
             }}
             checkboxes
             foldableGroups
+            allowSelelectAll={values.length > 0}
           />
         ) : (
-          <div className="h-80">
+          <div className="h-96">
             <h6 className="text-sm font-medium">
               <Translate>Input</Translate>
             </h6>
@@ -247,17 +243,6 @@ const ExtractorModal = ({
             </div>
           </div>
         )}
-
-        <div className="self-end">
-          <Button
-            type="button"
-            onClick={() => handleSelectAll()}
-            styling="outline"
-            disabled={values.length === 0}
-          >
-            <Translate>Sellect all</Translate>
-          </Button>
-        </div>
 
         <div className="flex gap-2 justify-center w-full">
           <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
