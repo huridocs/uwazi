@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
@@ -25,6 +26,7 @@ interface MultiselectListProps {
   value?: string[];
   foldableGroups?: boolean;
   singleSelect?: boolean;
+  allowSelelectAll?: boolean;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -32,6 +34,7 @@ const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
     <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
   </>
 );
+
 const MultiselectList = ({
   items,
   onChange,
@@ -42,6 +45,7 @@ const MultiselectList = ({
   checkboxes = false,
   foldableGroups = false,
   singleSelect = false,
+  allowSelelectAll = false,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value);
   const [showAll, setShowAll] = useState<boolean>(true);
@@ -106,6 +110,21 @@ const MultiselectList = ({
 
     setSelectedItems(newValues);
     if (onChange) onChange(newValues);
+  };
+
+  const handleSelectAll = () => {
+    const allValues: string[] = [];
+
+    items.forEach(item => {
+      if (item.items?.length) {
+        item.items?.forEach(subItem => allValues.push(subItem.value));
+      } else {
+        allValues.push(item.value);
+      }
+    });
+
+    setSelectedItems(allValues);
+    if (onChange) onChange(allValues);
   };
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -218,24 +237,35 @@ const MultiselectList = ({
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
-        <RadioSelect
-          name="filter"
-          orientation="horizontal"
-          options={[
-            {
-              label: <Translate>All</Translate>,
-              value: 'true',
-              defaultChecked: true,
-            },
-            {
-              label: <SelectedCounter selectedItems={selectedItems} />,
-              value: 'false',
-              disabled: selectedItems.length === 0,
-            },
-          ]}
-          onChange={applyFilter}
-          className="px-1 pt-4"
-        />
+        <div className="flex flex-nowrap mx-1 my-4">
+          <RadioSelect
+            name="filter"
+            orientation="horizontal"
+            options={[
+              {
+                label: <Translate>All</Translate>,
+                value: 'true',
+                defaultChecked: true,
+              },
+              {
+                label: <SelectedCounter selectedItems={selectedItems} />,
+                value: 'false',
+                disabled: selectedItems.length === 0,
+              },
+            ]}
+            onChange={applyFilter}
+            className="flex-grow"
+          />
+          {allowSelelectAll && (
+            <button
+              type="button"
+              className="text-gray-400 underline"
+              onClick={() => handleSelectAll()}
+            >
+              <Translate>Select all</Translate>
+            </button>
+          )}
+        </div>
       </div>
 
       <ul className="px-2 pt-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">

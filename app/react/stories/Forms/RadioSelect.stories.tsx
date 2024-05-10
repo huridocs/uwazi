@@ -18,13 +18,15 @@ type Story = StoryObj<typeof RadioSelect>;
 const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
-      <RadioSelect
-        legend={args.legend}
-        options={args.options}
-        name={args.name}
-        onChange={args.onChange}
-        orientation={args.orientation}
-      />
+      <div className="tw-content">
+        <RadioSelect
+          legend={args.legend}
+          options={args.options}
+          name={args.name}
+          onChange={args.onChange}
+          orientation={args.orientation}
+        />
+      </div>
     </Provider>
   ),
 };
