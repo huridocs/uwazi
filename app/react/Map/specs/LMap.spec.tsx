@@ -119,9 +119,9 @@ describe('Map', () => {
     it('should render the zoom buttons', async () => {
       const zoomButtons = await screen.findAllByRole('button');
       // @ts-ignore
-      expect(zoomButtons[0].text).toEqual('+');
+      expect(zoomButtons[2].text).toEqual('+');
       // @ts-ignore
-      expect(zoomButtons[1].text).toEqual('−');
+      expect(zoomButtons[3].text).toEqual('−');
     });
 
     it('should call clickOnCluster when clicking on a cluster', async () => {
