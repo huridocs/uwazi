@@ -97,7 +97,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
 };
 
 const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) => {
-  const [templateId, propertyName] = value.split('-');
+  const [templateId, propertyName] = (value || '').split('-');
 
   const matchedTemplate = templates.find(template => template._id.toString() === templateId);
 
@@ -193,7 +193,7 @@ const ExtractorModal = ({
           }}
         />
 
-        {step === 1 ? (
+        <div className={`${step !== 1 && 'hidden'}`}>
           <MultiselectList
             className="h-96"
             value={initialValues || []}
@@ -206,7 +206,8 @@ const ExtractorModal = ({
             foldableGroups
             allowSelelectAll={values.length > 0}
           />
-        ) : (
+        </div>
+        <div className={`${step !== 2 && 'hidden'}`}>
           <div className="h-96">
             <h6 className="text-sm font-medium">
               <Translate>Input</Translate>
@@ -242,7 +243,7 @@ const ExtractorModal = ({
               />
             </div>
           </div>
-        )}
+        </div>
 
         <div className="flex gap-2 justify-center w-full">
           <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
