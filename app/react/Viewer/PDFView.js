@@ -102,12 +102,17 @@ class PDFViewComponent extends Component {
   render() {
     const query = searchParamsFromSearchParams(this.props.searchParams);
     const page = Number(query.page || 1);
-    const { pathname } = this.props.location;
+    const { filename } = defaultDoc(this.props.entity);
+    const sharedId = this.props.entity.get('sharedId');
     const raw = query.raw === 'true' || !isClient;
 
     return (
       <>
-        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
+        <Helmet>
+          {raw && (
+            <link rel="canonical" href={`/entity/${sharedId}?page=${page}&file=${filename}`} />
+          )}
+        </Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}
