@@ -95,7 +95,7 @@ describe('Map', () => {
 
     it('should set the streets mapbox tile by default', async () => {
       await waitFor(async () => {
-        const presentation = await screen.getByRole('presentation');
+        const presentation = renderResult.container.querySelector('.leaflet-tile') as HTMLElement;
         // @ts-ignore
         expect(presentation.src).toEqual(
           'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/1/1/0?access_token=abd'
