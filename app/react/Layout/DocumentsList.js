@@ -285,7 +285,7 @@ DocumentsList.propTypes = {
   filters: PropTypes.object,
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
-  SearchBar: PropTypes.func,
+  SearchBar: PropTypes.instanceOf(SearchBar),
   SortButtons: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
