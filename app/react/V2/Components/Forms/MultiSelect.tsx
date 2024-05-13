@@ -88,6 +88,7 @@ const MultiSelect = ({
             // eslint-disable-next-line react/jsx-props-no-spreading
             {...attributes.popper}
             as="div"
+            className="z-10"
           >
             <ul
               className="max-w-md p-2 mb-2 overflow-y-auto bg-white rounded-md shadow max-h-56 w-fit min-w-56"
