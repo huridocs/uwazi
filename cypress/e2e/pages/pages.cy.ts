@@ -217,7 +217,7 @@ describe('Pages', () => {
 
     it('should allow to cancel deletion', () => {
       cy.contains('a', 'Pages').click();
-      cy.get('table > tbody > tr:nth-child(4) > td > label > input').check();
+      cy.get('table > tbody > tr:nth-child(4) > td label > input').check();
       cy.contains('Delete').click();
       cy.contains('Are you sure?');
       cy.contains('div[role="dialog"] button', 'Cancel').click();
@@ -226,14 +226,14 @@ describe('Pages', () => {
     });
 
     it('should delete a page with confirmation', () => {
-      deletePage('table > tbody > tr:nth-child(4) > td > label > input');
+      deletePage('table > tbody > tr:nth-child(4) > td label > input');
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
     });
 
     it('should not delete a page used as entity view', () => {
-      deletePage('table > tbody > tr:nth-child(1) > td > label > input');
+      deletePage('table > tbody > tr:nth-child(1) > td label > input');
       cy.contains('An error occurred');
       cy.contains('Country page');
     });

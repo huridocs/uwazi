@@ -24,6 +24,7 @@ interface TextSelectionSuggestion extends CommonSuggestion {
 
 interface ValuesSelectionSuggestion extends CommonSuggestion {
   values: { id: string; label: string }[];
+  segment_text: string;
 }
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
@@ -31,7 +32,7 @@ type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 const VALIDATORS = {
   text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => 'text' in suggestion,
   select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion && suggestion.values.length === 1,
+    'values' in suggestion && (suggestion.values.length === 1 || suggestion.values.length === 0),
   multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
     'values' in suggestion,
 };
@@ -71,10 +72,11 @@ const FORMATTERS = {
       throw new Error('Select suggestion is not valid.');
     }
 
-    const suggestedValue = rawSuggestion.values[0].id;
+    const suggestedValue = rawSuggestion.values[0]?.id;
 
     const suggestion: Partial<IXSuggestionType> = {
-      suggestedValue,
+      suggestedValue: suggestedValue || '',
+      segment: rawSuggestion.segment_text,
     };
 
     return suggestion;
@@ -88,6 +90,7 @@ const FORMATTERS = {
 
     const suggestion: Partial<IXSuggestionType> = {
       suggestedValue,
+      segment: rawSuggestion.segment_text,
     };
 
     return suggestion;
