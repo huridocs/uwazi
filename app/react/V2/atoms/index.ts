@@ -1,8 +1,8 @@
-import { notificationAtom, notificationAtomType } from './notificationAtom';
-import { settingsAtom } from './settingsAtom';
-import { templatesAtom } from './templatesAtom';
-import { translationsAtom } from './translationsAtom';
-import { thesaurisAtom } from './thesaurisAtom';
-
-export type { notificationAtomType };
-export { notificationAtom, settingsAtom, templatesAtom, translationsAtom, thesaurisAtom };
+export { atomStore } from './store';
+export { notificationAtom } from './notificationAtom';
+export { settingsAtom } from './settingsAtom';
+export { templatesAtom } from './templatesAtom';
+export { translationsAtom } from './translationsAtom';
+export { thesaurisAtom } from './thesaurisAtom';
+export { globalMatomoAtom } from './globalMatomoAtom';
+export type { notificationAtomType } from './notificationAtom';

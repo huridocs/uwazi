@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAtomValue } from 'jotai';
-import { settingsAtom } from 'V2/atoms';
+import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 
 const buildScript = ({
   globalUrl,
@@ -40,22 +40,17 @@ const buildScript = ({
 };
 
 const Matomo = () => {
-  // WIP: currently users Matomo is stored as a string like:
-  // '{"url":"https://matomo.huridata.org","id":"123"}'.
-  // The global one could be just a json with url and id
-
+  const { matomoConfig } = useAtomValue(settingsAtom);
+  const globalMatomo = useAtomValue(globalMatomoAtom);
+  const { id: globalId, url: globalUrl } = globalMatomo || {};
   let id: string | undefined;
   let url: string | undefined;
-
-  const { matomoConfig, globalMatomo } = useAtomValue(settingsAtom);
 
   try {
     ({ id, url } = JSON.parse(matomoConfig || '{}') as { id?: string; url?: string });
     //silent fail
     // eslint-disable-next-line no-empty
   } catch (e) {}
-
-  const { id: globalId, url: globalUrl } = globalMatomo || {};
 
   useEffect(() => {
     const script = document.createElement('script');

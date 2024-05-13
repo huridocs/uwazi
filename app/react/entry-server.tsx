@@ -8,7 +8,7 @@ import { matchRoutes, RouteObject } from 'react-router-dom';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
-import { Provider, createStore } from 'jotai';
+import { Provider } from 'jotai';
 import { omit, isEmpty } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 import api from 'app/utils/api';
@@ -21,7 +21,7 @@ import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
-import { settingsAtom } from './V2/atoms/settingsAtom';
+import { atomStore, settingsAtom } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -272,7 +272,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   resetTranslations();
 
-  const atomStore = createStore();
   atomStore.set(settingsAtom, settings);
 
   const componentHtml = ReactDOMServer.renderToString(
@@ -299,6 +298,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
+      globalMatomo={{ id: 'TEST1', url: 'TEST1.com' }}
     />
   );
 

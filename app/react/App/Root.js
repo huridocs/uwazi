@@ -71,6 +71,10 @@ class Root extends Component {
       innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
     }
 
+    if (this.props.globalMatomo) {
+      innerHtml += `window.__globalMatomo__ = ${serialize(this.props.globalMatomo, { isJSON: true })};`;
+    }
+
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
     );
@@ -125,6 +129,7 @@ Root.propTypes = {
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
+  globalMatomo: PropTypes.object,
 };
 
 export { headTag };

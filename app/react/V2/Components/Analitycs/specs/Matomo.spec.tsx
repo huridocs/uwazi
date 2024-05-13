@@ -6,7 +6,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { Provider } from 'jotai';
 import { atomsGlobalState } from 'V2/shared/testingHelpers';
-import { settingsAtom } from 'V2/atoms';
+import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 import { Matomo } from '../Matomo';
 
 declare global {
@@ -16,13 +16,12 @@ declare global {
 }
 
 describe('Matomo', () => {
-  const store = atomsGlobalState();
-
   beforeEach(() => {
     window._paq = undefined;
   });
 
   it('should set the matomo config from the user config', () => {
+    const store = atomsGlobalState();
     store.set(settingsAtom, { matomoConfig: '{"url":"https://url.org","id":"1"}' });
 
     render(
@@ -40,7 +39,8 @@ describe('Matomo', () => {
   });
 
   it('should set the global matomo config', () => {
-    store.set(settingsAtom, { globalMatomo: { url: 'https://global.org', id: '1' } });
+    const store = atomsGlobalState();
+    store.set(globalMatomoAtom, { url: 'https://global.org', id: '1' });
 
     render(
       <Provider store={store}>
@@ -57,10 +57,11 @@ describe('Matomo', () => {
   });
 
   it('should set both trackers when present', () => {
+    const store = atomsGlobalState();
     store.set(settingsAtom, {
       matomoConfig: '{"url":"https://url.org/","id":"1"}',
-      globalMatomo: { url: 'https://global.org', id: '2' },
     });
+    store.set(globalMatomoAtom, { url: 'https://global.org', id: '2' });
 
     render(
       <Provider store={store}>
@@ -84,11 +85,10 @@ describe('Matomo', () => {
     ${undefined} | ${undefined}      | ${'56'}
   `('should not include script when data is not available', ({ userJSON, globalUrl, globalId }) => {
     window._paq = undefined;
+    const store = atomsGlobalState();
 
-    store.set(settingsAtom, {
-      matomoConfig: userJSON,
-      globalMatomo: { url: globalUrl, id: globalId },
-    });
+    store.set(settingsAtom, { matomoConfig: userJSON });
+    store.set(globalMatomoAtom, { url: globalUrl, id: globalId });
 
     render(
       <Provider store={store}>
@@ -101,10 +101,9 @@ describe('Matomo', () => {
 
   it('should not pollute existing keys in the window object', () => {
     window._paq = [['googleTracker', 'idForTracker']];
-    store.set(settingsAtom, {
-      matomoConfig: '{"url":"https://url.org/","id":"10"}',
-      globalMatomo: { url: 'https://global.org', id: '5' },
-    });
+    const store = atomsGlobalState();
+    store.set(settingsAtom, { matomoConfig: '{"url":"https://url.org/","id":"10"}' });
+    store.set(globalMatomoAtom, { url: 'https://global.org', id: '5' });
 
     render(
       <Provider store={store}>
@@ -123,10 +122,9 @@ describe('Matomo', () => {
   });
 
   it('should not break when the users configuration is malformed', () => {
-    store.set(settingsAtom, {
-      matomoConfig: '{ malformed: "3",  }',
-      globalMatomo: { url: 'https://global.org', id: '3' },
-    });
+    const store = atomsGlobalState();
+    store.set(settingsAtom, { matomoConfig: '{ malformed: "3",  }' });
+    store.set(globalMatomoAtom, { url: 'https://global.org', id: '3' });
 
     render(
       <Provider store={store}>
