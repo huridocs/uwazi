@@ -119,7 +119,6 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
     try {
       await this.props.saveTemplate(template);
       const templates = await api.get('templates');
-      console.log('templates', templates);
       this.props.updateTemplatesAtom(templates);
     } catch (e) {
       if (e.status === 409) return this.confirmAndSaveTemplate(template, 'templateConflict');

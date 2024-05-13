@@ -8,6 +8,7 @@ import { useDnDContext } from '../../Layouts/DragAndDrop';
 
 interface TableBodyProps extends PropsWithChildren {
   draggableRows: boolean;
+  allowEditGroupsWithDnD?: boolean;
   DndProvider?: React.FC<any>;
   HTML5Backend?: any;
   items: any;
@@ -48,7 +49,7 @@ const setRowId: <T>(
 // eslint-disable-next-line comma-spacing
 const TableBodyComponent = <T,>({
   draggableRows,
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+  allowEditGroupsWithDnD,
   DndProvider,
   HTML5Backend,
   items,
@@ -62,6 +63,7 @@ const TableBodyComponent = <T,>({
       getDisplayName: item => item.dndId!,
       itemsProperty: subRowsKey,
       onChange,
+      allowEditGroupsWithDnD,
     },
     items,
     []
@@ -76,22 +78,28 @@ const TableBodyComponent = <T,>({
             const row = table.getRowModel().rowsById[itemValue.dndId];
             const children =
               row && row.getIsExpanded()
-                ? (item.value.items || []).map(subItem => {
-                    const subItemValue = subItem.value as TypeWithDnDId<T>;
-                    const childRow = table.getRowModel().rowsById[subItemValue.dndId];
-                    return (
-                      <TableRow
-                        key={subItem.dndId}
-                        draggableRow
-                        row={childRow}
-                        dndContext={dndContext}
-                        enableSelection={false}
-                        item={subItem}
-                      />
-                    );
-                  })
+                ? (item.value.items || [])
+                    .filter(v => v)
+                    .map(subItem => {
+                      const subItemValue = subItem.value as TypeWithDnDId<T>;
+                      const childRow = table.getRowModel().rowsById[subItemValue.dndId];
+
+                      return childRow !== undefined ? (
+                        <TableRow
+                          key={subItem.dndId}
+                          draggableRow
+                          row={childRow}
+                          dndContext={dndContext}
+                          enableSelection={false}
+                          item={subItem}
+                        />
+                      ) : (
+                        childRow
+                      );
+                    })
+                    .filter(child => child !== undefined)
                 : [];
-            return (
+            return row !== undefined ? (
               <React.Fragment key={item.dndId}>
                 <TableRow
                   draggableRow
@@ -102,6 +110,8 @@ const TableBodyComponent = <T,>({
                 />
                 {children}
               </React.Fragment>
+            ) : (
+              row
             );
           })
           .filter(row => row !== undefined)}
