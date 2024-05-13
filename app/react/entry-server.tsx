@@ -18,6 +18,7 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
+import { tenants } from '../api/tenants';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
@@ -274,6 +275,8 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   atomStore.set(settingsAtom, settings);
 
+  const { globalMatomo } = tenants.current();
+
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
@@ -298,7 +301,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
-      globalMatomo={{ id: 'TEST1', url: 'TEST1.com' }}
+      globalMatomo={globalMatomo}
     />
   );
 
