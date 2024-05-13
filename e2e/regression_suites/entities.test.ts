@@ -49,9 +49,10 @@ describe('Homepage entities', () => {
 
   it('should display entity relationship page', async () => {
     await page.goto(`${host}/entity/7amlebw43dw8kt9`);
-    await disableTransitions();
     await page.waitForSelector('div.page-wrapper');
+    await page.waitForSelector('#tab-relationships');
     await expect(page).toClick('div[aria-label="Relationships"]');
+    await page.waitForSelector('.relationship-toolbar');
     await testSelectorShot('main.app-content', { threshold: 0.08 });
   });
 
