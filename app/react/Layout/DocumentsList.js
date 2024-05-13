@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { toUrlParams } from 'shared/JSONRequest';
 import rison from 'rison-node';
 import { SearchBar } from 'app/Library/components/SearchBar';
+import ConnectionSearchBar from 'app/ConnectionsList/components/SearchBar';
 import { Loader } from 'app/components/Elements/Loader';
 import Footer from 'app/App/Footer';
 
@@ -285,7 +286,11 @@ DocumentsList.propTypes = {
   filters: PropTypes.object,
   thesauri: PropTypes.object,
   selectedDocuments: PropTypes.instanceOf(Object),
-  SearchBar: PropTypes.instanceOf(SearchBar),
+  SearchBar: PropTypes.oneOfType([
+    PropTypes.instanceOf(SearchBar),
+    PropTypes.instanceOf(ConnectionSearchBar),
+    PropTypes.func,
+  ]),
   SortButtons: PropTypes.func,
   GraphView: PropTypes.func,
   search: PropTypes.object,
