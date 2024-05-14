@@ -10,6 +10,8 @@ interface GrabIconProps<T> extends PropsWithChildren {
   dndContext: IDnDContext<T>;
   previewRef?: RefObject<HTMLElement>;
   item: IDraggable<T>;
+  highLightGroups?: boolean;
+  subRowsKey?: string;
 }
 
 interface RowWrapperProps<T> extends PropsWithChildren {
@@ -21,9 +23,21 @@ interface RowWrapperProps<T> extends PropsWithChildren {
 }
 
 // eslint-disable-next-line comma-spacing
-const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) => {
+const GrabIcon = <T,>({
+  dndContext,
+  row,
+  previewRef,
+  item,
+  subRowsKey,
+  highLightGroups = true,
+}: GrabIconProps<T>) => {
   const grabIconColor =
-    row.getCanExpand() || row.depth > 0 ? 'rgb(199 210 254)' : 'rgb(224 231 255)';
+    row.getIsExpanded() ||
+    (highLightGroups && row.getCanExpand()) ||
+    (subRowsKey && highLightGroups && Array.isArray((row.original as any)[subRowsKey])) ||
+    row.depth > 0
+      ? 'rgb(199 210 254)'
+      : 'rgb(224 231 255)';
   return (
     <DraggableItem
       key={`grab_${item.dndId}`}
