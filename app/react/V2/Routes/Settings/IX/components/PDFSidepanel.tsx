@@ -363,9 +363,7 @@ const PDFSidepanel = ({
         value: value.id,
       });
     });
-    if (!propertyValue) {
-      return null;
-    }
+
     return (
       <div className="p-4">
         <MultiselectList
