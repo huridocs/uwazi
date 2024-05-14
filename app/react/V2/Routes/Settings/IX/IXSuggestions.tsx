@@ -234,6 +234,7 @@ const IXSuggestions = () => {
         <SettingsContent.Body>
           <Table<TableSuggestion>
             data={currentSuggestions}
+            highLightGroups={false}
             subRowsKey="children"
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
