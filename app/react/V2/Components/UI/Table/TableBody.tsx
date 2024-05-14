@@ -15,6 +15,7 @@ interface TableBodyProps extends PropsWithChildren {
   table: any;
   onChange?: any;
   subRowsKey?: string;
+  highLightGroups?: boolean;
 }
 
 type TypeWithDnDId<T> = T & {
@@ -56,6 +57,7 @@ const TableBodyComponent = <T,>({
   table,
   subRowsKey,
   onChange,
+  highLightGroups = true,
 }: TableBodyProps) => {
   const dndContext = useDnDContext<T>(
     ItemTypes.ROW,
@@ -90,8 +92,9 @@ const TableBodyComponent = <T,>({
                           draggableRow
                           row={childRow}
                           dndContext={dndContext}
-                          enableSelection={false}
                           item={subItem}
+                          highLightGroups={highLightGroups}
+                          subRowsKey={subRowsKey}
                         />
                       ) : (
                         childRow
@@ -105,8 +108,9 @@ const TableBodyComponent = <T,>({
                   draggableRow
                   row={row}
                   dndContext={dndContext}
-                  enableSelection={false}
                   item={item}
+                  highLightGroups={highLightGroups}
+                  subRowsKey={subRowsKey}
                 />
                 {children}
               </React.Fragment>
@@ -120,7 +124,12 @@ const TableBodyComponent = <T,>({
   ) : (
     <tbody>
       {table.getRowModel().rows.map((row: Row<T>) => (
-        <TableRow<T> key={row.id} row={row} enableSelection={false} />
+        <TableRow<T>
+          key={row.id}
+          row={row}
+          highLightGroups={highLightGroups}
+          subRowsKey={subRowsKey}
+        />
       ))}
     </tbody>
   );

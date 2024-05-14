@@ -9,7 +9,7 @@ import { Button, Card } from 'app/V2/Components/UI';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import uniqueID from 'shared/uniqueID';
 
-type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string };
+type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string; type: 'link' | 'group' };
 
 interface MenuFormProps {
   closePanel: () => void;
