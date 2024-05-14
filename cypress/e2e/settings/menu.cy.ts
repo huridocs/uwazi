@@ -67,8 +67,8 @@ describe('Menu configuration', () => {
     cy.get('#link-title').type(' edited', { delay: 0 });
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
-    cy.get('tbody td:nth-of-type(2) button span').click();
-    cy.get('tbody tr:nth-of-type(2) button').click();
+    cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
+    cy.get('#link-title').type(' edited', { delay: 0 });
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
     cy.getByTestId('menu-save').click();
@@ -77,7 +77,10 @@ describe('Menu configuration', () => {
   });
 
   it('tests edit groups', () => {
+    //open groups
+    cy.get('tbody tr:nth-of-type(3)').contains('button', 'Group').click();
     cy.get('tbody tr:nth-of-type(2)').contains('button', 'Group').click();
+
     cy.get('tbody tr:nth-of-type(3)').contains('Edit').click();
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
@@ -95,7 +98,7 @@ describe('Menu configuration', () => {
     cy.get('.menuItems > .menuNav-list > .menuNav-item')
       .should('have.length', 3)
       .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-      .should('deep.equal', ['Link 2', 'Group 1  ', 'Group 2  ']);
+      .should('deep.equal', ['Link 3', 'Group 1  ', 'Group 2  ']);
 
     cy.get('.menuItems > .menuNav-list > .menuNav-item').eq(2).click();
     cy.get('.dropdown-menu.expanded').contains('Link 1 edited');

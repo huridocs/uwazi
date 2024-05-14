@@ -59,9 +59,7 @@ const useDnDContext = <T,>(
             : [];
           return {
             ...omit(item.value, ['items', 'dndId', operations.itemsProperty || '']),
-            ...(operations.itemsProperty && values.length > 0
-              ? { [operations.itemsProperty]: values }
-              : {}),
+            ...(operations.itemsProperty ? { [operations.itemsProperty]: values } : {}),
           } as T;
         });
       operations.onChange(sortedItems);
