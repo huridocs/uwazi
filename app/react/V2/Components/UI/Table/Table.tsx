@@ -31,6 +31,7 @@ const Table = <T,>({
   subRowsKey,
   draggableRows = false,
   allowEditGroupsWithDnD = true,
+  highLightGroups = true,
   onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
@@ -147,6 +148,7 @@ const Table = <T,>({
           table={table}
           subRowsKey={subRowsKey}
           onChange={handleOnChange}
+          highLightGroups={highLightGroups}
         />
       </table>
       {footer && <div className="p-4">{footer}</div>}
