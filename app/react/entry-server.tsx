@@ -3,19 +3,20 @@
 import { Request as ExpressRequest, Response } from 'express';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
-import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
-import { matchRoutes, RouteObject } from 'react-router-dom';
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOMServer from 'react-dom/server';
+import { matchRoutes, RouteObject } from 'react-router-dom';
+import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
+import { Provider as ReduxProvider } from 'react-redux';
+import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
 import { omit, isEmpty } from 'lodash';
-import { Provider as ReduxProvider } from 'react-redux';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { createStaticRouter, StaticRouterProvider } from 'react-router-dom/server';
-import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
+import { FetchResponseError } from 'shared/JSONRequest';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
 import { tenants } from '../api/tenants';
@@ -183,6 +184,7 @@ const setReduxState = async (
     })
     .filter(v => v);
   const initialStore = createReduxStore(reduxState);
+  const errors: {}[] = [];
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
@@ -211,17 +213,16 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
-        throw new ServerRenderingFetchError(
-          `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
-        );
+        errors.push(e);
+      } else {
+        if (e.message) {
+          throw new ServerRenderingFetchError(e.message);
+        }
+        throw e;
       }
-      if (e.message) {
-        throw new ServerRenderingFetchError(e.message);
-      }
-      throw e;
     }
   }
-  return { initialStore, initialState: initialStore.getState() };
+  return { initialStore, initialState: initialStore.getState(), errors };
 };
 
 const getSSRProperties = async (
@@ -270,7 +271,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   const { globalMatomo } = tenants.current();
-  const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
+  const { initialStore, initialState, errors } = await setReduxState(req, reduxState, matched);
   resetTranslations();
 
   atomStore.set(settingsAtom, settings);
@@ -280,17 +281,22 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <Provider store={atomStore}>
           <React.StrictMode>
-            <StaticRouterProvider
-              router={router}
-              context={staticHandleContext as any}
-              nonce="the-nonce"
-            />
+            <ErrorBoundary error={errors.length && errors[0]}>
+              <Suspense fallback={<div>Trying entry server</div>}>
+                <StaticRouterProvider
+                  router={router}
+                  context={staticHandleContext as any}
+                  nonce="the-nonce"
+                />
+              </Suspense>
+            </ErrorBoundary>
           </React.StrictMode>
         </Provider>
       </CustomProvider>
     </ReduxProvider>
   );
 
+  const atomStoreData = { errors, ...(globalMatomo && { globalMatomo }) };
   const html = ReactDOMServer.renderToString(
     <Root
       language={initialState.locale}
@@ -299,11 +305,12 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
-      atomStoreData={globalMatomo && { globalMatomo }}
+      atomStoreData={atomStoreData}
     />
   );
 
-  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
+  const resStatus = errors.length > 0 ? errors[0].status : isCatchAll ? 404 : 200;
+  res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };

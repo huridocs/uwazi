@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
@@ -13,6 +13,8 @@ import {
 } from './V2/atoms';
 import { relationshipTypesAtom } from './V2/atoms/relationshipTypes';
 import { store } from './store';
+import { ErrorFallback } from './App/ErrorHandling/ErrorFallback';
+import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 
 const reduxState = store?.getState();
 
@@ -45,7 +47,11 @@ const App = () => (
   <ReduxProvider store={store as any}>
     <CustomProvider>
       <Provider store={atomStore}>
-        <RouterProvider router={router} fallbackElement={null} />
+        <ErrorBoundary>
+          <Suspense fallback={<div>Trying app.tsx</div>}>
+            <RouterProvider router={router} fallbackElement={ErrorFallback} />
+          </Suspense>
+        </ErrorBoundary>
       </Provider>
     </CustomProvider>
   </ReduxProvider>

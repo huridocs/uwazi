@@ -1,5 +1,9 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, PropsWithChildren, ReactNode, useRef, useState } from 'react';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+
+import * as Sentry from '@sentry/react';
+import { useAtomValue } from 'jotai';
+import { globalErrorsAtom } from 'app/V2/atoms/globalErrorsAtom';
 
 interface ErrorBoundaryProps {
   error?: Error;
@@ -12,27 +16,23 @@ const defaultProps = {
   errorInfo: '',
   children: '',
 };
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
-  static defaultProps = defaultProps;
 
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { error: props.error, errorInfo: props.errorInfo };
-  }
+const ErrorBoundary = ({ children, error }: ErrorBoundaryProps) => {
+  const clientErrors = useAtomValue(globalErrorsAtom);
+  const localError = useRef(error || clientErrors[0]);
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    this.setState({
-      error,
-      errorInfo,
-    });
-  }
+  const onErrorHandle = errorEvent => {
+    localError.current = errorEvent;
+  };
 
-  render() {
-    if (this.state.error?.message) {
-      return <ErrorFallback error={this.state.error} errorInfo={this.state.errorInfo} />;
-    }
-    return this.props.children;
-  }
-}
+  return (
+    <Sentry.ErrorBoundary
+      fallback={<ErrorFallback error={localError.current} />}
+      onError={onErrorHandle}
+    >
+      {children}
+    </Sentry.ErrorBoundary>
+  );
+};
 
 export { ErrorBoundary };

@@ -30,7 +30,7 @@ const errorMessages = [
 ];
 
 function extractMessageFromError(error) {
-  let finalMessage = `An error has occurred, it has been logged with request id #${error.json.requestId}.`;
+  let finalMessage = `An error has occurred, it has been logged with request id #${error.json?.requestId || error.requestId}.`;
   if (!error.json.error) return finalMessage;
 
   const errorMessage = errorMessages.find(errorExpression =>
@@ -82,8 +82,15 @@ const handleErrorStatus = error => {
     }
 
     case 500: {
-      errorMessage = extractMessageFromError(error);
-      store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
+      errorMessage = error.json
+        ? extractMessageFromError(error)
+        : error.prettyMessage || error.message;
+      if (isClient) {
+        store.dispatch(notify(t('System', extractMessageFromError(error), null, false), 'danger'));
+        throw error;
+      } else {
+        return error;
+      }
       break;
     }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { actions as formActions } from 'react-redux-form';
 import { withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
@@ -7,6 +7,7 @@ import { actions } from 'app/BasicReducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
 import { showTab } from 'app/Entities/actions/uiActions';
 import { trackPage } from 'app/App/GoogleAnalytics';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { PDFViewComponent } from './PDFView';
 import EntityView from './EntityView';
 import { ViewerComponent } from './components/ViewerComponent';
@@ -15,16 +16,13 @@ import { setReferences } from './actions/referencesActions';
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {
     const { sharedId } = requestParams.data;
-    try {
-      const [entity] = await EntitiesAPI.get(
-        requestParams.set({ sharedId, omitRelationships: true })
-      );
-      return entity.documents.length
-        ? PDFViewComponent.requestState(requestParams, globalResources)
-        : EntityView.requestState(requestParams, globalResources);
-    } catch (e) {
-      return e.status === 404 ? [showTab('404')] : [];
-    }
+    const response = await EntitiesAPI.get(
+      requestParams.set({ sharedId, omitRelationships: true })
+    );
+    const [entity] = response;
+    return entity.documents.length
+      ? PDFViewComponent.requestState(requestParams, globalResources)
+      : EntityView.requestState(requestParams, globalResources);
   }
 
   componentWillUnmount() {
@@ -66,7 +64,13 @@ class ViewerRouteComponent extends RouteHandler {
   render() {
     trackPage();
     this.selectTab(this.props.params);
-    return <ViewerComponent {...this.props} />;
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<div>Trying final page</div>}>
+          <ViewerComponent {...this.props} />
+        </Suspense>
+      </ErrorBoundary>
+    );
   }
 }
 

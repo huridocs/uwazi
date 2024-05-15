@@ -2,19 +2,28 @@ import 'isomorphic-fetch';
 import superagent from 'superagent';
 
 import rison from 'rison-node';
+import { assign, isPlainObject } from 'lodash';
+import { getResponseType } from 'shared/apiClient/httpResponses';
 
 let cookie;
 
 class FetchResponseError extends Error {
-  // eslint-disable-next-line no-shadow
-  constructor(message, { json, status, cookie, headers, endpoint } = {}) {
+  // eslint-disable-next-line no-shadow, max-statements
+  constructor(message, info = {}) {
     super(message);
-    this.name = 'FetchResponseError';
+    const { json, status, cookie: cookieRes, headers, endpoint, requestId, ...rest } = info;
+    const errorType = getResponseType(status);
+    this.message = message;
+    this.name =
+      `${status}_${errorType}` === 'ClientError' ? 'FetchClientError' : 'FetchServerError';
     this.json = json;
     this.status = status;
-    this.cookie = cookie;
+    this.code = status;
+    this.cookie = cookieRes;
     this.headers = headers;
     this.endpoint = endpoint;
+    this.requestId = requestId;
+    this.additionalInfo = rest;
   }
 }
 
@@ -31,7 +40,7 @@ const attemptRisonDecode = string => {
   risonParser.parse(string);
 };
 
-export function toUrlParams(_data) {
+function toUrlParams(_data) {
   if (typeof _data === 'string') {
     return `?${_data}`;
   }
@@ -43,22 +52,18 @@ export function toUrlParams(_data) {
 
   return `?${Object.keys(data)
     .map(key => {
-      if (typeof data[key] === 'undefined' || data[key] === null) {
-        return;
+      if (typeof data[key] !== 'undefined' || data[key] !== null) {
+        return null;
       }
-
-      if (typeof data[key] === 'object') {
-        data[key] = JSON.stringify(data[key]);
-      }
-
+      const dataString = typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key];
       let encodedValue = encodeURIComponent(data[key]);
 
       if (encodeURIComponent(key) === 'q') {
         try {
-          attemptRisonDecode(data[key]);
-          encodedValue = data[key];
+          attemptRisonDecode(dataString);
+          encodedValue = dataString;
         } catch (err) {
-          encodedValue = encodeURIComponent(data[key]);
+          encodedValue = encodeURIComponent(dataString);
         }
       }
       return `${encodeURIComponent(key)}=${encodedValue}`;
@@ -87,13 +92,9 @@ const _fetch = (url, data, method, _headers) => {
 
   if (method === 'GET' || method === 'DELETE') {
     params = toUrlParams(data);
-  }
-
-  if (method === 'POST' || method === 'PUT') {
+  } else if (method === 'POST' || method === 'PUT') {
     body = JSON.stringify(data);
-  }
-
-  if (URLSearchParams && data instanceof URLSearchParams) {
+  } else if (URLSearchParams && data instanceof URLSearchParams) {
     body = data;
   }
 
@@ -117,21 +118,45 @@ const _fetch = (url, data, method, _headers) => {
       return Promise.all([res.json().catch(() => ({})), setCookie, res.headers]);
     })
     .then(([json, setCookie, responseHeaders]) => {
-      const processedResponse = {
-        json,
-        status: response.status,
-        cookie: setCookie,
-        headers: responseHeaders,
-        endpoint: { method, url },
-      };
-
-      if (response.status > 399) {
+      const processedResponse = assign(
+        {
+          status: response.status,
+          cookie: setCookie,
+          headers: responseHeaders,
+          endpoint: { method, url },
+        },
+        response.ok
+          ? {
+              json,
+            }
+          : {
+              ok: response.ok,
+              json: {
+                error: json.message || response.statusText,
+                requestId: json.requestId,
+                code: response.status,
+                status: response.status,
+              },
+              ...(isPlainObject(json)
+                ? {
+                    code: response.status,
+                    status: response.status,
+                    ...json,
+                    message: json.message || response.statusText,
+                  }
+                : {
+                    code: response.status,
+                    message: response.statusText,
+                    status: response.status,
+                  }),
+            }
+      );
+      if (!response.ok) {
         throw new FetchResponseError(
-          `Fetch returned a response with status ${response.status}.`,
+          `Request failed with ${processedResponse.code}: ${processedResponse.message}`,
           processedResponse
         );
       }
-
       return processedResponse;
     });
 };
@@ -169,4 +194,4 @@ export default {
   },
 };
 
-export { FetchResponseError };
+export { toUrlParams, FetchResponseError };
