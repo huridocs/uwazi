@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Suspense } from 'react';
+import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
@@ -10,7 +10,6 @@ import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
 import { Matomo } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
-import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
@@ -64,44 +63,40 @@ const App = ({ customParams }) => {
 
   return (
     <div id="app" className={appClassName}>
-      <ErrorBoundary>
-        <Suspense fallback={<div>Trying app.js</div>}>
-          <Notifications />
-          <Cookiepopup />
-          <div className="content">
-            <nav className="library-nav">
-              <h1>
-                <SiteName />
-              </h1>
-            </nav>
-            <header>
-              <button
-                className="menu-button"
-                onClick={() => toggleMobileMenu(MenuButtonIcon === 'bars')}
-                type="button"
-                aria-label={t('System', 'Menu', null, false)}
-              >
-                <Icon icon={MenuButtonIcon} />
-              </button>
-              <h1 className="logotype">
-                <SiteName />
-              </h1>
-              <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
-              <div className="nprogress-container" />
-            </header>
-            <main className="app-content container-fluid">
-              <AppMainContext.Provider value={appContext}>
-                <Confirm {...confirmOptions} />
-                <TranslateForm />
-                <Outlet />
-                <GoogleAnalytics />
-                <Matomo />
-              </AppMainContext.Provider>
-            </main>
-          </div>
-          <NotificationsContainer />
-        </Suspense>
-      </ErrorBoundary>
+      <Notifications />
+      <Cookiepopup />
+      <div className="content">
+        <nav className="library-nav">
+          <h1>
+            <SiteName />
+          </h1>
+        </nav>
+        <header>
+          <button
+            className="menu-button"
+            onClick={() => toggleMobileMenu(MenuButtonIcon === 'bars')}
+            type="button"
+            aria-label={t('System', 'Menu', null, false)}
+          >
+            <Icon icon={MenuButtonIcon} />
+          </button>
+          <h1 className="logotype">
+            <SiteName />
+          </h1>
+          <Menu location={location} toggleMobileMenu={toggleMobileMenu} className={navClass} />
+          <div className="nprogress-container" />
+        </header>
+        <main className="app-content container-fluid">
+          <AppMainContext.Provider value={appContext}>
+            <Confirm {...confirmOptions} />
+            <TranslateForm />
+            <Outlet />
+            <GoogleAnalytics />
+            <Matomo />
+          </AppMainContext.Provider>
+        </main>
+      </div>
+      <NotificationsContainer />
     </div>
   );
 };
