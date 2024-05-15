@@ -269,13 +269,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     language || 'en'
   );
 
+  const { globalMatomo } = tenants.current();
   const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
-
   resetTranslations();
 
   atomStore.set(settingsAtom, settings);
-
-  const { globalMatomo } = tenants.current();
 
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
@@ -301,7 +299,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
-      globalMatomo={globalMatomo}
+      atomStoreData={globalMatomo && { globalMatomo }}
     />
   );
 

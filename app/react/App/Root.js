@@ -71,8 +71,8 @@ class Root extends Component {
       innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
     }
 
-    if (this.props.globalMatomo) {
-      innerHtml += `window.__globalMatomo__ = ${serialize(this.props.globalMatomo, { isJSON: true })};`;
+    if (this.props.atomStoreData) {
+      innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
     }
 
     return (
@@ -129,7 +129,7 @@ Root.propTypes = {
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
-  globalMatomo: PropTypes.object,
+  atomStoreData: PropTypes.object,
 };
 
 export { headTag };
