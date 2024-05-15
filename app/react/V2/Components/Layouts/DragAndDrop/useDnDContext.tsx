@@ -20,7 +20,12 @@ const useDnDContext = <T,>(
   sourceItems: IDraggable<T>[] = []
 ) => {
   const [activeItems, setActiveItems] = useState<IDraggable<T>[]>(
-    mapWithParent(initialItems, undefined, operations.itemsProperty)
+    mapWithParent(
+      initialItems,
+      undefined,
+      operations.itemsProperty,
+      operations.allowEditGroupsWithDnD
+    )
   );
   const [internalChange, setInternalChange] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -54,9 +59,7 @@ const useDnDContext = <T,>(
             : [];
           return {
             ...omit(item.value, ['items', 'dndId', operations.itemsProperty || '']),
-            ...(operations.itemsProperty && values.length > 0
-              ? { [operations.itemsProperty]: values }
-              : {}),
+            ...(operations.itemsProperty ? { [operations.itemsProperty]: values } : {}),
           } as T;
         });
       operations.onChange(sortedItems);

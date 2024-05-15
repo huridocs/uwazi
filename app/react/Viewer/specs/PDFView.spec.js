@@ -106,7 +106,10 @@ describe('PDFView', () => {
     };
 
     props = {
-      entity: fromJS({ defaultDoc: { _id: 'documentId' } }),
+      entity: fromJS({
+        sharedId: 'a2b4c3',
+        defaultDoc: { _id: 'documentId', sharedId: 'sharedId', filename: '1234.pdf' },
+      }),
       routes: [],
     };
     spyOn(routeActions, 'requestViewerState');
@@ -144,10 +147,10 @@ describe('PDFView', () => {
       page = 1;
       pathname = 'pathname';
       render();
-      expect(
-        component.find({ link: [{ href: 'pathname?page=1', rel: 'canonical' }] })
-      ).toMatchSnapshot();
+
+      expect(component.find({ link: [{ rel: 'canonical' }] })).toMatchSnapshot();
     });
+
     describe('when page is undefined', () => {
       it('should render link canonical with a default page', () => {
         raw = 'true';

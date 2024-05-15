@@ -10,6 +10,8 @@ interface GrabIconProps<T> extends PropsWithChildren {
   dndContext: IDnDContext<T>;
   previewRef?: RefObject<HTMLElement>;
   item: IDraggable<T>;
+  highLightGroups?: boolean;
+  subRowsKey?: string;
 }
 
 interface RowWrapperProps<T> extends PropsWithChildren {
@@ -21,9 +23,21 @@ interface RowWrapperProps<T> extends PropsWithChildren {
 }
 
 // eslint-disable-next-line comma-spacing
-const GrabIcon = <T,>({ dndContext, row, previewRef, item }: GrabIconProps<T>) => {
+const GrabIcon = <T,>({
+  dndContext,
+  row,
+  previewRef,
+  item,
+  subRowsKey,
+  highLightGroups = true,
+}: GrabIconProps<T>) => {
   const grabIconColor =
-    row.getCanExpand() || row.depth > 0 ? 'rgb(199 210 254)' : 'rgb(224 231 255)';
+    row.getIsExpanded() ||
+    (highLightGroups && row.getCanExpand()) ||
+    (subRowsKey && highLightGroups && Array.isArray((row.original as any)[subRowsKey])) ||
+    row.depth > 0
+      ? 'rgb(199 210 254)'
+      : 'rgb(224 231 255)';
   return (
     <DraggableItem
       key={`grab_${item.dndId}`}
@@ -51,17 +65,7 @@ const RowWrapper =
         </tr>
       );
     }
-    if (!row.parentId && row.getLeafRows().length === 0) {
-      return (
-        <tr
-          key={`row_${row.id}`}
-          className={className}
-          ref={innerRef! as RefObject<HTMLTableRowElement>}
-        >
-          {children}
-        </tr>
-      );
-    }
+    const notParent = !row.parentId && row.getLeafRows().length === 0;
     const parentItem = dndContext.activeItems.find(item => item.dndId === row.parentId);
     return (
       <DropZone
@@ -69,8 +73,8 @@ const RowWrapper =
         className={className}
         activeClassName="border-t-4 border-primary-300"
         context={dndContext}
-        name={`group_${row.id}`}
-        key={`group_${row.id}`}
+        name={notParent ? `row_${row.id}` : `group_${row.id}`}
+        key={notParent ? `row_${row.id}` : `group_${row.id}`}
         wrapperType="tr"
         parent={row.parentId ? parentItem : undefined}
         innerRef={innerRef}

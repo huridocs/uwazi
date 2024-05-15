@@ -6,10 +6,11 @@ import { GrabIcon, RowWrapper } from './DraggableRow';
 
 interface TableRowProps<T> extends PropsWithChildren {
   row: Row<T>;
-  enableSelection: boolean | undefined;
   draggableRow?: boolean;
   dndContext?: IDnDContext<T>;
   item?: IDraggable<T>;
+  highLightGroups?: boolean;
+  subRowsKey?: string;
 }
 
 /* eslint-disable comma-spacing */
@@ -17,17 +18,31 @@ const TableRow = <T,>({
   draggableRow,
   row,
   dndContext,
-  enableSelection,
   item,
+  subRowsKey,
+  highLightGroups = true,
 }: TableRowProps<T>) => {
   const previewRef = useRef<HTMLTableRowElement>(null);
   const icons =
     draggableRow && dndContext && item
-      ? [<GrabIcon row={row} dndContext={dndContext} previewRef={previewRef} item={item} />]
+      ? [
+          <GrabIcon
+            row={row}
+            dndContext={dndContext}
+            previewRef={previewRef}
+            item={item}
+            subRowsKey={subRowsKey}
+            highLightGroups={highLightGroups}
+          />,
+        ]
       : [];
   const isSubGroup = row.depth > 0;
-  let bg = row.getCanExpand() || isSubGroup ? 'bg-primary-50' : '';
-  bg = row.getCanExpand() && row.getIsExpanded() ? 'bg-primary-100' : bg;
+  const bg =
+    row.getIsExpanded() ||
+    (highLightGroups && row.getCanExpand()) ||
+    (subRowsKey && highLightGroups && Array.isArray((row.original as any)[subRowsKey]))
+      ? 'bg-primary-100'
+      : '';
 
   return (
     <RowWrapper
@@ -40,22 +55,17 @@ const TableRow = <T,>({
     >
       {row.getVisibleCells().map((cell, columnIndex) => {
         const isSelect = cell.column.id === 'checkbox-select';
-        const firstColumnClass =
-          isSelect || (draggableRow && columnIndex === 0) ? 'flex items-center gap-3' : '';
+        const firstColumnClass = draggableRow && columnIndex === 0 ? 'flex items-center gap-3' : '';
 
         let border = '';
-        if (
-          isSelect &&
-          ((isSubGroup && enableSelection && columnIndex === 1) ||
-            (isSubGroup && !enableSelection && columnIndex === 0))
-        ) {
+        if (isSelect && isSubGroup) {
           border = 'border-r-2 border-primary-300';
         }
 
         return (
           <td
             key={cell.id}
-            className={`${firstColumnClass} ${isSelect ? 'px-2' : 'px-6'} ${border} py-2 ${
+            className={`${firstColumnClass} ${isSelect ? 'px-4' : 'px-6'} ${border} py-2 ${
               cell.column.columnDef.meta?.contentClassName || ''
             }`}
           >
