@@ -51,7 +51,7 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '1'],
     ]);
   });
@@ -72,7 +72,7 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '2'],
       ['addTracker', 'https://url.org/', '1'],
     ]);
@@ -115,7 +115,7 @@ describe('Matomo', () => {
       ['googleTracker', 'idForTracker'],
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '5'],
       ['addTracker', 'https://url.org/', '10'],
     ]);
@@ -135,7 +135,7 @@ describe('Matomo', () => {
     expect(window._paq).toStrictEqual([
       ['trackPageView'],
       ['enableLinkTracking'],
-      ['setTrackerUrl', 'https://global.org/matomo.php'],
+      ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '3'],
     ]);
   });

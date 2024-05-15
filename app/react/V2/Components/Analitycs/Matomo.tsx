@@ -18,14 +18,15 @@ const buildScript = ({
 
   const mainUrl = globalMatomoUrl || userMatomoUrl;
   const mainId = globalId || userId;
+  const filename = globalMatomoUrl ? 'tenant' : 'matomo';
 
   return `
   var _paq = _paq || [];
   _paq.push(["trackPageView"]);
   _paq.push(["enableLinkTracking"]);
   (function () {
-    var u = "${mainUrl}";
-    _paq.push(["setTrackerUrl", u + "matomo.php"]);
+    var url = "${mainUrl}";
+    _paq.push(["setTrackerUrl", url + "${filename}.php"]);
     _paq.push(["setSiteId", "${mainId}"]);
     ${userMatomoUrl && globalMatomoUrl && `_paq.push(["addTracker", "${userMatomoUrl}", "${userId}"]);`}
     var d = document,
@@ -34,7 +35,7 @@ const buildScript = ({
     g.type = "text/javascript";
     g.async = true;
     g.defer = true;
-    g.src = u + "matomo.js";
+    g.src = url + "${filename}.js";
     s.parentNode.insertBefore(g, s);
   })();`;
 };
