@@ -22,7 +22,7 @@ import { tenants } from '../api/tenants';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
-import { atomStore, settingsAtom } from './V2/atoms';
+import { atomStore } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -105,7 +105,7 @@ const getAssets = async () => {
   });
 };
 
-const prepareStore = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
+const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
 
   const headers = {
@@ -155,7 +155,15 @@ const prepareStore = async (req: ExpressRequest, settings: ClientSettings, langu
     locale,
   });
 
-  return { reduxStore };
+  return {
+    reduxStore,
+    atomStoreData: {
+      ...globalResources,
+      thesauri: globalResources.thesauris,
+      settings: globalResources.settings.collection,
+      locale,
+    },
+  };
 };
 
 const setReduxState = async (
@@ -230,7 +238,7 @@ const getSSRProperties = async (
   settings: ClientSettings,
   language: string
 ) => {
-  const { reduxStore } = await prepareStore(req, settings, language);
+  const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const staticHandleContext = await query(createFetchRequest(req));
   const router = createStaticRouter(routes, staticHandleContext as any);
@@ -238,6 +246,7 @@ const getSSRProperties = async (
 
   return {
     reduxState,
+    atomStoreData,
     staticHandleContext,
     router,
   };
@@ -262,7 +271,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const language = matched ? matched[0].params.lang : req.language;
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, staticHandleContext, router } = await getSSRProperties(
+  const { reduxState, atomStoreData, staticHandleContext, router } = await getSSRProperties(
     req,
     routes,
     settings,
@@ -272,8 +281,6 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { globalMatomo } = tenants.current();
   const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
   resetTranslations();
-
-  atomStore.set(settingsAtom, settings);
 
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
@@ -299,7 +306,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
-      atomStoreData={globalMatomo && { globalMatomo }}
+      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }) }}
     />
   );
 
