@@ -583,7 +583,7 @@ export default {
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
-          content: '',
+          // No content set to test no content apart from content: ""
         },
         {
           _id: db.id(),
