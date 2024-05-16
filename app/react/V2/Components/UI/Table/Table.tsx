@@ -30,6 +30,8 @@ const Table = <T,>({
   onSelection,
   subRowsKey,
   draggableRows = false,
+  allowEditGroupsWithDnD = true,
+  highLightGroups = true,
   onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
@@ -56,7 +58,6 @@ const Table = <T,>({
               header: CheckBoxHeader,
               cell: CheckBoxCell,
             },
-            meta: { headerClassName: 'w-0' },
           },
         ],
         [],
@@ -122,7 +123,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="relative w-full rounded-md border border-gray-50 shadow-sm">
+    <div className="relative w-full border rounded-md shadow-sm border-gray-50">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
@@ -142,10 +143,12 @@ const Table = <T,>({
         </thead>
         <TableBody
           draggableRows={draggableRows}
+          allowEditGroupsWithDnD={allowEditGroupsWithDnD}
           items={data}
           table={table}
           subRowsKey={subRowsKey}
           onChange={handleOnChange}
+          highLightGroups={highLightGroups}
         />
       </table>
       {footer && <div className="p-4">{footer}</div>}

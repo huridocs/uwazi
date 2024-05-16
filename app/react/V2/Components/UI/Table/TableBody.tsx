@@ -8,12 +8,14 @@ import { useDnDContext } from '../../Layouts/DragAndDrop';
 
 interface TableBodyProps extends PropsWithChildren {
   draggableRows: boolean;
+  allowEditGroupsWithDnD?: boolean;
   DndProvider?: React.FC<any>;
   HTML5Backend?: any;
   items: any;
   table: any;
   onChange?: any;
   subRowsKey?: string;
+  highLightGroups?: boolean;
 }
 
 type TypeWithDnDId<T> = T & {
@@ -48,13 +50,14 @@ const setRowId: <T>(
 // eslint-disable-next-line comma-spacing
 const TableBodyComponent = <T,>({
   draggableRows,
-  // eslint-disable-next-line react/jsx-no-useless-fragment
+  allowEditGroupsWithDnD,
   DndProvider,
   HTML5Backend,
   items,
   table,
   subRowsKey,
   onChange,
+  highLightGroups = true,
 }: TableBodyProps) => {
   const dndContext = useDnDContext<T>(
     ItemTypes.ROW,
@@ -62,6 +65,7 @@ const TableBodyComponent = <T,>({
       getDisplayName: item => item.dndId!,
       itemsProperty: subRowsKey,
       onChange,
+      allowEditGroupsWithDnD,
     },
     items,
     []
@@ -88,8 +92,9 @@ const TableBodyComponent = <T,>({
                           draggableRow
                           row={childRow}
                           dndContext={dndContext}
-                          enableSelection={false}
                           item={subItem}
+                          highLightGroups={highLightGroups}
+                          subRowsKey={subRowsKey}
                         />
                       ) : (
                         childRow
@@ -103,8 +108,9 @@ const TableBodyComponent = <T,>({
                   draggableRow
                   row={row}
                   dndContext={dndContext}
-                  enableSelection={false}
                   item={item}
+                  highLightGroups={highLightGroups}
+                  subRowsKey={subRowsKey}
                 />
                 {children}
               </React.Fragment>
@@ -118,7 +124,12 @@ const TableBodyComponent = <T,>({
   ) : (
     <tbody>
       {table.getRowModel().rows.map((row: Row<T>) => (
-        <TableRow<T> key={row.id} row={row} enableSelection={false} />
+        <TableRow<T>
+          key={row.id}
+          row={row}
+          highLightGroups={highLightGroups}
+          subRowsKey={subRowsKey}
+        />
       ))}
     </tbody>
   );
