@@ -1,17 +1,8 @@
-import { notificationAtom, notificationAtomType } from './notificationAtom';
-import { settingsAtom } from './settingsAtom';
-import { templatesAtom } from './templatesAtom';
-import { translationsAtom, inlineEditAtom } from './translationsAtoms';
-import { thesaurisAtom } from './thesaurisAtom';
-import { relationshipTypesAtom } from './relationshipTypes';
-
-export type { notificationAtomType };
-export {
-  notificationAtom,
-  settingsAtom,
-  templatesAtom,
-  translationsAtom,
-  inlineEditAtom,
-  thesaurisAtom,
-  relationshipTypesAtom,
-};
+export { atomStore } from './store';
+export { notificationAtom } from './notificationAtom';
+export { settingsAtom } from './settingsAtom';
+export { templatesAtom } from './templatesAtom';
+export { translationsAtom, inlineEditAtom } from './translationsAtoms';
+export { thesaurisAtom } from './thesaurisAtom';
+export { globalMatomoAtom } from './globalMatomoAtom';
+export type { notificationAtomType } from './notificationAtom';

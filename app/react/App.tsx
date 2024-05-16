@@ -1,10 +1,16 @@
 import React from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { createStore, Provider } from 'jotai';
+import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
 import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
-import { settingsAtom, templatesAtom, translationsAtom, thesaurisAtom } from './V2/atoms';
+import {
+  settingsAtom,
+  templatesAtom,
+  translationsAtom,
+  thesaurisAtom,
+  atomStore,
+} from './V2/atoms';
 import { relationshipTypesAtom } from './V2/atoms/relationshipTypes';
 import { store } from './store';
 
@@ -16,7 +22,6 @@ const thesauris = reduxState?.thesauris.toJS() || [];
 
 const router = createBrowserRouter(getRoutes(settings, reduxState?.user.get('_id')));
 
-const atomStore = createStore();
 atomStore.set(settingsAtom, settings);
 atomStore.set(templatesAtom, templates);
 atomStore.set(thesaurisAtom, thesauris);
