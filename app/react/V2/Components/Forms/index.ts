@@ -11,5 +11,6 @@ export type { MultiSelectProps } from './MultiSelect';
 export type { SelectProps, OptionSchema } from './Select';
 export { Checkbox } from './Checkbox';
 export { EnableButtonCheckbox } from './EnableButtonCheckbox';
+export { ColorPicker } from './ColorPicker';
 export { DatePicker, DateRangePicker } from './DatePicker/DatePicker';
 export { MultiselectList } from './MultiselectList';
