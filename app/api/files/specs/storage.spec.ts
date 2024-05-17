@@ -36,6 +36,7 @@ describe('storage', () => {
         accessKeyId: 'minioadmin',
         secretAccessKey: 'minioadmin',
       },
+      batchSize: 1,
     };
 
     s3 = new S3Client({
@@ -313,6 +314,126 @@ describe('storage', () => {
         );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
         expect(await storage.fileExists('non_existent.txt', 'document')).toBe(false);
+      });
+    });
+  });
+
+  describe('listFiles', () => {
+    describe('when s3 flag is active', () => {
+      it('should list all files on disk', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: true,
+          },
+        });
+        await storage.storeFile(
+          'file_created1.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
+        await storage.storeFile(
+          'file_created2.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
+        expect(await storage.listFiles()).toEqual([
+          { filename: 'already_uploaded.txt', type: 'uploads' },
+          { filename: 'file_created1.txt', type: 'uploads' },
+          { filename: 'file_created2.txt', type: 'uploads' },
+          { filename: 'file_to_be_deleted.txt', type: 'uploads' },
+          { filename: 'file_created.txt', type: 'segmentation' },
+        ]);
+      });
+    });
+
+    describe('when s3 flag is not active', () => {
+      it('should list all files on disk', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+        await storage.storeFile(
+          'file_created.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'document'
+        );
+        expect(await storage.listFiles()).toMatchObject([
+          // Every file in the test uploads folder. As configured by the
+          // testing filesystem
+          { type: 'custom', filename: 'customPDF.pdf' },
+          { type: 'custom', filename: 'index.html' },
+          { type: 'document', filename: 'documento.txt' },
+          { type: 'document', filename: 'eng.pdf' },
+          {
+            type: 'document',
+            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          },
+          {
+            type: 'document',
+            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
+          },
+          { type: 'document', filename: 'file_created.txt' },
+          { type: 'document', filename: 'import.zip' },
+          { type: 'document', filename: 'importcsv.csv' },
+          { type: 'document', filename: 'invalid_document.txt' },
+          { type: 'document', filename: 'spn.pdf' },
+          { type: 'document', filename: 'test_s3_file.txt' },
+          { type: 'thumbnail', filename: 'documento.txt' },
+          { type: 'thumbnail', filename: 'eng.pdf' },
+          {
+            type: 'thumbnail',
+            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          },
+          {
+            type: 'thumbnail',
+            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
+          },
+          { type: 'thumbnail', filename: 'file_created.txt' },
+          { type: 'thumbnail', filename: 'import.zip' },
+          { type: 'thumbnail', filename: 'importcsv.csv' },
+          { type: 'thumbnail', filename: 'invalid_document.txt' },
+          { type: 'thumbnail', filename: 'spn.pdf' },
+          { type: 'thumbnail', filename: 'test_s3_file.txt' },
+          { type: 'attachment', filename: 'documento.txt' },
+          { type: 'attachment', filename: 'eng.pdf' },
+          {
+            type: 'attachment',
+            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          },
+          {
+            type: 'attachment',
+            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
+          },
+          { type: 'attachment', filename: 'file_created.txt' },
+          { type: 'attachment', filename: 'import.zip' },
+          { type: 'attachment', filename: 'importcsv.csv' },
+          { type: 'attachment', filename: 'invalid_document.txt' },
+          { type: 'attachment', filename: 'spn.pdf' },
+          { type: 'attachment', filename: 'test_s3_file.txt' },
+          { type: 'activitylog', filename: 'documento.txt' },
+          { type: 'activitylog', filename: 'eng.pdf' },
+          {
+            type: 'activitylog',
+            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+          },
+          {
+            type: 'activitylog',
+            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
+          },
+          { type: 'activitylog', filename: 'file_created.txt' },
+          { type: 'activitylog', filename: 'import.zip' },
+          { type: 'activitylog', filename: 'importcsv.csv' },
+          { type: 'activitylog', filename: 'invalid_document.txt' },
+          { type: 'activitylog', filename: 'spn.pdf' },
+          { type: 'activitylog', filename: 'test_s3_file.txt' },
+        ]);
       });
     });
   });
