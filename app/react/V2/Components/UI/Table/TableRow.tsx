@@ -38,7 +38,7 @@ const TableRow = <T,>({
       : [];
   const isSubGroup = row.depth > 0;
   const bg =
-    row.getIsExpanded() ||
+    (row.getIsExpanded() && row.getCanExpand()) ||
     (highLightGroups && row.getCanExpand()) ||
     (subRowsKey && highLightGroups && Array.isArray((row.original as any)[subRowsKey]))
       ? 'bg-primary-100'
@@ -46,7 +46,7 @@ const TableRow = <T,>({
 
   return (
     <RowWrapper
-      className={`${bg} border-b`}
+      className={`border-b ${bg}`}
       draggableRow={draggableRow}
       row={row}
       dndContext={dndContext}
