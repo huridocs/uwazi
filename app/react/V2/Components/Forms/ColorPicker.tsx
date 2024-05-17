@@ -57,9 +57,9 @@ const ColorPicker = ({
 
   return (
     <div className={`${className}`}>
-      <Popover className="border border-gray-50">
+      <Popover className="">
         <Popover.Button
-          className={`w-[37px] h-[37px] border cursor-pointer rounded-lg ${dynamicStyles}`}
+          className={`w-[37px] h-[37px] border cursor-pointer rounded-lg ring-0 ${dynamicStyles}`}
         >
           <div
             data-testid="colorpicker-button"
@@ -67,39 +67,40 @@ const ColorPicker = ({
             style={{ backgroundColor: localValue }}
           />
         </Popover.Button>
-        <Popover.Panel as="div" className="z-10">
-          <div className="flex flex-col gap-2 p-2 m-2 bg-white rounded-md shadow max-w-[188px]">
-            <ul className="flex flex-wrap gap-2" data-testid="colorpicker-popover">
-              {defaultColors.map((color: string) => (
-                <li key={color}>
-                  <button
-                    type="button"
-                    className="w-full cursor-pointer"
-                    onClick={() => changeColor(color)}
-                  >
-                    <span className="sr-only">{color}</span>
-                    <div
-                      data-testid="colorpicker-button"
-                      className="m-auto rounded-md w-7 h-7"
-                      style={{ backgroundColor: color }}
-                    />
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <InputField
-              id={name}
-              type="text"
-              name={name}
-              value={localValue.slice(1)}
-              preText="#"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                changeColor(`#${e.target.value}`);
-              }}
-              className="w-full"
-              hasErrors={hasErrors}
-            />
-          </div>
+        <Popover.Panel
+          as="div"
+          className="flex flex-col gap-2 p-2 bg-white rounded-md shadow max-w-[188px] z-10 m-2"
+        >
+          <ul className="flex flex-wrap gap-2" data-testid="colorpicker-popover">
+            {defaultColors.map((color: string) => (
+              <li key={color}>
+                <button
+                  type="button"
+                  className="w-full cursor-pointer"
+                  onClick={() => changeColor(color)}
+                >
+                  <span className="sr-only">{color}</span>
+                  <div
+                    data-testid="colorpicker-button"
+                    className="m-auto rounded-sm w-7 h-7"
+                    style={{ backgroundColor: color }}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <InputField
+            id={name}
+            type="text"
+            name={name}
+            value={localValue.slice(1)}
+            preText="#"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              changeColor(`#${e.target.value}`);
+            }}
+            className="w-full"
+            hasErrors={hasErrors}
+          />
         </Popover.Panel>
       </Popover>
     </div>

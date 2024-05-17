@@ -3551,6 +3551,12 @@ input[type="range"]::-ms-fill-lower {
   outline-style: solid;
 }
 
+.ring-0 {
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
 .ring-indigo-100 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(229 237 255 / var(--tw-ring-opacity));
@@ -3884,6 +3890,21 @@ input[type="range"]::-ms-fill-lower {
 .focus\:ring-success-200:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(187 247 208 / var(--tw-ring-opacity));
+}
+
+.focus-visible\:border-error-900:focus-visible {
+  --tw-border-opacity: 1;
+  border-color: rgb(131 24 67 / var(--tw-border-opacity));
+}
+
+.focus-visible\:border-error-300:focus-visible {
+  --tw-border-opacity: 1;
+  border-color: rgb(249 168 212 / var(--tw-border-opacity));
+}
+
+.focus-visible\:border-gray-300:focus-visible {
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
 }
 
 .focus-visible\:outline-none:focus-visible {
