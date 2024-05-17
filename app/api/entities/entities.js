@@ -774,8 +774,10 @@ export default {
           ? [
               {
                 properties: {
-                  type: propertyTypes.relationship,
-                  content: null,
+                  $elemMatch: {
+                    type: propertyTypes.relationship,
+                    content: null,
+                  },
                 },
               },
             ]
