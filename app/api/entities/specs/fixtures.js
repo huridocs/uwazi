@@ -583,7 +583,7 @@ export default {
           type: 'relationship',
           name: 'friends',
           relationType: relationType1,
-          // No content set to test no content apart from content: ""
+          content: '',
         },
         {
           _id: db.id(),
@@ -674,7 +674,7 @@ export default {
           _id: db.id(),
           type: 'relationship',
           name: 'relationship_to_any_template',
-          content: '',
+          // No content set to test no content apart from content: ""
         },
       ],
     },
