@@ -2,8 +2,8 @@ export { Button } from './Button';
 export { EmbededButton } from './EmbededButton';
 export { Modal } from './Modal';
 export { Pill } from './Pill';
-export type { PillColor } from './Pill';
 export { Table } from './Table/Table';
+export { Table as NewTable } from './TableV2/Table';
 export { ToggleButton } from './ToggleButton';
 export { NotificationsContainer } from './NotificationsContainer';
 export { Tabs } from './Tabs';
@@ -17,4 +17,5 @@ export { PaginationState } from './PaginationState';
 export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
 
+export type { PillColor } from './Pill';
 export type { TableProps } from './Table/TableElements';

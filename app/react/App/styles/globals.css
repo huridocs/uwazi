@@ -2187,6 +2187,10 @@ input[type="range"]::-ms-fill-lower {
   max-width: 120px;
 }
 
+.max-w-full {
+  max-width: 100%;
+}
+
 .max-w-lg {
   max-width: 32rem;
 }
@@ -2457,6 +2461,14 @@ input[type="range"]::-ms-fill-lower {
 
 .overflow-x-hidden {
   overflow-x: hidden;
+}
+
+.overflow-y-hidden {
+  overflow-y: hidden;
+}
+
+.overflow-x-scroll {
+  overflow-x: scroll;
 }
 
 .overflow-y-scroll {
