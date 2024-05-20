@@ -122,11 +122,11 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const [
     userApiResponse = { json: {} },
-    translationsApiResponse = onlySystemTranslations(translations),
     settingsApiResponse = { json: { languages: [], private: settings.private } },
     templatesApiResponse = { json: { rows: [] } },
     thesaurisApiResponse = { json: { rows: [] } },
     relationTypesApiResponse = { json: { rows: [] } },
+    translationsApiResponse = onlySystemTranslations(translations),
   ] =
     !settings.private || req.user
       ? await Promise.all([
