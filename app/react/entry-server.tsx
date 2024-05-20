@@ -28,6 +28,8 @@ import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
 
+api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
+
 class ServerRenderingFetchError extends Error {
   constructor(message: string) {
     super(message);
@@ -116,8 +118,6 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const requestParams = new RequestParams({}, headers);
 
-  api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
-
   const translations = await translationsApi.get();
 
   const [
@@ -131,15 +131,15 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     !settings.private || req.user
       ? await Promise.all([
           api.get('user', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
           api.get('settings', requestParams),
           api.get('templates', requestParams),
           api.get('thesauris', requestParams),
           api.get('relationTypes', requestParams),
+          Promise.resolve({ json: { rows: translations } }),
         ])
       : [];
 
-  const globalResources = {
+  const reduxData = {
     user: userApiResponse.json,
     translations: translationsApiResponse.json.rows,
     templates: templatesApiResponse.json.rows,
@@ -151,16 +151,17 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   };
 
   const reduxStore = createReduxStore({
-    ...globalResources,
+    ...reduxData,
     locale,
   });
 
   return {
     reduxStore,
     atomStoreData: {
-      ...globalResources,
-      thesauri: globalResources.thesauris,
-      settings: globalResources.settings.collection,
+      settings: settingsApiResponse.json,
+      templates: templatesApiResponse.json,
+      thesauri: thesaurisApiResponse.json,
+      user: userApiResponse.json,
       locale,
     },
   };
@@ -300,7 +301,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const html = ReactDOMServer.renderToString(
     <Root
-      language={initialState.locale}
+      language={atomStoreData.locale}
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
