@@ -1,8 +1,9 @@
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsQuery } from 'shared/types/suggestionType';
+import { ObjectIdSchema } from 'shared/types/commonTypes';
+import { SuggestionValue } from 'app/V2/Routes/Settings/IX/types';
 
 const get = async (
   parameters: {
@@ -29,7 +30,13 @@ const aggregation = async (extractorId: string, headers?: IncomingHttpHeaders) =
 };
 
 const accept = async (
-  suggestions: { _id: ObjectIdSchema; sharedId: string; entityId: string }[]
+  suggestions: {
+    _id: ObjectIdSchema;
+    sharedId: string;
+    entityId: ObjectIdSchema;
+    addedValues: SuggestionValue[] | undefined;
+    removedValues: SuggestionValue[] | undefined;
+  }[]
 ) => {
   const params = new RequestParams({ suggestions });
   const response = await api.post('suggestions/accept', params);
