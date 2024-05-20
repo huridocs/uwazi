@@ -158,11 +158,9 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
   return {
     reduxStore,
     atomStoreData: {
-      settings: settingsApiResponse.json,
-      templates: templatesApiResponse.json,
-      thesauri: thesaurisApiResponse.json,
-      user: userApiResponse.json,
       locale,
+      settings: settingsApiResponse.json,
+      user: userApiResponse.json,
     },
   };
 };

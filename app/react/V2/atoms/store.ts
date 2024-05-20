@@ -1,23 +1,19 @@
 import { createStore } from 'jotai';
 import { isClient } from 'app/utils';
 import { store } from 'app/store';
-import { ClientTemplateSchema } from 'app/istore';
-import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientSettings, ClientUserSchema } from 'app/apiResponseTypes';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
 import { settingsAtom } from './settingsAtom';
 import { templatesAtom } from './templatesAtom';
-import { thesaurisAtom } from './thesaurisAtom';
 import { translationsAtom } from './translationsAtom';
 import { userAtom } from './userAtom';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
-  settings?: ClientSettings;
-  templates?: ClientTemplateSchema[];
-  thesauri?: ClientThesaurus[];
-  user?: ClientUserSchema;
   locale?: string;
+  settings?: ClientSettings;
+  user?: ClientUserSchema;
 };
 
 declare global {
@@ -29,14 +25,12 @@ declare global {
 const atomStore = createStore();
 
 if (isClient && window.__atomStoreData__) {
-  const { globalMatomo, settings, templates, thesauri, user, locale } = window.__atomStoreData__;
+  const { globalMatomo, locale, settings, user } = window.__atomStoreData__;
 
   if (globalMatomo) atomStore.set(globalMatomoAtom, { ...globalMatomo });
   if (settings) atomStore.set(settingsAtom, settings);
-  if (templates) atomStore.set(templatesAtom, templates);
-  if (thesauri) atomStore.set(thesaurisAtom, thesauri);
-  atomStore.set(translationsAtom, { locale: locale || 'en' });
   atomStore.set(userAtom, user);
+  atomStore.set(translationsAtom, { locale: locale || 'en' });
 
   //sync deprecated redux store
   atomStore.sub(settingsAtom, () => {
