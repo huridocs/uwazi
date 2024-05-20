@@ -45,9 +45,12 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       cy.contains('button', 'Add from URL').click();
     }
 
-    cy.get('video').should('be.visible');
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
+    cy.contains('.form-group.media', 'Video').scrollIntoView();
+    cy.contains('.form-group.media', 'Video').within(() => {
+      cy.get('video').should('be.visible');
+    });
   };
 
   const addImage = () => {
@@ -61,7 +64,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     // wait for image
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(200);
-    cy.get('img').should('be.visible');
+    cy.contains('.form-group.image', 'Fotografía').scrollIntoView();
+    cy.contains('.form-group.image', 'Fotografía').within(() => {
+      cy.get('img').should('be.visible');
+    });
   };
 
   const addInvalidFile = (field: string) => {
@@ -73,6 +79,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .selectFile('./cypress/test_files/sample.pdf', {
         force: true,
       });
+    cy.contains(field)
+      .parentsUntil('.form-group')
+      .contains('This file type is not supported on media fields')
+      .scrollIntoView();
     cy.contains(field)
       .parentsUntil('.form-group')
       .contains('This file type is not supported on media fields')
