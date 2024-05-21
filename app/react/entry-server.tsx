@@ -160,6 +160,8 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
     atomStoreData: {
       locale,
       settings: settingsApiResponse.json,
+      thesauri: thesaurisApiResponse.json.rows,
+      templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
     },
   };

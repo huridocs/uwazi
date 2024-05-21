@@ -3,7 +3,7 @@ export { notificationAtom } from './notificationAtom';
 export { settingsAtom } from './settingsAtom';
 export { templatesAtom } from './templatesAtom';
 export { translationsAtom, inlineEditAtom } from './translationsAtoms';
-export { thesaurisAtom } from './thesaurisAtom';
+export { thesauriAtom } from './thesauriAtom';
 export { globalMatomoAtom } from './globalMatomoAtom';
 export { userAtom } from './userAtom';
 export type { AtomStoreData } from './store';
