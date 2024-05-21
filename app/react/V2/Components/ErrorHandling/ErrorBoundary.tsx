@@ -1,4 +1,4 @@
-import React, { ReactNode, Suspense } from 'react';
+import React, { ReactNode } from 'react';
 import { RequestError, handledErrors } from './ErrorUtils';
 import { ErrorFallback } from './ErrorFallback';
 
@@ -41,7 +41,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
 
       return <ErrorFallback error={error} />;
     }
-    return <Suspense>{this.props.children}</Suspense>;
+    return this.props.children;
   }
 }
 

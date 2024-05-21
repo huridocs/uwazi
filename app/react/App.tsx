@@ -6,6 +6,7 @@ import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
 import { settingsAtom, templatesAtom, translationsAtom, thesaurisAtom } from './V2/atoms';
 import { relationshipTypesAtom } from './V2/atoms/relationshipTypes';
+import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { store } from './store';
 
 const reduxState = store?.getState();
@@ -40,7 +41,9 @@ const App = () => (
   <ReduxProvider store={store as any}>
     <CustomProvider>
       <Provider store={atomStore}>
-        <RouterProvider router={router} fallbackElement={null} />
+        <ErrorBoundary error={undefined}>
+          <RouterProvider router={router} fallbackElement={null} />
+        </ErrorBoundary>
       </Provider>
     </CustomProvider>
   </ReduxProvider>
