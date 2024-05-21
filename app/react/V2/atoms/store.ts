@@ -1,18 +1,22 @@
 import { createStore } from 'jotai';
 import { isClient } from 'app/utils';
 import { store } from 'app/store';
-import { ClientSettings, ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
+import { ClientTemplateSchema } from 'app/istore';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
 import { settingsAtom } from './settingsAtom';
 import { templatesAtom } from './templatesAtom';
 import { translationsAtom } from './translationsAtom';
 import { userAtom } from './userAtom';
+import { thesauriAtom } from './thesauriAtom';
 
 type AtomStoreData = {
   globalMatomo?: { url: string; id: string };
   locale?: string;
   settings?: ClientSettings;
+  thesauri?: ClientThesaurus[];
+  templates?: ClientTemplateSchema[];
   user?: ClientUserSchema;
 };
 
@@ -25,10 +29,12 @@ declare global {
 const atomStore = createStore();
 
 if (isClient && window.__atomStoreData__) {
-  const { globalMatomo, locale, settings, user } = window.__atomStoreData__;
+  const { globalMatomo, locale, settings, thesauri, templates, user } = window.__atomStoreData__;
 
   if (globalMatomo) atomStore.set(globalMatomoAtom, { ...globalMatomo });
   if (settings) atomStore.set(settingsAtom, settings);
+  if (thesauri) atomStore.set(thesauriAtom, thesauri);
+  if (templates) atomStore.set(templatesAtom, templates);
   atomStore.set(userAtom, user);
   atomStore.set(translationsAtom, { locale: locale || 'en' });
 
