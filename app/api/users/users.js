@@ -1,5 +1,4 @@
 import SHA256 from 'crypto-js/sha256';
-import crypto from 'crypto';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
@@ -15,10 +14,9 @@ import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
 import settings from '../settings/settings';
+import { generateUnlockCode } from './generateUnlockCode';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
-
-const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
 function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
@@ -288,7 +286,7 @@ export default {
   },
 
   recoverPassword(email, domain, options = {}) {
-    const key = SHA256(email + Date.now()).toString();
+    const key = generateUnlockCode();
     return Promise.all([model.get({ email }), settings.get()]).then(([_user, _settings]) => {
       const user = _user[0];
       if (user) {
