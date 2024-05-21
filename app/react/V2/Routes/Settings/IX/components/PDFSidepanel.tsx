@@ -443,7 +443,7 @@ const PDFSidepanel = ({
           </span>
         </div>
         {labelInputIsOpen && renderLabel()}
-        <div className="flex justify-end gap-2 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+        <div className="flex justify-end gap-2 px-4 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
           <Button
             type="button"
             styling="outline"
