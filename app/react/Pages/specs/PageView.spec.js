@@ -98,9 +98,9 @@ describe('PageView', () => {
         spyOn(console, 'error').and.callFake(consoleErrorSpy);
         assetsUtilsSpy.and.returnValue(Promise.reject(new Error('error at rendering')));
         component = renderConnectedMount(PageView, { context }, {}, true);
-        const errorMessage = component.find(ErrorFallback).find('.error-message-lg').at(0).text();
+        const errorMessage = component.find(ErrorFallback).find('.font-bold').at(0).text();
 
-        expect(errorMessage).toEqual('TypeError');
+        expect(errorMessage).toEqual('Well, this is awkward...');
       });
     });
   });

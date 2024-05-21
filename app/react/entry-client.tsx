@@ -8,8 +8,8 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
+import { RequestError } from 'V2/Components/ErrorHandling/ErrorUtils';
 import { App } from './App';
-import { RequestError } from './App/ErrorHandling/ErrorUtils';
 
 declare global {
   interface Window {
