@@ -1,6 +1,6 @@
 import React from 'react';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { useRouteError } from 'react-router-dom';
+import { ErrorFallback } from './ErrorFallback';
 
 interface ErrorBoundaryProps {
   error?: Error;

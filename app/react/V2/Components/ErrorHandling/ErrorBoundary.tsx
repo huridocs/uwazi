@@ -1,6 +1,6 @@
 import React, { ReactNode, Suspense } from 'react';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import { RequestError, handledErrors } from './ErrorUtils';
+import { ErrorFallback } from './ErrorFallback';
 
 interface ErrorBoundaryProps {
   error?: Error | RequestError;

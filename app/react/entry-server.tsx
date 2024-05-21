@@ -21,7 +21,7 @@ import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
-import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
+import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { settingsAtom } from './V2/atoms/settingsAtom';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';

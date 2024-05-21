@@ -2,11 +2,11 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { has } from 'lodash';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
 import Footer from 'app/App/Footer';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { t } from 'app/I18N';
 import { handledErrors } from './ErrorUtils';
+import { ErrorFallback } from './ErrorFallback';
 
 const GeneralError = () => {
   const { errorCode } = useParams();
@@ -32,4 +32,4 @@ const GeneralError = () => {
   );
 };
 
-export default GeneralError;
+export { GeneralError };
