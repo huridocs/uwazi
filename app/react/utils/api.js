@@ -30,7 +30,7 @@ const errorMessages = [
 ];
 
 function extractMessageFromError(error) {
-  let finalMessage = `An error has occurred${error.json.requestId ? `it has been logged with request id #${error.json.requestId}.` : '.'}`;
+  let finalMessage = `An error has occurred${error.json.requestId ? ` , it has been logged with request id #${error.json.requestId}.` : '.'}`;
   if (!error.json.error) return finalMessage;
 
   const errorMessage = errorMessages.find(errorExpression =>
