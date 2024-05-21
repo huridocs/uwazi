@@ -2,6 +2,7 @@ import React from 'react';
 import { actions as formActions } from 'react-redux-form';
 import { withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
+import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import EntitiesAPI from 'app/Entities/EntitiesAPI';
 import { actions } from 'app/BasicReducer';
 import * as relationships from 'app/Relationships/utils/routeUtils';
@@ -15,16 +16,12 @@ import { setReferences } from './actions/referencesActions';
 class ViewerRouteComponent extends RouteHandler {
   static async requestState(requestParams, globalResources) {
     const { sharedId } = requestParams.data;
-    try {
-      const [entity] = await EntitiesAPI.get(
-        requestParams.set({ sharedId, omitRelationships: true })
-      );
-      return entity.documents.length
-        ? PDFViewComponent.requestState(requestParams, globalResources)
-        : EntityView.requestState(requestParams, globalResources);
-    } catch (e) {
-      return e.status === 404 ? [showTab('404')] : [];
-    }
+    const [entity] = await EntitiesAPI.get(
+      requestParams.set({ sharedId, omitRelationships: true })
+    );
+    return entity.documents.length
+      ? PDFViewComponent.requestState(requestParams, globalResources)
+      : EntityView.requestState(requestParams, globalResources);
   }
 
   componentWillUnmount() {
@@ -66,7 +63,11 @@ class ViewerRouteComponent extends RouteHandler {
   render() {
     trackPage();
     this.selectTab(this.props.params);
-    return <ViewerComponent {...this.props} />;
+    return (
+      <ErrorBoundary error={this.state.loadingError}>
+        <ViewerComponent {...this.props} />
+      </ErrorBoundary>
+    );
   }
 }
 

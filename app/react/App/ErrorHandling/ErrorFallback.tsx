@@ -1,41 +1,41 @@
-import React, { ErrorInfo } from 'react';
+import React from 'react';
 import { RequestError } from 'app/App/ErrorHandling/ErrorUtils';
 import { Translate } from 'app/I18N';
 
 interface ErrorFallbackProps {
-  error: RequestError;
-  errorInfo?: ErrorInfo;
+  error: Error | RequestError;
 }
-export const ErrorFallback = (props: ErrorFallbackProps) => {
-  const showRequestId = props.error.code?.toString() === '500' && props.error.requestId;
-  const errorDetails = props.errorInfo?.componentStack || props.error.message;
+export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
+  const currentError = error as RequestError;
+  const showRequestId = currentError.status === 500 && currentError.requestId;
   return (
-    <div className="error-fallback-ui">
-      <div className="message">
-        <p className="error-message-xxl">
-          {props.error.summary && <Translate>{props.error.summary}</Translate>}
-          {!props.error.summary && <Translate>Well, this is awkward...</Translate>}
-        </p>
-        <p className="error-message-lg">
-          {props.error.name && <Translate>{props.error.name}</Translate>}
-          {!props.error.name && <Translate>Something went wrong</Translate>}
-        </p>
-        <p>
-          <Translate>Please contact an admin for details.</Translate>
-        </p>
-        {showRequestId && (
-          <p className="error-message-sm">
-            <Translate>Request id #</Translate>
-            {props.error.requestId}
-          </p>
-        )}
-        {errorDetails && (
-          <details className="error-details">
-            <Translate>{errorDetails}</Translate>
-          </details>
-        )}
-      </div>
-      {props.error.code && <span className="error-code">{props.error.code}</span>}
+    <div className="tw-content">
+      <section className="bg-white">
+        <div className="max-w-screen-xl px-4 py-8 mx-auto lg:py-16 lg:px-6">
+          <div className="max-w-screen-sm mx-auto text-center">
+            {currentError.status && (
+              <h1 className="mb-4 font-extrabold tracking-tight text-gray-500 text-7xl lg:text-9xl ">
+                {currentError.status}
+              </h1>
+            )}
+            <p className="mb-4 text-3xl font-bold tracking-tight text-gray-900 md:text-4xl ">
+              {error.name && <Translate>{currentError.name}</Translate>}
+              {!error.name && <Translate>Well, this is awkward...</Translate>}
+            </p>
+            {error.message && (
+              <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
+                <Translate>{currentError.message}</Translate>
+                {showRequestId && (
+                  <span>
+                    <Translate>Request id #</Translate>
+                    {currentError.requestId}
+                  </span>
+                )}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

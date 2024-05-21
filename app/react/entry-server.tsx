@@ -21,6 +21,7 @@ import settingsApi from '../api/settings/settings';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
+import { ErrorBoundary } from './App/ErrorHandling/ErrorBoundary';
 import { settingsAtom } from './V2/atoms/settingsAtom';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
@@ -182,6 +183,7 @@ const setReduxState = async (
     })
     .filter(v => v);
   const initialStore = createReduxStore(reduxState);
+  let loadingError: FetchResponseError | undefined;
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
@@ -210,17 +212,16 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
-        throw new ServerRenderingFetchError(
-          `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
-        );
+        loadingError = e;
+      } else {
+        if (e.message) {
+          throw new ServerRenderingFetchError(e.message);
+        }
+        throw e;
       }
-      if (e.message) {
-        throw new ServerRenderingFetchError(e.message);
-      }
-      throw e;
     }
   }
-  return { initialStore, initialState: initialStore.getState() };
+  return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
 const getSSRProperties = async (
@@ -268,7 +269,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     language || 'en'
   );
 
-  const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
+  const { initialStore, initialState, loadingError } = await setReduxState(
+    req,
+    reduxState,
+    matched
+  );
 
   resetTranslations();
 
@@ -280,11 +285,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <Provider store={atomStore}>
           <React.StrictMode>
-            <StaticRouterProvider
-              router={router}
-              context={staticHandleContext as any}
-              nonce="the-nonce"
-            />
+            <ErrorBoundary error={loadingError}>
+              <StaticRouterProvider
+                router={router}
+                context={staticHandleContext as any}
+                nonce="the-nonce"
+              />
+            </ErrorBoundary>
           </React.StrictMode>
         </Provider>
       </CustomProvider>
@@ -299,10 +306,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       user={req.user}
       reduxData={initialState}
       assets={assets}
+      loadingError={loadingError}
     />
   );
 
-  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
+  const responseCode = loadingError?.status || 200;
+  const resStatus = isCatchAll ? 404 : responseCode;
+  res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };

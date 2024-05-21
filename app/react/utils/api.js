@@ -30,7 +30,7 @@ const errorMessages = [
 ];
 
 function extractMessageFromError(error) {
-  let finalMessage = `An error has occurred, it has been logged with request id #${error.json.requestId}.`;
+  let finalMessage = `An error has occurred${error.json.requestId ? `it has been logged with request id #${error.json.requestId}.` : '.'}`;
   if (!error.json.error) return finalMessage;
 
   const errorMessage = errorMessages.find(errorExpression =>
@@ -140,7 +140,9 @@ const _request = (url, req, method) => {
 
   return request[method](API_URL + url, req.data, headers)
     .then(doneLoading)
-    .catch(e => handleError(e, { url, method }));
+    .catch(async e => {
+      await handleError(e, { url, method });
+    });
 };
 
 export default {

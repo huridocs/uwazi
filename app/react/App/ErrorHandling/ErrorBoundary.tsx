@@ -1,37 +1,47 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { ReactNode, Suspense } from 'react';
 import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { RequestError, handledErrors } from './ErrorUtils';
 
 interface ErrorBoundaryProps {
-  error?: Error;
-  errorInfo?: ErrorInfo;
+  error?: Error | RequestError;
   children?: ReactNode;
 }
 
 const defaultProps = {
   error: {},
-  errorInfo: '',
   children: '',
 };
+
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryProps> {
   static defaultProps = defaultProps;
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { error: props.error, errorInfo: props.errorInfo };
+    this.state = { error: props.error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(e: Error) {
+    const currentError = e as RequestError;
     this.setState({
-      error,
-      errorInfo,
+      error: currentError,
     });
   }
 
   render() {
-    if (this.state.error?.message) {
-      return <ErrorFallback error={this.state.error} errorInfo={this.state.errorInfo} />;
+    const currentError = (this.props.error || this.state.error) as RequestError;
+    if (currentError) {
+      const error = handledErrors[currentError.status] || {
+        ...currentError,
+        message: (currentError.message =
+          currentError.additionalInfo?.message ||
+          currentError.message ||
+          currentError.json?.error ||
+          currentError.name),
+      };
+
+      return <ErrorFallback error={error} />;
     }
-    return this.props.children;
+    return <Suspense>{this.props.children}</Suspense>;
   }
 }
 

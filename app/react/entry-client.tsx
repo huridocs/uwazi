@@ -9,6 +9,13 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 import { App } from './App';
+import { RequestError } from './App/ErrorHandling/ErrorUtils';
+
+declare global {
+  interface Window {
+    __loadingError__?: RequestError;
+  }
+}
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
@@ -33,6 +40,6 @@ if (window.SENTRY_APP_DSN) {
 }
 
 const container = document.getElementById('root');
-const root = hydrateRoot(container!, <App />);
+const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
 
 export { root };

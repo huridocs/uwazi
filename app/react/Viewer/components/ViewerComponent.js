@@ -23,7 +23,7 @@ class EntityViewerComponent extends Component {
     if (!entity.get('_id')) {
       if (notFound) {
         return (
-          <ErrorFallback error={{ code: 404, message: t('System', 'Not Found', null, false) }} />
+          <ErrorFallback error={{ status: 404, message: t('System', 'Not Found', null, false) }} />
         );
       }
       return <Loader />;
