@@ -20,10 +20,9 @@ import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
-import { InputField } from 'V2/Components/Forms';
+import { InputField, MultiselectList } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
-import { notificationAtom, thesaurisAtom } from 'V2/atoms';
-import { MultiselectList } from 'V2/Components/Forms';
+import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { Highlights } from '../types';
 
 interface PDFSidepanelProps {
@@ -147,7 +146,7 @@ const PDFSidepanel = ({
   const [entity, setEntity] = useState<ClientEntitySchema>();
   const [thesaurus, setThesaurus] = useState<any>();
   const setNotifications = useSetAtom(notificationAtom);
-  const thesauris = useAtomValue(thesaurisAtom);
+  const thesauris = useAtomValue(thesauriAtom);
 
   const templateId = suggestion?.entityTemplateId;
   const propertyValue = getFormValue(suggestion, entity, property?.type);
@@ -404,7 +403,7 @@ const PDFSidepanel = ({
       <Sidepanel.Body>
         <form
           id="ixpdfform"
-          className="flex flex-col h-full gap-4 pb-0"
+          className="flex flex-col gap-4 pb-0 h-full"
           onSubmit={handleSubmit(onSubmit)}
         >
           <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
@@ -430,7 +429,7 @@ const PDFSidepanel = ({
           </div>
         </form>{' '}
       </Sidepanel.Body>
-      <Sidepanel.Footer className="py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+      <Sidepanel.Footer className="py-0 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
         <div className="flex px-4 py-2">
           <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
             <Translate className="uppercase" context={templateId}>
@@ -443,7 +442,7 @@ const PDFSidepanel = ({
           </span>
         </div>
         {labelInputIsOpen && renderLabel()}
-        <div className="flex justify-end gap-2 px-4 py-2 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+        <div className="flex gap-2 justify-end px-4 py-2 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
           <Button
             type="button"
             styling="outline"
