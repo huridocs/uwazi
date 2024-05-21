@@ -10,7 +10,7 @@ import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultipleP
 import { PageViewer } from 'app/Pages/components/PageViewer';
 import { RequestParams } from 'app/utils/RequestParams';
 
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
 import { renderConnectedMount } from 'app/utils/test/renderConnected';
 import PageView from '../PageView';
 import * as assetsUtils from '../utils/getPageAssets';
