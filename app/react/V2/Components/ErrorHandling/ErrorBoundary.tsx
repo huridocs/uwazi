@@ -8,7 +8,7 @@ interface ErrorBoundaryProps {
 }
 
 const defaultProps = {
-  error: {},
+  error: undefined,
   children: '',
 };
 
@@ -45,4 +45,5 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryPro
   }
 }
 
+export type { ErrorBoundaryProps };
 export { ErrorBoundary };

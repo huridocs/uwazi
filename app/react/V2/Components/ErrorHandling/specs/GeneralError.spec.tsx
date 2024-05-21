@@ -1,7 +1,11 @@
+/**
+ * @jest-environment jsdom
+ */
 import React from 'react';
-import { shallow, ShallowWrapper } from 'enzyme';
-import GeneralError from 'app/App/ErrorHandling/GeneralError';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { screen } from '@testing-library/react';
+import { renderConnectedContainer, defaultState } from 'app/utils/test/renderConnected';
+import { fromJS } from 'immutable';
+import { GeneralError } from '../GeneralError';
 
 let requestId = '';
 let errorCode = 500;
@@ -33,58 +37,41 @@ describe('General Error', () => {
     errorCode = 500;
   });
 
-  describe('when a page could not be rendered at server', () => {
-    let component: ShallowWrapper<typeof GeneralError>;
-    const context = { store: { getState: () => ({}) }, router: { location: '' } };
-    const render = () => {
-      component = shallow(<GeneralError />, { context });
-    };
+  const state = {
+    ...defaultState,
+    connections: { connection: fromJS({}) },
+    user: fromJS({ _id: 'user1' }),
+    settings: { collection: fromJS({}) },
+  };
 
+  describe('when a page could not be rendered at server', () => {
     it('should show render an ErrorFallback with the error', () => {
       requestId = '1234';
-      render();
-      expect(component.find(ErrorFallback).at(0).props()).toEqual({
-        error: {
-          title: 'Unexpected error',
-          summary: 'Unexpected error',
-          name: '',
-          message: '',
-          code: '500',
-          requestId: '1234',
-        },
-      });
+      renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
+      expect(screen.getByText('500')).toBeInTheDocument();
+      expect(screen.getByText('Unexpected error')).toBeInTheDocument();
+      expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+      expect(screen.getByText('Request id #')).toBeInTheDocument();
+      expect(screen.getByText('1234')).toBeInTheDocument();
     });
 
     it('should pass a 404 code if received code is not supported', () => {
       errorCode = 422;
-      requestId = '1234';
-      render();
-      expect(component.find(ErrorFallback).at(0).props()).toEqual({
-        error: {
-          title: 'Not Found',
-          name: "We can't find the page you're looking for.",
-          message: '',
-          summary: '',
-          code: '404',
-          requestId: '1234',
-        },
-      });
+      renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
+      expect(screen.getByText('404')).toBeInTheDocument();
+      expect(screen.getByText('Not Found')).toBeInTheDocument();
+      expect(screen.getByText("We can't find the page you're looking for.")).toBeInTheDocument();
+      expect(screen.queryByText('Request id #')).not.toBeInTheDocument();
     });
 
     it('should not pass the requestId if it is not a valid number', () => {
       errorCode = 400;
       requestId = 'notNumber';
-      render();
-      expect(component.find(ErrorFallback).at(0).props()).toEqual({
-        error: {
-          title: 'Bad Request',
-          summary: 'Bad Request',
-          name: 'The request could not be processed.',
-          message: '',
-          code: '400',
-          requestId: undefined,
-        },
-      });
+      renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
+      expect(screen.getByText('400')).toBeInTheDocument();
+      expect(screen.getByText('Bad Request')).toBeInTheDocument();
+      expect(screen.getByText('The request could not be processed.')).toBeInTheDocument();
+      expect(screen.queryByText('Request id #')).not.toBeInTheDocument();
     });
   });
 });
