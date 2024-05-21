@@ -73,7 +73,7 @@ class PageViewer extends Component {
         }
       >
         <div className="row">
-          {!error && (
+          {!error.status && !error.message && (
             <>
               {setBrowserTitle && (
                 <Helmet>
@@ -96,7 +96,7 @@ class PageViewer extends Component {
               </Script>
             </>
           )}
-          {error && (
+          {(error.status || error.message) && (
             <div className="main-wrapper">
               <ErrorFallback error={error} />
               <Footer />
