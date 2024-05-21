@@ -19,7 +19,7 @@ class FetchResponseError extends Error {
     this.cookie = cookieRes;
     this.headers = headers;
     this.endpoint = endpoint;
-    this.requestId = json.requestId;
+    this.requestId = json?.requestId;
     this.additionalInfo = rest;
   }
 }
