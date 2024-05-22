@@ -28,7 +28,7 @@ const buildScript = ({
     var url = "${mainUrl}";
     _paq.push(["setTrackerUrl", url + "${filename}.php"]);
     _paq.push(["setSiteId", "${mainId}"]);
-    ${userMatomoUrl && globalMatomoUrl && `_paq.push(["addTracker", "${userMatomoUrl}", "${userId}"]);`}
+    ${userMatomoUrl && globalMatomoUrl && `_paq.push(["addTracker", "${userMatomoUrl}matomo.php", "${userId}"]);`}
     var d = document,
       g = d.createElement("script"),
       s = d.getElementsByTagName("script")[0];
