@@ -5,15 +5,9 @@ import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 
 function trackPage() {
+  console.log('trackPage!');
   if (isClient && window.gtag) {
     window.gtag('send', 'pageview');
-  }
-
-  if (isClient && window._paq) {
-    window._paq.push(['setCustomUrl', window.location.href]);
-    window._paq.push(['deleteCustomVariables', 'page']);
-    window._paq.push(['setGenerationTimeMs', 0]);
-    window._paq.push(['trackPageView']);
   }
 }
 

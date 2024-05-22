@@ -1,7 +1,15 @@
 /* eslint-disable max-statements */
 import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
+import { useLocation } from 'react-router-dom';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
+import { isClient } from 'app/utils';
+
+declare global {
+  interface Window {
+    _paq?: [string[]];
+  }
+}
 
 const buildScript = ({
   globalUrl,
@@ -23,8 +31,6 @@ const buildScript = ({
 
   return `
   var _paq = _paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
   (function () {
     var url = "${mainUrl}";
     _paq.push(["setTrackerUrl", url + "${filename}.php"]);
@@ -43,6 +49,7 @@ const buildScript = ({
 
 const Matomo = () => {
   const scriptIsPresent = useRef(false);
+  const location = useLocation();
   const { matomoConfig } = useAtomValue(settingsAtom);
   const globalMatomo = useAtomValue(globalMatomoAtom);
   const { id: globalId, url: globalUrl } = globalMatomo || {};
@@ -92,6 +99,14 @@ const Matomo = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (isClient && window._paq) {
+      window._paq.push(['setCustomUrl', window.location.href]);
+      window._paq.push(['trackPageView']);
+      window._paq.push(['enableLinkTracking']);
+    }
+  }, [location]);
 
   return null;
 };
