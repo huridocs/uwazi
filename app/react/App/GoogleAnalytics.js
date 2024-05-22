@@ -5,7 +5,6 @@ import React, { Component } from 'react';
 import { isClient } from 'app/utils';
 
 function trackPage() {
-  console.log('trackPage!');
   if (isClient && window.gtag) {
     window.gtag('send', 'pageview');
   }
