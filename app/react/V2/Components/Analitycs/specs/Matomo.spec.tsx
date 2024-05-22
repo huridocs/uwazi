@@ -49,6 +49,7 @@ describe('Matomo', () => {
       ['setTrackerUrl', 'https://url.org/matomo.php'],
       ['setSiteId', '1'],
       ['setCustomUrl', 'https://mockedurl.com/'],
+      ['deleteCustomVariables', 'page'],
       ['trackPageView'],
       ['enableLinkTracking'],
     ]);
@@ -64,6 +65,7 @@ describe('Matomo', () => {
       ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '1'],
       ['setCustomUrl', 'https://mockedurl.com/'],
+      ['deleteCustomVariables', 'page'],
       ['trackPageView'],
       ['enableLinkTracking'],
     ]);
@@ -83,6 +85,7 @@ describe('Matomo', () => {
       ['setSiteId', '2'],
       ['addTracker', 'https://url.org/matomo.php', '1'],
       ['setCustomUrl', 'https://mockedurl.com/'],
+      ['deleteCustomVariables', 'page'],
       ['trackPageView'],
       ['enableLinkTracking'],
     ]);
@@ -119,6 +122,7 @@ describe('Matomo', () => {
       ['setSiteId', '5'],
       ['addTracker', 'https://url.org/matomo.php', '10'],
       ['setCustomUrl', 'https://mockedurl.com/'],
+      ['deleteCustomVariables', 'page'],
       ['trackPageView'],
       ['enableLinkTracking'],
     ]);
@@ -135,6 +139,7 @@ describe('Matomo', () => {
       ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '3'],
       ['setCustomUrl', 'https://mockedurl.com/'],
+      ['deleteCustomVariables', 'page'],
       ['trackPageView'],
       ['enableLinkTracking'],
     ]);

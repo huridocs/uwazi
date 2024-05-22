@@ -103,6 +103,7 @@ const Matomo = () => {
   useEffect(() => {
     if (isClient && window._paq) {
       window._paq.push(['setCustomUrl', window.location.href]);
+      window._paq.push(['deleteCustomVariables', 'page']);
       window._paq.push(['trackPageView']);
       window._paq.push(['enableLinkTracking']);
     }
