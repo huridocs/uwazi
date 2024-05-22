@@ -74,7 +74,7 @@ describe('Matomo', () => {
       ['enableLinkTracking'],
       ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '2'],
-      ['addTracker', 'https://url.org/', '1'],
+      ['addTracker', 'https://url.org/matomo.php', '1'],
     ]);
   });
 
@@ -117,7 +117,7 @@ describe('Matomo', () => {
       ['enableLinkTracking'],
       ['setTrackerUrl', 'https://global.org/tenant.php'],
       ['setSiteId', '5'],
-      ['addTracker', 'https://url.org/', '10'],
+      ['addTracker', 'https://url.org/matomo.php', '10'],
     ]);
   });
 

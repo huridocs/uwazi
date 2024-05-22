@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+/* eslint-disable max-statements */
+import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { globalMatomoAtom, settingsAtom } from 'V2/atoms';
 
@@ -28,7 +29,7 @@ const buildScript = ({
     var url = "${mainUrl}";
     _paq.push(["setTrackerUrl", url + "${filename}.php"]);
     _paq.push(["setSiteId", "${mainId}"]);
-    ${userMatomoUrl && globalMatomoUrl && `_paq.push(["addTracker", "${userMatomoUrl}", "${userId}"]);`}
+    ${userMatomoUrl && globalMatomoUrl ? `_paq.push(["addTracker", "${userMatomoUrl}matomo.php", "${userId}"]);` : ''}
     var d = document,
       g = d.createElement("script"),
       s = d.getElementsByTagName("script")[0];
@@ -41,6 +42,7 @@ const buildScript = ({
 };
 
 const Matomo = () => {
+  const scriptIsPresent = useRef(false);
   const { matomoConfig } = useAtomValue(settingsAtom);
   const globalMatomo = useAtomValue(globalMatomoAtom);
   const { id: globalId, url: globalUrl } = globalMatomo || {};
@@ -54,38 +56,44 @@ const Matomo = () => {
   } catch (e) {}
 
   useEffect(() => {
-    const script = document.createElement('script');
-    const hasUserMatomo = Boolean(id && url);
-    const hasGlobalMatomo = Boolean(globalUrl && globalId);
+    if (!scriptIsPresent.current) {
+      const script = document.createElement('script');
+      const hasUserMatomo = Boolean(id && url);
+      const hasGlobalMatomo = Boolean(globalUrl && globalId);
 
-    switch (true) {
-      case hasGlobalMatomo && !hasUserMatomo:
-        script.innerHTML = buildScript({ globalUrl, globalId });
-        break;
+      let scriptContent = '';
 
-      case !hasGlobalMatomo && hasUserMatomo:
-        script.innerHTML = buildScript({ userUrl: url, userId: id });
-        break;
+      switch (true) {
+        case hasGlobalMatomo && !hasUserMatomo:
+          scriptContent = buildScript({ globalUrl, globalId });
+          break;
 
-      case hasGlobalMatomo && hasUserMatomo:
-        script.innerHTML = buildScript({
-          globalUrl,
-          globalId,
-          userUrl: url,
-          userId: id,
-        });
-        break;
+        case !hasGlobalMatomo && hasUserMatomo:
+          scriptContent = buildScript({ userUrl: url, userId: id });
+          break;
 
-      default:
-        break;
+        case hasGlobalMatomo && hasUserMatomo:
+          scriptContent = buildScript({
+            globalUrl,
+            globalId,
+            userUrl: url,
+            userId: id,
+          });
+          break;
+
+        default:
+          break;
+      }
+
+      if (scriptContent) {
+        script.innerHTML = scriptContent;
+        document.body.appendChild(script);
+        scriptIsPresent.current = true;
+      }
     }
+  }, []);
 
-    if (hasUserMatomo || hasGlobalMatomo) {
-      document.body.appendChild(script);
-    }
-  }, [globalId, globalUrl, id, url]);
-
-  return <div className="hidden" />;
+  return null;
 };
 
 export { Matomo };
