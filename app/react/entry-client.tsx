@@ -1,14 +1,29 @@
 import React from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
-import './App/sockets';
 import {
+  RouterProvider,
+  createBrowserRouter,
   createRoutesFromChildren,
   matchRoutes,
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import { App } from './App';
+import { Provider } from 'jotai';
+import { Provider as ReduxProvider } from 'react-redux';
+import type { RequestError } from 'V2/shared/errorUtils';
+import { ErrorBoundary } from './V2/Components/ErrorHandling';
+import './App/sockets';
+import { getRoutes } from './Routes';
+import CustomProvider from './App/Provider';
+import { settingsAtom, atomStore, userAtom } from './V2/atoms';
+import { store } from './store';
+
+declare global {
+  interface Window {
+    __loadingError__?: RequestError;
+  }
+}
 
 if (window.SENTRY_APP_DSN) {
   Sentry.init({
@@ -32,7 +47,23 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
+const router = createBrowserRouter(
+  getRoutes(atomStore.get(settingsAtom), atomStore.get(userAtom)?._id)
+);
+
+const App = () => (
+  <ReduxProvider store={store as any}>
+    <CustomProvider>
+      <Provider store={atomStore}>
+        <ErrorBoundary>
+          <RouterProvider router={router} fallbackElement={null} />
+        </ErrorBoundary>
+      </Provider>
+    </CustomProvider>
+  </ReduxProvider>
+);
+
 const container = document.getElementById('root');
-const root = hydrateRoot(container!, <App />);
+const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
 
 export { root };
