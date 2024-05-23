@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 
 import { createError } from 'api/utils';
-import SHA256 from 'crypto-js/sha256';
 import crypto from 'crypto';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
@@ -25,6 +24,7 @@ import fixtures, {
 import users from '../users.js';
 import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
+import * as unlockCode from '../generateUnlockCode';
 
 describe('Users', () => {
   beforeEach(async () => {
@@ -510,10 +510,11 @@ describe('Users', () => {
       jest.restoreAllMocks();
       jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
       jest.spyOn(Date, 'now').mockReturnValue(1000);
+      jest.spyOn(unlockCode, 'generateUnlockCode').mockReturnValue('ABCDEF1234');
     });
 
     it('should find the matching email create a recover password doc in the database and send an email', async () => {
-      const key = SHA256(`test@email.com${1000}`).toString();
+      const key = unlockCode.generateUnlockCode();
       const settings = await settingsModel.get();
       const response = await users.recoverPassword('test@email.com', 'domain');
       expect(response).toBe('OK');
@@ -524,13 +525,13 @@ describe('Users', () => {
         from: emailSender,
         to: 'test@email.com',
         subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
+        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });
 
     it('should personalize the mail if recover password process is part of a newly created user', async () => {
-      const key = SHA256(`peter@parker.com${1000}`).toString();
+      const key = unlockCode.generateUnlockCode();
       const settings = await settingsModel.get();
 
       const newUser = await users.newUser(
@@ -590,7 +591,7 @@ describe('Users', () => {
     describe('when the user does not exist with that email', () => {
       it('should not create the entry in the database, should not send a mail, and return an error.', async () => {
         jest.spyOn(Date, 'now').mockReturnValue(1000);
-        const key = SHA256(`false@email.com${1000}`).toString();
+        const key = unlockCode.generateUnlockCode();
         let response;
         try {
           response = await users.recoverPassword('false@email.com');
