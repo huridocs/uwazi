@@ -94,7 +94,7 @@ const LibraryHeaderComponent = ({
     <>
       <div className={`library-header ${!toolbarVisible ? 'closed' : ''}`}>
         <div className="library-toolbar">
-          {SearchBar !== undefined && (
+          {SearchBar !== undefined && SearchBar && (
             <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
               <SearchBar />
             </div>
