@@ -327,7 +327,7 @@ describe('Table', () => {
       cy.contains('children').click();
 
       cy.get('[data-testid="group_1-draggable-item-0"]').drag(
-        '[data-testid="root-draggable-item-1"]',
+        '[data-testid="root-draggable-item-0"]',
         {
           target: { x: 5, y: 0 },
           force: true,

@@ -15,7 +15,7 @@ import {
   TextPropertyIcon,
 } from 'V2/Components/CustomIcons';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Extractor, SingleValueSuggestion, TableSuggestion } from '../types';
+import { Extractor, MultiValueSuggestion, SingleValueSuggestion, TableSuggestion } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 
@@ -81,13 +81,22 @@ const CurrentValueCell = ({
 }: {
   cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
-}) => (
-  <SuggestedValue
-    value={cell.getValue()}
-    suggestion={cell.row.original}
-    templateProperties={allProperties}
-  />
-);
+}) => {
+  if ('children' in cell.row.original) {
+    return (
+      <span className="font-bold text-gray-500">
+        {cell.row.original.children.length} <Translate>Suggestions</Translate>
+      </span>
+    );
+  }
+  return (
+    <SuggestedValue
+      value={cell.getValue()}
+      suggestion={cell.row.original as SingleValueSuggestion}
+      templateProperties={allProperties}
+    />
+  );
+};
 
 const AcceptButton = ({
   cell,
@@ -204,6 +213,7 @@ const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
     icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
     onClick={() => row.toggleExpanded()}
     color="indigo"
+    disabled={(row.original as MultiValueSuggestion).children.length === 0}
   >
     <Translate>Group</Translate>
   </EmbededButton>
@@ -244,7 +254,7 @@ const suggestionsTableColumnsBuilder: Function = (
         row: Row<TableSuggestion>;
         cell: Cell<SingleValueSuggestion, any>;
       }) => {
-        if (row.getCanExpand()) {
+        if ('children' in row.original && Array.isArray(row.original.children)) {
           return <GroupButton row={row} />;
         }
         if (!row.original.isChild) {

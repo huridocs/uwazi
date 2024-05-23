@@ -25,6 +25,7 @@ interface TableProps<T> {
   subRowsKey?: string;
   draggableRows?: boolean;
   allowEditGroupsWithDnD?: boolean;
+  highLightGroups?: boolean;
   onChange?: (rows: T[]) => void;
 }
 

@@ -59,20 +59,16 @@ const MenuConfig = () => {
       delete link._id;
     }
     if (link.sublinks) {
-      link.sublinks = link.sublinks.map(sublink => {
-        const { _id, ...rest } = sublink;
-        return rest;
-      });
+      link.sublinks =
+        link.sublinks.map(sublink => {
+          const { _id, ...rest } = sublink;
+          return rest;
+        }) || [];
     }
     return link;
   };
 
-  const blocker = useBlocker(
-    !isEqual(
-      links,
-      linkChanges.map(l => sanitizeIds(l))
-    )
-  );
+  const blocker = useBlocker(!isEqual(links, linkChanges.map(sanitizeIds)));
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -112,7 +108,6 @@ const MenuConfig = () => {
     let newLinks = linkChanges.filter(
       link => !selectedLinks.find(selected => selected.original._id === link._id)
     );
-
     newLinks = newLinks.map(link => {
       if (link.sublinks) {
         link.sublinks = link.sublinks.filter(
@@ -154,7 +149,7 @@ const MenuConfig = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
           {selectedLinks.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={deleteSelected}
