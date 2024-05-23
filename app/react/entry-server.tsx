@@ -271,7 +271,11 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   );
 
   const { globalMatomo } = tenants.current();
-  const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
+  const { initialStore, initialState, loadingError } = await setReduxState(
+    req,
+    reduxState,
+    matched
+  );
   resetTranslations();
 
   atomStore.set(settingsAtom, settings);

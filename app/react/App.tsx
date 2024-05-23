@@ -46,7 +46,7 @@ const App = () => (
   <ReduxProvider store={store as any}>
     <CustomProvider>
       <Provider store={atomStore}>
-        <ErrorBoundary error={undefined}>
+        <ErrorBoundary>
           <RouterProvider router={router} fallbackElement={null} />
         </ErrorBoundary>
       </Provider>

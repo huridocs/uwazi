@@ -5,7 +5,7 @@ import { has } from 'lodash';
 import Footer from 'app/App/Footer';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { t } from 'app/I18N';
-import { handledErrors } from './ErrorUtils';
+import { handledErrors } from 'V2/shared/errorUtils';
 import { ErrorFallback } from './ErrorFallback';
 
 const GeneralError = () => {

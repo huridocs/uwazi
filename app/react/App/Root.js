@@ -132,11 +132,8 @@ Root.propTypes = {
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
-<<<<<<< HEAD
   loadingError: PropTypes.object,
-=======
   atomStoreData: PropTypes.object,
->>>>>>> b0ba28a3d5f532c4796bee5dca83789c18bd188c
 };
 
 export { headTag };

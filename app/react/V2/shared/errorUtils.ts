@@ -16,7 +16,7 @@ const handledErrors: { [k: string]: RequestError } = {
   },
 };
 
-export interface RequestError extends Error {
+interface RequestError extends Error {
   status: number;
   message: string;
   name: string;
@@ -28,3 +28,4 @@ export interface RequestError extends Error {
 }
 
 export { handledErrors };
+export type { RequestError };

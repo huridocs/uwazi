@@ -1,6 +1,6 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { RequestError } from './ErrorUtils';
+import type { RequestError } from 'V2/shared/errorUtils';
 
 interface ErrorFallbackProps {
   error: Error | RequestError;

@@ -8,7 +8,7 @@ import {
   useLocation,
   useNavigationType,
 } from 'react-router-dom';
-import { RequestError } from 'V2/Components/ErrorHandling/ErrorUtils';
+import type { RequestError } from 'V2/shared/errorUtils';
 import { App } from './App';
 
 declare global {
