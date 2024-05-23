@@ -74,6 +74,10 @@ class Root extends Component {
     if (this.props.loadingError) {
       innerHtml += `window.__loadingError__ = ${serialize(this.props.loadingError, { isJSON: true })};`;
     }
+    if (this.props.atomStoreData) {
+      innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
+    }
+
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
     );
@@ -128,7 +132,11 @@ Root.propTypes = {
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
+<<<<<<< HEAD
   loadingError: PropTypes.object,
+=======
+  atomStoreData: PropTypes.object,
+>>>>>>> b0ba28a3d5f532c4796bee5dca83789c18bd188c
 };
 
 export { headTag };
