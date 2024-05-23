@@ -525,7 +525,7 @@ describe('Users', () => {
         from: emailSender,
         to: 'test@email.com',
         subject: 'Password set',
-        text: `To set your password click on the following link:\ndomain/setpassword/${key}`,
+        text: `To set your password click on the following link:\ndomain/setpassword/${key}\nThis link will be valid for 24 hours.`,
       };
       expect(mailer.send).toHaveBeenCalledWith(expectedMailOptions);
     });

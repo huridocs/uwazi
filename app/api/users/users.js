@@ -22,7 +22,7 @@ function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
     response.subject = 'Password set';
-    response.text = `To set your password click on the following link:\n${domain}/setpassword/${key}`;
+    response.text = `To set your password click on the following link:\n${domain}/setpassword/${key}\nThis link will be valid for 24 hours.`;
   }
 
   if (options.newUser) {
@@ -32,7 +32,8 @@ function conformRecoverText(options, _settings, domain, key, user) {
       `The administrators of ${siteName} have created an account for you under the user name:\n` +
       `${user.username}\n\n` +
       'To complete this process, please create a strong password by clicking on the following link:\n' +
-      `${domain}/setpassword/${key}?createAccount=true\n\n` +
+      `${domain}/setpassword/${key}?createAccount=true\n` +
+      'This link will be valid for 24 hours.\n\n' +
       'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThank you!\nUwazi team';
 
     const htmlLink = `<a href="${domain}/setpassword/${key}?createAccount=true">${domain}/setpassword/${key}?createAccount=true</a>`;
