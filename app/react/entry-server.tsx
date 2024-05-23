@@ -23,7 +23,7 @@ import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import { atomStore, settingsAtom } from './V2/atoms';
+import { atomStore } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
