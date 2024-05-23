@@ -23,11 +23,14 @@ export const ErrorFallback = ({ error }: ErrorFallbackProps) => {
               {!error.name && <Translate>Well, this is awkward...</Translate>}
             </p>
             {error.message && (
-              <p className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400">
+              <p
+                data-testid="errorInfo"
+                className="mb-4 text-lg font-light text-gray-500 dark:text-gray-400"
+              >
                 <Translate>{currentError.message}</Translate>
                 {showRequestId && (
-                  <span>
-                    <Translate>Request id #</Translate>
+                  <span data-testid="requestId">
+                    .&nbsp;<Translate>Request id #</Translate>
                     {currentError.requestId}
                   </span>
                 )}

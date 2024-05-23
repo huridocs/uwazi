@@ -50,9 +50,9 @@ describe('General Error', () => {
       renderConnectedContainer(<GeneralError />, () => state, 'BrowserRouter');
       expect(screen.getByText('500')).toBeInTheDocument();
       expect(screen.getByText('Unexpected error')).toBeInTheDocument();
-      expect(screen.getByText('Something went wrong')).toBeInTheDocument();
-      expect(screen.getByText('Request id #')).toBeInTheDocument();
-      expect(screen.getByText('1234')).toBeInTheDocument();
+      expect(screen.getByTestId('errorInfo')).toHaveTextContent(
+        'Something went wrong. Request id #1234'
+      );
     });
 
     it('should pass a 404 code if received code is not supported', () => {
