@@ -12578,10 +12578,10 @@ lazy-universal-dotenv@^4.0.0:
     dotenv "^16.0.0"
     dotenv-expand "^10.0.0"
 
-leaflet.gridlayer.googlemutant@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/leaflet.gridlayer.googlemutant/-/leaflet.gridlayer.googlemutant-0.14.0.tgz#9f086ffbb6bb4d1e8f008336c997701d04da9628"
-  integrity sha512-DJ4hchHcqSf+znygd7r20pKijwHwGFrtf60FJeIafTbO6qsYC+65beGz+v42sYxUEKnQL2HmdPB8znWgsY8gBg==
+leaflet.gridlayer.googlemutant@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/leaflet.gridlayer.googlemutant/-/leaflet.gridlayer.googlemutant-0.14.1.tgz#c282209aa1a39eb2f87d8aaa4e9894181c9e20a0"
+  integrity sha512-/OYxEjmgxO1U1KOhTzg+m8c0b95J0943LU8DXQmdJu/x2f+1Ur78rvEPO2QCS0cmwZ3m6FvE5I3zXnBzJNWRCA==
 
 leaflet.markercluster@^1.5.3:
   version "1.5.3"
