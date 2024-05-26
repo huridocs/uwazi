@@ -5,7 +5,7 @@ import { Request as ExpressRequest, Response } from 'express';
 import fs from 'fs';
 import { AgnosticDataRouteObject, createStaticHandler } from '@remix-run/router';
 import { matchRoutes, RouteObject } from 'react-router-dom';
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'jotai';
@@ -294,11 +294,13 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
         <Provider store={atomStore}>
           <React.StrictMode>
             <ErrorBoundary error={loadingError}>
-              <StaticRouterProvider
-                router={router}
-                context={staticHandleContext as any}
-                nonce="the-nonce"
-              />
+              <Suspense>
+                <StaticRouterProvider
+                  router={router}
+                  context={staticHandleContext as any}
+                  nonce="the-nonce"
+                />
+              </Suspense>
             </ErrorBoundary>
           </React.StrictMode>
         </Provider>

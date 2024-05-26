@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { hydrateRoot } from 'react-dom/client';
 import * as Sentry from '@sentry/react';
 import {
@@ -56,7 +56,9 @@ const App = () => (
     <CustomProvider>
       <Provider store={atomStore}>
         <ErrorBoundary>
-          <RouterProvider router={router} fallbackElement={null} />
+          <Suspense>
+            <RouterProvider router={router} fallbackElement={null} />
+          </Suspense>
         </ErrorBoundary>
       </Provider>
     </CustomProvider>
