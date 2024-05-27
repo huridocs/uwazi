@@ -35,8 +35,13 @@ class RouteHandler extends Component {
   constructor(props, context) {
     super(props, context);
     setLocale(getLocale(context));
+    this.state = {};
     if ((!this.isRenderedFromServer() || props.location?.state?.isClient) && isClient) {
-      this.getClientState(this.props);
+      this.getClientState(this.props).catch(ex => {
+        // used in inherited types
+        // eslint-disable-next-line react/no-unused-state
+        this.setState({ loadingError: ex });
+      });
     }
   }
 
