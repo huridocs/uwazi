@@ -46,15 +46,15 @@ const Table = <T extends { rowId: string }>({
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
 
-    if (sorting === 'headers') {
-    }
-
     if (checkboxes) {
       tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
         cell: IndeterminateCheckboxRow,
       });
+    }
+
+    if (sorting === 'headers') {
     }
 
     if (sorting === 'dnd') {

@@ -77,20 +77,24 @@ const StoryComponent = ({ data, columns, sorting, checkboxes }: NewTableProps<Ba
         />
       </div>
       <hr className="my-4" />
-      <h2>Sorted items:</h2>
-      <div className="flex gap-2">
-        {dataState.map(ds => (
-          <span key={ds.rowId}>{ds.title}</span>
-        ))}
-      </div>
-      <hr className="my-4" />
-      <h2>Selected items:</h2>
-      <div className="flex gap-2">
-        {dataState
-          .filter(ds => ds.rowId in selected)
-          .map(ds => (
+      <div data-testid="sorted-items">
+        <h2>Sorted items:</h2>
+        <div className="flex gap-2">
+          {dataState.map(ds => (
             <span key={ds.rowId}>{ds.title}</span>
           ))}
+        </div>
+      </div>
+      <hr className="my-4" />
+      <div data-testid="selected-items">
+        <h2>Selected items:</h2>
+        <div className="flex gap-2">
+          {dataState
+            .filter(ds => ds.rowId in selected)
+            .map(ds => (
+              <span key={ds.rowId}>{ds.title}</span>
+            ))}
+        </div>
       </div>
     </div>
   );

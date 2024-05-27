@@ -87,27 +87,31 @@ describe('Table', () => {
     });
   });
 
-  xdescribe('Selections', () => {
-    it('should select items from each table', () => {
-      mount(<WithCheckboxes />);
-      cy.contains('Short text');
-      cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
-
-      cy.get('tbody')
-        .eq(1)
-        .within(() => {
-          cy.get('input[type="checkbox"]').eq(0).check();
-          cy.get('input[type="checkbox"]').eq(2).check();
-        });
-
-      cy.contains('p', 'Selected items for Table A: 3');
-      cy.contains('p', 'Selections of Table A: Entity 2, Entity 1, Entity 3,');
-      cy.contains('p', 'Selected items for Table B: 2');
-      cy.contains('p', 'Selections of Table B: Entity 2, Entity 3,');
+  describe('Selections', () => {
+    beforeEach(() => {
+      Basic.args.checkboxes = true;
+      Basic.args.sorting = undefined;
+      mount(<Basic />);
     });
 
-    it('should clear selected items when data changes', () => {
-      mount(<WithCheckboxes />);
+    it('should select and uselect some items', () => {
+      cy.contains('Select all').click();
+
+      cy.get('tbody').within(() => {
+        cy.get('input[type="checkbox"]').eq(0).uncheck();
+        cy.get('input[type="checkbox"]').eq(2).uncheck();
+      });
+
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Entity 1');
+        cy.contains('Entity 2').should('not.exist');
+        cy.contains('Entity 3');
+        cy.contains('Entity 4').should('not.exist');
+        cy.contains('Entity 5');
+      });
+    });
+
+    xit('should clear selected items when data changes', () => {
       cy.contains('Short text');
       cy.get('[data-testid="table"]').eq(0).get('thead > tr > th').eq(0).click();
 
@@ -124,8 +128,7 @@ describe('Table', () => {
       cy.contains('p', 'Selections of Table B: Entity 2, Entity 3,').should('not.exist');
     });
 
-    it('should not clear selections if data is not changed', () => {
-      mount(<WithCheckboxes />);
+    xit('should not clear selections if data is not changed', () => {
       cy.contains('Short text');
       cy.get('[data-testid="table"]')
         .eq(1)
