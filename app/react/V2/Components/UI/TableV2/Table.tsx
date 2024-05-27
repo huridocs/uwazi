@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useReactTable, getCoreRowModel, ColumnDef, flexRender } from '@tanstack/react-table';
 import {
   DragEndEvent,
@@ -18,11 +18,17 @@ import { DraggableRow, RowDragHandleCell } from './DnDComponents';
 type TableProps<T extends { rowId: string }> = {
   data: T[];
   columns: ColumnDef<T, any>[];
+  onChange?: (rows: T[]) => void;
 };
 
-// eslint-disable-next-line comma-spacing
-const Table = <T extends { rowId: string }>({ data, columns }: TableProps<T>) => {
+const Table = <T extends { rowId: string }>({ data, columns, onChange }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(dataState);
+    }
+  }, [dataState, onChange]);
 
   const dataIds = useMemo<UniqueIdentifier[]>(
     () => dataState.map(({ rowId }) => rowId),
@@ -98,4 +104,5 @@ const Table = <T extends { rowId: string }>({ data, columns }: TableProps<T>) =>
   );
 };
 
+export { type TableProps };
 export { Table };

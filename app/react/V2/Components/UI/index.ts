@@ -19,3 +19,4 @@ export { FileIcon } from './FileIcon';
 
 export type { PillColor } from './Pill';
 export type { TableProps } from './Table/TableElements';
+export type { TableProps as NewTableProps } from './TableV2/Table';

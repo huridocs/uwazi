@@ -1,16 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { NewTable } from 'V2/Components/UI';
+import { NewTable, NewTableProps } from 'V2/Components/UI';
 import { createColumnHelper } from '@tanstack/react-table';
 
-const meta: Meta<typeof NewTable> = {
+type BasicData = {
+  rowId: string;
+  title: string;
+  created: number;
+  description: string;
+};
+
+const meta: Meta<NewTableProps<BasicData>> = {
   title: 'Components/NewTable',
   component: NewTable,
 };
 
 type Story = StoryObj<typeof NewTable>;
 
-const basicData = [
+const basicData: BasicData[] = [
   { rowId: 'A2', title: 'Entity 2', created: 2, description: 'Short text' },
   {
     rowId: 'A1',
@@ -41,7 +48,7 @@ const basicData = [
   },
 ];
 
-const columnHelper = createColumnHelper<typeof basicData>();
+const columnHelper = createColumnHelper<BasicData>();
 
 const basicColumns = [
   columnHelper.accessor('title', { header: 'Title' }),
@@ -51,16 +58,32 @@ const basicColumns = [
   }),
 ];
 
-const Primary: Story = {
-  render: args => (
-    <React.StrictMode>
-      <div className="tw-content">
-        <div className="w-full">
-          <NewTable data={args.data} columns={args.columns} />
-        </div>
+const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
+  const [dataState, setDataState] = useState(data);
+
+  return (
+    <div className="tw-content">
+      <div className="w-full">
+        <NewTable
+          data={data}
+          columns={columns}
+          onChange={updatedData => setDataState(updatedData)}
+        />
       </div>
-    </React.StrictMode>
-  ),
+      <hr className="my-4" />
+      <ul>
+        {dataState.map(ds => (
+          <li className="py-2" key={ds.rowId}>
+            {ds.title}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const Primary: Story = {
+  render: args => <StoryComponent data={args.data} columns={args.columns} />,
 };
 
 const Basic = {
