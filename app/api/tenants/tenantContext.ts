@@ -3,7 +3,7 @@ import { handleError } from 'api/utils';
 import { appContext } from 'api/utils/AppContext';
 import { TenantDocument, TenantsModel, DBTenant, tenantsModel } from './tenantsModel';
 
-export type Tenant = {
+type Tenant = {
   name: string;
   dbName: string;
   indexName: string;
@@ -14,6 +14,7 @@ export type Tenant = {
   featureFlags?: {
     s3Storage?: boolean;
   };
+  globalMatomo?: { id: string; url: string };
 };
 
 class Tenants {
@@ -81,3 +82,4 @@ class Tenants {
 
 const tenants = new Tenants(config.defaultTenant);
 export { tenants };
+export type { Tenant };

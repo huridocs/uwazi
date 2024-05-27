@@ -8,7 +8,7 @@ import { matchRoutes, RouteObject } from 'react-router-dom';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { Helmet } from 'react-helmet';
-import { Provider, createStore } from 'jotai';
+import { Provider } from 'jotai';
 import { omit, isEmpty } from 'lodash';
 import { Provider as ReduxProvider } from 'react-redux';
 import api from 'app/utils/api';
@@ -18,14 +18,18 @@ import { FetchResponseError } from 'shared/JSONRequest';
 import { ClientSettings } from 'app/apiResponseTypes';
 import translationsApi, { IndexedTranslations } from '../api/i18n/translations';
 import settingsApi from '../api/settings/settings';
+import { tenants } from '../api/tenants';
 import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
-import { settingsAtom } from './V2/atoms/settingsAtom';
+import { ErrorBoundary } from './V2/Components/ErrorHandling';
+import { atomStore } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
+
+api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
 
 class ServerRenderingFetchError extends Error {
   constructor(message: string) {
@@ -104,7 +108,7 @@ const getAssets = async () => {
   });
 };
 
-const prepareStore = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
+const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
 
   const headers = {
@@ -115,30 +119,28 @@ const prepareStore = async (req: ExpressRequest, settings: ClientSettings, langu
 
   const requestParams = new RequestParams({}, headers);
 
-  api.APIURL(`http://localhost:${process.env.PORT || 3000}/api/`);
-
   const translations = await translationsApi.get();
 
   const [
     userApiResponse = { json: {} },
-    translationsApiResponse = onlySystemTranslations(translations),
     settingsApiResponse = { json: { languages: [], private: settings.private } },
     templatesApiResponse = { json: { rows: [] } },
     thesaurisApiResponse = { json: { rows: [] } },
     relationTypesApiResponse = { json: { rows: [] } },
+    translationsApiResponse = onlySystemTranslations(translations),
   ] =
     !settings.private || req.user
       ? await Promise.all([
           api.get('user', requestParams),
-          Promise.resolve({ json: { rows: translations } }),
           api.get('settings', requestParams),
           api.get('templates', requestParams),
           api.get('thesauris', requestParams),
           api.get('relationTypes', requestParams),
+          Promise.resolve({ json: { rows: translations } }),
         ])
       : [];
 
-  const globalResources = {
+  const reduxData = {
     user: userApiResponse.json,
     translations: translationsApiResponse.json.rows,
     templates: templatesApiResponse.json.rows,
@@ -150,11 +152,20 @@ const prepareStore = async (req: ExpressRequest, settings: ClientSettings, langu
   };
 
   const reduxStore = createReduxStore({
-    ...globalResources,
+    ...reduxData,
     locale,
   });
 
-  return { reduxStore };
+  return {
+    reduxStore,
+    atomStoreData: {
+      locale,
+      settings: settingsApiResponse.json,
+      thesauri: thesaurisApiResponse.json.rows,
+      templates: templatesApiResponse.json.rows,
+      user: userApiResponse.json,
+    },
+  };
 };
 
 const setReduxState = async (
@@ -182,6 +193,7 @@ const setReduxState = async (
     })
     .filter(v => v);
   const initialStore = createReduxStore(reduxState);
+  let loadingError: FetchResponseError | undefined;
   if (dataLoaders && dataLoaders.length > 0) {
     const headers = {
       'Content-Language': reduxState.locale,
@@ -210,17 +222,16 @@ const setReduxState = async (
       );
     } catch (e) {
       if (e instanceof FetchResponseError) {
-        throw new ServerRenderingFetchError(
-          `${e.endpoint.method} ${e.endpoint.url} -> ${e.message}`
-        );
+        loadingError = e;
+      } else {
+        if (e.message) {
+          throw new ServerRenderingFetchError(e.message);
+        }
+        throw e;
       }
-      if (e.message) {
-        throw new ServerRenderingFetchError(e.message);
-      }
-      throw e;
     }
   }
-  return { initialStore, initialState: initialStore.getState() };
+  return { initialStore, initialState: initialStore.getState(), loadingError };
 };
 
 const getSSRProperties = async (
@@ -229,7 +240,7 @@ const getSSRProperties = async (
   settings: ClientSettings,
   language: string
 ) => {
-  const { reduxStore } = await prepareStore(req, settings, language);
+  const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
   const staticHandleContext = await query(createFetchRequest(req));
   const router = createStaticRouter(routes, staticHandleContext as any);
@@ -237,6 +248,7 @@ const getSSRProperties = async (
 
   return {
     reduxState,
+    atomStoreData,
     staticHandleContext,
     router,
   };
@@ -261,30 +273,33 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const language = matched ? matched[0].params.lang : req.language;
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
-  const { reduxState, staticHandleContext, router } = await getSSRProperties(
+  const { reduxState, atomStoreData, staticHandleContext, router } = await getSSRProperties(
     req,
     routes,
     settings,
     language || 'en'
   );
 
-  const { initialStore, initialState } = await setReduxState(req, reduxState, matched);
-
+  const { globalMatomo } = tenants.current();
+  const { initialStore, initialState, loadingError } = await setReduxState(
+    req,
+    reduxState,
+    matched
+  );
   resetTranslations();
-
-  const atomStore = createStore();
-  atomStore.set(settingsAtom, settings);
 
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
         <Provider store={atomStore}>
           <React.StrictMode>
-            <StaticRouterProvider
-              router={router}
-              context={staticHandleContext as any}
-              nonce="the-nonce"
-            />
+            <ErrorBoundary error={loadingError}>
+              <StaticRouterProvider
+                router={router}
+                context={staticHandleContext as any}
+                nonce="the-nonce"
+              />
+            </ErrorBoundary>
           </React.StrictMode>
         </Provider>
       </CustomProvider>
@@ -293,16 +308,20 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
 
   const html = ReactDOMServer.renderToString(
     <Root
-      language={initialState.locale}
+      language={atomStoreData.locale}
       content={componentHtml}
       head={Helmet.rewind()}
       user={req.user}
       reduxData={initialState}
       assets={assets}
+      loadingError={loadingError}
+      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }) }}
     />
   );
 
-  res.status(isCatchAll ? 404 : 200).send(`<!DOCTYPE html>${html}`);
+  const responseCode = loadingError?.status || 200;
+  const resStatus = isCatchAll ? 404 : responseCode;
+  res.status(resStatus).send(`<!DOCTYPE html>${html}`);
 };
 
 export { EntryServer };

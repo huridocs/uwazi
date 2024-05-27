@@ -9,6 +9,7 @@ import { Icon } from 'UI';
 import { NeedAuthorization } from 'app/Auth';
 import { SortDropdown } from 'app/Library/components/SortDropdown';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
+import { SearchBar as SearchBarComponent } from 'app/Library/components/SearchBar';
 import {
   zoomIn as zoomInAction,
   zoomOut as zoomOutAction,
@@ -21,7 +22,7 @@ import { HiddenColumnsDropdown } from './HiddenColumnsDropdown';
 interface LibraryHeaderOwnProps {
   counter: React.ReactElement;
   selectAllDocuments: () => {};
-  SearchBar?: Function;
+  SearchBar?: typeof SearchBarComponent;
   searchCentered?: boolean;
   filters: IImmutable<{ documentTypes: string[] }>;
   tableViewMode: boolean;
@@ -93,7 +94,7 @@ const LibraryHeaderComponent = ({
     <>
       <div className={`library-header ${!toolbarVisible ? 'closed' : ''}`}>
         <div className="library-toolbar">
-          {SearchBar !== undefined && (
+          {SearchBar !== undefined && SearchBar && (
             <div className={`search-list ${searchCentered ? 'centered' : ''}`}>
               <SearchBar />
             </div>

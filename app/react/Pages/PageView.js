@@ -7,8 +7,8 @@ import RouteHandler from 'app/App/RouteHandler';
 import ViewMetadataPanel from 'app/Library/components/ViewMetadataPanel';
 import SelectMultiplePanelContainer from 'app/Library/containers/SelectMultiplePanelContainer';
 import { withRouter } from 'app/componentWrappers';
-import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { trackPage } from 'app/App/GoogleAnalytics';
+import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
 import { PageViewer } from './components/PageViewer';
 import { getPageAssets } from './utils/getPageAssets';
 

@@ -97,7 +97,7 @@ describe('MediaField', () => {
     it('should create an object URL with the file', async () => {
       const file = new File(['hello'], 'hello.png', { type: 'image/png' });
       render(imageProps);
-      const img = screen.getByRole('img') as HTMLImageElement;
+      const img = screen.getByRole('presentation') as HTMLImageElement;
       expect(img.src).toEqual('blob:abc');
       expect(mockedCreateObjectURL).toHaveBeenCalledWith(file);
     });

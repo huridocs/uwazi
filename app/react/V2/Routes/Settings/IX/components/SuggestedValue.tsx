@@ -7,7 +7,7 @@ import { secondsToDate } from 'app/V2/shared/dateHelpers';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
-import { thesaurisAtom } from 'app/V2/atoms';
+import { thesauriAtom } from 'V2/atoms';
 
 const SuggestedValue = ({
   value,
@@ -28,7 +28,7 @@ const SuggestedValue = ({
     modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
   });
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const thesauris = useAtomValue(thesaurisAtom);
+  const thesauris = useAtomValue(thesauriAtom);
 
   let colorClass = '';
   if (!suggestion || suggestion.suggestedValue === '') {
