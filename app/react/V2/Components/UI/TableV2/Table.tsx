@@ -14,21 +14,25 @@ import {
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableRow, RowDragHandleCell } from './DnDComponents';
+import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 
 type TableProps<T extends { rowId: string }> = {
   data: T[];
   columns: ColumnDef<T, any>[];
   onChange?: (rows: T[]) => void;
+  onSelect?: (selected: { [id: string]: boolean }) => void;
+  className?: string;
 };
 
-const Table = <T extends { rowId: string }>({ data, columns, onChange }: TableProps<T>) => {
+const Table = <T extends { rowId: string }>({
+  data,
+  columns,
+  onChange,
+  onSelect,
+  className,
+}: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(dataState);
-    }
-  }, [dataState, onChange]);
+  const [rowSelection, setRowSelection] = useState({});
 
   const dataIds = useMemo<UniqueIdentifier[]>(
     () => dataState.map(({ rowId }) => rowId),
@@ -43,6 +47,11 @@ const Table = <T extends { rowId: string }>({ data, columns, onChange }: TablePr
         cell: RowDragHandleCell,
         size: 60,
       },
+      {
+        id: 'select',
+        header: IndeterminateCheckboxHeader,
+        cell: IndeterminateCheckboxRow,
+      },
       ...columns,
     ],
     [columns]
@@ -51,9 +60,26 @@ const Table = <T extends { rowId: string }>({ data, columns, onChange }: TablePr
   const table = useReactTable({
     data: dataState,
     columns: memoizedColumns,
+    state: {
+      rowSelection,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
     getRowId: row => row.rowId,
   });
+
+  useEffect(() => {
+    if (onChange) {
+      onChange(dataState);
+    }
+  }, [dataState, onChange]);
+
+  useEffect(() => {
+    if (onSelect) {
+      onSelect(rowSelection);
+    }
+  }, [rowSelection, onSelect]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -80,7 +106,7 @@ const Table = <T extends { rowId: string }>({ data, columns, onChange }: TablePr
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <table className="w-full">
+      <table className={`w-full ${className || ''}`}>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>

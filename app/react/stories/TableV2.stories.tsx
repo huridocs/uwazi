@@ -60,6 +60,7 @@ const basicColumns = [
 
 const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
   const [dataState, setDataState] = useState(data);
+  const [selected, setSelected] = useState({});
 
   return (
     <div className="tw-content">
@@ -68,16 +69,25 @@ const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
           data={data}
           columns={columns}
           onChange={updatedData => setDataState(updatedData)}
+          onSelect={sel => setSelected(sel)}
         />
       </div>
       <hr className="my-4" />
-      <ul>
+      <h2>Ordered items:</h2>
+      <div className="flex gap-2">
         {dataState.map(ds => (
-          <li className="py-2" key={ds.rowId}>
-            {ds.title}
-          </li>
+          <span key={ds.rowId}>{ds.title}</span>
         ))}
-      </ul>
+      </div>
+      <hr className="my-4" />
+      <h2>Selected items:</h2>
+      <div className="flex gap-2">
+        {dataState
+          .filter(ds => ds.rowId in selected)
+          .map(ds => (
+            <span key={ds.rowId}>{ds.title}</span>
+          ))}
+      </div>
     </div>
   );
 };
