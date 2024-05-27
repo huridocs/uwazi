@@ -13,20 +13,23 @@ describe('Table', () => {
 
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
     cellsContent.forEach((content, index) =>
-      cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 2})`).contains(content)
+      cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
     );
   };
 
   it('should be accessible', () => {
     cy.injectAxe();
+    Basic.args.checkboxes = true;
     mount(<Basic />);
     cy.checkA11y();
   });
 
   it('Should return a table with the columns and row specified', () => {
+    Basic.args.checkboxes = false;
+    Basic.args.sorting = undefined;
     mount(<Basic />);
     const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
-    cy.get('tr th').then(toStrings).should('eql', ['Empty', 'Title', 'Description', 'Date added']);
+    cy.get('tr th').then(toStrings).should('eql', ['Title', 'Description', 'Date added']);
 
     checkRowContent(1, ['Entity 2', data[0].description, '2']);
     checkRowContent(2, ['Entity 1', data[1].description, '1']);
