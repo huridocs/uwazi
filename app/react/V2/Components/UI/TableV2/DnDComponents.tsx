@@ -4,6 +4,7 @@ import React, { CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
+import { Translate } from 'app/I18N';
 
 const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const { attributes, listeners } = useSortable({
@@ -41,4 +42,6 @@ const DraggableRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => 
   );
 };
 
-export { RowDragHandleCell, DraggableRow };
+const DnDHeader = () => <Translate className="sr-only">Empty</Translate>;
+
+export { RowDragHandleCell, DraggableRow, DnDHeader };

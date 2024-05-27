@@ -13,7 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { DraggableRow, RowDragHandleCell } from './DnDComponents';
+import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 
 type TableProps<T extends { rowId: string }> = {
@@ -21,6 +21,8 @@ type TableProps<T extends { rowId: string }> = {
   columns: ColumnDef<T, any>[];
   onChange?: (rows: T[]) => void;
   onSelect?: (selected: { [id: string]: boolean }) => void;
+  sorting?: 'dnd' | 'headers';
+  checkboxes?: boolean;
   className?: string;
 };
 
@@ -29,6 +31,8 @@ const Table = <T extends { rowId: string }>({
   columns,
   onChange,
   onSelect,
+  sorting,
+  checkboxes,
   className,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
@@ -39,32 +43,39 @@ const Table = <T extends { rowId: string }>({
     [dataState]
   );
 
-  const memoizedColumns = useMemo<ColumnDef<T, any>[]>(
-    () => [
-      {
-        id: 'drag-handle',
-        header: 'Move',
-        cell: RowDragHandleCell,
-        size: 60,
-      },
-      {
+  const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
+    const tableColumns = [...columns];
+
+    if (sorting === 'headers') {
+    }
+
+    if (checkboxes) {
+      tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
         cell: IndeterminateCheckboxRow,
-      },
-      ...columns,
-    ],
-    [columns]
-  );
+      });
+    }
+
+    if (sorting === 'dnd') {
+      tableColumns.unshift({
+        id: 'drag-handle',
+        cell: RowDragHandleCell,
+        header: DnDHeader,
+        size: 60,
+      });
+    }
+
+    return tableColumns;
+  }, [checkboxes, columns, sorting]);
 
   const table = useReactTable({
     data: dataState,
     columns: memoizedColumns,
     state: {
-      rowSelection,
+      ...(checkboxes && { rowSelection }),
     },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    ...(checkboxes && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
     getCoreRowModel: getCoreRowModel(),
     getRowId: row => row.rowId,
   });

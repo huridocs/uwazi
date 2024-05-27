@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef } from 'react';
 import { Row, Table } from '@tanstack/react-table';
+import { Translate } from 'app/I18N';
 
 const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const ref = useRef<HTMLInputElement>(null!);
@@ -17,15 +18,18 @@ const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: R
   }, [ref, indeterminate, checked]);
 
   return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className="cursor-pointer"
-      disabled={disabled}
-      onChange={onChange}
-      key={row.id}
-      checked={checked}
-    />
+    <label>
+      <Translate className="sr-only">Select</Translate>
+      <input
+        type="checkbox"
+        ref={ref}
+        className="cursor-pointer"
+        disabled={disabled}
+        onChange={onChange}
+        key={row.id}
+        checked={checked}
+      />
+    </label>
   );
 };
 
@@ -43,13 +47,16 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
   }, [ref, indeterminate, checked]);
 
   return (
-    <input
-      type="checkbox"
-      ref={ref}
-      className="cursor-pointer"
-      onChange={onChange}
-      key="checkbox-header"
-    />
+    <label>
+      <Translate className="sr-only">Select all</Translate>
+      <input
+        type="checkbox"
+        ref={ref}
+        className="cursor-pointer"
+        onChange={onChange}
+        key="checkbox-header"
+      />
+    </label>
   );
 };
 

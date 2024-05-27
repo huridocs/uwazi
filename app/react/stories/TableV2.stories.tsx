@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { NewTable, NewTableProps } from 'V2/Components/UI';
 import { createColumnHelper } from '@tanstack/react-table';
+import { Provider } from 'react-redux';
+import { NewTable, NewTableProps } from 'V2/Components/UI';
+import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 
 type BasicData = {
   rowId: string;
@@ -58,7 +60,7 @@ const basicColumns = [
   }),
 ];
 
-const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
+const StoryComponent = ({ data, columns, sorting, checkboxes }: NewTableProps<BasicData>) => {
   const [dataState, setDataState] = useState(data);
   const [selected, setSelected] = useState({});
 
@@ -70,6 +72,8 @@ const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
           columns={columns}
           onChange={updatedData => setDataState(updatedData)}
           onSelect={sel => setSelected(sel)}
+          sorting={sorting}
+          checkboxes={checkboxes}
         />
       </div>
       <hr className="my-4" />
@@ -93,7 +97,16 @@ const StoryComponent = ({ data, columns }: NewTableProps<BasicData>) => {
 };
 
 const Primary: Story = {
-  render: args => <StoryComponent data={args.data} columns={args.columns} />,
+  render: args => (
+    <Provider store={createStore()}>
+      <StoryComponent
+        data={args.data}
+        columns={args.columns}
+        sorting={args.sorting}
+        checkboxes={args.checkboxes}
+      />
+    </Provider>
+  ),
 };
 
 const Basic = {
@@ -101,6 +114,8 @@ const Basic = {
   args: {
     data: basicData,
     columns: basicColumns,
+    sorting: 'dnd',
+    checkboxes: false,
   },
 };
 
