@@ -3,12 +3,11 @@
 import React, { CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Row } from 'react-table';
-import { flexRender } from '@tanstack/react-table';
+import { flexRender, Row } from '@tanstack/react-table';
 
-const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
+const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const { attributes, listeners } = useSortable({
-    id: rowId,
+    id: row.id,
   });
 
   return (
@@ -18,9 +17,9 @@ const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   );
 };
 
-const DraggableRow = ({ row }: { row: Row }) => {
+const DraggableRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: row.original.tableId,
+    id: row.id,
   });
 
   const style: CSSProperties = {

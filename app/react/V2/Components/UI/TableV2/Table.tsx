@@ -15,23 +15,26 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableRow, RowDragHandleCell } from './DnDComponents';
 
-type TableProps<T extends { tableId: string }> = {
+type TableProps<T extends { rowId: string }> = {
   data: T[];
   columns: ColumnDef<T, any>[];
 };
 
 // eslint-disable-next-line comma-spacing
-const Table = <T extends { tableId: string }>({ data, columns }: TableProps<T>) => {
+const Table = <T extends { rowId: string }>({ data, columns }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
 
-  const dataIds = useMemo<UniqueIdentifier[]>(() => data.map(({ tableId }) => tableId), [data]);
+  const dataIds = useMemo<UniqueIdentifier[]>(
+    () => dataState.map(({ rowId }) => rowId),
+    [dataState]
+  );
 
-  const memoizedColumns = useMemo(
+  const memoizedColumns = useMemo<ColumnDef<T, any>[]>(
     () => [
       {
         id: 'drag-handle',
         header: 'Move',
-        cell: ({ row }) => <RowDragHandleCell rowId={row.tableId} />,
+        cell: RowDragHandleCell,
         size: 60,
       },
       ...columns,
@@ -43,16 +46,17 @@ const Table = <T extends { tableId: string }>({ data, columns }: TableProps<T>) 
     data: dataState,
     columns: memoizedColumns,
     getCoreRowModel: getCoreRowModel(),
-    getRowId: row => row.tableId,
+    getRowId: row => row.rowId,
   });
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
-      setDataState(state => {
+      setDataState(() => {
         const oldIndex = dataIds.indexOf(active.id);
         const newIndex = dataIds.indexOf(over.id);
-        return arrayMove(state, oldIndex, newIndex);
+        const newState = arrayMove(dataState, oldIndex, newIndex);
+        return newState;
       });
     }
   };
@@ -70,28 +74,26 @@ const Table = <T extends { tableId: string }>({ data, columns }: TableProps<T>) 
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="block overflow-y-hidden overflow-x-scroll p-2 max-w-full">
-        <table className="w-full">
-          <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id} colSpan={header.colSpan}>
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
-              {table.getRowModel().rows.map(row => (
-                <DraggableRow key={row.id} row={row} />
+      <table className="w-full">
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id} colSpan={header.colSpan}>
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
               ))}
-            </SortableContext>
-          </tbody>
-        </table>
-      </div>
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+            {table.getRowModel().rows.map(row => (
+              <DraggableRow key={row.id} row={row} />
+            ))}
+          </SortableContext>
+        </tbody>
+      </table>
     </DndContext>
   );
 };
