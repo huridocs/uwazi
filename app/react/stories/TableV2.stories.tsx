@@ -4,13 +4,8 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
 import { NewTable, NewTableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
-
-type BasicData = {
-  rowId: string;
-  title: string;
-  created: number;
-  description: string;
-};
+import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
+import { GroupCell } from './table/TableComponents';
 
 const meta: Meta<NewTableProps<BasicData>> = {
   title: 'Components/NewTable',
@@ -19,48 +14,31 @@ const meta: Meta<NewTableProps<BasicData>> = {
 
 type Story = StoryObj<typeof NewTable>;
 
-const basicData: BasicData[] = [
-  { rowId: 'A2', title: 'Entity 2', created: 2, description: 'Short text' },
-  {
-    rowId: 'A1',
-    title: 'Entity 1',
-    created: 1,
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vel efficitur quam. Donec feugiat at libero at rutrum.',
-  },
-  {
-    rowId: 'A4',
-    title: 'Entity 4',
-    created: 4,
-    description:
-      'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-  },
-  {
-    rowId: 'A3',
-    title: 'Entity 3',
-    created: 3,
-    description: 'Morbi congue et justo vitae congue. Vivamus porttitor et leo vitae efficitur',
-  },
-  {
-    rowId: 'A5',
-    title: 'Entity 5',
-    created: 5,
-    description:
-      'Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.',
-  },
-];
-
-const columnHelper = createColumnHelper<BasicData>();
+const basicColumnHelper = createColumnHelper<BasicData>();
+const nestedColumnHelper = createColumnHelper<DataWithGroups>();
 
 const basicColumns = [
-  columnHelper.accessor('title', { header: 'Title' }),
-  columnHelper.accessor('description', { header: 'Description' }),
-  columnHelper.accessor('created', {
+  basicColumnHelper.accessor('title', { header: 'Title' }),
+  basicColumnHelper.accessor('description', { header: 'Description' }),
+  basicColumnHelper.accessor('created', {
     header: 'Date added',
   }),
 ];
 
-const StoryComponent = ({ data, columns, sorting, checkboxes }: NewTableProps<BasicData>) => {
+const nestedColumns = [
+  nestedColumnHelper.accessor('title', { header: 'Title', cell: GroupCell }),
+  nestedColumnHelper.accessor('description', { header: 'Description' }),
+  nestedColumnHelper.accessor('created', {
+    header: 'Date added',
+  }),
+];
+
+const StoryComponent = ({
+  data,
+  columns,
+  sorting,
+  checkboxes,
+}: NewTableProps<BasicData | DataWithGroups>) => {
   const [dataState, setDataState] = useState(data);
   const [selected, setSelected] = useState({});
 
@@ -92,6 +70,17 @@ const StoryComponent = ({ data, columns, sorting, checkboxes }: NewTableProps<Ba
             ))}
         </div>
       </div>
+      <hr className="my-4" />
+      <div data-testid="selected-subrows">
+        <h2>Selected subRows:</h2>
+        <div className="flex gap-2">
+          {dataState.map((ds: DataWithGroups) =>
+            ds.subRows
+              ?.filter(subRow => subRow.rowId in selected)
+              .map(subRow => <span key={subRow.rowId}>{subRow.title}</span>)
+          )}
+        </div>
+      </div>
     </div>
   );
 };
@@ -119,5 +108,15 @@ const Basic = {
   },
 };
 
-export { Basic };
+const Nested = {
+  ...Primary,
+  args: {
+    data: dataWithGroups,
+    columns: nestedColumns,
+    sorting: 'dnd',
+    checkboxes: true,
+  },
+};
+
+export { Basic, Nested };
 export default meta;

@@ -1,5 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useReactTable, getCoreRowModel, ColumnDef, flexRender } from '@tanstack/react-table';
+import {
+  useReactTable,
+  getCoreRowModel,
+  ColumnDef,
+  flexRender,
+  getExpandedRowModel,
+} from '@tanstack/react-table';
 import {
   DragEndEvent,
   KeyboardSensor,
@@ -18,7 +24,7 @@ import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSele
 
 //whe should mark columns as having sort arrows when defining columns
 
-type TableProps<T extends { rowId: string }> = {
+type TableProps<T extends { rowId: string; subRows?: { rowId: string }[] }> = {
   data: T[];
   columns: ColumnDef<T, any>[];
   onChange?: (rows: T[]) => void;
@@ -28,7 +34,7 @@ type TableProps<T extends { rowId: string }> = {
   className?: string;
 };
 
-const Table = <T extends { rowId: string }>({
+const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
   data,
   columns,
   onChange,
@@ -77,6 +83,8 @@ const Table = <T extends { rowId: string }>({
     ...(checkboxes && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
     getCoreRowModel: getCoreRowModel(),
     getRowId: row => row.rowId,
+    getSubRows: row => row.subRows || undefined,
+    getExpandedRowModel: getExpandedRowModel(),
   });
 
   useEffect(() => {

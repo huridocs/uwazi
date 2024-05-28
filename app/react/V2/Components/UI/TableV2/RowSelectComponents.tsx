@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 
 const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const ref = useRef<HTMLInputElement>(null!);
-  const checked = row.getIsSelected();
+  const checked = row.getIsSelected() || row.getIsAllSubRowsSelected();
   const disabled = !row.getCanSelect();
   const indeterminate = row.getIsSomeSelected();
   const onChange = row.getToggleSelectedHandler();
