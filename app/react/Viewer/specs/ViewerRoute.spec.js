@@ -60,24 +60,33 @@ describe('ViewerRoute', () => {
   });
 
   describe('Entity not found', () => {
-    it('should return the SHOW TAB 404', async () => {
+    it('should throw a FetchResponseError exception', async () => {
       const request = new RequestParams({ sharedId: '123' }, 'headers');
 
       spyOn(EntitiesAPI, 'get').and.callFake(() =>
         Promise.reject(
-          new FetchResponseError('Fetch returned a.returnValue(nse with status 404.', {
+          new FetchResponseError('Not found', {
             status: 404,
+            name: 'client error',
+            json: {
+              message: 'not found',
+            },
           })
         )
       );
 
-      const state = await ViewerRoute.requestState(request, {
-        templates: 'templates',
-        settings: {
-          collection: fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
-        },
-      });
-      expect(state).toEqual([{ type: 'SHOW_TAB', tab: '404' }]);
+      try {
+        await ViewerRoute.requestState(request, {
+          templates: 'templates',
+          settings: {
+            collection: fromJS({ languages: [{ key: 'en', label: 'English', default: true }] }),
+          },
+        });
+        fail('Should throw error');
+      } catch (e) {
+        expect(e.status).toBe(404);
+        expect(e.message).toMatch('Not found');
+      }
     });
   });
 });
