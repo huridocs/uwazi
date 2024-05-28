@@ -28,6 +28,7 @@ interface DatePickerProps extends FlowbiteDatepickerProps {
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
+  mainClassName?: string;
 }
 
 const titleFormat = (locale: string) => {
@@ -90,6 +91,7 @@ const DatePickerComponent = React.forwardRef(
       dateFormat = 'yyyy-mm-dd',
       hideLabel = true,
       className = '',
+      mainClassName = '',
       name = '',
       onChange = () => {},
       onBlur = () => {},
@@ -134,7 +136,7 @@ const DatePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className="relative tw-datepicker" />
+        <div id="tw-container" className={`${mainClassName} relative tw-datepicker`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
@@ -193,6 +195,7 @@ DatePickerComponent.defaultProps = {
   errorMessage: '',
   value: '',
   className: '',
+  mainClassName: '',
   autoComplete: 'off',
   name: 'datePicker',
   clearFieldAction: () => {},
