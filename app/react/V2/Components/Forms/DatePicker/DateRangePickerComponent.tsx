@@ -33,8 +33,9 @@ const DateRangePickerComponent = React.forwardRef(
       id = uniqueID(),
       language = 'en',
       dateFormat = 'yyyy-mm-dd',
-      hideLabel = true,
+      hideLabel = false,
       className = '',
+      mainClassName = '',
       register = () => ({}),
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
@@ -82,7 +83,11 @@ const DateRangePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className="relative tw-datepicker" data-test-id={id} />
+        <div
+          id="tw-container"
+          className={`${mainClassName} relative tw-datepicker`}
+          data-test-id={id}
+        />
         <div>
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}

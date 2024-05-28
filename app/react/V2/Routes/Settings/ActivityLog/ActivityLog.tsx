@@ -1,7 +1,5 @@
-/* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   LoaderFunction,
   useLoaderData,
@@ -9,24 +7,23 @@ import {
   useSearchParams,
   createSearchParams,
 } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
 import { Row, SortingState } from '@tanstack/react-table';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { InputField, DateRangePicker } from 'app/V2/Components/Forms';
-import { PaginationState, Paginator, Table, Button } from 'app/V2/Components/UI';
+import { Button, PaginationState, Paginator, Table } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
-import { settingsAtom, translationsAtom } from 'app/V2/atoms';
+import { settingsAtom } from 'app/V2/atoms';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
+import { FiltersSidePanel } from './components/FiltersSidePanel';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -119,47 +116,18 @@ interface ActivityLogSearch {
   order: string;
 }
 
+// eslint-disable-next-line max-statements
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
-  const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
   const searchedParams = searchParamsFromSearchParams(searchParams);
-  const {
-    sort,
-    order,
-    from = '',
-    to = '',
-    page = 1,
-    limit = ITEMS_PER_PAGE,
-    username,
-    search,
-  } = searchedParams;
-  const {
-    register,
-    setValue,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<ActivityLogSearch>({
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit',
-    defaultValues: {
-      username,
-      search,
-      from,
-      to,
-    },
-  });
 
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
-
-  const onCloseSidePanel = () => {
-    setSelectedEntry(null);
-  };
 
   const changedParams = (filterPairs: [string, any][]) => {
     const newFilters = createSearchParams(filterPairs);
@@ -186,7 +154,11 @@ const ActivityLog = () => {
   useEffect(() => {
     const sortingProp = sorting?.[0]?.id;
     const sortingOrder = sorting?.[0]?.desc ? 'desc' : 'asc';
-    if (isFirstRender && (!sortingProp || (sortingProp === sort && sortingOrder === order))) {
+    if (
+      isFirstRender &&
+      (!sortingProp ||
+        (sortingProp === searchedParams.sort && sortingOrder === searchedParams.order))
+    ) {
       return;
     }
     updateSearch({ sort: sortingProp, order: sortingOrder });
@@ -197,101 +169,22 @@ const ActivityLog = () => {
     updateSearch(data);
   };
 
-  const debouncedChangeHandler = useMemo(
-    () => (handler: (_args?: any) => void) => _.debounce(handler, 500),
-    []
-  );
-
-  const handleInputSubmit =
-    (field: 'username' | 'search') => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(field, e.target.value);
-    };
-
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
 
   return (
     <div
       className="tw-content"
-      style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
+      style={{ width: '100%', height: '100%', overflowY: 'auto' }}
       data-testid="settings-activity-log"
     >
       <SettingsContent>
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body className="space-y-3">
-          <form
-            className="flex flex-col"
-            id="activity-filters-form mr-10"
-            onSubmit={handleSubmit(async data => onSubmit(data))}
-          >
-            <div className="flex flex-row items-center gap-4 justify-items-stretch">
-              <h2 className="w-40 p-4 text-base font-semibold text-left">
-                <Translate>Activity Log</Translate>
-              </h2>
-              <InputField
-                id="username"
-                label="User"
-                className="basis-1/5"
-                hideLabel
-                placeholder={t('System', 'User', null, false)}
-                hasErrors={!!errors.username}
-                {...register('username')}
-                clearFieldAction={() => {
-                  setValue('username', '');
-                }}
-                onChange={debouncedChangeHandler(handleInputSubmit('username'))}
-                onBlur={() => {}}
-              />
-              <InputField
-                id="search"
-                label="search"
-                hideLabel
-                className="basis-2/5"
-                placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
-                {...register('search')}
-                clearFieldAction={() => {
-                  setValue('search', '');
-                }}
-                onChange={debouncedChangeHandler(handleInputSubmit('search'))}
-                hasErrors={!!errors.search}
-                onBlur={() => {}}
-              />
-
-              <DateRangePicker
-                key="activity-log-range"
-                dateFormat={dateFormat}
-                language={locale}
-                register={register}
-                placeholderStart={t('System', 'From', null, false)}
-                placeholderEnd={t('System', 'To', null, false)}
-                labelToday={t('System', 'Today', null, false)}
-                className="basis-1/3"
-                hasErrors={!!errors.from || !!errors.to}
-                labelClear={t('System', 'Clear', null, false)}
-                onFromDateSelected={e => {
-                  const fromChanged = !_.isEqual(e.target.value, from || '');
-                  if (fromChanged) {
-                    setValue('from', e.target.value);
-                  }
-                }}
-                onToDateSelected={e => {
-                  const toChanged = !_.isEqual(e.target.value, to || '');
-                  if (toChanged) {
-                    setValue('to', e.target.value);
-                  }
-                }}
-                onClear={() => {
-                  reset();
-                  setValue('from', '');
-                  setValue('to', '');
-                }}
-              />
-            </div>
-            <div className="flex justify-end">
-              <Button type="submit" className="mr-0">
-                <Translate>Search</Translate>
-              </Button>
-            </div>
-          </form>
+          <div className="flex justify-end">
+            <Button type="button" className="mr-0" onClick={() => setShowFilters(true)}>
+              <Translate>Show filters</Translate>
+            </Button>
+          </div>
           {error === undefined && (
             <Table<ActivityLogEntryType>
               columns={columns}
@@ -301,17 +194,21 @@ const ActivityLog = () => {
               footer={
                 <div className="flex justify-between h-6">
                   <PaginationState
-                    page={Number(page)}
-                    size={limit}
+                    page={Number(searchedParams.page || 1)}
+                    size={searchedParams.limit || ITEMS_PER_PAGE}
                     total={total}
                     currentLength={activityLogData.length}
                   />
                   <div>
                     <Paginator
                       totalPages={totalPages}
-                      currentPage={Number(page)}
+                      currentPage={Number(searchedParams.page || 1)}
                       buildUrl={(pageTo: string | number) => {
-                        const updatedParams = { ...searchedParams, page: pageTo, limit };
+                        const updatedParams = {
+                          ...searchedParams,
+                          page: pageTo,
+                          limit: searchedParams.limit || ITEMS_PER_PAGE,
+                        };
                         return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
                       }}
                     />
@@ -320,15 +217,25 @@ const ActivityLog = () => {
               }
             />
           )}
-          {selectedEntry && (
-            <ActivityLogSidePanel
-              selectedEntry={selectedEntry.original}
-              isOpen={selectedEntry !== null}
-              onClose={onCloseSidePanel}
-            />
-          )}
         </SettingsContent.Body>
       </SettingsContent>
+      {selectedEntry && (
+        <ActivityLogSidePanel
+          selectedEntry={selectedEntry.original}
+          isOpen={selectedEntry !== null}
+          onClose={() => {
+            setSelectedEntry(null);
+          }}
+        />
+      )}
+      {showFilters && (
+        <FiltersSidePanel
+          isOpen={showFilters}
+          onClose={() => setShowFilters(false)}
+          onSubmit={onSubmit}
+          searchParams={searchedParams}
+        />
+      )}
     </div>
   );
 };

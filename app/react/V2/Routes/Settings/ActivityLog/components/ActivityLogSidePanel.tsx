@@ -11,6 +11,7 @@ interface ActivityLogSidePanelProps {
 }
 const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSidePanelProps) => (
   <Sidepanel
+    withOverlay
     isOpen={isOpen}
     closeSidepanelFunction={onClose}
     title={<Translate className="uppercase">Activity</Translate>}
