@@ -8,7 +8,7 @@ import { ViewerComponent } from 'app/Viewer/components/ViewerComponent';
 import { PDFView } from 'app/Viewer/PDFView';
 import EntityView from 'app/Viewer/EntityView';
 import { Loader } from 'app/components/Elements/Loader';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
+import { ErrorFallback } from 'app/V2/Components/ErrorHandling';
 
 const mockStoreCreator: MockStoreCreator<object> = configureStore<object>([]);
 const renderComponent = (store: MockStore<object>) =>
@@ -90,7 +90,7 @@ describe('ViewerComponent', () => {
       const component = renderComponent(store);
       expect(component.find(EntityView).length).toBe(0);
       const error = component.find(ErrorFallback).at(0);
-      expect(error.props().error).toEqual({ code: 404, message: 'Not Found' });
+      expect(error.props().error).toEqual({ status: 404, message: 'Not Found' });
     });
   });
 });
