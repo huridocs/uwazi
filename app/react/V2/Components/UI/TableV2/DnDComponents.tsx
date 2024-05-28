@@ -4,7 +4,7 @@ import React, { CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 
 const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const { attributes, listeners } = useSortable({
@@ -14,6 +14,7 @@ const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }
   return (
     <button {...attributes} {...listeners} type="button">
       🟰
+      <span className="sr-only">{`${t('System', 'Drag row', null, false)} ${row.index + 1}`}</span>
     </button>
   );
 };

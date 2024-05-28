@@ -139,64 +139,62 @@ describe('Table', () => {
     });
   });
 
-  xdescribe('DnD', () => {
-    it('should sort rows by dragging', () => {
-      mount(<WithDnD />);
-      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
-      cy.get('[data-testid="description_desc"]').should('have.length', 1);
-
-      cy.get('[data-testid="root-draggable-item-2"]').drag(
-        '[data-testid="root-draggable-item-0"]',
-        {
-          target: { x: 5, y: 0 },
-          force: true,
-        }
-      );
-
-      cy.get('[data-testid="description_false"]').should('have.length', 1);
-
-      checkRowContent(1, ['Entity 3', data[2].description, '3']);
-      checkRowContent(2, ['Entity 2', data[0].description, '2']);
-      checkRowContent(3, ['Entity 1', data[1].description, '1']);
-
-      cy.get('[data-testid="update_items"] > ul > li')
-        .should('have.length', 3)
-        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-        .should('deep.equal', ['Entity 3', 'Entity 2', 'Entity 1']);
+  describe('DnD', () => {
+    beforeEach(() => {
+      Basic.args.sorting = 'dnd';
+      mount(<Basic />);
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Entity 2 Entity 1 Entity 4 Entity 3 Entity 5');
+      });
     });
 
-    it('should sort rows by header', () => {
-      mount(<WithDnD />);
+    it('should sort rows by dragging', () => {
+      cy.contains('button', 'Drag row 2').drag('button:contains("Drag row 1")', {
+        target: { x: 5, y: 0 },
+        force: true,
+      });
 
-      cy.get('[data-testid="root-draggable-item-2"]').drag(
-        '[data-testid="root-draggable-item-0"]',
-        {
-          target: { x: 5, y: 0 },
-          force: true,
-        }
-      );
+      cy.contains('button', 'Drag row 3').drag('button:contains("Drag row 4")', {
+        target: { x: 5, y: 0 },
+        force: true,
+      });
 
-      cy.get('[data-testid="title_false"]').click();
+      checkRowContent(1, ['Drag row 1', 'Select', 'Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Drag row 2', 'Select', 'Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Drag row 3', 'Select', 'Entity 3', data[3].description, '3']);
+      checkRowContent(4, ['Drag row 4', 'Select', 'Entity 4', data[2].description, '4']);
+      checkRowContent(5, ['Drag row 5', 'Select', 'Entity 5', data[4].description, '5']);
 
-      checkRowContent(1, ['Entity 1', data[1].description, '1']);
-      checkRowContent(2, ['Entity 2', data[0].description, '2']);
-      checkRowContent(3, ['Entity 3', data[2].description, '3']);
+      cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
 
-      cy.get('[data-testid="title_asc"]').should('have.length', 1);
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
+      });
+    });
 
-      cy.get('[data-testid="root-draggable-item-0"]').drag(
-        '[data-testid="root-draggable-item-2"]',
-        {
-          target: { x: 5, y: 20 },
-          force: true,
-        }
-      );
+    it('should keep selections while sorting', () => {
+      cy.get('tbody').within(() => {
+        cy.get('input[type="checkbox"]').eq(0).check();
+        cy.get('input[type="checkbox"]').eq(2).check();
+      });
 
-      cy.get('[data-testid="title_false"]').should('have.length', 1);
+      cy.contains('button', 'Drag row 2').drag('button:contains("Drag row 1")', {
+        target: { x: 5, y: 0 },
+        force: true,
+      });
 
-      checkRowContent(1, ['Entity 2', data[0].description, '2']);
-      checkRowContent(2, ['Entity 3', data[2].description, '3']);
-      checkRowContent(3, ['Entity 1', data[1].description, '1']);
+      cy.contains('button', 'Drag row 3').drag('button:contains("Drag row 4")', {
+        target: { x: 5, y: 0 },
+        force: true,
+      });
+
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Entity 1').should('not.exist');
+        cy.contains('Entity 2');
+        cy.contains('Entity 3').should('not.exist');
+        cy.contains('Entity 4');
+        cy.contains('Entity 5').should('not.exist');
+      });
     });
   });
 

@@ -16,6 +16,8 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 
+//whe should mark columns as having sort arrows when defining columns
+
 type TableProps<T extends { rowId: string }> = {
   data: T[];
   columns: ColumnDef<T, any>[];
@@ -52,9 +54,6 @@ const Table = <T extends { rowId: string }>({
         header: IndeterminateCheckboxHeader,
         cell: IndeterminateCheckboxRow,
       });
-    }
-
-    if (sorting === 'headers') {
     }
 
     if (sorting === 'dnd') {
@@ -98,8 +97,7 @@ const Table = <T extends { rowId: string }>({
       setDataState(() => {
         const oldIndex = dataIds.indexOf(active.id);
         const newIndex = dataIds.indexOf(over.id);
-        const newState = arrayMove(dataState, oldIndex, newIndex);
-        return newState;
+        return arrayMove(dataState, oldIndex, newIndex);
       });
     }
   };
