@@ -37,7 +37,7 @@ const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
 const MultiselectList = ({
   items,
   onChange,
-  className,
+  className = '',
   label,
   hasErrors,
   value = [],
@@ -209,8 +209,8 @@ const MultiselectList = ({
   };
 
   return (
-    <div className={`flex flex-col relative ${className}`}>
-      <div className="sticky top-0 w-full mb-2">
+    <div className={`relative ${className}`}>
+      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -243,9 +243,7 @@ const MultiselectList = ({
         />
       </div>
 
-      <ul className="px-2 pt-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
-        {filteredItems.map(renderItem)}
-      </ul>
+      <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
     </div>
   );
 };

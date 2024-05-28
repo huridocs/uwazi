@@ -1920,6 +1920,10 @@ input[type="range"]::-ms-fill-lower {
   height: 100%;
 }
 
+.h-\[40\%\] {
+  height: 40%;
+}
+
 .max-h-16 {
   max-height: 4rem;
 }
@@ -1944,6 +1948,10 @@ input[type="range"]::-ms-fill-lower {
   max-height: 24rem;
 }
 
+.max-h-\[40\%\] {
+  max-height: 40%;
+}
+
 .max-h-\[calc\(100vh_-_9rem\)\] {
   max-height: calc(100vh - 9rem);
 }
@@ -1954,6 +1962,22 @@ input[type="range"]::-ms-fill-lower {
 
 .max-h-svh {
   max-height: 100svh;
+}
+
+.max-h-full {
+  max-height: 100%;
+}
+
+.max-h-\[calc\(100\%_-_9rem\)\] {
+  max-height: calc(100% - 9rem);
+}
+
+.max-h-\[20\%\] {
+  max-height: 20%;
+}
+
+.max-h-\[30\%\] {
+  max-height: 30%;
 }
 
 .min-h-fit {
@@ -2461,6 +2485,10 @@ input[type="range"]::-ms-fill-lower {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.overflow-scroll {
+  overflow: scroll;
 }
 
 .overflow-y-auto {
