@@ -166,7 +166,7 @@
     "json-schema-to-typescript": "^13.1.2",
     "jvent": "1.0.2",
     "leaflet": "^1.9.4",
-    "leaflet.gridlayer.googlemutant": "^0.14.0",
+    "leaflet.gridlayer.googlemutant": "^0.14.1",
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "luxon": "^3.4.4",
