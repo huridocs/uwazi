@@ -7,9 +7,16 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { t, Translate } from 'app/I18N';
 
 const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
-  const { attributes, listeners } = useSortable({
+  const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
+
+  const canExpand = row.getCanExpand();
+  const expanded = row.getIsExpanded();
+
+  if (canExpand && expanded && isDragging) {
+    row.toggleExpanded();
+  }
 
   return (
     <button {...attributes} {...listeners} type="button">

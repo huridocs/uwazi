@@ -15,12 +15,12 @@ import {
   useSensors,
   DndContext,
   closestCenter,
-  UniqueIdentifier,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
+import { dndSortHandler, getDataIds } from './helpers';
 
 //whe should mark columns as having sort arrows when defining columns
 
@@ -46,10 +46,7 @@ const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
   const [dataState, setDataState] = useState(data);
   const [rowSelection, setRowSelection] = useState({});
 
-  const dataIds = useMemo<UniqueIdentifier[]>(
-    () => dataState.map(({ rowId }) => rowId),
-    [dataState]
-  );
+  const dataIds = useMemo(() => getDataIds(dataState), [dataState]);
 
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
@@ -101,12 +98,9 @@ const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
     if (active && over && active.id !== over.id) {
-      setDataState(() => {
-        const oldIndex = dataIds.indexOf(active.id);
-        const newIndex = dataIds.indexOf(over.id);
-        return arrayMove(dataState, oldIndex, newIndex);
-      });
+      setDataState(() => dndSortHandler(dataState, dataIds, active.id, over.id));
     }
   };
 

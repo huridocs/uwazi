@@ -165,8 +165,6 @@ describe('Table', () => {
       checkRowContent(4, ['Drag row 4', 'Select', 'Entity 4', data[2].description, '4']);
       checkRowContent(5, ['Drag row 5', 'Select', 'Entity 5', data[4].description, '5']);
 
-      cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
-
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
       });
