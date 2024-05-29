@@ -143,8 +143,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
               type="button"
               styling="outline"
               onClick={() => {
-                reset();
-                onClose();
+                reset({ username: '', method: '', search: '', from: '', to: '' });
               }}
             >
               <Translate>Clear Filters</Translate>
