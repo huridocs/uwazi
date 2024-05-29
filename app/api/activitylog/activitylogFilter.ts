@@ -1,22 +1,39 @@
 import { isEmpty } from 'lodash';
 import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
+import moment from 'moment';
 import { ParsedActions } from './activitylogParser';
+import { EntryValue } from './activityLogBuilder';
 
 type ActivityLogQuery = ActivityLogGetRequest['query'];
 
 const prepareToFromRanges = (sanitizedTime: any) => {
-  const time: { $gte?: number; $lte?: number } = {};
-
-  if (sanitizedTime.from) {
-    time.$gte = parseInt(sanitizedTime.from, 10) * 1000;
-  }
-
-  if (sanitizedTime.to) {
-    time.$lte = parseInt(sanitizedTime.to, 10) * 1000;
-  }
-
-  return time;
+  const fromDate = sanitizedTime.from && moment.unix(parseInt(sanitizedTime.from, 10));
+  const toDate = sanitizedTime.to && moment.unix(parseInt(sanitizedTime.to, 10)).add(1, 'days');
+  return {
+    ...(fromDate && { $gte: fromDate }),
+    ...(toDate && fromDate !== toDate && { $lte: toDate }),
+    ...(toDate && fromDate === toDate && { $lt: toDate }),
+  };
 };
+
+const parsedActionsEntries = Object.entries(ParsedActions);
+
+const queryURL = (matchedEntries: [string, EntryValue][]) =>
+  matchedEntries.map(([key]) => {
+    const entries = key.split(/\/(.*)/s);
+    return {
+      $and: [
+        {
+          url: {
+            $regex: `^\\/${entries[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$`,
+          },
+        },
+        {
+          method: entries[0],
+        },
+      ],
+    };
+  });
 
 class ActivityLogFilter {
   andQuery: {}[] = [];
@@ -85,9 +102,23 @@ class ActivityLogFilter {
   }
 
   methodFilter() {
-    if (this.query?.method && this.query?.method.length > 0) {
-      const queryMethods = this.query?.method?.map(method => method.toUpperCase()) || [];
+    const methods = this.query?.method;
+    if (methods && methods.length > 0) {
+      const queryMethods =
+        methods.map(method =>
+          ['CREATE', 'UPDATE'].includes(method.toUpperCase()) ? 'POST' : method.toUpperCase()
+        ) || [];
+
+      const matchedEntries = parsedActionsEntries.filter(
+        ([key, value]) =>
+          key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
+          value.method?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`)
+      );
       this.andQuery.push({ method: { $in: queryMethods } });
+      if (matchedEntries.length > 0) {
+        const orUrlItems = queryURL(matchedEntries);
+        this.andQuery.push({ $or: orUrlItems });
+      }
     }
   }
 
@@ -95,25 +126,11 @@ class ActivityLogFilter {
     if (this.query?.search === undefined) {
       return;
     }
-    const parsedActionsEntries = Object.entries(ParsedActions);
     const matchedURLs = parsedActionsEntries.filter(([_key, value]) =>
       value.desc.toLowerCase().includes(this.query?.search?.toLocaleLowerCase() || '')
     );
-    const orUrlItems = matchedURLs.map(([key]) => {
-      const entries = key.split(/\/(.*)/s);
-      return {
-        $and: [
-          {
-            url: {
-              $regex: `^\\/${entries[1].replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$`,
-            },
-          },
-          {
-            method: entries[0],
-          },
-        ],
-      };
-    });
+    const orUrlItems = queryURL(matchedURLs);
+
     this.searchFilter();
     if (orUrlItems.length > 0) {
       this.searchQuery.push({ $or: orUrlItems });
