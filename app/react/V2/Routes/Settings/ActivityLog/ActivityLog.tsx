@@ -40,6 +40,7 @@ const sortingParams = ['method', 'time', 'username', 'url'];
 interface ActivityLogSearchParams {
   username?: string;
   search?: string;
+  method?: string;
   from?: string;
   to?: string;
   sort?: string;
@@ -52,6 +53,7 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
   const {
     username,
     search,
+    method,
     from,
     to,
     sort = 'time',
@@ -60,19 +62,17 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     limit = ITEMS_PER_PAGE,
   } = searchParams;
 
-  let time = {};
-  if (from !== undefined && to !== undefined) {
-    const fromDate = new Date(from).getTime() / 1000;
-    const toDate = new Date(to).getTime() / 1000;
-    time = { time: { from: fromDate, to: toDate } };
-  }
+  const fromDate = from && new Date(from).getTime() / 1000;
+  const toDate = to && new Date(to).getTime() / 1000;
+  const time = { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
   const sortOptions = sortingParams.includes(sort)
     ? { prop: sort, asc: +(order === 'asc') }
     : { prop: 'time', asc: 0 };
   const params = {
     ...(username !== undefined ? { username } : {}),
     ...(search !== undefined ? { search } : {}),
-    ...time,
+    ...(fromDate || toDate ? { time } : {}),
+    ...(method !== undefined ? { method: [method] } : {}),
     page,
     limit,
     sort: sortOptions,

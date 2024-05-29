@@ -59,8 +59,8 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
       closeSidepanelFunction={onClose}
       title={<Translate className="uppercase">Filters</Translate>}
     >
-      <Sidepanel.Body>
-        <form id="activity-filters-form" onSubmit={handleSubmit(async data => onSubmit(data))}>
+      <form id="activity-filters-form" onSubmit={handleSubmit(async data => onSubmit(data))}>
+        <Sidepanel.Body>
           <div className="flex flex-col my-4">
             <InputField
               id="username"
@@ -114,27 +114,47 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
                 const fromChanged = !_.isEqual(e.target.value, searchParams.from || '');
                 if (fromChanged) {
                   setValue('from', e.target.value);
+                  if (!searchParams.to) {
+                    setValue('to', e.target.value);
+                  }
                 }
               }}
               onToDateSelected={e => {
                 const toChanged = !_.isEqual(e.target.value, searchParams.to || '');
                 if (toChanged) {
                   setValue('to', e.target.value);
+                  if (!searchParams.from) {
+                    setValue('from', e.target.value);
+                  }
                 }
               }}
               onClear={() => {
-                reset();
                 setValue('from', '');
                 setValue('to', '');
               }}
               dateFormat={dateFormat}
             />
-            <Button type="submit" className="mt-4 mr-0 grow">
+          </div>
+        </Sidepanel.Body>
+        <Sidepanel.Footer className="px-4 py-3">
+          <div className="flex gap-2">
+            <Button
+              className="flex-grow"
+              type="button"
+              styling="outline"
+              onClick={() => {
+                reset();
+                onClose();
+              }}
+            >
+              <Translate>Clear Filters</Translate>
+            </Button>
+            <Button className="flex-grow" type="submit">
               <Translate>Search</Translate>
             </Button>
           </div>
-        </form>
-      </Sidepanel.Body>
+        </Sidepanel.Footer>
+      </form>
     </Sidepanel>
   );
 };
