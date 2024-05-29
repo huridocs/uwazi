@@ -219,23 +219,19 @@ const ActivityLog = () => {
           )}
         </SettingsContent.Body>
       </SettingsContent>
-      {selectedEntry && (
-        <ActivityLogSidePanel
-          selectedEntry={selectedEntry.original}
-          isOpen={selectedEntry !== null}
-          onClose={() => {
-            setSelectedEntry(null);
-          }}
-        />
-      )}
-      {showFilters && (
-        <FiltersSidePanel
-          isOpen={showFilters}
-          onClose={() => setShowFilters(false)}
-          onSubmit={onSubmit}
-          searchParams={searchedParams}
-        />
-      )}
+      <ActivityLogSidePanel
+        selectedEntry={selectedEntry?.original}
+        isOpen={selectedEntry !== null}
+        onClose={() => {
+          setSelectedEntry(null);
+        }}
+      />
+      <FiltersSidePanel
+        isOpen={showFilters}
+        onClose={() => setShowFilters(false)}
+        onSubmit={onSubmit}
+        searchParams={searchedParams}
+      />
     </div>
   );
 };
