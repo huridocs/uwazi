@@ -7,7 +7,7 @@ import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
 
-type Option = { label: string; value: string };
+type Option = { label: string | React.ReactNode; value: string };
 
 interface MultiSelectProps {
   label: string | React.ReactNode;
@@ -95,7 +95,7 @@ const MultiSelect = ({
               data-testid="multiselect-popover"
             >
               {options.map((option: Option) => (
-                <li key={option.label} className="flex gap-2 py-1 align-top">
+                <li key={option.value} className="flex gap-2 py-1 align-top">
                   <Checkbox
                     className="cursor-pointer"
                     id={option.value}
