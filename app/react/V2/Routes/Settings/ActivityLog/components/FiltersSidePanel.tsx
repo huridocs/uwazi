@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
-import { InputField, DateRangePicker } from 'app/V2/Components/Forms';
+import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
@@ -23,10 +23,33 @@ interface FiltersSidePanelProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ActivityLogSearch) => void;
-  searchParams: ActivityLogSearch;
+  searchedParams: ActivityLogSearch;
 }
 
-const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSidePanelProps) => {
+const methodOptions = [
+  {
+    label: <Translate>CREATE</Translate>,
+    value: 'CREATE',
+  },
+  {
+    label: <Translate>UPDATE</Translate>,
+    value: 'UPDATE',
+  },
+  {
+    label: <Translate>DELETE</Translate>,
+    value: 'DELETE',
+  },
+  {
+    label: <Translate>MIGRATE</Translate>,
+    value: 'MIGRATE',
+  },
+  {
+    label: <Translate>WARNING</Translate>,
+    value: 'WARNING',
+  },
+];
+
+const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: FiltersSidePanelProps) => {
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
   const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
 
@@ -44,7 +67,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
-    defaultValues: searchParams,
+    defaultValues: searchedParams,
   });
 
   const handleInputSubmit =
@@ -59,81 +82,83 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
       closeSidepanelFunction={onClose}
       title={<Translate className="uppercase">Filters</Translate>}
     >
-      <form id="activity-filters-form" onSubmit={handleSubmit(async data => onSubmit(data))}>
+      <form
+        id="activity-filters-form"
+        onSubmit={handleSubmit(async data => onSubmit(data))}
+        style={{ width: '100%', overflowY: 'auto', scrollbarGutter: 'stable' }}
+      >
         <Sidepanel.Body>
-          <div className="flex flex-col my-4">
-            <InputField
-              id="username"
-              label={<Translate>User</Translate>}
-              hasErrors={!!errors.username}
-              {...register('username')}
-              clearFieldAction={() => {
-                setValue('username', '');
-              }}
-              onChange={debouncedChangeHandler(handleInputSubmit('username'))}
-              onBlur={() => {}}
-            />
-            <InputField
-              id="method"
-              label={<Translate>Method</Translate>}
-              className="mt-4"
+          <div className="flex flex-col">
+            <MultiSelect
+              value={[]}
+              label={<Translate>Action</Translate>}
+              options={methodOptions}
               {...register('method')}
-              clearFieldAction={() => {
-                setValue('method', '');
-              }}
               onChange={debouncedChangeHandler(handleInputSubmit('method'))}
               hasErrors={!!errors.method}
-              onBlur={() => {}}
             />
-            <InputField
-              id="search"
-              label={<Translate>Search</Translate>}
-              className="mt-4"
-              placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
-              {...register('search')}
-              clearFieldAction={() => {
-                setValue('search', '');
-              }}
-              onChange={debouncedChangeHandler(handleInputSubmit('search'))}
-              hasErrors={!!errors.search}
-              onBlur={() => {}}
-            />
+            <div className="p-4">
+              <InputField
+                id="username"
+                label={<Translate>User</Translate>}
+                hasErrors={!!errors.username}
+                {...register('username')}
+                clearFieldAction={() => {
+                  setValue('username', '');
+                }}
+                onChange={debouncedChangeHandler(handleInputSubmit('username'))}
+                onBlur={() => {}}
+              />
+              <InputField
+                id="search"
+                label={<Translate>Search</Translate>}
+                className="my-4"
+                placeholder={t('System', 'by ids, methods, keywords, etc.', null, false)}
+                {...register('search')}
+                clearFieldAction={() => {
+                  setValue('search', '');
+                }}
+                onChange={debouncedChangeHandler(handleInputSubmit('search'))}
+                hasErrors={!!errors.search}
+                onBlur={() => {}}
+              />
 
-            <DateRangePicker
-              key="activity-log-range"
-              label={<Translate>Date range</Translate>}
-              language={locale}
-              mainClassName="mt-4"
-              register={register}
-              placeholderStart={t('System', 'From', null, false)}
-              placeholderEnd={t('System', 'To', null, false)}
-              labelToday={t('System', 'Today', null, false)}
-              hasErrors={!!errors.from || !!errors.to}
-              labelClear={t('System', 'Clear', null, false)}
-              onFromDateSelected={e => {
-                const fromChanged = !_.isEqual(e.target.value, searchParams.from || '');
-                if (fromChanged) {
-                  setValue('from', e.target.value);
-                  if (!searchParams.to) {
-                    setValue('to', e.target.value);
-                  }
-                }
-              }}
-              onToDateSelected={e => {
-                const toChanged = !_.isEqual(e.target.value, searchParams.to || '');
-                if (toChanged) {
-                  setValue('to', e.target.value);
-                  if (!searchParams.from) {
+              <DateRangePicker
+                key="activity-log-range"
+                label={<Translate>Date range</Translate>}
+                language={locale}
+                mainClassName="pt-4 -top-4"
+                register={register}
+                placeholderStart={t('System', 'From', null, false)}
+                placeholderEnd={t('System', 'To', null, false)}
+                labelToday={t('System', 'Today', null, false)}
+                hasErrors={!!errors.from || !!errors.to}
+                labelClear={t('System', 'Clear', null, false)}
+                onFromDateSelected={e => {
+                  const fromChanged = !_.isEqual(e.target.value, searchedParams.from || '');
+                  if (fromChanged) {
                     setValue('from', e.target.value);
+                    if (!searchedParams.to) {
+                      setValue('to', e.target.value);
+                    }
                   }
-                }
-              }}
-              onClear={() => {
-                setValue('from', '');
-                setValue('to', '');
-              }}
-              dateFormat={dateFormat}
-            />
+                }}
+                onToDateSelected={e => {
+                  const toChanged = !_.isEqual(e.target.value, searchedParams.to || '');
+                  if (toChanged) {
+                    setValue('to', e.target.value);
+                    if (!searchedParams.from) {
+                      setValue('from', e.target.value);
+                    }
+                  }
+                }}
+                onClear={() => {
+                  setValue('from', '');
+                  setValue('to', '');
+                }}
+                dateFormat={dateFormat}
+              />
+            </div>
           </div>
         </Sidepanel.Body>
         <Sidepanel.Footer className="px-4 py-3">
@@ -146,10 +171,10 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchParams }: FiltersSi
                 reset({ username: '', method: '', search: '', from: '', to: '' });
               }}
             >
-              <Translate>Clear Filters</Translate>
+              <Translate>Clear all</Translate>
             </Button>
             <Button className="flex-grow" type="submit">
-              <Translate>Search</Translate>
+              <Translate>Apply</Translate>
             </Button>
           </div>
         </Sidepanel.Footer>
