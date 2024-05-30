@@ -1,4 +1,5 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
+import { cloneDeep } from 'lodash';
 import { TableProps } from './Table';
 
 const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
@@ -26,7 +27,7 @@ const dndSortHandler = <T extends { rowId: string; subRows?: { rowId: string }[]
   activeId: string | number,
   overId: string | number
 ): TableProps<any>['data'] => {
-  const state = [...currentState];
+  const state = cloneDeep(currentState);
 
   const activeParent = dataIds.find(dataId => dataId.id === activeId)?.parentId;
   const overParent = dataIds.find(dataId => dataId.id === overId)?.parentId;
