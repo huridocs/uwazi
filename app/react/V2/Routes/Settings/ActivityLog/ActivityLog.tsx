@@ -230,7 +230,7 @@ const ActivityLog = () => {
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         onSubmit={onSubmit}
-        searchParams={searchedParams}
+        searchedParams={searchedParams}
       />
     </div>
   );

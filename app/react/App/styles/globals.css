@@ -1640,6 +1640,10 @@ input[type="range"]::-ms-fill-lower {
   top: -2.75rem;
 }
 
+.-top-4 {
+  top: -1rem;
+}
+
 .bottom-0 {
   bottom: 0px;
 }

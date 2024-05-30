@@ -136,7 +136,7 @@ const DatePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className={`${mainClassName} relative tw-datepicker`} />
+        <div id="tw-container" className={`${mainClassName} absolute tw-datepicker z-50`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}

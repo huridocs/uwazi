@@ -85,7 +85,7 @@ const DateRangePickerComponent = React.forwardRef(
       <div className="tw-content">
         <div
           id="tw-container"
-          className={`${mainClassName} relative tw-datepicker`}
+          className={`${mainClassName} absolute tw-datepicker z-50`}
           data-test-id={id}
         />
         <div>
