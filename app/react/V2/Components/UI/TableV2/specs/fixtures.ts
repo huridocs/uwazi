@@ -30,6 +30,12 @@ const tableData: TableProps<DataWithGroups>['data'] = [
         description: 'Second child',
         created: 7,
       },
+      {
+        rowId: '1.3',
+        title: 'Sub 1-3',
+        description: 'Last child',
+        created: 9,
+      },
     ],
   },
   {

@@ -1,10 +1,15 @@
+import { UniqueIdentifier } from '@dnd-kit/core';
 import { dndSortHandler, getDataIds } from '../helpers';
 import { tableData } from './fixtures';
 
 describe('DnD table sort handler', () => {
+  let ids: { id: UniqueIdentifier; parentId?: string }[] = [];
+  beforeAll(() => {
+    ids = getDataIds(tableData);
+  });
+
   // eslint-disable-next-line max-statements
   it('should sort root items', () => {
-    const ids = getDataIds(tableData);
     let result = dndSortHandler(tableData, ids, '4', '6');
 
     expect(result[3].title).toEqual('Item 1');
@@ -34,7 +39,64 @@ describe('DnD table sort handler', () => {
     expect(result[5].title).toEqual('Group 1');
   });
 
-  it('should sort childring within the parent', () => {});
+  it('should sort childring within the parent', () => {
+    const [firstElement, rest] = dndSortHandler(tableData, ids, '1.1', '1.2');
+
+    expect(firstElement).toEqual({
+      rowId: '1',
+      title: 'Group 1',
+      created: 10,
+      description: 'First group',
+      subRows: [
+        {
+          rowId: '1.2',
+          title: 'Sub 1-2',
+          description: 'Second child',
+          created: 7,
+        },
+        {
+          rowId: '1.1',
+          title: 'Sub 1-1',
+          description: 'First child',
+          created: 5,
+        },
+        {
+          rowId: '1.3',
+          title: 'Sub 1-3',
+          description: 'Last child',
+          created: 9,
+        },
+      ],
+    });
+
+    const [, expected] = tableData;
+    expect(rest).toEqual(expected);
+
+    const result = dndSortHandler(tableData, ids, 'D', 'C');
+
+    expect(result[2]).toEqual({
+      rowId: '3',
+      title: 'Group 3',
+      created: 30,
+      description: 'Third group',
+      subRows: [
+        {
+          rowId: 'D',
+          title: 'Sub 3-2',
+          description: 'Second item',
+          created: 18,
+        },
+        {
+          rowId: 'C',
+          title: 'Sub 3-1',
+          description: 'First item',
+          created: 12,
+        },
+      ],
+    });
+  });
+
+  it('should move childring from one parent to another', () => {});
 
   it('should move a child out of the parent', () => {});
 
