@@ -23,6 +23,7 @@ import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSele
 import { dndSortHandler, getDataIds } from './helpers';
 
 //whe should mark columns as having sort arrows when defining columns
+//whe should render an error if there are repeated ids
 
 type TableProps<T extends { rowId: string; subRows?: { rowId: string }[] }> = {
   data: T[];

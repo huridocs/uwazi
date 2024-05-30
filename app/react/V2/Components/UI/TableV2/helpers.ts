@@ -20,7 +20,6 @@ const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
   return identifiers;
 };
 
-// eslint-disable-next-line max-statements
 const dndSortHandler = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
   currentState: TableProps<T>['data'],
   dataIds: { id: UniqueIdentifier; parentId?: string }[],
