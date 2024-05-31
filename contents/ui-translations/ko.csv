@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,파일 추가
 Add from URL,URL 에서 추가
 Add from web,웹에서 추가
@@ -138,6 +139,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,컬렉션
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,필터 구성
 Configure templates,Configure templates
@@ -343,7 +345,6 @@ for,for
 Forgot Password?,비밀번호를 잊으셨나요?
 Forms and email configuration,양식 및 이메일 구성
 From,From
-From all templates,From all templates
 Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
@@ -388,6 +389,7 @@ Info,정보
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,속성 이어받기
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -552,7 +554,6 @@ OCR PDF,PDF OCR 읽기
 of,의
 Ok,확인
 OK,확인
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,Ooops...
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
 Open PDF,Open PDF
@@ -706,6 +707,7 @@ Select...,선택
 Selected,Selected
 selected,선택 완료
 selected of,~ 중 선택됨
+Selected templates,Selected templates
 Semantic search,시맨틱 서치
 Semantic Search,시맨틱 서치
 Semantic search minimum sentences help,시맨틱 서치를 위한 최소 문장 팁
