@@ -15,6 +15,7 @@ import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
+import { ci } from 'app/V2/Components/Analitycs';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -24,6 +25,8 @@ import './styles/globals.css';
 import 'flowbite';
 
 const App = ({ customParams }) => {
+  console.log("App.js - App");
+  console.log(ci);
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
   const setSettings = useSetAtom(settingsAtom);
