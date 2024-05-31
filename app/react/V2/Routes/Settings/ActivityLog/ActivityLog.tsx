@@ -8,12 +8,13 @@ import {
   createSearchParams,
 } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import _ from 'lodash';
+import _, { isArray } from 'lodash';
 import { Row, SortingState } from '@tanstack/react-table';
+import { FunnelIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, PaginationState, Paginator, Table } from 'app/V2/Components/UI';
+import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
@@ -40,7 +41,7 @@ const sortingParams = ['method', 'time', 'username', 'url'];
 interface ActivityLogSearchParams {
   username?: string;
   search?: string;
-  method?: string;
+  method?: string[];
   from?: string;
   to?: string;
   sort?: string;
@@ -53,7 +54,7 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
   const {
     username,
     search,
-    method,
+    method = [],
     from,
     to,
     sort = 'time',
@@ -68,11 +69,12 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
   const sortOptions = sortingParams.includes(sort)
     ? { prop: sort, asc: +(order === 'asc') }
     : { prop: 'time', asc: 0 };
+  const methodList = isArray(method) ? method : [method];
   const params = {
     ...(username !== undefined ? { username } : {}),
     ...(search !== undefined ? { search } : {}),
     ...(fromDate || toDate ? { time } : {}),
-    ...(method !== undefined ? { method: [method] } : {}),
+    ...(methodList[0] !== undefined ? { method: methodList } : {}),
     page,
     limit,
     sort: sortOptions,
@@ -125,7 +127,15 @@ const ActivityLog = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
-  const searchedParams = searchParamsFromSearchParams(searchParams);
+  let appliedFilters = searchParamsFromSearchParams(searchParams);
+  appliedFilters =
+    appliedFilters.method && !isArray(appliedFilters.method)
+      ? { ...appliedFilters, method: [appliedFilters.method] }
+      : appliedFilters;
+
+  const appliedFiltersCount = Object.keys(appliedFilters).filter(key =>
+    ['method', 'username', 'search', 'from', 'to'].includes(key)
+  ).length;
 
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
@@ -134,6 +144,17 @@ const ActivityLog = () => {
     return Array.from(newFilters).filter(([_key, value]) => value !== '');
   };
 
+  const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
+    if (!isArray(value)) {
+      prev.set(key, value);
+    } else {
+      prev.set(key, value[0]);
+      value.splice(0, 1);
+      value.forEach(item => {
+        prev.append(key, item);
+      });
+    }
+  };
   const updateSearch = (filters: any) => {
     const filterPairs = _(filters).toPairs().sortBy(0).value();
     const changedPairs = changedParams(filterPairs);
@@ -141,7 +162,7 @@ const ActivityLog = () => {
       setSearchParams((prev: URLSearchParams) => {
         filterPairs.forEach(([key, value]) => {
           if (value !== undefined && value !== '') {
-            prev.set(key, value);
+            setSearchValue(prev, key, value);
           } else {
             prev.delete(key);
           }
@@ -157,7 +178,7 @@ const ActivityLog = () => {
     if (
       isFirstRender &&
       (!sortingProp ||
-        (sortingProp === searchedParams.sort && sortingOrder === searchedParams.order))
+        (sortingProp === appliedFilters.sort && sortingOrder === appliedFilters.order))
     ) {
       return;
     }
@@ -181,8 +202,19 @@ const ActivityLog = () => {
         <SettingsContent.Header title="Activity Log" />
         <SettingsContent.Body className="space-y-3">
           <div className="flex justify-end">
-            <Button type="button" className="mr-0" onClick={() => setShowFilters(true)}>
-              <Translate>Show filters</Translate>
+            <Button
+              type="button"
+              styling="light"
+              size="small"
+              className="flex flex-row items-center gap-4 mr-0 align-middle"
+              onClick={() => setShowFilters(true)}
+            >
+              <FunnelIcon
+                fill={appliedFiltersCount > 0 ? 'text-blue-600' : 'text-gray-600'}
+                className="w-5"
+              />
+              <Translate>Filters</Translate>
+              {appliedFiltersCount > 0 && <Pill color="primary">{appliedFiltersCount}</Pill>}
             </Button>
           </div>
           {error === undefined && (
@@ -194,20 +226,20 @@ const ActivityLog = () => {
               footer={
                 <div className="flex justify-between h-6">
                   <PaginationState
-                    page={Number(searchedParams.page || 1)}
-                    size={searchedParams.limit || ITEMS_PER_PAGE}
+                    page={Number(appliedFilters.page || 1)}
+                    size={appliedFilters.limit || ITEMS_PER_PAGE}
                     total={total}
                     currentLength={activityLogData.length}
                   />
                   <div>
                     <Paginator
                       totalPages={totalPages}
-                      currentPage={Number(searchedParams.page || 1)}
+                      currentPage={Number(appliedFilters.page || 1)}
                       buildUrl={(pageTo: string | number) => {
                         const updatedParams = {
-                          ...searchedParams,
+                          ...appliedFilters,
                           page: pageTo,
-                          limit: searchedParams.limit || ITEMS_PER_PAGE,
+                          limit: appliedFilters.limit || ITEMS_PER_PAGE,
                         };
                         return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
                       }}
@@ -230,7 +262,7 @@ const ActivityLog = () => {
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         onSubmit={onSubmit}
-        searchedParams={searchedParams}
+        searchedParams={appliedFilters}
       />
     </div>
   );

@@ -109,7 +109,7 @@ const MultiSelect = ({
                     }}
                   />
                   <label className="w-full cursor-pointer" htmlFor={option.value}>
-                    {option.label}
+                    {renderChild(option.label)}
                   </label>
                 </li>
               ))}

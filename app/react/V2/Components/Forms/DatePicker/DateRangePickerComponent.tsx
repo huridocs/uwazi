@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
 import { UseFormRegister } from 'react-hook-form';
 //@ts-ignore
