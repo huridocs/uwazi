@@ -6,10 +6,11 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/TableV2.stories';
 
-const { Basic } = composeStories(stories);
+const { Basic, Nested } = composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.data || [];
+  const dataWithNested = Nested.args.data || [];
 
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
     cellsContent.forEach((content, index) =>
@@ -154,9 +155,17 @@ describe('Table', () => {
         force: true,
       });
 
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Entity 1 Entity 2 Entity 4 Entity 3 Entity 5');
+      });
+
       cy.contains('button', 'Drag row 3').drag('button:contains("Drag row 4")', {
         target: { x: 5, y: 0 },
         force: true,
+      });
+
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
       });
 
       checkRowContent(1, ['Drag row 1', 'Select', 'Entity 1', data[1].description, '1']);
@@ -164,10 +173,6 @@ describe('Table', () => {
       checkRowContent(3, ['Drag row 3', 'Select', 'Entity 3', data[3].description, '3']);
       checkRowContent(4, ['Drag row 4', 'Select', 'Entity 4', data[2].description, '4']);
       checkRowContent(5, ['Drag row 5', 'Select', 'Entity 5', data[4].description, '5']);
-
-      cy.get('[data-testid="sorted-items"]').within(() => {
-        cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
-      });
     });
 
     it('should keep selections while sorting', () => {
@@ -196,32 +201,37 @@ describe('Table', () => {
     });
   });
 
-  xdescribe('Nested DnD', () => {
+  describe('Nested data', () => {
+    beforeEach(() => {
+      Basic.args.sorting = 'dnd';
+      Basic.args.checkbox = true;
+      mount(<Nested />);
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Group 1 Group 2 Group 3 Group 4 Item 1 Item 2');
+      });
+      checkRowContent(1, ['Drag row 1', 'Select', 'Group 1', dataWithNested[0].description, '10']);
+      checkRowContent(2, ['Drag row 2', 'Select', 'Group 2', dataWithNested[1].description, '20']);
+      checkRowContent(3, ['Drag row 3', 'Select', 'Group 3', dataWithNested[2].description, '30']);
+      checkRowContent(4, ['Drag row 4', 'Select', 'Group 4', dataWithNested[3].description, '40']);
+      checkRowContent(5, ['Drag row 5', 'Select', 'Item 1', dataWithNested[4].description, '50']);
+      checkRowContent(6, ['Drag row 6', 'Select', 'Item 2', dataWithNested[5].description, '60']);
+    });
+
     it('should render children as subRows', () => {
-      mount(<NestedDnD />);
-
-      checkRowContent(1, ['Entity 2', data[0].description, '2']);
-      checkRowContent(2, ['Entity 1', data[1].description, '1']);
-      checkRowContent(3, ['Entity 3', data[2].description, '3']);
-
-      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
+      cy.get('tbody').within(() => {
+        cy.contains('Group 1').siblings().contains('Group').click();
+        cy.contains('Group 2').siblings().contains('Group').click();
+        cy.contains('Group 3').siblings().contains('Group').click();
+        cy.contains('td', 'Sub 1-1');
+        cy.contains('td', 'Sub 1-2');
+        cy.contains('td', 'Sub 2-1');
+        cy.contains('td', 'Sub 2-2');
+        cy.contains('td', 'Sub 3-1');
+        cy.contains('td', 'Sub 1-2');
+      });
     });
 
-    it('should expand a group', () => {
-      mount(<NestedDnD />);
-
-      cy.contains('children').click();
-
-      checkRowContent(1, ['Entity 2', data[0].description, '2']);
-      checkRowContent(2, ['Entity 1', data[1].description, '1']);
-      checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
-      checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
-      checkRowContent(5, ['Entity 3', data[2].description, '3']);
-
-      cy.get('[data-testid="update_items"] > ul > li').should('have.length', 0);
-    });
-
-    it('should sort an expanded row', () => {
+    xit('should sort an expanded row', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
 
@@ -243,7 +253,7 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 1 Entity a, Entity b', 'Entity 2', 'Entity 3']);
     });
 
-    it('should sort an expanded row by the header', () => {
+    xit('should sort an expanded row by the header', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
       cy.get('[data-testid="created_false"]').click();
@@ -276,7 +286,7 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b, Entity a', 'Entity 3']);
     };
 
-    it('should sort children of a group from top to bottom', () => {
+    xit('should sort children of a group from top to bottom', () => {
       checkChildrenSorting(
         '[data-testid="group_1-draggable-item-0"]',
         '[data-testid="group_1.1"]',
@@ -284,7 +294,7 @@ describe('Table', () => {
       );
     });
 
-    it('should sort children of a group from bottom to top', () => {
+    xit('should sort children of a group from bottom to top', () => {
       checkChildrenSorting(
         '[data-testid="group_1-draggable-item-1"]',
         '[data-testid="group_1.0"]',
@@ -292,7 +302,7 @@ describe('Table', () => {
       );
     });
 
-    it('should move a parent into a group', () => {
+    xit('should move a parent into a group', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
 
@@ -315,7 +325,7 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 1 Entity a, Entity b, Entity 2', 'Entity 3']);
     });
 
-    it('should move a child outsides a group', () => {
+    xit('should move a child outsides a group', () => {
       mount(<NestedDnD />);
       cy.contains('children').click();
 
@@ -339,7 +349,7 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b', 'Entity 3', 'Entity a']);
     });
 
-    describe('Fixed groups', () => {
+    xdescribe('Fixed groups', () => {
       it('should not move a child outsides a group if editableGroups is false', () => {
         mount(<NestedDnD allowEditGroupsWithDnD={false} />);
         cy.contains('children').click();

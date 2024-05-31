@@ -1,10 +1,11 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
+import { get } from 'lodash';
 import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { Translate } from 'app/I18N';
 import { EmbededButton, Table, TableProps } from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
-import { get } from 'lodash';
 import { DataWithGroups } from './fixtures';
 
 type SampleSchema = {
@@ -196,12 +197,17 @@ const GroupCell = ({ row, getValue }: CellContext<DataWithGroups, string>) => {
   const expanded = row.getIsExpanded();
 
   return (
-    <div className="flex gap-2">
-      {getValue()}
+    <div className="flex gap-2 items-center">
+      <Translate context="Menu">{getValue()}</Translate>
       {canExpand && (
-        <button type="button" onClick={() => row.toggleExpanded()}>
-          {expanded ? 'Contract' : 'Expand'}
-        </button>
+        <EmbededButton
+          icon={expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          onClick={() => row.toggleExpanded()}
+          color="indigo"
+          className="bg-indigo-200 rounded-md border-none drop-shadow-none"
+        >
+          <Translate>Group</Translate>
+        </EmbededButton>
       )}
     </div>
   );
