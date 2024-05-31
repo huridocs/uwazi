@@ -21,7 +21,7 @@ const parsedActionsEntries = Object.entries(ParsedActions);
 const queryURL = (matchedEntries: [string, EntryValue][]) =>
   matchedEntries.map(([key]) => {
     const entries = key.split(/\/(.*)/s);
-    return {
+    const condition: { $and: {}[] } = {
       $and: [
         {
           url: {
@@ -33,7 +33,61 @@ const queryURL = (matchedEntries: [string, EntryValue][]) =>
         },
       ],
     };
+    return condition;
   });
+
+const bodyCondition = (methods: string[]) => {
+  const orContent: {}[] = [];
+  methods.forEach(method => {
+    switch (method) {
+      case 'CREATE':
+        orContent.push({
+          $and: [
+            {
+              method: 'POST',
+            },
+            {
+              body: {
+                $regex: '^(?!{"_id").*',
+              },
+            },
+          ],
+        });
+        break;
+      case 'UPDATE':
+        orContent.push({
+          $and: [
+            {
+              method: { $in: ['POST', 'PUT'] },
+            },
+            {
+              body: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        });
+        break;
+      case 'DELETE':
+        orContent.push({
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              query: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        });
+        break;
+      default:
+        break;
+    }
+  });
+  return orContent;
+};
 
 class ActivityLogFilter {
   andQuery: {}[] = [];
@@ -88,7 +142,10 @@ class ActivityLogFilter {
 
   searchFilter() {
     if (this.query?.search) {
-      const regex = { $regex: `.*${this.query?.search}.*`, $options: 'si' };
+      const regex = {
+        $regex: `.*${this.query?.search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+        $options: 'si',
+      };
       this.searchQuery.push({
         $or: [
           { method: regex },
@@ -112,9 +169,13 @@ class ActivityLogFilter {
       const matchedEntries = parsedActionsEntries.filter(
         ([key, value]) =>
           key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
-          value.method?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`)
+          (value.method?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`) ||
+            value.desc?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`))
       );
-      this.andQuery.push({ method: { $in: queryMethods } });
+      const bodyTerm = bodyCondition(methods);
+      if (bodyTerm.length > 0) {
+        this.andQuery.push({ $or: bodyTerm });
+      }
       if (matchedEntries.length > 0) {
         const orUrlItems = queryURL(matchedEntries);
         this.andQuery.push({ $or: orUrlItems });
@@ -122,7 +183,7 @@ class ActivityLogFilter {
     }
   }
 
-  endPointFilter() {
+  openSearchFilter() {
     if (this.query?.search === undefined) {
       return;
     }
@@ -142,7 +203,10 @@ class ActivityLogFilter {
 
   findFilter() {
     if (this.query?.find) {
-      const regex = { $regex: `.*${this.query?.find}.*`, $options: 'si' };
+      const regex = {
+        $regex: `.*${this.query?.find.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+        $options: 'si',
+      };
       this.andQuery.push({
         $or: [
           { method: regex },
@@ -158,7 +222,12 @@ class ActivityLogFilter {
   userFilter() {
     if (this.query?.username) {
       const orUser: {}[] = [
-        { username: { $regex: `.*${this.query?.username}.*`, $options: 'si' } },
+        {
+          username: {
+            $regex: `.*${this.query?.username.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+            $options: 'si',
+          },
+        },
       ];
       if (this.query.username === 'anonymous') {
         orUser.push({ username: null });
@@ -170,7 +239,7 @@ class ActivityLogFilter {
   prepareQuery() {
     this.prepareRegexpQueries();
     this.methodFilter();
-    this.endPointFilter();
+    this.openSearchFilter();
     this.findFilter();
     this.userFilter();
     this.timeQuery();

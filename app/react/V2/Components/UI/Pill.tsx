@@ -34,7 +34,7 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
   }
   return (
     <span
-      className={`${pillColors} ${className} px-2.5 py-1 rounded-md text-xs `}
+      className={`${className} ${pillColors} px-2.5 py-1 rounded-md text-xs `}
       data-testid="pill-comp"
     >
       {children}

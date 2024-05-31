@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+/* eslint-disable react/jsx-props-no-spreading */
+import React, { useMemo, useEffect } from 'react';
 import _ from 'lodash';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
@@ -16,7 +17,7 @@ interface ActivityLogSearch {
   to: string;
   sort: string;
   order: string;
-  method: string;
+  method: string[];
 }
 
 interface FiltersSidePanelProps {
@@ -28,23 +29,23 @@ interface FiltersSidePanelProps {
 
 const methodOptions = [
   {
-    label: <Translate>CREATE</Translate>,
+    label: t('System', 'CREATE', null, false).toUpperCase(),
     value: 'CREATE',
   },
   {
-    label: <Translate>UPDATE</Translate>,
+    label: t('System', 'UPDATE', null, false).toUpperCase(),
     value: 'UPDATE',
   },
   {
-    label: <Translate>DELETE</Translate>,
+    label: t('System', 'DELETE', null, false).toUpperCase(),
     value: 'DELETE',
   },
   {
-    label: <Translate>MIGRATE</Translate>,
+    label: t('System', 'MIGRATE', null, false).toUpperCase(),
     value: 'MIGRATE',
   },
   {
-    label: <Translate>WARNING</Translate>,
+    label: t('System', 'WARNING', null, false).toUpperCase(),
     value: 'WARNING',
   },
 ];
@@ -70,6 +71,11 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
     defaultValues: searchedParams,
   });
 
+  useEffect(() => {
+    setValue('from', searchedParams.from);
+    setValue('to', searchedParams.to);
+  }, []);
+
   const handleInputSubmit =
     (field: 'username' | 'search' | 'method') => (e: React.ChangeEvent<HTMLInputElement>) => {
       setValue(field, e.target.value);
@@ -90,11 +96,12 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
         <Sidepanel.Body>
           <div className="flex flex-col">
             <MultiSelect
-              value={[]}
+              value={searchedParams.method || []}
               label={<Translate>Action</Translate>}
               options={methodOptions}
-              {...register('method')}
-              onChange={debouncedChangeHandler(handleInputSubmit('method'))}
+              onChange={selected => {
+                setValue('method', selected);
+              }}
               hasErrors={!!errors.method}
             />
             <div className="p-4">
@@ -168,7 +175,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
               type="button"
               styling="outline"
               onClick={() => {
-                reset({ username: '', method: '', search: '', from: '', to: '' });
+                reset({ username: '', method: [], search: '', from: '', to: '' });
               }}
             >
               <Translate>Clear all</Translate>
