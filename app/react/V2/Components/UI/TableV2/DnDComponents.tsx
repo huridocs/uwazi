@@ -13,6 +13,7 @@ const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }
 
   const canExpand = row.getCanExpand();
   const expanded = row.getIsExpanded();
+  const parentRow = row.getParentRow();
 
   if (canExpand && expanded && isDragging) {
     row.toggleExpanded();
@@ -21,7 +22,7 @@ const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }
   return (
     <button {...attributes} {...listeners} type="button">
       🟰
-      <span className="sr-only">{`${t('System', 'Drag row', null, false)} ${row.index + 1}`}</span>
+      <span className="sr-only">{`${t('System', 'Drag row', null, false)} ${parentRow ? `${parentRow.index + 1}-${row.index + 1}` : `${row.index + 1}`}`}</span>
     </button>
   );
 };

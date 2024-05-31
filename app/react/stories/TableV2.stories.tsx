@@ -81,6 +81,19 @@ const StoryComponent = ({
           )}
         </div>
       </div>
+      <hr className="my-4" />
+      <div data-testid="sorted-subrows">
+        <h2>Sorted subRows:</h2>
+        <div className="flex gap-2">
+          {dataState.map((ds: DataWithGroups) =>
+            ds.subRows?.map(subRow => (
+              <span key={subRow.rowId}>
+                |{ds.title} - {subRow.title}|
+              </span>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 };

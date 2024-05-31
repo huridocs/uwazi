@@ -217,7 +217,7 @@ describe('Table', () => {
       checkRowContent(6, ['Drag row 6', 'Select', 'Item 2', dataWithNested[5].description, '60']);
     });
 
-    it('should render children as subRows', () => {
+    it('should expand groups and check for accessibility', () => {
       cy.get('tbody').within(() => {
         cy.contains('Group 1').siblings().contains('Group').click();
         cy.contains('Group 2').siblings().contains('Group').click();
@@ -229,28 +229,39 @@ describe('Table', () => {
         cy.contains('td', 'Sub 3-1');
         cy.contains('td', 'Sub 1-2');
       });
+
+      cy.checkA11y();
     });
 
-    xit('should sort an expanded row', () => {
-      mount(<NestedDnD />);
-      cy.contains('children').click();
+    it('should sort children element with dnd', () => {
+      mount(<Nested />);
 
-      cy.get('[data-testid="root-draggable-item-1"]').drag(
-        '[data-testid="root-draggable-item-0"]',
-        {
-          target: { x: 5, y: 0 },
-          force: true,
-        }
+      cy.get('tbody').within(() => {
+        cy.contains('Group 1').siblings().contains('Group').click();
+        cy.contains('Group 3').siblings().contains('Group').click();
+        cy.contains('td', 'Sub 1-1');
+        cy.contains('td', 'Sub 1-2');
+        cy.contains('td', 'Sub 3-1');
+        cy.contains('td', 'Sub 3-2');
+      });
+
+      cy.contains('button', 'Drag row 3-1').drag('button:contains("Drag row 1-1")', {
+        target: { x: 5, y: 0 },
+        force: true,
+      });
+
+      checkRowContent(1, ['Drag row 1', 'Select', 'Group 1', dataWithNested[0].description, '10']);
+      checkRowContent(2, [
+        'Drag row 1-1',
+        'Select',
+        'Sub 3-1',
+        dataWithNested[2].subRows[0].description,
+        '12',
+      ]);
+
+      cy.get('[data-testid="sorted-subrows"] > .flex > :nth-child(1)').contains(
+        '|Group 1 - Sub 3-1|'
       );
-
-      checkRowContent(1, ['Entity 1', data[1].description, '1']);
-      checkRowContent(2, ['Entity 2', data[0].description, '2']);
-      checkRowContent(3, ['Entity 3', data[2].description, '3']);
-
-      cy.get('[data-testid="update_items"] > ul > li')
-        .should('have.length', 3)
-        .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-        .should('deep.equal', ['Entity 1 Entity a, Entity b', 'Entity 2', 'Entity 3']);
     });
 
     xit('should sort an expanded row by the header', () => {
