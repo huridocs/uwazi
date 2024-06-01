@@ -79,6 +79,18 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish').contains('Uninstall').should('not.exist');
       cy.contains('Dismiss').click();
     });
+    it('should use the default language if there is not specified locale', () => {
+      cy.clearAllCookies();
+      cy.visit('http://localhost:3000/login');
+      cy.contains('Acceder');
+      cy.contains('Usuario');
+      cy.get('input[name="username"').type('admin');
+      cy.get('input[name="password"').type('admin');
+      cy.get('button[type="submit"').click();
+      cy.contains('ordenado por');
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+      cy.contains('span', 'Languages').click();
+    });
   });
 
   describe('Reset Language', () => {
