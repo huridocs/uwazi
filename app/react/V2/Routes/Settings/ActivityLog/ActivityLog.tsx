@@ -147,7 +147,7 @@ const ActivityLog = () => {
   const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
     if (!isArray(value)) {
       prev.set(key, value);
-    } else {
+    } else if (value.length > 0) {
       prev.set(key, value[0]);
       value.splice(0, 1);
       value.forEach(item => {
@@ -210,7 +210,10 @@ const ActivityLog = () => {
               onClick={() => setShowFilters(true)}
             >
               <FunnelIcon
-                fill={appliedFiltersCount > 0 ? 'text-blue-600' : 'text-gray-600'}
+                stroke={
+                  appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)'
+                }
+                fill={appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)'}
                 className="w-5"
               />
               <Translate>Filters</Translate>
@@ -219,6 +222,7 @@ const ActivityLog = () => {
           </div>
           {error === undefined && (
             <Table<ActivityLogEntryType>
+              title={<Translate>Activity Log</Translate>}
               columns={columns}
               data={activityLogData}
               sorting={sorting}
@@ -262,7 +266,7 @@ const ActivityLog = () => {
         isOpen={showFilters}
         onClose={() => setShowFilters(false)}
         onSubmit={onSubmit}
-        searchedParams={appliedFilters}
+        appliedFilters={appliedFilters}
       />
     </div>
   );
