@@ -18,7 +18,9 @@ interface DateRangePickerProps extends DatePickerProps {
   placeholderEnd?: string;
   onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
   onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  onClear?: () => void;
+  from?: string;
+  to?: string;
+  onClear?: (field: 'from' | 'to') => void;
 }
 const DateRangePickerComponent = React.forwardRef(
   (
@@ -41,6 +43,8 @@ const DateRangePickerComponent = React.forwardRef(
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
       onBlur = () => {},
+      from,
+      to,
       onClear = () => {},
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
@@ -117,14 +121,15 @@ const DateRangePickerComponent = React.forwardRef(
                 </svg>
               </div>
               <InputField
+                id="from"
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                name="from"
                 {...register('from')}
                 type="text"
+                value={from}
                 onSelect={onFromDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
@@ -132,7 +137,13 @@ const DateRangePickerComponent = React.forwardRef(
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderStart}
                 ref={fromRef}
-                clearFieldAction={onClear}
+                clearFieldAction={() => {
+                  if (fromRef !== null && fromRef.current !== null) {
+                    //@ts-expect-error
+                    fromRef.current.value = '';
+                    onClear('from');
+                  }
+                }}
               />
             </div>
             <div className="relative">
@@ -148,22 +159,28 @@ const DateRangePickerComponent = React.forwardRef(
                 </svg>
               </div>
               <InputField
+                id="to"
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                id="to"
-                name="to"
                 {...register('to')}
                 type="text"
+                value={to}
                 onSelect={onToDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderEnd}
-                clearFieldAction={onClear}
+                clearFieldAction={() => {
+                  if (toRef !== null && toRef.current !== null) {
+                    //@ts-expect-error
+                    toRef.current.value = '';
+                    onClear('to');
+                  }
+                }}
                 ref={toRef}
               />
             </div>
@@ -181,6 +198,8 @@ DateRangePickerComponent.defaultProps = {
   placeholderEnd: 'Select end',
   onFromDateSelected: () => {},
   onToDateSelected: () => {},
+  from: '',
+  to: '',
   onClear: () => {},
 };
 

@@ -24,7 +24,7 @@ interface FiltersSidePanelProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ActivityLogSearch) => void;
-  searchedParams: ActivityLogSearch;
+  appliedFilters: ActivityLogSearch;
 }
 
 const methodOptions = [
@@ -50,7 +50,7 @@ const methodOptions = [
   },
 ];
 
-const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: FiltersSidePanelProps) => {
+const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
   const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
 
@@ -68,12 +68,12 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
-    defaultValues: searchedParams,
+    defaultValues: appliedFilters,
   });
 
   useEffect(() => {
-    setValue('from', searchedParams.from);
-    setValue('to', searchedParams.to);
+    setValue('from', appliedFilters.from);
+    setValue('to', appliedFilters.to);
   }, []);
 
   const handleInputSubmit =
@@ -96,7 +96,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
         <Sidepanel.Body>
           <div className="flex flex-col">
             <MultiSelect
-              value={searchedParams.method || []}
+              value={appliedFilters.method || []}
               label={<Translate>Action</Translate>}
               options={methodOptions}
               onChange={selected => {
@@ -142,28 +142,23 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, searchedParams }: Filters
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear={t('System', 'Clear', null, false)}
                 onFromDateSelected={e => {
-                  const fromChanged = !_.isEqual(e.target.value, searchedParams.from || '');
+                  const fromChanged = !_.isEqual(e.target.value, appliedFilters.from || '');
                   if (fromChanged) {
                     setValue('from', e.target.value);
-                    if (!searchedParams.to) {
-                      setValue('to', e.target.value);
-                    }
                   }
                 }}
                 onToDateSelected={e => {
-                  const toChanged = !_.isEqual(e.target.value, searchedParams.to || '');
+                  const toChanged = !_.isEqual(e.target.value, appliedFilters.to || '');
                   if (toChanged) {
                     setValue('to', e.target.value);
-                    if (!searchedParams.from) {
-                      setValue('from', e.target.value);
-                    }
                   }
                 }}
-                onClear={() => {
-                  setValue('from', '');
-                  setValue('to', '');
-                }}
                 dateFormat={dateFormat}
+                from={appliedFilters.from}
+                to={appliedFilters.to}
+                onClear={(field: 'from' | 'to') => {
+                  setValue(field, '');
+                }}
               />
             </div>
           </div>
