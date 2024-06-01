@@ -67,5 +67,23 @@ const App = () => (
 
 const container = document.getElementById('root');
 const root = window.__loadingError__ === undefined ? hydrateRoot(container!, <App />) : container;
+const silentWarnings = [
+  'Warning: %s uses the legacy childContextTypes API which is no longer supported and will be removed in the next major release.',
+  'Warning: %s: Support for defaultProps will be removed from function components in a future major release. Use JavaScript default parameters instead.%s',
+  'Warning: %s uses the legacy contextTypes API which is no longer supported and will be removed in the next major release.',
+  'Warning: findDOMNode is deprecated and will be removed in the next major release.',
+];
+
+const isSilentWarning = (warning: string) =>
+  silentWarnings.find(w => warning.includes(w)) !== undefined;
+
+const origConsoleError = window.console.error;
+
+window.console.error = (...args) => {
+  if (isSilentWarning(args[0])) {
+    return;
+  }
+  origConsoleError.apply(window.console, args);
+};
 
 export { root };

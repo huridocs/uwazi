@@ -20,7 +20,7 @@ const Checkbox = React.forwardRef(
     ref: Ref<any>
   ) => (
     <fieldset className={`flex flex-wrap gap-4 ${className}`} id={`radio_${name}`}>
-      <div className="flex items-center gap-2 mr-4">
+      <div className="flex items-center w-full gap-2 mr-4">
         <FlowbiteCheckbox
           checked={checked}
           id={name}
@@ -32,7 +32,7 @@ const Checkbox = React.forwardRef(
         />
         <Label
           htmlFor={name}
-          className={`text-sm font-medium text-gray-900 cursor-pointer ${disabled ? '!text-gray-300' : ''}`}
+          className={`w-full text-sm font-medium text-gray-900 cursor-pointer ${disabled ? '!text-gray-300' : ''}`}
         >
           {isString(label) ? <Translate>{label}</Translate> : label}
         </Label>

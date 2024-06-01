@@ -1,103 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import Modal from 'app/Layout/Modal';
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
+import React, { useState } from 'react';
+import { uniq } from 'lodash';
+import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { Modal, Button, MultiselectList, Pill } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { MultiSelect } from 'app/Forms';
-import { ClientTemplateSchema } from 'app/istore';
-import Icons from 'app/Templates/components/Icons';
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { IXExtractorInfo } from 'V2/shared/types';
+import { InputField } from 'app/V2/Components/Forms/InputField';
+import { RadioSelect } from 'app/V2/Components/Forms';
+import { propertyIcons } from './Icons';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
 
 interface ExtractorModalProps {
-  isOpen: boolean;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
   onAccept: (extractorInfo: IXExtractorInfo) => void;
   templates: ClientTemplateSchema[];
   extractor?: IXExtractorInfo;
 }
 
+const getPropertyLabel = (property: ClientPropertySchema, templateId: string) => {
+  let icon: React.ReactNode;
+  let propertyTypeTranslationKey = 'property text';
+
+  switch (property.type) {
+    case 'numeric':
+      icon = propertyIcons.numeric;
+      propertyTypeTranslationKey = 'property numeric';
+      break;
+    case 'date':
+      icon = propertyIcons.date;
+      propertyTypeTranslationKey = 'property date';
+      break;
+    case 'select':
+      icon = propertyIcons.select;
+      propertyTypeTranslationKey = 'property select';
+      break;
+    case 'multiselect':
+      icon = propertyIcons.multiselect;
+      propertyTypeTranslationKey = 'property multiselect';
+      break;
+    default:
+      icon = propertyIcons.text;
+  }
+
+  return (
+    <div className="flex gap-2 items-center">
+      <span className="w-4">{icon}</span>
+      <Translate context={templateId}>{property.label}</Translate>
+      <Translate
+        translationKey={propertyTypeTranslationKey}
+        className="lowercase before:content-['('] after:content-[')']"
+      >
+        {property.type}
+      </Translate>
+    </div>
+  );
+};
+
+const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
+  const propertyName = values.length ? values[0].split('-', 2)[1] : null;
+
+  return templates
+    .map(template => {
+      const option = {
+        label: template.name,
+        id: template._id,
+        searchLabel: template.name,
+        value: template._id,
+        items: template.properties
+          ?.filter(
+            prop =>
+              (!propertyName || prop.name === propertyName) &&
+              SUPPORTED_PROPERTIES.includes(prop.type)
+          )
+          .map(prop => ({
+            label: getPropertyLabel(prop, template._id),
+            value: `${template._id?.toString()}-${prop.name}`,
+            searchLabel: prop.label,
+          })),
+      };
+
+      if (propertyName === 'title' || !propertyName) {
+        option.items.push({
+          label: getPropertyLabel({ label: 'Title', name: 'Title', type: 'text' }, template._id),
+          value: `${template._id?.toString()}-title`,
+          searchLabel: 'Title',
+        });
+      }
+
+      return option;
+    })
+    .filter(template => template.items.length);
+};
+
+const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) => {
+  const [templateId, propertyName] = (value || '').split('-');
+
+  const matchedTemplate = templates.find(template => template._id.toString() === templateId);
+
+  if (propertyName === 'title') {
+    return getPropertyLabel(
+      {
+        name: 'title',
+        label: 'Title',
+        type: 'text',
+      },
+      matchedTemplate!._id.toString()
+    );
+  }
+
+  const matchedProperty = matchedTemplate?.properties.find(
+    property => property.name === propertyName
+  );
+
+  if (matchedProperty) {
+    return getPropertyLabel(matchedProperty, matchedTemplate!._id.toString());
+  }
+
+  return <div />;
+};
+
 const ExtractorModal = ({
-  isOpen,
+  setShowModal,
   onClose,
   onAccept,
   templates,
   extractor,
 }: ExtractorModalProps) => {
-  const [name, setName] = useState('');
-  const [values, setValues] = useState<string[]>([]);
-  const [isEditing, setEditing] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState(false);
-  const [error, setError] = useState(false);
+  const initialValues =
+    extractor?.templates.map(template => `${template}-${extractor.property}`) || [];
 
-  useEffect(() => {
-    if (extractor) {
-      setEditing(true);
-      setName(extractor.name);
-      const initialValues = extractor.templates.map(
-        template => `${template}-${extractor.property}`
-      );
-      setValues(initialValues);
-    } else {
-      setEditing(false);
-      setName('');
-      setValues([]);
-    }
-  }, [extractor]);
-
-  const filter = values.length ? values[0].split('-', 2)[1] : null;
-  const options = templates.map(template => ({
-    label: template.name,
-    id: template._id,
-    value: template._id,
-    options: template.properties
-      ?.filter(prop => !filter || prop.name === filter)
-      .map(prop => ({
-        label: prop.label,
-        value: `${template._id?.toString()}-${prop.name}`,
-        type: prop.type,
-        icon: { type: 'Icons', _id: Icons[prop.type] },
-      }))
-      .filter(({ type }) => SUPPORTED_PROPERTIES.includes(type))
-      .concat(
-        !filter || filter === 'title'
-          ? [
-              {
-                label: 'Title',
-                value: `${template._id?.toString()}-title`,
-                type: 'text',
-                icon: { type: 'Icons', _id: Icons.text },
-              },
-            ]
-          : []
-      ),
-  }));
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState(extractor?.name || '');
+  const [values, setValues] = useState<string[]>(initialValues);
+  const [options, setOptions] = useState(formatOptions(initialValues, templates));
+  const [hasNameError, setNameError] = useState(false);
 
   const handleClose = () => {
-    setEditing(false);
     setName('');
     setValues([]);
-    setIsDisabled(false);
     onClose();
   };
 
-  // eslint-disable-next-line max-statements
   const handleSubmit = (submittedName: string, submitedValues: string[]) => {
     if (!submittedName.length) {
-      setError(true);
+      setNameError(true);
       return;
     }
 
-    setEditing(false);
-    setIsDisabled(true);
     const result: null | IXExtractorInfo = submitedValues.length
       ? ({
           name: submittedName,
           property: submitedValues[0].split('-', 2)[1],
-          templates: submitedValues.map(value => value.split('-', 2)[0]),
+          templates: uniq(submitedValues.map(value => value.split('-', 2)[0])),
         } as IXExtractorInfo)
       : null;
 
-    if (isEditing && result && extractor) {
+    if (result && extractor) {
       result._id = extractor._id;
     }
 
@@ -109,112 +171,116 @@ const ExtractorModal = ({
     }
   };
 
-  const onAllTemplatedCheckboxChanged = () => {
-    const properties = new Set();
-    const newValues: string[] = [];
-
-    values.forEach(value => {
-      properties.add(value.split('-')[1]);
-    });
-
-    const validTemplateIds: string[] = templates
-      .filter(template => {
-        const isTitle = properties.has('title');
-
-        if (isTitle) return true;
-
-        const hasMatchingProperty = template.properties.filter(property =>
-          properties.has(property.name)
-        ).length;
-
-        return hasMatchingProperty > 0;
-      })
-      .map(template => template._id);
-
-    validTemplateIds.forEach(id => {
-      const arrProps = Array.from(properties);
-      arrProps.forEach(prop => {
-        newValues.push(`${id}-${prop}`);
-      });
-    });
-
-    setValues(newValues);
-  };
-
   return (
-    <Modal isOpen={isOpen} type="content" className="extractor-creation-modal">
+    <Modal size="xxl">
       <Modal.Header>
-        <div className="extractor-label">
-          {isEditing ? (
-            <Translate>Edit Extractor</Translate>
-          ) : (
-            <Translate>Create Extractor</Translate>
-          )}
-        </div>
-        <div className="all-templates-button">
-          <button
-            type="button"
-            className="btn"
-            onClick={onAllTemplatedCheckboxChanged}
-            disabled={!values.length}
-          >
-            <Translate>From all templates</Translate>
-          </button>
-        </div>
+        <h1 className="text-xl font-medium text-gray-900">
+          {extractor ? <Translate>Edit Extractor</Translate> : <Translate>Add Extractor</Translate>}
+        </h1>
+        <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
-      <Modal.Body>
-        <input
+
+      <Modal.Body className="flex flex-col gap-4 px-3 pt-4">
+        <InputField
+          clearFieldAction={() => {}}
+          id="extractor-name"
+          placeholder="Extractor name"
+          hasErrors={hasNameError}
           value={name}
-          type="text"
-          className="form-control extractor-name-input"
           onChange={event => {
             setName(event.target.value);
-            setError(false);
+            setNameError(false);
           }}
-          placeholder="Extractor name"
         />
-        {error && (
-          <div className="tw-content">
-            <Translate className="block mt-1 text-sm font-medium text-error-700">
-              This field is required
-            </Translate>
-          </div>
-        )}
-        <div className="property-selection">
-          <MultiSelect
-            className="ix-extraction-multiselect"
-            value={values}
-            onChange={setValues}
-            options={options}
-            optionsToShow={20}
-            topLevelSelectable={false}
+
+        <div className={`${step !== 1 && 'hidden'}`}>
+          <MultiselectList
+            className="h-96"
+            value={initialValues || []}
+            items={options}
+            onChange={selected => {
+              setValues(selected);
+              setOptions(formatOptions(selected, templates));
+            }}
+            checkboxes
+            foldableGroups
+            allowSelelectAll={values.length > 0}
           />
         </div>
-        <span className="left">
-          * <Translate>Only text, number and date properties are currently supported</Translate>
-        </span>
+        <div className={`${step !== 2 && 'hidden'}`}>
+          <div className="h-96">
+            <h6 className="text-sm font-medium">
+              <Translate>Input</Translate>
+            </h6>
+            <div className="p-3">{getPropertyForValue(values[0], templates)}</div>
+            <h6 className="text-sm font-medium">
+              <Translate>Selected templates</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
+              {values.map(value => {
+                const templateId = value?.split('-', 2)[0];
+                const template = templates.find(temp => temp._id === templateId);
+                return (
+                  <Pill color="gray" className="m-1" key={templateId}>
+                    {template?.name}
+                  </Pill>
+                );
+              })}
+            </div>
+            <h6 className="text-sm font-medium">
+              <Translate>Common sources</Translate>
+            </h6>
+            <div className="flex flex-wrap p-3">
+              <RadioSelect
+                name="pdf"
+                options={[
+                  {
+                    label: <Translate>PDF</Translate>,
+                    value: 'true',
+                    defaultChecked: true,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 justify-center w-full">
+          <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+          <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
+        </div>
       </Modal.Body>
+
       <Modal.Footer>
-        <div className="extractor-footer">
-          <button
-            type="button"
-            className="btn btn-default btn-extra-padding action-button"
-            onClick={handleClose}
-          >
-            <Translate>Cancel</Translate>
-          </button>
-          <button
-            type="button"
-            className="btn btn-default action-button btn-extra-padding"
-            onClick={() => handleSubmit(name, values)}
-            disabled={isDisabled}
-          >
-            {isEditing ? <Translate>Save</Translate> : <Translate>Add</Translate>}
-          </button>
+        <div className="flex flex-col w-full">
+          <div className="flex gap-2">
+            {step === 1 ? (
+              <>
+                <Button styling="light" onClick={() => setShowModal(false)} className="grow">
+                  <Translate>Cancel</Translate>
+                </Button>
+                <Button className="grow" onClick={() => setStep(2)}>
+                  <span className="flex flex-nowrap gap-2 justify-center items-center">
+                    <Translate>Next</Translate>
+                    <ArrowRightIcon className="w-5" />
+                  </span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button styling="light" onClick={() => setStep(1)} className="grow">
+                  <Translate>Back</Translate>
+                </Button>
+                <Button className="grow" onClick={() => handleSubmit(name, values)} color="success">
+                  {extractor ? <Translate>Update</Translate> : <Translate>Create</Translate>}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </Modal.Footer>
     </Modal>
   );
 };
 
-export { ExtractorModal };
+export { ExtractorModal, formatOptions };

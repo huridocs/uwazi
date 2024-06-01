@@ -15,7 +15,7 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <div className="w-full p-4 m-auto md:w-1/2">
+        <div className="p-4 m-auto w-full md:w-1/2">
           <MultiselectList
             label={args.label}
             items={args.items}
@@ -23,6 +23,7 @@ const Primary: Story = {
             hasErrors={args.hasErrors}
             checkboxes={args.checkboxes}
             foldableGroups={args.foldableGroups}
+            allowSelelectAll={args.allowSelelectAll}
           />
         </div>
       </div>
@@ -37,6 +38,7 @@ const Basic: Story = {
     checkboxes: true,
     foldableGroups: true,
     hasErrors: false,
+    allowSelelectAll: false,
     items: [
       { searchLabel: 'Someone', label: 'Someone', value: 'someone' },
       { searchLabel: 'Another', label: 'Another', value: 'another' },

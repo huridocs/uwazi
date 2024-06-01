@@ -12,7 +12,7 @@ import { ViewerRoute } from './Viewer/ViewerRoute';
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) {
-    return query.substring(1).split('=')[1];
+    return decodeURI(query.substring(1).split('=')[1]);
   }
   return `(${query.substring(1)})`;
 };
