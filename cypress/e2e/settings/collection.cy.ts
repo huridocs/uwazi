@@ -29,7 +29,8 @@ describe('Collection', () => {
 
   it('custom landing page', () => {
     cy.get('#landing-page').type(
-      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
+      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)',
+      { delay: 0 }
     );
   });
 
@@ -122,5 +123,18 @@ describe('Collection', () => {
     cy.get('.leaflet-control-layers-list .leaflet-control-layers-base label')
       .its('length')
       .should('eq', 2);
+  });
+
+  it('should load the selected search as landing page ', () => {
+    cy.contains('a', 'Library').click();
+    cy.get('.alert.alert-success [data-icon="times"]').click();
+    cy.reload();
+    cy.on('uncaught:exception', (err, _runnable) => {
+      err.message.includes('Hydration failed');
+      return false;
+    });
+    cy.contains('a', 'New Collection Name').scrollIntoView();
+    cy.contains('a', 'New Collection Name').click({ force: true });
+    cy.get('.item').should('have.length', 2);
   });
 });
