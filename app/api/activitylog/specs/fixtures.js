@@ -4,7 +4,7 @@ export default {
       method: 'POST',
       url: '/api/entities',
       query: '{}',
-      body: '{"_id":"123","title":"Hello"}',
+      body: '{"title":"Hello"}',
       time: 1200002400000,
       username: 'admin',
     },
