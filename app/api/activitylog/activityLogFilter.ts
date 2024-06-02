@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
-import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
 import moment from 'moment';
+import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
 import { ParsedActions } from './activitylogParser';
 import { EntryValue } from './activityLogBuilder';
 
@@ -36,58 +36,47 @@ const queryURL = (matchedEntries: [string, EntryValue][]) =>
     return condition;
   });
 
+const andCondition = (method: string, regex: string, property: string = 'body') => ({
+  $and: [
+    {
+      method,
+    },
+    {
+      [property]: {
+        $regex: regex,
+      },
+    },
+  ],
+});
+
 const bodyCondition = (methods: string[]) => {
   const orContent: {}[] = [];
   methods.forEach(method => {
     switch (method) {
       case 'CREATE':
-        orContent.push({
-          $and: [
-            {
-              method: 'POST',
-            },
-            {
-              body: {
-                $regex: '^(?!{"_id").*',
-              },
-            },
-          ],
-        });
+        orContent.push(andCondition('POST', '^(?!{"_id").*'));
         break;
       case 'UPDATE':
-        orContent.push({
-          $and: [
-            {
-              method: { $in: ['POST', 'PUT'] },
-            },
-            {
-              body: {
-                $regex: '^({"_id").*',
-              },
-            },
-          ],
-        });
+        orContent.push(andCondition('POST', '^({"_id").*'));
+        orContent.push(andCondition('PUT', '^({"_id").*'));
         break;
       case 'DELETE':
-        orContent.push({
-          $and: [
-            {
-              method: 'DELETE',
-            },
-            {
-              query: {
-                $regex: '^({"_id").*',
-              },
-            },
-          ],
-        });
+        orContent.push(andCondition('DELETE', '^({"_id").*'));
         break;
       default:
+        orContent.push({
+          method,
+        });
         break;
     }
   });
   return orContent;
 };
+const sanitizeTime = (time: { [k: string]: unknown }) => (memo: {}, k: string) =>
+  time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo;
+
+const equivalentHttpMethod = (method: string): string =>
+  ['CREATE', 'UPDATE'].includes(method.toUpperCase()) ? 'POST' : method.toUpperCase();
 
 class ActivityLogFilter {
   andQuery: {}[] = [];
@@ -97,17 +86,14 @@ class ActivityLogFilter {
   query: ActivityLogQuery;
 
   constructor(requestQuery: ActivityLogQuery) {
-    this.query = requestQuery;
+    const methodFilter = ((requestQuery || {}).method || []).map(method => method.toUpperCase());
+    this.query = { ...requestQuery, method: methodFilter };
   }
 
   timeQuery() {
-    const time = this.query?.time || {};
-    const before = this.query?.before || -1;
+    const { time = {}, before = -1 } = this.query || {};
 
-    const sanitizedTime = Object.keys(time).reduce(
-      (memo, k) => (time[k] !== null ? Object.assign(memo, { [k]: time[k] }) : memo),
-      {}
-    );
+    const sanitizedTime = Object.keys(time).reduce(sanitizeTime(time), {});
 
     if (before === -1 && isEmpty(sanitizedTime)) {
       return;
@@ -122,8 +108,9 @@ class ActivityLogFilter {
   }
 
   setRequestFilter(property: 'url' | 'query' | 'body' | 'params', exact = false) {
-    if (this.query?.[property] !== undefined) {
-      const exp = this.query?.[property]!.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&');
+    const filterValue = (this.query || {})[property];
+    if (filterValue !== undefined) {
+      const exp = filterValue.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&');
 
       this.andQuery.push({
         [property]: {
@@ -141,15 +128,23 @@ class ActivityLogFilter {
   };
 
   searchFilter() {
-    if (this.query?.search) {
+    const { search } = this.query || {};
+    if (search !== undefined) {
       const regex = {
-        $regex: `.*${this.query?.search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+        $regex: `.*${search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
         $options: 'si',
       };
       this.searchQuery.push({
         $or: [
-          { method: regex },
-          { url: { $regex: `^${this.query?.search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$` } },
+          {
+            method: {
+              $regex: `${search
+                .toUpperCase()
+                .replace('CREATE', 'POST')
+                .replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}`,
+            },
+          },
+          { url: { $regex: `^${search.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}$` } },
           { query: regex },
           { body: regex },
           { params: regex },
@@ -159,18 +154,14 @@ class ActivityLogFilter {
   }
 
   methodFilter() {
-    const methods = this.query?.method;
-    if (methods && methods.length > 0) {
-      const queryMethods =
-        methods.map(method =>
-          ['CREATE', 'UPDATE'].includes(method.toUpperCase()) ? 'POST' : method.toUpperCase()
-        ) || [];
-
+    const { method: methods = [] } = this.query || {};
+    if (methods.length > 0) {
+      const queryMethods = methods.map(equivalentHttpMethod);
       const matchedEntries = parsedActionsEntries.filter(
         ([key, value]) =>
           key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
-          (value.method?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`) ||
-            value.desc?.toUpperCase().match(`(${methods.join('|').toUpperCase()}).*`))
+          ((value.method || '').toUpperCase().match(`(${methods.join('|')}).*`) ||
+            value.desc.toUpperCase().match(`(${methods.join('|')}).*`))
       );
       const bodyTerm = bodyCondition(methods);
       if (bodyTerm.length > 0) {
@@ -184,11 +175,12 @@ class ActivityLogFilter {
   }
 
   openSearchFilter() {
-    if (this.query?.search === undefined) {
+    const { search } = this.query || {};
+    if (search === undefined) {
       return;
     }
     const matchedURLs = parsedActionsEntries.filter(([_key, value]) =>
-      value.desc.toLowerCase().includes(this.query?.search?.toLocaleLowerCase() || '')
+      value.desc.toLowerCase().includes(search.toLocaleLowerCase() || '')
     );
     const orUrlItems = queryURL(matchedURLs);
 
@@ -202,9 +194,10 @@ class ActivityLogFilter {
   }
 
   findFilter() {
-    if (this.query?.find) {
+    const { find } = this.query || {};
+    if (find) {
       const regex = {
-        $regex: `.*${this.query?.find.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+        $regex: `.*${find.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
         $options: 'si',
       };
       this.andQuery.push({
@@ -220,16 +213,17 @@ class ActivityLogFilter {
   }
 
   userFilter() {
-    if (this.query?.username) {
+    const { username } = this.query || {};
+    if (username) {
       const orUser: {}[] = [
         {
           username: {
-            $regex: `.*${this.query?.username.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
+            $regex: `.*${username.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&')}.*`,
             $options: 'si',
           },
         },
       ];
-      if (this.query.username === 'anonymous') {
+      if (username === 'anonymous') {
         orUser.push({ username: null });
       }
       this.andQuery.push({ $or: orUser });
