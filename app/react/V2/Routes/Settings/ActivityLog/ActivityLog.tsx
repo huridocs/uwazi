@@ -1,122 +1,29 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import {
-  LoaderFunction,
-  useLoaderData,
-  useLocation,
-  useSearchParams,
-  createSearchParams,
-} from 'react-router-dom';
-import { IncomingHttpHeaders } from 'http';
-import _, { isArray } from 'lodash';
+import { useLoaderData, useLocation, useSearchParams, createSearchParams } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
+import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
-import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
-import * as activityLogAPI from 'V2/api/activityLog';
-import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
-import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { useAtomValue } from 'jotai';
-import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from 'app/V2/atoms';
+import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { getActivityLogColumns } from './components/TableElements';
 import { ActivityLogSidePanel } from './components/ActivityLogSidePanel';
 import { FiltersSidePanel } from './components/FiltersSidePanel';
+import type { LoaderData } from './ActivityLogLoader';
+import {
+  getAppliedFilters,
+  updateSearch,
+  ActivityLogSearch,
+  ITEMS_PER_PAGE,
+} from './ActivityLogLoader';
 
-const ITEMS_PER_PAGE = 100;
-
-interface LoaderData {
-  activityLogData: ActivityLogEntryType[];
-  totalPages: number;
-  total: number;
-  page: number;
-  error?: {};
-}
-
-const sortingParams = ['method', 'time', 'username', 'url'];
-
-interface ActivityLogSearchParams {
-  username?: string;
-  search?: string;
-  method?: string[];
-  from?: string;
-  to?: string;
-  sort?: string;
-  order?: string;
-  page?: number;
-  limit?: number;
-}
-
-const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
-  const {
-    username,
-    search,
-    method = [],
-    from,
-    to,
-    sort = 'time',
-    order = 'desc',
-    page = 1,
-    limit = ITEMS_PER_PAGE,
-  } = searchParams;
-
-  const fromDate = from && new Date(from).getTime() / 1000;
-  const toDate = to && new Date(to).getTime() / 1000;
-  const time = { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
-  const sortOptions = sortingParams.includes(sort)
-    ? { prop: sort, asc: +(order === 'asc') }
-    : { prop: 'time', asc: 0 };
-  const methodList = isArray(method) ? method : [method];
-  const params = {
-    ...(username !== undefined ? { username } : {}),
-    ...(search !== undefined ? { search } : {}),
-    ...(fromDate || toDate ? { time } : {}),
-    ...(methodList[0] !== undefined ? { method: methodList } : {}),
-    page,
-    limit,
-    sort: sortOptions,
-  };
-  return params;
-};
-const activityLogLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ request }) => {
-    const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
-    const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams);
-    const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
-    if (activityLogList.message !== undefined) {
-      return {
-        error: activityLogList.message,
-        activityLogData: [],
-        totalPages: 0,
-        page: 0,
-        total: 0,
-      };
-    }
-    const total = Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows;
-    const totalPages = Math.ceil(total / params.limit);
-
-    return {
-      activityLogData: activityLogList.rows,
-      totalPages,
-      page: params.page,
-      total,
-    };
-  };
-
-interface ActivityLogSearch {
-  username: string;
-  search: string;
-  page: number;
-  from: string;
-  to: string;
-  sort: string;
-  order: string;
-}
+const funnelColor = (appliedFiltersCount: number): string =>
+  appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)';
 
 // eslint-disable-next-line max-statements
 const ActivityLog = () => {
@@ -127,11 +34,7 @@ const ActivityLog = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const isFirstRender = useIsFirstRender();
-  let appliedFilters = searchParamsFromSearchParams(searchParams);
-  appliedFilters =
-    appliedFilters.method && !isArray(appliedFilters.method)
-      ? { ...appliedFilters, method: [appliedFilters.method] }
-      : appliedFilters;
+  const appliedFilters = getAppliedFilters(searchParams);
 
   const appliedFiltersCount = Object.keys(appliedFilters).filter(key =>
     ['method', 'username', 'search', 'from', 'to'].includes(key)
@@ -139,42 +42,10 @@ const ActivityLog = () => {
 
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
-  const changedParams = (filterPairs: [string, any][]) => {
-    const newFilters = createSearchParams(filterPairs);
-    return Array.from(newFilters).filter(([_key, value]) => value !== '');
-  };
-
-  const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
-    if (!isArray(value)) {
-      prev.set(key, value);
-    } else if (value.length > 0) {
-      prev.set(key, value[0]);
-      value.splice(0, 1);
-      value.forEach(item => {
-        prev.append(key, item);
-      });
-    }
-  };
-  const updateSearch = (filters: any) => {
-    const filterPairs = _(filters).toPairs().sortBy(0).value();
-    const changedPairs = changedParams(filterPairs);
-    if (!_.isEqual(changedPairs, Array.from(searchParams))) {
-      setSearchParams((prev: URLSearchParams) => {
-        filterPairs.forEach(([key, value]) => {
-          if (value !== undefined && value !== '') {
-            setSearchValue(prev, key, value);
-          } else {
-            prev.delete(key);
-          }
-        });
-        return prev;
-      });
-    }
-  };
-
   useEffect(() => {
-    const sortingProp = sorting?.[0]?.id;
-    const sortingOrder = sorting?.[0]?.desc ? 'desc' : 'asc';
+    const currentSorting = sorting || [{}];
+    const { id: sortingProp, desc } = currentSorting[0];
+    const sortingOrder = desc ? 'desc' : 'asc';
     if (
       isFirstRender &&
       (!sortingProp ||
@@ -182,12 +53,12 @@ const ActivityLog = () => {
     ) {
       return;
     }
-    updateSearch({ sort: sortingProp, order: sortingOrder });
+    updateSearch({ sort: sortingProp, order: sortingOrder }, searchParams, setSearchParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sorting]);
 
   const onSubmit = async (data: ActivityLogSearch) => {
-    updateSearch(data);
+    updateSearch(data, searchParams, setSearchParams);
   };
 
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
@@ -210,10 +81,8 @@ const ActivityLog = () => {
               onClick={() => setShowFilters(true)}
             >
               <FunnelIcon
-                stroke={
-                  appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)rgb(115 115 115)'
-                }
-                fill={appliedFiltersCount > 0 ? 'rgb(30 64 175)' : 'rgb(115 115 115)'}
+                stroke={funnelColor(appliedFiltersCount)}
+                fill={funnelColor(appliedFiltersCount)}
                 className="w-5"
               />
               <Translate>Filters</Translate>
@@ -272,4 +141,4 @@ const ActivityLog = () => {
   );
 };
 
-export { ActivityLog, activityLogLoader };
+export { ActivityLog };
