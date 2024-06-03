@@ -269,6 +269,7 @@ const Collection = () => {
                   label="Document OCR trigger"
                   tip={tips.ocrTrigger}
                   register={register}
+                  defaultChecked={formData.ocrServiceEnabled}
                 />
               </Card>
             )}
@@ -300,6 +301,7 @@ const Collection = () => {
                   label="Allow captcha bypass"
                   tip={tips.openPublicForm}
                   register={register}
+                  defaultChecked={formData.openPublicEndpoint}
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect
