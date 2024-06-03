@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Checkbox } from 'flowbite-react';
 import { isString } from 'lodash';
 import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
+import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { Pill } from '../UI';
 
 type Option = { label: string | React.ReactNode; value: string };
@@ -33,6 +34,7 @@ const MultiSelect = ({
   canBeEmpty = true,
   value,
 }: MultiSelectProps) => {
+  const isFirstRender = useIsFirstRender();
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -58,6 +60,12 @@ const MultiSelect = ({
     setCurrentValue(newValue);
     onChange(newValue);
   };
+
+  useEffect(() => {
+    if (!isFirstRender) {
+      setCurrentValue(value);
+    }
+  }, [isFirstRender, value]);
 
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-sm">
