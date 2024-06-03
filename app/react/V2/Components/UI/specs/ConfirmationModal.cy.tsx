@@ -79,7 +79,7 @@ describe('Confirmation modals', () => {
       mount(<PasswordConfirm onAcceptClick={onAcceptClick} onCancelClick={onCancelClick} />);
       cy.get('input').type('currentPassword');
       cy.contains('Accept').click();
-      cy.get('@accept').should('have.been.called');
+      cy.get('@accept').should('have.been.calledOnceWith', 'currentPassword');
       cy.contains('Cancel').click();
       cy.get('@cancel').should('have.been.called');
     });

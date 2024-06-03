@@ -5,16 +5,16 @@ import { modalSizeType } from './Modal';
 
 type PasswordConfirmModalType = {
   size?: modalSizeType;
-  onAcceptClick?: () => void;
+  onAcceptClick?: (value: string) => void;
   onCancelClick?: () => void;
 };
 
 const PasswordConfirmModal = ({
+  size = 'md',
   onAcceptClick,
   onCancelClick,
-  size = 'md',
 }: PasswordConfirmModalType) => {
-  const [confirmed, setConfirmed] = useState(false);
+  const [currentValue, setCurrentValue] = useState<string | undefined>(undefined);
 
   return (
     <Modal size={size}>
@@ -38,7 +38,7 @@ const PasswordConfirmModal = ({
               id="confirm-input"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="password"
-              onChange={e => setConfirmed(e.currentTarget.value.length > 0)}
+              onChange={e => setCurrentValue(e.currentTarget.value)}
               data-testid="confirm-input"
             />
           </label>
@@ -48,7 +48,12 @@ const PasswordConfirmModal = ({
         <Button styling="light" onClick={onCancelClick} className="grow">
           <Translate>Cancel</Translate>
         </Button>
-        <Button onClick={onAcceptClick} disabled={!confirmed} color="primary" className="grow">
+        <Button
+          onClick={onAcceptClick ? () => onAcceptClick(currentValue || '') : undefined}
+          disabled={!currentValue?.length}
+          color="primary"
+          className="grow"
+        >
           <Translate>Accept</Translate>
         </Button>
       </Modal.Footer>
