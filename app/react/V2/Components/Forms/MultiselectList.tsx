@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
@@ -15,7 +16,6 @@ interface Option {
   value: string;
   items?: Option[];
 }
-
 interface MultiselectListProps {
   items: Option[];
   onChange: (selectedItems: string[]) => void;
@@ -26,6 +26,7 @@ interface MultiselectListProps {
   value?: string[];
   foldableGroups?: boolean;
   singleSelect?: boolean;
+  allowSelelectAll?: boolean;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -44,16 +45,13 @@ const MultiselectList = ({
   checkboxes = false,
   foldableGroups = false,
   singleSelect = false,
+  allowSelelectAll = false,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (onChange) onChange(selectedItems);
-  }, [onChange, selectedItems]);
 
   useEffect(() => {
     let filtered = [...items];
@@ -101,16 +99,32 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
-    let newValue;
+    let newValues;
     if (singleSelect) {
-      newValue = selectedItems.includes(_value) ? [] : [_value];
+      newValues = selectedItems.includes(_value) ? [] : [_value];
     } else {
-      newValue = selectedItems.includes(_value)
+      newValues = selectedItems.includes(_value)
         ? selectedItems.filter(item => item !== _value)
         : [...selectedItems, _value];
     }
 
-    setSelectedItems(newValue);
+    setSelectedItems(newValues);
+    if (onChange) onChange(newValues);
+  };
+
+  const handleSelectAll = () => {
+    const allValues: string[] = [];
+
+    items.forEach(item => {
+      if (item.items?.length) {
+        item.items?.forEach(subItem => allValues.push(subItem.value));
+      } else {
+        allValues.push(item.value);
+      }
+    });
+
+    setSelectedItems(allValues);
+    if (onChange) onChange(allValues);
   };
 
   const applyFilter = ({ target }: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,29 +237,39 @@ const MultiselectList = ({
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
-        <RadioSelect
-          name="filter"
-          orientation="horizontal"
-          options={[
-            {
-              label: <Translate>All</Translate>,
-              value: 'true',
-              defaultChecked: true,
-            },
-            {
-              label: <SelectedCounter selectedItems={selectedItems} />,
-              value: 'false',
-              disabled: selectedItems.length === 0,
-            },
-          ]}
-          onChange={applyFilter}
-          className="px-1 pt-4"
-        />
+        <div className="flex mx-1 my-4 flex-nowrap">
+          <RadioSelect
+            name="filter"
+            orientation="horizontal"
+            options={[
+              {
+                label: <Translate>All</Translate>,
+                value: 'true',
+                defaultChecked: true,
+              },
+              {
+                label: <SelectedCounter selectedItems={selectedItems} />,
+                value: 'false',
+                disabled: selectedItems.length === 0,
+              },
+            ]}
+            onChange={applyFilter}
+            className="flex-grow"
+          />
+          {allowSelelectAll && (
+            <button
+              type="button"
+              className="text-gray-400 underline"
+              onClick={() => handleSelectAll()}
+            >
+              <Translate>Select all</Translate>
+            </button>
+          )}
+        </div>
       </div>
 
       <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
     </div>
   );
 };
-
 export { MultiselectList };
