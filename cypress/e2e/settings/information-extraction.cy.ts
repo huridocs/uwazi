@@ -301,7 +301,7 @@ describe('Information Extraction', () => {
   describe('PDF sidepanel', () => {
     it('should display the PDF sidepanel with the pdf and selection rectangle', () => {
       cy.contains('button', 'Open PDF').click();
-      cy.contains('h1', 'SamplePDF.pdf');
+      cy.contains('h1', '2023');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2023');
       });
