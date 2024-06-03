@@ -7,7 +7,7 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Translate } from 'app/I18N';
 
 const meta: Meta<typeof ConfirmationModal> = {
-  title: 'Components/Modal',
+  title: 'Components/Modal/ConfirmationModal',
   component: ConfirmationModal,
   argTypes: {
     onAcceptClick: { action: 'onAcceptClick' },
