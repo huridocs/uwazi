@@ -191,9 +191,10 @@ class ActivityLogFilter {
     );
     const orUrlItems = queryURL(matchedURLs);
 
-    this.searchFilter();
-    if (orUrlItems.length > 0) {
+    if (matchedURLs.length > 0) {
       this.searchQuery.push({ $or: orUrlItems });
+    } else {
+      this.searchFilter();
     }
     if (this.searchQuery.length > 0) {
       this.andQuery.push({ $or: this.searchQuery });
