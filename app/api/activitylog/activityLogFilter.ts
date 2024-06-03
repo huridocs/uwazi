@@ -78,6 +78,16 @@ const sanitizeTime = (time: { [k: string]: unknown }) => (memo: {}, k: string) =
 const equivalentHttpMethod = (method: string): string =>
   ['CREATE', 'UPDATE'].includes(method.toUpperCase()) ? 'POST' : method.toUpperCase();
 
+const matchWithParsedEntry = (
+  key: string,
+  queryMethods: string[],
+  value: EntryValue,
+  methods: string[]
+) =>
+  key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
+  ((value.method || '').toUpperCase().match(`(${methods.join('|')}).*`) ||
+    value.desc.toUpperCase().match(`(${methods.join('|')}).*`));
+
 class ActivityLogFilter {
   andQuery: {}[] = [];
 
@@ -157,11 +167,8 @@ class ActivityLogFilter {
     const { method: methods = [] } = this.query || {};
     if (methods.length > 0) {
       const queryMethods = methods.map(equivalentHttpMethod);
-      const matchedEntries = parsedActionsEntries.filter(
-        ([key, value]) =>
-          key.toUpperCase().match(`(${queryMethods.join('|')}).*`) &&
-          ((value.method || '').toUpperCase().match(`(${methods.join('|')}).*`) ||
-            value.desc.toUpperCase().match(`(${methods.join('|')}).*`))
+      const matchedEntries = parsedActionsEntries.filter(([key, value]) =>
+        matchWithParsedEntry(key, queryMethods, value, methods)
       );
       const bodyTerm = bodyCondition(methods);
       if (bodyTerm.length > 0) {
