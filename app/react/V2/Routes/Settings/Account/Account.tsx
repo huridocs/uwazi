@@ -10,7 +10,7 @@ import { Translate } from 'app/I18N';
 import { updateUser, getCurrentUser } from 'V2/api/users';
 import { notificationAtom } from 'V2/atoms';
 import { InputField } from 'V2/Components/Forms';
-import { Button, Card, PasswordConfirmModal } from 'V2/Components/UI';
+import { Button, Card, ConfirmationModal } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
@@ -196,7 +196,9 @@ const Account = () => {
       )}
 
       {confirmationModal && (
-        <PasswordConfirmModal
+        <ConfirmationModal
+          header="Confirm"
+          usePassword
           onCancelClick={() => setConfirmationModal(false)}
           onAcceptClick={value => {
             if (formSubmit.current) {

@@ -2,11 +2,10 @@ import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
-import * as PasswordConfirmModal from 'app/stories/PasswordConfirmModal.stories';
 import * as stories from 'app/stories/ConfirmationModal.stories';
 
-const { BasicConfirmation, TextConfirmation, WarningConfirmation } = composeStories(stories);
-const { PasswordConfirm } = composeStories(PasswordConfirmModal);
+const { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm } =
+  composeStories(stories);
 
 describe('Confirmation modals', () => {
   it('should be accessible', () => {

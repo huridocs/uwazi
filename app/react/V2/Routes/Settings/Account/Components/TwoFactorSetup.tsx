@@ -5,13 +5,7 @@ import { useRevalidator } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { RequestParams } from 'app/utils/RequestParams';
 import { notificationAtom } from 'app/V2/atoms';
-import {
-  Button,
-  Card,
-  CopyValueInput,
-  PasswordConfirmModal,
-  Sidepanel,
-} from 'app/V2/Components/UI';
+import { Button, Card, CopyValueInput, ConfirmationModal, Sidepanel } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import loadable from '@loadable/component';
 import { InputField } from 'app/V2/Components/Forms';
@@ -174,7 +168,9 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
         </Sidepanel.Footer>
       </Sidepanel>
       {confirmPassword && (
-        <PasswordConfirmModal
+        <ConfirmationModal
+          header="Confirm"
+          usePassword
           onCancelClick={() => setConfirmPassword(false)}
           onAcceptClick={async value => {
             setConfirmPassword(false);

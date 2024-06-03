@@ -16,6 +16,5 @@ export { Paginator } from './Paginator';
 export { PaginationState } from './PaginationState';
 export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
-export { PasswordConfirmModal } from './PasswordConfirmModal';
 
 export type { TableProps } from './Table/TableElements';

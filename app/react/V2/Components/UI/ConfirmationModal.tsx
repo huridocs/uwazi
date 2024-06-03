@@ -8,12 +8,13 @@ type confirmationModalType = {
   size?: modalSizeType;
   header?: string | React.ReactNode;
   body?: string | React.ReactNode;
-  onAcceptClick?: () => void;
+  onAcceptClick?: (value: string) => void;
   onCancelClick?: () => void;
   acceptButton?: string | React.ReactNode;
   cancelButton?: string | React.ReactNode;
   warningText?: string | React.ReactNode;
   confirmWord?: string;
+  usePassword?: boolean;
   dangerStyle?: boolean;
 };
 
@@ -26,10 +27,12 @@ const ConfirmationModal = ({
   cancelButton,
   warningText,
   confirmWord,
+  usePassword,
   size = 'md',
   dangerStyle = false,
 }: confirmationModalType) => {
-  const [confirmed, setConfirmed] = useState(confirmWord === undefined);
+  const [passwordValue, setPasswordValue] = useState('');
+  const [confirmed, setConfirmed] = useState(!(confirmWord || usePassword));
 
   const renderChild = (child: string | React.ReactNode) =>
     isString(child) ? <Translate>{child}</Translate> : child;
@@ -71,6 +74,25 @@ const ConfirmationModal = ({
             />
           </div>
         )}
+
+        {usePassword && (
+          <div className="py-4">
+            <span className="block mb-2 font-medium text-gray-900 text-md dark:text-white">
+              <label htmlFor="confirm-password">
+                <Translate>Enter your current password to confirm</Translate>&nbsp;
+              </label>
+            </span>
+            <input
+              id="confirm-password"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              type="password"
+              onChange={e => {
+                setPasswordValue(e.currentTarget.value);
+                setConfirmed(e.currentTarget.value.length > 0);
+              }}
+            />
+          </div>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -82,7 +104,7 @@ const ConfirmationModal = ({
           {renderChild(cancelButton || 'Cancel')}
         </Button>
         <Button
-          onClick={onAcceptClick}
+          onClick={onAcceptClick ? () => onAcceptClick(passwordValue || '') : undefined}
           disabled={!confirmed}
           color={!warningText && !dangerStyle ? 'primary' : 'error'}
           className="grow"
