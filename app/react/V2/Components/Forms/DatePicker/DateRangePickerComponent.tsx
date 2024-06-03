@@ -121,7 +121,7 @@ const DateRangePickerComponent = React.forwardRef(
                 </svg>
               </div>
               <InputField
-                id="from"              
+                id="from"
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}

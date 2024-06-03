@@ -27,28 +27,10 @@ interface FiltersSidePanelProps {
   appliedFilters: ActivityLogSearch;
 }
 
-const methodOptions = [
-  {
-    label: t('System', 'CREATE', null, false).toUpperCase(),
-    value: 'CREATE',
-  },
-  {
-    label: t('System', 'UPDATE', null, false).toUpperCase(),
-    value: 'UPDATE',
-  },
-  {
-    label: t('System', 'DELETE', null, false).toUpperCase(),
-    value: 'DELETE',
-  },
-  {
-    label: t('System', 'MIGRATE', null, false).toUpperCase(),
-    value: 'MIGRATE',
-  },
-  {
-    label: t('System', 'WARNING', null, false).toUpperCase(),
-    value: 'WARNING',
-  },
-];
+const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(method => ({
+  label: t('System', method, null, false).toUpperCase(),
+  value: method,
+}));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);

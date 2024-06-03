@@ -31,6 +31,17 @@ interface ActivityLogSearchParams {
   limit?: number;
 }
 
+const timeFilter = (from?: string, to?: string) => {
+  const fromDate = from && new Date(from).getTime() / 1000;
+  const toDate = to && new Date(to).getTime() / 1000;
+  return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
+};
+
+const sortParam = (sort = '', order = '') =>
+  sortingParams.includes(sort) ? { prop: sort, asc: +(order === 'asc') } : { prop: 'time', asc: 0 };
+
+const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {});
+
 const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
   const {
     username,
@@ -43,19 +54,14 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     page = 1,
     limit = ITEMS_PER_PAGE,
   } = searchParams;
-
-  const fromDate = from && new Date(from).getTime() / 1000;
-  const toDate = to && new Date(to).getTime() / 1000;
-  const time = { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
-  const sortOptions = sortingParams.includes(sort)
-    ? { prop: sort, asc: +(order === 'asc') }
-    : { prop: 'time', asc: 0 };
+  const time = timeFilter(from, to);
+  const sortOptions = sortParam(sort, order);
   const methodList = isArray(method) ? method : [method];
   const params = {
-    ...(username !== undefined ? { username } : {}),
-    ...(search !== undefined ? { search } : {}),
-    ...(fromDate || toDate ? { time } : {}),
-    ...(methodList[0] !== undefined ? { method: methodList } : {}),
+    ...paramOrEmpty(username !== undefined, { username }),
+    ...paramOrEmpty(search !== undefined, { search }),
+    ...paramOrEmpty(time.from !== undefined || time.to !== undefined, { time }),
+    ...paramOrEmpty(methodList[0] !== undefined, { method: methodList }),
     page,
     limit,
     sort: sortOptions,
