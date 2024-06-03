@@ -16,10 +16,14 @@ const prepareUser = (user: ClientUserSchema) => {
   return preparedUser;
 };
 
-const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const newUser = async (
+  user: ClientUserSchema,
+  currentPassword: string,
+  headers?: IncomingHttpHeaders
+) => {
   try {
     const createdUser = prepareUser(user);
-    const requestParams = new RequestParams(createdUser, headers);
+    const requestParams = new RequestParams({ user: createdUser, currentPassword }, headers);
     const response = await UsersAPI.new(requestParams);
     return response;
   } catch (e) {
@@ -27,10 +31,14 @@ const newUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) =>
   }
 };
 
-const updateUser = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const updateUser = async (
+  user: ClientUserSchema,
+  currentPassword: string,
+  headers?: IncomingHttpHeaders
+) => {
   try {
     const updatedUser = prepareUser(user);
-    const requestParams = new RequestParams(updatedUser, headers);
+    const requestParams = new RequestParams({ user: updatedUser, currentPassword }, headers);
     const response = await UsersAPI.save(requestParams);
     return response;
   } catch (e) {
@@ -71,9 +79,13 @@ const deleteGroup = async (groups: ClientUserGroupSchema[], headers?: IncomingHt
   }
 };
 
-const unlockAccount = async (user: ClientUserSchema, headers?: IncomingHttpHeaders) => {
+const unlockAccount = async (
+  user: ClientUserSchema,
+  currentPassword: string,
+  headers?: IncomingHttpHeaders
+) => {
   try {
-    const requestParams = new RequestParams({ _id: user._id }, headers);
+    const requestParams = new RequestParams({ _id: user._id, currentPassword }, headers);
     const response = await UsersAPI.unlockAccount(requestParams);
     return response;
   } catch (e) {
@@ -83,20 +95,21 @@ const unlockAccount = async (user: ClientUserSchema, headers?: IncomingHttpHeade
 
 const resetPassword = async (
   data: ClientUserSchema | ClientUserSchema[],
+  currentPassword: string,
   headers?: IncomingHttpHeaders
 ) => {
   try {
     if (Array.isArray(data)) {
       const response = await Promise.all(
         data.map(user => {
-          const requestParams = new RequestParams({ email: user.email }, headers);
+          const requestParams = new RequestParams({ email: user.email, currentPassword }, headers);
           return api.post('recoverpassword', requestParams);
         })
       );
       return response;
     }
 
-    const requestParams = new RequestParams({ email: data.email }, headers);
+    const requestParams = new RequestParams({ email: data.email, currentPassword }, headers);
     const response = await api.post('recoverpassword', requestParams);
     return response;
   } catch (e) {
@@ -106,20 +119,21 @@ const resetPassword = async (
 
 const reset2FA = async (
   data: ClientUserSchema | ClientUserSchema[],
+  currentPassword: string,
   headers?: IncomingHttpHeaders
 ) => {
   try {
     if (Array.isArray(data)) {
       const response = await Promise.all(
         data.map(user => {
-          const requestParams = new RequestParams({ _id: user._id }, headers);
+          const requestParams = new RequestParams({ _id: user._id, currentPassword }, headers);
           return api.post('auth2fa-reset', requestParams);
         })
       );
       return response;
     }
 
-    const requestParams = new RequestParams({ _id: data._id }, headers);
+    const requestParams = new RequestParams({ _id: data._id, currentPassword }, headers);
     const response = await api.post('auth2fa-reset', requestParams);
     return response;
   } catch (e) {
@@ -131,6 +145,16 @@ const get = async (headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({}, headers);
     const response = await UsersAPI.get(requestParams);
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
+
+const getCurrentUser = async (headers?: IncomingHttpHeaders) => {
+  try {
+    const requestParams = new RequestParams({}, headers);
+    const response = await UsersAPI.currentUser(requestParams);
     return response;
   } catch (e) {
     return e;
@@ -158,4 +182,5 @@ export {
   unlockAccount,
   resetPassword,
   reset2FA,
+  getCurrentUser,
 };

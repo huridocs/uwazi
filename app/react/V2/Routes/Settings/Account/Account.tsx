@@ -1,33 +1,35 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { RequestParams } from 'app/utils/RequestParams';
-import UsersAPI from 'app/Users/UsersAPI';
-import { UserSchema } from 'shared/types/userType';
-
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'app/V2/atoms';
-
-import { InputField } from 'app/V2/Components/Forms';
-import { Button, Card } from 'app/V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
+import { updateUser, getCurrentUser } from 'V2/api/users';
+import { notificationAtom } from 'V2/atoms';
+import { InputField } from 'V2/Components/Forms';
+import { Button, Card, PasswordConfirmModal } from 'V2/Components/UI';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    UsersAPI.currentUser(new RequestParams({}, headers));
+    getCurrentUser(headers);
 
 const Account = () => {
-  const userAccount = useLoaderData() as UserSchema;
+  const userAccount = useLoaderData() as ClientUserSchema;
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const passwordConfirmation = useRef<string>();
+  const formSubmit = useRef<HTMLButtonElement>(null);
   const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
 
-  type AccountForm = UserSchema & { passwordConfirm?: string };
+  type AccountForm = ClientUserSchema & { passwordConfirm?: string };
+
   const {
     register,
     watch,
@@ -39,11 +41,14 @@ const Account = () => {
     mode: 'onSubmit',
   });
 
-  const submit = async (data: AccountForm) => {
+  const submit = async (data: AccountForm, currentPassword: string) => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
-    await UsersAPI.save(new RequestParams(userData));
-    await revalidator.revalidate();
+
+    await updateUser(userData, currentPassword);
+
+    revalidator.revalidate();
+
     setNotifications({
       type: 'success',
       text: <Translate>Account updated</Translate>,
@@ -63,7 +68,10 @@ const Account = () => {
       <SettingsContent>
         <SettingsContent.Header title="Account" />
         <SettingsContent.Body>
-          <form onSubmit={handleSubmit(submit)} id="account-form">
+          <form
+            id="account-form"
+            onSubmit={handleSubmit(async data => submit(data, passwordConfirmation.current || ''))}
+          >
             <Card className="mb-4" title={<Translate>General Information</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
@@ -158,6 +166,8 @@ const Account = () => {
                 </div>
               </Card>
             )}
+
+            <button type="submit" hidden aria-hidden="true" disabled ref={formSubmit} />
           </form>
         </SettingsContent.Body>
         <SettingsContent.Footer>
@@ -170,7 +180,11 @@ const Account = () => {
               <Translate>Logout</Translate>
             </a>
 
-            <Button type="submit" form="account-form">
+            <Button
+              type="button"
+              onClick={() => setConfirmationModal(true)}
+              disabled={!watch('email')}
+            >
               <Translate>Update</Translate>
             </Button>
           </div>
@@ -179,6 +193,21 @@ const Account = () => {
 
       {userAccount.using2fa ? null : (
         <TwoFactorSetup isOpen={isSidepanelOpen} closePanel={() => setIsSidepanelOpen(false)} />
+      )}
+
+      {confirmationModal && (
+        <PasswordConfirmModal
+          onCancelClick={() => setConfirmationModal(false)}
+          onAcceptClick={value => {
+            if (formSubmit.current) {
+              passwordConfirmation.current = value;
+              formSubmit.current.disabled = false;
+              formSubmit.current.click();
+              formSubmit.current.disabled = true;
+              setConfirmationModal(false);
+            }
+          }}
+        />
       )}
     </div>
   );
