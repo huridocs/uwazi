@@ -66,7 +66,7 @@ const Sidepanel = ({
 
   const isRigthToLeft = availableLanguages.find(language => language.key === languageKey)?.rtl;
   const transition = isRigthToLeft ? transitionRight : transitionLeft;
-  const contentClasses = 'flex flex-col h-full';
+  const contentClasses = 'flex flex-col h-full overflow-y-auto';
 
   if (withOverlay) {
     return (
