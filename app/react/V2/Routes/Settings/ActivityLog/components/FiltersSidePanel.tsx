@@ -132,7 +132,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
 
               <DateRangePicker
                 key="activity-log-range"
-                label={<Translate>Date range</Translate>}
+                label={<Translate>Date Range</Translate>}
                 language={locale}
                 mainClassName="pt-4 -top-4"
                 register={register}
