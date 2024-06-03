@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,إضافة تاريخ
 Add entities / documents,إضافة كيانات (أو إدخالات)/ مستندات
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,اضف ملف
 Add from URL,إضافة من عنوان URL
 Add from web,أضف من الويب
@@ -137,6 +138,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,المجموعة
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,ضبط قوائم تصفيه البيانات
 Configure templates,Configure templates
@@ -342,7 +344,6 @@ for,for
 Forgot Password?,هل نسيت كلمة المرور؟
 Forms and email configuration,تكوين النماذج والبريد الإلكتروني
 From,From
-From all templates,From all templates
 Full edit mode,وضع التحرير الكامل
 Full width,Full width
 General,عام
@@ -387,6 +388,7 @@ Info,معلومات
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,وراثة خاصية
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -551,7 +553,6 @@ OCR PDF,تشغيل خاصية الOCR على الPDF
 of,من
 Ok,موافق
 OK,موافق
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,بئساً...اذهب من فضلك
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,بئساً! لم نستطع إيجاد قائمة المفردات التي تحاول تحريرها. حاول العودة إلى هذه الصفحة من خلال الإعدادات.
 Open PDF,Open PDF
@@ -705,6 +706,7 @@ Select...,اختار...
 Selected,Selected
 selected,المحدد
 selected of,مختار من
+Selected templates,Selected templates
 Semantic search,البحث الدلالي
 Semantic Search,البحث الدلالي
 Semantic search minimum sentences help,المساعدة في البحث الدلالي بالحد الأدنى من الجمل

@@ -4,8 +4,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Loader } from '@googlemaps/js-api-loader';
 import { IStore } from 'app/istore';
 import { LMap } from 'app/Map/index';
-import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { DataMarker, MarkerInput } from 'app/Map/MapHelper';
+import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
 
 type Layer = 'Dark' | 'Street' | 'Satellite' | 'Hybrid';
 
