@@ -120,7 +120,7 @@ const IXDashboard = () => {
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
-        <SettingsContent.Header title="Metadata extraction dashboard" />
+        <SettingsContent.Header title="Metadata extraction" />
 
         <SettingsContent.Body>
           <Table<Extractor>
