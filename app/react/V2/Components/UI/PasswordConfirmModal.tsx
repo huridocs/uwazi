@@ -30,7 +30,7 @@ const PasswordConfirmModal = ({
         </span>
 
         <div className="py-4">
-          <label>
+          <label className="w-full">
             <span className="block mb-2">
               <Translate>Password</Translate>:
             </span>
