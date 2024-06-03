@@ -1,12 +1,13 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
+import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
 import { UserRole } from 'shared/types/userSchema';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal';
@@ -91,6 +92,9 @@ const UserFormSidepanel = ({
 }: UserFormSidepanelProps) => {
   const fetcher = useFetcher();
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const password = useRef<string>();
+  const formSubmitRef = useRef<HTMLButtonElement>(null);
 
   const defaultValues = {
     username: '',
@@ -104,6 +108,7 @@ const UserFormSidepanel = ({
     register,
     handleSubmit,
     reset,
+    trigger,
     formState: { errors },
     setValue,
   } = useForm({
@@ -126,6 +131,7 @@ const UserFormSidepanel = ({
     }
 
     formData.set('data', JSON.stringify(data));
+    formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
     setShowSidepanel(false);
     reset(defaultValues);
@@ -254,7 +260,7 @@ const UserFormSidepanel = ({
                 </div>
               </Card>
 
-              <div className="border rounded-md shadow-sm border-gray-50">
+              <div className="rounded-md border border-gray-50 shadow-sm">
                 <MultiSelect
                   label={
                     <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
@@ -282,14 +288,41 @@ const UserFormSidepanel = ({
               >
                 <Translate>Cancel</Translate>
               </Button>
-              <Button className="flex-grow" type="submit">
+              <Button
+                className="flex-grow"
+                type="button"
+                onClick={async () => {
+                  trigger()
+                    .then(valid => {
+                      if (valid) setShowConfirmationModal(true);
+                    })
+                    .catch(() => {});
+                }}
+              >
                 <Translate>Save</Translate>
               </Button>
             </div>
           </Sidepanel.Footer>
+          <button type="submit" hidden aria-hidden="true" disabled ref={formSubmitRef} />
         </form>
       </Sidepanel>
       <PermissionsListModal showModal={showModal} closeModal={() => setShowModal(false)} />
+      {showConfirmationModal && (
+        <ConfirmationModal
+          header="Confirm"
+          usePassword
+          onCancelClick={() => setShowConfirmationModal(false)}
+          onAcceptClick={value => {
+            if (formSubmitRef.current) {
+              password.current = value;
+              formSubmitRef.current.disabled = false;
+              formSubmitRef.current.click();
+              formSubmitRef.current.disabled = true;
+              setShowConfirmationModal(false);
+            }
+          }}
+        />
+      )}
     </>
   );
 };

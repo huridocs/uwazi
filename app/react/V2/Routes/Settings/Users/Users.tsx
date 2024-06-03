@@ -200,9 +200,7 @@ const Users = () => {
           body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
           usePassword={selectedUsers.length > 0 || false}
           onAcceptClick={value => {
-            if (password) {
-              password.current = value;
-            }
+            password.current = value;
             handleBulkAction();
             setShowConfirmationModal(false);
             setSelectedGroups([]);
