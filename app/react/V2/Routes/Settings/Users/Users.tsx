@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
@@ -38,9 +38,8 @@ const Users = () => {
     body: 'Do you want to delete?',
   });
   const [bulkActionIntent, setBulkActionIntent] = useState<FormIntent>('delete-users');
-
+  const password = useRef<string>();
   const fetcher = useFetcher();
-
   useHandleNotifications();
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
@@ -62,6 +61,8 @@ const Users = () => {
     } else {
       formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
     }
+
+    formData.set('confirmation', password.current || '');
 
     fetcher.submit(formData, { method: 'post' });
   };
@@ -197,7 +198,11 @@ const Users = () => {
           header={confirmationModalProps.header}
           warningText={confirmationModalProps.body}
           body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
-          onAcceptClick={() => {
+          usePassword={selectedUsers.length > 0 || false}
+          onAcceptClick={value => {
+            if (password) {
+              password.current = value;
+            }
             handleBulkAction();
             setShowConfirmationModal(false);
             setSelectedGroups([]);
@@ -226,27 +231,28 @@ const userAction =
     const formIntent = formData.get('intent') as FormIntent;
 
     const formValues = JSON.parse(formData.get('data') as string);
+    const confirmation = formData.get('confirmation') as string;
 
     switch (formIntent) {
       case 'new-user':
-        return usersAPI.newUser(formValues);
+        return usersAPI.newUser(formValues, confirmation);
       case 'edit-user':
-        return usersAPI.updateUser(formValues);
+        return usersAPI.updateUser(formValues, confirmation);
       case 'delete-users':
-        return usersAPI.deleteUser(formValues);
+        return usersAPI.deleteUser(formValues, confirmation);
       case 'new-group':
       case 'edit-group':
         return usersAPI.saveGroup(formValues);
       case 'delete-groups':
         return usersAPI.deleteGroup(formValues);
       case 'unlock-user':
-        return usersAPI.unlockAccount(formValues);
+        return usersAPI.unlockAccount(formValues, confirmation);
       case 'reset-password':
       case 'bulk-reset-password':
-        return usersAPI.resetPassword(formValues);
+        return usersAPI.resetPassword(formValues, confirmation);
       case 'reset-2fa':
       case 'bulk-reset-2fa':
-        return usersAPI.reset2FA(formValues);
+        return usersAPI.reset2FA(formValues, confirmation);
       default:
         return null;
     }
