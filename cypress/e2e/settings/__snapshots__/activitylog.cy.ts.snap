@@ -68,7 +68,7 @@ exports[`Activity log > should open the detail of an entry #0`] = `
         </svg>
       </button>
     </div>
-    <div class="flex-grow p-4 undefined">
+    <div class="flex-grow p-4 ">
       <div class="flex flex-col">
         <div
           class="flex flex-row justify-between w-full p-5 my-2 rounded-lg bg-gray-50"
