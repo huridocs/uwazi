@@ -87,6 +87,7 @@ const PDF = ({
           height: size?.height || 'auto',
           width: size?.width || 'auto',
           overflow: size?.overflow || 'auto',
+          padding: '10px',
         }}
       >
         {pdf ? (
