@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { usePopper } from 'react-popper';
+import { useAtomValue } from 'jotai';
 import { Popover } from '@headlessui/react';
 import { secondsToDate } from 'app/V2/shared/dateHelpers';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
+import { thesauriAtom } from 'V2/atoms';
 
 const SuggestedValue = ({
   value,
   suggestion,
   templateProperties,
 }: {
-  value: string;
+  value: string | number | undefined;
   suggestion: EntitySuggestionType;
   templateProperties: ClientTemplateSchema['properties'];
 }) => {
@@ -26,6 +28,7 @@ const SuggestedValue = ({
     modifiers: [{ name: 'arrow', options: { element: arrowElement } }],
   });
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const thesauris = useAtomValue(thesauriAtom);
 
   let colorClass = '';
   if (!suggestion || suggestion.suggestedValue === '') {
@@ -38,17 +41,35 @@ const SuggestedValue = ({
   }
 
   const property = templateProperties.find(prop => prop.name === suggestion.propertyName);
+  const { content, type } = property || {};
+  const thesaurus = thesauris.find(t => t._id === content);
 
   const getCurrentValue = () => {
-    if (value === '') return '-';
-    if (property?.type === 'date') return secondsToDate(value, locale);
+    if (value === '' || value === undefined) {
+      return '-';
+    }
+    if (type === 'date') {
+      return secondsToDate(value, locale);
+    }
+
+    if (type === 'select' || type === 'multiselect') {
+      const label = thesaurus?.values.find(v => v.id === value)?.label;
+      return <Translate context={content}>{label}</Translate>;
+    }
+
     return value;
   };
 
   const getSuggestedValue = () => {
-    if (suggestion.suggestedValue === '') return '-';
-    if (property?.type === 'date') {
+    if (suggestion.suggestedValue === '') {
+      return '-';
+    }
+    if (type === 'date') {
       return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
+    }
+    if (type === 'select' || type === 'multiselect') {
+      const label = thesaurus?.values.find(v => v.id === suggestion.suggestedValue)?.label;
+      return <Translate context={content}>{label}</Translate>;
     }
     return suggestion.suggestedValue!.toString();
   };

@@ -7,18 +7,11 @@ import React, { Component, Suspense } from 'react';
 import Footer from 'app/App/Footer';
 import MarkdownViewer from 'app/Markdown';
 import { Context } from 'app/Markdown/components';
-import { ErrorBoundary } from 'app/App/ErrorHandling/ErrorBoundary';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import { ErrorFallback } from 'app/App/ErrorHandling/ErrorFallback';
-import { parseRenderingError } from 'app/App/ErrorHandling/ErrorUtils';
 import { NeedAuthorization } from 'app/Auth';
+import { ErrorBoundary, ErrorFallback } from 'app/V2/Components/ErrorHandling';
 import Script from './Script';
-
-const parseSSRError = error => {
-  const SSRError = error instanceof Immutable.Map ? error.toJS() : error;
-  return SSRError?.json ? parseRenderingError(SSRError) : null;
-};
 
 class PageViewer extends Component {
   constructor(props) {
@@ -70,7 +63,6 @@ class PageViewer extends Component {
     let scriptCode = page.getIn(['metadata', 'script']) || '';
     scriptCode = `var datasets = window.store.getState().page.datasets.toJS();
     ${scriptCode}`;
-    const parsedPageError = parseSSRError(error);
 
     return (
       <Suspense
@@ -81,7 +73,7 @@ class PageViewer extends Component {
         }
       >
         <div className="row">
-          {!parsedPageError && (
+          {!error.status && !error.message && (
             <>
               {setBrowserTitle && (
                 <Helmet>
@@ -104,9 +96,9 @@ class PageViewer extends Component {
               </Script>
             </>
           )}
-          {parsedPageError && (
+          {(error.status || error.message) && (
             <div className="main-wrapper">
-              <ErrorFallback error={parsedPageError} />
+              <ErrorFallback error={error} />
               <Footer />
             </div>
           )}

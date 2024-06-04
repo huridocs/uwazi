@@ -33,7 +33,7 @@ describe('Filters', () => {
   it('should create a filter group', () => {
     cy.contains('button', 'Add group').click();
     cy.get('aside').within(() => {
-      cy.get('#group-name').type('My filter group 1');
+      cy.get('#group-name').type('My filter group 1', { delay: 0 });
       cy.getByTestId('multiselect').within(() => {
         cy.get('button').click();
         cy.contains('Ordenes de la corte').click();
@@ -76,7 +76,7 @@ describe('Filters', () => {
     cy.contains('td', 'My filter group 1').parent().contains('button', 'Edit').click();
     cy.get('aside').within(() => {
       cy.get('#group-name').clear();
-      cy.get('#group-name').type('Ordenes');
+      cy.get('#group-name').type('Ordenes', { delay: 0 });
       cy.contains('button', 'Update').click();
     });
     cy.contains('td', 'Ordenes');
@@ -102,7 +102,7 @@ describe('Filters', () => {
       cy.get('#group-name').clear();
       cy.contains('button', 'Update').click();
       cy.contains('This field is required');
-      cy.get('#group-name').type('Reportes y causas');
+      cy.get('#group-name').type('Reportes y causas', { delay: 0 });
       cy.getByTestId('multiselect').within(() => {
         cy.get('button').eq(1).click();
         cy.get('button').eq(1).click();
@@ -123,7 +123,7 @@ describe('Filters', () => {
   it('should create a another group', () => {
     cy.contains('button', 'Add group').click();
     cy.get('aside').within(() => {
-      cy.get('#group-name').type('Ordenes');
+      cy.get('#group-name').type('Ordenes', { delay: 0 });
       cy.getByTestId('multiselect').within(() => {
         cy.get('button').click();
         cy.contains('Voto Separado').click();

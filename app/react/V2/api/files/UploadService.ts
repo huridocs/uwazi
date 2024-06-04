@@ -1,4 +1,4 @@
-import superagent, { SuperAgentRequest } from 'superagent';
+import superagent, { MultipartValueSingle, SuperAgentRequest } from 'superagent';
 import { APIURL } from 'app/config';
 import { FileType } from 'shared/types/fileType';
 import { FetchResponseError } from 'shared/JSONRequest';
@@ -40,7 +40,7 @@ class UploadService {
       .set('Accept', 'application/json')
       .set('X-Requested-With', 'XMLHttpRequest')
       .field('originalname', file.name)
-      .attach('file', file)
+      .attach('file', file as unknown as MultipartValueSingle)
       .on('progress', event => {
         if (this.onProgressCallback && event.percent) {
           this.onProgressCallback(file.name, Math.floor(event.percent), event.total);

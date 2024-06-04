@@ -40,7 +40,7 @@ describe('Groups', () => {
     cy.intercept('GET', '/api/usergroups').as('fetchUserGroups');
     cy.contains('button', 'Add group').click();
     cy.get('aside').within(() => {
-      cy.get('#name').type('Group One');
+      cy.get('#name').type('Group One', { delay: 0 });
       cy.getByTestId('multiselect').within(() => {
         cy.get('button').click();
         cy.get('ul li')
@@ -60,7 +60,7 @@ describe('Groups', () => {
 
   it('should edit group', () => {
     cy.contains('button', 'Edit').eq(0).click({ force: true });
-    cy.clearAndType('input[id=name]', 'Knights of the Zodiac');
+    cy.clearAndType('input[id=name]', 'Knights of the Zodiac', { delay: 0 });
     cy.getByTestId('multiselect').within(() => {
       cy.get('button').eq(0).click();
       cy.get('ul li')
@@ -85,11 +85,11 @@ describe('Groups', () => {
 
   it('check for unique name', () => {
     cy.contains('button', 'Edit').eq(0).click();
-    cy.clearAndType('input[id=name]', 'Group One');
+    cy.clearAndType('input[id=name]', 'Group One', { delay: 0 });
     cy.contains('button', 'Save').click();
     cy.contains('span', 'Duplicated name');
 
-    cy.clearAndType('input[id=name]', 'Group Two');
+    cy.clearAndType('input[id=name]', 'Group Two', { delay: 0 });
     cy.contains('button', 'Save').click();
     cy.contains('td', 'Group Two');
     cy.contains('button', 'Dismiss').click();

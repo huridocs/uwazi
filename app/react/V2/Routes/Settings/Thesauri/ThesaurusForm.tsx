@@ -132,9 +132,7 @@ const ThesaurusForm = () => {
       if (singleThesaurus.values) {
         const newValues = singleThesaurus.values?.filter(
           currentGroupItem =>
-            !selectedThesaurusValue.find(
-              selected => selected.original.label === currentGroupItem.label
-            )
+            !selectedThesaurusValue.find(selected => selected.original._id === currentGroupItem._id)
         );
         singleThesaurus.values = newValues;
       }
@@ -217,23 +215,6 @@ const ThesaurusForm = () => {
     }
   };
 
-  const checkDNDBeforeCommit = (values: TableThesaurusValue[]) => {
-    const groups = values.filter(groupValue => Array.isArray(groupValue.values));
-    let groupsHaveChanged = false;
-    for (let i = 0; i < groups.length; i += 1) {
-      const group = groups[i];
-      const originalGroup = thesaurusValues.find(tv => tv._id === group._id);
-      if (group.values?.length !== originalGroup?.values?.length) {
-        groupsHaveChanged = true;
-        break;
-      }
-    }
-
-    if (!groupsHaveChanged) {
-      setThesaurusValues(values);
-    }
-  };
-
   return (
     <div
       className="tw-content"
@@ -262,11 +243,12 @@ const ThesaurusForm = () => {
                 draggableRows
                 enableSelection
                 subRowsKey="values"
-                onChange={checkDNDBeforeCommit}
+                onChange={setThesaurusValues}
                 columns={columns({ edit })}
                 data={thesaurusValues}
                 initialState={{ sorting: [{ id: 'label', desc: false }] }}
                 onSelection={setSelectedThesaurusValue}
+                allowEditGroupsWithDnD={false}
               />
             </div>
           </form>

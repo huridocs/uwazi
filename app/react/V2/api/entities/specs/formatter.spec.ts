@@ -8,7 +8,7 @@ describe('update entity', () => {
     entity = {
       _id: '1',
       title: 'Entity original title',
-      metadata: { textProperty: [{ value: 'property 1 value' }] },
+      metadata: { textProperty: [{ value: 'property 1 value' }], otherProperty: [{ value: 5 }] },
     };
   });
 
@@ -19,7 +19,10 @@ describe('update entity', () => {
 
   it('should update existing metadata', () => {
     const result = update(entity, { properties: [{ textProperty: 'new value' }] });
-    expect(result).toEqual({ ...entity, metadata: { textProperty: [{ value: 'new value' }] } });
+    expect(result).toEqual({
+      ...entity,
+      metadata: { textProperty: [{ value: 'new value' }], otherProperty: [{ value: 5 }] },
+    });
   });
 
   it('should add new metadata', () => {
@@ -33,12 +36,24 @@ describe('update entity', () => {
   it('should clear a metadata value', () => {
     expect(update(entity, { properties: [{ textProperty: undefined }] })).toEqual({
       ...entity,
-      metadata: {},
+      metadata: { otherProperty: [{ value: 5 }] },
     });
 
     expect(update(entity, { properties: [{ newProperty: 6 }, { textProperty: '' }] })).toEqual({
       ...entity,
-      metadata: { newProperty: [{ value: 6 }] },
+      metadata: { newProperty: [{ value: 6 }], otherProperty: [{ value: 5 }] },
+    });
+  });
+
+  it('should handle array of values', () => {
+    const result = update(entity, { properties: [{ multiselect: ['A', 'B'] }] });
+    expect(result).toEqual({
+      ...entity,
+      metadata: {
+        textProperty: [{ value: 'property 1 value' }],
+        otherProperty: [{ value: 5 }],
+        multiselect: [{ value: 'A' }, { value: 'B' }],
+      },
     });
   });
 });

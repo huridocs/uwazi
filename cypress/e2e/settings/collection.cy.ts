@@ -20,7 +20,7 @@ describe('Collection', () => {
 
   it('should change collection Name', () => {
     cy.get('#collection-name').clear();
-    cy.get('#collection-name').type('New Collection Name');
+    cy.get('#collection-name').type('New Collection Name', { delay: 0 });
   });
 
   it('should change default library view', () => {
@@ -29,20 +29,21 @@ describe('Collection', () => {
 
   it('custom landing page', () => {
     cy.get('#landing-page').type(
-      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)'
+      '/en/library/?q=(allAggregations:!f,filters:(),from:0,includeUnpublished:!t,limit:30,order:desc,sort:creationDate,treatAs:number,types:!(%2758ada34c299e82674854504b%27),unpublished:!f)',
+      { delay: 0 }
     );
   });
 
   it('should save Analytics google and matomo successfully', () => {
     cy.contains('span', 'Forms and email configuration').scrollIntoView();
-    cy.get('#google-analytics').type('google-analytics-key');
-    cy.get('#matomo-analytics').type('matomo-analytics-key');
+    cy.get('#google-analytics').type('google-analytics-key', { delay: 0 });
+    cy.get('#matomo-analytics').type('matomo-analytics-key', { delay: 0 });
   });
 
   it('should save Forms and email configurations successfully', () => {
-    cy.get('#sending-email').type('email@mailer.com');
-    cy.get('#receiving-email').type('reciever@mailer.com');
-    cy.get('#public-form-destination').type('/public/form/url');
+    cy.get('#sending-email').type('email@mailer.com', { delay: 0 });
+    cy.get('#receiving-email').type('reciever@mailer.com', { delay: 0 });
+    cy.get('#public-form-destination').type('/public/form/url', { delay: 0 });
     cy.get('[data-testid="enable-button-checkbox"]').eq(3).click();
   });
 
@@ -122,5 +123,18 @@ describe('Collection', () => {
     cy.get('.leaflet-control-layers-list .leaflet-control-layers-base label')
       .its('length')
       .should('eq', 2);
+  });
+
+  it('should load the selected search as landing page ', () => {
+    cy.contains('a', 'Library').click();
+    cy.get('.alert.alert-success [data-icon="times"]').click();
+    cy.reload();
+    cy.on('uncaught:exception', (err, _runnable) => {
+      err.message.includes('Hydration failed');
+      return false;
+    });
+    cy.contains('a', 'New Collection Name').scrollIntoView();
+    cy.contains('a', 'New Collection Name').click({ force: true });
+    cy.get('.item').should('have.length', 2);
   });
 });

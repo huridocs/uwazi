@@ -47,6 +47,7 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
           draggableRows={props.draggableRows === true}
           onChange={onChangeHandler}
           subRowsKey={props.subRowsKey}
+          allowEditGroupsWithDnD={props.allowEditGroupsWithDnD}
         />
       </div>
       {props.showUpdates === true && !firstLoad && (
@@ -118,7 +119,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -126,7 +127,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white rounded border bg-primary-600"
+          className="p-2 text-white border rounded bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -137,7 +138,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 };
 
 const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <span className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}>
       {getValue()}
     </span>

@@ -2,19 +2,25 @@ import 'isomorphic-fetch';
 import superagent from 'superagent';
 
 import rison from 'rison-node';
+import { assign } from 'lodash';
+import { getResponseType } from 'shared/apiClient/httpResponses';
 
 let cookie;
 
 class FetchResponseError extends Error {
-  // eslint-disable-next-line no-shadow
-  constructor(message, { json, status, cookie, headers, endpoint } = {}) {
+  // eslint-disable-next-line no-shadow, max-statements
+  constructor(message, details = {}) {
     super(message);
-    this.name = 'FetchResponseError';
+    const { json, status, cookie: cookieRes, headers, endpoint, ...rest } = details;
+    const errorType = getResponseType(status);
+    this.name = errorType === 'ClientError' ? 'Client Error' : 'Server Error';
     this.json = json;
     this.status = status;
-    this.cookie = cookie;
+    this.cookie = cookieRes;
     this.headers = headers;
     this.endpoint = endpoint;
+    this.requestId = json?.requestId;
+    this.additionalInfo = rest;
   }
 }
 
@@ -117,17 +123,24 @@ const _fetch = (url, data, method, _headers) => {
       return Promise.all([res.json().catch(() => ({})), setCookie, res.headers]);
     })
     .then(([json, setCookie, responseHeaders]) => {
-      const processedResponse = {
-        json,
-        status: response.status,
-        cookie: setCookie,
-        headers: responseHeaders,
-        endpoint: { method, url },
-      };
-
-      if (response.status > 399) {
+      const processedResponse = assign(
+        {
+          json,
+          status: response.status,
+          cookie: setCookie,
+          headers: responseHeaders,
+          endpoint: { method, url },
+        },
+        !response.ok
+          ? {
+              ok: response.ok,
+              message: json.message || response.statusText,
+            }
+          : {}
+      );
+      if (!response.ok) {
         throw new FetchResponseError(
-          `Fetch returned a response with status ${response.status}.`,
+          `Request failed with status code ${processedResponse.status}: ${processedResponse.message}`,
           processedResponse
         );
       }

@@ -1,41 +1,31 @@
+/* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { Cell, CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
-import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
-import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import {
-  DatePropertyIcon,
-  MarkdownPropertyIcon,
-  NumericPropertyIcon,
-  TextPropertyIcon,
-} from 'V2/Components/CustomIcons';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Extractor } from '../types';
+import { Extractor, MultiValueSuggestion, SingleValueSuggestion, TableSuggestion } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-
-const propertyIcons = {
-  text: <TextPropertyIcon className="w-4" />,
-  date: <DatePropertyIcon className="w-4" />,
-  numeric: <NumericPropertyIcon className="w-4" />,
-  markdown: <MarkdownPropertyIcon className="w-4" />,
-};
+import { propertyIcons } from './Icons';
 
 const extractorColumnHelper = createColumnHelper<Extractor>();
 // Helper typed as any because of https://github.com/TanStack/table/issues/4224
 const suggestionColumnHelper = createColumnHelper<any>();
 
-const statusColor = (suggestion: EntitySuggestionType): Color => {
-  if (!suggestion.suggestedValue || suggestion.suggestedValue === '') {
+const statusColor = (suggestion: TableSuggestion): Color => {
+  if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
     return 'red';
   }
+
   if (suggestion.currentValue === suggestion.suggestedValue) {
     return 'green';
   }
+
   return 'orange';
 };
 
@@ -56,15 +46,15 @@ const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Document</Translate>;
 const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
-const AcceptHeader = () => <Translate>Accept</Translate>;
+const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex gap-2">
-      {propertyIcons[property]}
+    <div className="flex gap-2 items-center">
+      <span className="w-4">{propertyIcons[property]}</span>
       <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
   );
@@ -74,28 +64,45 @@ const CurrentValueCell = ({
   cell,
   allProperties,
 }: {
-  cell: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>;
+  cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
-}) => (
-  <SuggestedValue
-    value={cell.getValue()}
-    suggestion={cell.row.original}
-    templateProperties={allProperties}
-  />
-);
+}) => {
+  if ('children' in cell.row.original) {
+    return (
+      <span className="font-bold text-gray-500">
+        {cell.row.original.children.length} <Translate>Suggestions</Translate>
+      </span>
+    );
+  }
+  return (
+    <SuggestedValue
+      value={cell.getValue()}
+      suggestion={cell.row.original as SingleValueSuggestion}
+      templateProperties={allProperties}
+    />
+  );
+};
 
-const AcceptButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
+const AcceptButton = ({
+  cell,
+  action,
+}: {
+  cell: Cell<SingleValueSuggestion, string>;
+  action: Function;
+}) => {
   const color = statusColor(cell.row.original);
-  const action = cell.column.columnDef.meta?.action;
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
+  if (color === 'green') {
+    return <div className="m-auto w-6 h-6">{getIcon(color)}</div>;
+  }
+
   return (
-    <div className="flex items-center justify-center gap-1">
+    <div className="m-auto">
       <EmbededButton
         icon={getIcon(color)}
         color={color}
-        disabled={color === 'green' || color === 'red' || !suggestionHasEntity}
-        collapsed={color === 'green'}
+        disabled={color === 'red' || !suggestionHasEntity}
         onClick={() => action && action([cell.row.original])}
       >
         <Translate>Accept</Translate>
@@ -122,8 +129,13 @@ const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
   </Link>
 );
 
-const OpenPDFButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => {
-  const action = cell.column.columnDef.meta?.action;
+const OpenPDFButton = ({
+  cell,
+  action,
+}: {
+  cell: Cell<SingleValueSuggestion, string>;
+  action: Function;
+}) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   return (
@@ -138,14 +150,15 @@ const OpenPDFButton = ({ cell }: CellContext<EntitySuggestionType, unknown>) => 
   );
 };
 
-const TitleCell = ({ cell }: CellContext<EntitySuggestionType, EntitySuggestionType['fileId']>) => (
+const TitleCell = ({ cell }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
   <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>
 );
 
-const SegmentCell = ({
-  cell,
-}: CellContext<EntitySuggestionType, EntitySuggestionType['segment']>) => {
+const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['segment']>) => {
   const segment = cell.getValue();
+  if (row.getCanExpand()) {
+    return null;
+  }
   if (segment === '') {
     return (
       <span className="text-xs font-normal text-orange-600">
@@ -180,12 +193,23 @@ const extractorsTableColumns = [
   }),
 ];
 
+const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
+  <EmbededButton
+    icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
+    onClick={() => row.toggleExpanded()}
+    color="indigo"
+    disabled={(row.original as MultiValueSuggestion).children.length === 0}
+  >
+    <Translate>Group</Translate>
+  </EmbededButton>
+);
+
 type Color = 'red' | 'green' | 'orange';
 
 const suggestionsTableColumnsBuilder: Function = (
   templates: ClientTemplateSchema[],
-  acceptSuggestions: (suggestions: EntitySuggestionType[]) => void,
-  openPdfSidepanel: (suggestion: EntitySuggestionType) => void
+  acceptSuggestions: (suggestions: TableSuggestion[]) => void,
+  openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
 
@@ -193,38 +217,61 @@ const suggestionsTableColumnsBuilder: Function = (
     suggestionColumnHelper.accessor('entityTitle', {
       header: TitleHeader,
       cell: TitleCell,
-      meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<EntitySuggestionType, 'entityTitle'>,
+      meta: { headerClassName: 'w-1/4' },
+    }) as ColumnDef<SingleValueSuggestion, 'entityTitle'>,
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
-      meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<EntitySuggestionType, 'segment'>,
+      meta: { headerClassName: 'w-1/4' },
+    }) as ColumnDef<SingleValueSuggestion, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
-      meta: { headerClassName: 'w-3/12' },
-    }) as ColumnDef<EntitySuggestionType, 'currentValue'>,
+      meta: { headerClassName: 'w-1/4' },
+    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
-      cell: AcceptButton,
+      cell: ({
+        cell,
+        row,
+      }: {
+        row: Row<TableSuggestion>;
+        cell: Cell<SingleValueSuggestion, any>;
+      }) => {
+        if ('children' in row.original && Array.isArray(row.original.children)) {
+          return <GroupButton row={row} />;
+        }
+        if (!row.original.isChild) {
+          return <AcceptButton action={acceptSuggestions} cell={cell} />;
+        }
+        return null;
+      },
       meta: {
-        action: acceptSuggestions,
-        headerClassName: 'w-1/12 text-center',
+        headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
     }),
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
       header: ActionHeader,
-      cell: OpenPDFButton,
+      cell: ({
+        cell,
+        row,
+      }: {
+        row: Row<TableSuggestion>;
+        cell: Cell<SingleValueSuggestion, any>;
+      }) =>
+        !row.original.isChild ? (
+          <OpenPDFButton action={openPdfSidepanel} cell={cell} />
+        ) : (
+          <AcceptButton action={acceptSuggestions} cell={cell} />
+        ),
       meta: {
-        headerClassName: 'sr-only invisible bg-gray-50',
+        headerClassName: 'w-2/12',
         contentClassName: 'text-center',
-        action: openPdfSidepanel,
       },
-    }),
+    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
   ];
 };
 
