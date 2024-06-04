@@ -84,7 +84,7 @@ const CurrentValueCell = ({
 }) => {
   if ('children' in cell.row.original) {
     return (
-      <span className="font-bold text-gray-500">
+      <span className="text-xs font-bold text-gray-500">
         {cell.row.original.children.length} <Translate>Suggestions</Translate>
       </span>
     );
