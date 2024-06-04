@@ -41,17 +41,23 @@ const MultiselectList = ({
   className = '',
   label,
   hasErrors,
-  value = [],
+  value,
   checkboxes = false,
   foldableGroups = false,
   singleSelect = false,
   allowSelelectAll = false,
 }: MultiselectListProps) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>(value);
+  const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (value) {
+      setSelectedItems(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     let filtered = [...items];

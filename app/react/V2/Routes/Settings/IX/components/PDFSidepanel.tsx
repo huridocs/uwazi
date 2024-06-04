@@ -147,18 +147,25 @@ const PDFSidepanel = ({
   const [thesaurus, setThesaurus] = useState<any>();
   const setNotifications = useSetAtom(notificationAtom);
   const thesauris = useAtomValue(thesauriAtom);
-
   const templateId = suggestion?.entityTemplateId;
-  const propertyValue = getFormValue(suggestion, entity, property?.type);
+  const [initialValue, setInitialValue] = useState<PropertyValueSchema | PropertyValueSchema[]>();
+
+  useEffect(() => {
+    if (suggestion) {
+      setInitialValue(getFormValue(suggestion, entity, property?.type));
+    }
+  }, [suggestion, entity, property]);
+
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     values: {
-      field: propertyValue,
+      field: initialValue,
     },
   });
 
@@ -378,7 +385,7 @@ const PDFSidepanel = ({
           onChange={values => {
             setValue('field', values, { shouldDirty: true });
           }}
-          value={propertyValue as string[]}
+          value={getValues('field') as string[]}
           items={options}
           checkboxes
           singleSelect={type === 'select'}
