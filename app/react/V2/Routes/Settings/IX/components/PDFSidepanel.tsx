@@ -217,6 +217,15 @@ const PDFSidepanel = ({
     };
   }, [pdf, setValue, showSidepanel, suggestion]);
 
+  useEffect(() => {
+    console.log('pdfContainerRef', pdfContainerRef);
+    if (pdfContainerRef.current) {
+      const { height } = pdfContainerRef.current.getBoundingClientRect();
+      console.log('height', height);
+      setPdfContainerHeight(height);
+    }
+  }, [labelInputIsOpen, pdfContainerRef.current]);
+
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
   }) => {
@@ -297,7 +306,7 @@ const PDFSidepanel = ({
     }
     const inputType = type === 'numeric' ? 'number' : type;
     return (
-      <div className="flex gap-2 p-4">
+      <div className="relative flex gap-2 px-4 pb-4 grow">
         <div className="grow">
           <InputField
             clearFieldAction={() => {
@@ -364,7 +373,7 @@ const PDFSidepanel = ({
     });
 
     return (
-      <div className="p-4">
+      <div className="px-4 pb-4 overflow-y-scroll grow">
         <MultiselectList
           onChange={values => {
             setValue('field', values, { shouldDirty: true });
@@ -393,73 +402,78 @@ const PDFSidepanel = ({
   };
 
   return (
-    <Sidepanel
-      isOpen={showSidepanel}
-      withOverlay
-      size="large"
-      title={pdf?.originalname}
-      closeSidepanelFunction={() => setShowSidepanel(false)}
-    >
-      <Sidepanel.Body>
-        <form
-          id="ixpdfform"
-          className="flex flex-col gap-4 pb-0 h-full"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div ref={pdfContainerRef} className="md:m-auto md:w-[95%] grow">
-            {pdf && (
-              <PDF
-                fileUrl={`/api/files/${pdf.filename}`}
-                highlights={highlights}
-                onSelect={selection => {
-                  if (!selection.selectionRectangles.length) {
-                    setSelectionError('Could not detect the area for the selected text');
-                    setSelectedText(undefined);
-                  } else {
-                    setSelectionError(undefined);
-                    setSelectedText(selection);
-                  }
-                }}
-                size={{
-                  height: `${pdfContainerHeight}px`,
-                }}
-                scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
-              />
-            )}
-          </div>
-        </form>{' '}
-      </Sidepanel.Body>
-      <Sidepanel.Footer className="py-0 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
-        <div className="flex px-4 py-2">
-          <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
-            <Translate className="uppercase" context={templateId}>
-              {property?.label}
-            </Translate>{' '}
-            {selectionError && <span>{selectionError}</span>}
-          </p>
-          <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
-            {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
-          </span>
-        </div>
-        {labelInputIsOpen && renderLabel()}
-        <div className="flex gap-2 justify-end px-4 py-2 border border-r-0 border-b-0 border-l-0 border-gray-200 border-t-1">
-          <Button
-            type="button"
-            styling="outline"
-            disabled={isSubmitting}
-            onClick={() => {
-              setShowSidepanel(false);
-              reset();
-            }}
+    <div className="h-full">
+      <Sidepanel
+        isOpen={showSidepanel}
+        withOverlay
+        size="large"
+        title={entity?.title}
+        closeSidepanelFunction={() => setShowSidepanel(false)}
+      >
+        <div className="flex-grow">
+          <form
+            id="ixpdfform"
+            className="flex flex-col h-full gap-4 p-0"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            <Translate>Cancel</Translate>
-          </Button>
-          <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
-            <Translate>Accept</Translate>
-          </Button>
+            <div ref={pdfContainerRef} className="w-full md:m-auto grow">
+              {pdf && (
+                <PDF
+                  fileUrl={`/api/files/${pdf.filename}`}
+                  highlights={highlights}
+                  onSelect={selection => {
+                    if (!selection.selectionRectangles.length) {
+                      setSelectionError('Could not detect the area for the selected text');
+                      setSelectedText(undefined);
+                    } else {
+                      setSelectionError(undefined);
+                      setSelectedText(selection);
+                    }
+                  }}
+                  size={{
+                    height: `${pdfContainerHeight - 90}px`,
+                    width: '100%',
+                  }}
+                  scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
+                />
+              )}
+            </div>
+          </form>{' '}
         </div>
-      </Sidepanel.Footer>
-    </Sidepanel>
+        <Sidepanel.Footer className={`absolute max-h-[40%] ${labelInputIsOpen ? 'h-[40%]' : ''}`}>
+          <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+            <div className="sticky top-0 flex px-4 py-2 bg-white">
+              <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
+                <Translate className="uppercase" context={templateId}>
+                  {property?.label}
+                </Translate>{' '}
+                {selectionError && <span>{selectionError}</span>}
+              </p>
+              <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
+                {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
+              </span>
+            </div>
+            {labelInputIsOpen && renderLabel()}
+            <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+              <Button
+                type="button"
+                styling="outline"
+                disabled={isSubmitting}
+                onClick={() => {
+                  setShowSidepanel(false);
+                  reset();
+                }}
+              >
+                <Translate>Cancel</Translate>
+              </Button>
+              <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
+                <Translate>Accept</Translate>
+              </Button>
+            </div>
+          </div>
+        </Sidepanel.Footer>
+      </Sidepanel>
+    </div>
   );
 };
 
