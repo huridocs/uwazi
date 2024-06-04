@@ -440,7 +440,9 @@ const PDFSidepanel = ({
             </div>
           </form>{' '}
         </div>
-        <Sidepanel.Footer className={`absolute max-h-[40%] ${labelInputIsOpen ? 'h-[40%]' : ''}`}>
+        <Sidepanel.Footer
+          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+        >
           <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
             <div className="sticky top-0 flex px-4 py-2 bg-white">
               <p className={selectionError ? 'text-pink-600 grow' : 'grow'}>
