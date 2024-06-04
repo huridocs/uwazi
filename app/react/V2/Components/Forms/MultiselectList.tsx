@@ -38,20 +38,26 @@ const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
 const MultiselectList = ({
   items,
   onChange,
-  className,
+  className = '',
   label,
   hasErrors,
-  value = [],
+  value,
   checkboxes = false,
   foldableGroups = false,
   singleSelect = false,
   allowSelelectAll = false,
 }: MultiselectListProps) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>(value);
+  const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (value) {
+      setSelectedItems(value);
+    }
+  }, [value]);
 
   useEffect(() => {
     let filtered = [...items];
@@ -223,8 +229,8 @@ const MultiselectList = ({
   };
 
   return (
-    <div className={`flex relative flex-col ${className}`}>
-      <div className="sticky top-0 mb-2 w-full">
+    <div className={`relative ${className}`}>
+      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -237,7 +243,7 @@ const MultiselectList = ({
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
-        <div className="flex flex-nowrap mx-1 my-4">
+        <div className="flex mx-1 my-4 flex-nowrap">
           <RadioSelect
             name="filter"
             orientation="horizontal"
@@ -268,9 +274,7 @@ const MultiselectList = ({
         </div>
       </div>
 
-      <ul className="px-2 pt-2 w-full overflow-y-scroll max-h-[calc(100vh_-_9rem)]">
-        {filteredItems.map(renderItem)}
-      </ul>
+      <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
     </div>
   );
 };
