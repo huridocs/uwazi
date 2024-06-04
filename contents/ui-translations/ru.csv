@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,Добавить дату
 Add entities / documents,Добавить объекты/документы
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,Добавить файл
 Add from URL,Добавить из URL
 Add from web,Добавить из Интернета
@@ -135,6 +136,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Коллекция
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,Настроить фильтры
 Configure templates,Configure templates
@@ -340,7 +342,6 @@ for,for
 Forgot Password?,Забыли пароль?
 Forms and email configuration,Настройка форм и электронной почты
 From,From
-From all templates,From all templates
 Full edit mode,Режим полного редактирования
 Full width,Full width
 General,Общий
@@ -385,6 +386,7 @@ Info,Информация
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Перенять свойство
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -548,7 +550,6 @@ OCR PDF,Оптическое распознавание символов PDF
 of,из
 Ok,Окей
 OK,Окей
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,Упс... Просим вас уйти
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,"Упс! Мы не смогли найти предметный указатель, который вы пытаетесь отредактировать. Попробуйте обратную навигацию вплоть до этой страницы через Настройки."
 Open PDF,Open PDF
@@ -702,6 +703,7 @@ Select...,Выбрать...
 Selected,Selected
 selected,выбранный
 selected of,выбран из
+Selected templates,Selected templates
 Semantic search,Семантический поиск
 Semantic Search,Семантический поиск
 Semantic search minimum sentences help,Справка о минимуме предложений для семантического поиска

@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,Add date
 Add entities / documents,Add entities / documents
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,Add file
 Add from URL,Add from URL
 Add from web,Add from web
@@ -140,6 +141,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,Configure filters
 Configure templates,Configure templates
@@ -345,7 +347,6 @@ for,for
 Forgot Password?,Forgot Password?
 Forms and email configuration,Forms and email configuration
 From,From
-From all templates,From all templates
 Full edit mode,Full edit mode
 Full width,Full width
 General,General
@@ -390,6 +391,7 @@ Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Inherit property
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -553,7 +555,6 @@ OCR PDF,OCR PDF
 of,of
 Ok,Ok
 OK,OK
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
 Open PDF,Open PDF
@@ -707,6 +708,7 @@ Select...,Select...
 Selected,Selected
 selected,selected
 selected of,selected of
+Selected templates,Selected templates
 Semantic search,Semantic search
 Semantic Search,Semantic Search
 Semantic search minimum sentences help,Semantic search is applied to each sentence in a document. Filter the documents by the minimum number of sentences that exceed the threshold.

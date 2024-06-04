@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,Tarih ekle
 Add entities / documents,Varlık/Döküman ekle
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,Dosya ekle
 Add from URL,URL'den ekle
 Add from web,WEB'ten ekle
@@ -138,6 +139,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Koleksiyon
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,Filtreleri yapılandır
 Configure templates,Configure templates
@@ -343,7 +345,6 @@ for,for
 Forgot Password?,Parolanızı mı unuttunuz?
 Forms and email configuration,Formlar ve e-posta yapılandırması
 From,From
-From all templates,From all templates
 Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
@@ -388,6 +389,7 @@ Info,Bilgi
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Inherit property
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -551,7 +553,6 @@ OCR PDF,OKT PDF
 of,nın-nin
 Ok,Tamam
 OK,TAMAM
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,Ooops... lütfen şuraya gidin
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! Düzenlemeye çalıştığınız Thesaurus'u bulamadık. Ayarlar aracılığıyla bu sayfaya geri dönmeyi deneyin.
 Open PDF,Open PDF
@@ -705,6 +706,7 @@ Select...,Seç...
 Selected,Selected
 selected,seçilmiş
 selected of,arasından seçildi
+Selected templates,Selected templates
 Semantic search,Anlamsal Arama
 Semantic Search,Anlamsal Arama
 Semantic search minimum sentences help,Anlamsal Arama Minimum Cümleler Yardım
