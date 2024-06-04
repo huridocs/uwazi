@@ -90,16 +90,20 @@ describe('Activity log', () => {
     cy.get('[data-testid=close-sidepanel]').click();
   });
 
-  it('should filter by method', () => {
-    cy.contains('button', 'Filters').click();
+  const selectMethod = (option: number) => {
     cy.getByTestId('multiselect').within(() => {
       cy.get('button').eq(0).click();
       cy.get('ul li')
-        .eq(2)
+        .eq(option)
         .within(() => {
           cy.get('input').eq(0).click();
         });
     });
+  };
+
+  it('should filter by method', () => {
+    cy.contains('button', 'Filters').click();
+    selectMethod(2);
     applyFilters();
     cy.contains('editor');
     cy.get('tr').should('have.length.at.most', 3);
@@ -122,14 +126,7 @@ describe('Activity log', () => {
     cy.contains('button', 'Clear all').click();
     cy.clearAndType('input[name=username]', 'admin', { delay: 0 });
     cy.clearAndType('input[name=search]', 'new user', { delay: 0 });
-    cy.getByTestId('multiselect').within(() => {
-      cy.get('button').eq(0).click();
-      cy.get('ul li')
-        .eq(0)
-        .within(() => {
-          cy.get('input').eq(0).click();
-        });
-    });
+    selectMethod(0);
     cy.get('input[name=from]').type('2023-06-22', { delay: 0 });
     cy.clearAndType('input[name=to]', '2023-06-22', { delay: 0 });
     applyFilters();
