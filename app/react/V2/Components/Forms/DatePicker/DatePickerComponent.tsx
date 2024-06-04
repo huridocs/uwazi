@@ -134,6 +134,13 @@ const DatePickerComponent = React.forwardRef(
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
 
+    useEffect(() => {
+      if (instance.current !== null && ref.current !== null) {
+        //@ts-expect-error
+        ref.current.value = value;
+      }
+    }, [instance, value]);
+
     return (
       <div className="tw-content">
         <div id="tw-container" className={`${mainClassName} absolute tw-datepicker z-50`} />

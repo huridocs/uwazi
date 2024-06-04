@@ -86,6 +86,15 @@ const DateRangePickerComponent = React.forwardRef(
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [locale, labelToday, labelClear, dateFormat]);
 
+    useEffect(() => {
+      if (instance.current !== null && fromRef.current !== null && toRef.current !== null) {
+        //@ts-expect-error
+        fromRef.current.value = from;
+        //@ts-expect-error
+        toRef.current.value = to;
+      }
+    }, [from, to, instance, fromRef, toRef]);
+
     return (
       <div className="tw-content">
         <div
@@ -129,7 +138,6 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 {...register('from')}
                 type="text"
-                value={from}
                 onSelect={onFromDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}
@@ -167,7 +175,6 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 {...register('to')}
                 type="text"
-                value={to}
                 onSelect={onToDateSelected}
                 onBlur={onBlur}
                 disabled={disabled}

@@ -43,8 +43,8 @@ const ActivityLog = () => {
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;
 
   useEffect(() => {
-    const currentSorting = sorting || [{}];
-    const { id: sortingProp, desc } = currentSorting[0];
+    const [currentSorting] = sorting || [];
+    const { id: sortingProp, desc } = currentSorting || {};
     const sortingOrder = desc ? 'desc' : 'asc';
     if (
       isFirstRender &&
@@ -59,6 +59,7 @@ const ActivityLog = () => {
 
   const onSubmit = async (data: ActivityLogSearch) => {
     updateSearch(data, searchParams, setSearchParams);
+    setShowFilters(false);
   };
 
   const columns = getActivityLogColumns(setSelectedEntry, dateFormat);
