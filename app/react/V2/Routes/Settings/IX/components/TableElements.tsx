@@ -7,26 +7,11 @@ import { CheckCircleIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/reac
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
-import {
-  DatePropertyIcon,
-  MarkdownPropertyIcon,
-  NumericPropertyIcon,
-  SelectPropertyIcon,
-  TextPropertyIcon,
-} from 'V2/Components/CustomIcons';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
 import { Extractor, MultiValueSuggestion, SingleValueSuggestion, TableSuggestion } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
-
-const propertyIcons = {
-  text: <TextPropertyIcon className="w-4" />,
-  date: <DatePropertyIcon className="w-4" />,
-  numeric: <NumericPropertyIcon className="w-4" />,
-  markdown: <MarkdownPropertyIcon className="w-4" />,
-  select: <SelectPropertyIcon className="w-4" />,
-  multiselect: <SelectPropertyIcon className="w-4" />,
-};
+import { propertyIcons } from './Icons';
 
 const extractorColumnHelper = createColumnHelper<Extractor>();
 // Helper typed as any because of https://github.com/TanStack/table/issues/4224
@@ -68,8 +53,8 @@ const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex gap-2">
-      {propertyIcons[property]}
+    <div className="flex gap-2 items-center">
+      <span className="w-4">{propertyIcons[property]}</span>
       <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
   );
@@ -109,7 +94,7 @@ const AcceptButton = ({
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   if (color === 'green') {
-    return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
+    return <div className="m-auto w-6 h-6">{getIcon(color)}</div>;
   }
 
   return (

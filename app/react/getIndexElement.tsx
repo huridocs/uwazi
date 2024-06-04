@@ -12,15 +12,15 @@ import { ViewerRoute } from './Viewer/ViewerRoute';
 const deconstructSearchQuery = (query?: string) => {
   if (!query) return '';
   if (query.startsWith('?q=')) {
-    return query.substring(1).split('=')[1];
+    return decodeURI(query.substring(1).split('=')[1]);
   }
-  return '(' + query.substring(1) + ')';
+  return `(${query.substring(1)})`;
 };
 
 const getCustomLibraryPage = (customHomePage: string[]) => {
   const [query] = customHomePage.filter(path => path.startsWith('?'));
-  let searchQuery = deconstructSearchQuery(query);
-  let queryString = query ? searchQuery : '';
+  const searchQuery = deconstructSearchQuery(query);
+  const queryString = query ? searchQuery : '';
 
   if (customHomePage.includes('map')) {
     return <LibraryMap params={{ q: queryString }} />;

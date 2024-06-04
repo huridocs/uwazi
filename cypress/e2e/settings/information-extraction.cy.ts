@@ -20,19 +20,19 @@ const labelEntityTitle = (
   cy.get('div.alert-success').click();
 };
 
+const checkTemplatesList = (templates: string[]) => {
+  templates.map(template => cy.getByTestId('pill-comp').contains(template));
+};
+
 const editPropertyForExtractor = (
   alias: string,
   templateName: string,
   property: string,
-  remove?: boolean
+  shouldUnfold = true
 ) => {
-  cy.getByTestId('modal').contains('li', templateName).as(alias);
-  if (remove) {
-    cy.get(`@${alias}`).contains('label', property).click();
-  } else {
-    cy.get(`@${alias}`).find('label').click();
-    cy.get(`@${alias}`).contains('label', property).click();
-  }
+  cy.contains('span', templateName).as(alias);
+  if (shouldUnfold) cy.get(`@${alias}`).click();
+  cy.get(`@${alias}`).parent().parent().contains('span', property).click();
 };
 
 describe('Information Extraction', () => {
@@ -72,17 +72,21 @@ describe('Information Extraction', () => {
       cy.contains('a', 'Metadata Extraction').click();
     });
 
-    it('Should create an extractor', () => {
+    it('should create an extractor', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1', { delay: 0 });
+        cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
+
+        editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
+
+        editPropertyForExtractor('secondTemplate', 'Causa', 'Title');
+
+        cy.contains('button', 'Next').click();
+        cy.contains('Title');
+        checkTemplatesList(['Ordenes del presidente', 'Causa']);
+        cy.contains('button', 'Create').click();
       });
 
-      editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
-
-      editPropertyForExtractor('secondTemplate', 'Causa', 'Title');
-
-      cy.contains('button', 'Add').click();
       cy.contains('td', 'Extractor 1');
       cy.contains('button', 'Dismiss').click();
     });
@@ -90,38 +94,57 @@ describe('Information Extraction', () => {
     it('should create another extractor selecting all templates', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Titles from all templates', { delay: 0 });
+        cy.get('input[id="extractor-name"]').type('Titles from all templates', { delay: 0 });
+        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
+        cy.contains('button', 'Select all').click();
+        cy.contains('button', 'Next').click();
+        checkTemplatesList([
+          'Mecanismo',
+          'Ordenes de la corte',
+          'Informe de admisibilidad',
+          'País',
+          'Ordenes del presidente',
+          'Causa',
+          'Voto Separado',
+          'Medida Provisional',
+          'Sentencia de la corte',
+          'Juez y/o Comisionado',
+          'Reporte',
+        ]);
+        cy.contains('button', 'Create').click();
       });
-
-      editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
-      cy.contains('button', 'From all templates').click();
-      cy.contains('button', 'Add').click();
       cy.contains('td', 'Titles from all templates');
       cy.contains('button', 'Dismiss').click();
     });
 
     it('should disable the button to select all templates if no property is selected', () => {
       cy.contains('button', 'Create Extractor').click();
-      cy.contains('button', 'From all templates').should('have.attr', 'disabled');
-
-      editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
-      cy.contains('button', 'From all templates').should('not.have.attr', 'disabled');
-
-      editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title', true);
-      cy.contains('button', 'From all templates').should('have.attr', 'disabled');
-
-      cy.contains('button', 'Cancel').click();
+      cy.getByTestId('modal').within(() => {
+        cy.contains('button', 'Select all').should('not.exist');
+        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title');
+        cy.contains('button', 'Select all').should('exist');
+        editPropertyForExtractor('ordenesDelPresidente', 'Ordenes del presidente', 'Title', false);
+        cy.contains('button', 'Select all').should('not.exist');
+        cy.contains('button', 'Cancel').click();
+      });
     });
 
     it('should create another extractor selecting all templates with the relevant property', () => {
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Fechas from relevant templates', { delay: 0 });
-      });
+        cy.get('input[id="extractor-name"]').type('Fechas from relevant templates', { delay: 0 });
 
-      editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');
-      cy.contains('button', 'From all templates').click();
-      cy.contains('button', 'Add').click();
+        editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Fecha');
+        cy.contains('button', 'Select all').click();
+        cy.contains('button', 'Next').click();
+        checkTemplatesList([
+          'Ordenes de la corte',
+          'Informe de admisibilidad',
+          'Ordenes del presidente',
+          'Sentencia de la corte',
+        ]);
+        cy.contains('button', 'Create').click();
+      });
       cy.contains('td', 'Fechas from relevant templates');
       cy.contains('button', 'Dismiss').click();
     });
@@ -133,17 +156,29 @@ describe('Information Extraction', () => {
           cy.get('td').eq(0).get('input').click();
         });
       cy.contains('button', 'Edit Extractor').click();
-
       cy.getByTestId('modal').within(() => {
-        cy.get('input').eq(0).type(' edited', { delay: 0 });
+        cy.get('input[id="extractor-name"]').type(' edited', { delay: 0 });
+        editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
+        editPropertyForExtractor('causa', 'Causa', 'Title');
+        cy.contains('button', 'Next').click();
+        checkTemplatesList(['Ordenes de la corte', 'Ordenes del presidente']);
+        cy.contains('button', 'Update').click();
       });
-
-      editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
-      editPropertyForExtractor('causa', 'Causa', 'Title', true);
-
-      cy.contains('button', 'Save').click();
       cy.contains('td', 'Extractor 1 edited');
       cy.contains('button', 'Dismiss').click();
+    });
+
+    it('should be able to filter templates', () => {
+      cy.contains('button', 'Create Extractor').click();
+      cy.getByTestId('modal').within(() => {
+        cy.get('input[id="search-multiselect"]').type('ordenes', { delay: 0 });
+        cy.contains('Ordenes de la corte');
+        cy.contains('Ordenes del presidente');
+        cy.contains('Cause').should('not.exist');
+        cy.get('input[id="search-multiselect"]').clear();
+        cy.contains('Cause').should('not.exist');
+        cy.contains('button', 'Cancel').click();
+      });
     });
 
     it('should not be able to edit when selecting multiple extractors', () => {
@@ -182,13 +217,14 @@ describe('Information Extraction', () => {
 
     it('should disable buttons while saving', () => {
       cy.intercept('POST', '/api/ixextractors', { delay: 100 });
-
       cy.contains('button', 'Create Extractor').click();
       cy.getByTestId('modal').within(() => {
-        cy.get('input').type('Extractor 1', { delay: 0 });
+        cy.get('input[id="extractor-name"]').type('Extractor 1', { delay: 0 });
+        editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
+        cy.contains('button', 'Next').click();
+        cy.contains('button', 'Create').click();
       });
-      editPropertyForExtractor('firstTemplate', 'Ordenes del presidente', 'Title');
-      cy.contains('button', 'Add').click();
+
       cy.contains('button', 'Create Extractor').should('have.attr', 'disabled');
       cy.contains('button', 'Dismiss').click();
     });
@@ -265,7 +301,7 @@ describe('Information Extraction', () => {
   describe('PDF sidepanel', () => {
     it('should display the PDF sidepanel with the pdf and selection rectangle', () => {
       cy.contains('button', 'Open PDF').click();
-      cy.contains('h1', 'SamplePDF.pdf');
+      cy.contains('h1', '2023');
       cy.get('aside').within(() => {
         cy.get('input').should('have.value', '2023');
       });
