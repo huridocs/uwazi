@@ -15,6 +15,7 @@ const ActivityLogSidePanel = ({ selectedEntry, isOpen, onClose }: ActivityLogSid
     isOpen={isOpen}
     closeSidepanelFunction={onClose}
     title={<Translate className="uppercase">Activity</Translate>}
+    data-testid="activity-log-detail"
   >
     <Sidepanel.Body>
       {selectedEntry !== undefined && (

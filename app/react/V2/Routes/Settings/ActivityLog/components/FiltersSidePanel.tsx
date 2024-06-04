@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useMemo, useEffect } from 'react';
-import _ from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
+import { isEqual, debounce } from 'lodash';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, translationsAtom } from 'app/V2/atoms';
+import { useIsFirstRender } from 'app/V2/CustomHooks';
 
 interface ActivityLogSearch {
   username: string;
@@ -33,13 +34,21 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 }));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
+  const isFirstRender = useIsFirstRender();
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
   const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
+  const [currentFilters, setCurrentFilters] = useState(appliedFilters);
 
   const debouncedChangeHandler = useMemo(
-    () => (handler: (_args?: any) => void) => _.debounce(handler, 500),
+    () => (handler: (_args?: any) => void) => debounce(handler, 500),
     []
   );
+
+  useEffect(() => {
+    if (!isFirstRender) {
+      setCurrentFilters(appliedFilters);
+    }
+  }, [isFirstRender, appliedFilters]);
 
   const {
     register,
@@ -50,13 +59,8 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
   } = useForm<ActivityLogSearch>({
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
-    defaultValues: appliedFilters,
+    defaultValues: currentFilters,
   });
-
-  useEffect(() => {
-    setValue('from', appliedFilters.from);
-    setValue('to', appliedFilters.to);
-  }, []);
 
   const handleInputSubmit =
     (field: 'username' | 'search' | 'method') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,7 +82,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
         <Sidepanel.Body>
           <div className="flex flex-col">
             <MultiSelect
-              value={appliedFilters.method || []}
+              value={currentFilters.method || []}
               label={<Translate>Action</Translate>}
               options={methodOptions}
               onChange={selected => {
@@ -111,7 +115,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 hasErrors={!!errors.search}
                 onBlur={() => {}}
               />
-
               <DateRangePicker
                 key="activity-log-range"
                 label={<Translate>Date Range</Translate>}
@@ -123,23 +126,24 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 labelToday={t('System', 'Today', null, false)}
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear={t('System', 'Clear', null, false)}
-                onFromDateSelected={e => {
-                  const fromChanged = !_.isEqual(e.target.value, appliedFilters.from || '');
+                onFromDateSelected={debouncedChangeHandler(e => {
+                  const fromChanged = !isEqual(e.target.value, currentFilters.from || '');
                   if (fromChanged) {
                     setValue('from', e.target.value);
                   }
-                }}
-                onToDateSelected={e => {
-                  const toChanged = !_.isEqual(e.target.value, appliedFilters.to || '');
+                })}
+                onToDateSelected={debouncedChangeHandler(e => {
+                  const toChanged = !isEqual(e.target.value, currentFilters.to || '');
                   if (toChanged) {
                     setValue('to', e.target.value);
                   }
-                }}
+                })}
                 dateFormat={dateFormat}
-                from={appliedFilters.from}
-                to={appliedFilters.to}
+                from={currentFilters.from}
+                to={currentFilters.to}
                 onClear={(field: 'from' | 'to') => {
                   setValue(field, '');
+                  setCurrentFilters({ ...currentFilters, [field]: '' });
                 }}
               />
             </div>
@@ -152,6 +156,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
               type="button"
               styling="outline"
               onClick={() => {
+                setCurrentFilters({ ...currentFilters, from: '', to: '', method: [] });
                 reset({ username: '', method: [], search: '', from: '', to: '' });
               }}
             >

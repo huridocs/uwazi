@@ -142,7 +142,10 @@ const updateSearch = (
   if (!isEqual(changedPairs, Array.from(searchParams))) {
     setSearchParams((prev: URLSearchParams) => {
       filterPairs.forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
+        if (
+          value !== undefined &&
+          ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))
+        ) {
           setSearchValue(prev, key, value);
         } else {
           prev.delete(key);
