@@ -5,7 +5,6 @@ import { usePopper } from 'react-popper';
 import { Popover } from '@headlessui/react';
 import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
-import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { Pill } from '../UI';
 
 type Option = { label: string | React.ReactNode; value: string };
@@ -34,7 +33,6 @@ const MultiSelect = ({
   canBeEmpty = true,
   value,
 }: MultiSelectProps) => {
-  const isFirstRender = useIsFirstRender();
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
@@ -62,10 +60,8 @@ const MultiSelect = ({
   };
 
   useEffect(() => {
-    if (!isFirstRender) {
-      setCurrentValue(value);
-    }
-  }, [isFirstRender, value]);
+    setCurrentValue(value);
+  }, [value]);
 
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-sm">

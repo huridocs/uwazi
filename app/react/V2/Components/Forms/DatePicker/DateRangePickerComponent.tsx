@@ -37,8 +37,8 @@ const DateRangePickerComponent = React.forwardRef(
       language = 'en',
       dateFormat = 'yyyy-mm-dd',
       hideLabel = false,
+      inputClassName = '',
       className = '',
-      mainClassName = '',
       register = () => ({}),
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
@@ -50,14 +50,14 @@ const DateRangePickerComponent = React.forwardRef(
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
     const divRef = useRef(null);
-    const fromRef = useRef(null);
-    const toRef = useRef(null);
+    const fromRef = useRef<HTMLInputElement>(null);
+    const toRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => divRef.current);
 
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${className || ''} bg-gray-50 border border-gray-300`
-      : `${className || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+        `${inputClassName || ''} bg-gray-50 border border-gray-300`
+      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
     const instance = useRef<DateRangePicker | null>(null);
     const locale = validateLocale(language);
 
@@ -87,19 +87,17 @@ const DateRangePickerComponent = React.forwardRef(
     }, [locale, labelToday, labelClear, dateFormat]);
 
     useEffect(() => {
-      if (instance.current !== null && fromRef.current !== null && toRef.current !== null) {
-        //@ts-expect-error
-        fromRef.current.value = from;
-        //@ts-expect-error
-        toRef.current.value = to;
+      if (instance.current && fromRef?.current && toRef?.current) {
+        fromRef.current.value = from || '';
+        toRef.current.value = to || '';
       }
-    }, [from, to, instance, fromRef, toRef]);
+    }, [locale, from, to, instance, fromRef, toRef]);
 
     return (
       <div className="tw-content">
         <div
           id="tw-container"
-          className={`${mainClassName} absolute tw-datepicker z-50`}
+          className={`${className} absolute tw-datepicker z-50`}
           data-test-id={id}
         />
         <div>
@@ -146,8 +144,7 @@ const DateRangePickerComponent = React.forwardRef(
                 placeholder={placeholderStart}
                 ref={fromRef}
                 clearFieldAction={() => {
-                  if (fromRef !== null && fromRef.current !== null) {
-                    //@ts-expect-error
+                  if (fromRef?.current) {
                     fromRef.current.value = '';
                     onClear('from');
                   }
@@ -182,8 +179,7 @@ const DateRangePickerComponent = React.forwardRef(
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderEnd}
                 clearFieldAction={() => {
-                  if (toRef !== null && toRef.current !== null) {
-                    //@ts-expect-error
+                  if (toRef?.current) {
                     toRef.current.value = '';
                     onClear('to');
                   }

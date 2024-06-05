@@ -8,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, translationsAtom } from 'app/V2/atoms';
-import { useIsFirstRender } from 'app/V2/CustomHooks';
 
 interface ActivityLogSearch {
   username: string;
@@ -34,21 +33,18 @@ const methodOptions = ['CREATE', 'UPDATE', 'DELETE', 'MIGRATE', 'WARNING'].map(m
 }));
 
 const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: FiltersSidePanelProps) => {
-  const isFirstRender = useIsFirstRender();
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
   const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
 
   const debouncedChangeHandler = useMemo(
-    () => (handler: (_args?: any) => void) => debounce(handler, 500),
+    () => (handler: (_args?: any) => void) => debounce(handler, 100),
     []
   );
 
   useEffect(() => {
-    if (!isFirstRender) {
-      setCurrentFilters(appliedFilters);
-    }
-  }, [isFirstRender, appliedFilters]);
+    setCurrentFilters(appliedFilters);
+  }, [appliedFilters]);
 
   const {
     register,
@@ -117,9 +113,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
               />
               <DateRangePicker
                 key="activity-log-range"
-                label={<Translate>Date Range</Translate>}
+                label={<Translate key="property daterange">Date Range</Translate>}
                 language={locale}
-                mainClassName="pt-4 -top-4"
+                className="pt-4 -top-4"
                 register={register}
                 placeholderStart={t('System', 'From', null, false)}
                 placeholderEnd={t('System', 'To', null, false)}
