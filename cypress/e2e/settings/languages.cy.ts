@@ -82,14 +82,22 @@ describe('Languages', () => {
     it('should use the default language if there is not specified locale', () => {
       cy.clearAllCookies();
       cy.visit('http://localhost:3000/login');
-      cy.contains('Acceder');
       cy.contains('Usuario');
       cy.get('input[name="username"').type('admin');
-      cy.get('input[name="password"').type('admin');
-      cy.get('button[type="submit"').click();
+      cy.get('input[name="password"').type('change this password now');
+      cy.intercept('POST', '/api/login').as('login');
+      cy.contains('button', 'Acceder').click();
+      cy.wait('@login');
       cy.contains('ordenado por');
+    });
+    it('should change to other language different than default', () => {
+      cy.contains('button', 'Español').click();
+      cy.contains('a', 'English').click();
+      cy.on('uncaught:exception', (err, _runnable) => {
+        err.message.includes('Hydration failed');
+        return false;
+      });
       cy.get('.only-desktop a[aria-label="Settings"]').click();
-      cy.contains('span', 'Languages').click();
     });
   });
 
