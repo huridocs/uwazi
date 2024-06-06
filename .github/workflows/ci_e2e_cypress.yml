@@ -24,8 +24,7 @@ jobs:
       redis:
         image: redis:5.0.14
         ports:
-          - 6379:6379
-
+          - 6379:6379         
     steps:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
@@ -81,6 +80,9 @@ jobs:
       - name: Log on failure
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
+      - name: Sleep for 30 seconds
+        run: sleep 30s
+        shell: bash
       - run: yarn blank-state
         env:
           DBHOST: localhost:27017
