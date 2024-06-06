@@ -70,7 +70,7 @@ const Sidepanel = ({
 
   if (withOverlay) {
     return (
-      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full">
+      <Transition show={isOpen} className="fixed top-0 left-0 z-10 flex w-full h-full max-h-full">
         <Transition.Child
           className="w-full transition-opacity duration-200 ease-in bg-gray-900 md:flex-grow"
           enterFrom="opacity-0"
@@ -111,13 +111,21 @@ const Sidepanel = ({
   );
 };
 
-Sidepanel.Body = ({ children, className }: { children: React.ReactNode; className?: String }) => (
-  <div className={`flex-grow p-4 ${className}`}>{children}</div>
-);
+Sidepanel.Body = ({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: String;
+}) => <div className={`flex-grow p-4 ${className}`}>{children}</div>;
 
-Sidepanel.Footer = ({ children, className }: { children: React.ReactNode; className?: String }) => (
-  <div className={`sticky bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>
-);
+Sidepanel.Footer = ({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: String;
+}) => <div className={`bottom-0 left-0 w-full bg-white z-1 ${className}`}>{children}</div>;
 
 export type { SidePanelProps };
 export { Sidepanel };
