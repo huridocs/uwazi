@@ -89,7 +89,8 @@ const changeToUpdate = (entryValue: EntryValue): EntryValue => {
 
 function checkForUpdate(body: any, entryValue: EntryValue) {
   const content = JSON.parse(body);
-  const id = entryValue.idField ? content[entryValue.idField] : null;
+  const json = content.entity ? JSON.parse(content.entity) : content;
+  const id = entryValue.idField ? json[entryValue.idField] : null;
   let activityInput = { ...entryValue };
   if (id && entryValue.method !== Methods.Delete) {
     activityInput = changeToUpdate(entryValue);
