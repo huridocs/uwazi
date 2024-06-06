@@ -118,6 +118,7 @@ describe('Activity log', () => {
     cy.get('input[name=from]').type('2023-06-21', { delay: 0 });
     cy.get('input[name=to]').clear();
     cy.get('input[name=to]').type('2023-06-24', { delay: 0 });
+    cy.get('input[name=to]').realPress('Tab');
     applyFilters();
     cy.get('tr').should('have.length.at.most', 2);
   });

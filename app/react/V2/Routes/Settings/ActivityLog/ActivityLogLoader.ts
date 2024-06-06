@@ -94,7 +94,10 @@ const activityLogLoader =
         total: 0,
       };
     }
-    const total = Number(params.page) * activityLogList.rows.length + activityLogList.remainingRows;
+    const total =
+      Number(params.page) * params.limit -
+      (params.limit - activityLogList.rows.length) +
+      activityLogList.remainingRows;
     const totalPages = Math.ceil(total / params.limit);
 
     return {
@@ -141,6 +144,7 @@ const updateSearch = (
   const changedPairs = changedParams(filterPairs);
   if (!isEqual(changedPairs, Array.from(searchParams))) {
     setSearchParams((prev: URLSearchParams) => {
+      prev.delete('page');
       filterPairs.forEach(([key, value]) => {
         if (
           value !== undefined &&

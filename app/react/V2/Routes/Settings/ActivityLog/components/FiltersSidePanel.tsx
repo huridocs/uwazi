@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useMemo, useState } from 'react';
-import { isEqual, debounce } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { isEqual } from 'lodash';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
@@ -36,11 +36,6 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
   const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
   const { locale } = useAtomValue<{ locale: string }>(translationsAtom);
   const [currentFilters, setCurrentFilters] = useState(appliedFilters);
-
-  const debouncedChangeHandler = useMemo(
-    () => (handler: (_args?: any) => void) => debounce(handler, 100),
-    []
-  );
 
   useEffect(() => {
     setCurrentFilters(appliedFilters);
@@ -95,7 +90,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 clearFieldAction={() => {
                   setValue('username', '');
                 }}
-                onChange={debouncedChangeHandler(handleInputSubmit('username'))}
+                onChange={handleInputSubmit('username')}
                 onBlur={() => {}}
               />
               <InputField
@@ -107,7 +102,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 clearFieldAction={() => {
                   setValue('search', '');
                 }}
-                onChange={debouncedChangeHandler(handleInputSubmit('search'))}
+                onChange={handleInputSubmit('search')}
                 hasErrors={!!errors.search}
                 onBlur={() => {}}
               />
@@ -122,18 +117,18 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 labelToday={t('System', 'Today', null, false)}
                 hasErrors={!!errors.from || !!errors.to}
                 labelClear={t('System', 'Clear', null, false)}
-                onFromDateSelected={debouncedChangeHandler(e => {
+                onFromDateSelected={e => {
                   const fromChanged = !isEqual(e.target.value, currentFilters.from || '');
                   if (fromChanged) {
                     setValue('from', e.target.value);
                   }
-                })}
-                onToDateSelected={debouncedChangeHandler(e => {
+                }}
+                onToDateSelected={e => {
                   const toChanged = !isEqual(e.target.value, currentFilters.to || '');
                   if (toChanged) {
                     setValue('to', e.target.value);
                   }
-                })}
+                }}
                 dateFormat={dateFormat}
                 from={currentFilters.from}
                 to={currentFilters.to}
