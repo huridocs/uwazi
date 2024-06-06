@@ -73,6 +73,7 @@ describe('InformationExtraction', () => {
       ...specificSuggestionData,
       ...result,
     }));
+    console.log('IXResults', JSON.stringify(IXResults, null, 2));
     IXExternalService.setResults(IXResults);
   };
 
@@ -798,6 +799,44 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('prop2extractor'),
       });
       expect(suggestions.length).toBe(4);
+    });
+
+    it('it should mark uwazi side saving error and store errorDetails', async () => {
+      const results = [
+        {
+          tenant: 'tenant1',
+          id: '666186e544b087b41dee1df8',
+          xml_file_name: 'documentA.xml',
+          text: 'recommended',
+          segment_text: 'This is recommended.',
+          segments_boxes: [
+            {
+              left: 1,
+              top: 2,
+              width: 3,
+              height: 4,
+              page_number: 1,
+            },
+          ],
+        },
+      ];
+      IXExternalService.setResults(results);
+
+      await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
+      await informationExtraction.processResults({
+        params: { id: factory.id('prop1extractor').toString() },
+        tenant: 'tenant1',
+        task: 'suggestions',
+        success: true,
+        data_url: 'http://localhost:1234/suggestions_results',
+      });
+
+      const suggestions = await IXSuggestionsModel.get({
+        status: 'ready',
+        extractorId: factory.id('prop1extractor'),
+      });
+
+      console.log('suggestions', suggestions);
     });
 
     describe('text', () => {
