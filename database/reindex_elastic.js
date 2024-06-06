@@ -17,6 +17,26 @@ const getIndexUrl = () => {
   return `${elasticUrl}/${config.defaultTenant.indexName}`;
 };
 
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function checkElasticHealth(remainingRetries = 5) {
+  try {
+    const elasticUrl = config.elasticsearch_nodes[0];
+    const response = await request.get(`${elasticUrl}/_cluster/health`);
+    return response.status;
+  } catch (e) {
+    if (remainingRetries > 0) {
+      await sleep((5 - remainingRetries) * 10000);
+      return checkElasticHealth(remainingRetries - 1);
+    }
+    throw e;
+  }
+}
+
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
   request.put(`${getIndexUrl()}/_settings`, {
     index: {
@@ -145,6 +165,7 @@ DB.connect(config.DBHOST, dbAuth).then(async () => {
   await tenants.run(async () => {
     try {
       permissionsContext.setCommandContext();
+      await checkElasticHealth();
       await prepareIndex();
       await tweakSettingsForPerformmance();
       await reindex();
