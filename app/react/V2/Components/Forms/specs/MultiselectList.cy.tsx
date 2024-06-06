@@ -139,6 +139,28 @@ describe('MultiselectList.cy.tsx', () => {
     cy.wrap(selectedItems).should('deep.equal', ['VegetarianSelected', 'MushroomSelected']);
   });
 
+  it('should show the selected checkbox checked when there are initial values', () => {
+    const selections: string[] = ['veggy_caesar', 'caesar'];
+
+    mount(
+      <Provider store={createStore()}>
+        <div className="p-2 tw-content">
+          <MultiselectList
+            value={selections}
+            items={salads}
+            onChange={selectedItems => {
+              selections.push(...selectedItems);
+            }}
+            allowSelelectAll
+            foldableGroups
+          />
+        </div>
+      </Provider>
+    );
+
+    cy.contains('Selected (2)').siblings().get('input').should('be.checked');
+  });
+
   describe('select all', () => {
     it('should allow selecting all items', () => {
       const selections: string[] = [];

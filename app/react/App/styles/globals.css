@@ -1983,18 +1983,6 @@ input[type="range"]::-ms-fill-lower {
   min-height: fit-content;
 }
 
-.min-h-96 {
-  min-height: 24rem;
-}
-
-.min-h-\[80\%\] {
-  min-height: 80%;
-}
-
-.min-h-\[70\%\] {
-  min-height: 70%;
-}
-
 .\!w-full {
   width: 100% !important;
 }

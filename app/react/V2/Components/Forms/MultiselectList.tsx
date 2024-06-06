@@ -61,6 +61,7 @@ const MultiselectList = ({
 
   useEffect(() => {
     let filtered = [...items];
+
     if (!showAll) {
       filtered = filtered
         .filter(item => {
@@ -143,6 +144,7 @@ const MultiselectList = ({
     }
 
     const selected = selectedItems.includes(item.value);
+
     const borderSyles = selected
       ? 'border-sucess-200'
       : 'border-transparent hover:border-primary-300';
@@ -169,7 +171,9 @@ const MultiselectList = ({
     if (item.items) {
       return renderGroup(item);
     }
+
     const selected = selectedItems.includes(item.value);
+
     return (
       <li key={item.value} className="mb-2">
         <Checkbox
@@ -230,7 +234,7 @@ const MultiselectList = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="sticky top-0 w-full pt-4 mb-2 bg-white">
+      <div className="sticky top-0 pt-4 mb-2 w-full bg-white">
         <Label htmlFor="search-multiselect" hideLabel={!label} hasErrors={Boolean(hasErrors)}>
           {label}
         </Label>
@@ -243,7 +247,7 @@ const MultiselectList = ({
           value={searchTerm}
           clearFieldAction={() => setSearchTerm('')}
         />
-        <div className="flex mx-1 my-4 flex-nowrap">
+        <div className="flex flex-nowrap mx-1 my-4">
           <RadioSelect
             name="filter"
             orientation="horizontal"
@@ -251,11 +255,12 @@ const MultiselectList = ({
               {
                 label: <Translate>All</Translate>,
                 value: 'true',
-                defaultChecked: true,
+                defaultChecked: selectedItems.length === 0,
               },
               {
                 label: <SelectedCounter selectedItems={selectedItems} />,
                 value: 'false',
+                defaultChecked: selectedItems.length > 0,
                 disabled: selectedItems.length === 0,
               },
             ]}
@@ -274,7 +279,7 @@ const MultiselectList = ({
         </div>
       </div>
 
-      <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
+      <ul className="px-2 pt-2 w-full grow">{filteredItems.map(renderItem)}</ul>
     </div>
   );
 };
