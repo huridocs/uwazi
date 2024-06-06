@@ -46,8 +46,8 @@ export default app => {
         body: {
           type: 'object',
           properties: {
-            username: { type: 'string' },
-            password: { type: 'string' },
+            username: { type: 'string', minLength: 1 },
+            password: { type: 'string', minLength: 1 },
             token: { type: 'string' },
           },
           required: ['username', 'password'],
