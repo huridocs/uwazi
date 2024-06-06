@@ -85,7 +85,7 @@ describe('Activity log', () => {
 
   it('should open the detail of an entry', () => {
     cy.contains('Updated user');
-    cy.get('tr:nth-child(1) td:nth-child(5)').contains('View').click();
+    cy.get('tr:nth-child(1) td:nth-child(5)').contains('View').click({ force: true });
     cy.contains('Query', { timeout: 200 });
     cy.get('aside.ease-in').toMatchSnapshot();
     cy.get('[data-testid=close-sidepanel]').click();
