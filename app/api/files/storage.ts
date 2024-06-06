@@ -18,6 +18,7 @@ import {
   uploadsPath,
 } from './filesystem';
 import { S3Storage } from './S3Storage';
+import { FileNotFound } from './FileNotFound';
 
 type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
@@ -59,15 +60,32 @@ const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> 
   return response.Body as Readable;
 };
 
+const catchFileNotFound = async <T>(cb: () => Promise<T>, filename: string): Promise<T> => {
+  const storageType = tenants.current().featureFlags?.s3Storage ? 's3' : 'local';
+  try {
+    return await cb();
+  } catch (err) {
+    if (err?.code === 'ENOENT' || err instanceof NoSuchKey) {
+      throw new FileNotFound(filename, storageType);
+    }
+    throw err;
+  }
+};
+
 export const storage = {
   async readableFile(filename: string, type: FileTypes) {
-    if (tenants.current().featureFlags?.s3Storage) {
-      return readFromS3(filename, type);
-    }
-    return createReadStream(paths[type](filename));
+    return catchFileNotFound(async () => {
+      if (tenants.current().featureFlags?.s3Storage) {
+        return readFromS3(filename, type);
+      }
+      return createReadStream(paths[type](filename));
+    }, filename);
   },
   async fileContents(filename: string, type: FileTypes) {
-    return streamToBuffer(await this.readableFile(filename, type));
+    return catchFileNotFound(
+      async () => streamToBuffer(await this.readableFile(filename, type)),
+      filename
+    );
   },
   async removeFile(filename: string, type: FileTypes) {
     if (tenants.current().featureFlags?.s3Storage) {

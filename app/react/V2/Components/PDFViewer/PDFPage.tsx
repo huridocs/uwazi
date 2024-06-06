@@ -64,7 +64,7 @@ const PDFPage = ({ pdf, page, highlights }: PDFPageProps) => {
         const pageViewer = new PDFJSViewer.PDFPageView({
           container: currentContainer,
           id: page,
-          scale: 1,
+          scale: 1.1,
           defaultViewport,
           annotationMode: 0,
           eventBus: new EventBus(),
