@@ -13,6 +13,7 @@ import { handleError } from 'api/utils';
 import { SegmentationType } from 'shared/types/segmentationType';
 import { FileType } from 'shared/types/fileType';
 import { SegmentationModel } from './segmentationModel';
+import { FileNotFound } from 'api/files/FileNotFound';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';
@@ -53,7 +54,7 @@ class PDFSegmentation {
 
       await this.storeProcess(file._id, file.filename);
     } catch (err) {
-      if (err.code === 'ENOENT') {
+      if (err instanceof FileNotFound) {
         await this.storeProcess(file._id, file.filename, false);
         handleError(err);
         return;
