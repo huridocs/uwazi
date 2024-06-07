@@ -1,3 +1,5 @@
+import Ajv from 'ajv';
+
 import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -7,12 +9,27 @@ import {
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
 } from 'shared/types/suggestionType';
+import { TextSelectionSuggestionSchema } from 'shared/types/suggestionSchema';
+import { syncWrapValidator } from 'shared/tsUtils';
 import { InternalIXResultsMessage } from './InformationExtraction';
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 
+const createAjvValidator = (schema: any) => {
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addVocabulary(['tsType']);
+  return syncWrapValidator(ajv.compile(schema));
+};
+
+const AJVS = {
+  text: createAjvValidator(TextSelectionSuggestionSchema),
+};
+
 const VALIDATORS = {
-  text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => 'text' in suggestion,
+  text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => {
+    AJVS.text(suggestion);
+    return true;
+  },
   select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
     'values' in suggestion && (suggestion.values.length === 1 || suggestion.values.length === 0),
   multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>

@@ -176,14 +176,16 @@ describe('formatSuggestion', () => {
   ])(
     'should throw error if $case',
     async ({ property, rawSuggestion, currentSuggestion, entity }) => {
-      const result = await formatSuggestion(
-        property,
-        // @ts-expect-error
-        rawSuggestion,
-        currentSuggestion,
-        entity,
-        successMessage
-      );
+      const cb = async () =>
+        formatSuggestion(
+          property,
+          // @ts-expect-error
+          rawSuggestion,
+          currentSuggestion,
+          entity,
+          successMessage
+        );
+      await expect(cb).rejects.toThrow('/tenant: must be string');
     }
   );
 
