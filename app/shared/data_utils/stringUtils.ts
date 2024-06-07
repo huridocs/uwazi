@@ -11,6 +11,4 @@ const compareStringLists = (list1: string[], list2: string[]): number => {
   return 0;
 };
 
-const escapeEspecialChars = (text: string) => text.replace(/[.*\/+?^${}()|[\]\\]/g, '\\$&');
-
-export { compareStringLists, escapeEspecialChars };
+export { compareStringLists };

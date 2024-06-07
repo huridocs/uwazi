@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Checkbox } from 'flowbite-react';
 import { isString } from 'lodash';
 import { usePopper } from 'react-popper';
@@ -7,7 +7,7 @@ import { XMarkIcon, PlusCircleIcon } from '@heroicons/react/20/solid';
 import { t, Translate } from 'app/I18N';
 import { Pill } from '../UI';
 
-type Option = { label: string | React.ReactNode; value: string };
+type Option = { label: string; value: string };
 
 interface MultiSelectProps {
   label: string | React.ReactNode;
@@ -18,7 +18,6 @@ interface MultiSelectProps {
   value: string[];
   placeholder?: string | React.ReactNode;
   canBeEmpty?: boolean;
-  updatable?: boolean;
 }
 
 const renderChild = (child: string | React.ReactNode, className?: string) =>
@@ -33,7 +32,6 @@ const MultiSelect = ({
   placeholder = 'No options',
   canBeEmpty = true,
   value,
-  updatable = false,
 }: MultiSelectProps) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
@@ -60,12 +58,6 @@ const MultiSelect = ({
     setCurrentValue(newValue);
     onChange(newValue);
   };
-
-  useEffect(() => {
-    if (updatable) {
-      setCurrentValue(value);
-    }
-  }, [updatable, value]);
 
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-sm">
@@ -103,7 +95,7 @@ const MultiSelect = ({
               data-testid="multiselect-popover"
             >
               {options.map((option: Option) => (
-                <li key={option.value} className="flex gap-2 py-1 align-top">
+                <li key={option.label} className="flex gap-2 py-1 align-top">
                   <Checkbox
                     className="cursor-pointer"
                     id={option.value}
@@ -117,7 +109,7 @@ const MultiSelect = ({
                     }}
                   />
                   <label className="w-full cursor-pointer" htmlFor={option.value}>
-                    {renderChild(option.label)}
+                    {option.label}
                   </label>
                 </li>
               ))}

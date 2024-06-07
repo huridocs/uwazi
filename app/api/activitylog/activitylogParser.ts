@@ -2,7 +2,7 @@ import * as helpers from 'api/activitylog/helpers';
 import { nameFunc } from 'api/activitylog/helpers';
 import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
 
-const ParsedActions: { [key: string]: EntryValue } = {
+const entryValues: { [key: string]: EntryValue } = {
   'POST/api/users': {
     desc: 'Updated user',
     method: Methods.Update,
@@ -226,7 +226,7 @@ const getSemanticData = async (data: any) => {
   if (action === 'MIGRATE') {
     return helpers.migrationLog(data);
   }
-  const entryValue = ParsedActions[action] || {
+  const entryValue = entryValues[action] || {
     desc: '',
     extra: () => `${data.method}: ${data.url}`,
     method: 'RAW',
@@ -245,4 +245,4 @@ const getSemanticData = async (data: any) => {
   return { ...activityEntry };
 };
 
-export { getSemanticData, ParsedActions };
+export { getSemanticData };

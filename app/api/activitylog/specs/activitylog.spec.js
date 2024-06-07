@@ -38,12 +38,12 @@ describe('activitylog', () => {
   describe('get()', () => {
     it('should return all entries', async () => {
       const { rows: entries } = await activitylog.get();
-      expect(entries.length).toBe(6);
+      expect(entries.length).toBe(5);
     });
 
     it('should include semantic info for each result', async () => {
       const { rows: entries } = await activitylog.get();
-      expect(activityLogParser.getSemanticData.mock.calls.length).toBe(6);
+      expect(activityLogParser.getSemanticData.mock.calls.length).toBe(5);
       expect(activityLogParser.getSemanticData).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'DELETE',
@@ -57,7 +57,6 @@ describe('activitylog', () => {
       });
     });
 
-    // eslint-disable-next-line max-statements
     describe('when filtering', () => {
       it('should filter by method', async () => {
         const { rows } = await activitylog.get({ method: ['POST'] });
@@ -67,35 +66,33 @@ describe('activitylog', () => {
       });
 
       it('should filter by time', async () => {
-        let { rows: entries } = await activitylog.get({
-          time: { from: 1200002400, to: 1300003200 },
-        });
+        let { rows: entries } = await activitylog.get({ time: { from: 5, to: 6 } });
         expect(entries.length).toBe(2);
-        expect(entries[0].time).toBe(1300003200000);
-        expect(entries[1].time).toBe(1200002400000);
+        expect(entries[0].time).toBe(6000);
+        expect(entries[1].time).toBe(5000);
 
         ({ rows: entries } = await activitylog.get({ time: { from: null } }));
-        expect(entries.length).toBe(6);
+        expect(entries.length).toBe(5);
 
         ({ rows: entries } = await activitylog.get({ time: { to: null } }));
-        expect(entries.length).toBe(6);
+        expect(entries.length).toBe(5);
       });
 
       it('should filter by url', async () => {
-        const { rows: entries } = await activitylog.get({ url: '/api/entities' });
+        const { rows: entries } = await activitylog.get({ url: 'entities' });
         expect(entries.length).toBe(4);
       });
 
       it('should filter by query', async () => {
         const { rows: entries } = await activitylog.get({ query: '123' });
-        expect(entries.length).toBe(2);
+        expect(entries.length).toBe(1);
         expect(entries[0].query).toBe('{"sharedId":"123"}');
       });
 
       it('should filter by body', async () => {
         const { rows: entries } = await activitylog.get({ body: 'Hello' });
         expect(entries.length).toBe(1);
-        expect(entries[0].body).toBe('{"title":"Hello"}');
+        expect(entries[0].body).toBe('{"_id":"123","title":"Hello"}');
       });
 
       it('should filter by username', async () => {
@@ -105,93 +102,26 @@ describe('activitylog', () => {
 
       it('should filter by anonymous user', async () => {
         const { rows: entries } = await activitylog.get({ username: 'anonymous' });
-        expect(entries.length).toBe(3);
+        expect(entries.length).toBe(2);
         expect(entries[0].username).toBeUndefined();
       });
 
       it('should allow a general find query of terms', async () => {
         const { rows: entries } = await activitylog.get({ find: 'Hello' });
         expect(entries.length).toBe(3);
-        expect(entries[0].time).toBe(1400000400000);
-        expect(entries[1].time).toBe(1300003200000);
-        expect(entries[2].time).toBe(1200002400000);
-      });
-
-      it('should filter by semantic text', async () => {
-        const { rows: entries } = await activitylog.get({ search: 'Deleted entity' });
-        expect(entries).toEqual([
-          expect.objectContaining({
-            method: 'DELETE',
-            url: '/api/entities',
-            query: '{"sharedId":"123"}',
-            time: 1100001600000,
-            username: 'admin',
-          }),
-        ]);
-      });
-
-      it('should filter by semantic method ', async () => {
-        const { rows: entries } = await activitylog.get({ search: 'create' });
-        expect(entries).toEqual([
-          expect.objectContaining({
-            method: 'POST',
-            url: '/api/entities',
-            query: '{"sharedId":"123"}',
-            body: '{"_id":"456","title":"Entity 1"}',
-            time: 1500008400000,
-          }),
-          expect.objectContaining({
-            method: 'POST',
-            url: '/api/entities',
-            body: '{"title":"Hello"}',
-            query: '{}',
-            time: 1200002400000,
-            username: 'admin',
-          }),
-        ]);
-      });
-
-      it('should filter by semantic method and a search term', async () => {
-        const { rows: entries } = await activitylog.get({ method: ['create'], search: 'Hello' });
-        expect(entries).toEqual([
-          expect.objectContaining({
-            method: 'POST',
-            url: '/api/entities',
-            body: '{"title":"Hello"}',
-            query: '{}',
-            time: 1200002400000,
-            username: 'admin',
-          }),
-        ]);
-      });
-
-      it('should filter by a composed query ', async () => {
-        const { rows: entries } = await activitylog.get({
-          url: '/api/entities',
-          username: 'admin',
-          method: ['POST'],
-        });
-        expect(entries).toEqual([expect.objectContaining({ time: 1200002400000 })]);
+        expect(entries[0].time).toBe(8000);
+        expect(entries[1].time).toBe(6000);
+        expect(entries[2].time).toBe(5000);
       });
     });
 
     describe('Load More functionality', () => {
       it('should allow to load more via "before" param', async () => {
         const initialResults = await activitylog.get({ limit: 2 });
-        assessResults(initialResults, {
-          size: 2,
-          remainingRows: 4,
-          limit: 2,
-          times: [1500008400000, 1400000400000],
-        });
+        assessResults(initialResults, { size: 2, remainingRows: 3, limit: 2, times: [8000, 6000] });
 
-        const nextResults = await activitylog.get({ before: 1300003200000, limit: 2 });
-        assessResults(nextResults, {
-          size: 2,
-          remainingRows: 1,
-          limit: 2,
-          times: [1200002400000, 1100001600000],
-        });
+        const nextResults = await activitylog.get({ before: 6000, limit: 2 });
+        assessResults(nextResults, { size: 2, remainingRows: 1, limit: 2, times: [5000, 2000] });
       });
     });
 
@@ -200,38 +130,32 @@ describe('activitylog', () => {
         let results = await activitylog.get({ limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 4,
+          remainingRows: 3,
           limit: 2,
           page: undefined,
-          times: [1500008400000, 1400000400000],
+          times: [8000, 6000],
         });
 
         results = await activitylog.get({ page: 1, limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 4,
+          remainingRows: 3,
           limit: 2,
           page: 1,
-          times: [1500008400000, 1400000400000],
+          times: [8000, 6000],
         });
 
         results = await activitylog.get({ page: 2, limit: 2 });
         assessResults(results, {
           size: 2,
-          remainingRows: 2,
+          remainingRows: 1,
           limit: 2,
           page: 2,
-          times: [1300003200000, 1200002400000],
+          times: [5000, 2000],
         });
 
         results = await activitylog.get({ page: 3, limit: 2 });
-        assessResults(results, {
-          size: 2,
-          remainingRows: 0,
-          limit: 2,
-          page: 3,
-          times: [1100001600000, 1000011600000],
-        });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 3, times: [1000] });
       });
 
       it('should return an empty array if the page is out of range', async () => {
@@ -246,78 +170,50 @@ describe('activitylog', () => {
           remainingRows: 1,
           limit: 2,
           page: 1,
-          times: [1400000400000, 1300003200000],
+          times: [8000, 6000],
         });
 
         results = await activitylog.get({ page: 2, limit: 2, method: ['PUT'] });
-        assessResults(results, {
-          size: 1,
-          remainingRows: 0,
-          limit: 2,
-          page: 2,
-          times: [1000011600000],
-        });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
       });
     });
 
     describe('sorting through the "sort" keyword', () => {
-      const checkSortResults = async (params, expectedTimeOrder) => {
-        const results = await activitylog.get(params);
-        expect(results.rows.map(r => r.time)).toEqual(expectedTimeOrder);
-      };
-
       it('without the "sort" keyword, it should sort by time, descending as default', async () => {
-        await checkSortResults(
-          {},
-          [1500008400000, 1400000400000, 1300003200000, 1200002400000, 1100001600000, 1000011600000]
-        );
+        const results = await activitylog.get();
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
       });
 
       it('should sort by method', async () => {
-        await checkSortResults(
-          { sort: { prop: 'method', asc: 1 } },
-          [1100001600000, 1500008400000, 1200002400000, 1400000400000, 1300003200000, 1000011600000]
-        );
+        let results = await activitylog.get({ sort: { prop: 'method', asc: 1 } });
+        expect(results.rows.map(r => r.time)).toEqual([2000, 5000, 8000, 6000, 1000]);
 
-        await checkSortResults(
-          { sort: { prop: 'method', asc: 0 } },
-          [1400000400000, 1300003200000, 1000011600000, 1500008400000, 1200002400000, 1100001600000]
-        );
+        results = await activitylog.get({ sort: { prop: 'method', asc: 0 } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000, 5000, 2000]);
       });
 
       it('should sort by user', async () => {
-        await checkSortResults(
-          { sort: { prop: 'username', asc: 1 } },
-          [1500008400000, 1400000400000, 1300003200000, 1200002400000, 1100001600000, 1000011600000]
-        );
+        let results = await activitylog.get({ sort: { prop: 'username', asc: 1 } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
 
-        await checkSortResults(
-          { sort: { prop: 'username', asc: 0 } },
-          [1000011600000, 1200002400000, 1100001600000, 1500008400000, 1400000400000, 1300003200000]
-        );
+        results = await activitylog.get({ sort: { prop: 'username', asc: 0 } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 5000, 2000, 8000, 6000]);
       });
 
       it('should sort by url', async () => {
-        await checkSortResults(
-          { sort: { prop: 'url', asc: 1 } },
-          [1500008400000, 1400000400000, 1200002400000, 1100001600000, 1300003200000, 1000011600000]
-        );
-        await checkSortResults(
-          { sort: { prop: 'url', asc: 0 } },
-          [1000011600000, 1300003200000, 1500008400000, 1400000400000, 1200002400000, 1100001600000]
-        );
+        let results = await activitylog.get({ sort: { prop: 'url', asc: 1 } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 5000, 2000, 6000, 1000]);
+
+        results = await activitylog.get({ sort: { prop: 'url', asc: 0 } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 6000, 8000, 5000, 2000]);
       });
 
       it('should sort by time', async () => {
-        await checkSortResults(
-          { sort: { prop: 'time', asc: 1 } },
-          [1000011600000, 1100001600000, 1200002400000, 1300003200000, 1400000400000, 1500008400000]
-        );
+        let results = await activitylog.get({ sort: { prop: 'time', asc: 1 } });
+        expect(results.rows.map(r => r.time)).toEqual([1000, 2000, 5000, 6000, 8000]);
 
-        await checkSortResults(
-          { sort: { prop: 'time', asc: 0 } },
-          [1500008400000, 1400000400000, 1300003200000, 1200002400000, 1100001600000, 1000011600000]
-        );
+        results = await activitylog.get({ sort: { prop: 'time', asc: 0 } });
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 5000, 2000, 1000]);
       });
 
       it('should respect filters', async () => {
@@ -325,17 +221,13 @@ describe('activitylog', () => {
           sort: { prop: 'username', asc: 1 },
           method: ['PUT'],
         });
-        expect(results.rows.map(r => r.time)).toEqual([
-          1400000400000, 1300003200000, 1000011600000,
-        ]);
+        expect(results.rows.map(r => r.time)).toEqual([8000, 6000, 1000]);
 
         results = await activitylog.get({
           sort: { prop: 'username', asc: 0 },
           method: ['PUT'],
         });
-        expect(results.rows.map(r => r.time)).toEqual([
-          1000011600000, 1400000400000, 1300003200000,
-        ]);
+        expect(results.rows.map(r => r.time)).toEqual([1000, 8000, 6000]);
       });
 
       it('should respect pagination', async () => {
@@ -350,7 +242,7 @@ describe('activitylog', () => {
           remainingRows: 1,
           limit: 2,
           page: 1,
-          times: [1400000400000, 1300003200000],
+          times: [8000, 6000],
         });
 
         results = await activitylog.get({
@@ -359,13 +251,7 @@ describe('activitylog', () => {
           limit: 2,
           method: ['PUT'],
         });
-        assessResults(results, {
-          size: 1,
-          remainingRows: 0,
-          limit: 2,
-          page: 2,
-          times: [1000011600000],
-        });
+        assessResults(results, { size: 1, remainingRows: 0, limit: 2, page: 2, times: [1000] });
 
         results = await activitylog.get({
           sort: { prop: 'username', asc: 1 },

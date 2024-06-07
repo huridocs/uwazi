@@ -1,4 +1,4 @@
-import { compareStringLists, escapeEspecialChars } from '../stringUtils';
+import { compareStringLists } from '../stringUtils';
 
 describe('compareStringLists()', () => {
   it('should throw an error on different length strings', () => {
@@ -39,14 +39,4 @@ describe('compareStringLists()', () => {
       expect(compareStringLists(list2, list1)).toBe(1);
     }
   );
-});
-
-describe('escapeEspecialChars', () => {
-  it('should escape especial characters', () => {
-    const input = 'This / should? + { escape ^ any $ } (special chars) | \\';
-    const output = escapeEspecialChars(input);
-    expect(output).toEqual(
-      'This \\/ should\\? \\+ \\{ escape \\^ any \\$ \\} \\(special chars\\) \\| \\\\'
-    );
-  });
 });
