@@ -25,7 +25,6 @@ function sleep(ms) {
 
 async function checkElasticHealth(remainingRetries = 6) {
   try {
-    process.stdout.write('\r\nATTEMPT!!!!!!!!!!!!!.\r\n');
     const elasticUrl = config.elasticsearch_nodes[0];
     const response = await request.get(`${elasticUrl}/_cluster/health`);
     return response.status;
