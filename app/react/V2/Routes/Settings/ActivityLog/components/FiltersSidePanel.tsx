@@ -80,6 +80,7 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 setValue('method', selected);
               }}
               hasErrors={!!errors.method}
+              updatable
             />
             <div className="p-4">
               <InputField

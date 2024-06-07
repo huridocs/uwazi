@@ -18,6 +18,7 @@ interface MultiSelectProps {
   value: string[];
   placeholder?: string | React.ReactNode;
   canBeEmpty?: boolean;
+  updatable?: boolean;
 }
 
 const renderChild = (child: string | React.ReactNode, className?: string) =>
@@ -32,6 +33,7 @@ const MultiSelect = ({
   placeholder = 'No options',
   canBeEmpty = true,
   value,
+  updatable = false,
 }: MultiSelectProps) => {
   const [referenceElement, setReferenceElement] = useState<HTMLButtonElement | null>(null);
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
@@ -60,8 +62,10 @@ const MultiSelect = ({
   };
 
   useEffect(() => {
-    setCurrentValue(value);
-  }, [value]);
+    if (updatable) {
+      setCurrentValue(value);
+    }
+  }, [updatable, value]);
 
   return (
     <div data-testid="multiselect" className="rounded-lg shadow-sm">
