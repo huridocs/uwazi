@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Ajv from 'ajv';
 
-import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
+import date from 'api/utils/date';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'shared/types/suggestionSchema';
 import { syncWrapValidator } from 'shared/tsUtils';
 import { InternalIXResultsMessage } from './InformationExtraction';
+import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 
@@ -31,19 +33,22 @@ const createAjvValidator = (schema: any) => {
   return syncWrapValidator(ajv.compile(schema));
 };
 
-const AJVS = {
-  text: createAjvValidator(TextSelectionSuggestionSchema),
-  select: createAjvValidator(ValuesSelectionSuggestionSchema),
-  multiselect: createAjvValidator(ValuesSelectionSuggestionSchema),
+const textSelectionAjv = createAjvValidator(TextSelectionSuggestionSchema);
+const valuesSelectionAjv = createAjvValidator(ValuesSelectionSuggestionSchema);
+
+const textSelectionValidator = (
+  suggestion: RawSuggestion
+): suggestion is TextSelectionSuggestion => {
+  textSelectionAjv(suggestion);
+  return true;
 };
 
 const VALIDATORS = {
-  text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => {
-    AJVS.text(suggestion);
-    return true;
-  },
+  text: textSelectionValidator,
+  numeric: textSelectionValidator,
+  date: textSelectionValidator,
   select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
-    AJVS.select(suggestion);
+    valuesSelectionAjv(suggestion);
 
     if (!('values' in suggestion) || suggestion.values.length > 1) {
       throw new RawSuggestionValidationError('Select suggestions must have one or zero values.');
@@ -52,15 +57,35 @@ const VALIDATORS = {
     return true;
   },
   multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
-    AJVS.multiselect(suggestion);
+    valuesSelectionAjv(suggestion);
     return true;
   },
 };
 
-const FORMATTERS = {
+const simpleSuggestion = (
+  suggestedValue: string | number | null,
+  rawSuggestion: TextSelectionSuggestion
+) => ({
+  suggestedValue,
+  segment: rawSuggestion.segment_text,
+  selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
+    const rect = { ...box, page: box.page_number.toString() };
+    delete rect.page_number;
+    return rect;
+  }),
+});
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
+const FORMATTERS: Record<
+  AllowedPropertyTypes,
+  (
+    rawSuggestion: RawSuggestion,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => Partial<IXSuggestionType>
+> = {
   text: (
     rawSuggestion: RawSuggestion,
-    property: PropertySchema | undefined,
     currentSuggestion: IXSuggestionType,
     entity: EntitySchema
   ) => {
@@ -68,26 +93,52 @@ const FORMATTERS = {
       throw new Error('Text suggestion is not valid.');
     }
 
-    const suggestedValue = stringToTypeOfProperty(
-      rawSuggestion.text,
-      property?.type,
+    const rawText = rawSuggestion.text;
+    const suggestedValue = rawText.trim();
+
+    const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
+
+    return suggestion;
+  },
+  numeric: (
+    rawSuggestion: RawSuggestion,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => {
+    if (!VALIDATORS.numeric(rawSuggestion)) {
+      throw new Error('Numeric suggestion is not valid.');
+    }
+
+    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || null;
+    const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
+
+    return suggestion;
+  },
+  date: (
+    rawSuggestion: RawSuggestion,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => {
+    if (!VALIDATORS.date(rawSuggestion)) {
+      throw new Error('Date suggestion is not valid.');
+    }
+
+    const suggestedValue = date.dateToSeconds(
+      rawSuggestion.text.trim(),
       currentSuggestion?.language || entity.language
     );
-
     const suggestion: Partial<IXSuggestionType> = {
-      suggestedValue,
-      ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
-      segment: rawSuggestion.segment_text,
-      selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
-        const rect = { ...box, page: box.page_number.toString() };
-        delete rect.page_number;
-        return rect;
-      }),
+      ...simpleSuggestion(suggestedValue, rawSuggestion),
+      suggestedText: rawSuggestion.text,
     };
 
     return suggestion;
   },
-  select: (rawSuggestion: RawSuggestion) => {
+  select: (
+    rawSuggestion: RawSuggestion,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => {
     if (!VALIDATORS.select(rawSuggestion)) {
       throw new Error('Select suggestion is not valid.');
     }
@@ -101,7 +152,11 @@ const FORMATTERS = {
 
     return suggestion;
   },
-  multiselect: (rawSuggestion: RawSuggestion) => {
+  multiselect: (
+    rawSuggestion: RawSuggestion,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => {
     if (!VALIDATORS.multiselect(rawSuggestion)) {
       throw new Error('Multiselect suggestion is not valid.');
     }
@@ -116,8 +171,7 @@ const FORMATTERS = {
     return suggestion;
   },
 };
-
-const DEFAULTFORMATTER = FORMATTERS.text;
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 const formatRawSuggestion = (
   rawSuggestion: RawSuggestion,
@@ -125,17 +179,16 @@ const formatRawSuggestion = (
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema
 ) => {
-  const formatter =
-    // @ts-ignore
-    (property?.type || '') in FORMATTERS ? FORMATTERS[property.type] : DEFAULTFORMATTER;
-  return formatter(rawSuggestion, property, currentSuggestion, entity);
+  const type = checkTypeIsAllowed(property?.type || '');
+  const formatter = FORMATTERS[type];
+  return formatter(rawSuggestion, currentSuggestion, entity);
 };
 
 const readMessageSuccess = (message: InternalIXResultsMessage) =>
   message.success
     ? {}
     : {
-        status: 'failed',
+        status: 'failed' as 'failed',
         error: message.error_message ? message.error_message : 'Unknown error',
       };
 
