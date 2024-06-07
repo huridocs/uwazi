@@ -38,7 +38,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
       - name: Cache node modules
         uses: actions/cache@v2
         with:

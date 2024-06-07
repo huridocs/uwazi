@@ -26,7 +26,6 @@ const Primary: Story = {
             placeholder={args.placeholder}
             canBeEmpty={args.canBeEmpty}
             value={args.value}
-            updatable={args.updatable}
           />
         </div>
       </div>
@@ -63,7 +62,6 @@ const Basic: Story = {
     placeholder: 'Nothing selected',
     canBeEmpty: true,
     value: [],
-    updatable: false,
   },
 };
 

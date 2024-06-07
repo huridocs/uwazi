@@ -34,7 +34,7 @@ describe('DateRangePicker', () => {
         cy.contains('12').click();
       });
     cy.get('@onFromDateSelected').should('have.been.called');
-    cy.get('#to').click();
+    cy.get('input[name=to]').click();
     cy.get('.days')
       .eq(1)
       .within(() => {
@@ -42,16 +42,16 @@ describe('DateRangePicker', () => {
       });
 
     cy.get('@onToDateSelected').should('have.been.called');
-    checkSelectedDate('#from', '12');
-    checkSelectedDate('#to', '17');
+    checkSelectedDate('input[name=from]', '12');
+    checkSelectedDate('input[name=to]', '17');
   });
 
   it('should select the current day', () => {
     mount(<Basic />);
     cy.get('input[placeholder*="Inicio"]').click();
     cy.contains('Hoy').click();
-    checkSelectedDate('#from', today.getDate().toString().padStart(2, '0'));
-    checkSelectedDate('#to', today.getDate().toString().padStart(2, '0'));
+    checkSelectedDate('input[name=from]', today.getDate().toString().padStart(2, '0'));
+    checkSelectedDate('input[name=to]', today.getDate().toString().padStart(2, '0'));
   });
 
   it('should clear the selected date by the button', () => {
