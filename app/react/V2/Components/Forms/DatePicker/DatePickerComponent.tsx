@@ -1,5 +1,6 @@
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
 import moment from 'moment';
+import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
@@ -22,12 +23,13 @@ interface DatePickerProps extends FlowbiteDatepickerProps {
   hasErrors?: boolean;
   errorMessage?: string | React.ReactNode;
   value?: string | number;
-  className?: string;
+  inputClassName?: string;
   autoComplete?: 'on' | 'off';
   name?: string;
   clearFieldAction?: () => any;
   onChange?: ChangeEventHandler<HTMLInputElement>;
   onBlur?: ChangeEventHandler<HTMLInputElement>;
+  className?: string;
 }
 
 const titleFormat = (locale: string) => {
@@ -89,6 +91,7 @@ const DatePickerComponent = React.forwardRef(
       language = 'en',
       dateFormat = 'yyyy-mm-dd',
       hideLabel = true,
+      inputClassName = '',
       className = '',
       name = '',
       onChange = () => {},
@@ -103,8 +106,8 @@ const DatePickerComponent = React.forwardRef(
     const datePickerFormat = dateFormat.toLocaleLowerCase();
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${className || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
-      : `${className || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+        `${inputClassName || ''} bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5`
+      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
 
     const instance = useRef<Datepicker | null>(null);
     const locale = validateLocale(language);
@@ -132,9 +135,15 @@ const DatePickerComponent = React.forwardRef(
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
     }, [id, locale, labelToday, labelClear, datePickerFormat, clearFieldAction]);
 
+    useEffect(() => {
+      if (instance?.current && ref?.current) {
+        ref.current.value = isNumber(value) ? value.toString() : value || '';
+      }
+    }, [instance, value]);
+
     return (
       <div className="tw-content">
-        <div id="tw-container" className="relative tw-datepicker" />
+        <div id="tw-container" className={`${className} absolute tw-datepicker z-50`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
@@ -192,6 +201,7 @@ DatePickerComponent.defaultProps = {
   hasErrors: false,
   errorMessage: '',
   value: '',
+  inputClassName: '',
   className: '',
   autoComplete: 'off',
   name: 'datePicker',
