@@ -258,7 +258,6 @@ class InformationExtraction {
 
     return Promise.all(
       rawSuggestions.map(async rawSuggestion => {
-        console.log('rawSuggestion', rawSuggestion)
         const entity = await this._getEntityFromSuggestion(rawSuggestion);
         if (!entity) {
           return Promise.resolve();
