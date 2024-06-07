@@ -162,11 +162,30 @@ const validRawSuggestions = {
 };
 
 describe('formatSuggestion', () => {
-  // it.each([{
-
-  // }])('should throw error if $case', async () => {
-
-  // });
+  it.each([
+    {
+      case: 'invalid tenant type',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        tenant: 1,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+    },
+  ])(
+    'should throw error if $case',
+    async ({ property, rawSuggestion, currentSuggestion, entity }) => {
+      const result = await formatSuggestion(
+        property,
+        // @ts-expect-error
+        rawSuggestion,
+        currentSuggestion,
+        entity,
+        successMessage
+      );
+    }
+  );
 
   it.each([
     {

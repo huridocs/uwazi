@@ -7,6 +7,12 @@ import {
   SelectionRectanglesSchema,
 } from 'shared/types/commonTypes';
 
+export interface CommonSuggestion {
+  tenant: string;
+  id: string;
+  xml_file_name: string;
+}
+
 export interface EntitySuggestionType {
   _id?: ObjectIdSchema;
   entityId: string;
@@ -120,4 +126,30 @@ export interface IXSuggestionsFilter {
   language?: string;
   extractorId: ObjectIdSchema;
   customFilter?: SuggestionCustomFilter;
+}
+
+export interface TextSelectionSuggestion {
+  tenant: string;
+  id: string;
+  xml_file_name: string;
+  text: string;
+  segment_text: string;
+  segments_boxes: {
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    page_number: number;
+  }[];
+}
+
+export interface ValuesSelectionSuggestion {
+  tenant: string;
+  id: string;
+  xml_file_name: string;
+  values: {
+    id: string;
+    label: string;
+  }[];
+  segment_text: string;
 }

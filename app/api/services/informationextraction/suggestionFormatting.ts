@@ -1,31 +1,13 @@
 import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import {
+  CommonSuggestion,
+  IXSuggestionType,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+} from 'shared/types/suggestionType';
 import { InternalIXResultsMessage } from './InformationExtraction';
-
-interface CommonSuggestion {
-  tenant: string;
-  id: string;
-  xml_file_name: string;
-}
-
-interface TextSelectionSuggestion extends CommonSuggestion {
-  text: string;
-  segment_text: string;
-  segments_boxes: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    page_number: number;
-  }[];
-}
-
-interface ValuesSelectionSuggestion extends CommonSuggestion {
-  values: { id: string; label: string }[];
-  segment_text: string;
-}
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 

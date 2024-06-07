@@ -7,6 +7,72 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
+const commonSuggestionMessageProperties = {
+  tenant: { type: 'string', minLength: 1 },
+  id: { type: 'string', minLength: 1 },
+  xml_file_name: { type: 'string', minLength: 1 },
+};
+
+export const CommonSuggestionSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'CommonSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'segment_text'],
+};
+
+export const TextSelectionSuggestionSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'TextSelectionSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+    text: { type: 'string', minLength: 1 },
+    segment_text: { type: 'string', minLength: 1 },
+    segments_boxes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          top: { type: 'number' },
+          left: { type: 'number' },
+          width: { type: 'number' },
+          height: { type: 'number' },
+          page_number: { type: 'number' },
+        },
+        required: ['top', 'left', 'width', 'height', 'page_number'],
+      },
+    },
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'text', 'segment_text', 'segments_boxes'],
+};
+
+export const ValuesSelectionSuggestionSchema = {
+  type: 'object',
+  additionalProperties: false,
+  title: 'ValuesSelectionSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+    values: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          id: { type: 'string', minLength: 1 },
+          label: { type: 'string', minLength: 1 },
+        },
+        required: ['id', 'label'],
+      },
+    },
+    segment_text: { type: 'string', minLength: 1 },
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'values', 'segment_text'],
+};
+
 export const IXSuggestionStateSchema = {
   type: 'object',
   additionalProperties: false,
