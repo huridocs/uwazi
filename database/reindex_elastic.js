@@ -23,14 +23,15 @@ function sleep(ms) {
   });
 }
 
-async function checkElasticHealth(remainingRetries = 5) {
+async function checkElasticHealth(remainingRetries = 6) {
   try {
+    process.stdout.write('\r\nATTEMPT!!!!!!!!!!!!!.\r\n');
     const elasticUrl = config.elasticsearch_nodes[0];
     const response = await request.get(`${elasticUrl}/_cluster/health`);
     return response.status;
   } catch (e) {
     if (remainingRetries > 0) {
-      await sleep((5 - remainingRetries) * 10000);
+      await sleep((6 - remainingRetries) * 10000);
       return checkElasticHealth(remainingRetries - 1);
     }
     throw e;
