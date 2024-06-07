@@ -9,11 +9,21 @@ import {
   TextSelectionSuggestion,
   ValuesSelectionSuggestion,
 } from 'shared/types/suggestionType';
-import { TextSelectionSuggestionSchema } from 'shared/types/suggestionSchema';
+import {
+  TextSelectionSuggestionSchema,
+  ValuesSelectionSuggestionSchema,
+} from 'shared/types/suggestionSchema';
 import { syncWrapValidator } from 'shared/tsUtils';
 import { InternalIXResultsMessage } from './InformationExtraction';
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
+
+class RawSuggestionValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RawSuggestionValidationError';
+  }
+}
 
 const createAjvValidator = (schema: any) => {
   const ajv = new Ajv({ allErrors: true });
@@ -23,6 +33,8 @@ const createAjvValidator = (schema: any) => {
 
 const AJVS = {
   text: createAjvValidator(TextSelectionSuggestionSchema),
+  select: createAjvValidator(ValuesSelectionSuggestionSchema),
+  multiselect: createAjvValidator(ValuesSelectionSuggestionSchema),
 };
 
 const VALIDATORS = {
@@ -30,10 +42,19 @@ const VALIDATORS = {
     AJVS.text(suggestion);
     return true;
   },
-  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion && (suggestion.values.length === 1 || suggestion.values.length === 0),
-  multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion,
+  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
+    AJVS.select(suggestion);
+
+    if (!('values' in suggestion) || suggestion.values.length > 1) {
+      throw new RawSuggestionValidationError('Select suggestions must have one or zero values.');
+    }
+
+    return true;
+  },
+  multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
+    AJVS.multiselect(suggestion);
+    return true;
+  },
 };
 
 const FORMATTERS = {

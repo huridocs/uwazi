@@ -164,6 +164,28 @@ const validRawSuggestions = {
 describe('formatSuggestion', () => {
   it.each([
     {
+      case: 'missing properties',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        tenant: undefined,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: ": must have required property 'tenant'",
+    },
+    {
+      case: 'extra properties',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        extra: 'extra',
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: ': must NOT have additional properties',
+    },
+    {
       case: 'invalid tenant type',
       property: properties.text,
       rawSuggestion: {
@@ -172,10 +194,132 @@ describe('formatSuggestion', () => {
       },
       currentSuggestion: currentSuggestions.text,
       entity: entities.text,
+      expectedErrorMessage: '/tenant: must be string',
+    },
+    {
+      case: 'invalid id type',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        id: 1,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: '/id: must be string',
+    },
+    {
+      case: 'invalid xml_file_name type',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        xml_file_name: 1,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: '/xml_file_name: must be string',
+    },
+    {
+      case: 'invalid text type',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        text: 1,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: '/text: must be string',
+    },
+    {
+      case: 'invalid segment_text type',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        segment_text: 1,
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: '/segment_text: must be string',
+    },
+    {
+      case: 'invalid segments_boxes subtype',
+      property: properties.text,
+      rawSuggestion: {
+        ...validRawSuggestions.text,
+        segments_boxes: [
+          {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            page_number: '1',
+          },
+        ],
+      },
+      currentSuggestion: currentSuggestions.text,
+      entity: entities.text,
+      expectedErrorMessage: '/segments_boxes/0/page_number: must be number',
+    },
+    {
+      case: 'invalid select values type',
+      property: properties.select,
+      rawSuggestion: {
+        ...validRawSuggestions.select,
+        values: 1,
+      },
+      currentSuggestion: currentSuggestions.select,
+      entity: entities.select,
+      expectedErrorMessage: '/values: must be array',
+    },
+    {
+      case: 'invalid select values subtype',
+      property: properties.select,
+      rawSuggestion: {
+        ...validRawSuggestions.select,
+        values: [{ id: 1, label: 'value_label' }],
+      },
+      currentSuggestion: currentSuggestions.select,
+      entity: entities.select,
+      expectedErrorMessage: '/values/0/id: must be string',
+    },
+    {
+      case: 'invalid select values length',
+      property: properties.select,
+      rawSuggestion: {
+        ...validRawSuggestions.select,
+        values: [
+          { id: 'B_id', label: 'B' },
+          { id: 'C_id', label: 'C' },
+        ],
+      },
+      currentSuggestion: currentSuggestions.select,
+      entity: entities.select,
+      expectedErrorMessage: 'Select suggestions must have one or zero values.',
+    },
+    {
+      case: 'invalid multiselect values type',
+      property: properties.multiselect,
+      rawSuggestion: {
+        ...validRawSuggestions.multiselect,
+        values: 1,
+      },
+      currentSuggestion: currentSuggestions.multiselect,
+      entity: entities.multiselect,
+      expectedErrorMessage: '/values: must be array',
+    },
+    {
+      case: 'invalid multiselect values subtype',
+      property: properties.multiselect,
+      rawSuggestion: {
+        ...validRawSuggestions.multiselect,
+        values: [{ id: 1, label: 'value_label' }],
+      },
+      currentSuggestion: currentSuggestions.multiselect,
+      entity: entities.multiselect,
+      expectedErrorMessage: '/values/0/id: must be string',
     },
   ])(
     'should throw error if $case',
-    async ({ property, rawSuggestion, currentSuggestion, entity }) => {
+    async ({ property, rawSuggestion, currentSuggestion, entity, expectedErrorMessage }) => {
       const cb = async () =>
         formatSuggestion(
           property,
@@ -185,7 +329,7 @@ describe('formatSuggestion', () => {
           entity,
           successMessage
         );
-      await expect(cb).rejects.toThrow('/tenant: must be string');
+      await expect(cb).rejects.toThrow(expectedErrorMessage);
     }
   );
 
