@@ -38,10 +38,7 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
       - name: install dependencies
-        run: yarn install
-      - name: Sleep for 30 seconds
-        run: sleep 30s
-        shell: bash  
+        run: yarn install      
       - run: yarn blank-state
         env:
           DBHOST: localhost:27017
