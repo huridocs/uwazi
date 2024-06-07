@@ -103,7 +103,7 @@
     "@huridocs/react-text-selection-handler": "^0.2.10",
     "@loadable/component": "^5.16.4",
     "@popperjs/core": "^2.11.8",
-    "@remix-run/router": "^1.16.0",
+    "@remix-run/router": "^1.16.1",
     "@sentry/node": "^7.114.0",
     "@sentry/react": "7.114.0",
     "@sentry/tracing": "^7.114.0",
