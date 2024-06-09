@@ -108,7 +108,7 @@ const getAssets = async () => {
   });
 };
 
-const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language: string) => {
+const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language?: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
 
   const headers = {
@@ -238,7 +238,7 @@ const getSSRProperties = async (
   req: ExpressRequest,
   routes: RouteObject[],
   settings: ClientSettings,
-  language: string
+  language?: string
 ) => {
   const { reduxStore, atomStoreData } = await prepareStores(req, settings, language);
   const { query } = createStaticHandler(routes as AgnosticDataRouteObject[]);
@@ -277,7 +277,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     req,
     routes,
     settings,
-    language || 'en'
+    language
   );
 
   const { globalMatomo } = tenants.current();
