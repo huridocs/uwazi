@@ -247,7 +247,7 @@ const userAction =
         return usersAPI.unlockAccount(formValues, confirmation);
       case 'reset-password':
       case 'bulk-reset-password':
-        return usersAPI.resetPassword(formValues, confirmation);
+        return usersAPI.resetPassword(formValues);
       case 'reset-2fa':
       case 'bulk-reset-2fa':
         return usersAPI.reset2FA(formValues, confirmation);

@@ -2,7 +2,7 @@ import SHA256 from 'crypto-js/sha256';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
-import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
 import {
@@ -323,3 +323,5 @@ export default {
     throw createError('key not found', 403);
   },
 };
+
+export { validateUserPassword };

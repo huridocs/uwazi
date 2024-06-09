@@ -23,7 +23,10 @@ const newUser = async (
 ) => {
   try {
     const createdUser = prepareUser(user);
-    const requestParams = new RequestParams({ user: createdUser, currentPassword }, headers);
+    const requestParams = new RequestParams(createdUser, {
+      ...headers,
+      authorization: `Basic ${currentPassword}`,
+    });
     const response = await UsersAPI.new(requestParams);
     return response;
   } catch (e) {
@@ -38,7 +41,12 @@ const updateUser = async (
 ) => {
   try {
     const updatedUser = prepareUser(user);
-    const requestParams = new RequestParams({ user: updatedUser, currentPassword }, headers);
+
+    const requestParams = new RequestParams(updatedUser, {
+      ...headers,
+      authorization: `Basic ${currentPassword}`,
+    });
+
     const response = await UsersAPI.save(requestParams);
     return response;
   } catch (e) {
@@ -46,9 +54,19 @@ const updateUser = async (
   }
 };
 
-const deleteUser = async (users: ClientUserSchema[], headers?: IncomingHttpHeaders) => {
+const deleteUser = async (
+  users: ClientUserSchema[],
+  currentPassword: string,
+  headers?: IncomingHttpHeaders
+) => {
   try {
-    const requestParams = new RequestParams({ ids: users.map(user => user._id) }, headers);
+    const requestParams = new RequestParams(
+      { ids: users.map(user => user._id) },
+      {
+        ...headers,
+        authorization: `Basic ${currentPassword}`,
+      }
+    );
     const response = await UsersAPI.delete(requestParams);
     return response;
   } catch (e) {
@@ -85,7 +103,13 @@ const unlockAccount = async (
   headers?: IncomingHttpHeaders
 ) => {
   try {
-    const requestParams = new RequestParams({ _id: user._id, currentPassword }, headers);
+    const requestParams = new RequestParams(
+      { _id: user._id },
+      {
+        ...headers,
+        authorization: `Basic ${currentPassword}`,
+      }
+    );
     const response = await UsersAPI.unlockAccount(requestParams);
     return response;
   } catch (e) {
@@ -95,21 +119,20 @@ const unlockAccount = async (
 
 const resetPassword = async (
   data: ClientUserSchema | ClientUserSchema[],
-  currentPassword: string,
   headers?: IncomingHttpHeaders
 ) => {
   try {
     if (Array.isArray(data)) {
       const response = await Promise.all(
         data.map(user => {
-          const requestParams = new RequestParams({ email: user.email, currentPassword }, headers);
+          const requestParams = new RequestParams({ email: user.email }, headers);
           return api.post('recoverpassword', requestParams);
         })
       );
       return response;
     }
 
-    const requestParams = new RequestParams({ email: data.email, currentPassword }, headers);
+    const requestParams = new RequestParams({ email: data.email }, headers);
     const response = await api.post('recoverpassword', requestParams);
     return response;
   } catch (e) {
@@ -123,17 +146,22 @@ const reset2FA = async (
   headers?: IncomingHttpHeaders
 ) => {
   try {
+    const headersWithAuth = {
+      ...headers,
+      authorization: `Basic ${currentPassword}`,
+    };
+
     if (Array.isArray(data)) {
       const response = await Promise.all(
         data.map(user => {
-          const requestParams = new RequestParams({ _id: user._id, currentPassword }, headers);
+          const requestParams = new RequestParams({ _id: user._id, headersWithAuth });
           return api.post('auth2fa-reset', requestParams);
         })
       );
       return response;
     }
 
-    const requestParams = new RequestParams({ _id: data._id, currentPassword }, headers);
+    const requestParams = new RequestParams({ _id: data._id }, headersWithAuth);
     const response = await api.post('auth2fa-reset', requestParams);
     return response;
   } catch (e) {
