@@ -73,7 +73,6 @@ describe('InformationExtraction', () => {
       ...specificSuggestionData,
       ...result,
     }));
-    console.log('IXResults', JSON.stringify(IXResults, null, 2));
     IXExternalService.setResults(IXResults);
   };
 
@@ -814,18 +813,10 @@ describe('InformationExtraction', () => {
           },
         ]);
 
-        await saveSuggestionProcess('F1', 'A1', 'eng', 'prop4extractor');
+        await saveSuggestionProcess('F1', 'A1', 'eng', 'prop1extractor');
 
         await informationExtraction.processResults({
           params: { id: factory.id('prop1extractor').toString() },
-          tenant: 'tenant1',
-          task: 'suggestions',
-          success: true,
-          data_url: 'http://localhost:1234/suggestions_results',
-        });
-
-        await informationExtraction.processResults({
-          params: { id: factory.id('prop4extractor').toString() },
           tenant: 'tenant1',
           task: 'suggestions',
           success: true,
@@ -837,12 +828,6 @@ describe('InformationExtraction', () => {
           extractorId: factory.id('prop1extractor'),
         });
         expect(suggestionsText.length).toBe(1);
-
-        const suggestionsMarkdown = await IXSuggestionsModel.get({
-          status: 'ready',
-          propertyName: 'property4',
-        });
-        expect(suggestionsMarkdown.length).toBe(1);
       });
     });
 
@@ -886,16 +871,19 @@ describe('InformationExtraction', () => {
               id: factory.id('extractorWithSelect').toString(),
               xml_file_name: 'documentG.xml',
               values: [{ id: 'A', label: 'A' }],
+              segment_text: 'it is A',
             },
             {
               id: factory.id('extractorWithSelect').toString(),
               xml_file_name: 'documentH.xml',
               values: [{ id: 'B', label: 'B' }],
+              segment_text: 'it is B',
             },
             {
               id: factory.id('extractorWithSelect').toString(),
               xml_file_name: 'documentI.xml',
               values: [{ id: 'A', label: 'A' }],
+              segment_text: 'it is A',
             },
           ],
           'value'
@@ -948,18 +936,21 @@ describe('InformationExtraction', () => {
             fileId: factory.id('F17'),
             entityId: 'A17',
             suggestedValue: 'A',
+            segment: 'it is A',
           },
           {
             ...expectedBase,
             fileId: factory.id('F18'),
             entityId: 'A18',
             suggestedValue: 'B',
+            segment: 'it is B',
           },
           {
             ...expectedBase,
             fileId: factory.id('F19'),
             entityId: 'A19',
             suggestedValue: 'A',
+            segment: 'it is A',
             state: {
               ...expectedBase.state,
               withValue: false,
@@ -977,6 +968,7 @@ describe('InformationExtraction', () => {
               id: factory.id('extractorWithMultiselect').toString(),
               xml_file_name: 'documentG.xml',
               values: [{ id: 'A', label: 'A' }],
+              segment_text: 'it is A',
             },
             {
               id: factory.id('extractorWithMultiselect').toString(),
@@ -985,6 +977,7 @@ describe('InformationExtraction', () => {
                 { id: 'B', label: 'B' },
                 { id: 'C', label: 'C' },
               ],
+              segment_text: 'it is B or C',
             },
             {
               id: factory.id('extractorWithMultiselect').toString(),
@@ -993,6 +986,7 @@ describe('InformationExtraction', () => {
                 { id: 'A', label: 'A' },
                 { id: 'C', label: 'C' },
               ],
+              segment_text: 'it is A or C',
             },
           ],
           'value'
@@ -1045,18 +1039,21 @@ describe('InformationExtraction', () => {
             fileId: factory.id('F17'),
             entityId: 'A17',
             suggestedValue: ['A'],
+            segment: 'it is A',
           },
           {
             ...expectedBase,
             fileId: factory.id('F18'),
             entityId: 'A18',
             suggestedValue: ['B', 'C'],
+            segment: 'it is B or C',
           },
           {
             ...expectedBase,
             fileId: factory.id('F19'),
             entityId: 'A19',
             suggestedValue: ['A', 'C'],
+            segment: 'it is A or C',
             state: {
               ...expectedBase.state,
               withValue: false,

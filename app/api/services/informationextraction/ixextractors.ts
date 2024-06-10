@@ -26,7 +26,7 @@ const typeIsAllowed = (type: string): type is AllowedPropertyTypes => allowedTyp
 
 const checkTypeIsAllowed = (type: string) => {
   if (!typeIsAllowed(type)) {
-    throw new Error('Invalid property type.');
+    throw new Error('Property type not allowed.');
   }
   return type;
 };

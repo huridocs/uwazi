@@ -29,8 +29,8 @@ export const TextSelectionSuggestionSchema = {
   title: 'TextSelectionSuggestion',
   properties: {
     ...commonSuggestionMessageProperties,
-    text: { type: 'string', minLength: 1 },
-    segment_text: { type: 'string', minLength: 1 },
+    text: { type: 'string' },
+    segment_text: { type: 'string' },
     segments_boxes: {
       type: 'array',
       items: {
@@ -68,7 +68,7 @@ export const ValuesSelectionSuggestionSchema = {
         required: ['id', 'label'],
       },
     },
-    segment_text: { type: 'string', minLength: 1 },
+    segment_text: { type: 'string' },
   },
   required: ['tenant', 'id', 'xml_file_name', 'values', 'segment_text'],
 };
