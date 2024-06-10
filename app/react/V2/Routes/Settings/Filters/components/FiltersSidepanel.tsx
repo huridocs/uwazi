@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { useLoaderData } from 'react-router-dom';
 import uniqueID from 'shared/uniqueID';
@@ -27,44 +27,39 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const { templates: allTemplates } = useLoaderData() as LoaderData;
   const filter = useAtomValue(sidepanelAtom);
-  const defaultValues: ClientSettingsFilterSchema | undefined = { name: '', items: [] };
-
   const multiselectValues = filter?.items?.map(item => item.id).filter(v => v) as
     | string[]
     | undefined;
+
+  const selectedValues: string[] = [];
+  const selectedOptions =
+    multiselectValues?.map(value => {
+      const template = allTemplates.find(t => t._id === value)!;
+      selectedValues.push(template?._id);
+      return {
+        label: template?.name,
+        value: template?._id,
+      };
+    }) || [];
 
   const availableOptions = availableTemplates?.map(availableTemplate => ({
     label: availableTemplate.name!,
     value: availableTemplate._id!,
   }));
 
-  const selectedOptions = multiselectValues?.map(value => {
-    const template = allTemplates.find(t => t._id === value)!;
-    return {
-      label: template?.name,
-      value: template?._id,
-    };
-  });
-
+  const defaultValues = { ...filter, items: selectedValues };
   const {
     register,
     handleSubmit,
-    setValue,
-    setError,
-    clearErrors,
-    reset,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues,
+    values: defaultValues,
   });
-
-  useEffect(() => {
-    reset(filter || defaultValues);
-  }, [filter, reset]);
 
   const closeSidepanel = () => {
     setShowSidepanel(false);
-    reset(undefined);
   };
 
   const formatSelected = (selected: string[] | undefined) =>
@@ -73,15 +68,11 @@ const FiltersSidepanel = ({
       return { id: selection, name: templateName };
     });
 
-  const handleSave = (values: ClientSettingsFilterSchema) => {
-    const result = { ...values };
+  const handleSave = (values: Omit<ClientSettingsFilterSchema, 'items'> & { items: string[] }) => {
+    const result = { ...values, items: formatSelected(values.items) };
 
     if (!filter?._id) delete result._id;
     if (!filter?.id) result.id = uniqueID();
-    if (!result.items?.length) {
-      setError('items', { type: 'required' }, { shouldFocus: true });
-      return;
-    }
 
     onSave(result);
     closeSidepanel();
@@ -92,7 +83,7 @@ const FiltersSidepanel = ({
       withOverlay
       isOpen={showSidepanel}
       closeSidepanelFunction={() => closeSidepanel()}
-      title={<Translate>Add group</Translate>}
+      title={filter?.name ? <Translate>Edit group</Translate> : <Translate>Add group</Translate>}
     >
       <Sidepanel.Body>
         <form onSubmit={handleSubmit(handleSave)} id="group-edit-form">
@@ -114,14 +105,18 @@ const FiltersSidepanel = ({
 
           <Card title={<Translate>Entity types</Translate>} className="mb-4">
             <div className="flex flex-col gap-4">
-              <MultiSelect
-                label={<Translate>Entity types</Translate>}
-                options={[...(selectedOptions || []), ...(availableOptions || [])]}
-                value={multiselectValues || []}
-                onChange={selected => {
-                  setValue('items', formatSelected(selected));
-                  clearErrors('items');
-                }}
+              <Controller
+                control={control}
+                name="items"
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <MultiSelect
+                    label={<Translate>Entity types</Translate>}
+                    options={[...(selectedOptions || []), ...(availableOptions || [])]}
+                    value={value || []}
+                    onChange={onChange}
+                  />
+                )}
               />
               {errors.items?.type === 'required' && (
                 <Translate className="text-error-700">This field is required</Translate>
