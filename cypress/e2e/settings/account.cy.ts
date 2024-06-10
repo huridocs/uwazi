@@ -27,21 +27,21 @@ describe('Account', () => {
   });
 
   describe('Update user', () => {
-    it('should validate passwords match and change the email', () => {
+    it('should validate user has email', () => {
       cy.contains('button', 'Update').should('be.disabled');
+      cy.get('input[name=email]').type('wrong.com');
+      cy.contains('button', 'Update').click();
+      cy.contains('A valid email is required');
+      cy.get('input[name=email]').clear();
+      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
+    });
+
+    it('should validate passwords match', () => {
       cy.get('input[name=password]').type('1234', { delay: 0 });
       cy.get('input[name=passwordConfirm]').type('123', { delay: 0 });
-      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
       cy.contains('button', 'Update').click();
       cy.contains('Passwords do not match');
       cy.get('input[name=passwordConfirm]').type('4');
-    });
-
-    it('should validate user has email', () => {
-      cy.get('input[name=email]').clear();
-      cy.contains('button', 'Update').click();
-      cy.contains('This field is required');
-      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
     });
 
     it('should save the changes', () => {
@@ -62,6 +62,7 @@ describe('Account', () => {
     it('should not save changes when the password is wrong', () => {
       cy.get('input[name=password]').type('12345', { delay: 0 });
       cy.get('input[name=passwordConfirm]').type('12345', { delay: 0 });
+      cy.get('input[name=email]').clear();
       cy.get('input[name=email]').type('admin@uwazi.io.com', { delay: 0 });
       cy.contains('button', 'Update').click();
 
