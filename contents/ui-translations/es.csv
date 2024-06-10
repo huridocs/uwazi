@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,Añadir archivo
 Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
@@ -136,6 +137,7 @@ Collaborators,Collaborators
 Collapse all,Colapsar todo
 Collection,Colección
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuración
 Configure filters,Configurar filtros
 Configure templates,Configurar plantillas
@@ -341,7 +343,6 @@ for,for
 Forgot Password?,¿Has olvidado tu contraseña?
 Forms and email configuration,Configuración de formularios y correo electrónico
 From,From
-From all templates,From all templates
 Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
@@ -386,6 +387,7 @@ Info,Información
 Information extraction training,Entrenamiento de extracción de información
 Inherit,Heredar
 Inherit property,Heredar propiedad
+Input,Input
 Install,Instalar
 Install browser extension (dynamic link),Instalar extensión de navegador (enlace dinámico)
 Install Language(s),Instalar Idioma(s)
@@ -471,7 +473,6 @@ Message sent,Mensaje enviado
 Metadata,Metadatos
 Metadata creator,Creador de metadatos
 Metadata Extraction,Extracción de metadatos
-Metadata extraction dashboard,Tablero de extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
 mismatched passwords,Las contraseñas no coinciden
@@ -550,7 +551,6 @@ OCR PDF,ROC PDF
 of,de
 Ok,De acuerdo
 OK,OK
-"Only text, number and date properties are currently supported","Actualmente solo se admiten las propiedades de texto, número y fecha"
 Ooops... please go,¡Cuidado! Adelante por favor
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,¡Cuidado! No se pudo encontrar el tesauro que intentas editar. Prueba a navegara e esta página mediante el área de Ajustes.
 Open PDF,Abrir PDF
@@ -704,6 +704,7 @@ Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
+Selected templates,Selected templates
 Semantic search,Búsqueda semántica
 Semantic Search,Búsqueda semántica
 Semantic search minimum sentences help,La búsqueda semántica se aplica a cada oración en un documento. Filtra los documentos por el número mínimo de oraciones que superan el límite.

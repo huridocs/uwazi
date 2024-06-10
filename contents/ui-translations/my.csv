@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,ရက်စွဲ ထည့်ရန်
 Add entities / documents,ဖြည့်သွင်းချက်များ / စာရွက်စာတမ်းများ ထည့်ရန်
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,ဖိုင် ထည့်ရန်
 Add from URL,url မှ ထည့်ရန်
 Add from web,ဝက်ဘ်မှ ထည့်ရန်
@@ -138,6 +139,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,စုစည်းမှု
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,စစ်ထုတ်မှုများကို ချိန်ညှိပါ
 Configure templates,Configure templates
@@ -343,7 +345,6 @@ for,for
 Forgot Password?,စကားဝှက် မေ့နေပါသလား။
 Forms and email configuration,ပုံစံများနှင့် အီးမေးလ် ဖွဲ့စည်းတည်ဆောက်ပုံ
 From,From
-From all templates,From all templates
 Full edit mode,အပြည့်အဝ တည်းဖြတ် မုဒ်
 Full width,Full width
 General,ယေဘုယျ
@@ -388,6 +389,7 @@ Info,အချက်အလက်
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ဂုဏ်သတ္တိကို အမွေဆက်ခံရန်
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -473,7 +475,6 @@ Message sent,Message sent
 Metadata,မီတာဒေတာ
 Metadata creator,မီတာဒေတာ ဖန်တီးသူ
 Metadata Extraction,မီတာဒေတာ ထုတ်ယူခြင်း
-Metadata extraction dashboard,မီတာဒေတာ ထုတ်ယူမှု ဒက်ရှ်ဘုတ်
 MIGRATE,MIGRATE
 Minimum,အနည်းဆုံး
 mismatched passwords,Passwords don't match
@@ -552,7 +553,6 @@ OCR PDF,OCR PDF
 of,၏
 Ok,အိုကေ
 OK,အိုကေ
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,အို... အဆင်ပြေပါစေ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,အို။ သင်တည်းဖြတ်ရန် ကြိုးစားနေသော ဝေါဟာရပဒေသာကျမ်းကို ကျွန်ုပ်တို့ ရှာမတွေ့ပါ။ ဆက်တင်များမှတစ်ဆင့် ဤစာမျက်နှာသို့ ပြန်သွားကြည့်ပါ။
 Open PDF,Open PDF
@@ -706,6 +706,7 @@ Select...,ရွေးချယ်ရန်...
 Selected,Selected
 selected,ရွေးချယ်ပြီး
 selected of,ရွေးချယ်ထားသည်
+Selected templates,Selected templates
 Semantic search,အဓိပ္ပာယ်ရင်းမြစ် ရှာဖွေမှု
 Semantic Search,အဓိပ္ပာယ်ရင်းမြစ် ရှာဖွေမှု
 Semantic search minimum sentences help,အဓိပ္ပာယ်ရင်းမြစ် ရှာဖွေမှု အနည်းဆုံး ဝါကျ အကူအညီ

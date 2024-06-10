@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,Ajouter une date
 Add entities / documents,Ajouter des entités / documents
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,Ajouter le fichier
 Add from URL,Ajouter à partir d'une url
 Add from web,Ajouter à partir du web
@@ -137,6 +138,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,Collection
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,Configurer les filtres
 Configure templates,Configure templates
@@ -342,7 +344,6 @@ for,for
 Forgot Password?,Mot de passe oublié?
 Forms and email configuration,Configuration des formulaires et des e-mails
 From,From
-From all templates,From all templates
 Full edit mode,Mode d'édition complet
 Full width,Full width
 General,Général
@@ -387,6 +388,7 @@ Info,Info
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,Hériter la propriété
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -472,7 +474,6 @@ Message sent,Message sent
 Metadata,Métadonnées
 Metadata creator,Metadata creator
 Metadata Extraction,Metadata Extraction
-Metadata extraction dashboard,Metadata extraction dashboard
 MIGRATE,MIGRATE
 Minimum,Minimum
 mismatched passwords,Passwords don't match
@@ -551,7 +552,6 @@ OCR PDF,OCR PDF
 of,de
 Ok,Ok
 OK,OK
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
 Open PDF,Open PDF
@@ -705,6 +705,7 @@ Select...,Sélectionner...
 Selected,Selected
 selected,Sélectionné
 selected of,sélectionné sur
+Selected templates,Selected templates
 Semantic search,Recherche sémantique
 Semantic Search,Recherche sémantique
 Semantic search minimum sentences help,Aide sur les phrases minimales de la recherche sémantique

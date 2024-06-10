@@ -27,6 +27,7 @@ Add an account to the app by scanning the provided QR code with your mobile devi
 Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
 Add entity type,Add entity type
+Add Extractor,Add Extractor
 Add file,เพิ่มไฟล์
 Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
@@ -138,6 +139,7 @@ Collaborators,Collaborators
 Collapse all,Collapse all
 Collection,คอลเล็คชั่น
 Collection Name,Collection Name
+Common sources,Common sources
 Configuration,Configuration
 Configure filters,กำหนดค่าตัวกรอง
 Configure templates,Configure templates
@@ -343,7 +345,6 @@ for,for
 Forgot Password?,ลืมรหัสผ่าน?
 Forms and email configuration,การตั้งค่าแบบฟอร์มและอีเมล
 From,From
-From all templates,From all templates
 Full edit mode,โหมดการแก้ไขแบบสมบูรณ์
 Full width,Full width
 General,ข้อมูลทั่วไป
@@ -388,6 +389,7 @@ Info,ข้อมูล
 Information extraction training,Information extraction training
 Inherit,Inherit
 Inherit property,ก็อปปี้คุณสมบัตินี้
+Input,Input
 Install,Install
 Install browser extension (dynamic link),Install browser extension (dynamic link)
 Install Language(s),Install Language(s)
@@ -473,7 +475,6 @@ Message sent,Message sent
 Metadata,เมทาดาทา
 Metadata creator,ผู้สร้างเมตาดาต้า
 Metadata Extraction,ค้นหาเมตาดาต้า
-Metadata extraction dashboard,แดชบอร์ดสำหรับค้นหาเมตาดาต้า
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
 mismatched passwords,Passwords don't match
@@ -552,7 +553,6 @@ OCR PDF,OCR PDF
 of,ของ
 Ok,ตกลง
 OK,ตกลง
-"Only text, number and date properties are currently supported","Only text, number and date properties are currently supported"
 Ooops... please go,กรุณาดำเนินการต่อ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
 Open PDF,Open PDF
@@ -706,6 +706,7 @@ Select...,เลือก...
 Selected,Selected
 selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
+Selected templates,Selected templates
 Semantic search,ค้นหาความหมาย
 Semantic Search,ค้นหาความหมาย
 Semantic search minimum sentences help,ความช่วยเหลือเกี่ยวกับ การค้นหาความหมายของประโยคขั้นต่ำ

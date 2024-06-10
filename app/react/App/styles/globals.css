@@ -1728,6 +1728,11 @@ input[type="range"]::-ms-fill-lower {
   margin: auto;
 }
 
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
 .mx-4 {
   margin-left: 1rem;
   margin-right: 1rem;
@@ -1808,10 +1813,6 @@ input[type="range"]::-ms-fill-lower {
   margin-right: 1rem;
 }
 
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
 .mt-2 {
   margin-top: 0.5rem;
 }
@@ -1822,6 +1823,10 @@ input[type="range"]::-ms-fill-lower {
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
 }
 
 .block {
@@ -1872,6 +1877,10 @@ input[type="range"]::-ms-fill-lower {
   height: 3.5rem;
 }
 
+.h-2 {
+  height: 0.5rem;
+}
+
 .h-3 {
   height: 0.75rem;
 }
@@ -1912,6 +1921,10 @@ input[type="range"]::-ms-fill-lower {
   height: 37px;
 }
 
+.h-\[40\%\] {
+  height: 40%;
+}
+
 .h-\[532px\] {
   height: 532px;
 }
@@ -1949,8 +1962,12 @@ input[type="range"]::-ms-fill-lower {
   max-height: 24rem;
 }
 
-.max-h-\[calc\(100vh_-_9rem\)\] {
-  max-height: calc(100vh - 9rem);
+.max-h-\[40\%\] {
+  max-height: 40%;
+}
+
+.max-h-full {
+  max-height: 100%;
 }
 
 .max-h-screen {
@@ -1964,6 +1981,18 @@ input[type="range"]::-ms-fill-lower {
 .min-h-fit {
   min-height: -moz-fit-content;
   min-height: fit-content;
+}
+
+.min-h-96 {
+  min-height: 24rem;
+}
+
+.min-h-\[80\%\] {
+  min-height: 80%;
+}
+
+.min-h-\[70\%\] {
+  min-height: 70%;
 }
 
 .\!w-full {
@@ -2883,6 +2912,11 @@ input[type="range"]::-ms-fill-lower {
   background-color: rgb(240 245 255 / var(--tw-bg-opacity));
 }
 
+.bg-indigo-700 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(81 69 205 / var(--tw-bg-opacity));
+}
+
 .bg-orange-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(253 186 140 / var(--tw-bg-opacity));
@@ -2971,6 +3005,10 @@ input[type="range"]::-ms-fill-lower {
 .object-scale-down {
   -o-object-fit: scale-down;
      object-fit: scale-down;
+}
+
+.p-0 {
+  padding: 0px;
 }
 
 .p-1 {
@@ -3108,10 +3146,6 @@ input[type="range"]::-ms-fill-lower {
 .py-\[3px\] {
   padding-top: 3px;
   padding-bottom: 3px;
-}
-
-.pb-0 {
-  padding-bottom: 0px;
 }
 
 .pb-14 {
@@ -3289,6 +3323,10 @@ input[type="range"]::-ms-fill-lower {
 
 .uppercase {
   text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
 }
 
 .italic {
@@ -4228,10 +4266,6 @@ input[type="range"]::-ms-fill-lower {
 
   .md\:w-\[768px\] {
     width: 768px;
-  }
-
-  .md\:w-\[95\%\] {
-    width: 95%;
   }
 
   .md\:min-w-72 {

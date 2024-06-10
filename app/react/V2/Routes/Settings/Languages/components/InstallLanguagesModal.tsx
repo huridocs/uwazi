@@ -40,15 +40,15 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
         </h1>
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
-      <Modal.Body className="pt-4">
-        <Translate className="block px-2 text-justify text-gray-700">
+      <Modal.Body className="pt-0">
+        <Translate className="block px-2 pt-4 text-justify text-gray-700">
           This action may take some time while we add the extra language to the entire collection.
         </Translate>
-        <MultiselectList className="pt-4 max-h-96" items={items} onChange={s => setSelected(s)} />
+        <MultiselectList items={items} onChange={s => setSelected(s)} />
       </Modal.Body>
       <Modal.Footer>
         <div className="flex flex-col w-full">
-          <p className="pt-0 pb-3 w-full text-sm font-normal text-gray-500 dark:text-gray-400">
+          <p className="w-full pt-0 pb-3 text-sm font-normal text-gray-500 dark:text-gray-400">
             * <Translate>Available default translation</Translate>
           </p>
           <div className="flex gap-2">

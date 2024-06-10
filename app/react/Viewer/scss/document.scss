@@ -157,7 +157,8 @@
 .page {
   position: relative;
   background: $c-white;
-  box-shadow: $box-shadow;
+  box-shadow: 0 1px 10px 1px rgba(108, 108, 123, 0.2);
+  margin-bottom: 20px;
 }
 
 .document.targetDocument {
