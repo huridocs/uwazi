@@ -610,7 +610,7 @@ describe('InformationExtraction', () => {
       IXExternalService.setResults([
         {
           tenant: 'tenant1',
-          property_name: 'property1',
+          id: factory.id('prop1extractor').toString(),
           xml_file_name: 'documentA.xml',
           text: 'text_in_other_language',
           segment_text: 'segmented_text_in_other_language',
@@ -626,7 +626,7 @@ describe('InformationExtraction', () => {
         },
         {
           tenant: 'tenant1',
-          property_name: 'property1',
+          id: factory.id('prop1extractor').toString(),
           xml_file_name: 'documentD.xml',
           text: 'text_in_eng_language',
           segment_text: 'segmented_text_in_eng_language',
