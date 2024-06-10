@@ -129,7 +129,7 @@ describe('Users', () => {
     it('should required email', () => {
       cy.get('aside').within(() => {
         cy.get('#email').clear();
-        cy.contains('span', 'Email is required').should('exist');
+        cy.contains('span', 'A valid email is required').should('exist');
       });
       cy.contains('button', 'Cancel').click();
     });
