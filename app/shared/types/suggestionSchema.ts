@@ -15,7 +15,6 @@ const commonSuggestionMessageProperties = {
 
 export const CommonSuggestionSchema = {
   type: 'object',
-  additionalProperties: false,
   title: 'CommonSuggestion',
   properties: {
     ...commonSuggestionMessageProperties,
@@ -25,7 +24,6 @@ export const CommonSuggestionSchema = {
 
 export const TextSelectionSuggestionSchema = {
   type: 'object',
-  additionalProperties: false,
   title: 'TextSelectionSuggestion',
   properties: {
     ...commonSuggestionMessageProperties,
@@ -52,7 +50,6 @@ export const TextSelectionSuggestionSchema = {
 
 export const ValuesSelectionSuggestionSchema = {
   type: 'object',
-  additionalProperties: false,
   title: 'ValuesSelectionSuggestion',
   properties: {
     ...commonSuggestionMessageProperties,

@@ -175,17 +175,6 @@ describe('formatSuggestion', () => {
       expectedErrorMessage: ": must have required property 'tenant'",
     },
     {
-      case: 'extra properties',
-      property: properties.text,
-      rawSuggestion: {
-        ...validRawSuggestions.text,
-        extra: 'extra',
-      },
-      currentSuggestion: currentSuggestions.text,
-      entity: entities.text,
-      expectedErrorMessage: ': must NOT have additional properties',
-    },
-    {
       case: 'invalid tenant type',
       property: properties.text,
       rawSuggestion: {
@@ -332,6 +321,36 @@ describe('formatSuggestion', () => {
       await expect(cb).rejects.toThrow(expectedErrorMessage);
     }
   );
+
+  it('should allow extra properties', async () => {
+    const property = properties.text;
+    const rawSuggestion = {
+      ...validRawSuggestions.text,
+      extra: 'extra',
+    };
+    const result = await formatSuggestion(
+      property,
+      rawSuggestion,
+      currentSuggestions.text,
+      entities.text,
+      successMessage
+    );
+    expect(result).toEqual({
+      ...currentSuggestions.text,
+      date: expect.any(Number),
+      suggestedValue: 'recommended_value',
+      segment: 'new context',
+      selectionRectangles: [
+        {
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
+          page: '1',
+        },
+      ],
+    });
+  });
 
   it.each([
     {

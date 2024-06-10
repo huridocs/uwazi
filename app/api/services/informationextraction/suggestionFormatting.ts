@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import Ajv from 'ajv';
 
 import date from 'api/utils/date';
