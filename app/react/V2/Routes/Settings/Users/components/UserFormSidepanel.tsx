@@ -8,9 +8,12 @@ import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
+import { validEmailFormat } from 'V2/shared/formatHelpers';
 import { UserRole } from 'shared/types/userSchema';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal';
+
+type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -66,8 +69,9 @@ const getFieldError = (field: 'username' | 'password' | 'email', type?: string) 
 
   if (field === 'email') {
     switch (type) {
+      case 'format':
       case 'required':
-        return 'Email is required';
+        return 'A valid email is required';
       case 'validate':
         return 'Duplicated email';
       default:
@@ -94,6 +98,7 @@ const UserFormSidepanel = ({
   const [showModal, setShowModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const password = useRef<string>();
+  const actionType = useRef<SubmitType>();
   const formSubmitRef = useRef<HTMLButtonElement>(null);
 
   const defaultValues = {
@@ -137,10 +142,11 @@ const UserFormSidepanel = ({
     reset(defaultValues);
   };
 
-  const onClickSubmit = (intent: string) => {
+  const onClickSubmit = () => {
     const formData = new FormData();
-    formData.set('intent', intent);
+    formData.set('intent', actionType.current || '');
     formData.set('data', JSON.stringify(selectedUser));
+    formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
 
     setShowSidepanel(false);
@@ -204,7 +210,10 @@ const UserFormSidepanel = ({
                     errorMessage={getFieldError('email', errors.email?.type)}
                     {...register('email', {
                       required: true,
-                      validate: email => isUnique(email, selectedUser, users),
+                      validate: {
+                        isUnique: email => isUnique(email, selectedUser, users),
+                        format: email => validEmailFormat(email),
+                      },
                       maxLength: 256,
                     })}
                   />
@@ -232,7 +241,10 @@ const UserFormSidepanel = ({
                       <Button
                         type="button"
                         styling="light"
-                        onClick={() => onClickSubmit('reset-password')}
+                        onClick={() => {
+                          actionType.current = 'reset-password';
+                          onClickSubmit();
+                        }}
                       >
                         <Translate>Reset Password</Translate>
                       </Button>
@@ -240,7 +252,10 @@ const UserFormSidepanel = ({
                       <Button
                         type="button"
                         styling="light"
-                        onClick={() => onClickSubmit('reset-2fa')}
+                        onClick={() => {
+                          actionType.current = 'reset-2fa';
+                          setShowConfirmationModal(true);
+                        }}
                       >
                         <Translate>Reset 2FA</Translate>
                       </Button>
@@ -252,7 +267,10 @@ const UserFormSidepanel = ({
                       type="button"
                       styling="light"
                       color="error"
-                      onClick={() => onClickSubmit('unlock-user')}
+                      onClick={() => {
+                        actionType.current = 'unlock-user';
+                        setShowConfirmationModal(true);
+                      }}
                     >
                       <Translate>Unlock account</Translate>
                     </Button>
@@ -292,11 +310,11 @@ const UserFormSidepanel = ({
                 className="flex-grow"
                 type="button"
                 onClick={async () => {
-                  trigger()
-                    .then(valid => {
-                      if (valid) setShowConfirmationModal(true);
-                    })
-                    .catch(() => {});
+                  const valid = await trigger();
+                  if (valid) {
+                    actionType.current = 'formSubmit';
+                    setShowConfirmationModal(true);
+                  }
                 }}
               >
                 <Translate>Save</Translate>
@@ -310,16 +328,21 @@ const UserFormSidepanel = ({
       {showConfirmationModal && (
         <ConfirmationModal
           header="Confirm"
+          body="Confirm action"
           usePassword
           onCancelClick={() => setShowConfirmationModal(false)}
           onAcceptClick={value => {
-            if (formSubmitRef.current) {
-              password.current = value;
+            password.current = value;
+
+            if (actionType.current === 'formSubmit' && formSubmitRef.current) {
               formSubmitRef.current.disabled = false;
               formSubmitRef.current.click();
               formSubmitRef.current.disabled = true;
-              setShowConfirmationModal(false);
+            } else {
+              onClickSubmit();
             }
+
+            setShowConfirmationModal(false);
           }}
         />
       )}
