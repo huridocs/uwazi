@@ -8,11 +8,11 @@ import {
 describe('activityLogFilter', () => {
   describe('prepareToFromRanges', () => {
     it.each`
-      from          | to            | expected
-      ${null}       | ${1000011600} | ${{ $lt: 1000098000000 }}
-      ${1000011600} | ${1000011600} | ${{ $gte: 1000011600000, $lt: 1000098000000 }}
-      ${1000011600} | ${null}       | ${{ $gte: 1000011600000 }}
-      ${1000011600} | ${1500008400} | ${{ $gte: 1000011600000, $lt: 1500094800000 }}
+      from             | to               | expected
+      ${undefined}     | ${1000011600000} | ${{ $lt: 1000098000000 }}
+      ${1000011600000} | ${1000011600000} | ${{ $gte: 1000011600000, $lt: 1000098000000 }}
+      ${1000011600000} | ${undefined}     | ${{ $gte: 1000011600000 }}
+      ${1000011600000} | ${1500008400000} | ${{ $gte: 1000011600000, $lt: 1500094800000 }}
     `("should create a date condition from: '$from' to: '$to' ", ({ from, to, expected }) => {
       const timeCondition: ActivityLogQueryTime = { from, to };
       const result = prepareToFromRanges(timeCondition);
@@ -183,7 +183,7 @@ describe('activityLogFilter', () => {
           },
           {
             time: {
-              $gte: 1000011600000,
+              $gte: 1000011600,
             },
           },
         ],

@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash';
-import moment from 'moment';
 import { FilterQuery } from 'mongoose';
+import moment from 'moment';
 import { ActivityLogGetRequest } from 'shared/types/activityLogApiTypes';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 import { escapeEspecialChars } from 'shared/data_utils/stringUtils';
@@ -10,11 +10,11 @@ import { EntryValue } from './activityLogBuilder';
 type ActivityLogQuery = Required<ActivityLogGetRequest>['query'];
 type ActivityLogQueryTime = Required<ActivityLogQuery>['time'];
 const prepareToFromRanges = (sanitizedTime: ActivityLogQueryTime) => {
-  const fromDate = sanitizedTime.from && moment.unix(sanitizedTime.from);
-  const toDate = sanitizedTime.to && moment.unix(sanitizedTime.to).add(1, 'days');
+  const fromDate = sanitizedTime.from && new Date(sanitizedTime.from);
+  const toDate = sanitizedTime.to && moment(new Date(sanitizedTime.to)).add(1, 'day').toDate();
   return {
-    ...(fromDate && { $gte: fromDate.valueOf() }),
-    ...(toDate && { $lt: toDate.valueOf() }),
+    ...(fromDate && { $gte: fromDate.getTime() }),
+    ...(toDate && { $lt: toDate.getTime() }),
   };
 };
 const parsedActionsEntries = Object.entries(ParsedActions);
@@ -37,14 +37,23 @@ const bodyCondition = (methods: string[]) => {
   methods.forEach(method => {
     switch (method) {
       case 'CREATE':
-        orContent.push(andCondition('POST', '^(?!{"_id").*'));
+        orContent.push({
+          $and: [
+            andCondition('POST', '^(?!{"_id").*'),
+            andCondition('POST', '^(?!{"entity":"{\\\\"_id).*'),
+          ],
+        });
         break;
       case 'UPDATE':
         orContent.push(andCondition('POST', '^({"_id").*'));
+        orContent.push(andCondition('POST', '^(?!{"entity":"{\\\\"_id).*'));
         orContent.push(andCondition('PUT', '^({"_id").*'));
+        orContent.push(andCondition('PUT', '^(?!{"entity":"{\\\\"_id).*'));
         break;
       case 'DELETE':
         orContent.push(andCondition('DELETE', '^({"_id").*'));
+        orContent.push(andCondition('DELETE', '^({"_id").*', 'query'));
+        orContent.push(andCondition('DELETE', '^({"sharedId").*', 'query'));
         break;
       default:
         orContent.push({ method });

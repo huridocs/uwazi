@@ -1,4 +1,4 @@
-export enum Methods {
+enum Methods {
   Create = 'CREATE',
   Update = 'UPDATE',
   Delete = 'DELETE',
@@ -12,7 +12,7 @@ const buildActivityLogEntry = (builder: ActivityLogBuilder) => ({
   ...(builder.extra && { extra: builder.extra }),
 });
 
-export interface EntryValue {
+interface EntryValue {
   idField?: string;
   nameField?: string;
   id?: any;
@@ -23,12 +23,12 @@ export interface EntryValue {
   desc: string;
 }
 
-export interface LogActivity {
+interface LogActivity {
   name?: string;
   [k: string]: any | undefined;
 }
 
-export class ActivityLogBuilder {
+class ActivityLogBuilder {
   description: string;
 
   action: Methods;
@@ -104,7 +104,7 @@ const getActivityInput = (entryValue: EntryValue, body: any) => {
   return idPost ? checkForUpdate(body, entryValue) : entryValue;
 };
 
-export const buildActivityEntry = async (entryValue: EntryValue, data: any) => {
+const buildActivityEntry = async (entryValue: EntryValue, data: any) => {
   const body = data.body && data.body !== '{}' ? data.body : data.query || '{}';
   const activityInput = getActivityInput(entryValue, body);
   const activityEntryBuilder = new ActivityLogBuilder(JSON.parse(body), activityInput);
@@ -113,3 +113,6 @@ export const buildActivityEntry = async (entryValue: EntryValue, data: any) => {
   activityEntryBuilder.makeExtra();
   return activityEntryBuilder.build();
 };
+
+export type { ActivityLogBuilder, EntryValue, LogActivity };
+export { Methods, buildActivityEntry };
