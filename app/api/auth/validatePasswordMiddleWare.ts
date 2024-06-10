@@ -17,6 +17,7 @@ const validatePasswordMiddleWare = async (req: Request, res: Response, next: Nex
 
   const currentPassword = (await usersModel.getById(user._id, '+password')).password;
   const submmitedPassword = authorization?.split('Basic ')[1] || '';
+
   const validPassword = await validatePassword(submmitedPassword, currentPassword);
 
   if (validPassword) {
