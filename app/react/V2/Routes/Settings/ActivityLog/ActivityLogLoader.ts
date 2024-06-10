@@ -2,10 +2,12 @@
 import { LoaderFunction, SetURLSearchParams, createSearchParams } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual } from 'lodash';
+import moment from 'moment';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
+import { ClientSettings } from 'app/apiResponseTypes';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -31,9 +33,9 @@ interface ActivityLogSearchParams {
   limit?: number;
 }
 
-const timeFilter = (from?: string, to?: string) => {
-  const fromDate = from && new Date(from).getTime() / 1000;
-  const toDate = to && new Date(to).getTime() / 1000;
+const timeFilter = (from?: string, to?: string, dateFormat = 'YYYY-MM-DD') => {
+  const fromDate = from && moment(from, dateFormat).toDate().getTime();
+  const toDate = to && moment(to, dateFormat).toDate().getTime();
   return { ...(fromDate && { from: fromDate }), ...(toDate && { to: toDate }) };
 };
 
@@ -42,7 +44,10 @@ const sortParam = (sort = '', order = '') =>
 
 const paramOrEmpty = (condition: boolean, param: {}) => (condition ? param : {});
 
-const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => {
+const getQueryParamsBySearchParams = (
+  searchParams: ActivityLogSearchParams,
+  dateFormat = 'YYYY-MM-DD'
+) => {
   const {
     username,
     search,
@@ -54,7 +59,7 @@ const getQueryParamsBySearchParams = (searchParams: ActivityLogSearchParams) => 
     page = 1,
     limit = ITEMS_PER_PAGE,
   } = searchParams;
-  const time = timeFilter(from, to);
+  const time = timeFilter(from, to, dateFormat.toUpperCase());
   const sortOptions = sortParam(sort, order);
   const methodList = isArray(method) ? method : [method];
   const params = {
@@ -79,11 +84,12 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
 };
 
 const activityLogLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  (headers?: IncomingHttpHeaders, handlerContext?: { settings?: ClientSettings }): LoaderFunction =>
   async ({ request }) => {
+    const { settings } = handlerContext || { dateFormat: 'YYYY-MM-DD' };
     const urlSearchParams = new URLSearchParams(request.url.split('?')[1]);
     const searchParams = searchParamsFromSearchParams(urlSearchParams);
-    const params = getQueryParamsBySearchParams(searchParams);
+    const params = getQueryParamsBySearchParams(searchParams, settings?.dateFormat);
     const activityLogList: ActivityLogResponse = await activityLogAPI.get(params, headers);
     if (activityLogList.message !== undefined) {
       return {

@@ -89,7 +89,7 @@ const DatePickerComponent = React.forwardRef(
       autoComplete,
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'yyyy-mm-dd',
+      dateFormat = 'YYYY-MM-DD',
       hideLabel = true,
       inputClassName = '',
       className = '',

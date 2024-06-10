@@ -29,7 +29,7 @@ const funnelColor = (appliedFiltersCount: number): string =>
 const ActivityLog = () => {
   const [selectedEntry, setSelectedEntry] = useState<Row<ActivityLogEntryType> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const { dateFormat = 'yyyy-mm-dd' } = useAtomValue<ClientSettings>(settingsAtom);
+  const { dateFormat = 'YYYY-MM-DD' } = useAtomValue<ClientSettings>(settingsAtom);
   const [sorting, setSorting] = useState<SortingState>([]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();

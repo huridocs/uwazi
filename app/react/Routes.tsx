@@ -175,7 +175,7 @@ const getRoutesLayout = (
       <Route
         path="activitylog"
         element={adminsOnlyRoute(<ActivityLog />)}
-        loader={activityLogLoader(headers)}
+        loader={activityLogLoader(headers, { settings })}
       />
       <Route
         path="custom-uploads"

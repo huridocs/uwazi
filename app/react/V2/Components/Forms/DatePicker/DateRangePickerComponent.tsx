@@ -35,7 +35,7 @@ const DateRangePickerComponent = React.forwardRef(
       errorMessage,
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'yyyy-mm-dd',
+      dateFormat = 'YYYY-MM-DD',
       hideLabel = false,
       inputClassName = '',
       className = '',
