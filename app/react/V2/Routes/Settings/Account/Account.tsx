@@ -6,6 +6,7 @@ import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom'
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { ClientUserSchema } from 'app/apiResponseTypes';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { Translate } from 'app/I18N';
 import { updateUser, getCurrentUser } from 'V2/api/users';
 import { notificationAtom } from 'V2/atoms';
@@ -34,25 +35,35 @@ const Account = () => {
     register,
     watch,
     handleSubmit,
+    trigger,
     reset,
-    formState: { errors, isSubmitted },
+    formState: { errors, isDirty },
   } = useForm<AccountForm>({
     defaultValues: userAccount,
     mode: 'onSubmit',
   });
 
-  const submit = async (data: AccountForm, currentPassword: string) => {
+  const onSubmit = async (data: AccountForm, currentPassword: string) => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
 
-    await updateUser(userData, currentPassword);
+    const response = await updateUser(userData, currentPassword);
+
+    if (response instanceof FetchResponseError) {
+      const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: message || undefined,
+      });
+    } else {
+      setNotifications({
+        type: 'success',
+        text: <Translate>Account updated</Translate>,
+      });
+    }
 
     revalidator.revalidate();
-
-    setNotifications({
-      type: 'success',
-      text: <Translate>Account updated</Translate>,
-    });
   };
 
   useEffect(() => {
@@ -70,7 +81,9 @@ const Account = () => {
         <SettingsContent.Body>
           <form
             id="account-form"
-            onSubmit={handleSubmit(async data => submit(data, passwordConfirmation.current || ''))}
+            onSubmit={handleSubmit(async data =>
+              onSubmit(data, passwordConfirmation.current || '')
+            )}
           >
             <Card className="mb-4" title={<Translate>General Information</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
@@ -97,6 +110,11 @@ const Account = () => {
                     label={<Translate>Email</Translate>}
                     {...register('email', { required: true })}
                   />
+                  {errors.email && (
+                    <p className="mt-2 text-sm text-error-600">
+                      <Translate>This field is required</Translate>
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>
@@ -110,7 +128,7 @@ const Account = () => {
                     {...register('password')}
                     type="password"
                   />
-                  {errors.passwordConfirm && isSubmitted && (
+                  {errors.passwordConfirm && (
                     <p className="mt-2 text-sm text-error-600">
                       <Translate>Passwords do not match</Translate>
                     </p>
@@ -182,8 +200,13 @@ const Account = () => {
 
             <Button
               type="button"
-              onClick={() => setConfirmationModal(true)}
-              disabled={!watch('email')}
+              onClick={async () => {
+                const validation = await trigger();
+                if (validation) {
+                  setConfirmationModal(true);
+                }
+              }}
+              disabled={!isDirty}
             >
               <Translate>Update</Translate>
             </Button>
@@ -198,6 +221,7 @@ const Account = () => {
       {confirmationModal && (
         <ConfirmationModal
           header="Confirm"
+          body="Confirm action"
           usePassword
           onCancelClick={() => setConfirmationModal(false)}
           onAcceptClick={value => {

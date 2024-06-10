@@ -27,17 +27,52 @@ describe('Account', () => {
   });
 
   describe('Update user', () => {
-    it('should change the password to a new one', () => {
-      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
+    it('should validate passwords match and change the email', () => {
+      cy.contains('button', 'Update').should('be.disabled');
       cy.get('input[name=password]').type('1234', { delay: 0 });
       cy.get('input[name=passwordConfirm]').type('123', { delay: 0 });
+      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
       cy.contains('button', 'Update').click();
       cy.contains('Passwords do not match');
       cy.get('input[name=passwordConfirm]').type('4');
+    });
 
+    it('should validate user has email', () => {
+      cy.get('input[name=email]').clear();
+      cy.contains('button', 'Update').click();
+      cy.contains('This field is required');
+      cy.get('input[name=email]').type('admin@uwazi.io', { delay: 0 });
+    });
+
+    it('should save the changes', () => {
       cy.intercept('POST', '/api/users').as('updateUser');
       cy.contains('Update').click();
+
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Confirm');
+        cy.get('input').type('change this password now');
+        cy.contains('button', 'Accept').click();
+      });
+
       cy.wait('@updateUser');
+      cy.contains('Dismiss').click();
+      cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
+    });
+
+    it('should not save changes when the password is wrong', () => {
+      cy.get('input[name=password]').type('12345', { delay: 0 });
+      cy.get('input[name=passwordConfirm]').type('12345', { delay: 0 });
+      cy.get('input[name=email]').type('admin@uwazi.io.com', { delay: 0 });
+      cy.contains('button', 'Update').click();
+
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Confirm');
+        cy.get('input').type('wrong pass');
+        cy.contains('button', 'Accept').click();
+      });
+
+      cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
+      cy.contains('An error occurred');
       cy.contains('Dismiss').click();
     });
 
