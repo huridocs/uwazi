@@ -240,7 +240,6 @@ describe('Users', () => {
       cy.get('aside').within(() => {
         cy.get('input[name="username"]').clear();
         cy.get('input[name="username"]').type('admin2', { delay: 0 });
-        cy.get('input[name="email"]').type('admin2@uwazi.io', { delay: 0 });
         cy.get('input[name="password"]').type('password', { delay: 0 });
         cy.get('#roles').select('admin');
       });
@@ -341,7 +340,26 @@ describe('Users', () => {
       cy.contains('span', 'Carmen_edited').should('not.exist');
       cy.contains('span', 'Mike').should('not.exist');
 
-      namesShouldMatch(['Cynthia', 'admin', 'blocky', 'colla', 'editor']);
+      namesShouldMatch(['Cynthia', 'admin', 'admin2', 'blocky', 'editor']);
+    });
+  });
+
+  describe('validate password', () => {
+    it('should not be able to edit another user', () => {
+      cy.contains('td', 'Cynthia').siblings().last().click();
+      cy.get('aside').within(() => {
+        cy.get('#password').type('changed password', { delay: 0 });
+        cy.contains('button', 'Save').click();
+      });
+
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.get('input').type('worngPass!!', { delay: 0 });
+        cy.contains('button', 'Accept').click();
+      });
+
+      cy.contains('An error occurred');
+      cy.contains('button', 'View more').click();
+      cy.contains('Request failed with status code 403: Forbidden');
     });
   });
 });
