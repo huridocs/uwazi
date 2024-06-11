@@ -50,7 +50,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 4.4
+          mongodb-version: 5.0.27
           mongodb-replica-set: uwazi_replica_set
           mongodb-port: 27017
 
