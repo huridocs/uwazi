@@ -11,6 +11,7 @@ export interface CommonSuggestion {
   tenant: string;
   id: string;
   xml_file_name: string;
+  [k: string]: unknown | undefined;
 }
 
 export interface EntitySuggestionType {
@@ -141,6 +142,7 @@ export interface TextSelectionSuggestion {
     height: number;
     page_number: number;
   }[];
+  [k: string]: unknown | undefined;
 }
 
 export interface ValuesSelectionSuggestion {
@@ -152,4 +154,5 @@ export interface ValuesSelectionSuggestion {
     label: string;
   }[];
   segment_text: string;
+  [k: string]: unknown | undefined;
 }
