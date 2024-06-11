@@ -37,8 +37,9 @@ const Users = () => {
     header: 'Delete',
     body: 'Do you want to delete?',
   });
-  const [bulkActionIntent, setBulkActionIntent] = useState<FormIntent>('delete-users');
+
   const password = useRef<string>();
+  const bulkActionIntent = useRef<FormIntent>();
   const fetcher = useFetcher();
   useHandleNotifications();
 
@@ -54,7 +55,7 @@ const Users = () => {
 
   const handleBulkAction = () => {
     const formData = new FormData();
-    formData.set('intent', bulkActionIntent);
+    formData.set('intent', bulkActionIntent.current || '');
 
     if (activeTab === 'Users') {
       formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
@@ -112,8 +113,12 @@ const Users = () => {
                 <Button
                   styling="light"
                   onClick={() => {
-                    setBulkActionIntent('bulk-reset-password');
-                    handleBulkAction();
+                    setConfirmationModalProps({
+                      header: 'Reset passwords',
+                      body: 'Do you want reset the password for the following users?',
+                    });
+                    bulkActionIntent.current = 'bulk-reset-password';
+                    setShowConfirmationModal(true);
                   }}
                 >
                   <Translate>Reset Password</Translate>
@@ -126,7 +131,7 @@ const Users = () => {
                       header: 'Reset 2FA',
                       body: 'Do you want disable 2FA for the following users?',
                     });
-                    setBulkActionIntent('bulk-reset-2fa');
+                    bulkActionIntent.current = 'bulk-reset-2fa';
                     setShowConfirmationModal(true);
                   }}
                 >
@@ -143,7 +148,8 @@ const Users = () => {
                     header: 'Delete',
                     body: 'Do you want to delete the following items?',
                   });
-                  setBulkActionIntent(activeTab === 'Users' ? 'delete-users' : 'delete-groups');
+                  bulkActionIntent.current =
+                    activeTab === 'Users' ? 'delete-users' : 'delete-groups';
                   setShowConfirmationModal(true);
                 }}
               >
@@ -194,7 +200,11 @@ const Users = () => {
           header={confirmationModalProps.header}
           warningText={confirmationModalProps.body}
           body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
-          usePassword={selectedUsers.length > 0 || false}
+          usePassword={
+            (selectedUsers.length > 0 &&
+              ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
+            false
+          }
           onAcceptClick={value => {
             password.current = value;
             handleBulkAction();

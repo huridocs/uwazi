@@ -154,14 +154,14 @@ const reset2FA = async (
     if (Array.isArray(data)) {
       const response = await Promise.all(
         data.map(user => {
-          const requestParams = new RequestParams({ _id: user._id, headersWithAuth });
+          const requestParams = new RequestParams({ _id: user._id }, { ...headersWithAuth });
           return api.post('auth2fa-reset', requestParams);
         })
       );
       return response;
     }
 
-    const requestParams = new RequestParams({ _id: data._id }, headersWithAuth);
+    const requestParams = new RequestParams({ _id: data._id }, { ...headersWithAuth });
     const response = await api.post('auth2fa-reset', requestParams);
     return response;
   } catch (e) {
