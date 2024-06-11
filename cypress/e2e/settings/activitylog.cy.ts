@@ -23,8 +23,18 @@ describe('Activity log', () => {
     cy.contains('.metadata-sidepanel.is-active .edit-metadata', 'Edit').click();
     cy.get('#metadataForm select').eq(0).select('Reporte');
     cy.contains('Title').scrollIntoView();
-    cy.get('textarea[name="library.sidepanel.metadata.title"]:not([disabled])').type('Report AL');
+    cy.clearAndType(
+      'textarea[name="library.sidepanel.metadata.title"]:not([disabled])',
+      'Report AL'
+    );
     cy.contains('.metadata-sidepanel.is-active .btn-success', 'Save').click();
+  });
+
+  it('should register entity deletion in activity log', () => {
+    cy.contains('div.item-document', 'AL Report').click();
+    cy.contains('.metadata-sidepanel.is-active .btn-danger', 'Delete').click();
+    cy.contains('.confirm-button', 'Accept').click();
+    cy.contains('Entity deleted');
   });
 
   it('should register account edition in activity log', () => {
@@ -135,12 +145,12 @@ describe('Activity log', () => {
     cy.contains('button', 'Clear all').click();
     applyFilters();
     cy.contains('button', 'Filters').click();
-    cy.get('#from').type('2023-06-21', { delay: 0 });
+    cy.get('#from').type('2024-04-25', { delay: 0 });
     cy.get('#to').clear();
-    cy.get('#to').type('2023-06-24', { delay: 0 });
+    cy.get('#to').type('2024-05-09', { delay: 0 });
     cy.get('#to').realPress('Tab');
     applyFilters();
-    cy.get('tr').should('have.length.at.most', 2);
+    cy.get('tr').should('have.length.at.most', 5);
   });
 
   // eslint-disable-next-line max-statements
@@ -150,9 +160,9 @@ describe('Activity log', () => {
     cy.clearAndType('input[name=username]', 'admin', { delay: 0 });
     cy.clearAndType('input[name=search]', 'new user', { delay: 0 });
     selectMethod(0);
-    cy.get('#from').type('2023-06-22', { delay: 0 });
+    cy.get('#from').type('2024-05-15', { delay: 0 });
     cy.get('#to').clear();
-    cy.get('#to').type('2023-06-22', { delay: 0 });
+    cy.get('#to').type('2024-05-29', { delay: 0 });
     applyFilters();
     cy.get('tr').should('have.length', 2);
     cy.contains('Cynthia');
@@ -164,11 +174,11 @@ describe('Activity log', () => {
     cy.contains('button', 'Clear all').click();
     cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
     selectMethod(0);
-    cy.get('#from').type('2023-06-22', { delay: 0 });
+    cy.get('#from').type('2024-05-28', { delay: 0 });
     cy.get('#to').click();
-    cy.get('.datepicker-controls .today-btn').click();
+    cy.get('.datepicker:not(.hidden) .datepicker-controls .today-btn').eq(1).click();
     applyFilters();
-    cy.get('tr').should('have.length', 4);
+    cy.get('tr').should('have.length', 3);
     cy.get('table > tbody > tr:nth-child(2) > td:nth-child(3)').contains('Created entity:');
     cy.get('table > tbody > tr:nth-child(2) > td:nth-child(3)').contains('AL Report');
   });
