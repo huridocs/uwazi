@@ -26,6 +26,11 @@ class RawSuggestionValidationError extends Error {
   }
 }
 
+type TitleAsProperty = {
+  name: 'title';
+  type: 'title';
+};
+
 const createAjvValidator = (schema: any) => {
   const ajv = new Ajv({ allErrors: true });
   ajv.addVocabulary(['tsType']);
@@ -43,6 +48,7 @@ const textSelectionValidator = (
 };
 
 const VALIDATORS = {
+  title: textSelectionValidator,
   text: textSelectionValidator,
   numeric: textSelectionValidator,
   date: textSelectionValidator,
@@ -74,6 +80,25 @@ const simpleSuggestion = (
   }),
 });
 
+const textFormatter = (
+  rawSuggestion: RawSuggestion,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  currentSuggestion: IXSuggestionType,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  entity: EntitySchema
+) => {
+  if (!VALIDATORS.text(rawSuggestion)) {
+    throw new Error('Text suggestion is not valid.');
+  }
+
+  const rawText = rawSuggestion.text;
+  const suggestedValue = rawText.trim();
+
+  const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
+
+  return suggestion;
+};
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 const FORMATTERS: Record<
   AllowedPropertyTypes,
@@ -83,22 +108,8 @@ const FORMATTERS: Record<
     entity: EntitySchema
   ) => Partial<IXSuggestionType>
 > = {
-  text: (
-    rawSuggestion: RawSuggestion,
-    currentSuggestion: IXSuggestionType,
-    entity: EntitySchema
-  ) => {
-    if (!VALIDATORS.text(rawSuggestion)) {
-      throw new Error('Text suggestion is not valid.');
-    }
-
-    const rawText = rawSuggestion.text;
-    const suggestedValue = rawText.trim();
-
-    const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
-
-    return suggestion;
-  },
+  title: textFormatter,
+  text: textFormatter,
   numeric: (
     rawSuggestion: RawSuggestion,
     currentSuggestion: IXSuggestionType,
@@ -172,9 +183,11 @@ const FORMATTERS: Record<
 };
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
+type PropertyOrTitle = PropertySchema | TitleAsProperty | undefined;
+
 const formatRawSuggestion = (
   rawSuggestion: RawSuggestion,
-  property: PropertySchema | undefined,
+  property: PropertyOrTitle,
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema
 ) => {
@@ -192,7 +205,7 @@ const readMessageSuccess = (message: InternalIXResultsMessage) =>
       };
 
 const formatSuggestion = async (
-  property: PropertySchema | undefined,
+  property: PropertyOrTitle,
   rawSuggestion: RawSuggestion,
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema,

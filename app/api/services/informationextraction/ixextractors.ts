@@ -10,9 +10,10 @@ import {
 } from 'api/suggestions/blankSuggestions';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
-type AllowedPropertyTypes = 'text' | 'numeric' | 'date' | 'select' | 'multiselect';
+type AllowedPropertyTypes = 'title' | 'text' | 'numeric' | 'date' | 'select' | 'multiselect';
 
 const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
+  'title',
   'text',
   'numeric',
   'date',

@@ -27,6 +27,7 @@ const properties: Record<string, PropertySchema> = {
 };
 
 const entities: Record<string, EntitySchema> = {
+  title: fixtureFactory.entity('entity_id', 'entity_template', {}),
   text: fixtureFactory.entity('entity_id', 'entity_template', {
     text_property: [{ value: 'previous_value' }],
   }),
@@ -71,6 +72,11 @@ const currentSuggestionBase = {
 };
 
 const currentSuggestions: Record<string, IXSuggestionType> = {
+  title: {
+    ...currentSuggestionBase,
+    propertyName: 'title',
+    suggestedValue: 'previous_value',
+  },
   text: {
     ...currentSuggestionBase,
     propertyName: 'text_property',
@@ -109,6 +115,19 @@ const suggestedDateTimeStamp = 1717743209000;
 const suggestedDateText = new Date(suggestedDateTimeStamp).toISOString();
 
 const validRawSuggestions = {
+  title: {
+    ...rawSuggestionBase,
+    text: 'recommended_value',
+    segments_boxes: [
+      {
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+        page_number: 1,
+      },
+    ],
+  },
   text: {
     ...rawSuggestionBase,
     text: 'recommended_value',
@@ -353,6 +372,28 @@ describe('formatSuggestion', () => {
   });
 
   it.each([
+    {
+      case: 'valid title suggestions',
+      property: { name: 'title' as 'title', type: 'title' as 'title' },
+      rawSuggestion: validRawSuggestions.title,
+      currentSuggestion: currentSuggestions.title,
+      entity: entities.title,
+      expectedResult: {
+        ...currentSuggestions.title,
+        date: expect.any(Number),
+        suggestedValue: 'recommended_value',
+        segment: 'new context',
+        selectionRectangles: [
+          {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            page: '1',
+          },
+        ],
+      },
+    },
     {
       case: 'valid text suggestions',
       property: properties.text,
