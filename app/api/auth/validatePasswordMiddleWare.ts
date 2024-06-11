@@ -1,27 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
+import { User } from 'api/users/usersModel';
 import usersModel from '../users/users';
 import { comparePasswords } from './encryptPassword';
 
-const validatePassword = async (submmitedPassword: string, currentPassword: string) =>
-  comparePasswords(submmitedPassword, currentPassword);
+const validatePassword = async (submmitedPassword: string, requestUser: User) => {
+  const user = await usersModel.getById(requestUser._id, '+password');
+  const currentPassword = user.password;
+  return comparePasswords(submmitedPassword, currentPassword);
+};
 
-// eslint-disable-next-line max-statements
 const validatePasswordMiddleWare = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user) {
-    res.status(403);
-    return res.json({ error: 'User error', message: 'Forbidden' });
-  }
+  const { user, headers } = req;
+  const submmitedPassword = headers?.authorization?.split('Basic ')[1];
 
-  const authorization = req.headers?.authorization || '';
-  const { user } = req;
+  if (submmitedPassword) {
+    const validPassword = await validatePassword(submmitedPassword, user);
 
-  const currentPassword = (await usersModel.getById(user._id, '+password')).password;
-  const submmitedPassword = authorization?.split('Basic ')[1] || '';
-
-  const validPassword = await validatePassword(submmitedPassword, currentPassword);
-
-  if (validPassword) {
-    return next();
+    if (validPassword) {
+      return next();
+    }
   }
 
   res.status(403);
