@@ -14,6 +14,11 @@ describe('Activity log', () => {
     cy.clearAndType('input[name=email]', 'editor@uwazi.com', { delay: 0 });
     cy.contains('button', 'Update').click();
 
+    cy.get('[data-testid="modal"]').within(() => {
+      cy.get('input').type('editor');
+      cy.contains('button', 'Accept').click();
+    });
+
     clearCookiesAndLogin();
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Activity log').click();
