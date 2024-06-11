@@ -72,7 +72,7 @@ const getFieldError = (field: 'username' | 'password' | 'email', type?: string) 
       case 'format':
       case 'required':
         return 'A valid email is required';
-      case 'validate':
+      case 'isUnique':
         return 'Duplicated email';
       default:
         break;
@@ -114,7 +114,6 @@ const UserFormSidepanel = ({
   const {
     register,
     handleSubmit,
-    reset,
     trigger,
     formState: { errors },
     setValue,
