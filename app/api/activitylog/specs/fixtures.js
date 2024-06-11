@@ -9,14 +9,6 @@ export default {
       username: 'admin',
     },
     {
-      method: 'POST',
-      url: '/api/entities',
-      query: '{}',
-      body: '{"entity": { "title":"Hello"}}',
-      time: 1200002400000,
-      username: 'admin',
-    },
-    {
       method: 'PUT',
       url: '/api/entities',
       query: '{"name": "Hello"}',
@@ -45,13 +37,6 @@ export default {
       url: '/api/entities',
       query: '{"sharedId":"123"}',
       body: '{"_id":"456","title":"Entity 1"}',
-      time: 1500008400000,
-    },
-    {
-      method: 'POST',
-      url: '/api/entities',
-      query: '{"sharedId":"123"}',
-      body: '{"entity": {"_id":"456","title":"Entity 1"}}',
       time: 1500008400000,
     },
   ],

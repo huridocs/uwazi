@@ -68,7 +68,7 @@ describe('activitylog', () => {
 
       it('should filter by time', async () => {
         let { rows: entries } = await activitylog.get({
-          time: { from: 1200002400, to: 1300003200 },
+          time: { from: 1200002400000, to: 1300003200000 },
         });
         expect(entries.length).toBe(2);
         expect(entries[0].time).toBe(1300003200000);

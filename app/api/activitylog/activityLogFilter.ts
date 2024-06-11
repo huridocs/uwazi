@@ -46,9 +46,9 @@ const bodyCondition = (methods: string[]) => {
         break;
       case 'UPDATE':
         orContent.push(andCondition('POST', '^({"_id").*'));
-        orContent.push(andCondition('POST', '^(?!{"entity":"{\\\\"_id).*'));
+        orContent.push(andCondition('POST', '^({"entity":"{\\\\"_id).*'));
         orContent.push(andCondition('PUT', '^({"_id").*'));
-        orContent.push(andCondition('PUT', '^(?!{"entity":"{\\\\"_id).*'));
+        orContent.push(andCondition('PUT', '^({"entity":"{\\\\"_id).*'));
         break;
       case 'DELETE':
         orContent.push(andCondition('DELETE', '^({"_id").*'));

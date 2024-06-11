@@ -21,41 +21,188 @@ describe('activityLogFilter', () => {
   });
 
   describe('bodyCondition', () => {
-    it.each([
-      {
-        methods: ['UPDATE'],
-        condition: [
-          { $and: [{ method: 'POST' }, { body: { $regex: '^({"_id").*' } }] },
-          { $and: [{ method: 'PUT' }, { body: { $regex: '^({"_id").*' } }] },
-        ],
-      },
-      {
-        methods: ['CREATE'],
-        condition: [{ $and: [{ method: 'POST' }, { body: { $regex: '^(?!{"_id").*' } }] }],
-      },
-      {
-        methods: ['DELETE'],
-        condition: [{ $and: [{ method: 'DELETE' }, { body: { $regex: '^({"_id").*' } }] }],
-      },
-      {
-        methods: ['MIGRATE'],
-        condition: [{ method: 'MIGRATE' }],
-      },
-      {
-        methods: ['MIGRATE', 'DELETE', 'POST'],
-        condition: [
-          { method: 'MIGRATE' },
-          { $and: [{ method: 'DELETE' }, { body: { $regex: '^({"_id").*' } }] },
-          { method: 'POST' },
-        ],
-      },
-    ])(
-      'should check the presence/absence of _id in body for each method',
-      ({ methods, condition }) => {
-        const result = bodyCondition(methods);
-        expect(result).toEqual(condition);
-      }
-    );
+    it('should check for no _id when searching by CREATE', () => {
+      const result = bodyCondition(['CREATE']);
+      expect(result).toEqual([
+        {
+          $and: [
+            {
+              $and: [
+                {
+                  method: 'POST',
+                },
+                {
+                  body: {
+                    $regex: '^(?!{"_id").*',
+                  },
+                },
+              ],
+            },
+            {
+              $and: [
+                {
+                  method: 'POST',
+                },
+                {
+                  body: {
+                    $regex: '^(?!{"entity":"{\\\\"_id).*',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    });
+    it('should check for _id when searching by UPDATE', () => {
+      const result = bodyCondition(['UPDATE']);
+      expect(result).toEqual([
+        {
+          $and: [
+            {
+              method: 'POST',
+            },
+            {
+              body: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'POST',
+            },
+            {
+              body: {
+                $regex: '^({"entity":"{\\\\"_id).*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'PUT',
+            },
+            {
+              body: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'PUT',
+            },
+            {
+              body: {
+                $regex: '^({"entity":"{\\\\"_id).*',
+              },
+            },
+          ],
+        },
+      ]);
+    });
+    it('should check for _id in query when searching by DELETE', () => {
+      const result = bodyCondition(['DELETE']);
+      expect(result).toEqual([
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              body: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              query: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              query: {
+                $regex: '^({"sharedId").*',
+              },
+            },
+          ],
+        },
+      ]);
+    });
+    it('should only check for method MIGRATE', () => {
+      const result = bodyCondition(['MIGRATE']);
+      expect(result).toEqual([
+        {
+          method: 'MIGRATE',
+        },
+      ]);
+    });
+    it('should combine conditions for several methods', () => {
+      const result = bodyCondition(['MIGRATE', 'DELETE', 'POST']);
+      expect(result).toEqual([
+        {
+          method: 'MIGRATE',
+        },
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              body: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              query: {
+                $regex: '^({"_id").*',
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              method: 'DELETE',
+            },
+            {
+              query: {
+                $regex: '^({"sharedId").*',
+              },
+            },
+          ],
+        },
+        {
+          method: 'POST',
+        },
+      ]);
+    });
   });
 
   describe('ActivityLogFilter', () => {
