@@ -62,7 +62,6 @@ const GroupFormSidepanel = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
   } = useForm({
     defaultValues,
     values: defaultValues,
