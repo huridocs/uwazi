@@ -81,7 +81,7 @@ export const syncWorker = {
 
     const syncConfig = await createSyncConfig(config, config.name, this.UPDATE_LOG_TARGET_COUNT);
 
-    const lastChanges = await await syncConfig.lastChanges();
+    const lastChanges = await syncConfig.lastChanges();
 
     if (lastChanges.length) {
       const cookie = await this.login(config);
