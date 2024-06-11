@@ -112,12 +112,8 @@ const Users = () => {
                 <Button
                   styling="light"
                   onClick={() => {
-                    setConfirmationModalProps({
-                      header: 'Reset passwords',
-                      body: 'Do you want reset the password for the following users?',
-                    });
                     setBulkActionIntent('bulk-reset-password');
-                    setShowConfirmationModal(true);
+                    handleBulkAction();
                   }}
                 >
                   <Translate>Reset Password</Translate>
