@@ -283,7 +283,7 @@ editor,Editor
 Editors,Editors
 Email,Correo electrónico
 Email address,Dirección de correo electrónico
-Email is required,La dirección de correo electrónico es obligatorio
+A valid email is required,La dirección de correo electrónico es obligatorio
 Email updated,Correo electrónico actualizado
 Empty,Vacío
 empty property tip,No podrás guardar una entidad si esta propiedad está vacía.
