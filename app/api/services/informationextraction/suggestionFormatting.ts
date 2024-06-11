@@ -47,13 +47,22 @@ const textSelectionValidator = (
   return true;
 };
 
+const valuesSelectionValidator = (
+  suggestion: RawSuggestion
+): suggestion is ValuesSelectionSuggestion => {
+  valuesSelectionAjv(suggestion);
+  return true;
+};
+
 const VALIDATORS = {
   title: textSelectionValidator,
   text: textSelectionValidator,
   numeric: textSelectionValidator,
   date: textSelectionValidator,
   select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
-    valuesSelectionAjv(suggestion);
+    if (!valuesSelectionValidator(suggestion)) {
+      throw new RawSuggestionValidationError('Select suggestion is not valid.');
+    }
 
     if (!('values' in suggestion) || suggestion.values.length > 1) {
       throw new RawSuggestionValidationError('Select suggestions must have one or zero values.');
@@ -61,10 +70,7 @@ const VALIDATORS = {
 
     return true;
   },
-  multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
-    valuesSelectionAjv(suggestion);
-    return true;
-  },
+  multiselect: valuesSelectionValidator,
 };
 
 const simpleSuggestion = (
