@@ -26,7 +26,7 @@ class InvalidSyncConfig extends Error {
   }
 }
 
-export interface SyncConfig {
+interface SyncConfig {
   url: string;
   active?: boolean;
   username: string;
@@ -71,39 +71,42 @@ export const syncWorker = {
       await previousSync;
       const syncConfig = validateConfig(config);
       if (syncConfig.active) {
-        const cookie = await this.login(syncConfig);
-        await this.syncronizeConfig(syncConfig, cookie);
+        await this.syncronizeConfig(syncConfig);
       }
     }, Promise.resolve());
   },
 
-  async syncronizeConfig(config: SyncConfig, cookie: string) {
+  async syncronizeConfig(config: SyncConfig) {
     await createSyncIfNotExists(config);
 
     const syncConfig = await createSyncConfig(config, config.name, this.UPDATE_LOG_TARGET_COUNT);
 
-    await (
-      await syncConfig.lastChanges()
-    ).reduce(async (previousChange, change) => {
-      await previousChange;
-      const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
-      if (shouldSync.skip) {
-        await synchronizer.syncDelete(change, config.url, cookie);
-      }
+    const lastChanges = await await syncConfig.lastChanges();
 
-      if (shouldSync.data) {
-        await synchronizer.syncData(
-          {
-            url: config.url,
-            change,
-            data: shouldSync.data,
-            cookie,
-          },
-          'post'
-        );
-      }
-      await updateSyncs(config.name, change.namespace, change.timestamp);
-    }, Promise.resolve());
+    if (lastChanges.length) {
+      const cookie = await this.login(config);
+
+      await lastChanges.reduce(async (previousChange, change) => {
+        await previousChange;
+        const shouldSync: { skip?: boolean; data?: any } = await syncConfig.shouldSync(change);
+        if (shouldSync.skip) {
+          await synchronizer.syncDelete(change, config.url, cookie);
+        }
+
+        if (shouldSync.data) {
+          await synchronizer.syncData(
+            {
+              url: config.url,
+              change,
+              data: shouldSync.data,
+              cookie,
+            },
+            'post'
+          );
+        }
+        await updateSyncs(config.name, change.namespace, change.timestamp);
+      }, Promise.resolve());
+    }
   },
 
   async login({ url, username, password }: SyncConfig) {
@@ -112,3 +115,5 @@ export const syncWorker = {
     return response.cookie || '';
   },
 };
+
+export type { SyncConfig };
