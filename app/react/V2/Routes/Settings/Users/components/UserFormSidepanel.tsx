@@ -101,13 +101,15 @@ const UserFormSidepanel = ({
   const actionType = useRef<SubmitType>();
   const formSubmitRef = useRef<HTMLButtonElement>(null);
 
-  const defaultValues = {
-    username: '',
-    email: '',
-    password: '',
-    role: 'collaborator',
-    groups: [],
-  } as ClientUserSchema;
+  const defaultValues =
+    selectedUser ||
+    ({
+      username: '',
+      email: '',
+      password: '',
+      role: 'collaborator',
+      groups: [],
+    } as ClientUserSchema);
 
   const {
     register,
@@ -118,11 +120,10 @@ const UserFormSidepanel = ({
     setValue,
   } = useForm({
     defaultValues,
-    values: selectedUser,
+    values: defaultValues,
   });
 
   const closeSidepanel = () => {
-    reset(defaultValues);
     setSelected(undefined);
     setShowSidepanel(false);
   };
@@ -138,8 +139,7 @@ const UserFormSidepanel = ({
     formData.set('data', JSON.stringify(data));
     formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-    setShowSidepanel(false);
-    reset(defaultValues);
+    closeSidepanel();
   };
 
   const onClickSubmit = () => {
@@ -148,9 +148,7 @@ const UserFormSidepanel = ({
     formData.set('data', JSON.stringify(selectedUser));
     formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-
-    setShowSidepanel(false);
-    reset(defaultValues);
+    closeSidepanel();
   };
 
   return (

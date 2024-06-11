@@ -55,7 +55,7 @@ const GroupFormSidepanel = ({
 }: GroupFormSidepanelProps) => {
   const fetcher = useFetcher();
 
-  const defaultValues = { name: '', members: [] } as UserGroupSchema;
+  const defaultValues = selectedGroup || ({ name: '', members: [] } as UserGroupSchema);
 
   const {
     register,
@@ -65,11 +65,10 @@ const GroupFormSidepanel = ({
     reset,
   } = useForm({
     defaultValues,
-    values: selectedGroup,
+    values: defaultValues,
   });
 
   const closeSidepanel = () => {
-    reset(defaultValues);
     setSelected(undefined);
     setShowSidepanel(false);
   };
@@ -89,8 +88,7 @@ const GroupFormSidepanel = ({
 
     formData.set('data', JSON.stringify(formattedData));
     fetcher.submit(formData, { method: 'post' });
-    setShowSidepanel(false);
-    reset(defaultValues);
+    closeSidepanel();
   };
 
   return (
@@ -121,7 +119,7 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
+            <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
