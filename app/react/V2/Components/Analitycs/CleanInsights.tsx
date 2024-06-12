@@ -1,8 +1,8 @@
 import { CleanInsights } from 'clean-insights-sdk';
 
 const ci = new CleanInsights({
-    "server": "http://example.com/ci/cleaninsights.php",
-    "siteId": 1,
+    "server": "http://metrics.cleaninsights.org/cleaninsights.php",
+    "siteId": 35,
     "campaigns": {
         "daily_active_users": {
             "start": "2024-01-01T00:00:00-00:00",
@@ -14,7 +14,7 @@ const ci = new CleanInsights({
         "weekly_active_users": {
             "start": "2024-01-01T00:00:00-00:00",
             "end": "2024-12-31T23:59:59-00:00",
-            "aggregationPeriodLength": 1,
+            "aggregationPeriodLength": 7,
             "numberOfPeriods": 53,
             "onlyRecordOnce" : true
         },
@@ -42,4 +42,4 @@ ci.persist()
 
 
 
-export { ci, measureActiveUser };
+export { ci };

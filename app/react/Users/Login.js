@@ -53,8 +53,6 @@ class LoginComponent extends RouteHandler {
 
   resolveSuccessfulLogin() {
     if (this.props.private) {
-      console.log(ci);
-    
       reloadHome();
       return;
     }
