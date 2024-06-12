@@ -42,8 +42,20 @@ const fixtures: DBFixture = {
     factory.ixExtractor('extractorWithMultiselectWithoutTrainingData', 'property_multiselect', [
       'templateToSegmentE',
     ]),
+    factory.ixExtractor('extractorWithRelationship', 'property_relationship', [
+      'templateToSegmentF',
+    ]),
+    factory.ixExtractor('extractorWithEmptyRelationship', 'property_empty_relationship', [
+      'templateToSegmentF',
+    ]),
+    factory.ixExtractor('extractorWithRelationshipToAny', 'property_relationship_to_any', [
+      'templateToSegmentF',
+    ]),
   ],
   entities: [
+    factory.entity('P1', 'relationshipPartnerTemplate'),
+    factory.entity('P2', 'relationshipPartnerTemplate'),
+    factory.entity('P3', 'relationshipPartnerTemplate'),
     factory.entity(
       'A1',
       'templateToSegmentA',
@@ -101,6 +113,22 @@ const fixtures: DBFixture = {
     factory.entity('A20', 'templateToSegmentE', {
       property_multiselect: [],
     }),
+    factory.entity('A21', 'templateToSegmentF', {
+      property_relationship: [{ value: 'P1', label: 'P1' }],
+      property_empty_relationship: [],
+      property_relationship_to_any: [{ value: 'P1', label: 'P1' }],
+    }),
+    factory.entity('A22', 'templateToSegmentF', {
+      property_relationship: [
+        { value: 'P1', label: 'P1' },
+        { value: 'P2', label: 'P2' },
+      ],
+      property_empty_relationship: [],
+      property_relationship_to_any: [
+        { value: 'P1', label: 'P1' },
+        { value: 'A1', label: 'A1' },
+      ],
+    }),
   ],
   files: [
     factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
@@ -154,6 +182,8 @@ const fixtures: DBFixture = {
     factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
     factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
     factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
+    factory.file('F21', 'A21', 'document', fixturesPdfNameG, 'eng'),
+    factory.file('F22', 'A22', 'document', fixturesPdfNameI, 'eng'),
   ],
   segmentations: [
     {
@@ -288,6 +318,56 @@ const fixtures: DBFixture = {
         page_height: 13,
         page_width: 13,
         paragraphs: [],
+      },
+    },
+    {
+      _id: factory.id('S11'),
+      filename: fixturesPdfNameG,
+      xmlname: 'documentG.xml',
+      fileID: factory.id('F21'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P1',
+          },
+        ],
+      },
+    },
+    {
+      _id: factory.id('S12'),
+      filename: fixturesPdfNameI,
+      xmlname: 'documentI.xml',
+      fileID: factory.id('F22'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P1',
+          },
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P2',
+          },
+        ],
       },
     },
   ],
@@ -555,8 +635,32 @@ const fixtures: DBFixture = {
       status: 'ready',
       findingSuggestions: false,
     },
+    {
+      extractorId: factory.id('extractorWithRelationship'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractorWithEmptyRelationship'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+    {
+      extractorId: factory.id('extractorWithRelationshipToAny'),
+      creationDate: 200,
+      status: 'ready',
+      findingSuggestions: true,
+    },
+  ],
+  relationtypes: [
+    factory.relationType('related'),
+    factory.relationType('emptyRelated'),
+    factory.relationType('relatedToAny'),
   ],
   templates: [
+    factory.template('relationshipPartnerTemplate'),
     factory.template('templateToSegmentA', [
       factory.property('property1', 'text'),
       factory.property('property2', 'date'),
@@ -575,6 +679,20 @@ const fixtures: DBFixture = {
     factory.template('templateToSegmentE', [
       factory.property('property_multiselect', 'multiselect', {
         content: factory.id('thesauri1').toString(),
+      }),
+    ]),
+    factory.template('templateToSegmentF', [
+      factory.property('property_relationship', 'relationship', {
+        content: factory.idString('relationshipPartnerTemplate'),
+        relationType: factory.idString('related'),
+      }),
+      factory.property('property_empty_relationship', 'relationship', {
+        content: factory.idString('relationshipPartnerTemplate'),
+        relationType: factory.idString('emptyRelated'),
+      }),
+      factory.property('property_relationship_to_any', 'relationship', {
+        content: '',
+        relationType: factory.idString('relatedToAny'),
       }),
     ]),
   ],

@@ -45,8 +45,15 @@ type FileEnforcedNotUndefined = {
 };
 
 const selectProperties: Set<string> = new Set([propertyTypes.select, propertyTypes.multiselect]);
+const propertiesWithoutExtractedMetadata: Set<string> = new Set([
+  ...Array.from(selectProperties),
+  propertyTypes.relationship,
+]);
 
 const propertyTypeIsSelectOrMultiSelect = (type: string) => selectProperties.has(type);
+
+const propertyTypeIsWithoutExtractedMetadata = (type: string) =>
+  propertiesWithoutExtractedMetadata.has(type);
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
@@ -98,7 +105,7 @@ async function fileQuery(
   propertyType: string,
   entitiesFromTrainingTemplatesIds: string[]
 ) {
-  const needsExtractedMetadata = !propertyTypeIsSelectOrMultiSelect(propertyType);
+  const needsExtractedMetadata = !propertyTypeIsWithoutExtractedMetadata(propertyType);
   const query: {
     type: string;
     filename: { $exists: Boolean };
@@ -162,7 +169,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
       return { ...file, propertyType };
     }
 
-    if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
+    if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
       const propertyValue = (entity.metadata[property] || []).map(({ value, label }) => ({
         value: ensure<string>(value),
         label: ensure<string>(label),
@@ -223,5 +230,6 @@ export {
   getFilesForSuggestions,
   getSegmentedFilesIds,
   propertyTypeIsSelectOrMultiSelect,
+  propertyTypeIsWithoutExtractedMetadata,
 };
 export type { FileWithAggregation };

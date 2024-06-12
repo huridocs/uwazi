@@ -188,6 +188,25 @@ describe('InformationExtraction', () => {
       );
     });
 
+    it('should send xmls (relationship)', async () => {
+      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+
+      const xmlG = await readDocument('G');
+      const xmlI = await readDocument('I');
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_train/tenant1/${factory.id('extractorWithRelationship')}`,
+        id: factory.id('extractorWithRelationship').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.files.length).toBe(2);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlI]));
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentG.xml', 'documentI.xml'].sort()
+      );
+    });
+
     it('should send labeled data', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
@@ -244,6 +263,48 @@ describe('InformationExtraction', () => {
       });
     });
 
+    it('should send labeled data (relationship)', async () => {
+      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+
+      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentI.xml')).toEqual({
+        xml_file_name: 'documentI.xml',
+        id: factory.id('extractorWithRelationship').toString(),
+        tenant: 'tenant1',
+        xml_segments_boxes: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P1',
+          },
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P2',
+          },
+        ],
+        page_width: 13,
+        page_height: 13,
+        language_iso: 'en',
+        values: [
+          {
+            id: 'P1',
+            label: 'P1',
+          },
+          {
+            id: 'P2',
+            label: 'P2',
+          },
+        ],
+      });
+    });
+
     it('should sanitize dates before sending', async () => {
       await informationExtraction.trainModel(factory.id('prop2extractor'));
 
@@ -269,6 +330,7 @@ describe('InformationExtraction', () => {
       });
     });
 
+    // TODO:
     it('should start the task to train the model', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
@@ -304,6 +366,7 @@ describe('InformationExtraction', () => {
       });
     });
 
+    //TODO:
     it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
       const expectedError = { status: 'error', message: 'No labeled data' };
       const result = await informationExtraction.trainModel(factory.id('prop3extractor'));

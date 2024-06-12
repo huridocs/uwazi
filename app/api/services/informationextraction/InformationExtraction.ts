@@ -30,6 +30,7 @@ import {
   getFilesForTraining,
   getFilesForSuggestions,
   propertyTypeIsSelectOrMultiSelect,
+  propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
@@ -142,9 +143,9 @@ class InformationExtraction {
 
     let data: MaterialsData = { ..._data, language_iso };
 
-    const isSelect = propertyTypeIsSelectOrMultiSelect(propertyType);
+    const noExtractedData = propertyTypeIsSelectOrMultiSelect(propertyType);
 
-    if (!isSelect && propertyLabeledData) {
+    if (!noExtractedData && propertyLabeledData) {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
@@ -155,7 +156,7 @@ class InformationExtraction {
       };
     }
 
-    if (isSelect) {
+    if (noExtractedData) {
       if (!Array.isArray(propertyValue)) {
         throw new Error('Property value should be an array');
       }
@@ -184,7 +185,7 @@ class InformationExtraction {
         );
         const { propertyValue, propertyType } = file;
 
-        const missingData = propertyTypeIsSelectOrMultiSelect(propertyType)
+        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
           ? !propertyValue
           : type === 'labeled_data' && !propertyLabeledData;
 
