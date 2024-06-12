@@ -37,7 +37,7 @@ const ActivityLog = () => {
   const appliedFilters = getAppliedFilters(searchParams);
 
   const appliedFiltersCount = Object.keys(appliedFilters).filter(key =>
-    ['method', 'username', 'search', 'from', 'to'].includes(key)
+    ['method', 'username', 'search', 'dateRange'].includes(key)
   ).length;
 
   const { activityLogData, totalPages, total, error } = useLoaderData() as LoaderData;

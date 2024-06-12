@@ -1,10 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { isEqual } from 'lodash';
+import { Controller, useForm } from 'react-hook-form';
 import { Sidepanel, Button } from 'app/V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { InputField, DateRangePicker, MultiSelect } from 'app/V2/Components/Forms';
-import { useForm } from 'react-hook-form';
 import { useAtomValue } from 'jotai';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom, translationsAtom } from 'app/V2/atoms';
@@ -13,7 +12,10 @@ interface ActivityLogSearch {
   username: string;
   search: string;
   page: number;
-  from: string;
+  dateRange: {
+    from: string;
+    to: string;
+  };
   to: string;
   sort: string;
   order: string;
@@ -43,7 +45,9 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
 
   const {
     register,
+    control,
     setValue,
+    getValues,
     handleSubmit,
     reset,
     formState: { errors },
@@ -107,36 +111,44 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
                 hasErrors={!!errors.search}
                 onBlur={() => {}}
               />
-              <DateRangePicker
-                key="activity-log-range"
-                label={<Translate key="property daterange" />}
-                language={locale}
-                className="pt-4 -top-4"
-                register={register}
-                placeholderStart={t('System', 'From', null, false)}
-                placeholderEnd={t('System', 'To', null, false)}
-                labelToday={t('System', 'Today', null, false)}
-                hasErrors={!!errors.from || !!errors.to}
-                labelClear={t('System', 'Clear', null, false)}
-                onFromDateSelected={e => {
-                  const fromChanged = !isEqual(e.target.value, currentFilters.from || '');
-                  if (fromChanged) {
-                    setValue('from', e.target.value);
-                  }
-                }}
-                onToDateSelected={e => {
-                  const toChanged = !isEqual(e.target.value, currentFilters.to || '');
-                  if (toChanged) {
-                    setValue('to', e.target.value);
-                  }
-                }}
-                dateFormat={dateFormat}
-                from={currentFilters.from}
-                to={currentFilters.to}
-                onClear={(field: 'from' | 'to') => {
-                  setValue(field, '');
-                  setCurrentFilters({ ...currentFilters, [field]: '' });
-                }}
+              <Controller
+                control={control}
+                name="dateRange"
+                render={({ field: { value }, fieldState }) => (
+                  <DateRangePicker
+                    key="activity-log-range"
+                    label={<Translate key="property daterange">Date range</Translate>}
+                    language={locale}
+                    className="pt-4 -top-4"
+                    placeholderStart={t('System', 'From', null, false)}
+                    placeholderEnd={t('System', 'To', null, false)}
+                    labelToday={t('System', 'Today', null, false)}
+                    hasErrors={fieldState.error !== undefined}
+                    labelClear={t('System', 'Clear', null, false)}
+                    from={value?.from || ''}
+                    to={value?.to || ''}
+                    onFromDateSelected={e => {
+                      setValue('dateRange.from', e.target.value);
+                      if (!getValues('dateRange.to')) {
+                        setValue('dateRange.to', e.target.value);
+                      }
+                    }}
+                    onToDateSelected={e => {
+                      setValue('dateRange.to', e.target.value);
+                      if (!getValues('dateRange.from')) {
+                        setValue('dateRange.from', e.target.value);
+                      }
+                    }}
+                    dateFormat={dateFormat}
+                    onClear={(field: 'from' | 'to') => {
+                      setValue(`dateRange.${field}`, '');
+                      setCurrentFilters({
+                        ...currentFilters,
+                        dateRange: { ...currentFilters.dateRange, [field]: '' },
+                      });
+                    }}
+                  />
+                )}
               />
             </div>
           </div>
@@ -148,8 +160,13 @@ const FiltersSidePanel = ({ isOpen, onClose, onSubmit, appliedFilters }: Filters
               type="button"
               styling="outline"
               onClick={() => {
-                setCurrentFilters({ ...currentFilters, from: '', to: '', method: [] });
-                reset({ username: '', method: [], search: '', from: '', to: '' });
+                setCurrentFilters({
+                  ...currentFilters,
+                  dateRange: { from: '', to: '' },
+                  to: '',
+                  method: [],
+                });
+                reset({ username: '', method: [], search: '', dateRange: { from: '', to: '' } });
               }}
             >
               <Translate>Clear all</Translate>

@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { LoaderFunction, SetURLSearchParams, createSearchParams } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import _, { isArray, isEqual } from 'lodash';
+import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';
+import { ClientSettings } from 'app/apiResponseTypes';
 import * as activityLogAPI from 'V2/api/activityLog';
 import type { ActivityLogResponse } from 'V2/api/activityLog';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
-import { ClientSettings } from 'app/apiResponseTypes';
 
 const ITEMS_PER_PAGE = 100;
 
@@ -80,7 +80,8 @@ const getAppliedFilters = (searchParams: URLSearchParams) => {
     appliedFilters.method && !isArray(appliedFilters.method)
       ? { ...appliedFilters, method: [appliedFilters.method] }
       : appliedFilters;
-  return appliedFilters;
+  const { from, to, ...rest } = appliedFilters;
+  return { ...rest, ...((from || to) && { dateRange: { from, to } }) };
 };
 
 const activityLogLoader =
@@ -115,13 +116,15 @@ const activityLogLoader =
   };
 
 interface ActivityLogSearch {
-  username: string;
-  search: string;
-  page: number;
-  from: string;
-  to: string;
-  sort: string;
-  order: string;
+  username?: string;
+  search?: string;
+  page?: number;
+  dateRange?: {
+    from?: string;
+    to?: string;
+  };
+  sort?: string;
+  order?: string;
 }
 
 const changedParams = (filterPairs: [string, any][]) => {
@@ -141,17 +144,30 @@ const setSearchValue = (prev: URLSearchParams, key: string, value: any) => {
   }
 };
 
+const filterPairs = (filters: ActivityLogSearch) => {
+  _.flatMap(filters);
+  const pairs = _(filters).toPairs().sortBy(0).value();
+  const plainFilters: [string, string][] = [];
+  pairs.forEach(([key, value]) => {
+    if (!isObject(value)) {
+      plainFilters.push([key, value]);
+    } else {
+      plainFilters.push(..._(value).toPairs().value());
+    }
+  });
+  return _(plainFilters).sortBy(0).value();
+};
 const updateSearch = (
-  filters: any,
+  filters: ActivityLogSearch,
   searchParams: URLSearchParams,
   setSearchParams: SetURLSearchParams
 ) => {
-  const filterPairs = _(filters).toPairs().sortBy(0).value();
-  const changedPairs = changedParams(filterPairs);
+  const plainFilters = filterPairs(filters);
+  const changedPairs = changedParams(plainFilters);
   if (!isEqual(changedPairs, Array.from(searchParams))) {
     setSearchParams((prev: URLSearchParams) => {
       prev.delete('page');
-      filterPairs.forEach(([key, value]) => {
+      plainFilters.forEach(([key, value]) => {
         if (
           value !== undefined &&
           ((isArray(value) && value.length > 0) || (!isArray(value) && value !== ''))
