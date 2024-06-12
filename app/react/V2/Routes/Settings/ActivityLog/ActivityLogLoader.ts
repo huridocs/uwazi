@@ -149,7 +149,7 @@ const filterPairs = (filters: ActivityLogSearch) => {
   const pairs = _(filters).toPairs().sortBy(0).value();
   const plainFilters: [string, string][] = [];
   pairs.forEach(([key, value]) => {
-    if (!isObject(value)) {
+    if (isArray(value) || !isObject(value)) {
       plainFilters.push([key, value]);
     } else {
       plainFilters.push(..._(value).toPairs().value());
