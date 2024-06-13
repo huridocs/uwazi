@@ -390,11 +390,10 @@ describe('InformationExtraction', () => {
       });
     });
 
-    //TODO:
     it('should return error status and stop finding suggestions, when there is no labaled data', async () => {
       const expectedError = { status: 'error', message: 'No labeled data' };
-      const result = await informationExtraction.trainModel(factory.id('prop3extractor'));
 
+      const result = await informationExtraction.trainModel(factory.id('prop3extractor'));
       expect(result).toMatchObject(expectedError);
       const [model] = await IXModelsModel.get({ extractorId: factory.id('prop3extractor') });
       expect(model.findingSuggestions).toBe(false);
@@ -407,6 +406,15 @@ describe('InformationExtraction', () => {
         extractorId: factory.id('extractorWithMultiselectWithoutTrainingData'),
       });
       expect(multiSelectModel.findingSuggestions).toBe(false);
+
+      const relationshipResult = await informationExtraction.trainModel(
+        factory.id('extractorWithEmptyRelationship')
+      );
+      expect(relationshipResult).toMatchObject(expectedError);
+      const [relationshipModel] = await IXModelsModel.get({
+        extractorId: factory.id('extractorWithEmptyRelationship'),
+      });
+      expect(relationshipModel.findingSuggestions).toBe(false);
     });
   });
 

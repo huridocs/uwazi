@@ -132,7 +132,7 @@ function entityForTrainingQuery(
   const query: {
     [key: string]: { $in?: ObjectIdSchema[]; $exists?: Boolean; $ne?: any[] };
   } = { template: { $in: templates } };
-  if (propertyTypeIsSelectOrMultiSelect(propertyType)) {
+  if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
     query[`metadata.${property}`] = { $exists: true, $ne: [] };
   }
   return query;
@@ -170,7 +170,7 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     }
 
     if (propertyTypeIsWithoutExtractedMetadata(propertyType)) {
-      const propertyValue = (entity.metadata[property] || []).map(({ value, label }) => ({
+      const propertyValue = (entity.metadata?.[property] || []).map(({ value, label }) => ({
         value: ensure<string>(value),
         label: ensure<string>(label),
       }));
