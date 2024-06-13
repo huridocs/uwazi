@@ -174,6 +174,8 @@ async function getFilesForTraining(templates: ObjectIdSchema[], property: string
     let stringValue: string;
     if (propertyType === propertyTypes.date) {
       stringValue = moment(<number>value * 1000).format('YYYY-MM-DD');
+    } else if (propertyType === propertyTypes.numeric) {
+      stringValue = value?.toString() || '';
     } else {
       stringValue = <string>value;
     }
