@@ -1,73 +1,157 @@
-import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
+import Ajv from 'ajv';
+
+import date from 'api/utils/date';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { IXSuggestionType } from 'shared/types/suggestionType';
+import {
+  CommonSuggestion,
+  IXSuggestionType,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+} from 'shared/types/suggestionType';
+import {
+  TextSelectionSuggestionSchema,
+  ValuesSelectionSuggestionSchema,
+} from 'shared/types/suggestionSchema';
+import { syncWrapValidator } from 'shared/tsUtils';
 import { InternalIXResultsMessage } from './InformationExtraction';
-
-interface CommonSuggestion {
-  tenant: string;
-  id: string;
-  xml_file_name: string;
-}
-
-interface TextSelectionSuggestion extends CommonSuggestion {
-  text: string;
-  segment_text: string;
-  segments_boxes: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    page_number: number;
-  }[];
-}
-
-interface ValuesSelectionSuggestion extends CommonSuggestion {
-  values: { id: string; label: string }[];
-  segment_text: string;
-}
+import { AllowedPropertyTypes, checkTypeIsAllowed } from './ixextractors';
 
 type RawSuggestion = TextSelectionSuggestion | ValuesSelectionSuggestion;
 
-const VALIDATORS = {
-  text: (suggestion: RawSuggestion): suggestion is TextSelectionSuggestion => 'text' in suggestion,
-  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion && (suggestion.values.length === 1 || suggestion.values.length === 0),
-  multiselect: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion =>
-    'values' in suggestion,
+class RawSuggestionValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'RawSuggestionValidationError';
+  }
+}
+
+type TitleAsProperty = {
+  name: 'title';
+  type: 'title';
 };
 
-const FORMATTERS = {
-  text: (
+const createAjvValidator = (schema: any) => {
+  const ajv = new Ajv({ allErrors: true });
+  ajv.addVocabulary(['tsType']);
+  return syncWrapValidator(ajv.compile(schema));
+};
+
+const textSelectionAjv = createAjvValidator(TextSelectionSuggestionSchema);
+const valuesSelectionAjv = createAjvValidator(ValuesSelectionSuggestionSchema);
+
+const textSelectionValidator = (
+  suggestion: RawSuggestion
+): suggestion is TextSelectionSuggestion => {
+  textSelectionAjv(suggestion);
+  return true;
+};
+
+const valuesSelectionValidator = (
+  suggestion: RawSuggestion
+): suggestion is ValuesSelectionSuggestion => {
+  valuesSelectionAjv(suggestion);
+  return true;
+};
+
+const VALIDATORS = {
+  title: textSelectionValidator,
+  text: textSelectionValidator,
+  numeric: textSelectionValidator,
+  date: textSelectionValidator,
+  select: (suggestion: RawSuggestion): suggestion is ValuesSelectionSuggestion => {
+    if (!valuesSelectionValidator(suggestion)) {
+      throw new RawSuggestionValidationError('Select suggestion is not valid.');
+    }
+
+    if (!('values' in suggestion) || suggestion.values.length > 1) {
+      throw new RawSuggestionValidationError('Select suggestions must have one or zero values.');
+    }
+
+    return true;
+  },
+  multiselect: valuesSelectionValidator,
+};
+
+const simpleSuggestion = (
+  suggestedValue: string | number | null,
+  rawSuggestion: TextSelectionSuggestion
+) => ({
+  suggestedValue,
+  segment: rawSuggestion.segment_text,
+  selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
+    const rect = { ...box, page: box.page_number.toString() };
+    delete rect.page_number;
+    return rect;
+  }),
+});
+
+const textFormatter = (
+  rawSuggestion: RawSuggestion,
+  _currentSuggestion: IXSuggestionType,
+  _entity: EntitySchema
+) => {
+  if (!VALIDATORS.text(rawSuggestion)) {
+    throw new Error('Text suggestion is not valid.');
+  }
+
+  const rawText = rawSuggestion.text;
+  const suggestedValue = rawText.trim();
+
+  const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
+
+  return suggestion;
+};
+
+const FORMATTERS: Record<
+  AllowedPropertyTypes,
+  (
     rawSuggestion: RawSuggestion,
-    property: PropertySchema | undefined,
+    currentSuggestion: IXSuggestionType,
+    entity: EntitySchema
+  ) => Partial<IXSuggestionType>
+> = {
+  title: textFormatter,
+  text: textFormatter,
+  numeric: (
+    rawSuggestion: RawSuggestion,
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
+  ) => {
+    if (!VALIDATORS.numeric(rawSuggestion)) {
+      throw new Error('Numeric suggestion is not valid.');
+    }
+
+    const suggestedValue = parseFloat(rawSuggestion.text.trim()) || null;
+    const suggestion: Partial<IXSuggestionType> = simpleSuggestion(suggestedValue, rawSuggestion);
+
+    return suggestion;
+  },
+  date: (
+    rawSuggestion: RawSuggestion,
     currentSuggestion: IXSuggestionType,
     entity: EntitySchema
   ) => {
-    if (!VALIDATORS.text(rawSuggestion)) {
-      throw new Error('Text suggestion is not valid.');
+    if (!VALIDATORS.date(rawSuggestion)) {
+      throw new Error('Date suggestion is not valid.');
     }
 
-    const suggestedValue = stringToTypeOfProperty(
-      rawSuggestion.text,
-      property?.type,
+    const suggestedValue = date.dateToSeconds(
+      rawSuggestion.text.trim(),
       currentSuggestion?.language || entity.language
     );
-
     const suggestion: Partial<IXSuggestionType> = {
-      suggestedValue,
-      ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
-      segment: rawSuggestion.segment_text,
-      selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
-        const rect = { ...box, page: box.page_number.toString() };
-        delete rect.page_number;
-        return rect;
-      }),
+      ...simpleSuggestion(suggestedValue, rawSuggestion),
+      suggestedText: rawSuggestion.text,
     };
 
     return suggestion;
   },
-  select: (rawSuggestion: RawSuggestion) => {
+  select: (
+    rawSuggestion: RawSuggestion,
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
+  ) => {
     if (!VALIDATORS.select(rawSuggestion)) {
       throw new Error('Select suggestion is not valid.');
     }
@@ -81,7 +165,11 @@ const FORMATTERS = {
 
     return suggestion;
   },
-  multiselect: (rawSuggestion: RawSuggestion) => {
+  multiselect: (
+    rawSuggestion: RawSuggestion,
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
+  ) => {
     if (!VALIDATORS.multiselect(rawSuggestion)) {
       throw new Error('Multiselect suggestion is not valid.');
     }
@@ -97,30 +185,29 @@ const FORMATTERS = {
   },
 };
 
-const DEFAULTFORMATTER = FORMATTERS.text;
+type PropertyOrTitle = PropertySchema | TitleAsProperty | undefined;
 
 const formatRawSuggestion = (
   rawSuggestion: RawSuggestion,
-  property: PropertySchema | undefined,
+  property: PropertyOrTitle,
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema
 ) => {
-  const formatter =
-    // @ts-ignore
-    (property?.type || '') in FORMATTERS ? FORMATTERS[property.type] : DEFAULTFORMATTER;
-  return formatter(rawSuggestion, property, currentSuggestion, entity);
+  const type = checkTypeIsAllowed(property?.type || '');
+  const formatter = FORMATTERS[type];
+  return formatter(rawSuggestion, currentSuggestion, entity);
 };
 
 const readMessageSuccess = (message: InternalIXResultsMessage) =>
   message.success
     ? {}
     : {
-        status: 'failed',
+        status: 'failed' as 'failed',
         error: message.error_message ? message.error_message : 'Unknown error',
       };
 
 const formatSuggestion = async (
-  property: PropertySchema | undefined,
+  property: PropertyOrTitle,
   rawSuggestion: RawSuggestion,
   currentSuggestion: IXSuggestionType,
   entity: EntitySchema,
