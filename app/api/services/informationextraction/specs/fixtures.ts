@@ -15,6 +15,7 @@ const fixturesPdfNameI = 'documentI.pdf';
 const ficturesPdfNameJ = 'documentJ.pdf';
 const fixturesPdfNameK = 'documentK.pdf';
 const fixturesPdfNameL = 'documentL.pdf';
+const fixturesPdfNameM = 'documentM.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -55,9 +56,9 @@ const fixtures: DBFixture = {
     ]),
   ],
   entities: [
-    factory.entity('P1', 'relationshipPartnerTemplate'),
-    factory.entity('P2', 'relationshipPartnerTemplate'),
-    factory.entity('P3', 'relationshipPartnerTemplate'),
+    factory.entity('P1', 'relationshipPartnerTemplate', {}, { sharedId: 'P1sharedId' }),
+    factory.entity('P2', 'relationshipPartnerTemplate', {}, { sharedId: 'P2sharedId' }),
+    factory.entity('P3', 'relationshipPartnerTemplate', {}, { sharedId: 'P3sharedId' }),
     factory.entity(
       'A1',
       'templateToSegmentA',
@@ -116,20 +117,25 @@ const fixtures: DBFixture = {
       property_multiselect: [],
     }),
     factory.entity('A21', 'templateToSegmentF', {
-      property_relationship: [{ value: 'P1', label: 'P1' }],
+      property_relationship: [{ value: 'P1sharedId', label: 'P1' }],
       property_empty_relationship: [],
-      property_relationship_to_any: [{ value: 'P1', label: 'P1' }],
+      property_relationship_to_any: [{ value: 'P1sharedId', label: 'P1' }],
     }),
     factory.entity('A22', 'templateToSegmentF', {
       property_relationship: [
-        { value: 'P1', label: 'P1' },
-        { value: 'P2', label: 'P2' },
+        { value: 'P1sharedId', label: 'P1' },
+        { value: 'P3sharedId', label: 'P3' },
       ],
       property_empty_relationship: [],
       property_relationship_to_any: [
         { value: 'P1', label: 'P1' },
         { value: 'A1', label: 'A1' },
       ],
+    }),
+    factory.entity('A23', 'templateToSegmentF', {
+      property_relationship: [],
+      property_empty_relationship: [],
+      property_relationship_to_any: [],
     }),
   ],
   files: [
@@ -186,6 +192,7 @@ const fixtures: DBFixture = {
     factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
     factory.file('F21', 'A21', 'document', fixturesPdfNameK, 'eng'),
     factory.file('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
+    factory.file('F23', 'A23', 'document', fixturesPdfNameM, 'eng'),
   ],
   segmentations: [
     {
@@ -368,6 +375,27 @@ const fixtures: DBFixture = {
             height: 1,
             page_number: 1,
             text: 'P2',
+          },
+        ],
+      },
+    },
+    {
+      _id: factory.id('S13'),
+      filename: fixturesPdfNameM,
+      xmlname: 'documentM.xml',
+      fileID: factory.id('F23'),
+      status: 'ready',
+      segmentation: {
+        page_height: 13,
+        page_width: 13,
+        paragraphs: [
+          {
+            left: 1,
+            top: 1,
+            width: 1,
+            height: 1,
+            page_number: 1,
+            text: 'P3',
           },
         ],
       },
@@ -609,6 +637,19 @@ const fixtures: DBFixture = {
       propertyName: 'property_relationship',
       extractorId: factory.id('extractorWithRelationship'),
       suggestedValue: ['P1', 'P2'],
+      status: 'ready',
+      page: 1,
+      date: 100,
+    },
+    {
+      _id: factory.id('SUG23'),
+      fileId: factory.id('F23'),
+      entityId: 'A23',
+      entityTemplate: factory.idString('templateToSegmentF'),
+      language: 'en',
+      propertyName: 'property_relationship',
+      extractorId: factory.id('extractorWithRelationship'),
+      suggestedValue: [],
       status: 'ready',
       page: 1,
       date: 100,

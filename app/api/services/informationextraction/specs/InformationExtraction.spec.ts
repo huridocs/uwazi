@@ -294,12 +294,12 @@ describe('InformationExtraction', () => {
         language_iso: 'en',
         values: [
           {
-            id: 'P1',
+            id: 'P1sharedId',
             label: 'P1',
           },
           {
-            id: 'P2',
-            label: 'P2',
+            id: 'P3sharedId',
+            label: 'P3',
           },
         ],
       });
@@ -372,15 +372,15 @@ describe('InformationExtraction', () => {
           multi_value: true,
           options: [
             {
-              id: 'P1',
+              id: 'P1sharedId',
               label: 'P1',
             },
             {
-              id: 'P2',
+              id: 'P2sharedId',
               label: 'P2',
             },
             {
-              id: 'P3',
+              id: 'P3sharedId',
               label: 'P3',
             },
           ],
@@ -568,7 +568,7 @@ describe('InformationExtraction', () => {
     it('should send the materials for the suggestions (relationship)', async () => {
       await informationExtraction.getSuggestions(factory.id('extractorWithRelationship'));
 
-      const [xmlK, xmlL] = await Promise.all(['K', 'L'].map(readDocument));
+      const [xmlK, xmlL, xmlM] = await Promise.all(['K', 'L', 'M'].map(readDocument));
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_predict/tenant1/${factory.id('extractorWithRelationship')}`,
@@ -577,12 +577,12 @@ describe('InformationExtraction', () => {
       });
 
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentK.xml', 'documentL.xml'].sort()
+        ['documentK.xml', 'documentL.xml', 'documentM.xml'].sort()
       );
-      expect(IXExternalService.files.length).toBe(2);
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL]));
+      expect(IXExternalService.files.length).toBe(3);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL, xmlM]));
 
-      expect(IXExternalService.materials.length).toBe(2);
+      expect(IXExternalService.materials.length).toBe(3);
       const sortedMaterials = sortByStrings(IXExternalService.materials, [
         (m: any) => m.xml_file_name,
       ]);
@@ -624,6 +624,23 @@ describe('InformationExtraction', () => {
               left: 1,
               page_number: 1,
               text: 'P2',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentM.xml',
+          id: factory.id('extractorWithRelationship').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P3',
               top: 1,
               width: 1,
             },
@@ -1216,6 +1233,112 @@ describe('InformationExtraction', () => {
             entityId: 'A19',
             suggestedValue: ['A', 'C'],
             segment: 'it is A or C',
+            state: {
+              ...expectedBase.state,
+              withValue: false,
+              labeled: false,
+              match: false,
+            },
+          },
+        ]);
+      });
+    });
+
+    describe('relationship', () => {
+      it('should request and store the suggestions (relationship)', async () => {
+        setIXServiceResults(
+          [
+            {
+              id: factory.id('extractorWithRelationship').toString(),
+              xml_file_name: 'documentK.xml',
+              values: [{ id: 'P1sharedId', label: 'P1' }],
+              segment_text: 'it is P1',
+            },
+            {
+              id: factory.id('extractorWithRelationship').toString(),
+              xml_file_name: 'documentL.xml',
+              values: [
+                { id: 'P1sharedId', label: 'P1' },
+                { id: 'P2sharedId', label: 'P2' },
+              ],
+              segment_text: 'it is P1 or P2',
+            },
+            {
+              id: factory.id('extractorWithRelationship').toString(),
+              xml_file_name: 'documentM.xml',
+              values: [{ id: 'P3sharedId', label: 'P3' }],
+              segment_text: 'it is P3',
+            },
+          ],
+          'value'
+        );
+
+        await saveSuggestionProcess('SUG21', 'A21', 'eng', 'extractorWithRelationship');
+        await saveSuggestionProcess('SUG22', 'A22', 'eng', 'extractorWithRelationship');
+        await saveSuggestionProcess('SUG23', 'A23', 'eng', 'extractorWithRelationship');
+
+        await informationExtraction.processResults({
+          params: { id: factory.id('extractorWithRelationship').toString() },
+          tenant: 'tenant1',
+          task: 'suggestions',
+          success: true,
+          data_url: 'http://localhost:1234/suggestions_results',
+        });
+
+        const suggestions = await IXSuggestionsModel.get({
+          status: 'ready',
+          extractorId: factory.id('extractorWithRelationship'),
+        });
+
+        const sorted = sortByStrings(suggestions, [(s: any) => s.entityId]);
+
+        const expectedBase = {
+          _id: expect.any(ObjectId),
+          entityTemplate: factory.id('templateToSegmentF').toString(),
+          language: 'en',
+          propertyName: 'property_relationship',
+          extractorId: factory.id('extractorWithRelationship'),
+          status: 'ready',
+          page: 1,
+          date: expect.any(Number),
+          error: '',
+          state: {
+            labeled: true,
+            withValue: true,
+            withSuggestion: true,
+            match: true,
+            hasContext: true,
+            processing: false,
+            obsolete: false,
+            error: false,
+          },
+        };
+
+        expect(sorted).toEqual([
+          {
+            ...expectedBase,
+            fileId: factory.id('F21'),
+            entityId: 'A21',
+            suggestedValue: ['P1sharedId'],
+            segment: 'it is P1',
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F22'),
+            entityId: 'A22',
+            suggestedValue: ['P1sharedId', 'P2sharedId'],
+            segment: 'it is P1 or P2',
+            state: {
+              ...expectedBase.state,
+              match: false,
+            },
+          },
+          {
+            ...expectedBase,
+            fileId: factory.id('F23'),
+            entityId: 'A23',
+            suggestedValue: ['P3sharedId'],
+            segment: 'it is P3',
             state: {
               ...expectedBase.state,
               withValue: false,

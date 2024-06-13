@@ -243,8 +243,6 @@ const thesauri = {
       return dictionaries.concat(processedTemplates);
     }
 
-    console.log('dictionaries', dictionaries);
-
     return dictionaries;
   },
 
