@@ -330,7 +330,6 @@ describe('InformationExtraction', () => {
       });
     });
 
-    // TODO:
     it('should start the task to train the model', async () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
@@ -358,6 +357,31 @@ describe('InformationExtraction', () => {
             {
               id: 'C',
               label: 'C',
+            },
+          ],
+        },
+        tenant: 'tenant1',
+        task: 'create_model',
+      });
+
+      await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: {
+          id: factory.id('extractorWithRelationship').toString(),
+          multi_value: true,
+          options: [
+            {
+              id: 'P1',
+              label: 'P1',
+            },
+            {
+              id: 'P2',
+              label: 'P2',
+            },
+            {
+              id: 'P3',
+              label: 'P3',
             },
           ],
         },

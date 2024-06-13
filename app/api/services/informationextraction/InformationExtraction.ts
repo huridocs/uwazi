@@ -29,10 +29,11 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
-  propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
+import { preloadOptionsLimit } from 'shared/config';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
@@ -384,14 +385,29 @@ class InformationExtraction {
 
     const params: TaskParameters = {
       id: extractorId.toString(),
-      multi_value: property.type === 'multiselect',
+      multi_value: property.type === 'multiselect' || property.type === 'relationship',
     };
 
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (propertyTypeIsSelectOrMultiSelect(property.type)) {
       const thesauri = await dictionatiesModel.getById(property.content);
 
       params.options =
         thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
+    }
+    if (property.type === 'relationship') {
+      const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+      const candidates = await entities.getUnrestricted(
+        {
+          template: new ObjectId(property.content),
+          language: defaultLanguageKey,
+        },
+        ['title', 'sharedId'],
+        { limit: preloadOptionsLimit() }
+      );
+      params.options = candidates.map(candidate => ({
+        label: candidate.title || '',
+        id: candidate.sharedId || '',
+      }));
     }
 
     await this.taskManager.startTask({

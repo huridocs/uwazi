@@ -594,6 +594,7 @@ export default {
       language,
       ...(onlyPublished ? { published: true } : {}),
     };
+    console.log('query', query);
     const queryLimit = limit ? { limit } : {};
     const entities = await model.get(query, ['title', 'icon', 'file', 'sharedId'], queryLimit);
     return entities;
