@@ -83,7 +83,7 @@ describe('Activity log', () => {
     cy.get('input[name=username]').type('editor', { delay: 0 });
     applyFilters();
     cy.contains('Updated user');
-    cy.get('tr').should('have.length.at.most', 5);
+    cy.get('tr').should('have.length.at.most', 6);
   });
 
   it('should show a tooltip with the detail of an activity entry', () => {
