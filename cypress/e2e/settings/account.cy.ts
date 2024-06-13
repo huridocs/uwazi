@@ -75,7 +75,13 @@ describe('Account', () => {
       cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io.com');
       cy.get('input[name=password]').should('not.contain.value');
       cy.get('input[name=passwordConfirm]').should('not.contain.value');
+    });
+
+    it('should check the error and dismiss the notification', () => {
       cy.contains('An error occurred');
+      cy.contains('button', 'View more').click();
+      cy.contains('Request failed with status code 403: Forbidden');
+      cy.contains('button', 'Dismiss').click();
     });
 
     it('should login with the new password', () => {
