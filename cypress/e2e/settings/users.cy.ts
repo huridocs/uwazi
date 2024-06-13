@@ -353,7 +353,7 @@ describe('Users', () => {
       });
 
       cy.get('[data-testid="modal"]').within(() => {
-        cy.get('input').type('worngPass!!', { delay: 0 });
+        cy.get('input').type('theIncorrectPassword!!', { delay: 0 });
         cy.contains('button', 'Accept').click();
       });
 
