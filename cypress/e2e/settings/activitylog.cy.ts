@@ -32,7 +32,7 @@ describe('Activity log', () => {
   });
 
   it('should register entity deletion in activity log', () => {
-    cy.contains('div.item-document', 'AL Report', { timeout: 200 }).click();
+    cy.contains('div.item-document', 'Report AL', { timeout: 200 }).click();
     cy.contains('.metadata-sidepanel.is-active .btn-danger', 'Delete').click();
     cy.contains('.confirm-button', 'Accept').click();
     cy.contains('Entity deleted');
