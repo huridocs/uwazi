@@ -88,10 +88,8 @@ const simpleSuggestion = (
 
 const textFormatter = (
   rawSuggestion: RawSuggestion,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  currentSuggestion: IXSuggestionType,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  entity: EntitySchema
+  _currentSuggestion: IXSuggestionType,
+  _entity: EntitySchema
 ) => {
   if (!VALIDATORS.text(rawSuggestion)) {
     throw new Error('Text suggestion is not valid.');
@@ -105,7 +103,6 @@ const textFormatter = (
   return suggestion;
 };
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 const FORMATTERS: Record<
   AllowedPropertyTypes,
   (
@@ -118,8 +115,8 @@ const FORMATTERS: Record<
   text: textFormatter,
   numeric: (
     rawSuggestion: RawSuggestion,
-    currentSuggestion: IXSuggestionType,
-    entity: EntitySchema
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
   ) => {
     if (!VALIDATORS.numeric(rawSuggestion)) {
       throw new Error('Numeric suggestion is not valid.');
@@ -152,8 +149,8 @@ const FORMATTERS: Record<
   },
   select: (
     rawSuggestion: RawSuggestion,
-    currentSuggestion: IXSuggestionType,
-    entity: EntitySchema
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
   ) => {
     if (!VALIDATORS.select(rawSuggestion)) {
       throw new Error('Select suggestion is not valid.');
@@ -170,8 +167,8 @@ const FORMATTERS: Record<
   },
   multiselect: (
     rawSuggestion: RawSuggestion,
-    currentSuggestion: IXSuggestionType,
-    entity: EntitySchema
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
   ) => {
     if (!VALIDATORS.multiselect(rawSuggestion)) {
       throw new Error('Multiselect suggestion is not valid.');
@@ -187,7 +184,6 @@ const FORMATTERS: Record<
     return suggestion;
   },
 };
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 type PropertyOrTitle = PropertySchema | TitleAsProperty | undefined;
 
