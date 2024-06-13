@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -37,7 +37,7 @@ const Account = () => {
     watch,
     handleSubmit,
     trigger,
-    reset,
+    resetField,
     formState: { errors, isDirty },
   } = useForm<AccountForm>({
     defaultValues: userAccount,
@@ -62,14 +62,12 @@ const Account = () => {
         type: 'success',
         text: <Translate>Account updated</Translate>,
       });
+      revalidator.revalidate();
     }
 
-    revalidator.revalidate();
+    resetField('password');
+    resetField('passwordConfirm');
   };
-
-  useEffect(() => {
-    reset({ ...userAccount, password: '', passwordConfirm: '' });
-  }, [userAccount, reset]);
 
   return (
     <div

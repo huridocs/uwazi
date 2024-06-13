@@ -72,9 +72,10 @@ describe('Account', () => {
         cy.contains('button', 'Accept').click();
       });
 
-      cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io');
+      cy.get('input[name=email]').should('contain.value', 'admin@uwazi.io.com');
+      cy.get('input[name=password]').should('not.contain.value');
+      cy.get('input[name=passwordConfirm]').should('not.contain.value');
       cy.contains('An error occurred');
-      cy.contains('Dismiss').click();
     });
 
     it('should login with the new password', () => {
