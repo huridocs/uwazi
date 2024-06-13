@@ -31,6 +31,26 @@ export function wrapValidator(validator: any) {
   };
 }
 
+export function syncWrapValidator(validator: any) {
+  return (value: any) => {
+    const valid = validator(value);
+
+    if (!valid) {
+      const { errors } = validator;
+      const e = new ValidationError(errors);
+      e.message = errors
+        .map(
+          ({ instancePath, message }: { instancePath: string; message: string }) =>
+            `${instancePath}: ${message}`
+        )
+        .join('/n');
+      throw e;
+    }
+
+    return valid;
+  };
+}
+
 export async function sleep(ms: number) {
   return new Promise(resolve => {
     setTimeout(resolve, ms);
