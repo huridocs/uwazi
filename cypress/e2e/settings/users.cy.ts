@@ -10,6 +10,14 @@ const namesShouldMatch = (names: string[]) => {
   });
 };
 
+const checkWorngPasswordState = () => {
+  cy.contains('An error occurred');
+  cy.contains('button', 'View more').click();
+  cy.contains('Request failed with status code 403: Forbidden');
+  cy.contains('button', 'Dismiss').click();
+  cy.get('aside').should('be.visible');
+};
+
 describe('Users', () => {
   before(() => {
     const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
@@ -202,10 +210,22 @@ describe('Users', () => {
   });
 
   describe('unblock user', () => {
+    it('should not be able to ublock a user if the password is incorrect', () => {
+      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
+
+      cy.contains('button', 'Unlock account').click();
+
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.contains('Confirm action');
+        cy.get('input').type('wroooong!', { delay: 0 });
+        cy.contains('button', 'Accept').click();
+      });
+
+      checkWorngPasswordState();
+    });
+
     it('should unblock a user', () => {
       cy.intercept('GET', '/api/users').as('updateUsers');
-
-      cy.contains('td', 'blocky').siblings().contains('button', 'Edit').click();
 
       cy.contains('button', 'Unlock account').click();
 
@@ -345,7 +365,7 @@ describe('Users', () => {
   });
 
   describe('validate password', () => {
-    it('should not be able to edit another user', () => {
+    it('should not be able to edit another user if the password is incorrect', () => {
       cy.contains('td', 'Cynthia').siblings().last().click();
       cy.get('aside').within(() => {
         cy.get('#password').type('changed password', { delay: 0 });
@@ -357,9 +377,18 @@ describe('Users', () => {
         cy.contains('button', 'Accept').click();
       });
 
-      cy.contains('An error occurred');
-      cy.contains('button', 'View more').click();
-      cy.contains('Request failed with status code 403: Forbidden');
+      checkWorngPasswordState();
+    });
+
+    it('should not be able to reset 2fa if the password is incorrect', () => {
+      cy.contains('button', 'Reset 2FA').click();
+
+      cy.get('[data-testid="modal"]').within(() => {
+        cy.get('input').type('anotherWorng!!', { delay: 0 });
+        cy.contains('button', 'Accept').click();
+      });
+
+      checkWorngPasswordState();
     });
   });
 });

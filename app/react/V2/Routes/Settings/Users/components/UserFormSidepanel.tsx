@@ -1,9 +1,10 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
@@ -127,6 +128,18 @@ const UserFormSidepanel = ({
     setShowSidepanel(false);
   };
 
+  useEffect(() => {
+    const { data: response, state } = fetcher;
+
+    if (
+      state === 'loading' &&
+      response &&
+      !(response instanceof FetchResponseError || response.status === 403)
+    ) {
+      closeSidepanel();
+    }
+  }, [fetcher]);
+
   const formSubmit = async (data: ClientUserSchema) => {
     const formData = new FormData();
     if (data._id) {
@@ -138,7 +151,6 @@ const UserFormSidepanel = ({
     formData.set('data', JSON.stringify(data));
     formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-    closeSidepanel();
   };
 
   const onClickSubmit = () => {
@@ -147,7 +159,6 @@ const UserFormSidepanel = ({
     formData.set('data', JSON.stringify(selectedUser));
     formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-    closeSidepanel();
   };
 
   return (
