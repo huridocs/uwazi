@@ -28,10 +28,11 @@ describe('Activity log', () => {
       'Report AL'
     );
     cy.contains('.metadata-sidepanel.is-active .btn-success', 'Save').click();
+    cy.contains('Entity updated');
   });
 
   it('should register entity deletion in activity log', () => {
-    cy.contains('div.item-document', 'AL Report').click();
+    cy.contains('div.item-document', 'AL Report', { timeout: 200 }).click();
     cy.contains('.metadata-sidepanel.is-active .btn-danger', 'Delete').click();
     cy.contains('.confirm-button', 'Accept').click();
     cy.contains('Entity deleted');
