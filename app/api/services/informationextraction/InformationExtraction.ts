@@ -143,7 +143,7 @@ class InformationExtraction {
 
     let data: MaterialsData = { ..._data, language_iso };
 
-    const noExtractedData = propertyTypeIsSelectOrMultiSelect(propertyType);
+    const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 
     if (!noExtractedData && propertyLabeledData) {
       data = {

@@ -267,8 +267,8 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
       expect(IXExternalService.materials.length).toBe(2);
-      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentI.xml')).toEqual({
-        xml_file_name: 'documentI.xml',
+      expect(IXExternalService.materials.find(m => m.xml_file_name === 'documentL.xml')).toEqual({
+        xml_file_name: 'documentL.xml',
         id: factory.id('extractorWithRelationship').toString(),
         tenant: 'tenant1',
         xml_segments_boxes: [
