@@ -8,16 +8,29 @@ import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
-import { propertyTypes } from 'shared/propertyTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
-const ALLOWED_PROPERTY_TYPES: (typeof propertyTypes)[keyof typeof propertyTypes][] = [
+type AllowedPropertyTypes = 'title' | 'text' | 'numeric' | 'date' | 'select' | 'multiselect';
+
+const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
+  'title',
   'text',
   'numeric',
   'date',
   'select',
   'multiselect',
 ];
+
+const allowedTypeSet = new Set<string>(ALLOWED_PROPERTY_TYPES);
+
+const typeIsAllowed = (type: string): type is AllowedPropertyTypes => allowedTypeSet.has(type);
+
+const checkTypeIsAllowed = (type: string) => {
+  if (!typeIsAllowed(type)) {
+    throw new Error('Property type not allowed.');
+  }
+  return type;
+};
 
 const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
   const tArray = await templates.get({ _id: { $in: templateIds } });
@@ -43,9 +56,7 @@ const templatePropertyExistenceCheck = async (propertyName: string, templateIds:
       throw new Error('Missing property.');
     }
 
-    if (!ALLOWED_PROPERTY_TYPES.includes(property.type)) {
-      throw new Error('Property type not allowed.');
-    }
+    checkTypeIsAllowed(property.type);
   });
 };
 
@@ -134,3 +145,6 @@ export const Extractors = {
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
   },
 };
+
+export type { AllowedPropertyTypes };
+export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed };
