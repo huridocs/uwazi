@@ -71,6 +71,7 @@ const VALIDATORS = {
     return true;
   },
   multiselect: valuesSelectionValidator,
+  relationship: valuesSelectionValidator,
 };
 
 const simpleSuggestion = (
@@ -85,6 +86,16 @@ const simpleSuggestion = (
     return rect;
   }),
 });
+
+function multiValueIdsSuggestion(rawSuggestion: ValuesSelectionSuggestion) {
+  const suggestedValue = rawSuggestion.values.map(value => value.id);
+
+  const suggestion: Partial<IXSuggestionType> = {
+    suggestedValue,
+    segment: rawSuggestion.segment_text,
+  };
+  return suggestion;
+}
 
 const textFormatter = (
   rawSuggestion: RawSuggestion,
@@ -174,17 +185,24 @@ const FORMATTERS: Record<
       throw new Error('Multiselect suggestion is not valid.');
     }
 
-    const suggestedValue = rawSuggestion.values.map(value => value.id);
+    const suggestion: Partial<IXSuggestionType> = multiValueIdsSuggestion(rawSuggestion);
 
-    const suggestion: Partial<IXSuggestionType> = {
-      suggestedValue,
-      segment: rawSuggestion.segment_text,
-    };
+    return suggestion;
+  },
+  relationship: (
+    rawSuggestion: RawSuggestion,
+    _currentSuggestion: IXSuggestionType,
+    _entity: EntitySchema
+  ) => {
+    if (!VALIDATORS.relationship(rawSuggestion)) {
+      throw new Error('Relationship suggestion is not valid.');
+    }
+
+    const suggestion: Partial<IXSuggestionType> = multiValueIdsSuggestion(rawSuggestion);
 
     return suggestion;
   },
 };
-/* eslint-enable @typescript-eslint/no-unused-vars */
 
 type PropertyOrTitle = PropertySchema | TitleAsProperty | undefined;
 
