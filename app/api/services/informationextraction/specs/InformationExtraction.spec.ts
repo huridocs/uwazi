@@ -565,6 +565,73 @@ describe('InformationExtraction', () => {
       ]);
     });
 
+    it('should send the materials for the suggestions (relationship)', async () => {
+      await informationExtraction.getSuggestions(factory.id('extractorWithRelationship'));
+
+      const [xmlK, xmlL] = await Promise.all(['K', 'L'].map(readDocument));
+
+      expect(IXExternalService.materialsFileParams).toEqual({
+        0: `/xml_to_predict/tenant1/${factory.id('extractorWithRelationship')}`,
+        id: factory.id('extractorWithRelationship').toString(),
+        tenant: 'tenant1',
+      });
+
+      expect(IXExternalService.filesNames.sort()).toEqual(
+        ['documentK.xml', 'documentL.xml'].sort()
+      );
+      expect(IXExternalService.files.length).toBe(2);
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL]));
+
+      expect(IXExternalService.materials.length).toBe(2);
+      const sortedMaterials = sortByStrings(IXExternalService.materials, [
+        (m: any) => m.xml_file_name,
+      ]);
+      expect(sortedMaterials).toEqual([
+        {
+          xml_file_name: 'documentK.xml',
+          id: factory.id('extractorWithRelationship').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P1',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+        {
+          xml_file_name: 'documentL.xml',
+          id: factory.id('extractorWithRelationship').toString(),
+          tenant: 'tenant1',
+          page_height: 13,
+          page_width: 13,
+          xml_segments_boxes: [
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P1',
+              top: 1,
+              width: 1,
+            },
+            {
+              height: 1,
+              left: 1,
+              page_number: 1,
+              text: 'P2',
+              top: 1,
+              width: 1,
+            },
+          ],
+        },
+      ]);
+    });
+
     it('should avoid sending materials for failed suggestions because no segmentation for instance', async () => {
       await informationExtraction.getSuggestions(factory.id('extractorWithOneFailedSegmentation'));
 
