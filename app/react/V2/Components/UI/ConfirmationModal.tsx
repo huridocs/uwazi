@@ -31,7 +31,7 @@ const ConfirmationModal = ({
   size = 'md',
   dangerStyle = false,
 }: confirmationModalType) => {
-  const [passwordValue, setPasswordValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
   const [confirmed, setConfirmed] = useState(!(confirmWord || usePassword));
 
   const renderChild = (child: string | React.ReactNode) =>
@@ -87,7 +87,7 @@ const ConfirmationModal = ({
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               type="password"
               onChange={e => {
-                setPasswordValue(e.currentTarget.value);
+                setInputValue(e.currentTarget.value);
                 setConfirmed(e.currentTarget.value.length > 0);
               }}
             />
@@ -104,7 +104,7 @@ const ConfirmationModal = ({
           {renderChild(cancelButton || 'Cancel')}
         </Button>
         <Button
-          onClick={onAcceptClick ? () => onAcceptClick(passwordValue || '') : undefined}
+          onClick={onAcceptClick ? () => onAcceptClick(inputValue || '') : undefined}
           disabled={!confirmed}
           color={!warningText && !dangerStyle ? 'primary' : 'error'}
           className="grow"
