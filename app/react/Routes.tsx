@@ -43,7 +43,7 @@ import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboar
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
-import { activityLogLoader, ActivityLog } from 'V2/Routes/Settings/ActivityLog/ActivityLog';
+import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
@@ -175,7 +175,7 @@ const getRoutesLayout = (
       <Route
         path="activitylog"
         element={adminsOnlyRoute(<ActivityLog />)}
-        loader={activityLogLoader(headers)}
+        loader={activityLogLoader(headers, { settings })}
       />
       <Route
         path="custom-uploads"
