@@ -13,6 +13,8 @@ const fixturesPdfNameG = 'documentG.pdf';
 const fixturesPdfNameH = 'documentH.pdf';
 const fixturesPdfNameI = 'documentI.pdf';
 const ficturesPdfNameJ = 'documentJ.pdf';
+const fixturesPdfNameK = 'documentK.pdf';
+const fixturesPdfNameL = 'documentL.pdf';
 
 const fixtures: DBFixture = {
   settings: [
@@ -182,8 +184,8 @@ const fixtures: DBFixture = {
     factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
     factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
     factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
-    factory.file('F21', 'A21', 'document', fixturesPdfNameG, 'eng'),
-    factory.file('F22', 'A22', 'document', fixturesPdfNameI, 'eng'),
+    factory.file('F21', 'A21', 'document', fixturesPdfNameK, 'eng'),
+    factory.file('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
   ],
   segmentations: [
     {
@@ -322,8 +324,8 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('S11'),
-      filename: fixturesPdfNameG,
-      xmlname: 'documentG.xml',
+      filename: fixturesPdfNameK,
+      xmlname: 'documentK.xml',
       fileID: factory.id('F21'),
       status: 'ready',
       segmentation: {
@@ -343,8 +345,8 @@ const fixtures: DBFixture = {
     },
     {
       _id: factory.id('S12'),
-      filename: fixturesPdfNameI,
-      xmlname: 'documentI.xml',
+      filename: fixturesPdfNameL,
+      xmlname: 'documentL.xml',
       fileID: factory.id('F22'),
       status: 'ready',
       segmentation: {

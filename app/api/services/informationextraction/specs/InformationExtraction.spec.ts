@@ -191,8 +191,8 @@ describe('InformationExtraction', () => {
     it('should send xmls (relationship)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
-      const xmlG = await readDocument('G');
-      const xmlI = await readDocument('I');
+      const xmlK = await readDocument('K');
+      const xmlL = await readDocument('L');
 
       expect(IXExternalService.materialsFileParams).toEqual({
         0: `/xml_to_train/tenant1/${factory.id('extractorWithRelationship')}`,
@@ -201,9 +201,9 @@ describe('InformationExtraction', () => {
       });
 
       expect(IXExternalService.files.length).toBe(2);
-      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlG, xmlI]));
+      expect(IXExternalService.files).toEqual(expect.arrayContaining([xmlK, xmlL]));
       expect(IXExternalService.filesNames.sort()).toEqual(
-        ['documentG.xml', 'documentI.xml'].sort()
+        ['documentK.xml', 'documentL.xml'].sort()
       );
     });
 
