@@ -338,7 +338,9 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
         task: 'create_model',
       });
+    });
 
+    it('should start the task to train the model (multiselect)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithMultiselect'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
@@ -363,7 +365,9 @@ describe('InformationExtraction', () => {
         tenant: 'tenant1',
         task: 'create_model',
       });
+    });
 
+    it('should start the task to train the model (relationship)', async () => {
       await informationExtraction.trainModel(factory.id('extractorWithRelationship'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
@@ -383,6 +387,37 @@ describe('InformationExtraction', () => {
               id: 'P3sharedId',
               label: 'P3',
             },
+          ],
+        },
+        tenant: 'tenant1',
+        task: 'create_model',
+      });
+    });
+
+    it('should start the task to train the model (relationship to any template)', async () => {
+      await informationExtraction.trainModel(factory.id('extractorWithRelationshipToAny'));
+
+      expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
+        params: {
+          id: factory.id('extractorWithRelationshipToAny').toString(),
+          multi_value: true,
+          options: [
+            {
+              id: 'P1sharedId',
+              label: 'P1',
+            },
+            {
+              id: 'P2sharedId',
+              label: 'P2',
+            },
+            {
+              id: 'P3sharedId',
+              label: 'P3',
+            },
+            ...Array.from({ length: 23 }, (_, i) => ({
+              id: `A${i + 1}`,
+              label: `A${i + 1}`,
+            })),
           ],
         },
         tenant: 'tenant1',

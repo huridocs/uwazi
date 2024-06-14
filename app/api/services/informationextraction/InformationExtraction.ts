@@ -33,7 +33,6 @@ import {
   propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
-import { preloadOptionsLimit } from 'shared/config';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
 import { ParagraphSchema } from 'shared/types/segmentationType';
@@ -96,6 +95,16 @@ type MaterialsData =
   | CommonMaterialsData
   | TextSelectionMaterialsData
   | ValuesSelectionMaterialsData;
+
+async function fetchCandidates(property: PropertySchema) {
+  const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+  const query: { template?: ObjectId; language: string } = {
+    language: defaultLanguageKey,
+  };
+  if (property.content !== '') query.template = new ObjectId(property.content);
+  const candidates = await entities.getUnrestricted(query, ['title', 'sharedId']);
+  return candidates;
+}
 
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
@@ -395,15 +404,7 @@ class InformationExtraction {
         thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
     }
     if (property.type === 'relationship') {
-      const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
-      const candidates = await entities.getUnrestricted(
-        {
-          template: new ObjectId(property.content),
-          language: defaultLanguageKey,
-        },
-        ['title', 'sharedId'],
-        { limit: preloadOptionsLimit() }
-      );
+      const candidates = await fetchCandidates(property);
       params.options = candidates.map(candidate => ({
         label: candidate.title || '',
         id: candidate.sharedId || '',
