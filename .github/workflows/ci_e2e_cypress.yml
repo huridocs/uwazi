@@ -81,6 +81,13 @@ jobs:
       - name: Log on failure
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
+      - name: Retry Step
+        uses: nick-fields/retry@v3.0.0
+        with:
+          timeout_seconds: 20
+          max_attempts: 3
+          retry_on: error
+          command: yarn blank-state        
       - run: yarn blank-state
         env:
           DBHOST: localhost:27017
