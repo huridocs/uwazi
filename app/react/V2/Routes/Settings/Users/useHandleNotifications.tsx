@@ -19,10 +19,12 @@ const useHandleNotifications = () => {
     if (!intent || !data) return;
 
     if (data instanceof FetchResponseError) {
+      const message = data.json?.prettyMessage ? data.json.prettyMessage : data.message;
+
       setNotifications({
         type: 'error',
         text: <Translate>An error occurred</Translate>,
-        details: data.json?.prettyMessage ? data.json.prettyMessage : undefined,
+        details: message || undefined,
       });
 
       return;

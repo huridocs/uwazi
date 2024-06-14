@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { useLoaderData, useLocation, useSearchParams, createSearchParams } from 'react-router-dom';
+import { useLoaderData, useLocation, useSearchParams } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';
@@ -20,6 +20,7 @@ import {
   updateSearch,
   ActivityLogSearch,
   ITEMS_PER_PAGE,
+  buildPageURL,
 } from './ActivityLogLoader';
 
 const funnelColor = (appliedFiltersCount: number): string =>
@@ -109,14 +110,9 @@ const ActivityLog = () => {
                     <Paginator
                       totalPages={totalPages}
                       currentPage={Number(appliedFilters.page || 1)}
-                      buildUrl={(pageTo: string | number) => {
-                        const updatedParams = {
-                          ...appliedFilters,
-                          page: pageTo,
-                          limit: appliedFilters.limit || ITEMS_PER_PAGE,
-                        };
-                        return `${location.pathname}?${createSearchParams(Object.entries(updatedParams))}`;
-                      }}
+                      buildUrl={(pageTo: string | number) =>
+                        buildPageURL(appliedFilters, pageTo, location)
+                      }
                     />
                   </div>
                 </div>
