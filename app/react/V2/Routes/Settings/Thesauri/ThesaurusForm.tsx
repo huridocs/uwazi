@@ -206,7 +206,7 @@ const ThesaurusForm = () => {
           <Translate>Thesauri added.</Translate>
         ),
       });
-      navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
+      navigate(`../edit/${savedThesaurus._id}`);
     } catch (e) {
       setNotifications({
         type: 'error',
@@ -286,7 +286,7 @@ const ThesaurusForm = () => {
                       type: 'success',
                       text: <Translate>Thesauri updated.</Translate>,
                     });
-                    navigate(`/settings/thesauri/edit/${savedThesaurus._id}`);
+                    navigate(`../edit/${savedThesaurus._id}`);
                   }}
                   onFailure={() => {
                     setNotifications({
