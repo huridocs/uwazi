@@ -45,6 +45,10 @@ describe('Activity log', () => {
     cy.contains('button', 'Cancel').click();
     cy.clearAndType('input[name=email]', 'editor@uwazi.com', { delay: 0 });
     cy.contains('button', 'Update').click();
+    cy.get('[data-testid="modal"]').within(() => {
+      cy.get('input').type('editor');
+      cy.contains('button', 'Accept').click();
+    });
   });
 
   it('should pass accessibility check', () => {

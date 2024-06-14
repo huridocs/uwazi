@@ -73,6 +73,7 @@ export default {
       remainingRows: Math.max(0, totalRows - dbResults.length - (optionsQuery.skip || 0)),
       limit: optionsQuery.limit,
       page: query.page,
+      totalRows,
     };
   },
 };
