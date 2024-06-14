@@ -46,7 +46,6 @@ jobs:
           max_attempts: 3
           retry_on: error
           command: yarn blank-state
-      - run: yarn blank-state
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
