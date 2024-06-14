@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { LoaderFunction, SetURLSearchParams, createSearchParams } from 'react-router-dom';
+import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';
@@ -101,17 +101,13 @@ const activityLogLoader =
         total: 0,
       };
     }
-    const total =
-      Number(params.page) * params.limit -
-      (params.limit - activityLogList.rows.length) +
-      activityLogList.remainingRows;
-    const totalPages = Math.ceil(total / params.limit);
+    const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
 
     return {
       activityLogData: activityLogList.rows,
       totalPages,
       page: params.page,
-      total,
+      total: activityLogList.totalRows,
     };
   };
 
@@ -182,5 +178,32 @@ const updateSearch = (
   }
 };
 
+const buildPageURL = (appliedFilters: any, pageTo: string | number, location: Location<any>) => {
+  const { dateRange, ...updatedParams } = {
+    ...appliedFilters,
+    page: pageTo,
+    limit: appliedFilters.limit || ITEMS_PER_PAGE,
+    ...appliedFilters.dateRange,
+    dateRange: {},
+  };
+  const newParams: [string, string][] = [];
+  Object.entries(updatedParams).forEach(([key, value]) => {
+    if (!isArray(value)) {
+      newParams.push([key, value as string]);
+    } else {
+      value.forEach(item => newParams.push([key, item as string]));
+    }
+  });
+  return `${location.pathname}?${createSearchParams(newParams)}`;
+};
+
 export type { LoaderData, ActivityLogSearch };
-export { activityLogLoader, getAppliedFilters, ITEMS_PER_PAGE, updateSearch };
+export {
+  activityLogLoader,
+  getAppliedFilters,
+  ITEMS_PER_PAGE,
+  updateSearch,
+  filterPairs,
+  getQueryParamsBySearchParams,
+  buildPageURL,
+};
