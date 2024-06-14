@@ -10,8 +10,12 @@ import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
+import { Client } from '@elastic/elasticsearch';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
+type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
+  type: 'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship';
+};
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,30 +25,11 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-const getPropertyLabel = (property: ClientPropertySchema, templateId: string) => {
-  let icon: React.ReactNode;
-  let propertyTypeTranslationKey = 'property text';
+const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
+  const { type } = property;
 
-  switch (property.type) {
-    case 'numeric':
-      icon = propertyIcons.numeric;
-      propertyTypeTranslationKey = 'property numeric';
-      break;
-    case 'date':
-      icon = propertyIcons.date;
-      propertyTypeTranslationKey = 'property date';
-      break;
-    case 'select':
-      icon = propertyIcons.select;
-      propertyTypeTranslationKey = 'property select';
-      break;
-    case 'multiselect':
-      icon = propertyIcons.multiselect;
-      propertyTypeTranslationKey = 'property multiselect';
-      break;
-    default:
-      icon = propertyIcons.text;
-  }
+  let icon = propertyIcons[type];
+  let propertyTypeTranslationKey = `property ${type}`;
 
   return (
     <div className="flex items-center gap-2">
