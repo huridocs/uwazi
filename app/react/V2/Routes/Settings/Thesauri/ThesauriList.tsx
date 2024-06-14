@@ -56,14 +56,14 @@ const ThesauriList = () => {
   }, [thesauri, templates]);
 
   const navigateToEditThesaurus = (thesaurus: Row<ThesaurusSchema>) => {
-    navigate(`/settings/thesauri/edit/${thesaurus.original._id}`);
+    navigate(`./edit/${thesaurus.original._id}`);
   };
 
   const deleteSelectedThesauri = async () => {
     try {
-      const requests = selectedThesauri.map(sThesauri => {
-        return ThesauriAPI.delete({ _id: sThesauri.original._id });
-      });
+      const requests = selectedThesauri.map(sThesauri =>
+        ThesauriAPI.delete({ _id: sThesauri.original._id })
+      );
       await Promise.all(requests);
       setNotifications({
         type: 'success',
