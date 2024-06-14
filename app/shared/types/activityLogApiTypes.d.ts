@@ -22,6 +22,10 @@ export interface ActivityLogGetRequest {
       prop: ActivityLogSortProp;
       asc: number;
     };
+    url?: string;
+    body?: string;
+    params?: string;
+    query?: string;
   };
   [k: string]: unknown | undefined;
 }

@@ -7,7 +7,7 @@ import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import * as random from 'shared/uniqueID';
 
-import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { settingsModel } from 'api/settings/settingsModel';
 import userGroups from 'api/usergroups/userGroups';
