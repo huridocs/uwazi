@@ -72,6 +72,13 @@ describe('MultiSelect', () => {
 
       cy.get('@onChange').should('have.been.calledOnceWith', ['another']);
     });
+
+    it('should update the values if value has changed', () => {
+      mount(<MultiSelect value={['item1']} />).then(({ rerender }) => {
+        rerender(<MultiSelect value={['item8', 'item9']} />);
+        cy.get('[data-testid="pill-comp"]').should('have.length', 2);
+      });
+    });
   });
 
   describe('disabled', () => {

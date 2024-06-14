@@ -1,5 +1,5 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle } from 'react';
-import { UseFormRegister } from 'react-hook-form';
 //@ts-ignore
 import DateRangePicker from 'flowbite-datepicker/DateRangePicker';
 //@ts-ignore
@@ -12,12 +12,13 @@ import { InputField } from '../InputField';
 import { DatePickerProps, datePickerOptionsByLocale, validateLocale } from './DatePickerComponent';
 
 interface DateRangePickerProps extends DatePickerProps {
-  register?: UseFormRegister<any> | (() => {});
   placeholderStart?: string;
   placeholderEnd?: string;
   onFromDateSelected?: ChangeEventHandler<HTMLInputElement>;
   onToDateSelected?: ChangeEventHandler<HTMLInputElement>;
-  onClear?: () => void;
+  from?: string;
+  to?: string;
+  onClear?: (field: 'from' | 'to') => void;
 }
 const DateRangePickerComponent = React.forwardRef(
   (
@@ -32,26 +33,28 @@ const DateRangePickerComponent = React.forwardRef(
       errorMessage,
       id = uniqueID(),
       language = 'en',
-      dateFormat = 'yyyy-mm-dd',
-      hideLabel = true,
+      dateFormat = 'YYYY-MM-DD',
+      hideLabel = false,
+      inputClassName = '',
       className = '',
-      register = () => ({}),
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
       onBlur = () => {},
+      from,
+      to,
       onClear = () => {},
     }: DateRangePickerProps,
     forwardedRef: Ref<HTMLInputElement | null>
   ) => {
     const divRef = useRef(null);
-    const fromRef = useRef(null);
-    const toRef = useRef(null);
+    const fromRef = useRef<HTMLInputElement>(null);
+    const toRef = useRef<HTMLInputElement>(null);
     useImperativeHandle(forwardedRef, () => divRef.current);
 
     const fieldStyles = !(hasErrors || errorMessage)
       ? // eslint-disable-next-line max-len
-        `${className || ''} bg-gray-50 border border-gray-300`
-      : `${className || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
+        `${inputClassName || ''} bg-gray-50 border border-gray-300`
+      : `${inputClassName || ''} border-error-300 focus:border-error-500 focus:ring-error-500 border-2 text-error-900 bg-error-50 placeholder-error-700`;
     const instance = useRef<DateRangePicker | null>(null);
     const locale = validateLocale(language);
 
@@ -77,12 +80,29 @@ const DateRangePickerComponent = React.forwardRef(
         autohide: true,
         format: dateFormat.toLowerCase(),
       });
+
+      instance.current.setDates(from, to);
       return () => (instance?.current?.hide instanceof Function ? instance?.current?.hide() : {});
-    }, [locale, labelToday, labelClear, dateFormat]);
+    }, [locale, labelToday, labelClear, dateFormat, from, to]);
+
+    useEffect(() => {
+      if (!instance.current) {
+        return;
+      }
+      if (from || to) {
+        instance.current.setDates(from, to);
+      } else {
+        instance.current.setDates({ clear: true }, { clear: true });
+      }
+    }, [instance, from, to]);
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className="relative tw-datepicker" data-test-id={id} />
+        <div
+          id="tw-container"
+          className={`${className} absolute tw-datepicker z-50`}
+          data-test-id={id}
+        />
         <div>
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
@@ -111,13 +131,12 @@ const DateRangePickerComponent = React.forwardRef(
                 </svg>
               </div>
               <InputField
+                id="from"
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                name="from"
-                {...register('from')}
                 type="text"
                 onSelect={onFromDateSelected}
                 onBlur={onBlur}
@@ -126,7 +145,10 @@ const DateRangePickerComponent = React.forwardRef(
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderStart}
                 ref={fromRef}
-                clearFieldAction={onClear}
+                clearFieldAction={() => {
+                  instance.current.setDates({ clear: true }, to);
+                  onClear('from');
+                }}
               />
             </div>
             <div className="relative">
@@ -142,14 +164,12 @@ const DateRangePickerComponent = React.forwardRef(
                 </svg>
               </div>
               <InputField
+                id="to"
                 // @ts-ignore
                 datepicker={true}
                 datepicker-autohide={true}
                 datepicker-buttons={true}
                 datepicker-autoselect-today={true}
-                id="to"
-                name="to"
-                {...register('to')}
                 type="text"
                 onSelect={onToDateSelected}
                 onBlur={onBlur}
@@ -157,7 +177,10 @@ const DateRangePickerComponent = React.forwardRef(
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
                 placeholder={placeholderEnd}
-                clearFieldAction={onClear}
+                clearFieldAction={() => {
+                  instance.current.setDates(from, { clear: true });
+                  onClear('to');
+                }}
                 ref={toRef}
               />
             </div>
@@ -170,11 +193,12 @@ const DateRangePickerComponent = React.forwardRef(
 );
 
 DateRangePickerComponent.defaultProps = {
-  register: () => ({}),
   placeholderStart: 'Select start',
   placeholderEnd: 'Select end',
   onFromDateSelected: () => {},
   onToDateSelected: () => {},
+  from: '',
+  to: '',
   onClear: () => {},
 };
 

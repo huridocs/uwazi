@@ -7,7 +7,7 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Translate } from 'app/I18N';
 
 const meta: Meta<typeof ConfirmationModal> = {
-  title: 'Components/Modal',
+  title: 'Components/Modal/ConfirmationModal',
   component: ConfirmationModal,
   argTypes: {
     onAcceptClick: { action: 'onAcceptClick' },
@@ -28,13 +28,14 @@ const Primary: Story = {
       <div className="tw-content">
         <div className="container w-10 h-10">
           <ConfirmationModal
+            size="md"
             header={args.header}
             body={args.body}
             acceptButton={args.acceptButton}
             cancelButton={args.cancelButton}
             warningText={args.warningText}
             confirmWord={args.confirmWord}
-            size="md"
+            usePassword={args.usePassword}
             onAcceptClick={args.onAcceptClick}
             onCancelClick={args.onCancelClick}
           />
@@ -66,6 +67,7 @@ const TextConfirmation: Story = {
     onCancelClick: action('canceled'),
   },
 };
+
 const WarningConfirmation: Story = {
   ...Primary,
   args: {
@@ -80,6 +82,16 @@ const WarningConfirmation: Story = {
   },
 };
 
-export { BasicConfirmation, TextConfirmation, WarningConfirmation };
+const PasswordConfirm: Story = {
+  ...Primary,
+  args: {
+    header: 'Confirm action',
+    usePassword: true,
+    onAcceptClick: action('accepted'),
+    onCancelClick: action('canceled'),
+  },
+};
+
+export { BasicConfirmation, TextConfirmation, WarningConfirmation, PasswordConfirm };
 
 export default meta;

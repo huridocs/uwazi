@@ -30,7 +30,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 4.2.6
+          mongodb-version: 5.0.27
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
@@ -82,12 +82,22 @@ jobs:
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
       - run: yarn blank-state
+        id: blank-state-attempt1
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+      - run: yarn blank-state
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true          
       - run: yarn ix-config
         env:
           DBHOST: localhost:27017
