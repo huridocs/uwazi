@@ -80,7 +80,7 @@ jobs:
       - run: sleep 5 && wget --waitretry=5 --retry-connrefused -v http://localhost:5051/info
       - name: Log on failure
         if: ${{ failure() }}
-        run: cat dummy_extractor_services/logs.log      
+        run: cat dummy_extractor_services/logs.log
       - run: yarn blank-state
         id: blank-state-attempt1
         env:
