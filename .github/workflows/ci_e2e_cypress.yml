@@ -82,12 +82,22 @@ jobs:
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
       - run: yarn blank-state
+        id: blank-state-attempt1
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+      - run: yarn blank-state
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true          
       - run: yarn ix-config
         env:
           DBHOST: localhost:27017
