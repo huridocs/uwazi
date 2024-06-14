@@ -6,6 +6,7 @@ import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 interface ActivityLogResponse {
   rows: ActivityLogEntryType[];
   remainingRows: number;
+  totalRows: number;
   limit: number;
   page: number;
   message: string;
