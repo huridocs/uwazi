@@ -1,4 +1,4 @@
-export const objectPath = (path, object) =>
+const objectPath = (path, object) =>
   path.split('.').reduce((o, key) => {
     if (!o || !key) {
       return o;
@@ -6,7 +6,7 @@ export const objectPath = (path, object) =>
     return o.toJS ? o.get(key) : o[key];
   }, object);
 
-export const logError = (err, propValueOf, propLabelOf) => {
+const logError = (err, propValueOf, propLabelOf) => {
   /* eslint-disable no-console */
   console.error('Error on EntityData: ');
   console.error('value-of: ', propValueOf, '; label-of: ', propLabelOf);
@@ -14,7 +14,7 @@ export const logError = (err, propValueOf, propLabelOf) => {
   /* eslint-enable no-console */
 };
 
-export const validHtmlTags = new Set([
+const validHtmlTags = new Set([
   'a',
   'abbr',
   'acronym',
@@ -35,7 +35,9 @@ export const validHtmlTags = new Set([
   'canvas',
   'caption',
   'center',
+  'circle',
   'cite',
+  'clipPath',
   'code',
   'col',
   'colgroup',
@@ -44,7 +46,9 @@ export const validHtmlTags = new Set([
   'datalist',
   'dd',
   'decorator',
+  'defs',
   'del',
+  'desc',
   'details',
   'dfn',
   'dir',
@@ -52,13 +56,41 @@ export const validHtmlTags = new Set([
   'dl',
   'dt',
   'element',
+  'ellipse',
   'em',
+  'feBlend',
+  'feColorMatrix',
+  'feComponentTransfer',
+  'feComposite',
+  'feConvolveMatrix',
+  'feDiffuseLighting',
+  'feDisplacementMap',
+  'feDistantLight',
+  'feFlood',
+  'feFuncA',
+  'feFuncB',
+  'feFuncG',
+  'feFuncR',
+  'feGaussianBlur',
+  'feImage',
+  'feMerge',
+  'feMergeNode',
+  'feMorphology',
+  'feOffset',
+  'fePointLight',
+  'feSpecularLighting',
+  'feSpotLight',
+  'feTile',
+  'feTurbulence',
   'fieldset',
   'figcaption',
   'figure',
+  'filter',
   'font',
   'footer',
+  'foreignObject',
   'form',
+  'g',
   'h1',
   'h2',
   'h3',
@@ -72,6 +104,7 @@ export const validHtmlTags = new Set([
   'html',
   'i',
   'iframe',
+  'image',
   'img',
   'input',
   'ins',
@@ -79,12 +112,17 @@ export const validHtmlTags = new Set([
   'label',
   'legend',
   'li',
+  'line',
+  'linearGradient',
   'main',
   'map',
   'mark',
+  'marker',
   'marquee',
+  'mask',
   'menu',
   'menuitem',
+  'metadata',
   'meter',
   'nav',
   'nobr',
@@ -93,9 +131,15 @@ export const validHtmlTags = new Set([
   'option',
   'output',
   'p',
+  'path',
+  'pattern',
+  'polygon',
+  'polyline',
   'pre',
   'progress',
   'q',
+  'radialGradient',
+  'rect',
   'rp',
   'rt',
   'ruby',
@@ -115,6 +159,8 @@ export const validHtmlTags = new Set([
   'summary',
   'sup',
   'svg',
+  'switch',
+  'symbol',
   'table',
   'tbody',
   'td',
@@ -126,10 +172,15 @@ export const validHtmlTags = new Set([
   'time',
   'tr',
   'track',
+  'tspan',
   'tt',
   'u',
   'ul',
+  'use',
   'var',
   'video',
+  'view',
   'wbr',
 ]);
+
+export { objectPath, logError, validHtmlTags };
