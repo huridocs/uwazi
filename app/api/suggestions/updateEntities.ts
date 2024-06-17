@@ -1,10 +1,12 @@
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
+import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
+import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { setIntersection } from 'shared/data_utils/setUtils';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -288,6 +290,21 @@ const getValue = (
   return getter(entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
 };
 
+const updateEntities = async (entitiesToUpdate: EntitySchema[]) => {
+  const templateIds = entitiesToUpdate.map(e => e.template).filter(id => id) as ObjectIdSchema[];
+  const templatesInDb = await templates.get({ _id: { $in: templateIds } });
+  const templatesById = objectIndex(
+    templatesInDb,
+    t => t._id.toString(),
+    t => t
+  );
+  await syncedPromiseLoop(entitiesToUpdate, async (entity: EntitySchema) => {
+    const template = templatesById[entity.template?.toString() || ''];
+    if (!template) return;
+    await entities.updateEntity(entities.sanitize(entity, template), template, true);
+  });
+};
+
 const updateEntitiesWithSuggestion = async (
   allLanguages: boolean,
   acceptedSuggestions: AcceptedSuggestion[],
@@ -336,7 +353,7 @@ const updateEntitiesWithSuggestion = async (
           title: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
         }));
 
-  await entities.saveMultiple(entitiesToUpdate);
+  await updateEntities(entitiesToUpdate);
 };
 
 export { updateEntitiesWithSuggestion, SuggestionAcceptanceError };

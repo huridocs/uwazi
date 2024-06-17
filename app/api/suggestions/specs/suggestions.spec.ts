@@ -894,14 +894,14 @@ describe('suggestions', () => {
           .find({ sharedId: 'shared1' })
           .toArray();
         const ages1 = entities1?.map(entity => entity.metadata.age[0].value);
-        expect(ages1).toEqual(['17', '17']);
+        expect(ages1).toEqual([17, 17]);
 
         const entities2 = await db.mongodb
           ?.collection('entities')
           .find({ sharedId: 'shared2' })
           .toArray();
         const ages2 = entities2?.map(entity => entity.metadata.age[0].value);
-        expect(ages2).toEqual(['20', '20', '20']);
+        expect(ages2).toEqual([20, 20, 20]);
       });
     });
 
@@ -1182,6 +1182,124 @@ describe('suggestions', () => {
         await expect(action()).rejects.toThrow(
           'Some of the removed values exist in the suggestion: S1_sId. Cannot remove values that are suggested.'
         );
+      });
+
+      it('should allow full acceptance, and update entites of all languages, with the properly translated labels', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor'
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(true));
+        expect(metadataValues).toMatchObject([
+          [
+            { value: 'S1_sId', label: 'S1' },
+            { value: 'S3_sId', label: 'S3' },
+          ],
+          [
+            { value: 'S1_sId', label: 'S1_es' },
+            { value: 'S3_sId', label: 'S3_es' },
+          ],
+        ]);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
+      });
+
+      xit('should allow partial acceptance, and update entites of all languages, with the properly translated labels', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['B', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              addedValues: ['B'],
+            }
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(false));
+        expect(metadataValues).toMatchObject([
+          [
+            { value: 'A', label: 'A' },
+            { value: '1A', label: '1A' },
+            { value: 'B', label: 'B' },
+          ],
+          [
+            { value: 'A', label: 'Aes' },
+            { value: '1A', label: '1Aes' },
+            { value: 'B', label: 'Bes' },
+          ],
+        ]);
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
+
+      xit('should do nothing on partial acceptance if the id is already in the entity metadata', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor',
+            {
+              addedValues: ['S1_sId'],
+            }
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(false));
+        expect(metadataValues).toMatchObject([
+          [
+            { value: 'S1_sId', label: 'S1' },
+            { value: 'S2_sId', label: 'S2' },
+          ],
+          [
+            { value: 'S1_sId', label: 'S1_es' },
+            { value: 'S2_sId', label: 'S2_es' },
+          ],
+        ]);
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
+
+      xit('should allow removal through partial acceptance, and update entities of all languages', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              removedValues: ['A'],
+            }
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(false));
+        expect(metadataValues).toMatchObject([
+          [{ value: '1A', label: '1A' }],
+          [{ value: '1A', label: '1Aes' }],
+        ]);
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
+
+      xit('should do nothing on removal through partial acceptance if the id is not in the entity metadata', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', 'A'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              removedValues: ['B'],
+            }
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState());
+        expect(metadataValues).toMatchObject([
+          [
+            { value: 'A', label: 'A' },
+            { value: '1A', label: '1A' },
+          ],
+          [
+            { value: 'A', label: 'Aes' },
+            { value: '1A', label: '1Aes' },
+          ],
+        ]);
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
       });
     });
   });

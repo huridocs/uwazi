@@ -23,7 +23,7 @@ import {
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import {
   getSegmentedFilesIds,
-  propertyTypeIsSelectOrMultiSelect,
+  propertyTypeIsWithoutExtractedMetadata,
 } from 'api/services/informationextraction/getFiles';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
@@ -48,7 +48,7 @@ const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
   property: PropertySchema
 ) => {
-  if (propertyTypeIsSelectOrMultiSelect(property.type)) return;
+  if (propertyTypeIsWithoutExtractedMetadata(property.type)) return;
 
   const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
   const suggestionsByFileId = objectIndex(
