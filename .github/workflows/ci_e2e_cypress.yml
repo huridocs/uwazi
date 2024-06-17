@@ -90,7 +90,7 @@ jobs:
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
-      - run: yarn blank-state
+      - run: yarn blank-state --force
         id: blank-state-attempt2
         if: steps.blank-state-attempt1.outcome == 'failure'
         env:
