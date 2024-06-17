@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -26,33 +26,29 @@ import { dndSortHandler, getDataIds } from './helpers';
 //whe should render an error if there are repeated ids
 
 type TableProps<T extends { rowId: string; subRows?: { rowId: string }[] }> = {
-  data: T[];
   columns: ColumnDef<T, any>[];
-  onChange?: (rows: T[]) => void;
-  onSelect?: (selected: { [id: string]: boolean }) => void;
+  dataState: [state: T[], setter: React.Dispatch<React.SetStateAction<T[]>>];
+  selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
   sorting?: 'dnd' | 'headers';
-  checkboxes?: boolean;
   className?: string;
 };
 
 const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
-  data,
   columns,
-  onChange,
-  onSelect,
+  dataState,
+  selectionState,
   sorting,
-  checkboxes,
   className,
 }: TableProps<T>) => {
-  const [dataState, setDataState] = useState(data);
-  const [rowSelection, setRowSelection] = useState({});
+  const [state, setState] = dataState;
+  const [rowSelection, setRowSelection] = selectionState || [null, null];
 
-  const dataIds = useMemo(() => getDataIds(dataState), [dataState]);
+  const dataIds = useMemo(() => getDataIds(state), [state]);
 
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
 
-    if (checkboxes) {
+    if (rowSelection) {
       tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
@@ -70,38 +66,26 @@ const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
     }
 
     return tableColumns;
-  }, [checkboxes, columns, sorting]);
+  }, [columns, rowSelection, sorting]);
 
   const table = useReactTable({
-    data: dataState,
+    data: state,
     columns: memoizedColumns,
     state: {
-      ...(checkboxes && { rowSelection }),
+      ...(rowSelection && { rowSelection }),
     },
-    ...(checkboxes && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
+    ...(setRowSelection && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
     getCoreRowModel: getCoreRowModel(),
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     getExpandedRowModel: getExpandedRowModel(),
   });
 
-  useEffect(() => {
-    if (onChange) {
-      onChange(dataState);
-    }
-  }, [dataState, onChange]);
-
-  useEffect(() => {
-    if (onSelect) {
-      onSelect(rowSelection);
-    }
-  }, [rowSelection, onSelect]);
-
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
-      setDataState(() => dndSortHandler(dataState, dataIds, active.id, over.id));
+      setState(() => dndSortHandler(state, dataIds, active.id, over.id));
     }
   };
 

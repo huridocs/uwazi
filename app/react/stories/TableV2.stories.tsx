@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
-import { NewTable, NewTableProps } from 'V2/Components/UI';
+import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 import { GroupCell } from './table/TableComponents';
 
-const meta: Meta<NewTableProps<BasicData>> = {
-  title: 'Components/NewTable',
-  component: NewTable,
+type StoryProps = {
+  tableData: any[];
+  checkboxes: boolean;
+  sorting: NewTableProps<BasicData | DataWithGroups>['sorting'];
+  columns: NewTableProps<BasicData | DataWithGroups>['columns'];
 };
-
-type Story = StoryObj<typeof NewTable>;
 
 const basicColumnHelper = createColumnHelper<BasicData>();
 const nestedColumnHelper = createColumnHelper<DataWithGroups>();
@@ -33,26 +33,37 @@ const nestedColumns = [
   }),
 ];
 
-const StoryComponent = ({
-  data,
-  columns,
-  sorting,
-  checkboxes,
-}: NewTableProps<BasicData | DataWithGroups>) => {
-  const [dataState, setDataState] = useState(data);
+const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps) => {
+  const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
 
   return (
     <div className="tw-content">
       <div className="w-full">
         <NewTable
-          data={data}
+          dataState={[dataState, setDataState]}
+          selectionState={checkboxes ? [selected, setSelected] : undefined}
           columns={columns}
-          onChange={updatedData => setDataState(updatedData)}
-          onSelect={sel => setSelected(sel)}
           sorting={sorting}
-          checkboxes={checkboxes}
         />
+        <div className="flex gap-2">
+          <Button
+            styling="outline"
+            onClick={() => {
+              setDataState(tableData.slice(0, 2));
+            }}
+          >
+            Filter data
+          </Button>
+          <Button
+            styling="outline"
+            onClick={() => {
+              setDataState(tableData);
+            }}
+          >
+            Reset data
+          </Button>
+        </div>
       </div>
       <hr className="my-4" />
       <div data-testid="sorted-items">
@@ -98,11 +109,18 @@ const StoryComponent = ({
   );
 };
 
+const meta: Meta<StoryProps> = {
+  title: 'Components/NewTable',
+  component: StoryComponent,
+};
+
+type Story = StoryObj<StoryProps>;
+
 const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <StoryComponent
-        data={args.data}
+        tableData={args.tableData}
         columns={args.columns}
         sorting={args.sorting}
         checkboxes={args.checkboxes}
@@ -114,17 +132,17 @@ const Primary: Story = {
 const Basic = {
   ...Primary,
   args: {
-    data: basicData,
+    tableData: basicData,
     columns: basicColumns,
     sorting: 'dnd',
-    checkboxes: false,
+    checkboxes: true,
   },
 };
 
 const Nested = {
   ...Primary,
   args: {
-    data: dataWithGroups,
+    tableData: dataWithGroups,
     columns: nestedColumns,
     sorting: 'dnd',
     checkboxes: true,
