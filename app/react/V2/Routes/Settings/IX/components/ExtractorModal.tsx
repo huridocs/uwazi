@@ -10,7 +10,6 @@ import { IXExtractorInfo } from 'V2/shared/types';
 import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
-import { Client } from '@elastic/elasticsearch';
 
 const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
 type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
@@ -28,8 +27,8 @@ interface ExtractorModalProps {
 const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
   const { type } = property;
 
-  let icon = propertyIcons[type];
-  let propertyTypeTranslationKey = `property ${type}`;
+  const icon = propertyIcons[type];
+  const propertyTypeTranslationKey = `property ${type}`;
 
   return (
     <div className="flex items-center gap-2">
@@ -62,7 +61,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
               SUPPORTED_PROPERTIES.includes(prop.type)
           )
           .map(prop => ({
-            label: getPropertyLabel(prop, template._id),
+            label: getPropertyLabel(prop as SupportedProperty, template._id),
             value: `${template._id?.toString()}-${prop.name}`,
             searchLabel: prop.label,
           })),
@@ -99,7 +98,7 @@ const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) =
 
   const matchedProperty = matchedTemplate?.properties.find(
     property => property.name === propertyName
-  );
+  ) as SupportedProperty;
 
   if (matchedProperty) {
     return getPropertyLabel(matchedProperty, matchedTemplate!._id.toString());

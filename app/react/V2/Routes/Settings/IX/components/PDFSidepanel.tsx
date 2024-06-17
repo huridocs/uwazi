@@ -62,7 +62,7 @@ const getFormValue = (
       value = dateString;
     }
 
-    if (type === 'select' || type === 'multiselect') {
+    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
     }
   }
@@ -367,7 +367,7 @@ const PDFSidepanel = ({
     items?: Option[];
   }
 
-  const renderSelect = (type: 'select' | 'multiselect') => {
+  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => {
     const options: Option[] = [];
     thesaurus?.values.forEach((value: any) => {
       options.push({
@@ -400,6 +400,7 @@ const PDFSidepanel = ({
         return renderInputText(property?.type);
       case 'select':
       case 'multiselect':
+      case 'relationship':
         return renderSelect(property?.type);
       default:
         return '';

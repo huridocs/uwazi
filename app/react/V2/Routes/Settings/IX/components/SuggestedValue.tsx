@@ -52,7 +52,7 @@ const SuggestedValue = ({
       return secondsToDate(value, locale);
     }
 
-    if (type === 'select' || type === 'multiselect') {
+    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       const label = thesaurus?.values.find(v => v.id === value)?.label;
       return <Translate context={content}>{label}</Translate>;
     }
@@ -67,7 +67,7 @@ const SuggestedValue = ({
     if (type === 'date') {
       return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
     }
-    if (type === 'select' || type === 'multiselect') {
+    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       const label = thesaurus?.values.find(v => v.id === suggestion.suggestedValue)?.label;
       return <Translate context={content}>{label}</Translate>;
     }
