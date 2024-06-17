@@ -1,5 +1,4 @@
 import entities from 'api/entities';
-import translations from 'api/i18n/translations';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
@@ -36,16 +35,6 @@ const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
   return { name: thesaurusName, id: thesaurusId, indexedlabels };
 };
 
-const fetchTranslations = async (property: PropertySchema) => {
-  const trs = await translations.get({ context: property.content });
-  const indexed = objectIndex(
-    trs,
-    t => t.locale || '',
-    t => t.contexts?.[0].values
-  );
-  return indexed;
-};
-
 const fetchEntitySharedIds = async (
   _property: PropertySchema,
   acceptedSuggestions: AcceptedSuggestion[],
@@ -61,8 +50,7 @@ const fetchEntitySharedIds = async (
 
 const fetchSelectResources = async (property: PropertySchema) => {
   const thesaurus = await fetchThesaurus(property.content);
-  const labelTranslations = await fetchTranslations(property);
-  return { thesaurus, translations: labelTranslations };
+  return { thesaurus };
 };
 
 const resourceFetchers = {
@@ -117,17 +105,6 @@ const checkValuesInThesaurus = (
       `Ids are invalid: ${missingValues.join(', ')} (${thesaurusName}).`
     );
   }
-};
-
-const translateThesaurusLabels = (
-  values: string[],
-  entity: EntitySchema,
-  thesaurus: { indexedlabels: Record<IndexTypes, string> },
-  translation: Record<IndexTypes, Record<IndexTypes, string>>
-) => {
-  const labels = values.map(v => thesaurus.indexedlabels[v]);
-  const translatedLabels = labels.map(l => translation[entity.language || '']?.[l]);
-  return values.map((value, index) => ({ value, label: translatedLabels[index] }));
 };
 
 function readAddedValues(acceptedSuggestion: AcceptedSuggestion, suggestionValues: string[]) {
@@ -219,11 +196,11 @@ const valueGetters = {
     acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
-    const { thesaurus, translations: translation } = resources;
+    const { thesaurus } = resources;
     const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
     checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
 
-    return translateThesaurusLabels([value], entity, thesaurus, translation);
+    return [{ value }];
   },
   multiselect: (
     entity: EntitySchema,
@@ -231,7 +208,7 @@ const valueGetters = {
     acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
-    const { thesaurus, translations: translation } = resources;
+    const { thesaurus } = resources;
     const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
     const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
     const suggestionValues = getRawValue(
@@ -248,7 +225,7 @@ const valueGetters = {
       suggestion
     );
 
-    return translateThesaurusLabels(finalValues, entity, thesaurus, translation);
+    return finalValues.map(value => ({ value }));
   },
   relationship: (
     entity: EntitySchema,
