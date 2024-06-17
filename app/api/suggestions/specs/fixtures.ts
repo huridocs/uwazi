@@ -1407,6 +1407,157 @@ const selectAcceptanceFixtureBase: DBFixture = {
   ],
 };
 
+const relationshipAcceptanceFixtureBase: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
+  ixextractors: [
+    factory.ixExtractor('relationship_extractor', 'relationship_to_source', ['rel_template']),
+    factory.ixExtractor(
+      'relationship_with_inheritance_extractor',
+      'relationship_with_inheritance',
+      ['rel_template']
+    ),
+    factory.ixExtractor('relationship_to_any_extractor', 'relationship_to_any', ['rel_template']),
+  ],
+  ixsuggestions: [],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_with_inheritance_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_to_any_extractor'),
+    },
+  ],
+  relationtypes: [
+    factory.relationType('related'),
+    factory.relationType('related_with_inheritance'),
+    factory.relationType('related_to_any'),
+  ],
+  templates: [
+    factory.template('source_template', [factory.property('text_to_inherit', 'text')]),
+    factory.template('rel_template', [
+      factory.property('relationship_to_source', 'relationship', {
+        content: factory.idString('source_template'),
+        relationType: 'related',
+      }),
+      factory.property('relationship_with_inheritance', 'relationship', {
+        content: factory.idString('source_template'),
+        relationType: 'related_with_inheritance',
+        inherit: {
+          property: factory.idString('text_to_inherit'),
+          type: 'text',
+        },
+      }),
+      factory.property('relationship_to_any', 'relationship', {
+        content: '',
+        relationType: 'related_to_any',
+      }),
+    ]),
+  ],
+  entities: [
+    {
+      _id: testingDB.id(),
+      sharedId: 'S1_sId',
+      title: 'S1',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S1_sId',
+      title: 'S1_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S2_sId',
+      title: 'S2',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text 2' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S2_sId',
+      title: 'S2_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text 2 Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S3_sId',
+      title: 'S3',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text 3' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S3_sId',
+      title: 'S3_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text 3 Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithRelationships_sId',
+      title: 'entityWithRelationships',
+      language: 'en',
+      metadata: {
+        relationship_to_source: [
+          { value: 'S1_sId', label: 'S1' },
+          { value: 'S2_sId', label: 'S2' },
+        ],
+        relationship_with_inheritance: [],
+        relationship_to_any: [],
+      },
+      template: factory.id('rel_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithRelationships_sId',
+      title: 'entityWithRelationshipsEs',
+      language: 'es',
+      metadata: {
+        relationship_to_source: [
+          { value: 'S1_sId', label: 'S1_es' },
+          { value: 'S2_sId', label: 'S2_es' },
+        ],
+        relationship_with_inheritance: [],
+        relationship_to_any: [],
+      },
+      template: factory.id('rel_template'),
+    },
+  ],
+  connections: [],
+  files: [
+    factory.file(
+      'fileForEntityWithRelationships',
+      'entityWithRelationships_sId',
+      'document',
+      'documentWithRelationships.pdf',
+      'eng',
+      'documentWithRelationships.pdf'
+    ),
+  ],
+};
+
 export {
   factory,
   file2Id,
@@ -1423,4 +1574,5 @@ export {
   suggestionId,
   shared2AgeSuggestionId,
   selectAcceptanceFixtureBase,
+  relationshipAcceptanceFixtureBase,
 };

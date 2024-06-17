@@ -1,5 +1,6 @@
 import entities from 'api/entities';
 import translations from 'api/i18n/translations';
+import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
@@ -18,6 +19,8 @@ interface AcceptedSuggestion {
   addedValues?: string[];
   removedValues?: string[];
 }
+
+const fetchNoResources = async () => ({});
 
 const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
   const dict = await thesauri.getById(thesaurusId);
@@ -41,6 +44,19 @@ const fetchTranslations = async (property: PropertySchema) => {
   return indexed;
 };
 
+const fetchEntitySharedIds = async (
+  _property: PropertySchema,
+  acceptedSuggestions: AcceptedSuggestion[],
+  suggestions: IXSuggestionType[]
+) => {
+  const suggestionSharedIds = suggestions.map(s => s.suggestedValue).flat();
+  const addedSharedIds = acceptedSuggestions.map(s => s.addedValues || []).flat();
+  const expectedSharedIds = Array.from(new Set(suggestionSharedIds.concat(addedSharedIds)));
+  const entitiesInDb = await entities.get({ sharedId: { $in: expectedSharedIds } }, ['sharedId']);
+  const sharedIdsInDb = new Set(entitiesInDb.map((e: any) => e.sharedId));
+  return { sharedIdsInDb };
+};
+
 const fetchSelectResources = async (property: PropertySchema) => {
   const thesaurus = await fetchThesaurus(property.content);
   const labelTranslations = await fetchTranslations(property);
@@ -48,22 +64,35 @@ const fetchSelectResources = async (property: PropertySchema) => {
 };
 
 const resourceFetchers = {
-  _default: async () => ({}),
+  title: fetchNoResources,
+  text: fetchNoResources,
+  numeric: fetchNoResources,
+  date: fetchNoResources,
   select: fetchSelectResources,
   multiselect: fetchSelectResources,
+  relationship: fetchEntitySharedIds,
 };
 
-const fetchResources = async (property: PropertySchema) => {
-  // @ts-ignore
-  const fetcher = resourceFetchers[property.type] || resourceFetchers._default;
-  return fetcher(property);
+const fetchResources = async (
+  property: PropertySchema,
+  acceptedSuggestions: AcceptedSuggestion[],
+  suggestions: IXSuggestionType[]
+) => {
+  const type = checkTypeIsAllowed(property.type);
+  const fetcher = resourceFetchers[type];
+  return fetcher(property, acceptedSuggestions, suggestions);
 };
+
+const getAcceptedSuggestion = (
+  entity: EntitySchema,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+): AcceptedSuggestion => acceptedSuggestionsBySharedId[entity.sharedId || ''];
 
 const getSuggestion = (
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
   acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-) => suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId || '']._id.toString()];
+) => suggestionsById[getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId)._id.toString()];
 
 const getRawValue = (
   entity: EntitySchema,
@@ -146,7 +175,7 @@ function mixFinalValues(
   return finalValues;
 }
 
-function arrangeValues(
+function arrangeAddedOrRemovedValues(
   acceptedSuggestion: AcceptedSuggestion,
   suggestionValues: string[],
   entity: EntitySchema,
@@ -161,6 +190,15 @@ function arrangeValues(
     finalValues = suggestionValues;
   }
   return finalValues;
+}
+
+function checkSharedIds(values: string[], sharedIdsInDb: Set<string>) {
+  const missingSharedIds = values.filter(v => !sharedIdsInDb.has(v));
+  if (missingSharedIds.length > 0) {
+    throw new SuggestionAcceptanceError(
+      `The following sharedIds do not exist in the database: ${missingSharedIds.join(', ')}.`
+    );
+  }
 }
 
 const valueGetters = {
@@ -201,7 +239,7 @@ const valueGetters = {
     ) as string[];
     checkValuesInThesaurus(suggestionValues, thesaurus.name, thesaurus.indexedlabels);
 
-    const finalValues: string[] = arrangeValues(
+    const finalValues: string[] = arrangeAddedOrRemovedValues(
       acceptedSuggestion,
       suggestionValues,
       entity,
@@ -209,6 +247,17 @@ const valueGetters = {
     );
 
     return mapLabels(finalValues, entity, thesaurus, translation);
+  },
+  relationship: (
+    entity: EntitySchema,
+    suggestionsById: Record<IndexTypes, IXSuggestionType>,
+    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    resources: any
+  ) => {
+    const { sharedIdsInDb } = resources;
+    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string[];
+    checkSharedIds(value, sharedIdsInDb);
+    return [{ value }];
   },
 };
 
@@ -249,7 +298,7 @@ const updateEntitiesWithSuggestion = async (
     s => s
   );
 
-  const resources = await fetchResources(property);
+  const resources = await fetchResources(property, acceptedSuggestions, suggestions);
 
   const entitiesToUpdate =
     propertyName !== 'title'

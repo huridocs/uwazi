@@ -18,6 +18,7 @@ import {
   suggestionId,
   shared2AgeSuggestionId,
   selectAcceptanceFixtureBase,
+  relationshipAcceptanceFixtureBase,
 } from './fixtures';
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
@@ -346,18 +347,20 @@ const matchState = (match: boolean = true): IXSuggestionStateType => ({
   error: false,
 });
 
-const selectSuggestionBase = (propertyName: string, extractorName: string) => ({
-  fileId: factory.id('fileForentityWithSelects'),
-  entityId: 'entityWithSelects',
-  entityTemplate: factory.id('templateWithSelects').toString(),
-  propertyName,
-  extractorId: factory.id(extractorName),
-  date: 5,
-  status: 'ready' as 'ready',
-  error: '',
-});
+type SuggestionBase = Pick<
+  IXSuggestionType,
+  | 'fileId'
+  | 'entityId'
+  | 'entityTemplate'
+  | 'propertyName'
+  | 'extractorId'
+  | 'date'
+  | 'status'
+  | 'error'
+>;
 
 const prepareAndAcceptSuggestion = async (
+  suggestionBase: SuggestionBase,
   suggestedValue: string | string[],
   language: string,
   propertyName: string,
@@ -368,7 +371,7 @@ const prepareAndAcceptSuggestion = async (
   } = {}
 ) => {
   const suggestion = {
-    ...selectSuggestionBase(propertyName, extractorName),
+    ...suggestionBase,
     suggestedValue,
     language,
   };
@@ -386,6 +389,69 @@ const prepareAndAcceptSuggestion = async (
   const allFiles = await db.mongodb?.collection('files').find({}).toArray();
   return { acceptedSuggestion, metadataValues, allFiles };
 };
+
+const selectSuggestionBase = (propertyName: string, extractorName: string): SuggestionBase => ({
+  fileId: factory.id('fileForentityWithSelects'),
+  entityId: 'entityWithSelects',
+  entityTemplate: factory.id('templateWithSelects').toString(),
+  propertyName,
+  extractorId: factory.id(extractorName),
+  date: 5,
+  status: 'ready' as 'ready',
+  error: '',
+});
+
+const prepareAndAcceptSelectSuggestion = async (
+  suggestedValue: string | string[],
+  language: string,
+  propertyName: string,
+  extractorName: string,
+  acceptanceParameters: {
+    addedValues?: string[];
+    removedValues?: string[];
+  } = {}
+) =>
+  prepareAndAcceptSuggestion(
+    selectSuggestionBase(propertyName, extractorName),
+    suggestedValue,
+    language,
+    propertyName,
+    extractorName,
+    acceptanceParameters
+  );
+
+const relationshipSuggestionBase = (
+  propertyName: string,
+  extractorName: string
+): SuggestionBase => ({
+  fileId: factory.id('fileForEntityWithRelationships'),
+  entityId: 'entityWithRelationships_sId',
+  entityTemplate: factory.id('rel_template').toString(),
+  propertyName,
+  extractorId: factory.id(extractorName),
+  date: 5,
+  status: 'ready' as 'ready',
+  error: '',
+});
+
+const prepareAndAcceptRelationshipSuggestion = async (
+  suggestedValue: string | string[],
+  language: string,
+  propertyName: string,
+  extractorName: string,
+  acceptanceParameters: {
+    addedValues?: string[];
+    removedValues?: string[];
+  } = {}
+) =>
+  prepareAndAcceptSuggestion(
+    relationshipSuggestionBase(propertyName, extractorName),
+    suggestedValue,
+    language,
+    propertyName,
+    extractorName,
+    acceptanceParameters
+  );
 
 describe('suggestions', () => {
   afterAll(async () => {
@@ -846,18 +912,14 @@ describe('suggestions', () => {
 
       it('should validate that the id exists in the dictionary', async () => {
         const action = async () => {
-          await prepareAndAcceptSuggestion('Z', 'en', 'property_select', 'select_extractor');
+          await prepareAndAcceptSelectSuggestion('Z', 'en', 'property_select', 'select_extractor');
         };
         await expect(action()).rejects.toThrow('Id is invalid: Z (Nested Thesaurus).');
       });
 
       it('should update entities of all languages, with the properly translated labels', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          'A',
-          'en',
-          'property_select',
-          'select_extractor'
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion('A', 'en', 'property_select', 'select_extractor');
         expect(acceptedSuggestion.state).toEqual(matchState());
         expect(metadataValues).toMatchObject([
           [{ value: 'A', label: 'A' }],
@@ -874,7 +936,7 @@ describe('suggestions', () => {
 
       it('should validate that the ids exist in the dictionary', async () => {
         const action = async () => {
-          await prepareAndAcceptSuggestion(
+          await prepareAndAcceptSelectSuggestion(
             ['Z', '1A', 'Y', 'A'],
             'en',
             'property_multiselect',
@@ -886,18 +948,30 @@ describe('suggestions', () => {
 
       it('should validate that partial acceptance is allowed only for multiselects', async () => {
         const addAction = async () => {
-          await prepareAndAcceptSuggestion('1A', 'en', 'property_select', 'select_extractor', {
-            addedValues: ['1A'],
-          });
+          await prepareAndAcceptSelectSuggestion(
+            '1A',
+            'en',
+            'property_select',
+            'select_extractor',
+            {
+              addedValues: ['1A'],
+            }
+          );
         };
         await expect(addAction()).rejects.toThrow(
           'Partial acceptance is only allowed for multiselects.'
         );
 
         const removeAction = async () => {
-          await prepareAndAcceptSuggestion('1A', 'en', 'property_select', 'select_extractor', {
-            removedValues: ['1B'],
-          });
+          await prepareAndAcceptSelectSuggestion(
+            '1A',
+            'en',
+            'property_select',
+            'select_extractor',
+            {
+              removedValues: ['1B'],
+            }
+          );
         };
         await expect(removeAction()).rejects.toThrow(
           'Partial acceptance is only allowed for multiselects.'
@@ -906,7 +980,7 @@ describe('suggestions', () => {
 
       it("should validate that the accepted id's through partial acceptance do exist on the suggestion", async () => {
         const action = async () => {
-          await prepareAndAcceptSuggestion(
+          await prepareAndAcceptSelectSuggestion(
             ['1A', '1B'],
             'en',
             'property_multiselect',
@@ -923,7 +997,7 @@ describe('suggestions', () => {
 
       it("should validate that the id's to remove through partial acceptance do not exist on the suggestion", async () => {
         const action = async () => {
-          await prepareAndAcceptSuggestion(
+          await prepareAndAcceptSelectSuggestion(
             ['1A', '1B'],
             'en',
             'property_multiselect',
@@ -939,12 +1013,13 @@ describe('suggestions', () => {
       });
 
       it('should allow full acceptance, and update entites of all languages, with the properly translated labels', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          ['1A', '1B'],
-          'en',
-          'property_multiselect',
-          'multiselect_extractor'
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor'
+          );
         expect(acceptedSuggestion.state).toEqual(matchState());
         expect(metadataValues).toMatchObject([
           [
@@ -960,15 +1035,16 @@ describe('suggestions', () => {
       });
 
       it('should allow partial acceptance, and update entites of all languages, with the properly translated labels', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          ['B', '1B'],
-          'en',
-          'property_multiselect',
-          'multiselect_extractor',
-          {
-            addedValues: ['B'],
-          }
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['B', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              addedValues: ['B'],
+            }
+          );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
         expect(metadataValues).toMatchObject([
           [
@@ -986,15 +1062,16 @@ describe('suggestions', () => {
       });
 
       it('should do nothing on partial acceptance if the id is already in the entity metadata', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          ['1A', '1B'],
-          'en',
-          'property_multiselect',
-          'multiselect_extractor',
-          {
-            addedValues: ['1A'],
-          }
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              addedValues: ['1A'],
+            }
+          );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
         expect(metadataValues).toMatchObject([
           [
@@ -1010,15 +1087,16 @@ describe('suggestions', () => {
       });
 
       it('should allow removal through partial acceptance, and update entities of all languages', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          ['1A', '1B'],
-          'en',
-          'property_multiselect',
-          'multiselect_extractor',
-          {
-            removedValues: ['A'],
-          }
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', '1B'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              removedValues: ['A'],
+            }
+          );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
         expect(metadataValues).toMatchObject([
           [{ value: '1A', label: '1A' }],
@@ -1028,15 +1106,16 @@ describe('suggestions', () => {
       });
 
       it('should do nothing on removal through partial acceptance if the id is not in the entity metadata', async () => {
-        const { acceptedSuggestion, metadataValues, allFiles } = await prepareAndAcceptSuggestion(
-          ['1A', 'A'],
-          'en',
-          'property_multiselect',
-          'multiselect_extractor',
-          {
-            removedValues: ['B'],
-          }
-        );
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion(
+            ['1A', 'A'],
+            'en',
+            'property_multiselect',
+            'multiselect_extractor',
+            {
+              removedValues: ['B'],
+            }
+          );
         expect(acceptedSuggestion.state).toEqual(matchState());
         expect(metadataValues).toMatchObject([
           [
@@ -1049,6 +1128,26 @@ describe('suggestions', () => {
           ],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
+    });
+
+    describe('relationship', () => {
+      beforeEach(async () => {
+        await db.setupFixturesAndContext(relationshipAcceptanceFixtureBase);
+      });
+
+      it('should validate that the entities exist', async () => {
+        const action = async () => {
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'X_sId', 'S2_sId', 'Y_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor'
+          );
+        };
+        await expect(action()).rejects.toThrow(
+          'The following sharedIds do not exist in the database: X_sId, Y_sId.'
+        );
       });
     });
   });
