@@ -205,15 +205,22 @@ const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'mul
 const needsAllLanguages = (propertyType: PropertySchema['type']) =>
   propertyTypesWithAllLanguages.has(propertyType);
 
+const validTypesForPartialAcceptance = new Set(['multiselect', 'relationship']);
+
+const typeIsValidForPartialAcceptance = (propertyType: string) =>
+  validTypesForPartialAcceptance.has(propertyType);
+
 const validatePartialAcceptanceTypeConstraint = (
   acceptedSuggestions: AcceptedSuggestion[],
   property: PropertySchema
 ) => {
   const addedValuesExist = acceptedSuggestions.some(s => s.addedValues);
   const removedValuesExist = acceptedSuggestions.some(s => s.removedValues);
-  const multiSelectOnly = addedValuesExist || removedValuesExist;
-  if (property.type !== 'multiselect' && multiSelectOnly) {
-    throw new SuggestionAcceptanceError('Partial acceptance is only allowed for multiselects.');
+  const partialAcceptanceTriggered = addedValuesExist || removedValuesExist;
+  if (!typeIsValidForPartialAcceptance(property.type) && partialAcceptanceTriggered) {
+    throw new SuggestionAcceptanceError(
+      'Partial acceptance is only allowed for multiselects or relationships.'
+    );
   }
 };
 

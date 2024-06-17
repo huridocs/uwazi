@@ -946,7 +946,7 @@ describe('suggestions', () => {
         await expect(action()).rejects.toThrow('Ids are invalid: Z, Y (Nested Thesaurus).');
       });
 
-      it('should validate that partial acceptance is allowed only for multiselects', async () => {
+      it('should validate that partial acceptance is allowed only for multiselects/relationships', async () => {
         const addAction = async () => {
           await prepareAndAcceptSelectSuggestion(
             '1A',
@@ -959,7 +959,7 @@ describe('suggestions', () => {
           );
         };
         await expect(addAction()).rejects.toThrow(
-          'Partial acceptance is only allowed for multiselects.'
+          'Partial acceptance is only allowed for multiselects or relationships.'
         );
 
         const removeAction = async () => {
@@ -974,7 +974,7 @@ describe('suggestions', () => {
           );
         };
         await expect(removeAction()).rejects.toThrow(
-          'Partial acceptance is only allowed for multiselects.'
+          'Partial acceptance is only allowed for multiselects or relationships.'
         );
       });
 
@@ -1136,7 +1136,7 @@ describe('suggestions', () => {
         await db.setupFixturesAndContext(relationshipAcceptanceFixtureBase);
       });
 
-      it('should validate that the entities exist', async () => {
+      it('should validate that the entities in the suggestion exist', async () => {
         const action = async () => {
           await prepareAndAcceptRelationshipSuggestion(
             ['S1_sId', 'X_sId', 'S2_sId', 'Y_sId'],
@@ -1147,6 +1147,40 @@ describe('suggestions', () => {
         };
         await expect(action()).rejects.toThrow(
           'The following sharedIds do not exist in the database: X_sId, Y_sId.'
+        );
+      });
+
+      it("should validate that the accepted id's through partial acceptance do exist on the suggestion", async () => {
+        const action = async () => {
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S2_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor',
+            {
+              addedValues: ['S1_sId', 'X_sId', 'Y_sId'],
+            }
+          );
+        };
+        await expect(action()).rejects.toThrow(
+          'Some of the accepted values do not exist in the suggestion: X_sId, Y_sId. Cannot accept values that are not suggested.'
+        );
+      });
+
+      it("should validate that the id's to remove through partial acceptance do not exist on the suggestion", async () => {
+        const action = async () => {
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S2_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor',
+            {
+              removedValues: ['S1_sId', 'S0_sId'],
+            }
+          );
+        };
+        await expect(action()).rejects.toThrow(
+          'Some of the removed values exist in the suggestion: S1_sId. Cannot remove values that are suggested.'
         );
       });
     });

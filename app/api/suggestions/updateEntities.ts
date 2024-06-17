@@ -117,7 +117,7 @@ const checkValuesInThesaurus = (
   }
 };
 
-const mapLabels = (
+const translateThesaurusLabels = (
   values: string[],
   entity: EntitySchema,
   thesaurus: { indexedlabels: Record<IndexTypes, string> },
@@ -221,7 +221,7 @@ const valueGetters = {
     const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
     checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
 
-    return mapLabels([value], entity, thesaurus, translation);
+    return translateThesaurusLabels([value], entity, thesaurus, translation);
   },
   multiselect: (
     entity: EntitySchema,
@@ -230,7 +230,7 @@ const valueGetters = {
     resources: any
   ) => {
     const { thesaurus, translations: translation } = resources;
-    const acceptedSuggestion = acceptedSuggestionsBySharedId[entity.sharedId || ''];
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
     const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
     const suggestionValues = getRawValue(
       entity,
@@ -246,7 +246,7 @@ const valueGetters = {
       suggestion
     );
 
-    return mapLabels(finalValues, entity, thesaurus, translation);
+    return translateThesaurusLabels(finalValues, entity, thesaurus, translation);
   },
   relationship: (
     entity: EntitySchema,
@@ -255,9 +255,24 @@ const valueGetters = {
     resources: any
   ) => {
     const { sharedIdsInDb } = resources;
-    const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string[];
-    checkSharedIds(value, sharedIdsInDb);
-    return [{ value }];
+
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
+    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
+    const suggestionValues = getRawValue(
+      entity,
+      suggestionsById,
+      acceptedSuggestionsBySharedId
+    ) as string[];
+    checkSharedIds(suggestionValues, sharedIdsInDb);
+
+    const finalValues: string[] = arrangeAddedOrRemovedValues(
+      acceptedSuggestion,
+      suggestionValues,
+      entity,
+      suggestion
+    );
+
+    return finalValues.map(value => ({ value }));
   },
 };
 
