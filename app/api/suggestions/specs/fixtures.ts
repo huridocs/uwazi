@@ -1524,7 +1524,28 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
           { value: 'S1_sId', label: 'S1' },
           { value: 'S2_sId', label: 'S2' },
         ],
-        relationship_with_inheritance: [],
+        relationship_with_inheritance: [
+          {
+            value: 'S1_sId',
+            label: 'S1',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text',
+              },
+            ],
+          },
+          {
+            value: 'S2_sId',
+            label: 'S2',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text 2',
+              },
+            ],
+          },
+        ],
         relationship_to_any: [],
       },
       template: factory.id('rel_template'),
@@ -1539,7 +1560,28 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
           { value: 'S1_sId', label: 'S1_es' },
           { value: 'S2_sId', label: 'S2_es' },
         ],
-        relationship_with_inheritance: [],
+        relationship_with_inheritance: [
+          {
+            value: 'S1_sId',
+            label: 'S1_es',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text Spanish',
+              },
+            ],
+          },
+          {
+            value: 'S2_sId',
+            label: 'S2_es',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text 2 Spanish',
+              },
+            ],
+          },
+        ],
         relationship_to_any: [],
       },
       template: factory.id('rel_template'),

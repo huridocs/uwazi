@@ -1206,34 +1206,34 @@ describe('suggestions', () => {
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      xit('should allow partial acceptance, and update entites of all languages, with the properly translated labels', async () => {
+      it('should allow partial acceptance, and update entites of all languages, with the properly translated labels', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
-          await prepareAndAcceptSelectSuggestion(
-            ['B', '1B'],
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
             'en',
-            'property_multiselect',
-            'multiselect_extractor',
+            'relationship_to_source',
+            'relationship_extractor',
             {
-              addedValues: ['B'],
+              addedValues: ['S3_sId'],
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
         expect(metadataValues).toMatchObject([
           [
-            { value: 'A', label: 'A' },
-            { value: '1A', label: '1A' },
-            { value: 'B', label: 'B' },
+            { value: 'S1_sId', label: 'S1' },
+            { value: 'S2_sId', label: 'S2' },
+            { value: 'S3_sId', label: 'S3' },
           ],
           [
-            { value: 'A', label: 'Aes' },
-            { value: '1A', label: '1Aes' },
-            { value: 'B', label: 'Bes' },
+            { value: 'S1_sId', label: 'S1_es' },
+            { value: 'S2_sId', label: 'S2_es' },
+            { value: 'S3_sId', label: 'S3_es' },
           ],
         ]);
-        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      xit('should do nothing on partial acceptance if the id is already in the entity metadata', async () => {
+      it('should do nothing on partial acceptance if the id is already in the entity metadata', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptRelationshipSuggestion(
             ['S1_sId', 'S3_sId'],
@@ -1255,51 +1255,109 @@ describe('suggestions', () => {
             { value: 'S2_sId', label: 'S2_es' },
           ],
         ]);
-        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      xit('should allow removal through partial acceptance, and update entities of all languages', async () => {
+      it('should allow removal through partial acceptance, and update entities of all languages', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
-          await prepareAndAcceptSelectSuggestion(
-            ['1A', '1B'],
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
             'en',
-            'property_multiselect',
-            'multiselect_extractor',
+            'relationship_to_source',
+            'relationship_extractor',
             {
-              removedValues: ['A'],
+              removedValues: ['S2_sId'],
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
         expect(metadataValues).toMatchObject([
-          [{ value: '1A', label: '1A' }],
-          [{ value: '1A', label: '1Aes' }],
+          [{ value: 'S1_sId', label: 'S1' }],
+          [{ value: 'S1_sId', label: 'S1_es' }],
         ]);
-        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      xit('should do nothing on removal through partial acceptance if the id is not in the entity metadata', async () => {
+      it('should do nothing on removal through partial acceptance if the id is not in the entity metadata', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
-          await prepareAndAcceptSelectSuggestion(
-            ['1A', 'A'],
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S2_sId'],
             'en',
-            'property_multiselect',
-            'multiselect_extractor',
+            'relationship_to_source',
+            'relationship_extractor',
             {
-              removedValues: ['B'],
+              removedValues: ['S3_sId'],
             }
           );
-        expect(acceptedSuggestion.state).toEqual(matchState());
+        expect(acceptedSuggestion.state).toEqual(matchState(true));
         expect(metadataValues).toMatchObject([
           [
-            { value: 'A', label: 'A' },
-            { value: '1A', label: '1A' },
+            { value: 'S1_sId', label: 'S1' },
+            { value: 'S2_sId', label: 'S2' },
           ],
           [
-            { value: 'A', label: 'Aes' },
-            { value: '1A', label: '1Aes' },
+            { value: 'S1_sId', label: 'S1_es' },
+            { value: 'S2_sId', label: 'S2_es' },
           ],
         ]);
-        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
+      });
+
+      it('should update inherited values per language', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
+            'en',
+            'relationship_with_inheritance',
+            'relationship_with_inheritance_extractor'
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(true));
+        expect(metadataValues).toMatchObject([
+          [
+            {
+              value: 'S1_sId',
+              label: 'S1',
+              inheritedType: 'text',
+              inheritedValue: [
+                {
+                  value: 'inherited text',
+                },
+              ],
+            },
+            {
+              value: 'S3_sId',
+              label: 'S3',
+              inheritedType: 'text',
+              inheritedValue: [
+                {
+                  value: 'inherited text 3',
+                },
+              ],
+            },
+          ],
+          [
+            {
+              value: 'S1_sId',
+              label: 'S1_es',
+              inheritedType: 'text',
+              inheritedValue: [
+                {
+                  value: 'inherited text Spanish',
+                },
+              ],
+            },
+            {
+              value: 'S3_sId',
+              label: 'S3_es',
+              inheritedType: 'text',
+              inheritedValue: [
+                {
+                  value: 'inherited text 3 Spanish',
+                },
+              ],
+            },
+          ],
+        ]);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
     });
   });
