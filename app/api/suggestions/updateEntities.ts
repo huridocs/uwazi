@@ -180,16 +180,20 @@ function checkSharedIds(values: string[], sharedIdsInDb: Set<string>) {
   }
 }
 
+const getRawValueAsArray = (
+  entity: EntitySchema,
+  suggestionsById: Record<IndexTypes, IXSuggestionType>,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+) => [
+  {
+    value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
+  },
+];
+
 const valueGetters = {
-  _default: (
-    entity: EntitySchema,
-    suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-  ) => [
-    {
-      value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
-    },
-  ],
+  text: getRawValueAsArray,
+  date: getRawValueAsArray,
+  numeric: getRawValueAsArray,
   select: (
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
@@ -262,8 +266,11 @@ const getValue = (
   acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
   resources: any
 ) => {
-  // @ts-ignore
-  const getter = valueGetters[property.type] || valueGetters._default;
+  const type = checkTypeIsAllowed(property.type);
+  if (type === 'title') {
+    throw new SuggestionAcceptanceError('Title should not be hanled here.');
+  }
+  const getter = valueGetters[type];
   return getter(entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
 };
 
