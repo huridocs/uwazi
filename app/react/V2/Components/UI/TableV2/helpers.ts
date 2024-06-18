@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash';
 import { TableProps } from './Table';
 
 const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
-  data: TableProps<T>['data']
+  data: TableProps<T>['dataState'][0]
 ) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];
 
@@ -21,11 +21,11 @@ const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
 };
 
 const dndSortHandler = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
-  currentState: TableProps<T>['data'],
+  currentState: TableProps<T>['dataState'][0],
   dataIds: { id: UniqueIdentifier; parentId?: string }[],
   activeId: string | number,
   overId: string | number
-): TableProps<any>['data'] => {
+): TableProps<any>['dataState'][0] => {
   const state = cloneDeep(currentState);
 
   const activeParent = dataIds.find(dataId => dataId.id === activeId)?.parentId;
