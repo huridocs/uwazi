@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import db from 'api/utils/testing_db';
 
 import {
@@ -1354,6 +1355,54 @@ describe('suggestions', () => {
                   value: 'inherited text 3 Spanish',
                 },
               ],
+            },
+          ],
+        ]);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
+      });
+
+      it('should check if the suggested entities are of the correct template', async () => {
+        const action = async () => {
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'other_source'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor'
+          );
+        };
+        await expect(action()).rejects.toThrow(
+          'The following sharedIds do not match the content template in the relationship property: other_source.'
+        );
+      });
+
+      it('should handle relationship properties with any template as content', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S2_sId', 'other_source_2'],
+            'en',
+            'relationship_to_any',
+            'relationship_to_any_extractor'
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(true));
+        expect(metadataValues).toMatchObject([
+          [
+            {
+              value: 'S2_sId',
+              label: 'S2',
+            },
+            {
+              value: 'other_source_2',
+              label: 'Other Source 2',
+            },
+          ],
+          [
+            {
+              value: 'S2_sId',
+              label: 'S2_es',
+            },
+            {
+              value: 'other_source_2',
+              label: 'Other Source 2 Spanish',
             },
           ],
         ]);

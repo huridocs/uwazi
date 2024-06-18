@@ -1446,6 +1446,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
   ],
   templates: [
     factory.template('source_template', [factory.property('text_to_inherit', 'text')]),
+    factory.template('source_template_2', []),
     factory.template('rel_template', [
       factory.property('relationship_to_source', 'relationship', {
         content: factory.idString('source_template'),
@@ -1466,6 +1467,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
     ]),
   ],
   entities: [
+    // ---------- sources
     {
       _id: testingDB.id(),
       sharedId: 'S1_sId',
@@ -1514,6 +1516,40 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
       metadata: { text_to_inherit: [{ value: 'inherited text 3 Spanish' }] },
       template: factory.id('source_template'),
     },
+    // ---------- other sources
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source',
+      title: 'Other Source',
+      language: 'en',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source',
+      title: 'Other Source Spanish',
+      language: 'es',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source_2',
+      title: 'Other Source 2',
+      language: 'en',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source_2',
+      title: 'Other Source 2 Spanish',
+      language: 'es',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    // ---------- with relationship
     {
       _id: testingDB.id(),
       sharedId: 'entityWithRelationships_sId',
@@ -1546,7 +1582,16 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
             ],
           },
         ],
-        relationship_to_any: [],
+        relationship_to_any: [
+          {
+            value: 'S1_sId',
+            label: 'S1',
+          },
+          {
+            value: 'other_source',
+            label: 'Other Source',
+          },
+        ],
       },
       template: factory.id('rel_template'),
     },
@@ -1582,7 +1627,16 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
             ],
           },
         ],
-        relationship_to_any: [],
+        relationship_to_any: [
+          {
+            value: 'S1_sId',
+            label: 'S1_es',
+          },
+          {
+            value: 'other_source',
+            label: 'Other Source Spanish',
+          },
+        ],
       },
       template: factory.id('rel_template'),
     },
