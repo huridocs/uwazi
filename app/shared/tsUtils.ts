@@ -3,6 +3,8 @@ import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ClientBlobFile } from 'app/istore';
 
+export type Subset<K, T extends K> = T;
+
 export const isBlobFile = (file: unknown): file is ClientBlobFile =>
   isObject(file) && isString((file as ClientBlobFile).data);
 
