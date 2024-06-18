@@ -67,12 +67,25 @@ const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps)
       </div>
       <hr className="my-4" />
       <div data-testid="sorted-items">
-        <h2>Sorted items:</h2>
+        <h2>Row state:</h2>
         <div className="flex gap-2">{dataState.map(ds => `${ds.title} `)}</div>
       </div>
       <hr className="my-4" />
+      <div data-testid="sorted-subrows">
+        <h2>Subrow state:</h2>
+        <div className="flex gap-2">
+          {dataState.map((ds: DataWithGroups) =>
+            ds.subRows?.map(subRow => (
+              <span key={subRow.rowId}>
+                |{ds.title} - {subRow.title}|
+              </span>
+            ))
+          )}
+        </div>
+      </div>
+      <hr className="my-4" />
       <div data-testid="selected-items">
-        <h2>Selected items:</h2>
+        <h2>Selected rows:</h2>
         <div className="flex gap-2">
           {dataState
             .filter(ds => ds.rowId in selected)
@@ -89,19 +102,6 @@ const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps)
             ds.subRows
               ?.filter(subRow => subRow.rowId in selected)
               .map(subRow => <span key={subRow.rowId}>{subRow.title}</span>)
-          )}
-        </div>
-      </div>
-      <hr className="my-4" />
-      <div data-testid="sorted-subrows">
-        <h2>Sorted subRows:</h2>
-        <div className="flex gap-2">
-          {dataState.map((ds: DataWithGroups) =>
-            ds.subRows?.map(subRow => (
-              <span key={subRow.rowId}>
-                |{ds.title} - {subRow.title}|
-              </span>
-            ))
           )}
         </div>
       </div>

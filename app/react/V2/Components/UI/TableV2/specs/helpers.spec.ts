@@ -1,5 +1,5 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { dndSortHandler, getDataIds } from '../helpers';
+import { getDataIds, dndSortHandler } from '../helpers';
 import { tableData } from './fixtures';
 
 describe('DnD table sort handler', () => {
