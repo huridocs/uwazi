@@ -60,16 +60,24 @@ const ixmessages = {
 };
 
 const IXSuggestions = () => {
-  const { suggestions, extractor, templates, aggregation, currentStatus, totalPages } =
-    useLoaderData() as {
-      totalPages: number;
-      suggestions: TableSuggestion[];
-      extractor: IXExtractorInfo;
-      templates: ClientTemplateSchema[];
-      aggregation: any;
-      currentStatus: ixStatus;
-      _id: string;
-    };
+  const {
+    suggestions,
+    extractor,
+    templates,
+    aggregation,
+    currentStatus,
+    totalPages,
+    activeFilters,
+  } = useLoaderData() as {
+    totalPages: number;
+    suggestions: TableSuggestion[];
+    extractor: IXExtractorInfo;
+    templates: ClientTemplateSchema[];
+    aggregation: any;
+    currentStatus: ixStatus;
+    _id: string;
+    activeFilters: number;
+  };
 
   const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
   const [property, setProperty] = useState<ClientPropertySchema>();
@@ -248,6 +256,7 @@ const IXSuggestions = () => {
                 onFiltersButtonClicked={() => {
                   setSidepanel('filters');
                 }}
+                activeFilters={activeFilters}
               />
             }
             enableSelection
@@ -366,10 +375,14 @@ const IXSuggestionsLoader =
     if (!extractorId) throw new Error('extractorId is required');
     const searchParams = new URLSearchParams(request.url.split('?')[1]);
     const filter: any = { extractorId };
+    let activeFilters = 0;
     if (searchParams.has('filter')) {
       filter.customFilter = JSON.parse(searchParams.get('filter')!);
+      activeFilters = [
+        ...Object.values(filter.customFilter.labeled),
+        ...Object.values(filter.customFilter.nonLabeled),
+      ].filter(Boolean).length;
     }
-
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
     const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
@@ -396,6 +409,7 @@ const IXSuggestionsLoader =
       templates,
       aggregation,
       currentStatus: currentStatus.status,
+      activeFilters,
     };
   };
 
