@@ -1641,7 +1641,30 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
       template: factory.id('rel_template'),
     },
   ],
-  connections: [],
+  connections: [
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1'),
+      template: factory.id('related'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S2'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S2_sId',
+      hub: factory.id('hub_S2'),
+      template: factory.id('related'),
+    },
+  ],
   files: [
     factory.file(
       'fileForEntityWithRelationships',

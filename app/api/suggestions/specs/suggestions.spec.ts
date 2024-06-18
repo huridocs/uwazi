@@ -1408,6 +1408,51 @@ describe('suggestions', () => {
         ]);
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
+
+      fit('should remove or create connections as necessary', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptRelationshipSuggestion(
+            ['S1_sId', 'S3_sId'],
+            'en',
+            'relationship_to_source',
+            'relationship_extractor'
+          );
+        expect(acceptedSuggestion.state).toEqual(matchState(true));
+        expect(metadataValues).toMatchObject([
+          [
+            { value: 'S1_sId', label: 'S1' },
+            { value: 'S3_sId', label: 'S3' },
+          ],
+          [
+            { value: 'S1_sId', label: 'S1_es' },
+            { value: 'S3_sId', label: 'S3_es' },
+          ],
+        ]);
+        expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
+
+        const connections = await db.mongodb?.collection('connections').find({}).toArray();
+        const secondHubId = connections?.find(c => c.entity === 'S3_sId')?.hub;
+        expect(connections).toMatchObject([
+          {
+            entity: 'entityWithRelationships_sId',
+            hub: factory.id('hub_S1'),
+          },
+          {
+            entity: 'S1_sId',
+            hub: factory.id('hub_S1'),
+            template: factory.id('related'),
+          },
+          {
+            entity: 'entityWithRelationships_sId',
+            hub: secondHubId,
+          },
+          {
+            entity: 'S3_sId',
+            hub: secondHubId,
+            template: factory.id('related'),
+          },
+        ]);
+      });
     });
   });
 
