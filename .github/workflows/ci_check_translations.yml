@@ -45,7 +45,7 @@ jobs:
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
-      - run: yarn blank-state
+      - run: yarn blank-state --force
         id: blank-state-attempt2
         if: steps.blank-state-attempt1.outcome == 'failure'
         env:
