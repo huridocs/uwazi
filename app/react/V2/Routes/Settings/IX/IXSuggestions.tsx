@@ -92,7 +92,7 @@ const IXSuggestions = () => {
   }, [templates, extractor]);
 
   useMemo(() => {
-    if (property?.type === 'multiselect') {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
       const flatenedSuggestions = suggestions.map(suggestion =>
         generateChildrenRows(suggestion as MultiValueSuggestion)
       );
