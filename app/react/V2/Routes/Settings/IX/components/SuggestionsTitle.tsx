@@ -9,16 +9,19 @@ import {
   NumericPropertyIcon,
   TextPropertyIcon,
   SelectPropertyIcon,
+  RelationshipPropertyIcon,
 } from 'app/V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
   property,
   templates,
   onFiltersButtonClicked,
+  activeFilters,
 }: {
   property: string;
   templates: ClientTemplateSchema[];
   onFiltersButtonClicked: () => void;
+  activeFilters: number;
 }) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   const template = allProperties.find(prop => prop.name === property);
@@ -38,6 +41,9 @@ const SuggestionsTitle = ({
     case 'select':
     case 'multiselect':
       propGraphics = <SelectPropertyIcon className="w-3" />;
+      break;
+    case 'relationship':
+      propGraphics = <RelationshipPropertyIcon className="w-3" />;
       break;
     default:
       propGraphics = <TextPropertyIcon className="w-3" />;
@@ -64,8 +70,15 @@ const SuggestionsTitle = ({
 
       <div className="flex-none">
         <Button size="small" styling="light" onClick={onFiltersButtonClicked}>
-          <FunnelIcon className="inline w-5 px-1 text-gray-800" />
+          <FunnelIcon
+            className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
+          />
           <Translate>Stats & Filters</Translate>
+          {activeFilters > 0 && (
+            <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
+              {activeFilters}
+            </span>
+          )}
         </Button>
       </div>
     </div>

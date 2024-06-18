@@ -1,4 +1,4 @@
-import { formatBytes, getFileNameAndExtension } from '../formatHelpers';
+import { formatBytes, getFileNameAndExtension, validEmailFormat } from '../formatHelpers';
 
 describe('Formatting helpers', () => {
   describe('bytes formatter', () => {
@@ -34,5 +34,23 @@ describe('Formatting helpers', () => {
         expect(extension).toEqual(expectedExtension);
       }
     );
+  });
+
+  describe('validate email format', () => {
+    it.each`
+      email                          | result
+      ${'valid@valid.com'}           | ${true}
+      ${'Valid123@domain.co.uk'}     | ${true}
+      ${'user.name+tag@domain.com'}  | ${true}
+      ${'username@sub.domain.com'}   | ${true}
+      ${'username@domain.c'}         | ${true}
+      ${'username@domain.wrong'}     | ${true}
+      ${'username@domain.something'} | ${true}
+      ${'username@domain'}           | ${false}
+      ${'username@.com'}             | ${false}
+      ${'@domain.com'}               | ${false}
+    `('returns $result for $email', ({ email, result }) => {
+      expect(validEmailFormat(email)).toEqual(result);
+    });
   });
 });
