@@ -281,7 +281,10 @@ class InformationExtraction {
           templates,
           template => template.properties || []
         );
-        const property = allProps.find(p => p.name === extractor.property);
+        const property =
+          extractor.property === 'title'
+            ? { name: 'title' as 'title', type: 'title' as 'title' }
+            : allProps.find(p => p.name === extractor.property);
 
         const suggestion = await formatSuggestion(
           property,

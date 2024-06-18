@@ -225,10 +225,8 @@ const PDFSidepanel = ({
   }, [pdf, setValue, showSidepanel, suggestion]);
 
   useEffect(() => {
-    console.log('pdfContainerRef', pdfContainerRef);
     if (pdfContainerRef.current) {
       const { height } = pdfContainerRef.current.getBoundingClientRect();
-      console.log('height', height);
       setPdfContainerHeight(height);
     }
   }, [labelInputIsOpen, pdfContainerRef.current]);
@@ -313,7 +311,7 @@ const PDFSidepanel = ({
     }
     const inputType = type === 'numeric' ? 'number' : type;
     return (
-      <div className="relative flex gap-2 px-4 pb-4 grow">
+      <div className={`relative flex gap-2 px-4 pb-4 grow ${labelInputIsOpen ? '' : 'hidden'}`}>
         <div className="grow">
           <InputField
             clearFieldAction={() => {
@@ -380,7 +378,7 @@ const PDFSidepanel = ({
     });
 
     return (
-      <div className="px-4 pb-4 overflow-y-scroll grow">
+      <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
         <MultiselectList
           onChange={values => {
             setValue('field', values, { shouldDirty: true });
@@ -462,7 +460,7 @@ const PDFSidepanel = ({
                 {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
               </span>
             </div>
-            {labelInputIsOpen && renderLabel()}
+            {renderLabel()}
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
               <Button
                 type="button"

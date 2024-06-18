@@ -23,6 +23,7 @@ import {
   uploadsPath,
 } from '../filesystem';
 import { storage } from '../storage';
+import { FileNotFound } from '../FileNotFound';
 
 let s3: S3Client;
 
@@ -100,7 +101,7 @@ describe('storage', () => {
 
       it('should throw an error when file does not exists', async () => {
         await expect(storage.fileContents('test_s3_file.txt', 'document')).rejects.toBeInstanceOf(
-          Error
+          FileNotFound
         );
       });
     });

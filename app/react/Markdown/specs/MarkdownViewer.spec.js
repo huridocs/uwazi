@@ -157,9 +157,18 @@ describe('MarkdownViewer', () => {
     });
 
     describe('when not valid html', () => {
-      it('should not fail', () => {
+      it('should not fail on malformed tags', () => {
         props.markdown = '<div><h</div>';
         props.html = true;
+
+        render();
+        expect(component).toMatchSnapshot();
+      });
+
+      it('should not fail on unsupported tags', () => {
+        props.html = true;
+        props.markdown =
+          "<b>Little red ridding hood</b>\n<p>I don't know <..long pause..> a minute later  <..pause..> a grandma story.\nWhen I heard it</p>";
 
         render();
         expect(component).toMatchSnapshot();
