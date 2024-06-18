@@ -113,16 +113,18 @@ const getRoutesLayout = (
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
       </Route>
-      <Route
-        path="metadata_extraction"
-        element={adminsOnlyRoute(<IXDashboard />)}
-        loader={IXdashboardLoader(headers)}
-      />
-      <Route
-        path="metadata_extraction/suggestions/:extractorId"
-        loader={IXSuggestionsLoader(headers)}
-        element={adminsOnlyRoute(<IXSuggestions />)}
-      />
+      <Route path="metadata_extraction">
+        <Route
+          index
+          element={adminsOnlyRoute(<IXDashboard />)}
+          loader={IXdashboardLoader(headers)}
+        />
+        <Route
+          path="suggestions/:extractorId"
+          loader={IXSuggestionsLoader(headers)}
+          element={adminsOnlyRoute(<IXSuggestions />)}
+        />
+      </Route>
       <Route path="relationship-types">
         <Route
           index
@@ -202,7 +204,7 @@ const getRoutes = (
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
-      <Route path=":lang">
+      <Route path="/:lang">
         {layout}
         <Route path="*" element={<GeneralError />} />
       </Route>
