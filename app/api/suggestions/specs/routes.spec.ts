@@ -393,10 +393,7 @@ describe('suggestions routes', () => {
           title: 'The Penguin',
         },
       ]);
-      expect(search.indexEntities).toHaveBeenCalledWith(
-        { _id: { $in: [shared6enId] } },
-        '+fullText'
-      );
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
     });
 
     it('should reject with unauthorized when user has not admin role', async () => {
@@ -434,10 +431,10 @@ describe('suggestions routes', () => {
       const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
       expect(entity.metadata.property_multiselect).toEqual([
         { value: 'A', label: 'A' },
-        { value: '1B', label: '1B' },
+        { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
       ]);
       expect(search.indexEntities).toHaveBeenCalledWith(
-        { _id: { $in: [factory.id('entityWithSelects2')] } },
+        { sharedId: 'entityWithSelects2' },
         '+fullText'
       );
     });

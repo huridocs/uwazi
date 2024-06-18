@@ -24,6 +24,7 @@ const properties: Record<string, PropertySchema> = {
   date: fixtureFactory.property('date_property', 'date'),
   select: fixtureFactory.property('select_property', 'select'),
   multiselect: fixtureFactory.property('multiselect_property', 'multiselect'),
+  relationship: fixtureFactory.property('relationship_property', 'relationship'),
 };
 
 const entities: Record<string, EntitySchema> = {
@@ -44,6 +45,12 @@ const entities: Record<string, EntitySchema> = {
     multiselect_property: [
       { value: 'A_id', label: 'A' },
       { value: 'B_id', label: 'B' },
+    ],
+  }),
+  relationship: fixtureFactory.entity('entity_id', 'entity_template', {
+    relationship_property: [
+      { value: 'related_1_id', label: 'related_1_title' },
+      { value: 'related_2_id', label: 'related_2_title' },
     ],
   }),
 };
@@ -101,6 +108,11 @@ const currentSuggestions: Record<string, IXSuggestionType> = {
     ...currentSuggestionBase,
     propertyName: 'multiselect_property',
     suggestedValue: ['A_id', 'B_id'],
+  },
+  relationship: {
+    ...currentSuggestionBase,
+    propertyName: 'relationship_property',
+    suggestedValue: ['related_1_id', 'related_2_id'],
   },
 };
 
@@ -176,6 +188,13 @@ const validRawSuggestions = {
     values: [
       { id: 'C_id', label: 'C' },
       { id: 'D_id', label: 'D' },
+    ],
+  },
+  relationship: {
+    ...rawSuggestionBase,
+    values: [
+      { id: 'related_1_id', label: 'related_1_title' },
+      { id: 'related_3_id', label: 'related_3_title' },
     ],
   },
 };
@@ -323,6 +342,28 @@ describe('formatSuggestion', () => {
       },
       currentSuggestion: currentSuggestions.multiselect,
       entity: entities.multiselect,
+      expectedErrorMessage: '/values/0/id: must be string',
+    },
+    {
+      case: 'invalid relationship values type',
+      property: properties.relationship,
+      rawSuggestion: {
+        ...validRawSuggestions.relationship,
+        values: 1,
+      },
+      currentSuggestion: currentSuggestions.relationship,
+      entity: entities.relationship,
+      expectedErrorMessage: '/values: must be array',
+    },
+    {
+      case: 'invalid relationship values subtype',
+      property: properties.relationship,
+      rawSuggestion: {
+        ...validRawSuggestions.relationship,
+        values: [{ id: 1, label: 'value_label' }],
+      },
+      currentSuggestion: currentSuggestions.relationship,
+      entity: entities.relationship,
       expectedErrorMessage: '/values/0/id: must be string',
     },
   ])(
@@ -484,6 +525,19 @@ describe('formatSuggestion', () => {
         ...currentSuggestions.multiselect,
         date: expect.any(Number),
         suggestedValue: ['C_id', 'D_id'],
+        segment: 'new context',
+      },
+    },
+    {
+      case: 'valid relationship suggestions',
+      property: properties.relationship,
+      rawSuggestion: validRawSuggestions.relationship,
+      currentSuggestion: currentSuggestions.relationship,
+      entity: entities.relationship,
+      expectedResult: {
+        ...currentSuggestions.relationship,
+        date: expect.any(Number),
+        suggestedValue: ['related_1_id', 'related_3_id'],
         segment: 'new context',
       },
     },
