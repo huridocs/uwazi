@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import db from 'api/utils/testing_db';
 
 import {

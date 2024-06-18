@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import entities from 'api/entities';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import thesauri from 'api/thesauri';
