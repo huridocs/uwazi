@@ -8,9 +8,16 @@ import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
+import { Subset } from 'shared/tsUtils';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
-type AllowedPropertyTypes = 'title' | 'text' | 'numeric' | 'date' | 'select' | 'multiselect';
+type AllowedPropertyTypes =
+  | Subset<
+      PropertyTypeSchema,
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
+    >
+  | 'title';
 
 const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
   'title',
@@ -19,6 +26,7 @@ const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
   'date',
   'select',
   'multiselect',
+  'relationship',
 ];
 
 const allowedTypeSet = new Set<string>(ALLOWED_PROPERTY_TYPES);

@@ -11,7 +11,10 @@ import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
+type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
+  type: 'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship';
+};
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,30 +24,11 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-const getPropertyLabel = (property: ClientPropertySchema, templateId: string) => {
-  let icon: React.ReactNode;
-  let propertyTypeTranslationKey = 'property text';
+const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
+  const { type } = property;
 
-  switch (property.type) {
-    case 'numeric':
-      icon = propertyIcons.numeric;
-      propertyTypeTranslationKey = 'property numeric';
-      break;
-    case 'date':
-      icon = propertyIcons.date;
-      propertyTypeTranslationKey = 'property date';
-      break;
-    case 'select':
-      icon = propertyIcons.select;
-      propertyTypeTranslationKey = 'property select';
-      break;
-    case 'multiselect':
-      icon = propertyIcons.multiselect;
-      propertyTypeTranslationKey = 'property multiselect';
-      break;
-    default:
-      icon = propertyIcons.text;
-  }
+  const icon = propertyIcons[type];
+  const propertyTypeTranslationKey = `property ${type}`;
 
   return (
     <div className="flex items-center gap-2">
@@ -77,7 +61,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
               SUPPORTED_PROPERTIES.includes(prop.type)
           )
           .map(prop => ({
-            label: getPropertyLabel(prop, template._id),
+            label: getPropertyLabel(prop as SupportedProperty, template._id),
             value: `${template._id?.toString()}-${prop.name}`,
             searchLabel: prop.label,
           })),
@@ -114,7 +98,7 @@ const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) =
 
   const matchedProperty = matchedTemplate?.properties.find(
     property => property.name === propertyName
-  );
+  ) as SupportedProperty;
 
   if (matchedProperty) {
     return getPropertyLabel(matchedProperty, matchedTemplate!._id.toString());

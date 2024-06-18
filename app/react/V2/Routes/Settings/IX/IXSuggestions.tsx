@@ -92,7 +92,7 @@ const IXSuggestions = () => {
   }, [templates, extractor]);
 
   useMemo(() => {
-    if (property?.type === 'multiselect') {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
       const flatenedSuggestions = suggestions.map(suggestion =>
         generateChildrenRows(suggestion as MultiValueSuggestion)
       );
@@ -268,7 +268,7 @@ const IXSuggestions = () => {
                 <PaginationState
                   page={Number(searchParams.get('page') || 1)}
                   size={SUGGESTIONS_PER_PAGE}
-                  total={status.data?.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  total={aggregation.total || totalPages * SUGGESTIONS_PER_PAGE}
                   currentLength={currentSuggestions.length}
                 />
                 <div>

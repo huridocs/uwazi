@@ -62,7 +62,7 @@ const getFormValue = (
       value = dateString;
     }
 
-    if (type === 'select' || type === 'multiselect') {
+    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
     }
   }
@@ -367,7 +367,7 @@ const PDFSidepanel = ({
     items?: Option[];
   }
 
-  const renderSelect = (type: 'select' | 'multiselect') => {
+  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => {
     const options: Option[] = [];
     thesaurus?.values.forEach((value: any) => {
       options.push({
@@ -400,6 +400,7 @@ const PDFSidepanel = ({
         return renderInputText(property?.type);
       case 'select':
       case 'multiselect':
+      case 'relationship':
         return renderSelect(property?.type);
       default:
         return '';
@@ -446,7 +447,7 @@ const PDFSidepanel = ({
           </form>{' '}
         </div>
         <Sidepanel.Footer
-          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
         >
           <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
             <div className="sticky top-0 flex px-4 py-2 bg-white">
