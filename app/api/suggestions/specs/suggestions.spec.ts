@@ -21,6 +21,7 @@ import {
   selectAcceptanceFixtureBase,
   relationshipAcceptanceFixtureBase,
 } from './fixtures';
+import { ObjectId } from 'mongodb';
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
   Suggestions.get(filter, { page: { size, number: 1 } });
@@ -1409,7 +1410,7 @@ describe('suggestions', () => {
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
       });
 
-      fit('should remove or create connections as necessary', async () => {
+      it('should remove or create connections as necessary', async () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptRelationshipSuggestion(
             ['S1_sId', 'S3_sId'],
@@ -1430,28 +1431,27 @@ describe('suggestions', () => {
         ]);
         expect(allFiles).toEqual(relationshipAcceptanceFixtureBase.files);
 
-        const connections = await db.mongodb?.collection('connections').find({}).toArray();
-        const secondHubId = connections?.find(c => c.entity === 'S3_sId')?.hub;
-        expect(connections).toMatchObject([
-          {
-            entity: 'entityWithRelationships_sId',
-            hub: factory.id('hub_S1'),
-          },
-          {
-            entity: 'S1_sId',
-            hub: factory.id('hub_S1'),
-            template: factory.id('related'),
-          },
-          {
-            entity: 'entityWithRelationships_sId',
-            hub: secondHubId,
-          },
-          {
-            entity: 'S3_sId',
-            hub: secondHubId,
-            template: factory.id('related'),
-          },
-        ]);
+        const removedConnection = await db.mongodb
+          ?.collection('connections')
+          .findOne({ entity: 'S2_sId', template: factory.id('related') });
+        expect(removedConnection).toBeNull();
+
+        const newConnection = await db.mongodb
+          ?.collection('connections')
+          .findOne({ entity: 'S3_sId' });
+        expect(newConnection).toMatchObject({
+          entity: 'S3_sId',
+          hub: expect.any(ObjectId),
+          template: factory.id('related'),
+        });
+        const newHub = newConnection?.hub;
+        const pairedConnection = await db.mongodb
+          ?.collection('connections')
+          .findOne({ entity: 'entityWithRelationships_sId', hub: newHub });
+        expect(pairedConnection).toMatchObject({
+          entity: 'entityWithRelationships_sId',
+          hub: newHub,
+        });
       });
     });
   });

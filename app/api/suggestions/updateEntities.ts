@@ -1,7 +1,6 @@
 /* eslint-disable max-lines */
 import entities from 'api/entities';
 import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
-import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { ObjectId } from 'mongodb';
@@ -304,18 +303,9 @@ const getValue = (
   return getter(property, entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
 };
 
-const updateEntities = async (entitiesToUpdate: EntitySchema[]) => {
-  const templateIds = entitiesToUpdate.map(e => e.template).filter(id => id) as ObjectIdSchema[];
-  const templatesInDb = await templates.get({ _id: { $in: templateIds } });
-  const templatesById = objectIndex(
-    templatesInDb,
-    t => t._id.toString(),
-    t => t
-  );
+const saveEntities = async (entitiesToUpdate: EntitySchema[]) => {
   await syncedPromiseLoop(entitiesToUpdate, async (entity: EntitySchema) => {
-    const template = templatesById[entity.template?.toString() || ''];
-    if (!template) return;
-    await entities.updateEntity(entities.sanitize(entity, template), template, true);
+    await entities.save(entity, { user: {}, language: entity.language });
   });
 };
 
@@ -367,7 +357,7 @@ const updateEntitiesWithSuggestion = async (
           title: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
         }));
 
-  await updateEntities(entitiesToUpdate);
+  await saveEntities(entitiesToUpdate);
 };
 
 export { updateEntitiesWithSuggestion, SuggestionAcceptanceError };

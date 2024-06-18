@@ -1450,11 +1450,11 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
     factory.template('rel_template', [
       factory.property('relationship_to_source', 'relationship', {
         content: factory.idString('source_template'),
-        relationType: 'related',
+        relationType: factory.idString('related'),
       }),
       factory.property('relationship_with_inheritance', 'relationship', {
         content: factory.idString('source_template'),
-        relationType: 'related_with_inheritance',
+        relationType: factory.idString('related_with_inheritance'),
         inherit: {
           property: factory.idString('text_to_inherit'),
           type: 'text',
@@ -1462,7 +1462,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
       }),
       factory.property('relationship_to_any', 'relationship', {
         content: '',
-        relationType: 'related_to_any',
+        relationType: factory.idString('related_to_any'),
       }),
     ]),
   ],
@@ -1663,6 +1663,50 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
       entity: 'S2_sId',
       hub: factory.id('hub_S2'),
       template: factory.id('related'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1_inherited'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1_inherited'),
+      template: factory.id('related_with_inheritance'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S2_inherited'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S2_sId',
+      hub: factory.id('hub_S2_inherited'),
+      template: factory.id('related_with_inheritance'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1_any'),
+      template: factory.id('related_to_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_other_source_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'other_source',
+      hub: factory.id('hub_other_source_any'),
+      template: factory.id('related_to_any'),
     },
   ],
   files: [
