@@ -2,7 +2,7 @@ import settings from 'api/settings';
 import templates from 'api/templates';
 import { objectIndex } from 'shared/data_utils/objectIndex';
 import { CurrentValue, getSuggestionState, SuggestionValues } from 'shared/getIXSuggestionState';
-import { propertyIsMultiselect } from 'shared/propertyTypes';
+import { propertyIsMultiselect, propertyIsRelationship } from 'shared/propertyTypes';
 import { LanguagesListSchema, PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXSuggestionsModel } from './IXSuggestionsModel';
 import {
@@ -95,7 +95,9 @@ const postProcessCurrentValue = (
   suggestion: SuggestionsAggregationResult,
   propertyType: PropertyTypeSchema
 ): PostProcessedAggregationResult => {
-  if (propertyIsMultiselect(propertyType)) return suggestion;
+  if (propertyIsMultiselect(propertyType) || propertyIsRelationship(propertyType)) {
+    return suggestion;
+  }
   return {
     ...suggestion,
     currentValue: suggestion.currentValue.length > 0 ? suggestion.currentValue[0] : '',

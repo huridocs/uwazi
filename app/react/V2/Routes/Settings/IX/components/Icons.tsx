@@ -5,6 +5,7 @@ import {
   NumericPropertyIcon,
   SelectPropertyIcon,
   TextPropertyIcon,
+  RelationshipPropertyIcon,
 } from 'V2/Components/CustomIcons';
 
 const propertyIcons = {
@@ -14,6 +15,7 @@ const propertyIcons = {
   markdown: <MarkdownPropertyIcon />,
   select: <SelectPropertyIcon />,
   multiselect: <SelectPropertyIcon />,
+  relationship: <RelationshipPropertyIcon />,
 };
 
 export { propertyIcons };
