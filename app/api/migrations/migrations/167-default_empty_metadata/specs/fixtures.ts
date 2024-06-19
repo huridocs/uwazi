@@ -318,6 +318,38 @@ const fixtures: Fixture = {
     },
     {
       _id: new ObjectId(),
+      title: 'entity_with_partial_valid_metadata',
+      sharedId: 'entity_with_partial_valid_metadata_sharedId',
+      template: template._id,
+      language: 'en',
+      metadata: {
+        text: [],
+        select: [
+          {
+            value: 'A_id',
+            label: 'A',
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
+      title: 'entity_with_partial_valid_metadata_es',
+      sharedId: 'entity_with_partial_valid_metadata_sharedId',
+      template: template._id,
+      language: 'es',
+      metadata: {
+        text: [],
+        select: [
+          {
+            value: 'A_id',
+            label: 'A_es',
+          },
+        ],
+      },
+    },
+    {
+      _id: new ObjectId(),
       title: 'other_template',
       sharedId: 'other_template_sharedId',
       template: template2._id,

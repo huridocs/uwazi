@@ -111,6 +111,31 @@ describe('migration test', () => {
         ],
       },
       {
+        title: 'entity_with_partial_valid_metadata',
+        expectedMetadata: [
+          {
+            text: [],
+            select: [
+              {
+                value: 'A_id',
+                label: 'A',
+              },
+            ],
+            relationship: [],
+          },
+          {
+            text: [],
+            select: [
+              {
+                value: 'A_id',
+                label: 'A_es',
+              },
+            ],
+            relationship: [],
+          },
+        ],
+      },
+      {
         title: 'other_template',
         expectedMetadata: [
           {
