@@ -27,7 +27,7 @@ afterAll(async () => {
 
 describe('migration test', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(165);
+    expect(migration.delta).toBe(167);
   });
 
   describe('on a correct database', () => {

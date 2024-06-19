@@ -8,7 +8,7 @@ const propDoesNotExist = (obj: Record<string, unknown>, prop: string) =>
   !obj.hasOwnProperty(prop) || obj[prop] === null || obj[prop] === undefined;
 
 export default {
-  delta: 165,
+  delta: 167,
 
   name: 'default_empty_metadata',
 
