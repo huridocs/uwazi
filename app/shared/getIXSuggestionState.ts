@@ -4,9 +4,13 @@ import { IXSuggestionStateType } from './types/suggestionType';
 import { setsEqual } from './data_utils/setUtils';
 import {
   propertyIsMultiselect,
+  propertyIsRelationship,
   propertyIsSelect,
   propertyIsSelectOrMultiSelect,
 } from './propertyTypes';
+
+const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
+  propertyIsMultiselect(propertyType) || propertyIsRelationship(propertyType);
 
 type CurrentValue = string | number | null;
 
@@ -27,6 +31,7 @@ const sameValueSet = (first: any, second: any) => setsEqual(first || [], second 
 const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
   date: isSameDate,
   multiselect: sameValueSet,
+  relationship: sameValueSet,
 };
 
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
@@ -67,7 +72,7 @@ class IXSuggestionState implements IXSuggestionStateType {
     if (
       labeledValue ||
       (propertyIsSelect(propertyType) && currentValue) ||
-      (propertyIsMultiselect(propertyType) &&
+      (propertyIsMultiValued(propertyType) &&
         Array.isArray(currentValue) &&
         currentValue.length > 0)
     ) {
@@ -76,7 +81,7 @@ class IXSuggestionState implements IXSuggestionStateType {
   }
 
   setWithValue({ currentValue }: SuggestionValues, propertyType: PropertySchema['type']) {
-    if (propertyIsMultiselect(propertyType) && Array.isArray(currentValue)) {
+    if (propertyIsMultiValued(propertyType) && Array.isArray(currentValue)) {
       this.withValue = currentValue?.length > 0;
     } else if (currentValue) {
       this.withValue = true;
@@ -103,7 +108,11 @@ class IXSuggestionState implements IXSuggestionStateType {
   }
 
   setHasContext({ segment }: SuggestionValues, propertyType: PropertySchema['type']) {
-    if (segment || propertyIsSelectOrMultiSelect(propertyType)) {
+    if (
+      segment ||
+      propertyIsSelectOrMultiSelect(propertyType) ||
+      propertyIsRelationship(propertyType)
+    ) {
       this.hasContext = true;
     }
   }

@@ -105,7 +105,7 @@ const updateSuggestionsByEntity = (
 
   if (updatedEntity.metadata[propertyToUpdate]?.length) {
     const newValue = (
-      property?.type === 'multiselect'
+      property?.type === 'multiselect' || property?.type === 'relationship'
         ? updatedEntity.metadata[propertyToUpdate]?.map(v => v.value)
         : updatedEntity.metadata[propertyToUpdate]![0].value
     ) as SuggestionValue;
@@ -119,7 +119,7 @@ const updateSuggestionsByEntity = (
     suggestionToUpdate.state.match = suggestionToUpdate.suggestedValue === '';
   }
 
-  if (property?.type === 'multiselect') {
+  if (property?.type === 'multiselect' || property?.type === 'relationship') {
     suggestionToUpdate = generateChildrenRows(suggestionToUpdate as MultiValueSuggestion);
   }
 
