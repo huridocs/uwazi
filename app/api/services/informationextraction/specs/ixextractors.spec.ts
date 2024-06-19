@@ -30,11 +30,20 @@ const fixtures: DBFixture = {
       },
     },
   ],
+  relationtypes: [fixtureFactory.relationType('owns')],
   templates: [
     fixtureFactory.template('personTemplate', [
       fixtureFactory.property('age', 'numeric'),
       fixtureFactory.property('enemy', 'text'),
       fixtureFactory.property('location', 'geolocation'),
+      fixtureFactory.property('occupation', 'select', { content: fixtureFactory.idString('Jobs') }),
+      fixtureFactory.property('spoken_languages', 'multiselect', {
+        content: fixtureFactory.idString('Languages'),
+      }),
+      fixtureFactory.property('pets', 'relationship', {
+        content: fixtureFactory.idString('animalTemplate'),
+        relationType: fixtureFactory.idString('owns'),
+      }),
     ]),
     fixtureFactory.template('animalTemplate', [fixtureFactory.property('kind', 'text')]),
     fixtureFactory.template('plantTemplate', [fixtureFactory.property('kind', 'text')]),
@@ -127,6 +136,10 @@ const fixtures: DBFixture = {
       { language: 'es' }
     ),
   ],
+  dictionaries: [
+    fixtureFactory.thesauri('Jobs', ['Developer', 'Tester']),
+    fixtureFactory.thesauri('Languages', ['English', 'Spanish']),
+  ],
 };
 
 const emptyState: IXSuggestionStateType = {
@@ -148,6 +161,16 @@ const expectedStates: Record<string, IXSuggestionStateType> = {
   onlyValue: {
     ...emptyState,
     withValue: true,
+  },
+  onlyContext: {
+    ...emptyState,
+    hasContext: true,
+  },
+  defaultForMultiValued: {
+    ...emptyState,
+    hasContext: true,
+    withSuggestion: true,
+    match: true,
   },
 };
 
@@ -259,6 +282,102 @@ describe('ixextractors', () => {
             segment: '',
             suggestedValue: '',
             state: expectedStates.onlyValue,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+        ],
+      },
+      {
+        case: 'selects',
+        name: 'occupation_test',
+        property: 'occupation',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'en',
+            fileId: fixtureFactory.id('F1'),
+            propertyName: 'occupation',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: expectedStates.onlyContext,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'es',
+            fileId: fixtureFactory.id('F2'),
+            propertyName: 'occupation',
+            error: '',
+            segment: '',
+            suggestedValue: '',
+            state: expectedStates.onlyContext,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+        ],
+      },
+      {
+        case: 'multiselects',
+        name: 'spoken_languages_test',
+        property: 'spoken_languages',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'en',
+            fileId: fixtureFactory.id('F1'),
+            propertyName: 'spoken_languages',
+            error: '',
+            segment: '',
+            suggestedValue: [],
+            state: expectedStates.defaultForMultiValued,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'es',
+            fileId: fixtureFactory.id('F2'),
+            propertyName: 'spoken_languages',
+            error: '',
+            segment: '',
+            suggestedValue: [],
+            state: expectedStates.defaultForMultiValued,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+        ],
+      },
+      {
+        case: 'relationships',
+        name: 'pets_test',
+        property: 'pets',
+        templates: [fixtureFactory.id('personTemplate').toString()],
+        expectedSuggestions: [
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'en',
+            fileId: fixtureFactory.id('F1'),
+            propertyName: 'pets',
+            error: '',
+            segment: '',
+            suggestedValue: [],
+            state: expectedStates.defaultForMultiValued,
+            entityTemplate: fixtureFactory.id('personTemplate').toString(),
+          },
+          {
+            status: 'ready',
+            entityId: 'shared2',
+            language: 'es',
+            fileId: fixtureFactory.id('F2'),
+            propertyName: 'pets',
+            error: '',
+            segment: '',
+            suggestedValue: [],
+            state: expectedStates.defaultForMultiValued,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],

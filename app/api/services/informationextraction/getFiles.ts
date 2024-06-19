@@ -49,11 +49,17 @@ const propertiesWithoutExtractedMetadata: Set<string> = new Set([
   ...Array.from(selectProperties),
   propertyTypes.relationship,
 ]);
+const multiValuedProperties: Set<string> = new Set([
+  propertyTypes.multiselect,
+  propertyTypes.relationship,
+]);
 
 const propertyTypeIsSelectOrMultiSelect = (type: string) => selectProperties.has(type);
 
 const propertyTypeIsWithoutExtractedMetadata = (type: string) =>
   propertiesWithoutExtractedMetadata.has(type);
+
+const propertyTypeIsMultiValued = (type: string) => multiValuedProperties.has(type);
 
 async function getFilesWithAggregations(files: (FileType & FileEnforcedNotUndefined)[]) {
   const filesNames = files.filter(x => x.filename).map(x => x.filename);
@@ -231,5 +237,6 @@ export {
   getSegmentedFilesIds,
   propertyTypeIsSelectOrMultiSelect,
   propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsMultiValued,
 };
 export type { FileWithAggregation };
