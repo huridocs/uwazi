@@ -135,9 +135,7 @@ const PDFSidepanel = ({
   onEntitySave,
   property,
 }: PDFSidepanelProps) => {
-  const pdfContainerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<FileType>();
-  const [pdfContainerHeight, setPdfContainerHeight] = useState(0);
   const [selectedText, setSelectedText] = useState<TextSelection>();
   const [selectionError, setSelectionError] = useState<string>();
   const [highlights, setHighlights] = useState<Highlights>();
@@ -210,11 +208,6 @@ const PDFSidepanel = ({
       );
     }
 
-    if (pdfContainerRef.current) {
-      const { height } = pdfContainerRef.current.getBoundingClientRect();
-      setPdfContainerHeight(height);
-    }
-
     return () => {
       setSelectedText(undefined);
       setSelectionError(undefined);
@@ -223,13 +216,6 @@ const PDFSidepanel = ({
       setValue('field', undefined, { shouldDirty: false });
     };
   }, [pdf, setValue, showSidepanel, suggestion]);
-
-  useEffect(() => {
-    if (pdfContainerRef.current) {
-      const { height } = pdfContainerRef.current.getBoundingClientRect();
-      setPdfContainerHeight(height);
-    }
-  }, [labelInputIsOpen, pdfContainerRef.current]);
 
   const onSubmit = async (value: {
     field: PropertyValueSchema | PropertyValueSchema[] | undefined;
@@ -311,7 +297,7 @@ const PDFSidepanel = ({
     }
     const inputType = type === 'numeric' ? 'number' : type;
     return (
-      <div className={`relative flex gap-2 px-4 pb-4 grow ${labelInputIsOpen ? '' : 'hidden'}`}>
+      <div className={`relative flex gap-2 px-4 pb-4 grow  ${labelInputIsOpen ? '' : 'hidden'}`}>
         <div className="grow">
           <InputField
             clearFieldAction={() => {
@@ -416,13 +402,13 @@ const PDFSidepanel = ({
         title={entity?.title}
         closeSidepanelFunction={() => setShowSidepanel(false)}
       >
-        <div className="flex-grow">
+        <div className="flex-grow overflow-y-scroll">
           <form
             id="ixpdfform"
             className="flex flex-col h-full gap-4 p-0"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <div ref={pdfContainerRef} className="w-full md:m-auto grow">
+            <div className="w-full md:m-auto grow">
               {pdf && (
                 <PDF
                   fileUrl={`/api/files/${pdf.filename}`}
@@ -437,7 +423,6 @@ const PDFSidepanel = ({
                     }
                   }}
                   size={{
-                    height: `${pdfContainerHeight - 90}px`,
                     width: '100%',
                   }}
                   scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
@@ -447,7 +432,7 @@ const PDFSidepanel = ({
           </form>{' '}
         </div>
         <Sidepanel.Footer
-          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+          className={`max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
         >
           <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
             <div className="sticky top-0 flex px-4 py-2 bg-white">

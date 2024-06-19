@@ -47,7 +47,6 @@ const MultiselectList = ({
   singleSelect = false,
   allowSelelectAll = false,
 }: MultiselectListProps) => {
-  console.log(value);
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState('');
