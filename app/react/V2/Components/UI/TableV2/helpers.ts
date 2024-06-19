@@ -1,11 +1,9 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { Row } from 'react-table';
 import { cloneDeep } from 'lodash';
-import { TableProps } from './Table';
+import { RowWithId, TableProps } from './Table';
 
-const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
-  data: TableProps<T>['dataState'][0]
-) => {
+const getDataIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];
 
   data.forEach(element => {
@@ -21,7 +19,7 @@ const getDataIds = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
   return identifiers;
 };
 
-const dndSortHandler = <T extends { rowId: string; subRows?: { rowId: string }[] }>(
+const dndSortHandler = <T extends RowWithId<T>>(
   currentState: TableProps<T>['dataState'][0],
   dataIds: { id: UniqueIdentifier; parentId?: string }[],
   activeId: string | number,
@@ -57,7 +55,7 @@ const dndSortHandler = <T extends { rowId: string; subRows?: { rowId: string }[]
   return state;
 };
 
-const sortHandler = <T extends { rowId: string; subRows?: { rowId: string }[] }>(rows: Row<T>[]) =>
+const sortHandler = <T extends RowWithId<T>>(rows: Row<T>[]) =>
   rows.map(row => {
     const { original, subRows } = row;
     if (subRows.length) {

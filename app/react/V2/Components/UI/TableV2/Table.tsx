@@ -28,7 +28,12 @@ import { SortingChevrons } from './SortingChevrons';
 //whe should mark columns as having sort arrows when defining columns
 //whe should render an error if there are repeated ids
 
-type TableProps<T extends { rowId: string; subRows?: { rowId: string }[] }> = {
+type RowWithId<T extends { rowId: string }> = {
+  rowId: string;
+  subRows?: T[];
+};
+
+type TableProps<T extends RowWithId<T>> = {
   columns: ColumnDef<T, any>[];
   dataState: [state: T[], setter?: React.Dispatch<React.SetStateAction<T[]>>];
   selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
@@ -36,7 +41,7 @@ type TableProps<T extends { rowId: string; subRows?: { rowId: string }[] }> = {
   className?: string;
 };
 
-const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
+const Table = <T extends RowWithId<T>>({
   columns,
   dataState,
   selectionState,
@@ -154,5 +159,5 @@ const Table = <T extends { rowId: string; subRows?: { rowId: string }[] }>({
   );
 };
 
-export { type TableProps };
+export type { TableProps, RowWithId };
 export { Table };

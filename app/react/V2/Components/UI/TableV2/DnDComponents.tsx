@@ -5,8 +5,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
 import { t, Translate } from 'app/I18N';
+import { RowWithId } from './Table';
 
-const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
+const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
@@ -27,7 +28,7 @@ const RowDragHandleCell = <T extends { rowId: string }>({ row }: { row: Row<T> }
   );
 };
 
-const DraggableRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
+const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.id,
   });
