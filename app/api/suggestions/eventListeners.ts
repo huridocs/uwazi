@@ -10,7 +10,6 @@ import { FilesDeletedEvent } from 'api/files/events/FilesDeletedEvent';
 import { FileUpdatedEvent } from 'api/files/events/FileUpdatedEvent';
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import settings from 'api/settings';
-import templates from 'api/templates';
 import { TemplateDeletedEvent } from 'api/templates/events/TemplateDeletedEvent';
 import { TemplateUpdatedEvent } from 'api/templates/events/TemplateUpdatedEvent';
 import { objectIndex } from 'shared/data_utils/objectIndex';
@@ -63,22 +62,11 @@ const createDefaultSuggestionsForFiles = async (
 ) => {
   const blankSuggestions: IXSuggestionType[] = [];
 
-  const template = await templates.getById(entityTemplateId);
-  const extractorPropertySet = new Set(extractorsInvolved.map(e => e.property));
-  const involvedProperties =
-    template!.properties?.filter(p => extractorPropertySet.has(p.name)) || [];
-  const involvedPropertiesByName = objectIndex(
-    involvedProperties,
-    p => p.name,
-    p => p
-  );
-
   fileList.forEach(file => {
     extractorsInvolved.forEach(extractor => {
-      const propertyType = involvedPropertiesByName[extractor.property]?.type;
       if (file.entity) {
         blankSuggestions.push(
-          getBlankSuggestion(file, extractor, entityTemplateId, propertyType, defaultLanguage)
+          getBlankSuggestion(file, extractor, entityTemplateId, defaultLanguage)
         );
       }
     });
