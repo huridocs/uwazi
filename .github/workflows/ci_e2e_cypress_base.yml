@@ -1,4 +1,4 @@
-name: e2e cypress
+name: e2e cypress BASE
 
 on:
   push:
