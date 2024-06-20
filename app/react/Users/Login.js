@@ -9,10 +9,10 @@ import { reconnectSocket } from 'app/socket';
 import RouteHandler from 'app/App/RouteHandler';
 import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { withRouter } from 'app/componentWrappers';
-
-import { ci, measureActiveUser } from 'app/V2/Components/Analitycs';
-
 import auth from 'app/Auth';
+
+
+
 
 const reloadHome = () => {
   window.location.assign('/');

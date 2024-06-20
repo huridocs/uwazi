@@ -29,6 +29,11 @@ const ci = new CleanInsights({
 });
 
 
+function get_analytics_opt_in() {
+    console.log("Opt-in for analytics has been granted.");
+    return true;
+}
+
 const measureActiveUser = () => {
     ci.measureEvent("activity", "daily", "daily_active_users");
     ci.measureEvent("activity", "weekly", "weekly_active_users");
@@ -36,10 +41,6 @@ const measureActiveUser = () => {
     console.log("The Clean Insights SDK has been initialized.");
 }
 
-measureActiveUser();
+ci.persist();
 
-ci.persist()
-
-
-
-export { ci };
+export { ci, get_analytics_opt_in, measureActiveUser };
