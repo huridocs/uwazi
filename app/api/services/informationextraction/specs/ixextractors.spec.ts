@@ -166,12 +166,6 @@ const expectedStates: Record<string, IXSuggestionStateType> = {
     ...emptyState,
     hasContext: true,
   },
-  defaultForMultiValued: {
-    ...emptyState,
-    hasContext: true,
-    withSuggestion: true,
-    match: true,
-  },
 };
 
 describe('ixextractors', () => {
@@ -333,7 +327,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: [],
-            state: expectedStates.defaultForMultiValued,
+            state: expectedStates.onlyContext,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -345,7 +339,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: [],
-            state: expectedStates.defaultForMultiValued,
+            state: expectedStates.onlyContext,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
@@ -365,7 +359,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: [],
-            state: expectedStates.defaultForMultiValued,
+            state: expectedStates.onlyContext,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
           {
@@ -377,7 +371,7 @@ describe('ixextractors', () => {
             error: '',
             segment: '',
             suggestedValue: [],
-            state: expectedStates.defaultForMultiValued,
+            state: expectedStates.onlyContext,
             entityTemplate: fixtureFactory.id('personTemplate').toString(),
           },
         ],
