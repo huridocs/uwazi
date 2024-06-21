@@ -11,6 +11,9 @@ import { reloadThesauri } from 'app/Thesauri/actions/thesaurisActions';
 import { withRouter } from 'app/componentWrappers';
 import auth from 'app/Auth';
 
+
+
+
 const reloadHome = () => {
   window.location.assign('/');
 };
