@@ -15,7 +15,7 @@ import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
-import { ci, measureActiveUser, get_analytics_opt_in } from 'app/V2/Components/Analitycs';
+import { measureActiveUser } from 'app/V2/Components/Analitycs';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -25,17 +25,6 @@ import './styles/globals.css';
 import 'flowbite';
 
 const App = ({ customParams }) => {
-
-  console.log("App.js - App");
-  console.log(ci);
-
-  if(get_analytics_opt_in()){
-    ci.grantCampaign(campaignId);
-    measureActiveUser();
-  }else{
-    ci.denyCampaign(campaignId);
-  }
-
 
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
@@ -73,6 +62,9 @@ const App = ({ customParams }) => {
   socket.on('updateSettings', settings => {
     setSettings(settings);
   });
+
+  // TODO: Trigger this from a client-side render.
+  measureActiveUser();
 
   return (
     <div id="app" className={appClassName}>

@@ -1,2 +1,2 @@
 export { Matomo } from './Matomo';
-export { ci } from './CleanInsights';
+export { measureActiveUser } from './CleanInsights';
