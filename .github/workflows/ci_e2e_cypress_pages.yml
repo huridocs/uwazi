@@ -1,4 +1,4 @@
-name: e2e cypress
+name: e2e cypress PAGES
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.8.0
         with:
-          mongodb-version: 4.2.6
+          mongodb-version: 5.0.27
           mongodb-replica-set: test-rs
       - name: Checkout reposistory
         uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Nodejs
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -82,12 +82,23 @@ jobs:
         if: ${{ failure() }}
         run: cat dummy_extractor_services/logs.log
       - run: yarn blank-state
+        id: blank-state-attempt1
+        continue-on-error: true
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
           DATABASE_NAME: uwazi_e2e
           INDEX_NAME: uwazi_e2e
           TRANSPILED: true
+      - run: yarn blank-state --force
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+          DATABASE_NAME: uwazi_e2e
+          INDEX_NAME: uwazi_e2e
+          TRANSPILED: true          
       - run: yarn ix-config
         env:
           DBHOST: localhost:27017
@@ -110,6 +121,7 @@ jobs:
           browser: chrome
           component: false
           config-file: cypress.config.ts
+          spec: "cypress/e2e/pages/*.cy.ts"
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017

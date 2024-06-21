@@ -4,24 +4,18 @@ exports[`MarkdownViewer render should be able to render properly custom componen
 <div
   className="markdown-viewer"
 >
-  <div
-    key="0"
-  >
+  <div>
     <MarkdownMedia
       compact={false}
       config="(youtubeUrl)"
-      key="0"
     />
   </div>
   
 
-  <div
-    key="2"
-  >
+  <div>
     <MarkdownMedia
       compact={false}
       config="(mediaUrl)"
-      key="2"
     />
   </div>
   
@@ -33,9 +27,7 @@ exports[`MarkdownViewer render should not render html by default 1`] = `
 <div
   className="markdown-viewer"
 >
-  <p
-    key="0"
-  >
+  <p>
     &lt;div&gt;&lt;h1&gt;should be all a escaped string&lt;/h1&gt;&lt;/div&gt;
   </p>
   
@@ -47,9 +39,7 @@ exports[`MarkdownViewer render should remove Dataset and Query tags 1`] = `
 <div
   className="markdown-viewer"
 >
-  <p
-    key="0"
-  >
+  <p>
     test
   </p>
   
@@ -60,16 +50,13 @@ exports[`MarkdownViewer render should remove Dataset and Query tags 1`] = `
 
   <SearchBox
     classname=""
-    key="6"
     placeholder=""
   />
   
 
   
 
-  <div
-    key="10"
-  >
+  <div>
     test
   </div>
 </div>
@@ -79,75 +66,39 @@ exports[`MarkdownViewer render should remove whitespaces between table tags (to 
 <div
   className="markdown-viewer"
 >
-  <table
-    key="0"
-  >
-    <thead
-      key="0"
-    >
-      <tr
-        key="0"
-      >
-        <th
-          key="0"
-        >
+  <table>
+    <thead>
+      <tr>
+        <th>
           cadh
         </th>
-        <th
-          key="1"
-        >
+        <th>
           cbdp
         </th>
-        <th
-          key="2"
-        >
+        <th>
           cidfp
         </th>
-        <th
-          key="3"
-        >
+        <th>
           cipst
         </th>
       </tr>
     </thead>
-    <tbody
-      key="1"
-    >
-      <tr
-        key="0"
-      >
-        <td
-          key="0"
-        >
+    <tbody>
+      <tr>
+        <td>
           1.1,25.1
         </td>
-        <td
-          key="1"
-        />
-        <td
-          key="2"
-        />
-        <td
-          key="3"
-        />
+        <td />
+        <td />
+        <td />
       </tr>
-      <tr
-        key="1"
-      >
-        <td
-          key="0"
-        >
+      <tr>
+        <td>
           1.1,21.1,21.2,25,1
         </td>
-        <td
-          key="1"
-        />
-        <td
-          key="2"
-        />
-        <td
-          key="3"
-        />
+        <td />
+        <td />
+        <td />
       </tr>
     </tbody>
   </table>
@@ -162,18 +113,14 @@ exports[`MarkdownViewer render should render Link 1`] = `
 >
   <MarkdownLink
     classname=""
-    key="0"
     label="this is a label"
     url="this_is_the_url"
   />
   
 
-  <p
-    key="2"
-  >
+  <p>
     <MarkdownLink
       classname=""
-      key="0"
       url="the_url"
     >
       label
@@ -190,7 +137,6 @@ exports[`MarkdownViewer render should render a searchbox 1`] = `
 >
   <SearchBox
     classname=""
-    key="0"
     placeholder="this is a placeholder"
   />
   
@@ -219,27 +165,22 @@ exports[`MarkdownViewer render should render customHook components and show an e
       ]
     }
     component="validcomponent"
-    key="0"
     prop="a prop"
   />
   
 
-  <p
-    key="2"
-  >
+  <p>
     Should allow markdown between hooks
   </p>
   
 
   <customComponent
     component="validcomponent"
-    key="4"
   />
   
 
   <p
     className="error"
-    key="6"
   >
     <br />
     <strong>
@@ -270,7 +211,6 @@ exports[`MarkdownViewer render should render list components 1`] = `
         "items1",
       ]
     }
-    key="0"
     link="/library/param1"
     options={
       Object {
@@ -286,7 +226,6 @@ exports[`MarkdownViewer render should render list components 1`] = `
         "items2",
       ]
     }
-    key="2"
     link="/library/param2"
     options={Object {}}
   />
@@ -298,7 +237,6 @@ exports[`MarkdownViewer render should render list components 1`] = `
         "items3",
       ]
     }
-    key="4"
     link="/library/param3"
     options={Object {}}
   />
@@ -311,20 +249,15 @@ exports[`MarkdownViewer render should render markdown 1`] = `
 <div
   className="markdown-viewer"
 >
-  <h2
-    key="0"
-  >
+  <h2>
     title
   </h2>
   
 
-  <p
-    key="2"
-  >
+  <p>
     Some text with a 
     <a
       href="http://google.com"
-      key="1"
     >
       URL
     </a>
@@ -332,19 +265,14 @@ exports[`MarkdownViewer render should render markdown 1`] = `
   </p>
   
 
-  <p
-    key="4"
-  >
+  <p>
     Which should be in its own line, separated with TWO line breaks (to create a new &lt;p&gt; Element)
   </p>
   
 
-  <pre
-    key="6"
-  >
+  <pre>
     <code
       className="language-javascript"
-      key="0"
     >
       Code
 
@@ -359,35 +287,26 @@ exports[`MarkdownViewer render should render media components 1`] = `
 <div
   className="markdown-viewer"
 >
-  <div
-    key="0"
-  >
+  <div>
     <MarkdownMedia
       compact={false}
       config="(1234, options)"
-      key="0"
     />
   </div>
   
 
-  <div
-    key="2"
-  >
+  <div>
     <MarkdownMedia
       compact={false}
       config="(1234)"
-      key="2"
     />
   </div>
   
 
-  <div
-    key="4"
-  >
+  <div>
     <MarkdownMedia
       compact={false}
       config="(config options)"
-      key="4"
     />
   </div>
   
@@ -399,23 +318,18 @@ exports[`MarkdownViewer render should render properly a selfclosing XML tags 1`]
 <div
   className="markdown-viewer"
 >
-  <p
-    key="0"
-  >
+  <p>
     test
   </p>
   
 
   <SearchBox
     classname=""
-    key="2"
     placeholder=""
   />
   
 
-  <div
-    key="4"
-  >
+  <div>
     test
   </div>
 </div>
@@ -425,21 +339,15 @@ exports[`MarkdownViewer render should render single tags as self closing 1`] = `
 <div
   className="markdown-viewer"
 >
-  <p
-    key="0"
-  >
+  <p>
     test
   </p>
   
 
-  <hr
-    key="2"
-  />
+  <hr />
   
 
-  <p
-    key="4"
-  >
+  <p>
     test
   </p>
   
@@ -453,11 +361,8 @@ exports[`MarkdownViewer render should support containers with custom classNames 
 >
   <div
     className="test classname"
-    key="0"
   >
-    <p
-      key="0"
-    >
+    <p>
       text inside a div
     </p>
     
@@ -468,13 +373,33 @@ exports[`MarkdownViewer render should support containers with custom classNames 
 
 exports[`MarkdownViewer render when markdown is invalid should not render anything when its empty 1`] = `""`;
 
-exports[`MarkdownViewer render when not valid html should not fail 1`] = `
+exports[`MarkdownViewer render when not valid html should not fail on malformed tags 1`] = `
 <div
   className="markdown-viewer"
 >
-  <div
-    key="0"
-  />
+  <div />
+</div>
+`;
+
+exports[`MarkdownViewer render when not valid html should not fail on unsupported tags 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p>
+    <b>
+      Little red ridding hood
+    </b>
+  </p>
+  
+
+  <p>
+    I don't know 
+    <div
+      className="error"
+    >
+      Invalid tag: ..long
+    </div>
+  </p>
 </div>
 `;
 
@@ -482,16 +407,13 @@ exports[`MarkdownViewer render when passing html true prop should render customC
 <div
   className="markdown-viewer"
 >
-  <div
-    key="0"
-  >
+  <div>
     <ItemList
       items={
         Array [
           "items1",
         ]
       }
-      key="0"
       link="/library/param1"
       options={
         Object {
@@ -499,16 +421,11 @@ exports[`MarkdownViewer render when passing html true prop should render customC
         }
       }
     />
-    <div
-      key="1"
-    >
-      <div
-        key="0"
-      >
+    <div>
+      <div>
         <MarkdownMedia
           compact={false}
           config="(url)"
-          key="0"
         />
       </div>
     </div>
@@ -520,12 +437,8 @@ exports[`MarkdownViewer render when passing html true prop should render html 1`
 <div
   className="markdown-viewer"
 >
-  <div
-    key="0"
-  >
-    <h1
-      key="0"
-    >
+  <div>
+    <h1>
       test
     </h1>
   </div>

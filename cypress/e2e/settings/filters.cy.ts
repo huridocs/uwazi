@@ -75,6 +75,7 @@ describe('Filters', () => {
   it('should edit the group', () => {
     cy.contains('td', 'My filter group 1').parent().contains('button', 'Edit').click();
     cy.get('aside').within(() => {
+      cy.contains('Edit group');
       cy.get('#group-name').clear();
       cy.get('#group-name').type('Ordenes', { delay: 0 });
       cy.contains('button', 'Update').click();

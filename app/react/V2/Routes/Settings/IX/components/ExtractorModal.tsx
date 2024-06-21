@@ -11,7 +11,10 @@ import { InputField } from 'app/V2/Components/Forms/InputField';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { propertyIcons } from './Icons';
 
-const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect'];
+const SUPPORTED_PROPERTIES = ['text', 'numeric', 'date', 'select', 'multiselect', 'relationship'];
+type SupportedProperty = Omit<ClientPropertySchema, 'type'> & {
+  type: 'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship';
+};
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,33 +24,14 @@ interface ExtractorModalProps {
   extractor?: IXExtractorInfo;
 }
 
-const getPropertyLabel = (property: ClientPropertySchema, templateId: string) => {
-  let icon: React.ReactNode;
-  let propertyTypeTranslationKey = 'property text';
+const getPropertyLabel = (property: SupportedProperty, templateId: string) => {
+  const { type } = property;
 
-  switch (property.type) {
-    case 'numeric':
-      icon = propertyIcons.numeric;
-      propertyTypeTranslationKey = 'property numeric';
-      break;
-    case 'date':
-      icon = propertyIcons.date;
-      propertyTypeTranslationKey = 'property date';
-      break;
-    case 'select':
-      icon = propertyIcons.select;
-      propertyTypeTranslationKey = 'property select';
-      break;
-    case 'multiselect':
-      icon = propertyIcons.multiselect;
-      propertyTypeTranslationKey = 'property multiselect';
-      break;
-    default:
-      icon = propertyIcons.text;
-  }
+  const icon = propertyIcons[type];
+  const propertyTypeTranslationKey = `property ${type}`;
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <span className="w-4">{icon}</span>
       <Translate context={templateId}>{property.label}</Translate>
       <Translate
@@ -77,7 +61,7 @@ const formatOptions = (values: string[], templates: ClientTemplateSchema[]) => {
               SUPPORTED_PROPERTIES.includes(prop.type)
           )
           .map(prop => ({
-            label: getPropertyLabel(prop, template._id),
+            label: getPropertyLabel(prop as SupportedProperty, template._id),
             value: `${template._id?.toString()}-${prop.name}`,
             searchLabel: prop.label,
           })),
@@ -114,7 +98,7 @@ const getPropertyForValue = (value: string, templates: ClientTemplateSchema[]) =
 
   const matchedProperty = matchedTemplate?.properties.find(
     property => property.name === propertyName
-  );
+  ) as SupportedProperty;
 
   if (matchedProperty) {
     return getPropertyLabel(matchedProperty, matchedTemplate!._id.toString());
@@ -180,8 +164,9 @@ const ExtractorModal = ({
         <Modal.CloseButton onClick={() => setShowModal(false)} />
       </Modal.Header>
 
-      <Modal.Body className="flex flex-col gap-4 px-3 pt-4">
+      <Modal.Body className="pt-0">
         <InputField
+          className="mt-6"
           clearFieldAction={() => {}}
           id="extractor-name"
           placeholder="Extractor name"
@@ -195,8 +180,7 @@ const ExtractorModal = ({
 
         <div className={`${step !== 1 && 'hidden'}`}>
           <MultiselectList
-            className="h-96"
-            value={initialValues || []}
+            value={values || []}
             items={options}
             onChange={selected => {
               setValues(selected);
@@ -207,8 +191,8 @@ const ExtractorModal = ({
             allowSelelectAll={values.length > 0}
           />
         </div>
-        <div className={`${step !== 2 && 'hidden'}`}>
-          <div className="h-96">
+        <div className={`${step !== 2 && 'hidden'} mt-6`}>
+          <div>
             <h6 className="text-sm font-medium">
               <Translate>Input</Translate>
             </h6>
@@ -245,7 +229,7 @@ const ExtractorModal = ({
           </div>
         </div>
 
-        <div className="flex gap-2 justify-center w-full">
+        <div className="flex justify-center w-full gap-2">
           <div className={`w-2 h-2 rounded-full ${step === 1 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
           <div className={`w-2 h-2 rounded-full ${step === 2 ? 'bg-indigo-700' : 'bg-gray-200'}`} />
         </div>
@@ -259,8 +243,8 @@ const ExtractorModal = ({
                 <Button styling="light" onClick={() => setShowModal(false)} className="grow">
                   <Translate>Cancel</Translate>
                 </Button>
-                <Button className="grow" onClick={() => setStep(2)}>
-                  <span className="flex flex-nowrap gap-2 justify-center items-center">
+                <Button className="grow" onClick={() => setStep(2)} disabled={values.length === 0}>
+                  <span className="flex items-center justify-center gap-2 flex-nowrap">
                     <Translate>Next</Translate>
                     <ArrowRightIcon className="w-5" />
                   </span>

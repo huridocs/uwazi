@@ -43,7 +43,7 @@ import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboar
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
 import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
 import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
-import { activityLogLoader, ActivityLog } from 'V2/Routes/Settings/ActivityLog/ActivityLog';
+import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
@@ -113,16 +113,18 @@ const getRoutesLayout = (
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
       </Route>
-      <Route
-        path="metadata_extraction"
-        element={adminsOnlyRoute(<IXDashboard />)}
-        loader={IXdashboardLoader(headers)}
-      />
-      <Route
-        path="metadata_extraction/suggestions/:extractorId"
-        loader={IXSuggestionsLoader(headers)}
-        element={adminsOnlyRoute(<IXSuggestions />)}
-      />
+      <Route path="metadata_extraction">
+        <Route
+          index
+          element={adminsOnlyRoute(<IXDashboard />)}
+          loader={IXdashboardLoader(headers)}
+        />
+        <Route
+          path="suggestions/:extractorId"
+          loader={IXSuggestionsLoader(headers)}
+          element={adminsOnlyRoute(<IXSuggestions />)}
+        />
+      </Route>
       <Route path="relationship-types">
         <Route
           index
@@ -175,7 +177,7 @@ const getRoutesLayout = (
       <Route
         path="activitylog"
         element={adminsOnlyRoute(<ActivityLog />)}
-        loader={activityLogLoader(headers)}
+        loader={activityLogLoader(headers, { settings })}
       />
       <Route
         path="custom-uploads"
@@ -202,7 +204,7 @@ const getRoutes = (
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
-      <Route path=":lang">
+      <Route path="/:lang">
         {layout}
         <Route path="*" element={<GeneralError />} />
       </Route>

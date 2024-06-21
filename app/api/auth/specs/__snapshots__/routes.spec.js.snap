@@ -6,12 +6,14 @@ Object {
     "body": Object {
       "properties": Object {
         "password": Object {
+          "minLength": 1,
           "type": "string",
         },
         "token": Object {
           "type": "string",
         },
         "username": Object {
+          "minLength": 1,
           "type": "string",
         },
       },

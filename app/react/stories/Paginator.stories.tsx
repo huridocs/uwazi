@@ -8,7 +8,6 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 const meta: Meta<typeof Paginator> = {
   title: 'Components/Paginator',
   component: Paginator,
-  argTypes: {},
 };
 
 type Story = StoryObj<typeof Paginator>;

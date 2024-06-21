@@ -3,16 +3,17 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { Provider } from 'jotai';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
 import { DatePicker } from 'app/V2/Components/Forms';
 import { LEGACY_createStore as createStore, atomsGlobalState } from 'V2/shared/testingHelpers';
 
 const meta: Meta<typeof DatePicker> = {
   title: 'Forms/DatePicker',
   component: DatePicker,
-  argTypes: {
-    onChange: { action: 'onChange' },
-    onBlur: { action: 'onBlur' },
-    clearFieldAction: { action: 'clearFieldAction' },
+  args: {
+    onChange: fn(),
+    onBlur: fn(),
+    clearFieldAction: fn(),
   },
   parameters: {
     actions: {
