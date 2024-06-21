@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 import { action } from '@storybook/addon-actions';
 import { Provider } from 'react-redux';
 import { ConfirmationModal } from 'app/V2/Components/UI/ConfirmationModal';
@@ -9,10 +10,7 @@ import { Translate } from 'app/I18N';
 const meta: Meta<typeof ConfirmationModal> = {
   title: 'Components/Modal/ConfirmationModal',
   component: ConfirmationModal,
-  argTypes: {
-    onAcceptClick: { action: 'onAcceptClick' },
-    onCancelClick: { action: 'onCancelClick' },
-  },
+  args: { onAcceptClick: fn(), onCancelClick: fn() },
   parameters: {
     actions: {
       handles: ['change'],
