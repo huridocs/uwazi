@@ -25,7 +25,6 @@ import './styles/globals.css';
 import 'flowbite';
 
 const App = ({ customParams }) => {
-
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
   const setSettings = useSetAtom(settingsAtom);
