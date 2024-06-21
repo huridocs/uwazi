@@ -1,2 +1,2 @@
 export { Matomo } from './Matomo';
-export { measureActiveUser } from './CleanInsights';
+export { CleanInsights } from './CleanInsights';

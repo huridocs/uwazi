@@ -1,4 +1,5 @@
-import { Campaign, CleanInsights } from 'clean-insights-sdk';
+import { useEffect } from 'react';
+import { CleanInsights as CI } from 'clean-insights-sdk';
 
 const campaigns = {
     "daily_active_users": {
@@ -24,7 +25,7 @@ const campaigns = {
     }
 };
 
-const ci = new CleanInsights({
+const ci = new CI({
     "server": "http://metrics.cleaninsights.org/cleaninsights.php",
     "siteId": 35,
     "campaigns": campaigns
@@ -57,4 +58,13 @@ const measureActiveUser = () => {
     }
 }
 
-export { measureActiveUser };
+const CleanInsights = () => {
+    // Measurement involves aggregation over time, and this aggregation
+    // happens in the browser's local storage, so useEffect.
+    useEffect(() => {
+        measureActiveUser();
+    }, []);
+    return null;
+}
+
+export { CleanInsights };
