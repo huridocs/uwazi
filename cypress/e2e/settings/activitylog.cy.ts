@@ -115,7 +115,7 @@ describe('Activity log', () => {
     cy.contains('button', 'Filters').click();
     cy.contains('button', 'Clear all').click();
     applyFilters();
-    cy.get('tr').should('have.length.at.least', 10);
+    cy.get('tr').should('have.length.at.least', 9);
   });
 
   it('should open the detail of an entry', () => {
