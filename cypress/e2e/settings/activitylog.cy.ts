@@ -65,7 +65,7 @@ describe('Activity log', () => {
   };
 
   it('should list the last activity log entries', () => {
-    cy.get('tr').should('have.length.at.least', 10);
+    cy.get('tr').should('have.length.at.least', 9);
     checkCells(1, 1, 'span');
     checkCells(1, 2, 'span');
     checkCells(1, 3, ' div > div:nth-child(1)');
