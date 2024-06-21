@@ -1,26 +1,33 @@
 import { useEffect } from 'react';
 import { CleanInsights as CI } from 'clean-insights-sdk';
 
+// January 1 of 2024 just happens to be a Monday.
+// This makes it a suitable starting period for the weekly 
+// and monthly active user campaigns.
+const startDate = "2024-01-01T00:00:00-00:00";
+
 const campaigns = {
     "daily_active_users": {
-        "start": "2024-01-01T00:00:00-00:00",
+        "start": startDate,
         "end": "2024-12-31T23:59:59-00:00",
         "aggregationPeriodLength": 1,
         "numberOfPeriods": 365,
         "onlyRecordOnce": true
     },
     "weekly_active_users": {
-        "start": "2024-01-01T00:00:00-00:00",
+        "start": startDate,
         "end": "2024-12-31T23:59:59-00:00",
         "aggregationPeriodLength": 7,
         "numberOfPeriods": 53,
         "onlyRecordOnce": true
     },
     "monthly_active_users": {
-        "start": "2024-01-01T00:00:00-00:00",
+        "start": startDate,
         "end": "2024-12-31T23:59:59-00:00",
-        "aggregationPeriodLength": 30,
-        "numberOfPeriods": 12,
+        // 28 day patterns align with weeks so all periods will have
+        // the same # of weekdays/weekends.
+        "aggregationPeriodLength": 28,
+        "numberOfPeriods": 13,
         "onlyRecordOnce": true
     }
 };
