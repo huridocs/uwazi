@@ -29,6 +29,7 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
+  propertyTypeIsWithoutExtractedMetadata,
   propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
@@ -95,6 +96,16 @@ type MaterialsData =
   | TextSelectionMaterialsData
   | ValuesSelectionMaterialsData;
 
+async function fetchCandidates(property: PropertySchema) {
+  const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+  const query: { template?: ObjectId; language: string } = {
+    language: defaultLanguageKey,
+  };
+  if (property.content !== '') query.template = new ObjectId(property.content);
+  const candidates = await entities.getUnrestricted(query, ['title', 'sharedId']);
+  return candidates;
+}
+
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
@@ -142,9 +153,9 @@ class InformationExtraction {
 
     let data: MaterialsData = { ..._data, language_iso };
 
-    const isSelect = propertyTypeIsSelectOrMultiSelect(propertyType);
+    const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 
-    if (!isSelect && propertyLabeledData) {
+    if (!noExtractedData && propertyLabeledData) {
       data = {
         ...data,
         label_text: propertyValue || propertyLabeledData?.selection?.text,
@@ -155,7 +166,7 @@ class InformationExtraction {
       };
     }
 
-    if (isSelect) {
+    if (noExtractedData) {
       if (!Array.isArray(propertyValue)) {
         throw new Error('Property value should be an array');
       }
@@ -184,7 +195,7 @@ class InformationExtraction {
         );
         const { propertyValue, propertyType } = file;
 
-        const missingData = propertyTypeIsSelectOrMultiSelect(propertyType)
+        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
           ? !propertyValue
           : type === 'labeled_data' && !propertyLabeledData;
 
@@ -383,14 +394,21 @@ class InformationExtraction {
 
     const params: TaskParameters = {
       id: extractorId.toString(),
-      multi_value: property.type === 'multiselect',
+      multi_value: property.type === 'multiselect' || property.type === 'relationship',
     };
 
-    if (property.type === 'select' || property.type === 'multiselect') {
+    if (propertyTypeIsSelectOrMultiSelect(property.type)) {
       const thesauri = await dictionatiesModel.getById(property.content);
 
       params.options =
         thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
+    }
+    if (property.type === 'relationship') {
+      const candidates = await fetchCandidates(property);
+      params.options = candidates.map(candidate => ({
+        label: candidate.title || '',
+        id: candidate.sharedId || '',
+      }));
     }
 
     await this.taskManager.startTask({
