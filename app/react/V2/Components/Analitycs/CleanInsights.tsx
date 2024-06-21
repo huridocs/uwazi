@@ -26,35 +26,45 @@ const campaigns = {
 };
 
 const ci = new CI({
-    "server": "http://metrics.cleaninsights.org/cleaninsights.php",
+    "server": "https://metrics.cleaninsights.org/cleaninsights.php",
     "siteId": 35,
     "campaigns": campaigns
 });
 
-function getAnalyticsOptIn() {
+async function getAnalyticsOptIn() {
     // TODO: Fetch opt-in from central database
     console.log(
         "WARNING: Consent must be fetched from DB. This demo assumes consent"
     );
-    return true;
+    return new Promise((resolve) => {
+        // Simulate a delay to demonstrate this code doesn't block rendering.
+        setTimeout(() => {
+            resolve(true);
+        }, 3000);
+    });
 }
 
-const measureActiveUser = () => {
-    const optedIn = getAnalyticsOptIn();
-    console.log("Opted in: " + optedIn);
-    if (optedIn) {
-        for (var campaign in campaigns) {
-            ci.grantCampaign(campaign);
+const measureActiveUser = async () => {
+    try {
+        const optedIn = await getAnalyticsOptIn();
+        console.log("Opted in: " + optedIn);
+        if (optedIn) {
+            for (var campaign in campaigns) {
+                ci.grantCampaign(campaign);
+            }
+            ci.measureEvent("activity", "daily", "daily_active_users");
+            ci.measureEvent("activity", "weekly", "weekly_active_users");
+            ci.measureEvent("activity", "monthly", "monthly_active_users");
+        } else {
+            // If consent has been revoked, deny any campaigns that might have
+            // been granted.
+            for (var campaign in campaigns) {
+                ci.denyCampaign(campaign);
+            }
         }
-        ci.measureEvent("activity", "daily", "daily_active_users");
-        ci.measureEvent("activity", "weekly", "weekly_active_users");
-        ci.measureEvent("activity", "monthly", "monthly_active_users");
-    } else {
-        // If consent has been revoked, deny any campaigns that might have been
-        // granted.
-        for (var campaign in campaigns) {
-            ci.denyCampaign(campaign);
-        }
+    } catch (e) {
+        console.error("Error fetching analytics opt-in", e);
+        return;
     }
 }
 
