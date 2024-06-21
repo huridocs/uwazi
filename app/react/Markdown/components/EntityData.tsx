@@ -39,6 +39,16 @@ const rootProperties = ['title', 'creationDate', 'editDate'];
 const getPropertyData = ({ formattedEntity, propertyName, newNameGeneration }: Options) =>
   formattedEntity.metadata.find((p: any) => p.name === safeName(propertyName, newNameGeneration));
 
+const getPropertyName = (propertyName: string, _template: IImmutable<ClientTemplateSchema>) => {
+  const template = ensure<IImmutable<ClientTemplateSchema>>(_template);
+  return (
+    template
+      .get('commonProperties')
+      ?.find(p => p?.get('label') === propertyName)
+      ?.get('name') || propertyName
+  );
+};
+
 const extractRootProperty = ({ formattedEntity, propertyName }: Options) =>
   formattedEntity[propertyName];
 
@@ -107,7 +117,8 @@ const EntityData = ({
   let output = <></>;
 
   try {
-    const propertyName = getProperty(propValueOf, propLabelOf);
+    const attributeValue = getProperty(propValueOf, propLabelOf);
+    const propertyName = getPropertyName(attributeValue, template);
     const renderMethod = getMethod(propValueOf, propertyName);
     output = <>{renderMethod({ formattedEntity, propertyName, newNameGeneration, template })}</>;
   } catch (err) {
