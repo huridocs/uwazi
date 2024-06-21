@@ -30,7 +30,10 @@ const App = ({ customParams }) => {
   console.log(ci);
 
   if(get_analytics_opt_in()){
+    ci.grantCampaign(campaignId);
     measureActiveUser();
+  }else{
+    ci.denyCampaign(campaignId);
   }
 
 
