@@ -177,6 +177,8 @@ describe('Pages', () => {
       cy.get('.slider').click();
       cy.contains('Select...');
       cy.get('select.form-control').select('My entity view page');
+      cy.get('.property-edit').eq(0).click();
+      cy.clearAndType('input[name="template.data.commonProperties[0].label"]', 'Custom Title');
       cy.contains('Save').click();
       cy.contains('Saved successfully.');
     });
