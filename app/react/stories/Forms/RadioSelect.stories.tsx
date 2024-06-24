@@ -1,6 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
+import { fn } from '@storybook/test';
 import { RadioSelect } from 'app/V2/Components/Forms';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { Provider } from 'react-redux';
@@ -8,8 +9,8 @@ import { Provider } from 'react-redux';
 const meta: Meta<typeof RadioSelect> = {
   title: 'Forms/RadioSelect',
   component: RadioSelect,
-  argTypes: {
-    onChange: { action: 'changed' },
+  args: {
+    onChange: fn(),
   },
 };
 

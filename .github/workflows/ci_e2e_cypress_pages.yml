@@ -1,4 +1,4 @@
-name: e2e cypress
+name: e2e cypress PAGES
 
 on:
   push:
@@ -121,6 +121,7 @@ jobs:
           browser: chrome
           component: false
           config-file: cypress.config.ts
+          spec: "cypress/e2e/pages/*.cy.ts"
         timeout-minutes: 25
         env:
           DBHOST: localhost:27017

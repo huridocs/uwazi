@@ -5,7 +5,9 @@ module.exports = {
     '../app/react/stories/**/*.stories.mdx',
     '../app/react/stories/**/*.stories.@(js|jsx|ts|tsx)',
   ],
+
   staticDirs: ['../cypress/test_files'],
+
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
@@ -15,10 +17,12 @@ module.exports = {
     '@storybook/addon-webpack5-compiler-babel',
     '@chromatic-com/storybook'
   ],
+
   framework: {
     name: '@storybook/react-webpack5',
     options: {},
   },
+
   previewHead: head => `
     ${head}
     <style>
@@ -29,6 +33,7 @@ module.exports = {
       }
     </style>
   `,
+
   webpackFinal: async config => {
     config.plugins.push(new MiniCssExtractPlugin({}));
     return {
@@ -39,7 +44,12 @@ module.exports = {
       },
     };
   },
+
   docs: {
     autodocs: true,
   },
+
+  typescript: {
+    reactDocgen: 'react-docgen-typescript'
+  }
 };
