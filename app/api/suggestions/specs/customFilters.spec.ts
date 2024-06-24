@@ -92,6 +92,24 @@ describe('suggestions with CustomFilters', () => {
         ],
       },
       {
+        description: 'filtering for nonLabeled - withSuggestion',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            withSuggestion: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
+          { sharedId: 'unlabeled-no-context', language: 'en' },
+          { sharedId: 'unlabeled-no-context', language: 'es' },
+        ],
+      },
+      {
         description: 'filtering for nonLabeled - noSuggestion',
         customFilter: {
           ...blankCustomFilter,
@@ -101,6 +119,27 @@ describe('suggestions with CustomFilters', () => {
           },
         },
         expectedSuggestions: [
+          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
+        ],
+      },
+      {
+        description: 'filtering for nonLabeled - withSuggestions and noSuggestion',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            withSuggestion: true,
+            noSuggestion: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
+          { sharedId: 'unlabeled-no-context', language: 'en' },
+          { sharedId: 'unlabeled-no-context', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },
           { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
@@ -184,24 +223,6 @@ describe('suggestions with CustomFilters', () => {
           { sharedId: 'unlabeled-no-context', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },
           { sharedId: 'unlabeled-no-suggestion', language: 'es' },
-        ],
-      },
-      {
-        description: 'filtering for nonLabeled - withSuggestion',
-        customFilter: {
-          ...blankCustomFilter,
-          nonLabeled: {
-            ...blankCustomFilter.nonLabeled,
-            withSuggestion: true,
-          },
-        },
-        expectedSuggestions: [
-          { sharedId: 'unlabeled-no-context', language: 'en' },
-          { sharedId: 'unlabeled-no-context', language: 'es' },
-          { sharedId: 'unlabeled-obsolete', language: 'en' },
-          { sharedId: 'unlabeled-obsolete', language: 'es' },
-          { sharedId: 'unlabeled-error', language: 'en' },
-          { sharedId: 'unlabeled-error', language: 'es' },
         ],
       },
     ])(

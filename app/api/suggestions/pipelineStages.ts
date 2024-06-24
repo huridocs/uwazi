@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
@@ -21,6 +22,7 @@ export const filterFragments = {
   },
   nonLabeled: {
     _fragment: { 'state.labeled': false },
+    withSuggestion: { 'state.labeled': false, 'state.withSuggestion': true },
     noSuggestion: { 'state.labeled': false, 'state.withSuggestion': false },
     noContext: { 'state.labeled': false, 'state.hasContext': false },
     obsolete: { 'state.labeled': false, 'state.obsolete': true },
@@ -35,6 +37,10 @@ export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   }
   if (customFilter.labeled.mismatch) {
     orFilters.push(filterFragments.labeled.mismatch);
+  }
+
+  if (customFilter.nonLabeled.withSuggestion) {
+    orFilters.push(filterFragments.nonLabeled.withSuggestion);
   }
 
   if (customFilter.nonLabeled.noSuggestion) {
