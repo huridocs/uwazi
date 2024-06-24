@@ -1872,10 +1872,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@cypress/react18@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@cypress/react18/-/react18-2.0.0.tgz#9923928328a1a775bc10b7046747d4d90452c754"
-  integrity sha512-I4iEzyPvSmADPUFT7fuihuo21zu5j5OdgB73KnuCI7VjFT6RaYnag8zBeSkXuwSBO1fbD4jeJWoDyPNLqwLspg==
+"@cypress/react18@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@cypress/react18/-/react18-2.0.1.tgz#7bc6d9b557fd6a516a690996946092b12abbd3f9"
+  integrity sha512-T/bhFEvVDIu0lDOKXbEQqVEmmANKWc/pyFDyDoJw3OndRYv9QVEJSsE/VNXIaOQLDjWvQkKBOwd0lLe1hWF/Zg==
 
 "@cypress/request@^3.0.0":
   version "3.0.1"
