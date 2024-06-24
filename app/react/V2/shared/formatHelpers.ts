@@ -15,4 +15,6 @@ const getFileNameAndExtension = (filename?: string) => {
   return { name, extension };
 };
 
-export { formatBytes, getFileNameAndExtension };
+const validEmailFormat = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+export { formatBytes, getFileNameAndExtension, validEmailFormat };

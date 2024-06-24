@@ -3,6 +3,8 @@ import { isObject, isString } from 'lodash';
 import ValidationError from 'ajv/dist/runtime/validation_error';
 import { ClientBlobFile } from 'app/istore';
 
+export type Subset<K, T extends K> = T;
+
 export const isBlobFile = (file: unknown): file is ClientBlobFile =>
   isObject(file) && isString((file as ClientBlobFile).data);
 
@@ -28,6 +30,26 @@ export function wrapValidator(validator: any) {
       }
       throw error;
     }
+  };
+}
+
+export function syncWrapValidator(validator: any) {
+  return (value: any) => {
+    const valid = validator(value);
+
+    if (!valid) {
+      const { errors } = validator;
+      const e = new ValidationError(errors);
+      e.message = errors
+        .map(
+          ({ instancePath, message }: { instancePath: string; message: string }) =>
+            `${instancePath}: ${message}`
+        )
+        .join('/n');
+      throw e;
+    }
+
+    return valid;
   };
 }
 

@@ -1,6 +1,6 @@
 import { parseQuery, validation } from 'api/utils';
 import { userSchema } from 'shared/types/userSchema';
-import needsAuthorization from '../auth/authMiddleware';
+import { needsAuthorization, validatePasswordMiddleWare } from '../auth';
 import users from './users';
 
 const getDomain = req => `${req.protocol}://${req.get('host')}`;
@@ -8,6 +8,7 @@ export default app => {
   app.post(
     '/api/users',
     needsAuthorization(['admin', 'editor', 'collaborator']),
+    validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -27,6 +28,7 @@ export default app => {
   app.post(
     '/api/users/new',
     needsAuthorization(),
+    validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -45,6 +47,7 @@ export default app => {
   app.post(
     '/api/users/unlock',
     needsAuthorization(),
+    validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
       properties: {
@@ -149,6 +152,7 @@ export default app => {
     '/api/users',
     needsAuthorization(),
     parseQuery,
+    validatePasswordMiddleWare,
     validation.validateRequest({
       type: 'object',
       properties: {

@@ -49,10 +49,13 @@ const propertyIsMultiselect = (propertyType: PropertySchema['type']) =>
 const propertyIsSelectOrMultiSelect = (propertyType: PropertySchema['type']) =>
   propertyIsSelect(propertyType) || propertyIsMultiselect(propertyType);
 
+const propertyIsRelationship = (propertyType: string) => propertyType === 'relationship';
+
 export {
   propertyTypes,
   getCompatibleTypes,
   propertyIsSelect,
   propertyIsMultiselect,
   propertyIsSelectOrMultiSelect,
+  propertyIsRelationship,
 };

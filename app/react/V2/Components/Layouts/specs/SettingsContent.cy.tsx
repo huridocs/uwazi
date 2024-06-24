@@ -47,7 +47,7 @@ describe('ConfirmationModal', () => {
     cy.get('[data-testid="settings-content-header"]')
       .invoke('text')
       .should('contain', 'Root PathMiddle PathLeafCurrent page');
-    cy.get('a[href="/settings"]').should('not.be.visible');
+    cy.get('a[href="/en/settings"]').should('not.be.visible');
     cy.contains('a', 'Root Path').invoke('attr', 'href').should('include', '#top');
     cy.contains('a', 'Middle Path').invoke('attr', 'href').should('include', '#bottom');
     cy.contains('a', 'Leaf').invoke('attr', 'href').should('include', '#footer');
@@ -58,6 +58,6 @@ describe('ConfirmationModal', () => {
   it('should have an arrow to return to settings menu for mobile', () => {
     cy.viewport(450, 650);
     render();
-    cy.get('a[href="/settings"]').should('be.visible');
+    cy.get('a[href="/en/settings"]').should('be.visible');
   });
 });
