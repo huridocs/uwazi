@@ -38,6 +38,9 @@ const fixtures: DBFixture = {
       fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
       fixturesFactory.property('extracted_property_1', propertyTypes.text),
       fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+      fixturesFactory.property('select_property', propertyTypes.select),
+      fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+      fixturesFactory.property('relationship_property', propertyTypes.relationship),
     ]),
     fixturesFactory.template(otherExtractedTemplateName, [
       fixturesFactory.property('extracted_property_1', propertyTypes.text),
@@ -91,6 +94,9 @@ const fixtures: DBFixture = {
     fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
       otherExtractedTemplateName,
     ]),
+    fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
+    fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [extractedTemplateName]),
+    fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
   ],
   ixsuggestions: [
     fixturesFactory.ixSuggestion(
@@ -116,6 +122,30 @@ const fixtures: DBFixture = {
       extractedTemplateName,
       'entfile',
       'title'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_select_suggestion',
+      'extractor6',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'select_property'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_multiselect_suggestion',
+      'extractor7',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'multiselect_property'
+    ),
+    fixturesFactory.ixSuggestion(
+      'new_relationship_suggestion',
+      'extractor8',
+      'entity for new file',
+      extractedTemplateName,
+      'entfile',
+      'relationship_property'
     ),
   ],
 };
@@ -280,6 +310,24 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
         {
           entityId: 'entity for new file',
           entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'multiselect_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'relationship_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'select_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
           propertyName: 'title',
           fileId: fixturesFactory.id('entfile'),
         },
@@ -318,6 +366,42 @@ describe(`On ${EntityUpdatedEvent.name}`, () => {
           entityId: 'entity with template not in config',
           entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
           propertyName: 'extracted_property_2',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'multiselect_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'multiselect_property',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'relationship_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'relationship_property',
+          fileId: fixturesFactory.id('entfile2'),
+        },
+        {
+          entityId: 'entity for new file',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'select_property',
+          fileId: fixturesFactory.id('entfile'),
+        },
+        {
+          entityId: 'entity with template not in config',
+          entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+          propertyName: 'select_property',
           fileId: fixturesFactory.id('entfile2'),
         },
         {
@@ -501,6 +585,45 @@ describe(`On ${FileCreatedEvent.name}`, () => {
         segment: '',
         status: 'ready',
         suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'select_property',
+        extractorId: fixturesFactory.id('extractor6'),
+        segment: '',
+        status: 'ready',
+        suggestedValue: '',
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'multiselect_property',
+        extractorId: fixturesFactory.id('extractor7'),
+        segment: '',
+        status: 'ready',
+        suggestedValue: [],
+      },
+      {
+        date: expect.any(Number),
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        error: '',
+        fileId: fixturesFactory.id('new file'),
+        language: 'en',
+        propertyName: 'relationship_property',
+        extractorId: fixturesFactory.id('extractor8'),
+        segment: '',
+        status: 'ready',
+        suggestedValue: [],
       },
     ]);
 
@@ -731,6 +854,9 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
             fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
             fixturesFactory.property('extracted_property_1', propertyTypes.text),
             fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+            fixturesFactory.property('relationship_property', propertyTypes.relationship),
           ],
         },
         after: {
@@ -740,6 +866,8 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
             fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
             fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
             fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
           ],
         },
       })
@@ -764,6 +892,9 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
         otherExtractedTemplateName,
       ]),
+      fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
+      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [extractedTemplateName]),
+      fixturesFactory.ixExtractor('extractor8', 'relationship_property', []),
     ]);
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
@@ -780,6 +911,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         propertyName: 'title',
         extractorId: fixturesFactory.id('title_extractor'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'select_property',
+        extractorId: fixturesFactory.id('extractor6'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'multiselect_property',
+        extractorId: fixturesFactory.id('extractor7'),
       },
     ]);
   });
@@ -795,6 +938,9 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
             fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
             fixturesFactory.property('extracted_property_1', propertyTypes.text),
             fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+            fixturesFactory.property('relationship_property', propertyTypes.relationship),
           ],
         },
         after: {
@@ -805,6 +951,9 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
             fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
             fixturesFactory.property('extracted_property_1', propertyTypes.text),
             fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
+            fixturesFactory.property('relationship_property', propertyTypes.relationship),
           ],
         },
       })
@@ -829,6 +978,9 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
         otherExtractedTemplateName,
       ]),
+      fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
+      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', []),
+      fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
     ]);
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
@@ -845,6 +997,18 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
         propertyName: 'title',
         extractorId: fixturesFactory.id('title_extractor'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'select_property',
+        extractorId: fixturesFactory.id('extractor6'),
+      },
+      {
+        entityId: 'entity for new file',
+        entityTemplate: fixturesFactory.id(extractedTemplateName).toString(),
+        propertyName: 'relationship_property',
+        extractorId: fixturesFactory.id('extractor8'),
       },
     ]);
   });
@@ -873,6 +1037,9 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
       fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
         otherExtractedTemplateName,
       ]),
+      fixturesFactory.ixExtractor('extractor6', 'select_property', []),
+      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', []),
+      fixturesFactory.ixExtractor('extractor8', 'relationship_property', []),
     ]);
   });
 

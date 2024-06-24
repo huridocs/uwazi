@@ -14,10 +14,12 @@ const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
 
 type CurrentValue = string | number | null;
 
+type SuggestedValue = string[] | string | null;
+
 interface SuggestionValues {
   currentValue: CurrentValue | CurrentValue[];
   labeledValue: string | null;
-  suggestedValue: string | null;
+  suggestedValue: SuggestedValue;
   modelCreationDate: number;
   error: string;
   date: number;
@@ -26,7 +28,7 @@ interface SuggestionValues {
   status: string | null;
 }
 
-const sameValueSet = (first: any, second: any) => setsEqual(first || [], second || []);
+const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
 
 const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
   date: isSameDate,
@@ -57,7 +59,7 @@ class IXSuggestionState implements IXSuggestionStateType {
   constructor(values: SuggestionValues, propertyType: PropertySchema['type']) {
     this.setLabeled(values, propertyType);
     this.setWithValue(values, propertyType);
-    this.setWithSuggestion(values);
+    this.setWithSuggestion(values, propertyType);
     this.setMatch(values, propertyType);
     this.setHasContext(values, propertyType);
     this.setObsolete(values);
@@ -88,8 +90,10 @@ class IXSuggestionState implements IXSuggestionStateType {
     }
   }
 
-  setWithSuggestion({ suggestedValue }: SuggestionValues) {
-    if (suggestedValue) {
+  setWithSuggestion({ suggestedValue }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (propertyIsMultiValued(propertyType) && Array.isArray(suggestedValue)) {
+      this.withSuggestion = suggestedValue?.length > 0;
+    } else if (suggestedValue) {
       this.withSuggestion = true;
     }
   }
@@ -100,8 +104,8 @@ class IXSuggestionState implements IXSuggestionStateType {
   ) {
     const equals = equalsForType(propertyType);
 
-    if (suggestedValue === '') {
-      this.withSuggestion = false;
+    if (suggestedValue === '' || (Array.isArray(suggestedValue) && suggestedValue.length === 0)) {
+      this.match = false;
     } else if (equals(suggestedValue, currentValue)) {
       this.match = true;
     }
