@@ -72,8 +72,8 @@ const silentWarnings = [
   'Warning: findDOMNode is deprecated and will be removed in the next major release.',
 ];
 
-const isSilentWarning = (warning: string) =>
-  silentWarnings.find(w => warning.includes(w)) !== undefined;
+const isSilentWarning = (warning: any) =>
+  silentWarnings.find(w => typeof warning === 'string' && warning.includes(w)) !== undefined;
 
 const origConsoleError = window.console.error;
 

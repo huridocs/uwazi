@@ -179,7 +179,7 @@ describe('syncWorker', () => {
     await db.disconnect();
   });
 
-  it('should sync the configured templates and its defined properties', async () => {
+  it('should sync the whitelisted templates and properties', async () => {
     await runAllTenants();
     await tenants.run(async () => {
       const syncedTemplates = await templates.get();
@@ -459,7 +459,7 @@ describe('syncWorker', () => {
     }, 'target1');
   });
 
-  describe('when a template that is configured has been deleted', () => {
+  describe('when a template that is whitelisted has been deleted', () => {
     it('should not throw an error', async () => {
       await tenants.run(async () => {
         await entitiesModel.delete({ template: template1 });
@@ -467,7 +467,7 @@ describe('syncWorker', () => {
         await templates.delete({ _id: template1 });
       }, 'host1');
 
-      await expect(syncWorker.runAllTenants()).resolves.not.toThrowError();
+      await expect(syncWorker.runAllTenants()).resolves.not.toThrow();
     });
   });
 
@@ -575,7 +575,7 @@ describe('syncWorker', () => {
     fixtures.settings[0].sync[0].config.pages = [];
     await applyFixtures(fixtures, {});
 
-    await expect(runAllTenants).rejects.toThrowError(
+    await expect(runAllTenants).rejects.toThrow(
       new Error('Invalid elements found in ordering - pages')
     );
 
