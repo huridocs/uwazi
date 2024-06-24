@@ -216,13 +216,14 @@ export const SuggestionCustomFilterSchema = {
     nonLabeled: {
       type: 'object',
       properties: {
+        withSuggestion: { type: 'boolean' },
         noSuggestion: { type: 'boolean' },
         noContext: { type: 'boolean' },
         obsolete: { type: 'boolean' },
         others: { type: 'boolean' },
       },
       additionalProperties: false,
-      required: ['noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
     },
   },
   required: ['labeled', 'nonLabeled'],

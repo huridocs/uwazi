@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';

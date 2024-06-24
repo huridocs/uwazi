@@ -116,6 +116,7 @@ export interface SuggestionCustomFilter {
     mismatch: boolean;
   };
   nonLabeled: {
+    withSuggestion: boolean;
     noSuggestion: boolean;
     noContext: boolean;
     obsolete: boolean;

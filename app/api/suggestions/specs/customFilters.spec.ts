@@ -9,6 +9,7 @@ const blankCustomFilter: SuggestionCustomFilter = {
     mismatch: false,
   },
   nonLabeled: {
+    withSuggestion: false,
     noSuggestion: false,
     noContext: false,
     obsolete: false,
@@ -185,6 +186,24 @@ describe('suggestions with CustomFilters', () => {
           { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
       },
+      {
+        description: 'filtering for nonLabeled - withSuggestion',
+        customFilter: {
+          ...blankCustomFilter,
+          nonLabeled: {
+            ...blankCustomFilter.nonLabeled,
+            withSuggestion: true,
+          },
+        },
+        expectedSuggestions: [
+          { sharedId: 'unlabeled-no-context', language: 'en' },
+          { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
+        ],
+      },
     ])(
       'should use the custom filter properly when $description',
       async ({ customFilter, expectedSuggestions }) => {
@@ -203,7 +222,7 @@ describe('suggestions with CustomFilters', () => {
   describe('aggreagate()', () => {
     it('should return correct aggregation', async () => {
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
-      expect(result).toMatchObject({
+      expect(result).toEqual({
         total: 12,
         labeled: {
           _count: 4,
