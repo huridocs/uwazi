@@ -62,7 +62,7 @@ const getFormValue = (
       value = dateString;
     }
 
-    if (type === 'select' || type === 'multiselect') {
+    if (type === 'select' || type === 'multiselect' || type === 'relationship') {
       value = entityMetadata?.map((metadata: MetadataObjectSchema) => metadata.value);
     }
   }
@@ -225,10 +225,8 @@ const PDFSidepanel = ({
   }, [pdf, setValue, showSidepanel, suggestion]);
 
   useEffect(() => {
-    console.log('pdfContainerRef', pdfContainerRef);
     if (pdfContainerRef.current) {
       const { height } = pdfContainerRef.current.getBoundingClientRect();
-      console.log('height', height);
       setPdfContainerHeight(height);
     }
   }, [labelInputIsOpen, pdfContainerRef.current]);
@@ -313,7 +311,7 @@ const PDFSidepanel = ({
     }
     const inputType = type === 'numeric' ? 'number' : type;
     return (
-      <div className="relative flex gap-2 px-4 pb-4 grow">
+      <div className={`relative flex gap-2 px-4 pb-4 grow ${labelInputIsOpen ? '' : 'hidden'}`}>
         <div className="grow">
           <InputField
             clearFieldAction={() => {
@@ -369,7 +367,7 @@ const PDFSidepanel = ({
     items?: Option[];
   }
 
-  const renderSelect = (type: 'select' | 'multiselect') => {
+  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => {
     const options: Option[] = [];
     thesaurus?.values.forEach((value: any) => {
       options.push({
@@ -380,7 +378,7 @@ const PDFSidepanel = ({
     });
 
     return (
-      <div className="px-4 pb-4 overflow-y-scroll grow">
+      <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
         <MultiselectList
           onChange={values => {
             setValue('field', values, { shouldDirty: true });
@@ -402,6 +400,7 @@ const PDFSidepanel = ({
         return renderInputText(property?.type);
       case 'select':
       case 'multiselect':
+      case 'relationship':
         return renderSelect(property?.type);
       default:
         return '';
@@ -448,7 +447,7 @@ const PDFSidepanel = ({
           </form>{' '}
         </div>
         <Sidepanel.Footer
-          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+          className={`absolute max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
         >
           <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
             <div className="sticky top-0 flex px-4 py-2 bg-white">
@@ -462,7 +461,7 @@ const PDFSidepanel = ({
                 {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
               </span>
             </div>
-            {labelInputIsOpen && renderLabel()}
+            {renderLabel()}
             <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
               <Button
                 type="button"

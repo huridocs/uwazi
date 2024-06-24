@@ -19,6 +19,16 @@ jest.mock(
   }
 );
 
+jest.mock('../../auth', () => {
+  const originalModule = jest.requireActual('../../auth');
+  return {
+    ...originalModule,
+    validatePasswordMiddleWare: jest.fn((_req: Request, _res: Response, next: NextFunction) => {
+      next();
+    }),
+  };
+});
+
 const invalidUserProperties = [
   { field: 'username', value: undefined, instancePath: '/body', keyword: 'required' },
   { field: 'email', value: undefined, instancePath: '/body', keyword: 'required' },
@@ -32,6 +42,7 @@ const invalidUserProperties = [
 const adminUser = {
   _id: 'admin1',
   username: 'Admin 1',
+  password: 'admin124',
   role: UserRole.ADMIN,
   email: 'admin@test.com',
 };

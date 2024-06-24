@@ -40,6 +40,14 @@ jobs:
       - name: install dependencies
         run: yarn install
       - run: yarn blank-state
+        id: blank-state-attempt1
+        continue-on-error: true  
+        env:
+          DBHOST: localhost:27017
+          ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}
+      - run: yarn blank-state --force
+        id: blank-state-attempt2
+        if: steps.blank-state-attempt1.outcome == 'failure'
         env:
           DBHOST: localhost:27017
           ELASTICSEARCH_URL: http://localhost:${{ job.services.elasticsearch.ports[9200] }}

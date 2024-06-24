@@ -1,9 +1,11 @@
 import entities from 'api/entities';
-import translations from 'api/i18n/translations';
+import { checkTypeIsAllowed } from 'api/services/informationextraction/ixextractors';
 import thesauri from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
+import { ObjectId } from 'mongodb';
 import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 import { IndexTypes, objectIndex } from 'shared/data_utils/objectIndex';
+import { syncedPromiseLoop } from 'shared/data_utils/promiseUtils';
 import { setIntersection } from 'shared/data_utils/setUtils';
 import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
@@ -19,6 +21,10 @@ interface AcceptedSuggestion {
   removedValues?: string[];
 }
 
+type EntityInfo = Record<string, { sharedId: string; template: ObjectId }>;
+
+const fetchNoResources = async () => ({});
+
 const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
   const dict = await thesauri.getById(thesaurusId);
   const thesaurusName = dict!.name;
@@ -31,39 +37,61 @@ const fetchThesaurus = async (thesaurusId: PropertySchema['content']) => {
   return { name: thesaurusName, id: thesaurusId, indexedlabels };
 };
 
-const fetchTranslations = async (property: PropertySchema) => {
-  const trs = await translations.get({ context: property.content });
-  const indexed = objectIndex(
-    trs,
-    t => t.locale || '',
-    t => t.contexts?.[0].values
+const fetchEntityInfo = async (
+  _property: PropertySchema,
+  acceptedSuggestions: AcceptedSuggestion[],
+  suggestions: IXSuggestionType[]
+): Promise<{ entityInfo: EntityInfo }> => {
+  const suggestionSharedIds = suggestions.map(s => s.suggestedValue).flat();
+  const addedSharedIds = acceptedSuggestions.map(s => s.addedValues || []).flat();
+  const expectedSharedIds = Array.from(new Set(suggestionSharedIds.concat(addedSharedIds)));
+  const entitiesInDb = (await entities.get({ sharedId: { $in: expectedSharedIds } }, [
+    'sharedId',
+    'template',
+  ])) as { sharedId: string; template: ObjectId }[];
+  const indexedBySharedId = objectIndex(
+    entitiesInDb,
+    e => e.sharedId,
+    e => e
   );
-  return indexed;
+  return { entityInfo: indexedBySharedId };
 };
 
 const fetchSelectResources = async (property: PropertySchema) => {
   const thesaurus = await fetchThesaurus(property.content);
-  const labelTranslations = await fetchTranslations(property);
-  return { thesaurus, translations: labelTranslations };
+  return { thesaurus };
 };
 
 const resourceFetchers = {
-  _default: async () => ({}),
+  title: fetchNoResources,
+  text: fetchNoResources,
+  numeric: fetchNoResources,
+  date: fetchNoResources,
   select: fetchSelectResources,
   multiselect: fetchSelectResources,
+  relationship: fetchEntityInfo,
 };
 
-const fetchResources = async (property: PropertySchema) => {
-  // @ts-ignore
-  const fetcher = resourceFetchers[property.type] || resourceFetchers._default;
-  return fetcher(property);
+const fetchResources = async (
+  property: PropertySchema,
+  acceptedSuggestions: AcceptedSuggestion[],
+  suggestions: IXSuggestionType[]
+) => {
+  const type = checkTypeIsAllowed(property.type);
+  const fetcher = resourceFetchers[type];
+  return fetcher(property, acceptedSuggestions, suggestions);
 };
+
+const getAcceptedSuggestion = (
+  entity: EntitySchema,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+): AcceptedSuggestion => acceptedSuggestionsBySharedId[entity.sharedId || ''];
 
 const getSuggestion = (
   entity: EntitySchema,
   suggestionsById: Record<IndexTypes, IXSuggestionType>,
   acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-) => suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId || '']._id.toString()];
+) => suggestionsById[getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId)._id.toString()];
 
 const getRawValue = (
   entity: EntitySchema,
@@ -86,17 +114,6 @@ const checkValuesInThesaurus = (
       `Ids are invalid: ${missingValues.join(', ')} (${thesaurusName}).`
     );
   }
-};
-
-const mapLabels = (
-  values: string[],
-  entity: EntitySchema,
-  thesaurus: { indexedlabels: Record<IndexTypes, string> },
-  translation: Record<IndexTypes, Record<IndexTypes, string>>
-) => {
-  const labels = values.map(v => thesaurus.indexedlabels[v]);
-  const translatedLabels = labels.map(l => translation[entity.language || '']?.[l]);
-  return values.map((value, index) => ({ value, label: translatedLabels[index] }));
 };
 
 function readAddedValues(acceptedSuggestion: AcceptedSuggestion, suggestionValues: string[]) {
@@ -146,7 +163,7 @@ function mixFinalValues(
   return finalValues;
 }
 
-function arrangeValues(
+function arrangeAddedOrRemovedValues(
   acceptedSuggestion: AcceptedSuggestion,
   suggestionValues: string[],
   entity: EntitySchema,
@@ -163,36 +180,66 @@ function arrangeValues(
   return finalValues;
 }
 
+function checkSharedIds(values: string[], entityInfo: EntityInfo) {
+  const missingSharedIds = values.filter(v => !(v in entityInfo));
+  if (missingSharedIds.length > 0) {
+    throw new SuggestionAcceptanceError(
+      `The following sharedIds do not exist in the database: ${missingSharedIds.join(', ')}.`
+    );
+  }
+}
+
+function checkTemplates(property: PropertySchema, values: string[], entityInfo: EntityInfo) {
+  const { content } = property;
+  if (!content) return;
+  const templateId = new ObjectId(content);
+  const wrongTemplatedSharedIds = values.filter(
+    v => entityInfo[v].template.toString() !== templateId.toString()
+  );
+  if (wrongTemplatedSharedIds.length > 0) {
+    throw new SuggestionAcceptanceError(
+      `The following sharedIds do not match the content template in the relationship property: ${wrongTemplatedSharedIds.join(', ')}.`
+    );
+  }
+}
+
+const getRawValueAsArray = (
+  _property: PropertySchema,
+  entity: EntitySchema,
+  suggestionsById: Record<IndexTypes, IXSuggestionType>,
+  acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
+) => [
+  {
+    value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
+  },
+];
+
 const valueGetters = {
-  _default: (
-    entity: EntitySchema,
-    suggestionsById: Record<IndexTypes, IXSuggestionType>,
-    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>
-  ) => [
-    {
-      value: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
-    },
-  ],
+  text: getRawValueAsArray,
+  date: getRawValueAsArray,
+  numeric: getRawValueAsArray,
   select: (
+    _property: PropertySchema,
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
     acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
-    const { thesaurus, translations: translation } = resources;
+    const { thesaurus } = resources;
     const value = getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId) as string;
     checkValuesInThesaurus([value], thesaurus.name, thesaurus.indexedlabels);
 
-    return mapLabels([value], entity, thesaurus, translation);
+    return [{ value }];
   },
   multiselect: (
+    _property: PropertySchema,
     entity: EntitySchema,
     suggestionsById: Record<IndexTypes, IXSuggestionType>,
     acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
     resources: any
   ) => {
-    const { thesaurus, translations: translation } = resources;
-    const acceptedSuggestion = acceptedSuggestionsBySharedId[entity.sharedId || ''];
+    const { thesaurus } = resources;
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
     const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
     const suggestionValues = getRawValue(
       entity,
@@ -201,14 +248,42 @@ const valueGetters = {
     ) as string[];
     checkValuesInThesaurus(suggestionValues, thesaurus.name, thesaurus.indexedlabels);
 
-    const finalValues: string[] = arrangeValues(
+    const finalValues: string[] = arrangeAddedOrRemovedValues(
       acceptedSuggestion,
       suggestionValues,
       entity,
       suggestion
     );
 
-    return mapLabels(finalValues, entity, thesaurus, translation);
+    return finalValues.map(value => ({ value }));
+  },
+  relationship: (
+    property: PropertySchema,
+    entity: EntitySchema,
+    suggestionsById: Record<IndexTypes, IXSuggestionType>,
+    acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
+    resources: any
+  ) => {
+    const { entityInfo } = resources;
+
+    const acceptedSuggestion = getAcceptedSuggestion(entity, acceptedSuggestionsBySharedId);
+    const suggestion = getSuggestion(entity, suggestionsById, acceptedSuggestionsBySharedId);
+    const suggestionValues = getRawValue(
+      entity,
+      suggestionsById,
+      acceptedSuggestionsBySharedId
+    ) as string[];
+    checkSharedIds(suggestionValues, entityInfo);
+    checkTemplates(property, suggestionValues, entityInfo);
+
+    const finalValues: string[] = arrangeAddedOrRemovedValues(
+      acceptedSuggestion,
+      suggestionValues,
+      entity,
+      suggestion
+    );
+
+    return finalValues.map(value => ({ value }));
   },
 };
 
@@ -219,9 +294,18 @@ const getValue = (
   acceptedSuggestionsBySharedId: Record<IndexTypes, AcceptedSuggestion>,
   resources: any
 ) => {
-  // @ts-ignore
-  const getter = valueGetters[property.type] || valueGetters._default;
-  return getter(entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
+  const type = checkTypeIsAllowed(property.type);
+  if (type === 'title') {
+    throw new SuggestionAcceptanceError('Title should not be handled here.');
+  }
+  const getter = valueGetters[type];
+  return getter(property, entity, suggestionsById, acceptedSuggestionsBySharedId, resources);
+};
+
+const saveEntities = async (entitiesToUpdate: EntitySchema[]) => {
+  await syncedPromiseLoop(entitiesToUpdate, async (entity: EntitySchema) => {
+    await entities.save(entity, { user: {}, language: entity.language });
+  });
 };
 
 const updateEntitiesWithSuggestion = async (
@@ -249,7 +333,7 @@ const updateEntitiesWithSuggestion = async (
     s => s
   );
 
-  const resources = await fetchResources(property);
+  const resources = await fetchResources(property, acceptedSuggestions, suggestions);
 
   const entitiesToUpdate =
     propertyName !== 'title'
@@ -272,7 +356,7 @@ const updateEntitiesWithSuggestion = async (
           title: getRawValue(entity, suggestionsById, acceptedSuggestionsBySharedId),
         }));
 
-  await entities.saveMultiple(entitiesToUpdate);
+  await saveEntities(entitiesToUpdate);
 };
 
 export { updateEntitiesWithSuggestion, SuggestionAcceptanceError };
