@@ -1,4 +1,3 @@
-/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 import { FilterQuery } from 'mongoose';
 import { LanguagesListSchema } from 'shared/types/commonTypes';

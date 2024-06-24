@@ -301,7 +301,7 @@ export const IXSuggestionAggregationSchema = {
     nonLabeled: {
       type: 'object',
       additionalProperties: false,
-      required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['_count', 'withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
       properties: {
         _count: { type: 'number' },
         withSuggestion: { type: 'number' },

@@ -54,7 +54,7 @@ export interface IXSuggestionAggregation {
   };
   nonLabeled: {
     _count: number;
-    withSuggestion?: number;
+    withSuggestion: number;
     noSuggestion: number;
     noContext: number;
     obsolete: number;
