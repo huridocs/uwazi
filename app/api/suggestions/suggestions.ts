@@ -168,6 +168,10 @@ const getNonLabeledCounts = async (_extractorId: ObjectId) => {
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.noContext,
   });
+  const withSuggestionCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.withSuggestion,
+  });
   const noSuggestionCount = await IXSuggestionsModel.count({
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.noSuggestion,
@@ -180,7 +184,14 @@ const getNonLabeledCounts = async (_extractorId: ObjectId) => {
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.others,
   });
-  return { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount };
+  return {
+    nonLabeledCount,
+    noContextCount,
+    withSuggestionCount,
+    noSuggestionCount,
+    obsoleteCount,
+    othersCount,
+  };
 };
 
 const readFilter = (filter: IXSuggestionsFilter) => {
@@ -261,8 +272,14 @@ const Suggestions = {
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);
     const { labeledCount, matchCount, mismatchCount } = await getLabeledCounts(extractorId);
-    const { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount } =
-      await getNonLabeledCounts(extractorId);
+    const {
+      nonLabeledCount,
+      noContextCount,
+      withSuggestionCount,
+      noSuggestionCount,
+      obsoleteCount,
+      othersCount,
+    } = await getNonLabeledCounts(extractorId);
     const totalCount = labeledCount + nonLabeledCount;
     return {
       total: totalCount,
@@ -274,6 +291,7 @@ const Suggestions = {
       nonLabeled: {
         _count: nonLabeledCount,
         noContext: noContextCount,
+        withSuggestion: withSuggestionCount,
         noSuggestion: noSuggestionCount,
         obsolete: obsoleteCount,
         others: othersCount,

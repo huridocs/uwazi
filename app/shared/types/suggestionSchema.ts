@@ -304,6 +304,7 @@ export const IXSuggestionAggregationSchema = {
       required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
       properties: {
         _count: { type: 'number' },
+        withSuggestion: { type: 'number' },
         noSuggestion: { type: 'number' },
         noContext: { type: 'number' },
         obsolete: { type: 'number' },

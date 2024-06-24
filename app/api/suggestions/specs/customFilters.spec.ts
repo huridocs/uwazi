@@ -252,6 +252,7 @@ describe('suggestions with CustomFilters', () => {
         },
         nonLabeled: {
           _count: 8,
+          withSuggestion: 6,
           noSuggestion: 2,
           noContext: 4,
           obsolete: 2,
