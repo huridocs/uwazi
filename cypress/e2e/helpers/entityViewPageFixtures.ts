@@ -22,7 +22,7 @@ ${textWithDynamicValues}
 <h4 className="descriptores-title"><Value path="entity.metadata.descriptores.label" /></h4>
 <p className="descriptores-content"><Value path="entity.metadata.descriptores.value.0.value" /></p>
 <h4 className="EntityData-label"><EntityData label-of="title" /></h4>
-<p className="EntityData-title"><EntityData value-of="title" /></p>
+<p className="EntityData-title"><EntityData value-of="Custom Title" /></p>
 <p id="entity-datasets-value"><p>`;
 
 export const script = `var currentEntitySharedId = window.store.getState().page.datasets.getIn(['entity', 'sharedId']);

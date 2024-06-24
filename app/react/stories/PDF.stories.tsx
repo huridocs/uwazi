@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
 import { Provider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { PDF } from 'V2/Components/PDFViewer';
@@ -8,7 +9,7 @@ import { highlights } from './fixtures/PDFStoryFixtures';
 const meta: Meta<typeof PDF> = {
   title: 'Viewers/PDF',
   component: PDF,
-  argTypes: { onSelect: { action: 'selected' }, onDeselect: { action: 'unselected' } },
+  args: { onSelect: fn(), onDeselect: fn() },
 };
 
 type Story = StoryObj<typeof PDF>;
