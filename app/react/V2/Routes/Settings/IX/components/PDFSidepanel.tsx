@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
