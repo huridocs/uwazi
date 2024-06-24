@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
+import uniqueID from 'shared/uniqueID';
 import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
@@ -46,14 +47,31 @@ const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps)
           columns={columns}
           sorting={sorting}
         />
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-4">
           <Button
             styling="outline"
             onClick={() => {
-              setDataState(tableData.slice(0, 2));
+              setDataState(dataState.slice(0, dataState.length - 1));
             }}
           >
-            Filter data
+            Remove last item
+          </Button>
+          <Button
+            styling="outline"
+            onClick={() => {
+              const id = uniqueID();
+              setDataState([
+                ...dataState,
+                {
+                  rowId: id,
+                  title: `New item ${id}`,
+                  description: `Description for ${id}`,
+                  created: Date.now(),
+                },
+              ]);
+            }}
+          >
+            Add new item
           </Button>
           <Button
             styling="outline"

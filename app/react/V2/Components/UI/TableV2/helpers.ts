@@ -3,7 +3,28 @@ import { Row } from 'react-table';
 import { cloneDeep } from 'lodash';
 import { RowWithId, TableProps } from './Table';
 
-const getDataIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) => {
+const equalityById = (
+  previousState: { id: UniqueIdentifier }[],
+  newState: { id: UniqueIdentifier }[]
+) => {
+  let areEqual = true;
+
+  if (previousState.length !== newState.length) {
+    areEqual = false;
+  } else {
+    let idsSet = new Set(previousState.map(obj => obj.id));
+    for (let obj of newState) {
+      if (!idsSet.has(obj.id)) {
+        areEqual = false;
+        break;
+      }
+    }
+  }
+
+  return areEqual;
+};
+
+const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];
 
   data.forEach(element => {
@@ -64,4 +85,4 @@ const sortHandler = <T extends RowWithId<T>>(rows: Row<T>[]) =>
     return original;
   });
 
-export { getDataIds, dndSortHandler, sortHandler };
+export { getRowIds, dndSortHandler, sortHandler, equalityById };

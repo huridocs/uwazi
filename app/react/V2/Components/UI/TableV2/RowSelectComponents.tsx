@@ -41,9 +41,8 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
   const onChange = table.getToggleAllRowsSelectedHandler();
 
   useEffect(() => {
-    if (typeof indeterminate === 'boolean') {
-      ref.current.indeterminate = !checked && indeterminate;
-    }
+    ref.current.checked = Boolean(checked && !indeterminate);
+    ref.current.indeterminate = Boolean(indeterminate);
   }, [ref, indeterminate, checked]);
 
   return (

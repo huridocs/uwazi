@@ -38,54 +38,91 @@ describe('Table', () => {
     checkRowContent(5, ['Entity 5', data[4].description, '5']);
   });
 
-  // xit('Should sort the rows with the sorting state specified', () => {
-  //   mount(<WithInitialState />);
+  xit('should render the data in a custom component', () => {
+    mount(<Basic />);
+    cy.get('tbody > :nth-child(1) > :nth-child(3) > div').should(
+      'have.class',
+      'text-center text-white bg-gray-400 rounded'
+    );
+  });
 
-  //   checkRowContent(1, ['Entity 2', data[0].description, '2']);
-  //   checkRowContent(2, ['Entity 3', data[2].description, '3']);
-  //   checkRowContent(3, ['Entity 1', data[1].description, '1']);
-  // });
+  xit('should render the header appending custom styles passed in the definition of the columns', () => {
+    mount(<WithActions />);
+    cy.get('table > thead > tr > th:nth-child(3)').should(
+      'have.class',
+      'px-6 py-3 w-1/4 bg-error-100 text-blue-600'
+    );
+  });
 
-  // xit('should render the data in a custom component', () => {
-  //   mount(<Basic />);
-  //   cy.get('tbody > :nth-child(1) > :nth-child(3) > div').should(
-  //     'have.class',
-  //     'text-center text-white bg-gray-400 rounded'
-  //   );
-  // });
+  describe('Sorting', () => {
+    it('Should be sortable by title', () => {
+      Basic.args.checkboxes = false;
+      Basic.args.sorting = 'headers';
+      mount(<Basic />);
 
-  // xit('should render the header appending custom styles passed in the definition of the columns', () => {
-  //   mount(<WithActions />);
-  //   cy.get('table > thead > tr > th:nth-child(3)').should(
-  //     'have.class',
-  //     'px-6 py-3 w-1/4 bg-error-100 text-blue-600'
-  //   );
-  // });
+      cy.get('th').contains('Title').click();
 
-  // xdescribe('Sorting', () => {
-  //   it('Should be sortable by title', () => {
-  //     mount(<Basic />);
-  //     cy.get('tr th').contains('Title').click();
-  //     checkRowContent(1, ['Entity 1', data[1].description, '1']);
-  //     checkRowContent(2, ['Entity 2', data[0].description, '2']);
-  //     checkRowContent(3, ['Entity 3', data[2].description, '3']);
-  //   });
+      checkRowContent(1, ['Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Entity 3', data[3].description, '3']);
+      checkRowContent(4, ['Entity 4', data[2].description, '4']);
+      checkRowContent(5, ['Entity 5', data[4].description, '5']);
+    });
 
-  //   it('should disable sorting when defined in the columns', () => {
-  //     mount(<WithActions />);
-  //     cy.get('tr th').contains('Description').click();
-  //     checkRowContent(1, ['Entity 2', '2', data[0].description]);
-  //   });
+    it('should return to the default sorting', () => {
+      Basic.args.checkboxes = false;
+      mount(<Basic />);
+      cy.get('th').contains('Title').click().click().click();
 
-  //   it('should allow external control of sorting', () => {
-  //     const setSortingSpy = cy.stub().as('setSortingSpy');
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 1', data[1].description, '1']);
+      checkRowContent(3, ['Entity 4', data[2].description, '4']);
+      checkRowContent(4, ['Entity 3', data[3].description, '3']);
+      checkRowContent(5, ['Entity 5', data[4].description, '5']);
+    });
 
-  //     mount(<Basic setSorting={setSortingSpy} />);
-  //     cy.get('tr th').contains('Title').click();
+    it('should keep selections when sorting', () => {
+      Basic.args.checkboxes = true;
+      mount(<Basic />);
 
-  //     cy.get('@setSortingSpy').should('have.been.calledOnce');
-  //   });
-  // });
+      cy.get('tbody').within(() => {
+        cy.get('input[type="checkbox"]').eq(0).check();
+        cy.get('input[type="checkbox"]').eq(2).check();
+      });
+
+      cy.get('th').contains('Title').click().click();
+
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Entity 2');
+        cy.contains('Entity 4');
+      });
+    });
+
+    it('should sort items in groups', () => {});
+
+    xit('should disable sorting when defined in the columns', () => {
+      mount(<WithActions />);
+      cy.get('tr th').contains('Description').click();
+      checkRowContent(1, ['Entity 2', '2', data[0].description]);
+    });
+
+    xit('should allow external control of sorting', () => {
+      const setSortingSpy = cy.stub().as('setSortingSpy');
+
+      mount(<Basic setSorting={setSortingSpy} />);
+      cy.get('tr th').contains('Title').click();
+
+      cy.get('@setSortingSpy').should('have.been.calledOnce');
+    });
+
+    xit('Should sort the rows with the sorting state specified', () => {
+      mount(<WithInitialState />);
+
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      checkRowContent(2, ['Entity 3', data[2].description, '3']);
+      checkRowContent(3, ['Entity 1', data[1].description, '1']);
+    });
+  });
 
   describe('Selections', () => {
     beforeEach(() => {
@@ -109,28 +146,9 @@ describe('Table', () => {
       });
     });
 
-    it('should keep selected items that are not filtered', () => {
-      cy.contains('button', 'Filter data').click();
-
-      checkRowContent(1, ['Drag row 1', 'Select', 'Entity 2', data[0].description, '2']);
-      checkRowContent(2, ['Drag row 2', 'Select', 'Entity 1', data[1].description, '1']);
-
-      cy.get('[data-testid="selected-items"]').within(() => {
-        cy.contains('Entity 1');
-        cy.contains('Entity 2').should('not.exist');
-      });
-    });
-
-    it('should not clear selections if data is restored', () => {
-      cy.contains('button', 'Filter data').click();
-      cy.contains('button', 'Reset data').click();
-      cy.get('[data-testid="selected-items"]').within(() => {
-        cy.contains('Entity 1');
-        cy.contains('Entity 2').should('not.exist');
-        cy.contains('Entity 3');
-        cy.contains('Entity 4').should('not.exist');
-        cy.contains('Entity 5');
-      });
+    it('should reset selections when data changes', () => {
+      cy.contains('button', 'Add new item').click();
+      cy.get('[data-testid="selected-items"] > div').should('be.empty');
     });
   });
 
@@ -169,7 +187,7 @@ describe('Table', () => {
       checkRowContent(5, ['Drag row 5', 'Select', 'Entity 5', data[4].description, '5']);
     });
 
-    it('should keep selections while sorting', () => {
+    it('should keep selections while dragging', () => {
       cy.get('tbody').within(() => {
         cy.get('input[type="checkbox"]').eq(0).check();
         cy.get('input[type="checkbox"]').eq(2).check();

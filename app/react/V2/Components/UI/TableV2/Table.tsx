@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -17,16 +17,14 @@ import {
   useSensors,
   DndContext,
   closestCenter,
+  UniqueIdentifier,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
-import { dndSortHandler, getDataIds, sortHandler } from './helpers';
+import { dndSortHandler, getRowIds, sortHandler, equalityById } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
-
-//whe should mark columns as having sort arrows when defining columns
-//whe should render an error if there are repeated ids
 
 type RowWithId<T extends { rowId: string }> = {
   rowId: string;
@@ -51,8 +49,10 @@ const Table = <T extends RowWithId<T>>({
   const [state, setState] = dataState;
   const [rowSelection, setRowSelection] = selectionState || [null, null];
   const [sortingState, setSortingState] = useState<SortingState>([]);
+  const rowIds = useMemo(() => getRowIds(state), [state]);
 
-  const dataIds = useMemo(() => getDataIds(state), [state]);
+  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>([...rowIds]);
+  const originalState = useRef([...state]);
 
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
@@ -93,22 +93,38 @@ const Table = <T extends RowWithId<T>>({
     ...(setRowSelection && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
   });
 
+  useEffect(() => {
+    const isEqual = equalityById(originalRowIds.current, rowIds);
+
+    if (!isEqual) {
+      originalState.current = [...state];
+      originalRowIds.current = [...rowIds];
+      if (setRowSelection) {
+        setRowSelection({});
+      }
+    }
+  }, [rowIds]);
+
+  useEffect(() => {
+    if (setState) {
+      if (sortingState.length === 0) {
+        setState(originalState.current);
+      } else {
+        const { rows } = table.getSortedRowModel();
+        setState(sortHandler(rows));
+      }
+    }
+  }, [sortingState]);
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
       if (setState) {
-        setState(() => dndSortHandler(state, dataIds, active.id, over.id));
+        setState(() => dndSortHandler(state, rowIds, active.id, over.id));
       }
     }
   };
-
-  useEffect(() => {
-    const { rows } = table.getSortedRowModel();
-    if (setState) {
-      setState(sortHandler(rows));
-    }
-  }, [sortingState]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
@@ -148,7 +164,7 @@ const Table = <T extends RowWithId<T>>({
           ))}
         </thead>
         <tbody>
-          <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
+          <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
             {table.getRowModel().rows.map(row => (
               <DraggableRow key={row.id} row={row} />
             ))}
