@@ -72,6 +72,7 @@ describe('Table', () => {
     it('should return to the default sorting', () => {
       Basic.args.checkboxes = false;
       mount(<Basic />);
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click().click();
 
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
@@ -90,6 +91,7 @@ describe('Table', () => {
         cy.get('input[type="checkbox"]').eq(2).check();
       });
 
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click();
 
       cy.get('[data-testid="selected-items"]').within(() => {

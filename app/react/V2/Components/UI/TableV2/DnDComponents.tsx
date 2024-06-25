@@ -33,6 +33,8 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
     id: row.id,
   });
 
+  const isParent = row.getCanExpand() || row.originalSubRows;
+
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -42,7 +44,11 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   };
 
   return (
-    <tr ref={setNodeRef} style={style}>
+    <tr
+      ref={setNodeRef}
+      style={style}
+      className={`${isParent ? 'bg-success-300' : 'bg-primary-300'}`}
+    >
       {row.getVisibleCells().map(cell => (
         <td key={cell.id} style={{ width: cell.column.getSize() }}>
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
