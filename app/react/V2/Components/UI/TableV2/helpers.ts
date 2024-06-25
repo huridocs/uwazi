@@ -31,6 +31,7 @@ const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) 
   return identifiers;
 };
 
+// eslint-disable-next-line max-statements
 const dndSortHandler = <T extends RowWithId<T>>(
   currentState: TableProps<T>['dataState'][0],
   dataIds: { id: UniqueIdentifier; parentId?: string }[],
@@ -39,8 +40,17 @@ const dndSortHandler = <T extends RowWithId<T>>(
 ): TableProps<T>['dataState'][0] => {
   const state = cloneDeep(currentState);
 
-  const activeParent = dataIds.find(dataId => dataId.id === activeId)?.parentId;
-  const overParent = dataIds.find(dataId => dataId.id === overId)?.parentId;
+  const { activeParent, overParent } = dataIds.reduce(
+    (acc, { id, parentId }) => {
+      if (id === activeId) acc.activeParent = parentId;
+      if (id === overId) acc.overParent = parentId;
+      return acc;
+    },
+    { activeParent: undefined, overParent: undefined } as {
+      activeParent?: string;
+      overParent?: string;
+    }
+  );
 
   const activePosition = activeParent
     ? state
@@ -54,14 +64,20 @@ const dndSortHandler = <T extends RowWithId<T>>(
         ?.subRows?.findIndex(element => element.rowId === overId)
     : state.findIndex(element => element.rowId === overId);
 
-  const element = activeParent
+  const activeElement = activeParent
     ? state.find(item => item.rowId === activeParent)?.subRows?.splice(activePosition, 1)[0]
     : state.splice(activePosition, 1)[0];
 
+  if (!activeElement || (Object.hasOwn(activeElement, 'subRows') && overParent)) {
+    return currentState;
+  }
+
   if (overParent) {
-    state.find(item => item.rowId === overParent)?.subRows?.splice(droppedPosition, 0, element);
+    state
+      .find(item => item.rowId === overParent)
+      ?.subRows?.splice(droppedPosition, 0, activeElement);
   } else {
-    state.splice(droppedPosition, 0, element);
+    state.splice(droppedPosition, 0, activeElement);
   }
 
   return state;

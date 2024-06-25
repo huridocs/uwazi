@@ -179,12 +179,17 @@ describe('DnD table sort handler', () => {
     expect(result[5].title).toEqual('Item 1');
   });
 
-  it('should not move parent items inside other parent items', () => {
+  it('should not move parent items inside other parent items when droping it on parents', () => {
     let result = dndSortHandler(tableData, ids, '4', '3');
     result = dndSortHandler(result, ids, '4', '2');
     result = dndSortHandler(result, ids, '1', '4');
     expect(result[0].title).toEqual('Group 4');
     expect(result[1].title).toEqual('Group 1');
+  });
+
+  it('should not move parent items inside other parent items when droping it on children', () => {
+    const result = dndSortHandler(tableData, ids, '4', 'C');
+    expect(result).toEqual(tableData);
   });
 
   it('should move a root item inside a parent', () => {
