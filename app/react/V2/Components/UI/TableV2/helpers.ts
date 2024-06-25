@@ -7,21 +7,12 @@ const equalityById = (
   previousState: { id: UniqueIdentifier }[],
   newState: { id: UniqueIdentifier }[]
 ) => {
-  let areEqual = true;
-
   if (previousState.length !== newState.length) {
-    areEqual = false;
-  } else {
-    let idsSet = new Set(previousState.map(obj => obj.id));
-    for (let obj of newState) {
-      if (!idsSet.has(obj.id)) {
-        areEqual = false;
-        break;
-      }
-    }
+    return false;
   }
 
-  return areEqual;
+  const idsSet = new Set(previousState.map(obj => obj.id));
+  return newState.every(obj => idsSet.has(obj.id));
 };
 
 const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) => {
