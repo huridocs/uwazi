@@ -58,6 +58,7 @@ const validHtmlTags = new Set([
   'element',
   'ellipse',
   'em',
+  'embed',
   'feBlend',
   'feColorMatrix',
   'feComponentTransfer',
