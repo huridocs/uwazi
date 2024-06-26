@@ -126,6 +126,7 @@ const validHtmlTags = new Set([
   'meter',
   'nav',
   'nobr',
+  'object',
   'ol',
   'optgroup',
   'option',
