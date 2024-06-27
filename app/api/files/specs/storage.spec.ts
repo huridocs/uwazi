@@ -320,7 +320,7 @@ describe('storage', () => {
 
   describe('listFiles', () => {
     describe('when s3 flag is active', () => {
-      it('should list all files on disk', async () => {
+      it('should list all files on s3', async () => {
         testingTenants.changeCurrentTenant({
           name: 'tenant1',
           dbName: 'uwazi_development',
@@ -350,6 +350,14 @@ describe('storage', () => {
     });
 
     describe('when s3 flag is not active', () => {
+      beforeAll(async () => {
+        await setupTestUploadedPaths('listFilesUsingDisk');
+      });
+
+      afterAll(async () => {
+        await setupTestUploadedPaths();
+      });
+
       it('should list all files on disk', async () => {
         testingTenants.changeCurrentTenant({
           name: 'tenant1',
@@ -359,80 +367,19 @@ describe('storage', () => {
             s3Storage: false,
           },
         });
-        await storage.storeFile(
-          'file_created.txt',
-          createReadStream(uploadsPath('documento.txt')),
-          'document'
-        );
-        expect(await storage.listFiles()).toMatchObject([
+
+        const listedFiles = await storage.listFiles();
+        console.log(listedFiles);
+        expect(listedFiles).toMatchObject([
           // Every file in the test uploads folder. As configured by the
           // testing filesystem
-          { type: 'custom', filename: 'customPDF.pdf' },
           { type: 'custom', filename: 'index.html' },
-          { type: 'document', filename: 'documento.txt' },
           { type: 'document', filename: 'eng.pdf' },
           {
-            type: 'document',
-            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-          },
-          {
-            type: 'document',
-            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
-          },
-          { type: 'document', filename: 'file_created.txt' },
-          { type: 'document', filename: 'import.zip' },
-          { type: 'document', filename: 'importcsv.csv' },
-          { type: 'document', filename: 'invalid_document.txt' },
-          { type: 'document', filename: 'spn.pdf' },
-          { type: 'document', filename: 'test_s3_file.txt' },
-          { type: 'thumbnail', filename: 'documento.txt' },
-          { type: 'thumbnail', filename: 'eng.pdf' },
-          {
             type: 'thumbnail',
-            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
+            filename: 'aThumbnail.png',
           },
-          {
-            type: 'thumbnail',
-            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
-          },
-          { type: 'thumbnail', filename: 'file_created.txt' },
-          { type: 'thumbnail', filename: 'import.zip' },
-          { type: 'thumbnail', filename: 'importcsv.csv' },
-          { type: 'thumbnail', filename: 'invalid_document.txt' },
-          { type: 'thumbnail', filename: 'spn.pdf' },
-          { type: 'thumbnail', filename: 'test_s3_file.txt' },
           { type: 'attachment', filename: 'documento.txt' },
-          { type: 'attachment', filename: 'eng.pdf' },
-          {
-            type: 'attachment',
-            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-          },
-          {
-            type: 'attachment',
-            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
-          },
-          { type: 'attachment', filename: 'file_created.txt' },
-          { type: 'attachment', filename: 'import.zip' },
-          { type: 'attachment', filename: 'importcsv.csv' },
-          { type: 'attachment', filename: 'invalid_document.txt' },
-          { type: 'attachment', filename: 'spn.pdf' },
-          { type: 'attachment', filename: 'test_s3_file.txt' },
-          { type: 'activitylog', filename: 'documento.txt' },
-          { type: 'activitylog', filename: 'eng.pdf' },
-          {
-            type: 'activitylog',
-            filename: 'f2082bf51b6ef839690485d7153e847a.pdf',
-          },
-          {
-            type: 'activitylog',
-            filename: 'f2082bf51b6ef839690485d7153e847b.pdf',
-          },
-          { type: 'activitylog', filename: 'file_created.txt' },
-          { type: 'activitylog', filename: 'import.zip' },
-          { type: 'activitylog', filename: 'importcsv.csv' },
-          { type: 'activitylog', filename: 'invalid_document.txt' },
-          { type: 'activitylog', filename: 'spn.pdf' },
-          { type: 'activitylog', filename: 'test_s3_file.txt' },
         ]);
       });
     });
