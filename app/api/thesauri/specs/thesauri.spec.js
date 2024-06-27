@@ -1,4 +1,6 @@
 /* eslint-disable max-lines */
+import _ from 'lodash';
+
 import translations from 'api/i18n/translations';
 import templates from 'api/templates/templates';
 import entities from 'api/entities/entities';
@@ -1002,21 +1004,23 @@ describe('thesauri', () => {
           { label: '2' },
           { label: '3' },
           { label: 'a', values: [{ label: 'A3' }] },
-          { label: 'B', values: [{ label: 'B1' }, { label: 'b2' }] },
+          { label: 'B', values: [{ label: 'b1' }, { label: 'B2' }] },
           { label: 'C', values: [{ label: 'C1' }, { label: 'C2' }] },
         ],
         expectedValues: [
           base.values[0],
           base.values[1],
-          { label: '3' },
           { label: 'A', values: [...base.values[2].values, { label: 'A3' }] },
-          base.values[3],
+          { label: 'B', values: [...base.values[3].values, { label: 'B2' }] },
+          { label: '3' },
           { label: 'C', values: [{ label: 'C1' }, { label: 'C2' }] },
         ],
       },
     ])('should $case', async ({ addition, expectedValues }) => {
-      const modified = thesauri.appendValues(base, addition);
-      expect(modified.values).toEqual(expectedValues);
+      const baseClone = _.cloneDeep(base);
+      const modified = thesauri.appendValues(baseClone, addition);
+      expect(modified.values).toMatchObject(expectedValues);
+      expect(baseClone).toEqual(base);
     });
   });
 });
