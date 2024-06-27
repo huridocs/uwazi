@@ -160,10 +160,15 @@ function recursivelyAppendValues(originalValues, newValues) {
   const existingLabels = new Set(Object.keys(valuesByLabel));
 
   newValues.forEach(newValue => {
+    const newValueCopy = _.cloneDeep(newValue);
     const normalizedNewLabel = normalizeThesaurusLabel(newValue.label);
     if (!existingLabels.has(normalizedNewLabel)) {
-      values.push(newValue);
       existingLabels.add(normalizedNewLabel);
+      if (newValueCopy.values) {
+        newValueCopy.values = recursivelyAppendValues([], newValueCopy.values);
+      }
+      values.push(newValueCopy);
+      valuesByLabel[normalizedNewLabel] = newValueCopy;
     } else if (newValue.values) {
       const originalValue = valuesByLabel[normalizedNewLabel];
       originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
