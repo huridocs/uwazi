@@ -14,6 +14,7 @@ import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
 import { search } from 'api/search';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
@@ -165,15 +166,35 @@ function calcNewLabels(originals, news) {
     }
   });
   return actualNewLabels.map(label => ({ label }));
-};
+}
 
 function calcNewValues(originalValues, newValues) {
   const values = _.cloneDeep(originalValues);
-  const [roots, groups] = _.partition(originalValues, v => !v.values);
-  const [ newRoots, newGroups ] = _.partition(newValues, v => !v.values);
+  const roots = values.filter(v => !v.values);
+  const groups = values.filter(v => v.values);
+  const [newRoots, newGroups] = _.partition(newValues, v => !v.values);
 
   const finalNewRoots = calcNewLabels(roots, newRoots);
   values.push(...finalNewRoots);
+
+  const groupsByNormalizedLabel = objectIndex(
+    groups,
+    v => normalizeThesaurusLabel(v.label),
+    v => v
+  );
+  const finalNewGroups = [];
+  newGroups.forEach(newGroup => {
+    const normalizedLabel = normalizeThesaurusLabel(newGroup.label);
+    if (!(normalizedLabel in groupsByNormalizedLabel)) {
+      const emptyNewGroup = { label: newGroup.label, values: [] };
+      finalNewGroups.push(emptyNewGroup);
+      groupsByNormalizedLabel[normalizedLabel] = emptyNewGroup;
+    }
+    const group = groupsByNormalizedLabel[normalizedLabel];
+    const newLocalValues = calcNewLabels(group.values, newGroup.values);
+    group.values.push(...newLocalValues);
+  });
+  values.push(...finalNewGroups);
 
   return values;
 }

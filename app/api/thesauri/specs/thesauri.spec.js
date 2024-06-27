@@ -789,7 +789,7 @@ describe('thesauri', () => {
     });
   });
 
-  fdescribe('appendValues', () => {
+  describe('appendValues', () => {
     const base = factory.nestedThesauri('base_thesaurus', [
       '1',
       '2',
