@@ -14,6 +14,7 @@ import { denormalizeThesauriLabelInMetadata } from 'api/entities/denormalize';
 import { search } from 'api/search';
 import model from './dictionariesModel';
 import { validateThesauri } from './validateThesauri';
+import { objectIndex } from 'shared/data_utils/objectIndex';
 
 const autoincrementValuesId = thesauri => {
   thesauri.values = generateIds(thesauri.values);
@@ -152,22 +153,48 @@ const update = async thesauri => {
   return model.save(thesauri);
 };
 
-function recursivelyAppendValues(originalValues, newValues) {
-  const values = [...originalValues];
-  const valuesByLabel = Object.fromEntries(
-    values.map(value => [normalizeThesaurusLabel(value.label), value])
-  );
-  const existingLabels = new Set(Object.keys(valuesByLabel));
-
-  newValues.forEach(newValue => {
-    const normalizedNewLabel = normalizeThesaurusLabel(newValue.label);
-    if (!existingLabels.has(normalizedNewLabel)) {
-      values.push(newValue);
-    } else if (newValue.values) {
-      const originalValue = valuesByLabel[newValue.label];
-      originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
+function calcNewLabels(originals, news) {
+  const originalLabels = originals.map(v => v.label);
+  const normalizedOriginals = originalLabels.map(normalizeThesaurusLabel);
+  const normalizedSet = new Set(normalizedOriginals);
+  const actualNewLabels = [];
+  news.forEach(({ label }) => {
+    const normalized = normalizeThesaurusLabel(label);
+    if (!normalizedSet.has(normalized)) {
+      actualNewLabels.push(label);
+      normalizedSet.add(normalized);
     }
   });
+  return actualNewLabels.map(label => ({ label }));
+}
+
+function calcNewValues(originalValues, newValues) {
+  const values = _.cloneDeep(originalValues);
+  const roots = values.filter(v => !v.values);
+  const groups = values.filter(v => v.values);
+  const [newRoots, newGroups] = _.partition(newValues, v => !v.values);
+
+  const finalNewRoots = calcNewLabels(roots, newRoots);
+  values.push(...finalNewRoots);
+
+  const groupsByNormalizedLabel = objectIndex(
+    groups,
+    v => normalizeThesaurusLabel(v.label),
+    v => v
+  );
+  const finalNewGroups = [];
+  newGroups.forEach(newGroup => {
+    const normalizedLabel = normalizeThesaurusLabel(newGroup.label);
+    if (!(normalizedLabel in groupsByNormalizedLabel)) {
+      const emptyNewGroup = { label: newGroup.label, values: [] };
+      finalNewGroups.push(emptyNewGroup);
+      groupsByNormalizedLabel[normalizedLabel] = emptyNewGroup;
+    }
+    const group = groupsByNormalizedLabel[normalizedLabel];
+    const newLocalValues = calcNewLabels(group.values, newGroup.values);
+    group.values.push(...newLocalValues);
+  });
+  values.push(...finalNewGroups);
 
   return values;
 }
@@ -189,7 +216,7 @@ const thesauri = {
   appendValues(thesaurus, newValues) {
     return {
       ...thesaurus,
-      values: recursivelyAppendValues(thesaurus.values || [], newValues),
+      values: calcNewValues(thesaurus.values || [], newValues),
     };
   },
 
