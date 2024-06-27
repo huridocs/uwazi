@@ -1,6 +1,29 @@
+/* eslint-disable max-statements */
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { getRowIds, dndSortHandler, equalityById } from '../helpers';
 import { tableData } from './fixtures';
+
+describe('row id generator', () => {
+  it('should return a flat array of row ids with the correct format', () => {
+    const ids = getRowIds(tableData);
+    expect(ids).toEqual([
+      { id: '1' },
+      { id: '1.1', parentId: '1' },
+      { id: '1.2', parentId: '1' },
+      { id: '1.3', parentId: '1' },
+      { id: '2' },
+      { id: 'A', parentId: '2' },
+      { id: 'B', parentId: '2' },
+      { id: '3' },
+      { id: 'C', parentId: '3' },
+      { id: 'D', parentId: '3' },
+      { id: '4' },
+      { id: '4-dropzone', parentId: '4' },
+      { id: '5' },
+      { id: '6' },
+    ]);
+  });
+});
 
 describe('DnD table sort handler', () => {
   let ids: { id: UniqueIdentifier; parentId?: string }[] = [];
@@ -252,6 +275,36 @@ describe('DnD table sort handler', () => {
           created: 9,
         },
       ],
+    });
+  });
+
+  it('should move an item withing a parent when dropped on the dropzone', () => {
+    const result = dndSortHandler(tableData, ids, '6', '4-dropzone');
+    expect(result[3]).toEqual({
+      rowId: '4',
+      title: 'Group 4',
+      created: 40,
+      description: 'Empty subrows',
+      subRows: [
+        {
+          rowId: '6',
+          title: 'Item 2',
+          created: 60,
+          description: 'Another regular',
+        },
+      ],
+    });
+  });
+
+  it('should empty a group by moving all items out of it', () => {
+    let result = dndSortHandler(tableData, ids, 'C', '6');
+    result = dndSortHandler(result, ids, 'D', '6');
+    expect(result[2]).toEqual({
+      rowId: '3',
+      title: 'Group 3',
+      created: 30,
+      description: 'Third group',
+      subRows: [],
     });
   });
 });

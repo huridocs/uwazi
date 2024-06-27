@@ -26,6 +26,10 @@ const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) 
         identifiers.push({ id: subElement.rowId, parentId: element.rowId });
       });
     }
+
+    if (element.subRows?.length === 0) {
+      identifiers.push({ id: `${element.rowId}-dropzone`, parentId: element.rowId });
+    }
   });
 
   return identifiers;
