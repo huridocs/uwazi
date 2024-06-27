@@ -35,56 +35,46 @@ function print(content: any, error?: 'error') {
 }
 
 type FileRecord = { type: string; filename: string };
-function getMap(files: FileRecord[]) {
-  const mapped: Record<string, Record<string, FileRecord>> = {};
-  files.forEach(file => {
-    if (!mapped[file.type]) {
-      mapped[file.type] = {};
-    }
-    mapped[file.type][file.filename] = file;
-  });
-  return mapped;
+
+function filterFilesInStorage(files: string[]) {
+  return files.filter(file => !file.endsWith('activity.log'));
 }
 
-function check(
-  source: FileRecord[],
-  target: FileRecord[],
-  { logType, excludeTypes }: { logType: string; excludeTypes?: string[] }
-) {
-  let missing = 0;
-  const mapped = getMap(target);
+async function handleTenant(tenantName: string) {
+  await tenants.run(async () => {
+    const allFilesInDb: FileRecord[] = await files.get({});
+    const allFilesInStorage = await storage.listFiles();
+    const filteredFilesInStorage = new Set(filterFilesInStorage(allFilesInStorage));
+    let missingInStorage = 0;
+    const countInStorage = filteredFilesInStorage.size;
 
-  source.forEach(file => {
-    if (!(excludeTypes ?? []).includes(file.type)) {
-      const exists = mapped[file.type]?.[file.filename];
-      if (!exists) {
-        missing += 1;
+    allFilesInDb.forEach(file => {
+      const existsInStorage = filteredFilesInStorage.delete(
+        storage.getPath(file.filename, file.type)
+      );
+
+      if (!existsInStorage) {
+        missingInStorage += 1;
         print(
           {
-            logType,
+            logType: 'missingInStorage',
             tenant: tenants.current().name,
             file,
           },
           'error'
         );
       }
-    }
-  });
-
-  return missing;
-}
-
-async function handleTenant(tenantName: string) {
-  await tenants.run(async () => {
-    const allFilesInDb = await files.get({});
-    const allFilesInStorage = await storage.listFiles();
-
-    const missingInStorage = check(allFilesInDb, allFilesInStorage, {
-      logType: 'missingInStorage',
     });
-    const missingInDb = check(allFilesInStorage, allFilesInDb, {
-      logType: 'missingInDb',
-      excludeTypes: ['activitylog'],
+
+    filteredFilesInStorage.forEach(file => {
+      print(
+        {
+          logType: 'missingInDb',
+          tenant: tenants.current().name,
+          file,
+        },
+        'error'
+      );
     });
 
     print({
@@ -92,8 +82,9 @@ async function handleTenant(tenantName: string) {
       tenant: tenants.current().name,
       storage: tenants.current().featureFlags?.s3Storage ? 's3' : 'local',
       missingInStorage,
-      missingInDb,
-      count: allFilesInDb.length,
+      missingInDb: filteredFilesInStorage.size,
+      countInDb: allFilesInDb.length,
+      countInStorage,
     });
   }, tenantName);
 }

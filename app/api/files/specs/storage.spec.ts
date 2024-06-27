@@ -16,6 +16,8 @@ import { rmdir } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { Readable } from 'stream';
 import {
+  attachmentsPath,
+  customUploadsPath,
   deleteFile,
   fileExistsOnPath,
   setupTestUploadedPaths,
@@ -332,20 +334,17 @@ describe('storage', () => {
         await storage.storeFile(
           'file_created1.txt',
           createReadStream(uploadsPath('documento.txt')),
-          'document'
+          'custom'
         );
-        await storage.storeFile(
-          'file_created2.txt',
-          createReadStream(uploadsPath('documento.txt')),
-          'document'
+        const listedFiles = await storage.listFiles();
+        expect(listedFiles.sort()).toEqual(
+          [
+            'tenant1/customUploads/file_created1.txt',
+            'tenant1/uploads/already_uploaded.txt',
+            'tenant1/uploads/file_to_be_deleted.txt',
+            'tenant1/uploads/segmentation/file_created.txt',
+          ].sort()
         );
-        expect(await storage.listFiles()).toEqual([
-          { filename: 'already_uploaded.txt', type: 'uploads' },
-          { filename: 'file_created1.txt', type: 'uploads' },
-          { filename: 'file_created2.txt', type: 'uploads' },
-          { filename: 'file_to_be_deleted.txt', type: 'uploads' },
-          { filename: 'file_created.txt', type: 'segmentation' },
-        ]);
       });
     });
 
@@ -369,18 +368,46 @@ describe('storage', () => {
         });
 
         const listedFiles = await storage.listFiles();
-        console.log(listedFiles);
-        expect(listedFiles).toMatchObject([
-          // Every file in the test uploads folder. As configured by the
-          // testing filesystem
-          { type: 'custom', filename: 'index.html' },
-          { type: 'document', filename: 'eng.pdf' },
-          {
-            type: 'thumbnail',
-            filename: 'aThumbnail.png',
+        expect(listedFiles.sort()).toMatchObject(
+          [
+            customUploadsPath('index.html'),
+            uploadsPath('eng.pdf'),
+            uploadsPath('aThumbnail.png'),
+            attachmentsPath('documento.txt'),
+          ].sort()
+        );
+      });
+    });
+  });
+
+  describe('getPath', () => {
+    describe('when s3 flag is active', () => {
+      it('should return the correct s3 key', () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: true,
           },
-          { type: 'attachment', filename: 'documento.txt' },
-        ]);
+        });
+
+        expect(storage.getPath('filename.pdf', 'document')).toBe('tenant1/uploads/filename.pdf');
+      });
+    });
+
+    describe('when s3 flag is not active', () => {
+      it('should return the correct filesystem path', () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+
+        expect(storage.getPath('filename.pdf', 'document')).toBe(uploadsPath('filename.pdf'));
       });
     });
   });

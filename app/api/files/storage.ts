@@ -5,7 +5,7 @@ import { tenants } from 'api/tenants';
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
 import { access, readdir } from 'fs/promises';
-import path, { join } from 'path';
+import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
@@ -53,21 +53,6 @@ const s3KeyWithPath = (filename: string, type: FileTypes) => {
     tenants.current().name,
     paths[type](filename).split('/').slice(sliceValue).join('/')
   );
-};
-
-const fromS3Key = (key: string) => {
-  const [, type, nestedTypeOrFilename, ...rest] = key.split('/');
-  if (!['segmentation', 'activitylog'].includes(nestedTypeOrFilename)) {
-    return {
-      type,
-      filename: nestedTypeOrFilename,
-    };
-  }
-
-  return {
-    type: nestedTypeOrFilename,
-    filename: rest.join('/'),
-  };
 };
 
 const readFromS3 = async (filename: string, type: FileTypes): Promise<Readable> => {
@@ -139,21 +124,17 @@ export const storage = {
   async listFiles() {
     if (tenants.current().featureFlags?.s3Storage) {
       const results = await s3().list(tenants.current().name);
-      return results.map(c => fromS3Key(c.Key!));
+      return results.map(c => c.Key!);
     }
 
-    const files: { type: FileTypes; filename: string; path: string }[] = [];
-    await Object.keys(paths).reduce(async (prev, type) => {
+    const files: string[] = [];
+    const uniquePaths = new Set(Object.values(paths).map(pathFn => pathFn('')));
+    await Array.from(uniquePaths).reduce(async (prev, filesPath) => {
       await prev;
-      const filetype = type as keyof typeof paths;
       try {
-        (await readdir(paths[filetype](''), { withFileTypes: true })).forEach(file => {
+        (await readdir(filesPath, { withFileTypes: true })).forEach(file => {
           if (file.isFile()) {
-            files.push({
-              type: filetype,
-              filename: file.name,
-              path: join(paths[filetype](''), file.name),
-            });
+            files.push(path.join(filesPath, file.name));
           }
         });
       } catch (err) {
@@ -171,5 +152,13 @@ export const storage = {
     if (!tenants.current().featureFlags?.s3Storage) {
       await createDirIfNotExists(dirPath);
     }
+  },
+
+  getPath(filename: string, type: FileTypes) {
+    if (tenants.current().featureFlags?.s3Storage) {
+      return s3KeyWithPath(filename, type);
+    }
+
+    return paths[type](filename);
   },
 };
