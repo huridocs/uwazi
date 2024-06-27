@@ -153,7 +153,7 @@ const update = async thesauri => {
 };
 
 function recursivelyAppendValues(originalValues, newValues) {
-  const values = [...originalValues];
+  const values = _.cloneDeep(originalValues);
   const valuesByLabel = Object.fromEntries(
     values.map(value => [normalizeThesaurusLabel(value.label), value])
   );
@@ -163,6 +163,7 @@ function recursivelyAppendValues(originalValues, newValues) {
     const normalizedNewLabel = normalizeThesaurusLabel(newValue.label);
     if (!existingLabels.has(normalizedNewLabel)) {
       values.push(newValue);
+      existingLabels.add(normalizedNewLabel);
     } else if (newValue.values) {
       const originalValue = valuesByLabel[normalizedNewLabel];
       originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);

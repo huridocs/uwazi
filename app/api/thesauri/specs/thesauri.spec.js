@@ -999,6 +999,11 @@ describe('thesauri', () => {
         expectedValues: base.values,
       },
       {
+        case: 'should be able to ignore case in the addition',
+        addition: [{ label: 'root' }, { label: 'Root' }, { label: 'ROOT' }],
+        expectedValues: [...base.values, { label: 'root' }],
+      },
+      {
         case: 'handle complex cases',
         addition: [
           { label: '2' },
