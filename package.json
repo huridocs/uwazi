@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.172.1",
+  "version": "1.173.0-rc4",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -246,7 +246,7 @@
     "world-countries": "5.0.0",
     "xml-js": "^1.6.11",
     "yargs": "^17.7.2",
-    "yauzl": "^3.1.2",
+    "yauzl": "^3.1.3",
     "yazl": "^2.5.1"
   },
   "devDependencies": {
@@ -356,7 +356,7 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "5.1.3",
-    "eslint-plugin-react": "v7.34.1",
+    "eslint-plugin-react": "v7.34.3",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-storybook": "^0.8.0",
     "fetch-mock": "^9.11.0",

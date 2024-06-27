@@ -172,6 +172,7 @@ const validHtmlTags = new Set([
   'th',
   'thead',
   'time',
+  'title',
   'tr',
   'track',
   'tspan',
