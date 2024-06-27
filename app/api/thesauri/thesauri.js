@@ -164,7 +164,7 @@ function recursivelyAppendValues(originalValues, newValues) {
     if (!existingLabels.has(normalizedNewLabel)) {
       values.push(newValue);
     } else if (newValue.values) {
-      const originalValue = valuesByLabel[newValue.label];
+      const originalValue = valuesByLabel[normalizedNewLabel];
       originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
     }
   });
