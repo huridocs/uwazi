@@ -152,28 +152,28 @@ const update = async thesauri => {
   return model.save(thesauri);
 };
 
-function recursivelyAppendValues(originalValues, newValues) {
-  const values = _.cloneDeep(originalValues);
-  const valuesByLabel = Object.fromEntries(
-    values.map(value => [normalizeThesaurusLabel(value.label), value])
-  );
-  const existingLabels = new Set(Object.keys(valuesByLabel));
-
-  newValues.forEach(newValue => {
-    const newValueCopy = _.cloneDeep(newValue);
-    const normalizedNewLabel = normalizeThesaurusLabel(newValue.label);
-    if (!existingLabels.has(normalizedNewLabel)) {
-      existingLabels.add(normalizedNewLabel);
-      if (newValueCopy.values) {
-        newValueCopy.values = recursivelyAppendValues([], newValueCopy.values);
-      }
-      values.push(newValueCopy);
-      valuesByLabel[normalizedNewLabel] = newValueCopy;
-    } else if (newValue.values) {
-      const originalValue = valuesByLabel[normalizedNewLabel];
-      originalValue.values = recursivelyAppendValues(originalValue.values || [], newValue.values);
+function calcNewLabels(originals, news) {
+  const originalLabels = originals.map(v => v.label);
+  const normalizedOriginals = originalLabels.map(normalizeThesaurusLabel);
+  const normalizedSet = new Set(normalizedOriginals);
+  const actualNewLabels = [];
+  news.forEach(({ label }) => {
+    const normalized = normalizeThesaurusLabel(label);
+    if (!normalizedSet.has(normalized)) {
+      actualNewLabels.push(label);
+      normalizedSet.add(normalized);
     }
   });
+  return actualNewLabels.map(label => ({ label }));
+};
+
+function calcNewValues(originalValues, newValues) {
+  const values = _.cloneDeep(originalValues);
+  const [roots, groups] = _.partition(originalValues, v => !v.values);
+  const [ newRoots, newGroups ] = _.partition(newValues, v => !v.values);
+
+  const finalNewRoots = calcNewLabels(roots, newRoots);
+  values.push(...finalNewRoots);
 
   return values;
 }
@@ -195,7 +195,7 @@ const thesauri = {
   appendValues(thesaurus, newValues) {
     return {
       ...thesaurus,
-      values: recursivelyAppendValues(thesaurus.values || [], newValues),
+      values: calcNewValues(thesaurus.values || [], newValues),
     };
   },
 
