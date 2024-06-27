@@ -33,7 +33,15 @@ describe('permissions', () => {
   });
 
   describe('set entities permissions', () => {
-    it('should update the specified entities with the passed permissions in all entities languages', async () => {
+    it('should update the specified entities with the passed permissions in all entities languages and make no other changes', async () => {
+      const originalEntities = await entities.getUnrestricted({}, 'sharedId +permissions');
+      const originalUpdatedEntities = originalEntities.filter(entity =>
+        ['shared1', 'shared2'].includes(entity.sharedId!)
+      );
+      const originalNotUpdatedEntities = originalEntities.filter(
+        entity => !['shared1', 'shared2'].includes(entity.sharedId!)
+      );
+
       const permissionsData: PermissionsDataSchema = {
         ids: ['shared1', 'shared2'],
         permissions: [
@@ -48,17 +56,20 @@ describe('permissions', () => {
       const updateEntities = storedEntities.filter(entity =>
         ['shared1', 'shared2'].includes(entity.sharedId!)
       );
-      updateEntities.forEach(entity => {
-        expect(entity.permissions).toEqual(
-          permissionsData.permissions.filter(p => p.type !== PermissionType.PUBLIC)
-        );
+      const expectedNewPermissions = permissionsData.permissions.filter(
+        p => p.type !== PermissionType.PUBLIC
+      );
+      updateEntities.forEach((entity, index) => {
+        const original = originalUpdatedEntities[index];
+        expect(entity).toEqual({
+          ...original,
+          permissions: expectedNewPermissions,
+        });
       });
       const notUpdatedEntities = storedEntities.filter(
         entity => !['shared1', 'shared2'].includes(entity.sharedId!)
       );
-      notUpdatedEntities.forEach(entity => {
-        expect(entity.permissions).toBe(undefined);
-      });
+      expect(notUpdatedEntities).toEqual(originalNotUpdatedEntities);
     });
 
     it('should invalidate if permissions are duplicated', async () => {
