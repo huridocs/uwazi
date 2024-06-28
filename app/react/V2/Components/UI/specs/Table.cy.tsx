@@ -13,8 +13,10 @@ describe('Table', () => {
   const dataWithNested = Nested.args.tableData || [];
 
   const checkRowContent = (rowNumber: number, cellsContent: string[]) => {
-    cellsContent.forEach((content, index) =>
-      cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
+    cellsContent.forEach(
+      (content, index) =>
+        content &&
+        cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
     );
   };
 
@@ -213,6 +215,12 @@ describe('Table', () => {
         cy.contains('Entity 5').should('not.exist');
       });
     });
+
+    it('should add an item to an empty group', () => {});
+
+    it('should empty a group by dragging all items out of it', () => {});
+
+    it('should not loose selections when dragging into a dropzone', () => {});
   });
 
   describe('Nested data', () => {
@@ -223,19 +231,61 @@ describe('Table', () => {
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Group 1 Group 2 Group 3 Group 4 Item 1 Item 2');
       });
-      checkRowContent(1, ['Drag row 1', 'Select', 'Group 1', dataWithNested[0].description, '10']);
-      checkRowContent(2, ['Drag row 2', 'Select', 'Group 2', dataWithNested[1].description, '20']);
-      checkRowContent(3, ['Drag row 3', 'Select', 'Group 3', dataWithNested[2].description, '30']);
-      checkRowContent(4, ['Drag row 4', 'Select', 'Group 4', dataWithNested[3].description, '40']);
-      checkRowContent(5, ['Drag row 5', 'Select', 'Item 1', dataWithNested[4].description, '50']);
-      checkRowContent(6, ['Drag row 6', 'Select', 'Item 2', dataWithNested[5].description, '60']);
+      checkRowContent(1, [
+        'Drag row 1',
+        'Select',
+        'Group',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
+      checkRowContent(2, [
+        'Drag row 2',
+        'Select',
+        'Group',
+        'Group 2',
+        dataWithNested[1].description,
+        '20',
+      ]);
+      checkRowContent(3, [
+        'Drag row 3',
+        'Select',
+        'Group',
+        'Group 3',
+        dataWithNested[2].description,
+        '30',
+      ]);
+      checkRowContent(4, [
+        'Drag row 4',
+        'Select',
+        'Group',
+        'Group 4',
+        dataWithNested[3].description,
+        '40',
+      ]);
+      checkRowContent(5, [
+        'Drag row 5',
+        'Select',
+        undefined,
+        'Item 1',
+        dataWithNested[4].description,
+        '50',
+      ]);
+      checkRowContent(6, [
+        'Drag row 6',
+        'Select',
+        undefined,
+        'Item 2',
+        dataWithNested[5].description,
+        '60',
+      ]);
     });
 
     it('should expand groups and check for accessibility', () => {
       cy.get('tbody').within(() => {
-        cy.contains('Group 1').siblings().contains('Group').click();
-        cy.contains('Group 2').siblings().contains('Group').click();
-        cy.contains('Group 3').siblings().contains('Group').click();
+        cy.contains('Open group 1').click();
+        cy.contains('Open group 2').click();
+        cy.contains('Open group 3').click();
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
         cy.contains('td', 'Sub 2-1');
@@ -251,8 +301,8 @@ describe('Table', () => {
       mount(<Nested />);
 
       cy.get('tbody').within(() => {
-        cy.contains('Group 1').siblings().contains('Group').click();
-        cy.contains('Group 3').siblings().contains('Group').click();
+        cy.contains('Open group 1').click();
+        cy.contains('Open group 3').click();
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
         cy.contains('td', 'Sub 3-1');
@@ -264,10 +314,18 @@ describe('Table', () => {
         force: true,
       });
 
-      checkRowContent(1, ['Drag row 1', 'Select', 'Group 1', dataWithNested[0].description, '10']);
+      checkRowContent(1, [
+        'Drag row 1',
+        'Select',
+        'Open group 1',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
       checkRowContent(2, [
         'Drag row 1-1',
         'Select',
+        undefined,
         'Sub 3-1',
         dataWithNested[2].subRows[0].description,
         '12',

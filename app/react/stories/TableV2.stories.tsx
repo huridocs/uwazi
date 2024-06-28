@@ -6,7 +6,6 @@ import uniqueID from 'shared/uniqueID';
 import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
-import { GroupCell } from './table/TableComponents';
 
 type StoryProps = {
   tableData: any[];
@@ -27,7 +26,7 @@ const basicColumns = [
 ];
 
 const nestedColumns = [
-  nestedColumnHelper.accessor('title', { header: 'Title', cell: GroupCell }),
+  nestedColumnHelper.accessor('title', { header: 'Title' }),
   nestedColumnHelper.accessor('description', { header: 'Description' }),
   nestedColumnHelper.accessor('created', {
     header: 'Date added',

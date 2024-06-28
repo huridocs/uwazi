@@ -25,6 +25,7 @@ import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 import { dndSortHandler, getRowIds, sortHandler, equalityById } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
+import { GroupCell, GroupHeader } from './GroupComponents';
 
 type RowWithId<T extends { rowId: string }> = {
   rowId: string;
@@ -56,6 +57,15 @@ const Table = <T extends RowWithId<T>>({
 
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
+    const hasGroups = state.find(item => item.subRows);
+
+    if (hasGroups) {
+      tableColumns.unshift({
+        id: 'group-button',
+        cell: GroupCell,
+        header: GroupHeader,
+      });
+    }
 
     if (rowSelection) {
       tableColumns.unshift({

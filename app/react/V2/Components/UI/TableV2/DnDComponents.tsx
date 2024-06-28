@@ -12,7 +12,7 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
     id: row.id,
   });
 
-  const canExpand = row.getCanExpand();
+  const canExpand = row.originalSubRows;
   const expanded = row.getIsExpanded();
   const parentRow = row.getParentRow();
 
@@ -29,11 +29,16 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 };
 
 const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
+  const isParent = row.getCanExpand() || row.originalSubRows;
+  const isChild = row.parentId;
+  const expanded = row.getIsExpanded();
+  const isEmpty = row.originalSubRows?.length === 0;
+
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.id,
   });
 
-  const isParent = row.getCanExpand() || row.originalSubRows;
+  const { setNodeRef: dropNoderef } = useSortable({ id: `${row.id}-dropzone` });
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -44,17 +49,28 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   };
 
   return (
-    <tr
-      ref={setNodeRef}
-      style={style}
-      className={`${isParent ? 'bg-success-300' : 'bg-primary-300'}`}
-    >
-      {row.getVisibleCells().map(cell => (
-        <td key={cell.id} style={{ width: cell.column.getSize() }}>
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </td>
-      ))}
-    </tr>
+    <>
+      <tr
+        ref={setNodeRef}
+        style={style}
+        className={`${isParent || isChild ? 'bg-success-300' : 'bg-primary-300'}`}
+      >
+        {row.getVisibleCells().map(cell => (
+          <td key={cell.id} style={{ width: cell.column.getSize() }}>
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        ))}
+      </tr>
+      {isParent && isEmpty && expanded && (
+        <tr
+          ref={dropNoderef}
+          // style={style}
+          // className={`${isParent || isChild ? 'bg-success-300' : 'bg-primary-300'}`}
+        >
+          <td>dropzone</td>
+        </tr>
+      )}
+    </>
   );
 };
 

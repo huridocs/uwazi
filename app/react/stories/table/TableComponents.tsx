@@ -192,26 +192,5 @@ const withActionsColumns = [
   }),
 ];
 
-const GroupCell = ({ row, getValue }: CellContext<DataWithGroups, string>) => {
-  const canExpand = row.getCanExpand();
-  const expanded = row.getIsExpanded();
-
-  return (
-    <div className="flex gap-2 items-center">
-      <Translate context="Menu">{getValue()}</Translate>
-      {canExpand && (
-        <EmbededButton
-          icon={expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          onClick={() => row.toggleExpanded()}
-          color="indigo"
-          className="bg-indigo-200 rounded-md border-none drop-shadow-none"
-        >
-          <Translate>Group</Translate>
-        </EmbededButton>
-      )}
-    </div>
-  );
-};
-
 export type { SampleSchema };
-export { StoryComponent, CheckboxesTableComponent, basicColumns, withActionsColumns, GroupCell };
+export { StoryComponent, CheckboxesTableComponent, basicColumns, withActionsColumns };
