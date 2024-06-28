@@ -11,10 +11,7 @@ const pdfjsLoader = async () => {
     import('pdfjs-dist/web/pdf_viewer.css');
     PDFJS = await import('pdfjs-dist/web/pdf_viewer.mjs');
 
-    if (process.env.HOT || process.env.NODE_ENV === 'test') {
-      pdfjsLib = pdfjs;
-      pdfjsLib.GlobalWorkerOptions.workerSrc = await import('pdfjs-dist/build/pdf.worker.min.mjs');
-    } else {
+    if (!process.env.HOT && !(process.env.NODE_ENV === 'test')) {
       pdfjsLib = await import('pdfjs-dist/webpack.mjs');
     }
   }

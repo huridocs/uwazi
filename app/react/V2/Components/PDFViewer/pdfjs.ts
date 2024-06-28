@@ -8,12 +8,7 @@ const { EventBus } = viewer;
 const CMAP_URL = 'legacy_character_maps';
 
 const pdfjsLoader = async () => {
-  if (process.env.HOT || process.env.NODE_ENV === 'test') {
-    //@ts-ignore
-    //this is to trigger pdfjs-dist fake worker instantiation in non production environments
-    const fakeWorker = await import('pdfjs-dist/build/pdf.worker.min.mjs');
-    pdfjs.GlobalWorkerOptions.workerSrc = fakeWorker;
-  } else {
+  if (!process.env.HOT && !(process.env.NODE_ENV === 'test')) {
     //@ts-ignore
     //webpack bundled version for production, types are not needed.
     pdfjs = await import('pdfjs-dist/webpack.mjs');
