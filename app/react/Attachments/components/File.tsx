@@ -115,6 +115,7 @@ class File extends Component<FileOwnProps, FileState> {
             href={`${APIURL}files/${filename}`}
             target="_blank"
             rel="noopener noreferrer"
+            download
             className="file-download btn btn-outline-secondary"
           >
             <Icon icon="cloud-download-alt" />
