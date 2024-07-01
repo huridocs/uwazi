@@ -20,9 +20,11 @@ describe('full text search', () => {
   });
 
   it('should show text snippets when performing a text search', () => {
-    cy.get('input[aria-label="Type something in the search box to get some results."]')
-      .clear()
-      .type('Artavia Murillo', { delay: 0 });
+    cy.get('input[aria-label="Type something in the search box to get some results."]').clear();
+    cy.get('input[aria-label="Type something in the search box to get some results."]').type(
+      'Artavia Murillo',
+      { delay: 0 }
+    );
     cy.get('svg[aria-label="Search button"]').click();
 
     cy.get('.item-snippet').should('have.length', '9');
@@ -46,9 +48,11 @@ describe('full text search', () => {
       'Artavia Murillo y otros. Resolución de la Corte IDH de 31 de marzo de 2014'
     );
 
-    cy.get('input[aria-label="Type something in the search box to get some results."]')
-      .clear()
-      .type('Mauris\u000d', { delay: 0 });
+    cy.get('input[aria-label="Type something in the search box to get some results."]').clear();
+    cy.get('input[aria-label="Type something in the search box to get some results."]').type(
+      'Mauris\u000d',
+      { delay: 0 }
+    );
 
     cy.contains('.item-snippet-source', 'Document contents');
     cy.contains('.item-snippet', 'maecenas ligula nostra, accumsan taciti. Sociis mauris').click();
