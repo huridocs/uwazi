@@ -61,7 +61,7 @@ const EmbededButton = ({
       className={`${className} ${buttonColor} 
       ${collapsed || disabled ? '' : 'border'}
       ${collapsed || disabled ? 'px-[7px] py-[3px]' : 'px-1.5 py-0.5'}
-      drop-shadow-md disabled:drop-shadow-none active:drop-shadow-none text-xs disabled:cursor-not-allowed font-medium rounded-[4px]
+      text-xs disabled:cursor-not-allowed font-medium rounded-[4px]
       focus:outline-none`}
       form={form}
     >
