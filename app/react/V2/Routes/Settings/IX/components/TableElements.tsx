@@ -54,7 +54,7 @@ const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']
   const property = cell.getValue();
   return (
     <div className="flex items-center gap-2">
-      <span className="w-4">{propertyIcons[property]}</span>
+      <span className="w-5">{propertyIcons[property]}</span>
       <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
   );
