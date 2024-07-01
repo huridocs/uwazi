@@ -47,6 +47,7 @@ const FiltersSidepanel = ({
     },
     nonLabeled: {
       noContext: false,
+      withSuggestion: false,
       noSuggestion: false,
       obsolete: false,
       others: false,
@@ -153,6 +154,17 @@ const FiltersSidepanel = ({
                 <div className="flex-none font-mono">
                   {getPercentage(aggregation.nonLabeled._count, aggregation.total)}
                 </div>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Checkbox
+                  label="With suggestion"
+                  {...register('nonLabeled.withSuggestion')}
+                  onChange={e => {
+                    checkOption(e, 'nonLabeled.withSuggestion');
+                  }}
+                />
+                <div className="flex-1 border-t border-dashed border-t-gray-200" />
+                <div className="flex-none">{aggregation.nonLabeled.withSuggestion}</div>
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
