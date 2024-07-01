@@ -54,6 +54,7 @@ export interface IXSuggestionAggregation {
   };
   nonLabeled: {
     _count: number;
+    withSuggestion: number;
     noSuggestion: number;
     noContext: number;
     obsolete: number;
@@ -116,6 +117,7 @@ export interface SuggestionCustomFilter {
     mismatch: boolean;
   };
   nonLabeled: {
+    withSuggestion: boolean;
     noSuggestion: boolean;
     noContext: boolean;
     obsolete: boolean;
