@@ -465,6 +465,7 @@ Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
 Markdown,Markdown
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,Участники
 Menu,Меню
@@ -476,6 +477,7 @@ Metadata Extraction,Извлечение метаданных
 MIGRATE,MIGRATE
 Minimum,Минимум
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,Доступ смешанного типа
 ML TOC,Оглавление для машинного обучения
 Month,Месяц
@@ -769,6 +771,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Предлагаемые варианты
+suggestions,suggestions
 Supporting files,Сопроводительные файлы
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -910,6 +913,7 @@ Uwazi is developed by,Uwazi разработан
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,Верифицировать
 Verifying...,Верифицирование...
 View,Просмотреть

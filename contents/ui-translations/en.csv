@@ -470,6 +470,7 @@ Maps,Maps
 Mark as Reviewed,Mark as Reviewed
 Markdown,Markdown
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,Members
 Menu,Menu
@@ -481,6 +482,7 @@ Metadata Extraction,Metadata Extraction
 MIGRATE,MIGRATE
 Minimum,Minimum
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,Mixed access
 ML TOC,ML TOC
 Month,Month
@@ -774,6 +776,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Suggestions
+suggestions,suggestions
 Supporting files,Supporting files
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -915,6 +918,7 @@ Uwazi is developed by,Uwazi is developed by
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,Verify
 Verifying...,Verifying...
 View,View

@@ -2,12 +2,14 @@ import entitiesModel from 'api/entities/entitiesModel';
 import { files } from 'api/files';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
+import { propertyTypeIsMultiValued } from 'api/services/informationextraction/getFiles';
 import languages from 'shared/languages';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { FileType } from 'shared/types/fileType';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { Suggestions } from './suggestions';
+import templates from 'api/templates';
 
 const fetchEntitiesBatch = async (query: any, limit: number = 100) =>
   entitiesModel.db.find(query).select('sharedId').limit(limit).sort({ _id: 1 }).lean();
@@ -43,6 +45,7 @@ export const getBlankSuggestion = (
   file: EnforcedWithId<FileType>,
   { _id: extractorId, property: propertyName }: { _id: ObjectIdSchema; property: string },
   template: ObjectIdSchema,
+  propertyType: string,
   defaultLanguage: string
 ) => ({
   language: file.language
@@ -56,7 +59,7 @@ export const getBlankSuggestion = (
   status: 'ready' as 'ready',
   error: '',
   segment: '',
-  suggestedValue: '',
+  suggestedValue: propertyTypeIsMultiValued(propertyType) ? [] : '',
   date: new Date().getTime(),
 });
 
@@ -67,6 +70,7 @@ export const createBlankSuggestionsForPartialExtractor = async (
 ) => {
   const defaultLanguage = (await settings.getDefaultLanguage()).key;
   const extractorTemplates = new Set(extractor.templates.map(t => t.toString()));
+  const exampleProperty = await templates.getPropertyByName(extractor.property);
 
   const templatesPromises = selectedTemplates
     .filter(template => extractorTemplates.has(template.toString()))
@@ -80,7 +84,9 @@ export const createBlankSuggestionsForPartialExtractor = async (
 
       const suggestionsToSave: IXSuggestionType[] = fetchedFiles
         .filter(file => file.entity)
-        .map(file => getBlankSuggestion(file, extractor, template, defaultLanguage));
+        .map(file =>
+          getBlankSuggestion(file, extractor, template, exampleProperty.type, defaultLanguage)
+        );
       await Suggestions.saveMultiple(suggestionsToSave);
     });
 

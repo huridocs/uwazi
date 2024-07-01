@@ -468,6 +468,7 @@ Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,สมาชิก
 Menu,เมนู
@@ -479,6 +480,7 @@ Metadata Extraction,ค้นหาเมตาดาต้า
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,การเข้าถึงแบบผสม
 ML TOC,ML TOC
 Month,เดือน
@@ -772,6 +774,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,คำแนะนำ
+suggestions,suggestions
 Supporting files,รองรับไฟล์
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -913,6 +916,7 @@ Uwazi is developed by,Uwazi ได้รับการพัฒนาโดย
 Uwazi UI,uwazi ui
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,ตรวจสอบ
 Verifying...,กำลังตรวจสอบ....
 View,ดู
