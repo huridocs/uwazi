@@ -525,6 +525,7 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,Нет взаимосвязей
 No Relationships description,Relationships are bonds between entities.
+No suggestion,No suggestion
 No Table of Contents,Нет содержания
 No Table of Contents description,Нет описания содержания
 No text match,Нет совпадающего текста
@@ -561,6 +562,7 @@ Order,Последовательность
 Other,Другой
 other,Другой
 Other users will be affected by this action!,Other users will be affected by this action!
+Others,Others
 out of,из
 Page,Страница
 Pages,Страницы
@@ -925,6 +927,7 @@ Welcome to Uwazi,Добро пожаловать в Uwazi
 will be updated with the same value.,будет обновляться с тем же значением
 with,с
 With great power comes great responsibility!,С большой силой приходит большая ответственность!
+With suggestion,With suggestion
 x less,x меньше
 x more,х больше
 Year,Год

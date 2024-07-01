@@ -528,6 +528,7 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,ไม่มีความสัมพันธ์
 No Relationships description,Relationships are bonds between entities.
+No suggestion,No suggestion
 No Table of Contents,ไม่มีสารบัญ
 No Table of Contents description,ไม่มีคำอธิบายสารบัญ
 No text match,ไม่มีการจับคู่ข้อความ
@@ -564,6 +565,7 @@ Order,คำสั่ง
 Other,อื่น
 other,อื่น
 Other users will be affected by this action!,Other users will be affected by this action!
+Others,Others
 out of,ออกไปจาก
 Page,หน้า
 Pages,หน้า
@@ -928,6 +930,7 @@ Welcome to Uwazi,ยินดีต้อนรับสู่ Uwazi
 will be updated with the same value.,จะถูกอัปเดทด้วยค่าเดียวกัน
 with,กับ
 With great power comes great responsibility!,พลังที่ยิ่งใหญ่มากับความรับผิดชอบที่ใหญ่ยิ่ง!
+With suggestion,With suggestion
 x less,ลดขนาดลง
 x more,เพิ่มขนาดขึ้น
 Year,ปี

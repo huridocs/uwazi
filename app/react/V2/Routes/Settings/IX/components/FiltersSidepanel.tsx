@@ -157,7 +157,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="With suggestion"
+                  label={<Translate>With suggestion</Translate>}
                   {...register('nonLabeled.withSuggestion')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.withSuggestion');
@@ -168,7 +168,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="No suggestion"
+                  label={<Translate>No suggestion</Translate>}
                   {...register('nonLabeled.noSuggestion')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.noSuggestion');
@@ -179,7 +179,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="No context"
+                  label={<Translate>No context</Translate>}
                   {...register('nonLabeled.noContext')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.noContext');
@@ -190,7 +190,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="Obsolete"
+                  label={<Translate>Obsolete</Translate>}
                   {...register('nonLabeled.obsolete')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.obsolete');
@@ -201,7 +201,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="Others"
+                  label={<Translate>Others</Translate>}
                   {...register('nonLabeled.others')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.others');
