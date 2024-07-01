@@ -2,7 +2,7 @@ import * as pdfJsDist from 'pdfjs-dist';
 import * as viewer from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 
-const pdfjs = pdfJsDist;
+let pdfjs = pdfJsDist;
 const PDFJSViewer = viewer;
 const { EventBus } = viewer;
 const CMAP_URL = 'legacy_character_maps';
