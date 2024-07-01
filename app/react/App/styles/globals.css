@@ -3434,6 +3434,11 @@ input[type="range"]::-ms-fill-lower {
   color: rgb(49 196 141 / var(--tw-text-opacity));
 }
 
+.text-green-500 {
+  --tw-text-opacity: 1;
+  color: rgb(14 159 110 / var(--tw-text-opacity));
+}
+
 .text-green-600 {
   --tw-text-opacity: 1;
   color: rgb(5 122 85 / var(--tw-text-opacity));
@@ -3462,6 +3467,11 @@ input[type="range"]::-ms-fill-lower {
 .text-orange-400 {
   --tw-text-opacity: 1;
   color: rgb(255 138 76 / var(--tw-text-opacity));
+}
+
+.text-orange-500 {
+  --tw-text-opacity: 1;
+  color: rgb(255 90 31 / var(--tw-text-opacity));
 }
 
 .text-orange-600 {

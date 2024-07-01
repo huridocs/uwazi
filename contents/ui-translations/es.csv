@@ -466,6 +466,7 @@ Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
 Matching,Coincidencia
+matching,matching
 Matomo,Matomo
 Members,Miembros
 Menu,Menú
@@ -477,6 +478,7 @@ Metadata Extraction,Extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
 mismatched passwords,Las contraseñas no coinciden
+mismatching,mismatching
 Mixed access,Acceso mixto
 ML TOC,ML TdC
 Month,Mes
@@ -768,6 +770,7 @@ Suggestion,Sugerencia
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Sugerencias
+suggestions,suggestions
 Supporting files,Archivos de soporte
 Synced template,Plantilla sincronizada
 syncedTemplateEditorMessage,Esta plantilla esta sincronizada desde otra instancia. Solo se puede habilitar la página de vista de entidad.
@@ -908,6 +911,7 @@ Uwazi is developed by,Uwazi es desarrollado por
 Uwazi UI,Uwazi UI
 Value,valor
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,Verificar
 Verifying...,Verificando
 View,Ver
