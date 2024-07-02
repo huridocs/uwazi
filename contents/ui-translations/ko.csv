@@ -468,6 +468,7 @@ Maps,지도
 Mark as Reviewed,검토 완료로 표시
 Markdown,Markdown
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,멤버
 Menu,메뉴
@@ -479,6 +480,7 @@ Metadata Extraction,메타데이터 추출
 MIGRATE,MIGRATE
 Minimum,최소
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,혼합 접근
 ML TOC,ML TOC
 Month,월
@@ -528,6 +530,7 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,관계 없음
 No Relationships description,Relationships are bonds between entities.
+No suggestion,No suggestion
 No Table of Contents,목차 없음
 No Table of Contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
@@ -564,6 +567,7 @@ Order,순서
 Other,기타
 other,기타
 Other users will be affected by this action!,Other users will be affected by this action!
+Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
@@ -770,6 +774,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,자동 제안
+suggestions,suggestions
 Supporting files,추가 파일
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -911,6 +916,7 @@ Uwazi is developed by,Uwazi 제작 및 개발:
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,검증
 Verifying...,검증 중
 View,보기
@@ -928,6 +934,7 @@ Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 will be updated with the same value.,동일 값으로 업데이트됩니다.
 with,with
 With great power comes great responsibility!,큰 일에는 큰 책임이 따르는 법!
+With suggestion,With suggestion
 x less,덜 보기
 x more,더 보기
 Year,연도

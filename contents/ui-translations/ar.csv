@@ -467,6 +467,7 @@ Maps,خرائط
 Mark as Reviewed,ضع علامة للإشارة إلى خضوعه للمراجعة
 Markdown,ماركداون
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,أعضاء
 Menu,قائمة التحكم
@@ -478,6 +479,7 @@ Metadata Extraction,استخلاص البيانات الوصفية
 MIGRATE,MIGRATE
 Minimum,الحد الأدنى
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,وصول مختلط
 ML TOC,ML TOC
 Month,شهر
@@ -527,6 +529,7 @@ No References description,المراجع هي اجزاء من الوثيقة ا�
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,لا توجد علاقات
 No Relationships description,العلاقات هي الروابط بين الكيانات
+No suggestion,No suggestion
 No Table of Contents,لا يوجد جدول المحتويات
 No Table of Contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
@@ -563,6 +566,7 @@ Order,ترتيب
 Other,آخر
 other,آخر
 Other users will be affected by this action!,Other users will be affected by this action!
+Others,Others
 out of,خارج
 Page,صفحة
 Pages,الصفحات
@@ -769,6 +773,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,اقتراحات
+suggestions,suggestions
 Supporting files,ملفات الدعم
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -910,6 +915,7 @@ Uwazi is developed by,أوازي من إعداد:
 Uwazi UI,واجهة استخدام أوازي
 Value,قيمة
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,تحقق
 Verifying...,تحقق..
 View,عرض
@@ -927,6 +933,7 @@ Welcome to Uwazi,مرحباً بكم في أوازي
 will be updated with the same value.,سيحدث بالقيمة نفسها
 with,مع
 With great power comes great responsibility!,كلما ازدادت القوة، ازدادت معها المسؤولية!
+With suggestion,With suggestion
 x less,X أقل
 x more,X أكثر
 Year,سنة

@@ -468,6 +468,7 @@ Maps,Haritalar
 Mark as Reviewed,İncelendi olarak işaretle
 Markdown,Not et
 Matching,Matching
+matching,matching
 Matomo,Matomo
 Members,Üyeler
 Menu,Menü
@@ -479,6 +480,7 @@ Metadata Extraction,Meta veri özütleme
 MIGRATE,MIGRATE
 Minimum,Minimum
 mismatched passwords,Passwords don't match
+mismatching,mismatching
 Mixed access,Karma erişim
 ML TOC,ML TOC
 Month,Ay
@@ -528,6 +530,7 @@ No References description,References are parts of this document related with oth
 No relationship types warning,Relationship fields can not be added until you have at least one relationship type to select.
 No Relationships,İlişki yok
 No Relationships description,Relationships are bonds between entities.
+No suggestion,No suggestion
 No Table of Contents,İçerik Tablosu yok
 No Table of Contents description,İçerik Tablosu Yok Açıklama
 No text match,Metin Eşleşmesi Yok
@@ -564,6 +567,7 @@ Order,Düzen
 Other,Diğer
 other,Diğer
 Other users will be affected by this action!,Other users will be affected by this action!
+Others,Others
 out of,dışında
 Page,Sayfa
 Pages,Sayfalar
@@ -770,6 +774,7 @@ Suggestion,Suggestion
 Suggestion accepted.,Suggestion accepted.
 Suggestion:,Suggestion:
 Suggestions,Öneriler
+suggestions,suggestions
 Supporting files,Destekleyici belgeler
 Synced template,Synced template
 syncedTemplateEditorMessage,This template is synced from another instance. Only entity view page can be enabled.
@@ -911,6 +916,7 @@ Uwazi is developed by,Uwazi tarafından geliştirildi
 Uwazi UI,Uwazi UI
 Value,Value
 Value cannot be transformed to the correct type,Value cannot be transformed to the correct type
+values,values
 Verify,Doğrula
 Verifying...,Doğrulanıyor...
 View,Görüntüle
@@ -928,6 +934,7 @@ Welcome to Uwazi,Uwazi'ye hoş geldiniz
 will be updated with the same value.,aynı değerle güncellenecektir.
 with,ile
 With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!
+With suggestion,With suggestion
 x less,daha az
 x more,daha az
 Year,Yıl
