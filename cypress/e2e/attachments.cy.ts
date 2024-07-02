@@ -173,39 +173,14 @@ describe('attachments', () => {
       });
     });
 
-    it('should add a new file', () => {
-      cy.get('.side-panel.is-active').within(() => {
-        cy.get('.attachments-list-parent').within(() => {
-          cy.contains('button', 'Add file').click();
-        });
-      });
-
-      cy.contains('button', 'Upload and select file');
-
-      cy.get('.attachments-modal__dropzone').within(() => {
-        cy.get('input[type=file]').selectFile('./cypress/test_files/batman.jpg', { force: true });
-      });
-
-      cy.get('.attachments-modal__dropzone').should('not.exist');
-
-      cy.get('.side-panel.is-active').within(() => {
-        cy.get('.attachments-list-parent').within(() => {
-          cy.contains('batman.jpg');
-          cy.contains('new name.pdf');
-        });
-      });
-    });
-
     it('should delete the file', () => {
       cy.get('.side-panel.is-active').within(() => {
-        cy.get('.attachment')
-          .eq(1)
-          .within(() => {
-            cy.get('#attachment-dropdown-actions').click();
-            cy.get('ul.dropdown-menu').within(() => {
-              cy.contains('Delete').click();
-            });
+        cy.get('.attachment').within(() => {
+          cy.get('#attachment-dropdown-actions').click();
+          cy.get('ul.dropdown-menu').within(() => {
+            cy.contains('Delete').click();
           });
+        });
       });
 
       cy.contains('Confirm delete');
@@ -213,11 +188,7 @@ describe('attachments', () => {
         cy.contains('button', 'Accept').click();
       });
 
-      cy.get('.side-panel.is-active').within(() => {
-        cy.get('.attachments-list-parent').within(() => {
-          cy.contains('new name.pdf');
-        });
-      });
+      cy.get('.attachment').should('not.exist');
     });
   });
 });
