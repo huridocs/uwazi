@@ -77,14 +77,8 @@ describe('text references', () => {
   });
 
   it('should delete the reference to the entity', () => {
-    cy.get('.metadata-sidepanel.is-active').within(() => {
-      cy.contains('Chile')
-        .parent()
-        .parent()
-        .parent()
-        .within(() => {
-          cy.get('.item-shortcut.btn-default').eq(0).click();
-        });
+    cy.contains('.relationship-active', 'Chile').within(() => {
+      cy.get('.btn.delete').click();
     });
 
     cy.contains('Confirm delete connection');
