@@ -5,7 +5,9 @@ if (process.env.NODE_ENV !== 'production') {
   require('@babel/register')({ extensions: ['.js', '.jsx', '.ts', '.tsx'] });
 }
 
-process.env.ROOT_PATH = process.env.ROOT_PATH || __dirname;
+const cwd = process.env.USE_CWD ? process.cwd() : undefined;
+
+process.env.ROOT_PATH = process.env.ROOT_PATH || cwd || __dirname;
 
 const file = process.argv[2];
 if (file) {

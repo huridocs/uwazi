@@ -16,6 +16,8 @@ import { rmdir } from 'fs/promises';
 import { createReadStream } from 'fs';
 import { Readable } from 'stream';
 import {
+  attachmentsPath,
+  customUploadsPath,
   deleteFile,
   fileExistsOnPath,
   setupTestUploadedPaths,
@@ -36,6 +38,7 @@ describe('storage', () => {
         accessKeyId: 'minioadmin',
         secretAccessKey: 'minioadmin',
       },
+      batchSize: 1,
     };
 
     s3 = new S3Client({
@@ -313,6 +316,98 @@ describe('storage', () => {
         );
         expect(await storage.fileExists('file_created.txt', 'document')).toBe(true);
         expect(await storage.fileExists('non_existent.txt', 'document')).toBe(false);
+      });
+    });
+  });
+
+  describe('listFiles', () => {
+    describe('when s3 flag is active', () => {
+      it('should list all files on s3', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: true,
+          },
+        });
+        await storage.storeFile(
+          'file_created1.txt',
+          createReadStream(uploadsPath('documento.txt')),
+          'custom'
+        );
+        const listedFiles = await storage.listFiles();
+        expect(listedFiles.sort()).toEqual(
+          [
+            'tenant1/customUploads/file_created1.txt',
+            'tenant1/uploads/already_uploaded.txt',
+            'tenant1/uploads/file_to_be_deleted.txt',
+            'tenant1/uploads/segmentation/file_created.txt',
+          ].sort()
+        );
+      });
+    });
+
+    describe('when s3 flag is not active', () => {
+      beforeAll(async () => {
+        await setupTestUploadedPaths('listFilesUsingDisk');
+      });
+
+      afterAll(async () => {
+        await setupTestUploadedPaths();
+      });
+
+      it('should list all files on disk', async () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+
+        const listedFiles = await storage.listFiles();
+        expect(listedFiles.sort()).toMatchObject(
+          [
+            customUploadsPath('index.html'),
+            uploadsPath('eng.pdf'),
+            uploadsPath('aThumbnail.png'),
+            attachmentsPath('documento.txt'),
+          ].sort()
+        );
+      });
+    });
+  });
+
+  describe('getPath', () => {
+    describe('when s3 flag is active', () => {
+      it('should return the correct s3 key', () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: true,
+          },
+        });
+
+        expect(storage.getPath('filename.pdf', 'document')).toBe('tenant1/uploads/filename.pdf');
+      });
+    });
+
+    describe('when s3 flag is not active', () => {
+      it('should return the correct filesystem path', () => {
+        testingTenants.changeCurrentTenant({
+          name: 'tenant1',
+          dbName: 'uwazi_development',
+          indexName: 'index',
+          featureFlags: {
+            s3Storage: false,
+          },
+        });
+
+        expect(storage.getPath('filename.pdf', 'document')).toBe(uploadsPath('filename.pdf'));
       });
     });
   });
