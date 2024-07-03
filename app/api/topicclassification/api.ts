@@ -9,7 +9,7 @@ import { search } from 'api/search';
 import templates from 'api/templates';
 import { extractSequence } from 'api/topicclassification/common';
 import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
-import 'isomorphic-fetch';
+import 'cross-fetch/polyfill';
 import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
