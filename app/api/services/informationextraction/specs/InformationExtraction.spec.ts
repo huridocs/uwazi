@@ -360,6 +360,14 @@ describe('InformationExtraction', () => {
               id: 'C',
               label: 'C',
             },
+            {
+              id: '1A',
+              label: '1A',
+            },
+            {
+              id: '1B',
+              label: '1B',
+            },
           ],
         },
         tenant: 'tenant1',
