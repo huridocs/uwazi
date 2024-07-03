@@ -82,6 +82,7 @@ export const config = {
       accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
     },
+    batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',
