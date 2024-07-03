@@ -1,4 +1,4 @@
-import 'isomorphic-fetch';
+import 'cross-fetch/polyfill';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 import { Logger } from 'winston';
