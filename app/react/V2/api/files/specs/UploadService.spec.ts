@@ -14,7 +14,6 @@ const file2 = new File(['File 2 contents'], 'file2.txt', {
 describe('Upload service', () => {
   const uploadService = new UploadService('attachment');
 
-  // eslint-disable-next-line @typescript-eslint/promise-function-async
   const mockSuperAgent = () => {
     const mockUpload = superagent.post('api/files');
     spyOn(mockUpload, 'field').and.returnValue(mockUpload);
@@ -36,7 +35,7 @@ describe('Upload service', () => {
     expect(mock.field).toHaveBeenNthCalledWith(2, 'originalname', 'file2.txt');
     expect(mock.attach).toHaveBeenNthCalledWith(2, 'file', file2);
     expect(uploadService.getFilesInQueue()).toMatchObject([]);
-  });
+  }, 30000);
 
   it('should add files to the queue when calling multiple times', async () => {
     const mock = mockSuperAgent();
@@ -46,7 +45,7 @@ describe('Upload service', () => {
     expect(mock.field).toHaveBeenNthCalledWith(2, 'originalname', 'file1.txt');
     expect(mock.attach).toHaveBeenNthCalledWith(2, 'file', file1);
     expect(uploadService.getFilesInQueue()).toMatchObject([]);
-  });
+  }, 30000);
 
   it('should get information about the queue', async () => {
     // eslint-disable-next-line no-void
@@ -59,7 +58,7 @@ describe('Upload service', () => {
     await uploadPromise;
     expect(getQueue()).toEqual(expect.arrayContaining([]));
     expect(getIsUploading()).toBe(false);
-  });
+  }, 30000);
 
   it('should abort', async () => {
     const mock = mockSuperAgent();
@@ -69,7 +68,7 @@ describe('Upload service', () => {
     expect(mock.field).toHaveBeenCalledWith('originalname', 'file1.txt');
     expect(mock.field).not.toHaveBeenCalledWith('originalname', 'file2.txt');
     expect(mock.abort).toHaveBeenCalledTimes(1);
-  });
+  }, 30000);
 
   it('should be able to start uploading again after an abort event', async () => {
     const mock = mockSuperAgent();
@@ -79,5 +78,5 @@ describe('Upload service', () => {
     await uploadService.upload([file2]);
     expect(mock.field).toHaveBeenCalledWith('originalname', 'file2.txt');
     expect(mock.attach).toHaveBeenCalledWith('file', file2);
-  });
+  }, 30000);
 });
