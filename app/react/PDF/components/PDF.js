@@ -95,6 +95,7 @@ class PDF extends Component {
         url: file,
         cMapUrl,
         cMapPacked,
+        isEvalSupported: false,
       }).promise.then(pdf => {
         if (this._isMounted) {
           this.setState({ pdf });

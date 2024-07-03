@@ -4,7 +4,7 @@ import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
-import { access } from 'fs/promises';
+import { access, readdir } from 'fs/promises';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
@@ -121,9 +121,44 @@ export const storage = {
     return true;
   },
 
+  async listFiles() {
+    if (tenants.current().featureFlags?.s3Storage) {
+      const results = await s3().list(tenants.current().name);
+      return results.map(c => c.Key!);
+    }
+
+    const files: string[] = [];
+    const uniquePaths = new Set(Object.values(paths).map(pathFn => pathFn('')));
+    await Array.from(uniquePaths).reduce(async (prev, filesPath) => {
+      await prev;
+      try {
+        (await readdir(filesPath, { withFileTypes: true })).forEach(file => {
+          if (file.isFile()) {
+            files.push(path.join(filesPath, file.name));
+          }
+        });
+      } catch (err) {
+        if (err?.code === 'ENOENT') {
+          return;
+        }
+
+        throw err;
+      }
+    }, Promise.resolve());
+    return files;
+  },
+
   async createDirectory(dirPath: string) {
     if (!tenants.current().featureFlags?.s3Storage) {
       await createDirIfNotExists(dirPath);
     }
+  },
+
+  getPath(filename: string, type: FileTypes) {
+    if (tenants.current().featureFlags?.s3Storage) {
+      return s3KeyWithPath(filename, type);
+    }
+
+    return paths[type](filename);
   },
 };

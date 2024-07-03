@@ -9,7 +9,6 @@ const labelEntityTitle = (
   selector: string = 'span[role="presentation"]'
 ) => {
   cy.get('.view-doc').eq(entityPos).click();
-  //@ts-ignore
   cy.contains(selector, selectValue).setSelection(selectValue);
   cy.get('button.edit-metadata').click();
   cy.get('button.extraction-button').first().click();
@@ -335,7 +334,6 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Clear').click();
       cy.contains('span[role="presentation"]', 'The Spectacular Spider-Man')
         .eq(0)
-        //@ts-ignore
         .setSelection('The Spectacular Spider-Man');
 
       cy.contains('button', 'Click to fill').click();

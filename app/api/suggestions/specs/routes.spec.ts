@@ -214,6 +214,7 @@ describe('suggestions routes', () => {
                   mismatch: false,
                 },
                 nonLabeled: {
+                  withSuggestion: false,
                   noSuggestion: true,
                   noContext: false,
                   obsolete: false,
@@ -487,6 +488,7 @@ describe('aggregation routes', () => {
         },
         nonLabeled: {
           _count: 8,
+          withSuggestion: 6,
           noSuggestion: 2,
           noContext: 4,
           obsolete: 2,
