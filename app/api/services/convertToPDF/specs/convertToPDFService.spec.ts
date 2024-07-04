@@ -1,7 +1,7 @@
 import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import backend from 'fetch-mock';
-import 'isomorphic-fetch';
+import 'cross-fetch/polyfill';
 // eslint-disable-next-line node/no-restricted-import
 import { tenants } from 'api/tenants';
 // eslint-disable-next-line node/no-restricted-import
