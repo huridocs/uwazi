@@ -24,6 +24,20 @@ const formatInfo = (info: any) => {
   }`;
 };
 
+const jsonFormatter = (DATABASE_NAME: String) =>
+  winston.format.combine(
+    winston.format.timestamp(),
+    winston.format(addTenant)({ instanceName: DATABASE_NAME }),
+    winston.format.printf(info =>
+      JSON.stringify({
+        timestamp: info.timestamp,
+        tenant: info.tenant,
+        message: info.message,
+        tenantError: info.tenantError,
+      })
+    )
+  );
+
 const formatter = (DATABASE_NAME: String) =>
   winston.format.combine(
     winston.format.timestamp(),
@@ -31,4 +45,4 @@ const formatter = (DATABASE_NAME: String) =>
     winston.format.printf(info => formatInfo(info))
   );
 
-export { formatter, addTenant, formatInfo };
+export { jsonFormatter, formatter, addTenant, formatInfo };
