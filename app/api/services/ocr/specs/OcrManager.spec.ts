@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-
+import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
 import { files, storage } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
@@ -12,7 +12,6 @@ import { Readable } from 'stream';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError';
-import fetch from 'cross-fetch';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
