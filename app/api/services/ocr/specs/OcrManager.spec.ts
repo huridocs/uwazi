@@ -1,4 +1,6 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
+
 import fetchMock from 'fetch-mock';
 import { files, storage } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
@@ -10,6 +12,7 @@ import { Readable } from 'stream';
 import request from 'shared/JSONRequest';
 import * as sockets from 'api/socketio/setupSockets';
 import * as handleError from 'api/utils/handleError';
+import fetch from 'cross-fetch';
 import { getOcrStatus, OcrManager } from '../OcrManager';
 import { OcrModel, OcrStatus } from '../ocrModel';
 import { ResultsMessage, TaskManager } from '../../tasksmanager/TaskManager';
@@ -18,6 +21,11 @@ import { fixtures, fixturesFactory } from './fixtures/fixtures';
 import { cleanupRecordsOfFiles } from '../ocrRecords';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+
+Object.assign(fetchMock.config, {
+  Response,
+  fetch,
+});
 
 class Mocks {
   jestMocks: { [k: string]: jest.SpyInstance };
@@ -62,7 +70,6 @@ class Mocks {
 
     fetchMock.mock(
       'protocol://link/to/result/file',
-      //@ts-ignore
       new Response(Readable.from(Buffer.from('resultFileContent')), {
         headers: { 'Content-Type': 'some/mimetype' },
         size: 17,
