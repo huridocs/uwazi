@@ -183,6 +183,7 @@ describe('files routes', () => {
     });
   });
 
+  // eslint-disable-next-line max-statements
   describe('DELETE/api/files', () => {
     beforeEach(() => {
       testingEnvironment.setPermissions(adminUser);
@@ -210,16 +211,31 @@ describe('files routes', () => {
         .expect(400);
     });
 
-    it('should delete upload and return the response', async () => {
+    it('should allow deletion of custom file only to admin users', async () => {
+      // Need to be admin to upload file
+      const originalRequestUser = requestMockedUser;
+      testingEnvironment.setPermissions(adminUser);
+      requestMockedUser = adminUser;
+
       await request(app)
         .post('/api/files/upload/custom')
         .attach('file', path.join(__dirname, 'test.txt'));
+
+      testingEnvironment.setPermissions(collabUser);
+      requestMockedUser = collabUser;
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       await request(app).delete('/api/files').query({ _id: file._id?.toString() });
 
+      expect(await storage.fileExists(file.filename!, 'custom')).toBe(true);
+
+      testingEnvironment.setPermissions(adminUser);
+      requestMockedUser = adminUser;
+
+      await request(app).delete('/api/files').query({ _id: file._id?.toString() });
       expect(await storage.fileExists(file.filename!, 'custom')).toBe(false);
+      requestMockedUser = originalRequestUser;
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {

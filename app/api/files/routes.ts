@@ -13,8 +13,13 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { files } from './files';
 import { createError, handleError, validation } from '../utils';
 import { storage } from './storage';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
-const checkEntityPermission = async (file: FileType): Promise<boolean> => {
+const checkPermission = async (file: FileType): Promise<boolean> => {
+  if (file.type === 'custom' && permissionsContext.getUserInContext()?.role !== 'admin') {
+    return false;
+  }
+
   if (!file.entity) return true;
   const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
     withoutDocuments: true,
@@ -57,7 +62,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
+    needsAuthorization(['admin']),
     uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
@@ -192,7 +197,7 @@ export default (app: Application) => {
         !file?.filename ||
         !file?.type ||
         !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file))
+        !(await checkPermission(file))
       ) {
         throw createError('file not found', 404);
       }
@@ -235,7 +240,7 @@ export default (app: Application) => {
 
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {
+      if (!fileToDelete || !(await checkPermission(fileToDelete))) {
         throw createError('file not found', 404);
       }
 
