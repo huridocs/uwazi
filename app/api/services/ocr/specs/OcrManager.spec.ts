@@ -69,6 +69,7 @@ class Mocks {
 
     fetchMock.mock(
       'protocol://link/to/result/file',
+      //@ts-ignore
       new Response(Readable.from(Buffer.from('resultFileContent')), {
         headers: { 'Content-Type': 'some/mimetype' },
         size: 17,
