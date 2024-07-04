@@ -19,8 +19,10 @@ conversions/*.json
 app/api/files/specs/uploads/*
 app/api/migrations/**/uploads/*
 !app/api/migrations/**/uploads/index.html
+!app/api/files/specs/uploads/listFilesUsingDisk
 app/api/files/specs/customUploads/*
 !app/api/files/specs/customUploads/index.html
+!app/api/files/specs/customUploads/listFilesUsingDisk
 app/api/csv/specs/*.jpg
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847a.pdf
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847b.pdf

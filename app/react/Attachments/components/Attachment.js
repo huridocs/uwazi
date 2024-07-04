@@ -146,6 +146,7 @@ class Attachment extends Component {
       <a
         className="attachment-link"
         href={item.url || item.downloadHref}
+        download
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -226,7 +227,12 @@ class Attachment extends Component {
                 </button>
               </li>
               <li>
-                <a href={item.url || item.downloadHref} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={item.url || item.downloadHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                >
                   <Icon icon="cloud-download-alt" /> <Translate>Download</Translate>
                 </a>
               </li>

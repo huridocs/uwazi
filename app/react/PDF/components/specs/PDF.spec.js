@@ -45,6 +45,7 @@ describe('PDF', () => {
       expect(PDFJS.getDocument).toHaveBeenCalledWith({
         cMapPacked: true,
         cMapUrl: legacyCharacterMapUrl,
+        isEvalSupported: false,
         url: props.file,
       });
       expect(instance.setState).toHaveBeenCalledWith({ pdf: pdfObject });
