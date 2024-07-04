@@ -23,6 +23,7 @@ const getPDFFile = async (fileUrl: string) =>
     url: fileUrl,
     cMapUrl: CMAP_URL,
     cMapPacked: true,
+    isEvalSupported: false,
   }).promise;
 
 const PDF = ({
