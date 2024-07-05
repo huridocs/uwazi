@@ -36,7 +36,7 @@ const prepareFiles = async (mediaProperties, values) => {
 
           files.push(file);
 
-          return URL.revokeObjectURL(values.metadata[p.name]);
+          return URL.revokeObjectURL(url);
         }
       })
     );
