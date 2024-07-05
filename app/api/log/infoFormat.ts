@@ -34,7 +34,7 @@ const jsonFormatter = (DATABASE_NAME: String) =>
         timestamp: info.timestamp,
         environment: config.ENVIRONMENT,
         tenant: info.tenant,
-        message: info.message,
+        message: formatInfo(info),
         tenantError: info.tenantError,
       })
     )
