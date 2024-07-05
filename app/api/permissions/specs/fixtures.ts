@@ -1,6 +1,9 @@
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import db, { DBFixture } from 'api/utils/testing_db';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserRole } from 'shared/types/userSchema';
+
+const factory = getFixturesFactory();
 
 const idUserA = db.id();
 const idUserB = db.id();
@@ -36,6 +39,8 @@ const groupB = {
 
 const entity1 = {
   sharedId: 'shared1',
+  template: factory.id('template'),
+  metadata: { text: [{ value: 'one' }] },
   type: 'entity',
   language: 'en',
   title: 'Entity 1',
@@ -60,6 +65,8 @@ const entity1 = {
 };
 const entity2 = {
   sharedId: 'shared2',
+  template: factory.id('template'),
+  metadata: { text: [{ value: 'two' }] },
   type: 'entity',
   language: 'en',
   title: 'Entity 2',
@@ -86,6 +93,8 @@ const entity2 = {
 
 const entity3 = {
   sharedId: 'shared3',
+  metadata: { text: [{ value: 'three' }] },
+  template: factory.id('template'),
   type: 'entity',
   language: 'en',
   title: 'Entity 3',
@@ -95,6 +104,8 @@ const entity3 = {
 
 const entity4 = {
   sharedId: 'shared4',
+  metadata: { text: [{ value: 'four' }] },
+  template: factory.id('template'),
   type: 'entity',
   language: 'en',
   title: 'Entity 4',
@@ -103,6 +114,7 @@ const entity4 = {
 };
 
 const fixtures: DBFixture = {
+  templates: [factory.template('template', [factory.property('text', 'text')])],
   entities: [
     {
       ...entity1,

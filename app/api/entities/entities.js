@@ -11,7 +11,6 @@ import templates from 'api/templates/templates';
 import { generateNames } from 'api/templates/utils';
 import date from 'api/utils/date';
 import { unique } from 'api/utils/filters';
-import { objectIndex } from 'shared/data_utils/objectIndex';
 import { AccessLevels } from 'shared/types/permissionSchema';
 import { propertyTypes } from 'shared/propertyTypes';
 import ID from 'shared/uniqueID';
@@ -532,26 +531,6 @@ export default {
       doc = await model.get({ sharedId, language }).then(result => result[0]);
     }
     return doc;
-  },
-
-  async saveMultiple(docs) {
-    const templateIds = Array.from(new Set(docs.map(d => d.template)));
-    const indexedTemplates = objectIndex(
-      await templates.get({ _id: { $in: templateIds } }),
-      t => t._id.toString(),
-      t => t
-    );
-
-    await docs.reduce(async (prev, _doc) => {
-      await prev;
-      const template = indexedTemplates[_doc.template];
-      const doc = this.sanitize(_doc, template);
-      await validateEntity(doc);
-    }, Promise.resolve());
-
-    const response = await model.saveMultiple(docs);
-    await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
-    return response;
   },
 
   async multipleUpdate(ids, values, params) {
