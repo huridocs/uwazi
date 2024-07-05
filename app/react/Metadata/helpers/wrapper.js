@@ -7,7 +7,7 @@ const prepareFiles = async (mediaProperties, values) => {
   const entityAttachments = [];
   const files = [];
 
-  if (values.metadata || mediaProperties.length === 0) {
+  if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
         if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
@@ -38,6 +38,8 @@ const prepareFiles = async (mediaProperties, values) => {
 
           return URL.revokeObjectURL(url);
         }
+
+        return null;
       })
     );
   }
