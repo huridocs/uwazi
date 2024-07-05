@@ -36,9 +36,9 @@ const createErrorLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
   LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
-  const transports = [createFileTransport(), createConsoleTransport()];
+  let transports = [createFileTransport(), createConsoleTransport()];
   if (config.JSON_LOGS) {
-    transports.push(createJSONConsoleTransport());
+    transports = [createJSONConsoleTransport()];
   }
 
   const logger: ExtendedLogger = winston.createLogger({
@@ -49,7 +49,7 @@ const createErrorLog = () => {
     cb();
   };
 
-  if (process.env.USE_GRAYLOG) {
+  if (process.env.USE_GRAYLOG && !config.JSON_LOGS) {
     const graylogTransport = new GrayLogTransport({
       format: formatter(DATABASE_NAME),
       instance_name: DATABASE_NAME,
