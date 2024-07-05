@@ -30,7 +30,9 @@ const jsonFormatter = (DATABASE_NAME: String) =>
     winston.format(addTenant)({ instanceName: DATABASE_NAME }),
     winston.format.printf(info =>
       JSON.stringify({
+        application_name: 'Uwazi',
         timestamp: info.timestamp,
+        environment: config.ENVIRONMENT,
         tenant: info.tenant,
         message: info.message,
         tenantError: info.tenantError,
