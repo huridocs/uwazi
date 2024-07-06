@@ -94,11 +94,20 @@ class Root extends Component {
       ? determineHotAssets(query)
       : determineAssets(assets, languageData);
 
+    const reScript = /(<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>)/g;
+    const [scriptContent] = content.match(reScript);
+    const htmlContent = content.replace(scriptContent, '');
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
         {headTag(head, CSS, reduxData)}
         <body>
-          <div id="root" dangerouslySetInnerHTML={{ __html: content }} />
+          <div id="root" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+          <script
+            //eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+              __html: scriptContent,
+            }}
+          />
           <script
             //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
