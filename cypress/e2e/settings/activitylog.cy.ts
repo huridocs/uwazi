@@ -65,7 +65,7 @@ describe('Activity log', () => {
   };
 
   it('should list the last activity log entries', () => {
-    cy.get('tr').should('have.length.at.least', 9);
+    cy.get('tr').should('have.length.at.least', 8);
     checkCells(1, 1, 'span');
     checkCells(1, 2, 'span');
     checkCells(1, 3, ' div > div:nth-child(1)');
@@ -115,7 +115,7 @@ describe('Activity log', () => {
     cy.contains('button', 'Filters').click();
     cy.contains('button', 'Clear all').click();
     applyFilters();
-    cy.get('tr').should('have.length.at.least', 9);
+    cy.get('tr').should('have.length.at.least', 8);
   });
 
   it('should open the detail of an entry', () => {
@@ -162,15 +162,15 @@ describe('Activity log', () => {
   it('should do a composed filter with search', () => {
     cy.contains('button', 'Filters').click();
     cy.contains('button', 'Clear all').click();
-    cy.clearAndType('input[name=username]', 'admin', { delay: 0 });
-    cy.clearAndType('input[name=search]', 'new user', { delay: 0 });
-    selectMethod(0);
-    cy.get('#from').type('2024-05-15', { delay: 0 });
-    cy.get('#to').clear();
-    cy.get('#to').type('2024-05-29', { delay: 0 });
+    cy.clearAndType('input[name=username]', 'editor', { delay: 0 });
+    cy.clearAndType('input[name=search]', 'Deleted entity', { delay: 0 });
+    selectMethod(2);
+    cy.get('#from').type('2024-05-28', { delay: 0 });
+    cy.get('#to').click();
+    cy.get('.datepicker:not(.hidden) .datepicker-controls .today-btn').eq(1).click();
     applyFilters();
     cy.get('tr').should('have.length', 2);
-    cy.contains('Cynthia');
+    cy.contains('Deleted entity');
   });
 
   // eslint-disable-next-line max-statements

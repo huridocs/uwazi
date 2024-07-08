@@ -1127,101 +1127,6 @@ describe('entities', () => {
     });
   });
 
-  describe('saveMultiple()', () => {
-    it('should allow partial saveMultiple with correct full indexing', done => {
-      const partialDoc = { _id: batmanFinishesId, sharedId: 'shared', title: 'Updated title' };
-      const partialDoc2 = {
-        _id: syncPropertiesEntityId,
-        sharedId: 'shared',
-        title: 'Updated title 2',
-      };
-      entities
-        .saveMultiple([partialDoc, partialDoc2])
-        .then(response => Promise.all([response, entities.getById(batmanFinishesId)]))
-        .then(([response, savedEntity]) => {
-          const expectedQuery = {
-            _id: { $in: [batmanFinishesId, syncPropertiesEntityId] },
-          };
-
-          expect(response[0]._id.toString()).toBe(batmanFinishesId.toString());
-          expect(savedEntity.title).toBe('Updated title');
-          expect(savedEntity.metadata).toEqual(
-            expect.objectContaining({
-              property1: [{ value: 'value1' }],
-              friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
-            })
-          );
-          expect(search.indexEntities).toHaveBeenCalledWith(expectedQuery, '+fullText');
-          done();
-        })
-        .catch(done.fail);
-    });
-
-    it('should sanitize the entities', async () => {
-      const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-      const docsToSave = [
-        {
-          title: 'Batman begins',
-          template: templateId,
-          language: 'es',
-          metadata: {
-            multiselect: [{ value: 'country_one' }, { value: 'country_two' }],
-            friends: [{ value: 'id1' }, { value: 'id2' }],
-          },
-        },
-        {
-          title: 'Batman begins',
-          template: templateId,
-          language: 'en',
-          metadata: {
-            multiselect: [{ value: 'country_one' }, { value: 'country_two' }],
-            friends: [{ value: 'id1' }, { value: 'id2' }],
-          },
-        },
-        {
-          title: 'Batman Goes On',
-          template: entityGetTestTemplateId,
-          language: 'en',
-          metadata: {
-            some_property: [{ value: 'some value' }],
-          },
-        },
-      ];
-      await entities.saveMultiple(docsToSave);
-      expect(sanitizationSpy.mock.calls).toMatchObject([
-        [
-          {
-            title: 'Batman begins',
-            language: 'es',
-          },
-          {
-            name: 'template_test',
-          },
-        ],
-        [
-          {
-            title: 'Batman begins',
-            language: 'en',
-          },
-          {
-            name: 'template_test',
-          },
-        ],
-        [
-          {
-            title: 'Batman Goes On',
-            language: 'en',
-          },
-          {
-            name: 'entityGetTestTemplate',
-          },
-        ],
-      ]);
-
-      sanitizationSpy.mockRestore();
-    });
-  });
-
   describe('updateMetadataProperties', () => {
     let currentTemplate;
     beforeEach(() => {
@@ -1508,7 +1413,7 @@ describe('entities', () => {
     });
 
     it('should duplicate all the entities from the default language to the new one', async () => {
-      await entities.saveMultiple([{ _id: docId1, file: {} }]);
+      await entitiesModel.save({ _id: docId1, file: {} });
 
       await entities.addLanguage('ab', 2);
       const newEntities = await entities.get({ language: 'ab' }, '+permissions');
