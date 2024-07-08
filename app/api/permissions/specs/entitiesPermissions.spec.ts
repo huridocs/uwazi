@@ -146,7 +146,7 @@ describe('permissions', () => {
       expect(storedEntities[2].published).toBe(false);
     });
 
-    it.each<{
+    fit.each<{
       case: string;
       permissionInput: PermissionsDataSchema;
       expectedMetadata: Record<string, { value: string; published: boolean }[]>[];
@@ -246,6 +246,26 @@ describe('permissions', () => {
               },
             ],
             relationship_22: [
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_to_any: [
+              {
+                value: 'source11',
+                published: true,
+              },
+              {
+                value: 'source12',
+                published: true,
+              },
               {
                 value: 'source22',
                 published: true,
@@ -360,10 +380,31 @@ describe('permissions', () => {
               },
             ],
           },
+          {
+            relationship_to_any: [
+              {
+                value: 'source11',
+                published: false,
+              },
+              {
+                value: 'source12',
+                published: false,
+              },
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: false,
+              },
+            ],
+          },
         ],
       },
     ])(
       'should denormalize published state when $case, and reindex touched entities',
+      // eslint-disable-next-line max-statements
       async ({ permissionInput, expectedMetadata }) => {
         const publishedStateTestFixtures: DBFixture = {
           settings: [
@@ -387,6 +428,9 @@ describe('permissions', () => {
             factory.template('relationshipTemplate2', [
               factory.inherit('relationship_21', 'sourceTemplate1', 'text1'),
               factory.relationshipProp('relationship_22', 'sourceTemplate2'),
+            ]),
+            factory.template('relationshipToAnyTemplate', [
+              factory.relationshipProp('relationship_to_any', ''),
             ]),
           ],
           entities: [
@@ -427,7 +471,7 @@ describe('permissions', () => {
               { published: false }
             ),
             factory.entity('unrelated_entity', 'unrelatedTemplate', {}, { published: true }),
-            factory.entity('relationship11', 'relationshipTemplate1', {
+            factory.entity('entityWithRel11', 'relationshipTemplate1', {
               relationship_11: [
                 { value: 'source11', label: 'source11', published: true },
                 { value: 'source12', label: 'source12', published: false },
@@ -450,7 +494,7 @@ describe('permissions', () => {
                 { value: 'unrelated_entity', label: 'unrelated_entity', published: true },
               ],
             }),
-            factory.entity('relationship12', 'relationshipTemplate1', {
+            factory.entity('entityWithRel12', 'relationshipTemplate1', {
               relationship_11: [
                 { value: 'source12', label: 'source12', published: false },
                 { value: 'source13', label: 'source13', published: true },
@@ -471,7 +515,7 @@ describe('permissions', () => {
               ],
               unrelated_relationship: [],
             }),
-            factory.entity('relationship21', 'relationshipTemplate2', {
+            factory.entity('entityWithRel21', 'relationshipTemplate2', {
               relationship_21: [
                 {
                   value: 'source11',
@@ -491,12 +535,20 @@ describe('permissions', () => {
                 { value: 'source22', label: 'source22', published: true },
               ],
             }),
-            factory.entity('relationship22', 'relationshipTemplate2', {
+            factory.entity('entityWithRel22', 'relationshipTemplate2', {
               relationship_21: [
                 { value: 'source12', label: 'source12', published: false },
                 { value: 'source13', label: 'source13', published: true },
               ],
               relationship_22: [
+                { value: 'source22', label: 'source22', published: true },
+                { value: 'source23', label: 'source23', published: false },
+              ],
+            }),
+            factory.entity('entityWithRelToAny', 'relationshipToAnyTemplate', {
+              relationship_to_any: [
+                { value: 'source11', label: 'source11', published: true },
+                { value: 'source12', label: 'source12', published: false },
                 { value: 'source22', label: 'source22', published: true },
                 { value: 'source23', label: 'source23', published: false },
               ],
@@ -511,9 +563,10 @@ describe('permissions', () => {
 
         const relTemplateId1 = factory.id('relationshipTemplate1');
         const relTemplateId2 = factory.id('relationshipTemplate2');
+        const relToAnyTemplateId = factory.id('relationshipToAnyTemplate');
 
         const entites = await entities.get(
-          { template: { $in: [relTemplateId1, relTemplateId2] } },
+          { template: { $in: [relTemplateId1, relTemplateId2, relToAnyTemplateId] } },
           {},
           { sort: 'title' }
         );

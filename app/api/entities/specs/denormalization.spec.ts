@@ -252,9 +252,7 @@ describe('Denormalize relationships', () => {
   describe('when the relationship property has no content', () => {
     const fixtures: DBFixture = {
       templates: [
-        factory.template('templateA', [
-          factory.relationshipProp('relationship', '', { content: '' }),
-        ]),
+        factory.template('templateA', [factory.relationshipProp('relationship', '')]),
         factory.template('templateB'),
         factory.template('templateC'),
       ],
