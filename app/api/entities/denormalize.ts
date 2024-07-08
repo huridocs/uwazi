@@ -243,9 +243,9 @@ const denormalizePublishedStateInRelated = async (
     .map(t => t.properties || [])
     .flat()
     .filter(p => p.type === 'relationship')
-    .filter(p => p.content);
+    .filter(p => p.content || p.content === '');
   const relatedRelationshipProperites = relationshipProperties.filter(
-    p => p.content && templateIdsOfUpdatedEntities.has(p.content)
+    p => (p.content && templateIdsOfUpdatedEntities.has(p.content)) || p.content === ''
   );
   await Promise.all(
     relatedRelationshipProperites.map(async p =>

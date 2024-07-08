@@ -146,7 +146,7 @@ describe('permissions', () => {
       expect(storedEntities[2].published).toBe(false);
     });
 
-    fit.each<{
+    it.each<{
       case: string;
       permissionInput: PermissionsDataSchema;
       expectedMetadata: Record<string, { value: string; published: boolean }[]>[];
@@ -404,7 +404,6 @@ describe('permissions', () => {
       },
     ])(
       'should denormalize published state when $case, and reindex touched entities',
-      // eslint-disable-next-line max-statements
       async ({ permissionInput, expectedMetadata }) => {
         const publishedStateTestFixtures: DBFixture = {
           settings: [
@@ -561,12 +560,15 @@ describe('permissions', () => {
         );
         await entitiesPermissions.set(permissionInput);
 
-        const relTemplateId1 = factory.id('relationshipTemplate1');
-        const relTemplateId2 = factory.id('relationshipTemplate2');
-        const relToAnyTemplateId = factory.id('relationshipToAnyTemplate');
+        const templateIds = [
+          factory.id('relationshipTemplate1'),
+          factory.id('relationshipTemplate2'),
+          factory.id('relationshipToAnyTemplate'),
+        ];
+        const templateIdSet = new Set(templateIds.map(id => id.toString()));
 
         const entites = await entities.get(
-          { template: { $in: [relTemplateId1, relTemplateId2, relToAnyTemplateId] } },
+          { template: { $in: templateIds } },
           {},
           { sort: 'title' }
         );
@@ -574,8 +576,8 @@ describe('permissions', () => {
         expect(metadata).toMatchObject(expectedMetadata);
 
         await elasticTesting.refresh();
-        const indexed = (await elasticTesting.getIndexedEntities()).filter(
-          e => e.template === relTemplateId1.toString() || e.template === relTemplateId2.toString()
+        const indexed = (await elasticTesting.getIndexedEntities()).filter(e =>
+          templateIdSet.has(e.template!.toString())
         );
         const metadataInIndex = indexed.map((e: EntitySchema) => e.metadata);
         expect(metadataInIndex).toMatchObject(expectedMetadata);
