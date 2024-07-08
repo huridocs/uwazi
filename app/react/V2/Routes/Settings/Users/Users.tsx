@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
@@ -37,10 +37,10 @@ const Users = () => {
     header: 'Delete',
     body: 'Do you want to delete?',
   });
-  const [bulkActionIntent, setBulkActionIntent] = useState<FormIntent>('delete-users');
 
+  const password = useRef<string>();
+  const bulkActionIntent = useRef<FormIntent>();
   const fetcher = useFetcher();
-
   useHandleNotifications();
 
   const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
@@ -55,13 +55,15 @@ const Users = () => {
 
   const handleBulkAction = () => {
     const formData = new FormData();
-    formData.set('intent', bulkActionIntent);
+    formData.set('intent', bulkActionIntent.current || '');
 
     if (activeTab === 'Users') {
       formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
     } else {
       formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
     }
+
+    formData.set('confirmation', password.current || '');
 
     fetcher.submit(formData, { method: 'post' });
   };
@@ -115,7 +117,7 @@ const Users = () => {
                       header: 'Reset passwords',
                       body: 'Do you want reset the password for the following users?',
                     });
-                    setBulkActionIntent('bulk-reset-password');
+                    bulkActionIntent.current = 'bulk-reset-password';
                     setShowConfirmationModal(true);
                   }}
                 >
@@ -129,7 +131,7 @@ const Users = () => {
                       header: 'Reset 2FA',
                       body: 'Do you want disable 2FA for the following users?',
                     });
-                    setBulkActionIntent('bulk-reset-2fa');
+                    bulkActionIntent.current = 'bulk-reset-2fa';
                     setShowConfirmationModal(true);
                   }}
                 >
@@ -146,7 +148,8 @@ const Users = () => {
                     header: 'Delete',
                     body: 'Do you want to delete the following items?',
                   });
-                  setBulkActionIntent(activeTab === 'Users' ? 'delete-users' : 'delete-groups');
+                  bulkActionIntent.current =
+                    activeTab === 'Users' ? 'delete-users' : 'delete-groups';
                   setShowConfirmationModal(true);
                 }}
               >
@@ -197,7 +200,13 @@ const Users = () => {
           header={confirmationModalProps.header}
           warningText={confirmationModalProps.body}
           body={<ListOfItems items={selectedUsers.length ? selectedUsers : selectedGroups} />}
-          onAcceptClick={() => {
+          usePassword={
+            (selectedUsers.length > 0 &&
+              ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
+            false
+          }
+          onAcceptClick={value => {
+            password.current = value;
             handleBulkAction();
             setShowConfirmationModal(false);
             setSelectedGroups([]);
@@ -226,27 +235,28 @@ const userAction =
     const formIntent = formData.get('intent') as FormIntent;
 
     const formValues = JSON.parse(formData.get('data') as string);
+    const confirmation = formData.get('confirmation') as string;
 
     switch (formIntent) {
       case 'new-user':
-        return usersAPI.newUser(formValues);
+        return usersAPI.newUser(formValues, confirmation);
       case 'edit-user':
-        return usersAPI.updateUser(formValues);
+        return usersAPI.updateUser(formValues, confirmation);
       case 'delete-users':
-        return usersAPI.deleteUser(formValues);
+        return usersAPI.deleteUser(formValues, confirmation);
       case 'new-group':
       case 'edit-group':
         return usersAPI.saveGroup(formValues);
       case 'delete-groups':
         return usersAPI.deleteGroup(formValues);
       case 'unlock-user':
-        return usersAPI.unlockAccount(formValues);
+        return usersAPI.unlockAccount(formValues, confirmation);
       case 'reset-password':
       case 'bulk-reset-password':
         return usersAPI.resetPassword(formValues);
       case 'reset-2fa':
       case 'bulk-reset-2fa':
-        return usersAPI.reset2FA(formValues);
+        return usersAPI.reset2FA(formValues, confirmation);
       default:
         return null;
     }

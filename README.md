@@ -22,11 +22,11 @@ Read the [user guide](https://uwazi.io/page/9852italrtk/support)
 
 Before anything else you will need to install the application dependencies:
 
-- **NodeJs >= 18.16.1** For ease of update, use nvm: https://github.com/creationix/nvm.
+- **NodeJs >= 20.9.0** For ease of update, use nvm: https://github.com/creationix/nvm.
 - **ElasticSearch 7.17.6** https://www.elastic.co/downloads/past-releases/elasticsearch-7-17-6 Please note that ElasticSearch requires Java. Follow the instructions to install the package manually, you also probably need to disable ml module in the ElasticSearch config file:
   `xpack.ml.enabled: false`
 - **ICU Analysis Plugin (recommended)** [installation](https://www.elastic.co/guide/en/elasticsearch/plugins/current/analysis-icu.html#analysis-icu) Adds support for number sorting in texts and solves other language sorting nuances. This option is activated by setting the env var USE_ELASTIC_ICU=true before running the server (defaults to false/unset).
-- **MongoDB 4.2** https://docs.mongodb.com/v4.2/installation/ . If you have a previous version installed, please follow the instructions on how to [upgrade here](https://docs.mongodb.com/manual/release-notes/4.2-upgrade-standalone/). The new mongosh dependency needs to be added [installation](https://www.mongodb.com/docs/mongodb-shell/).
+- **MongoDB 5.0.27** https://www.mongodb.com/docs/v5.0/installation/ . If you have a previous version installed, please follow the instructions on how to [upgrade here](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-standalone/). The new mongosh dependency needs to be added [installation](https://www.mongodb.com/docs/mongodb-shell/).
 - **Yarn** https://yarnpkg.com/en/docs/install.
 - **pdftotext (Poppler)** tested to work on version 0.86 but it's recommended to use the latest available for your platform https://poppler.freedesktop.org/. Make sure to **install libjpeg-dev** if you build from source.
 

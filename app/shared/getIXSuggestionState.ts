@@ -1,11 +1,25 @@
 import { isSameDate } from 'shared/isSameDate';
 import { PropertySchema } from 'shared/types/commonTypes';
 import { IXSuggestionStateType } from './types/suggestionType';
+import { setsEqual } from './data_utils/setUtils';
+import {
+  propertyIsMultiselect,
+  propertyIsRelationship,
+  propertyIsSelect,
+  propertyIsSelectOrMultiSelect,
+} from './propertyTypes';
+
+const propertyIsMultiValued = (propertyType: PropertySchema['type']) =>
+  propertyIsMultiselect(propertyType) || propertyIsRelationship(propertyType);
+
+type CurrentValue = string | number | null;
+
+type SuggestedValue = string[] | string | null;
 
 interface SuggestionValues {
-  currentValue: string | number | null;
+  currentValue: CurrentValue | CurrentValue[];
   labeledValue: string | null;
-  suggestedValue: string | null;
+  suggestedValue: SuggestedValue;
   modelCreationDate: number;
   error: string;
   date: number;
@@ -14,8 +28,16 @@ interface SuggestionValues {
   status: string | null;
 }
 
+const sameValueSet = (first: string[], second: string[]) => setsEqual(first || [], second || []);
+
+const EQUALITIES: Record<string, (first: any, second: any) => boolean> = {
+  date: isSameDate,
+  multiselect: sameValueSet,
+  relationship: sameValueSet,
+};
+
 const equalsForType = (type: PropertySchema['type']) => (first: any, second: any) =>
-  type === 'date' ? isSameDate(first, second) : first === second;
+  EQUALITIES[type] ? EQUALITIES[type](first, second) : first === second;
 
 class IXSuggestionState implements IXSuggestionStateType {
   labeled = false;
@@ -35,30 +57,43 @@ class IXSuggestionState implements IXSuggestionStateType {
   error = false;
 
   constructor(values: SuggestionValues, propertyType: PropertySchema['type']) {
-    this.setLabeled(values);
-    this.setWithValue(values);
-    this.setWithSuggestion(values);
+    this.setLabeled(values, propertyType);
+    this.setWithValue(values, propertyType);
+    this.setWithSuggestion(values, propertyType);
     this.setMatch(values, propertyType);
-    this.setHasContext(values);
+    this.setHasContext(values, propertyType);
     this.setObsolete(values);
     this.setProcessing(values);
     this.setError(values);
   }
 
-  setLabeled({ labeledValue }: SuggestionValues) {
-    if (labeledValue) {
+  setLabeled(
+    { labeledValue, currentValue }: SuggestionValues,
+    propertyType: PropertySchema['type']
+  ) {
+    if (
+      labeledValue ||
+      (propertyIsSelect(propertyType) && currentValue) ||
+      (propertyIsMultiValued(propertyType) &&
+        Array.isArray(currentValue) &&
+        currentValue.length > 0)
+    ) {
       this.labeled = true;
     }
   }
 
-  setWithValue({ currentValue }: SuggestionValues) {
-    if (currentValue) {
+  setWithValue({ currentValue }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (propertyIsMultiValued(propertyType) && Array.isArray(currentValue)) {
+      this.withValue = currentValue?.length > 0;
+    } else if (currentValue) {
       this.withValue = true;
     }
   }
 
-  setWithSuggestion({ suggestedValue }: SuggestionValues) {
-    if (suggestedValue) {
+  setWithSuggestion({ suggestedValue }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (propertyIsMultiValued(propertyType) && Array.isArray(suggestedValue)) {
+      this.withSuggestion = suggestedValue?.length > 0;
+    } else if (suggestedValue) {
       this.withSuggestion = true;
     }
   }
@@ -69,15 +104,19 @@ class IXSuggestionState implements IXSuggestionStateType {
   ) {
     const equals = equalsForType(propertyType);
 
-    if (suggestedValue === '') {
-      this.withSuggestion = false;
+    if (suggestedValue === '' || (Array.isArray(suggestedValue) && suggestedValue.length === 0)) {
+      this.match = false;
     } else if (equals(suggestedValue, currentValue)) {
       this.match = true;
     }
   }
 
-  setHasContext({ segment }: SuggestionValues) {
-    if (segment) {
+  setHasContext({ segment }: SuggestionValues, propertyType: PropertySchema['type']) {
+    if (
+      segment ||
+      propertyIsSelectOrMultiSelect(propertyType) ||
+      propertyIsRelationship(propertyType)
+    ) {
       this.hasContext = true;
     }
   }
@@ -111,4 +150,4 @@ const getSuggestionState = (
 };
 
 export { getSuggestionState };
-export type { SuggestionValues };
+export type { CurrentValue, SuggestionValues };

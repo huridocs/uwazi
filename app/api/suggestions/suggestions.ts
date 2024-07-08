@@ -1,5 +1,5 @@
 import { ObjectId } from 'mongodb';
-import entities from 'api/entities/entities';
+
 import { files } from 'api/files/files';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings/settings';
@@ -10,8 +10,8 @@ import {
   ExtractedMetadataSchema,
   LanguagesListSchema,
   ObjectIdSchema,
+  PropertySchema,
 } from 'shared/types/commonTypes';
-import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import {
   IXSuggestionAggregation,
@@ -21,7 +21,11 @@ import {
   SuggestionCustomFilter,
 } from 'shared/types/suggestionType';
 import { objectIndex } from 'shared/data_utils/objectIndex';
-import { getSegmentedFilesIds } from 'api/services/informationextraction/getFiles';
+import {
+  getSegmentedFilesIds,
+  propertyTypeIsWithoutExtractedMetadata,
+} from 'api/services/informationextraction/getFiles';
+import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {
   baseQueryFragment,
@@ -33,65 +37,19 @@ import {
   getMatchStage,
   groupByAndCount,
 } from './pipelineStages';
-import { updateStates } from './updateState';
+import { postProcessCurrentValues, updateStates } from './updateState';
+import {
+  AcceptedSuggestion,
+  SuggestionAcceptanceError,
+  updateEntitiesWithSuggestion,
+} from './updateEntities';
 
-interface AcceptedSuggestion {
-  _id: ObjectIdSchema;
-  sharedId: string;
-  entityId: string;
-}
-
-const updateEntitiesWithSuggestion = async (
-  allLanguages: boolean,
-  acceptedSuggestions: AcceptedSuggestion[],
-  suggestions: IXSuggestionType[]
+const updateExtractedMetadata = async (
+  suggestions: IXSuggestionType[],
+  property: PropertySchema
 ) => {
-  const sharedIds = acceptedSuggestions.map(s => s.sharedId);
-  const entityIds = acceptedSuggestions.map(s => s.entityId);
-  const { propertyName } = suggestions[0];
-  const query = allLanguages
-    ? { sharedId: { $in: sharedIds } }
-    : { sharedId: { $in: sharedIds }, _id: { $in: entityIds } };
-  const storedEntities = await entities.get(query, '+permissions');
+  if (propertyTypeIsWithoutExtractedMetadata(property.type)) return;
 
-  const acceptedSuggestionsBySharedId = objectIndex(
-    acceptedSuggestions,
-    as => as.sharedId,
-    as => as
-  );
-  const suggestionsById = objectIndex(
-    suggestions,
-    s => s._id?.toString() || '',
-    s => s
-  );
-
-  const getValue = (entity: EntitySchema) =>
-    suggestionsById[acceptedSuggestionsBySharedId[entity.sharedId?.toString() || '']._id.toString()]
-      .suggestedValue;
-
-  const entitiesToUpdate =
-    propertyName !== 'title'
-      ? storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          metadata: {
-            ...entity.metadata,
-            [propertyName]: [
-              {
-                value: getValue(entity),
-              },
-            ],
-          },
-          permissions: entity.permissions || [],
-        }))
-      : storedEntities.map((entity: EntitySchema) => ({
-          ...entity,
-          title: getValue(entity),
-        }));
-
-  await entities.saveMultiple(entitiesToUpdate);
-};
-
-const updateExtractedMetadata = async (suggestions: IXSuggestionType[]) => {
   const fetchedFiles = await files.get({ _id: { $in: suggestions.map(s => s.fileId) } });
   const suggestionsByFileId = objectIndex(
     suggestions,
@@ -209,6 +167,10 @@ const getNonLabeledCounts = async (_extractorId: ObjectId) => {
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.noContext,
   });
+  const withSuggestionCount = await IXSuggestionsModel.count({
+    ...unlabeledMatch,
+    ...filterFragments.nonLabeled.withSuggestion,
+  });
   const noSuggestionCount = await IXSuggestionsModel.count({
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.noSuggestion,
@@ -221,13 +183,56 @@ const getNonLabeledCounts = async (_extractorId: ObjectId) => {
     ...unlabeledMatch,
     ...filterFragments.nonLabeled.others,
   });
-  return { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount };
+  return {
+    nonLabeledCount,
+    noContextCount,
+    withSuggestionCount,
+    noSuggestionCount,
+    obsoleteCount,
+    othersCount,
+  };
 };
 
 const readFilter = (filter: IXSuggestionsFilter) => {
   const { customFilter, extractorId: _extractorId } = filter;
   const extractorId = new ObjectId(_extractorId);
   return { customFilter, extractorId };
+};
+
+const postProcessSuggestions = async (_suggestions: any, extractorId: ObjectId) => {
+  let suggestions = _suggestions;
+  if (suggestions.length > 0) {
+    const extractor = await Extractors.getById(extractorId);
+    const propertyName = extractor?.property;
+    const property = await templates.getPropertyByName(propertyName!);
+    const propertyType = property.type;
+    suggestions = postProcessCurrentValues(suggestions, propertyType);
+  }
+  return suggestions;
+};
+
+const propertyTypesWithAllLanguages = new Set(['numeric', 'date', 'select', 'multiselect']);
+
+const needsAllLanguages = (propertyType: PropertySchema['type']) =>
+  propertyTypesWithAllLanguages.has(propertyType);
+
+const validTypesForPartialAcceptance = new Set(['multiselect', 'relationship']);
+
+const typeIsValidForPartialAcceptance = (propertyType: string) =>
+  validTypesForPartialAcceptance.has(propertyType);
+
+const validatePartialAcceptanceTypeConstraint = (
+  acceptedSuggestions: AcceptedSuggestion[],
+  property: PropertySchema
+) => {
+  const addedValuesExist = acceptedSuggestions.some(s => s.addedValues);
+  const removedValuesExist = acceptedSuggestions.some(s => s.removedValues);
+  const partialAcceptanceTriggered = addedValuesExist || removedValuesExist;
+  if (!typeIsValidForPartialAcceptance(property.type) && partialAcceptanceTriggered) {
+    throw new SuggestionAcceptanceError(
+      'Partial acceptance is only allowed for multiselects or relationships.'
+    );
+  }
 };
 
 const Suggestions = {
@@ -252,9 +257,10 @@ const Suggestions = {
       .aggregate(getMatchStage(extractorId, customFilter, true))
       .then(result => (result?.length ? result[0].count : 0));
 
-    const suggestions = await IXSuggestionsModel.db.aggregate(
+    let suggestions = await IXSuggestionsModel.db.aggregate(
       buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
     );
+    suggestions = await postProcessSuggestions(suggestions, extractorId);
 
     return {
       suggestions,
@@ -265,8 +271,14 @@ const Suggestions = {
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);
     const { labeledCount, matchCount, mismatchCount } = await getLabeledCounts(extractorId);
-    const { nonLabeledCount, noContextCount, noSuggestionCount, obsoleteCount, othersCount } =
-      await getNonLabeledCounts(extractorId);
+    const {
+      nonLabeledCount,
+      noContextCount,
+      withSuggestionCount,
+      noSuggestionCount,
+      obsoleteCount,
+      othersCount,
+    } = await getNonLabeledCounts(extractorId);
     const totalCount = labeledCount + nonLabeledCount;
     return {
       total: totalCount,
@@ -278,6 +290,7 @@ const Suggestions = {
       nonLabeled: {
         _count: nonLabeledCount,
         noContext: noContextCount,
+        withSuggestion: withSuggestionCount,
         noSuggestion: noSuggestionCount,
         obsolete: obsoleteCount,
         others: othersCount,
@@ -325,10 +338,11 @@ const Suggestions = {
 
     const { propertyName } = suggestions[0];
     const property = await templates.getPropertyByName(propertyName);
-    const allLanguage = property.type === 'numeric' || property.type === 'date';
+    validatePartialAcceptanceTypeConstraint(acceptedSuggestions, property);
+    const allLanguage = needsAllLanguages(property.type);
 
-    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions);
-    await updateExtractedMetadata(suggestions);
+    await updateEntitiesWithSuggestion(allLanguage, acceptedSuggestions, suggestions, property);
+    await updateExtractedMetadata(suggestions, property);
     await Suggestions.updateStates({ _id: { $in: acceptedIds.map(id => new ObjectId(id)) } });
   },
 

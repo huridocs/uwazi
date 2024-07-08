@@ -10,9 +10,9 @@ import * as translationsAPI from 'V2/api/translations/index';
 import {
   ContextPill,
   RenderButton,
-  ActionHeader,
   LabelHeader,
   TypeHeader,
+  ActionHeader,
 } from './components/TableComponents';
 
 const translationsListLoader =
@@ -58,7 +58,7 @@ const TranslationsList = () => {
       header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
-      meta: { headerClassName: 'text-center w-0' },
+      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
   ];
 

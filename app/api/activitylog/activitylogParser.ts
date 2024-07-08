@@ -2,7 +2,7 @@ import * as helpers from 'api/activitylog/helpers';
 import { nameFunc } from 'api/activitylog/helpers';
 import { buildActivityEntry, Methods, EntryValue } from 'api/activitylog/activityLogBuilder';
 
-const entryValues: { [key: string]: EntryValue } = {
+const ParsedActions: { [key: string]: EntryValue } = {
   'POST/api/users': {
     desc: 'Updated user',
     method: Methods.Update,
@@ -68,6 +68,10 @@ const entryValues: { [key: string]: EntryValue } = {
     method: Methods.Create,
     idField: 'sharedId',
     nameField: 'title',
+    nameFunc: data => {
+      const body = data.entity ? JSON.parse(data.entity) : data;
+      return body.sharedId ? `${body.title} (${body.sharedId})` : body.title;
+    },
     related: helpers.loadTemplate,
     extra: helpers.extraTemplate,
   },
@@ -222,7 +226,7 @@ const getSemanticData = async (data: any) => {
   if (action === 'MIGRATE') {
     return helpers.migrationLog(data);
   }
-  const entryValue = entryValues[action] || {
+  const entryValue = ParsedActions[action] || {
     desc: '',
     extra: () => `${data.method}: ${data.url}`,
     method: 'RAW',
@@ -241,4 +245,4 @@ const getSemanticData = async (data: any) => {
   return { ...activityEntry };
 };
 
-export { getSemanticData };
+export { getSemanticData, ParsedActions };

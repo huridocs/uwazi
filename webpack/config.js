@@ -78,7 +78,10 @@ module.exports = production => {
         },
         {
           test: /^(?!main\.css|globals\.css)^((.+)\.s?[ac]ss)$/,
-          exclude: [path.resolve(__dirname, '../node_modules/monaco-editor/min/vs')],
+          exclude: [
+            path.resolve(__dirname, '../node_modules/monaco-editor/min/vs'),
+            path.resolve(__dirname, '../node_modules/flowbite/dist'),
+          ],
           use: [
             MiniCssExtractPlugin.loader,
             { loader: 'css-loader', options: { url: false, sourceMap: true } },
@@ -103,12 +106,36 @@ module.exports = production => {
             fullySpecified: false,
           },
         },
+        {
+          test: /flowbite\.min\.css$/,
+          include: [path.join(rootPath, 'node_modules/flowbite/dist')],
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: { import: true, url: false, sourceMap: true, esModule: true },
+            },
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  plugins: {
+                    'postcss-prefix-selector': {
+                      prefix: '.tw-datepicker',
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
       ],
     },
     plugins: [
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      }),
+      process.env.CYPRESS &&
+        new webpack.ProvidePlugin({
+          process: 'process/browser',
+        }),
       new NodePolyfillPlugin({ includeAliases: ['path', 'url', 'util', 'Buffer'] }),
       new CleanWebpackPlugin(),
       new MiniCssExtractPlugin({
@@ -133,7 +160,9 @@ module.exports = production => {
           { from: 'node_modules/leaflet/dist/images/', to: 'images' },
         ],
       }),
-      new MonacoWebpackPlugin({ languages: ['typescript', 'html'] }),
+      new MonacoWebpackPlugin({
+        languages: ['typescript', 'html', 'css'],
+      }),
       new BundleAnalyzerPlugin({ analyzerMode }),
       new webpack.HotModuleReplacementPlugin(),
     ],

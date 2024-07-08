@@ -142,6 +142,9 @@ describe('csvLoader thesauri', () => {
           name: 'nestedThesauri',
           values: [
             {
+              label: 'value4',
+            },
+            {
               label: 'value1',
               values: [
                 {
@@ -151,9 +154,6 @@ describe('csvLoader thesauri', () => {
                   label: 'value3',
                 },
               ],
-            },
-            {
-              label: 'value4',
             },
           ],
         });

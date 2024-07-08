@@ -8,9 +8,39 @@ import {
   createBlankSuggestionsForExtractor,
   createBlankSuggestionsForPartialExtractor,
 } from 'api/suggestions/blankSuggestions';
+import { Subset } from 'shared/tsUtils';
+import { PropertyTypeSchema } from 'shared/types/commonTypes';
 import { IXExtractorModel as model } from './IXExtractorModel';
 
-const templatePropertyExistenceCheck = async (property: string, templateIds: string[]) => {
+type AllowedPropertyTypes =
+  | Subset<
+      PropertyTypeSchema,
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
+    >
+  | 'title';
+
+const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
+  'title',
+  'text',
+  'numeric',
+  'date',
+  'select',
+  'multiselect',
+  'relationship',
+];
+
+const allowedTypeSet = new Set<string>(ALLOWED_PROPERTY_TYPES);
+
+const typeIsAllowed = (type: string): type is AllowedPropertyTypes => allowedTypeSet.has(type);
+
+const checkTypeIsAllowed = (type: string) => {
+  if (!typeIsAllowed(type)) {
+    throw new Error('Property type not allowed.');
+  }
+  return type;
+};
+
+const templatePropertyExistenceCheck = async (propertyName: string, templateIds: string[]) => {
   const tArray = await templates.get({ _id: { $in: templateIds } });
   const usedTemplates = objectIndex(
     tArray,
@@ -23,16 +53,18 @@ const templatePropertyExistenceCheck = async (property: string, templateIds: str
     }
   });
 
-  const propertyMap = Object.fromEntries(
-    Object.entries(usedTemplates).map(([tId, t]) => [
-      tId,
-      new Set(t.properties?.map(p => p.name) || []),
-    ])
-  );
+  if (propertyName === 'title') {
+    return;
+  }
+
   templateIds.forEach(id => {
-    if (property !== 'title' && !propertyMap[id].has(property)) {
-      throw Error('Missing property.');
+    const property = usedTemplates[id].properties?.find(p => p.name === propertyName);
+
+    if (!property) {
+      throw new Error('Missing property.');
     }
+
+    checkTypeIsAllowed(property.type);
   });
 };
 
@@ -65,6 +97,7 @@ const handleTemplateUpdate = async (
 
 export const Extractors = {
   get: model.get.bind(model),
+  getById: model.getById.bind(model),
   get_all: async () => model.get({}),
   delete: async (_ids: string[]) => {
     const ids = _ids.map(id => new ObjectId(id));
@@ -120,3 +153,6 @@ export const Extractors = {
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
   },
 };
+
+export type { AllowedPropertyTypes };
+export { ALLOWED_PROPERTY_TYPES, typeIsAllowed, checkTypeIsAllowed };

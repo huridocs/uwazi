@@ -26,7 +26,7 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .find('select')
       .select('Reporte');
     cy.contains('Descriptor').parentsUntil('.form-group').find('select').select('Familia');
-    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { force: true });
+    cy.get('textarea[name="library.sidepanel.metadata.title"]').type(title, { delay: 0 });
   };
 
   const addVideo = (local: boolean = true) => {
@@ -39,14 +39,18 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
         });
     } else {
       cy.get('input[name="urlForm.url"]').type(
-        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
+        'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+        { delay: 0 }
       );
       cy.contains('button', 'Add from URL').click();
     }
 
-    cy.get('video').should('be.visible');
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);
+    cy.contains('.form-group.media', 'Video').scrollIntoView();
+    cy.contains('.form-group.media', 'Video').within(() => {
+      cy.get('video').should('be.visible');
+    });
   };
 
   const addImage = () => {
@@ -60,7 +64,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
     // wait for image
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(200);
-    cy.get('img').should('be.visible');
+    cy.contains('.form-group.image', 'Fotografía').scrollIntoView();
+    cy.contains('.form-group.image', 'Fotografía').within(() => {
+      cy.get('img').should('be.visible');
+    });
   };
 
   const addInvalidFile = (field: string) => {
@@ -72,6 +79,10 @@ describe('Media metadata', { defaultCommandTimeout: 5000 }, () => {
       .selectFile('./cypress/test_files/sample.pdf', {
         force: true,
       });
+    cy.contains(field)
+      .parentsUntil('.form-group')
+      .contains('This file type is not supported on media fields')
+      .scrollIntoView();
     cy.contains(field)
       .parentsUntil('.form-group')
       .contains('This file type is not supported on media fields')

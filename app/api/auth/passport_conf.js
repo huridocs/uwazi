@@ -27,13 +27,16 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async (serializeUser, done) => {
-  const currentTenant = tenants.current().name;
-  const [id, serializedTenant] = serializeUser.split('///');
-  if (serializedTenant !== currentTenant) {
-    return done(null, false);
+  try {
+    const currentTenant = tenants.current().name;
+    const [id, serializedTenant] = serializeUser.split('///');
+    if (serializedTenant !== currentTenant) {
+      return done(null, false);
+    }
+    const user = await users.getById(id, '-password', true);
+    appContext.set('user', user);
+    done(null, user);
+  } catch (e) {
+    done(e);
   }
-
-  const user = await users.getById(id, '-password', true);
-  appContext.set('user', user);
-  done(null, user);
 });

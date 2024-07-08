@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -41,10 +41,7 @@ const formatExtractors = (
 
       if (property) {
         propertyType = property.type as Extractor['propertyType'];
-
-        if (!propertyLabel) {
-          propertyLabel = t(template._id, property.label, null, false);
-        }
+        propertyLabel = t(template._id, property.label, null, false);
       }
     });
 
@@ -61,7 +58,7 @@ const IXDashboard = () => {
   const [selected, setSelected] = useState<Row<Extractor>[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const formmatedExtractors = useMemo(
     () => formatExtractors(extractors, templates),
@@ -120,7 +117,7 @@ const IXDashboard = () => {
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
-        <SettingsContent.Header title="Metadata extraction dashboard" />
+        <SettingsContent.Header title="Metadata extraction" />
 
         <SettingsContent.Body>
           <Table<Extractor>
@@ -172,18 +169,20 @@ const IXDashboard = () => {
         />
       )}
 
-      <ExtractorModal
-        isOpen={extractorModal}
-        onClose={() => setExtractorModal(false)}
-        onAccept={async extractor => handleSave(extractor)}
-        templates={templates}
-        extractor={selected.length ? selected[0].original : undefined}
-      />
+      {extractorModal && (
+        <ExtractorModal
+          setShowModal={setExtractorModal}
+          onClose={() => setExtractorModal(false)}
+          onAccept={async extractor => handleSave(extractor)}
+          templates={templates}
+          extractor={selected.length ? selected[0].original : undefined}
+        />
+      )}
     </div>
   );
 };
 
-const dashboardLoader =
+const IXdashboardLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
     const extractors = await extractorsAPI.get(headers);
@@ -191,4 +190,4 @@ const dashboardLoader =
     return { extractors, templates };
   };
 
-export { IXDashboard, dashboardLoader };
+export { IXDashboard, IXdashboardLoader, formatExtractors };

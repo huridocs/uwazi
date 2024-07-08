@@ -45,6 +45,11 @@ const ixSettings = [
   },
 ];
 
+const dictionaryTranslationContext = factory.v2.database.nestedTranslationContextDBO(
+  'Nested Thesaurus',
+  'Thesaurus'
+);
+
 const fixtures: DBFixture = {
   settings: _.cloneDeep(ixSettings),
   ixextractors: [
@@ -53,6 +58,8 @@ const fixtures: DBFixture = {
     factory.ixExtractor('super_powers_extractor', 'super_powers', ['personTemplate', 'template1']),
     factory.ixExtractor('enemy_extractor', 'enemy', ['personTemplate', 'heroTemplate']),
     factory.ixExtractor('first_encountered_extractor', 'first_encountered', ['heroTemplate']),
+    factory.ixExtractor('select_extractor', 'property_select', ['templateWithSelects']),
+    factory.ixExtractor('multiselect_extractor', 'property_multiselect', ['templateWithSelects']),
   ],
   ixmodels: [
     {
@@ -84,6 +91,18 @@ const fixtures: DBFixture = {
       status: 'ready',
       creationDate: 1,
       extractorId: factory.id('first_encountered_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('select_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('multiselect_extractor'),
     },
   ],
   ixsuggestions: [
@@ -452,6 +471,79 @@ const fixtures: DBFixture = {
       status: 'ready',
       error: '',
     },
+    {
+      fileId: factory.id('fileForentityWithSelects'),
+      entityId: 'entityWithSelects',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: '1B',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects'),
+      entityId: 'entityWithSelects',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1A'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects2'),
+      entityId: 'entityWithSelects2',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: 'A',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      _id: factory.id('multiSelectSuggestion2'),
+      fileId: factory.id('fileForentityWithSelects2'),
+      entityId: 'entityWithSelects2',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1B'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects3'),
+      entityId: 'entityWithSelects3',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_select',
+      extractorId: factory.id('select_extractor'),
+      suggestedValue: 'A',
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
+    {
+      fileId: factory.id('fileForentityWithSelects3'),
+      entityId: 'entityWithSelects3',
+      entityTemplate: factory.id('templateWithSelects').toString(),
+      propertyName: 'property_multiselect',
+      extractorId: factory.id('multiselect_extractor'),
+      suggestedValue: ['A', '1A'],
+      language: 'en',
+      date: 5,
+      status: 'ready',
+      error: '',
+    },
   ],
   entities: [
     {
@@ -583,6 +675,45 @@ const fixtures: DBFixture = {
       metadata: {},
       template: heroTemplateId,
     },
+    {
+      _id: factory.id('entityWithSelects'),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelects',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+    },
+    {
+      _id: factory.id('entityWithSelects2'),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects2',
+      title: 'entityWithSelects2',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+    },
+    {
+      _id: testingDB.id(),
+      template: factory.id('templateWithSelects'),
+      sharedId: 'entityWithSelects3',
+      title: 'entityWithSelects3',
+      language: 'en',
+      metadata: {
+        property_select: [],
+        property_multiselect: [],
+      },
+    },
   ],
   files: [
     factory.file('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
@@ -672,7 +803,32 @@ const fixtures: DBFixture = {
         },
       },
     ]),
+    factory.file(
+      'fileForentityWithSelects',
+      'entityWithSelects',
+      'document',
+      'documentWithSelects.pdf',
+      'eng',
+      'documentWithSelects.pdf'
+    ),
+    factory.file(
+      'fileForentityWithSelects2',
+      'entityWithSelects2',
+      'document',
+      'documentWithSelects2.pdf',
+      'eng',
+      'documentWithSelects2.pdf'
+    ),
+    factory.file(
+      'fileForentityWithSelects3',
+      'entityWithSelects3',
+      'document',
+      'documentWithSelects3.pdf',
+      'eng',
+      'documentWithSelects3.pdf'
+    ),
   ],
+  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', { 1: ['1A', '1B'] }])],
   templates: [
     {
       _id: personTemplateId,
@@ -730,6 +886,14 @@ const fixtures: DBFixture = {
         },
       ],
     },
+    factory.template('templateWithSelects', [
+      factory.property('property_select', 'select', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+    ]),
   ],
   segmentations: [
     {
@@ -744,6 +908,26 @@ const fixtures: DBFixture = {
       filename: 'documentC.pdf',
       status: 'ready',
     },
+  ],
+  translationsV2: [
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus',
+      'en',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus Es',
+      'es',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO('A', 'A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('A', 'Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1Bes', 'es', dictionaryTranslationContext),
   ],
 };
 
@@ -1127,6 +1311,416 @@ const stateFilterFixtures: DBFixture = {
   ],
 };
 
+const selectAcceptanceFixtureBase: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
+  ixextractors: [
+    factory.ixExtractor('select_extractor', 'property_select', ['templateWithSelects']),
+    factory.ixExtractor('multiselect_extractor', 'property_multiselect', ['templateWithSelects']),
+  ],
+  ixsuggestions: [],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('select_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('multiselect_extractor'),
+    },
+  ],
+  entities: [
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelects',
+      language: 'en',
+      metadata: {
+        property_select: [{ value: '1B', label: '1B' }],
+        property_multiselect: [
+          { value: 'A', label: 'A' },
+          { value: '1A', label: '1A' },
+        ],
+      },
+      template: factory.id('templateWithSelects'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithSelects',
+      title: 'entityWithSelectsEs',
+      language: 'es',
+      metadata: {
+        property_select: [{ value: '1B', label: '1Bes' }],
+        property_multiselect: [
+          { value: 'A', label: 'Aes' },
+          { value: '1A', label: '1Aes' },
+        ],
+      },
+      template: factory.id('templateWithSelects'),
+    },
+  ],
+  files: [
+    factory.file(
+      'fileForentityWithSelects',
+      'entityWithSelects',
+      'document',
+      'documentWithSelects.pdf',
+      'eng',
+      'documentWithSelects.pdf'
+    ),
+  ],
+  dictionaries: [factory.nestedThesauri('Nested Thesaurus', ['A', 'B', { 1: ['1A', '1B'] }])],
+  templates: [
+    factory.template('templateWithSelects', [
+      factory.property('property_select', 'select', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+      factory.property('property_multiselect', 'multiselect', {
+        content: factory.id('Nested Thesaurus').toString(),
+      }),
+    ]),
+  ],
+  translationsV2: [
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus',
+      'en',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO(
+      'Nested Thesaurus',
+      'Nested Thesaurus Es',
+      'es',
+      dictionaryTranslationContext
+    ),
+    factory.v2.database.translationDBO('A', 'A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('A', 'Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('B', 'B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('B', 'Bes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1A', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1A', '1Aes', 'es', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1B', 'en', dictionaryTranslationContext),
+    factory.v2.database.translationDBO('1B', '1Bes', 'es', dictionaryTranslationContext),
+  ],
+};
+
+const relationshipAcceptanceFixtureBase: DBFixture = {
+  settings: _.cloneDeep(ixSettings),
+  ixextractors: [
+    factory.ixExtractor('relationship_extractor', 'relationship_to_source', ['rel_template']),
+    factory.ixExtractor(
+      'relationship_with_inheritance_extractor',
+      'relationship_with_inheritance',
+      ['rel_template']
+    ),
+    factory.ixExtractor('relationship_to_any_extractor', 'relationship_to_any', ['rel_template']),
+  ],
+  ixsuggestions: [],
+  ixmodels: [
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_with_inheritance_extractor'),
+    },
+    {
+      _id: testingDB.id(),
+      status: 'ready',
+      creationDate: 1,
+      extractorId: factory.id('relationship_to_any_extractor'),
+    },
+  ],
+  relationtypes: [
+    factory.relationType('related'),
+    factory.relationType('related_with_inheritance'),
+    factory.relationType('related_to_any'),
+  ],
+  templates: [
+    factory.template('source_template', [factory.property('text_to_inherit', 'text')]),
+    factory.template('source_template_2', []),
+    factory.template('rel_template', [
+      factory.property('relationship_to_source', 'relationship', {
+        content: factory.idString('source_template'),
+        relationType: factory.idString('related'),
+      }),
+      factory.property('relationship_with_inheritance', 'relationship', {
+        content: factory.idString('source_template'),
+        relationType: factory.idString('related_with_inheritance'),
+        inherit: {
+          property: factory.idString('text_to_inherit'),
+          type: 'text',
+        },
+      }),
+      factory.property('relationship_to_any', 'relationship', {
+        content: '',
+        relationType: factory.idString('related_to_any'),
+      }),
+    ]),
+  ],
+  entities: [
+    // ---------- sources
+    {
+      _id: testingDB.id(),
+      sharedId: 'S1_sId',
+      title: 'S1',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S1_sId',
+      title: 'S1_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S2_sId',
+      title: 'S2',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text 2' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S2_sId',
+      title: 'S2_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text 2 Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S3_sId',
+      title: 'S3',
+      language: 'en',
+      metadata: { text_to_inherit: [{ value: 'inherited text 3' }] },
+      template: factory.id('source_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'S3_sId',
+      title: 'S3_es',
+      language: 'es',
+      metadata: { text_to_inherit: [{ value: 'inherited text 3 Spanish' }] },
+      template: factory.id('source_template'),
+    },
+    // ---------- other sources
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source',
+      title: 'Other Source',
+      language: 'en',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source',
+      title: 'Other Source Spanish',
+      language: 'es',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source_2',
+      title: 'Other Source 2',
+      language: 'en',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'other_source_2',
+      title: 'Other Source 2 Spanish',
+      language: 'es',
+      metadata: {},
+      template: factory.id('source_template_2'),
+    },
+    // ---------- with relationship
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithRelationships_sId',
+      title: 'entityWithRelationships',
+      language: 'en',
+      metadata: {
+        relationship_to_source: [
+          { value: 'S1_sId', label: 'S1' },
+          { value: 'S2_sId', label: 'S2' },
+        ],
+        relationship_with_inheritance: [
+          {
+            value: 'S1_sId',
+            label: 'S1',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text',
+              },
+            ],
+          },
+          {
+            value: 'S2_sId',
+            label: 'S2',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text 2',
+              },
+            ],
+          },
+        ],
+        relationship_to_any: [
+          {
+            value: 'S1_sId',
+            label: 'S1',
+          },
+          {
+            value: 'other_source',
+            label: 'Other Source',
+          },
+        ],
+      },
+      template: factory.id('rel_template'),
+    },
+    {
+      _id: testingDB.id(),
+      sharedId: 'entityWithRelationships_sId',
+      title: 'entityWithRelationshipsEs',
+      language: 'es',
+      metadata: {
+        relationship_to_source: [
+          { value: 'S1_sId', label: 'S1_es' },
+          { value: 'S2_sId', label: 'S2_es' },
+        ],
+        relationship_with_inheritance: [
+          {
+            value: 'S1_sId',
+            label: 'S1_es',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text Spanish',
+              },
+            ],
+          },
+          {
+            value: 'S2_sId',
+            label: 'S2_es',
+            inheritedType: 'text',
+            inheritedValue: [
+              {
+                value: 'inherited text 2 Spanish',
+              },
+            ],
+          },
+        ],
+        relationship_to_any: [
+          {
+            value: 'S1_sId',
+            label: 'S1_es',
+          },
+          {
+            value: 'other_source',
+            label: 'Other Source Spanish',
+          },
+        ],
+      },
+      template: factory.id('rel_template'),
+    },
+  ],
+  connections: [
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1'),
+      template: factory.id('related'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S2'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S2_sId',
+      hub: factory.id('hub_S2'),
+      template: factory.id('related'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1_inherited'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1_inherited'),
+      template: factory.id('related_with_inheritance'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S2_inherited'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S2_sId',
+      hub: factory.id('hub_S2_inherited'),
+      template: factory.id('related_with_inheritance'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_S1_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'S1_sId',
+      hub: factory.id('hub_S1_any'),
+      template: factory.id('related_to_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'entityWithRelationships_sId',
+      hub: factory.id('hub_other_source_any'),
+    },
+    {
+      _id: testingDB.id(),
+      entity: 'other_source',
+      hub: factory.id('hub_other_source_any'),
+      template: factory.id('related_to_any'),
+    },
+  ],
+  files: [
+    factory.file(
+      'fileForEntityWithRelationships',
+      'entityWithRelationships_sId',
+      'document',
+      'documentWithRelationships.pdf',
+      'eng',
+      'documentWithRelationships.pdf'
+    ),
+  ],
+};
+
 export {
   factory,
   file2Id,
@@ -1142,4 +1736,6 @@ export {
   heroTemplateId,
   suggestionId,
   shared2AgeSuggestionId,
+  selectAcceptanceFixtureBase,
+  relationshipAcceptanceFixtureBase,
 };

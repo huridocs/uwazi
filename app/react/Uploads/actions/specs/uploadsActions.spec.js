@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import backend from 'fetch-mock';
 import configureMockStore from 'redux-mock-store';
 import { fromJS } from 'immutable';
-import { RequestParams } from 'app/utils/RequestParams';
 import { APIURL } from 'app/config.js';
 import { actions as basicActions } from 'app/BasicReducer';
 import { actions as metadataActions } from 'app/Metadata';
@@ -12,7 +11,6 @@ import * as libraryTypes from 'app/Library/actions/actionTypes';
 import * as types from 'app/Uploads/actions/actionTypes';
 import entitiesApi from 'app/Entities/EntitiesAPI';
 import { mockID } from 'shared/uniqueID.js';
-import api from '../../../utils/api';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -273,56 +271,6 @@ describe('uploadsActions', () => {
           body: { filename: 'a', originalname: 'a', size: 1 },
         });
         expect(store.getActions()).toEqual(expectedActions);
-      });
-    });
-
-    describe('uploadCustom', () => {
-      it('should upload a file and then add it to the customUploads', done => {
-        const mockUpload = mockSuperAgent();
-
-        const expectedActions = [
-          { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 65 },
-          { type: types.UPLOAD_PROGRESS, doc: 'customUpload_unique_id', progress: 75 },
-          {
-            type: types.UPLOAD_COMPLETE,
-            doc: 'customUpload_unique_id',
-            file: { filename: 'a', originalname: 'a', size: 1 },
-          },
-          basicActions.push('customUploads', { test: 'test' }),
-        ];
-        const store = mockStore({});
-        const file = getMockFile();
-
-        store.dispatch(actions.uploadCustom(file)).then(() => {
-          expect(mockUpload.field).toHaveBeenCalledWith('originalname', file.name);
-          expect(mockUpload.attach).toHaveBeenCalledWith('file', file);
-          expect(store.getActions()).toEqual(expectedActions);
-          expect(superagent.post).toHaveBeenCalledWith(`${APIURL}files/upload/custom`);
-          done();
-        });
-
-        emitProgressAndResponse(mockUpload, {
-          text: JSON.stringify({ test: 'test' }),
-          body: { filename: 'a', originalname: 'a', size: 1 },
-        });
-      });
-    });
-
-    describe('deleteCustomUpload', () => {
-      it('should delete the upload and remove it locally on success', done => {
-        spyOn(api, 'delete').and.callFake(async () =>
-          Promise.resolve({ json: [{ _id: 'deleted' }] })
-        );
-
-        const expectedActions = [basicActions.remove('customUploads', { _id: 'deleted' })];
-
-        const store = mockStore({});
-
-        store.dispatch(actions.deleteCustomUpload('id')).then(() => {
-          expect(store.getActions()).toEqual(expectedActions);
-          expect(api.delete).toHaveBeenCalledWith('files', new RequestParams({ _id: 'id' }));
-          done();
-        });
       });
     });
   });

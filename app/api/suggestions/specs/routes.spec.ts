@@ -214,6 +214,7 @@ describe('suggestions routes', () => {
                   mismatch: false,
                 },
                 nonLabeled: {
+                  withSuggestion: false,
                   noSuggestion: true,
                   noContext: false,
                   obsolete: false,
@@ -393,10 +394,7 @@ describe('suggestions routes', () => {
           title: 'The Penguin',
         },
       ]);
-      expect(search.indexEntities).toHaveBeenCalledWith(
-        { _id: { $in: [shared6enId] } },
-        '+fullText'
-      );
+      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
     });
 
     it('should reject with unauthorized when user has not admin role', async () => {
@@ -413,6 +411,33 @@ describe('suggestions routes', () => {
         })
         .expect(401);
       expect(response.unauthorized).toBe(true);
+    });
+
+    it('should handle partial acceptance parameters for multiselects', async () => {
+      await request(app)
+        .post('/api/suggestions/accept')
+        .send({
+          suggestions: [
+            {
+              _id: factory.idString('multiSelectSuggestion2'),
+              sharedId: 'entityWithSelects2',
+              entityId: factory.idString('entityWithSelects2'),
+              addedValues: ['1B'],
+              removedValues: ['1A'],
+            },
+          ],
+        })
+        .expect(200);
+
+      const [entity] = await entities.get({ sharedId: 'entityWithSelects2' });
+      expect(entity.metadata.property_multiselect).toEqual([
+        { value: 'A', label: 'A' },
+        { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
+      ]);
+      expect(search.indexEntities).toHaveBeenCalledWith(
+        { sharedId: 'entityWithSelects2' },
+        '+fullText'
+      );
     });
   });
 });
@@ -463,6 +488,7 @@ describe('aggregation routes', () => {
         },
         nonLabeled: {
           _count: 8,
+          withSuggestion: 6,
           noSuggestion: 2,
           noContext: 4,
           obsolete: 2,

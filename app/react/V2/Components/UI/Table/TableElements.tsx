@@ -24,6 +24,8 @@ interface TableProps<T> {
   onSelection?: Dispatch<SetStateAction<Row<T>[]>>;
   subRowsKey?: string;
   draggableRows?: boolean;
+  allowEditGroupsWithDnD?: boolean;
+  highLightGroups?: boolean;
   onChange?: (rows: T[]) => void;
 }
 
@@ -31,6 +33,7 @@ const IndeterminateCheckbox = ({
   indeterminate,
   className = '',
   id,
+  disabled,
   ...rest
 }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) => {
   const ref = useRef<HTMLInputElement>(null!);
@@ -53,7 +56,8 @@ const IndeterminateCheckbox = ({
       <input
         type="checkbox"
         ref={ref}
-        className={`rounded cursor-pointer ${className}`}
+        className={`rounded cursor-pointer ${className} ${disabled ? 'opacity-50' : ''}`}
+        disabled={disabled}
         {...rest}
       />
     </label>
@@ -89,20 +93,22 @@ const CheckBoxHeader = <T,>({ table }: { table: TableDef<T> }) => (
 
 // eslint-disable-next-line comma-spacing
 const CheckBoxCell = <T,>({ row }: { row: Row<T> }) => (
-  <IndeterminateCheckbox
-    {...{
-      checked: row.getCanExpand()
-        ? row.getIsAllSubRowsSelected() && row.getIsSelected()
-        : row.getIsSelected(),
-      disabled: !row.getCanSelect(),
-      indeterminate: row.getIsSomeSelected() || row.getIsAllSubRowsSelected(),
-      onChange: e => {
-        row.getToggleSelectedHandler()(e);
-        row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
-      },
-      id: row.id,
-    }}
-  />
+  <div className="h-full">
+    <IndeterminateCheckbox
+      {...{
+        checked: row.getCanExpand()
+          ? row.getIsAllSubRowsSelected() && row.getIsSelected()
+          : row.getIsSelected(),
+        disabled: !row.getCanSelect(),
+        indeterminate: row.getIsSomeSelected(),
+        onChange: e => {
+          row.getToggleSelectedHandler()(e);
+          row.subRows.forEach(subRow => subRow.getToggleSelectedHandler()(e));
+        },
+        id: row.id,
+      }}
+    />
+  </div>
 );
 
 export type { TableProps };

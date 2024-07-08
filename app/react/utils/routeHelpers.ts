@@ -1,5 +1,6 @@
 import { Location } from 'react-router-dom';
 import { risonDecodeOrIgnore } from 'app/utils';
+import { isArray } from 'lodash';
 
 const validateHomePageRoute = (route: string) => {
   const queryParams = '(\\?.*)?)';
@@ -20,7 +21,14 @@ const searchParamsFromLocationSearch = (location: Location, param: string = 'q')
 const searchParamsFromSearchParams = (searchParams: URLSearchParams) => {
   let params: any = {};
   searchParams.forEach((value, key) => {
-    params = { ...params, [key]: value };
+    if (params[key] === undefined) {
+      params = { ...params, [key]: value };
+    } else if (isArray(params[key])) {
+      params[key].push(value);
+    } else {
+      params[key] = [params[key]];
+      params[key].push(value);
+    }
   });
   return params;
 };

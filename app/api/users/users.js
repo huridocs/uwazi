@@ -1,9 +1,8 @@
 import SHA256 from 'crypto-js/sha256';
-import crypto from 'crypto';
 
 import { createError } from 'api/utils';
 import random from 'shared/uniqueID';
-import encryptPassword, { comparePasswords } from 'api/auth/encryptPassword';
+import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 
 import {
@@ -15,16 +14,15 @@ import mailer from '../utils/mailer';
 import model from './usersModel';
 import passwordRecoveriesModel from './passwordRecoveriesModel';
 import settings from '../settings/settings';
+import { generateUnlockCode } from './generateUnlockCode';
 
 const MAX_FAILED_LOGIN_ATTEMPTS = 6;
-
-const generateUnlockCode = () => crypto.randomBytes(32).toString('hex');
 
 function conformRecoverText(options, _settings, domain, key, user) {
   const response = {};
   if (!options.newUser) {
     response.subject = 'Password set';
-    response.text = `To set your password click on the following link:\n${domain}/setpassword/${key}`;
+    response.text = `To set your password click on the following link:\n${domain}/setpassword/${key}\nThis link will be valid for 24 hours.`;
   }
 
   if (options.newUser) {
@@ -34,7 +32,8 @@ function conformRecoverText(options, _settings, domain, key, user) {
       `The administrators of ${siteName} have created an account for you under the user name:\n` +
       `${user.username}\n\n` +
       'To complete this process, please create a strong password by clicking on the following link:\n' +
-      `${domain}/setpassword/${key}?createAccount=true\n\n` +
+      `${domain}/setpassword/${key}?createAccount=true\n` +
+      'This link will be valid for 24 hours.\n\n' +
       'For more information about the Uwazi platform, visit https://www.uwazi.io.\n\nThank you!\nUwazi team';
 
     const htmlLink = `<a href="${domain}/setpassword/${key}?createAccount=true">${domain}/setpassword/${key}?createAccount=true</a>`;
@@ -288,7 +287,7 @@ export default {
   },
 
   recoverPassword(email, domain, options = {}) {
-    const key = SHA256(email + Date.now()).toString();
+    const key = generateUnlockCode();
     return Promise.all([model.get({ email }), settings.get()]).then(([_user, _settings]) => {
       const user = _user[0];
       if (user) {
@@ -324,3 +323,5 @@ export default {
     throw createError('key not found', 403);
   },
 };
+
+export { validateUserPassword };

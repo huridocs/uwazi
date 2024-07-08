@@ -1,58 +1,73 @@
+/* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { RequestParams } from 'app/utils/RequestParams';
-import UsersAPI from 'app/Users/UsersAPI';
-import { UserSchema } from 'shared/types/userType';
-
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
-import { notificationAtom } from 'app/V2/atoms';
-
-import { InputField } from 'app/V2/Components/Forms';
-import { Button, Card } from 'app/V2/Components/UI';
-import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import { useSetAtom } from 'jotai';
+import { ClientUserSchema } from 'app/apiResponseTypes';
+import { FetchResponseError } from 'shared/JSONRequest';
+import { validEmailFormat } from 'V2/shared/formatHelpers';
 import { Translate } from 'app/I18N';
+import { updateUser, getCurrentUser } from 'V2/api/users';
+import { notificationAtom } from 'V2/atoms';
+import { InputField } from 'V2/Components/Forms';
+import { Button, Card, ConfirmationModal } from 'V2/Components/UI';
+import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { TwoFactorSetup } from './Components/TwoFactorSetup';
 
 const accountLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    UsersAPI.currentUser(new RequestParams({}, headers));
+    getCurrentUser(headers);
 
 const Account = () => {
-  const userAccount = useLoaderData() as UserSchema;
+  const userAccount = useLoaderData() as ClientUserSchema;
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const passwordConfirmation = useRef<string>();
+  const formSubmit = useRef<HTMLButtonElement>(null);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
 
-  type AccountForm = UserSchema & { passwordConfirm?: string };
+  type AccountForm = ClientUserSchema & { passwordConfirm?: string };
+
   const {
     register,
     watch,
     handleSubmit,
-    reset,
-    formState: { errors, isSubmitted },
+    trigger,
+    resetField,
+    formState: { errors, isDirty },
   } = useForm<AccountForm>({
     defaultValues: userAccount,
     mode: 'onSubmit',
   });
 
-  const submit = async (data: AccountForm) => {
+  const onSubmit = async (data: AccountForm, currentPassword: string) => {
     const { passwordConfirm, ...userData } = data;
     userData.password = userData.password ? userData.password : userAccount.password;
-    await UsersAPI.save(new RequestParams(userData));
-    await revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Account updated</Translate>,
-    });
-  };
 
-  useEffect(() => {
-    reset({ ...userAccount, password: '', passwordConfirm: '' });
-  }, [userAccount, reset]);
+    const response = await updateUser(userData, currentPassword);
+
+    if (response instanceof FetchResponseError) {
+      const message = response.json?.prettyMessage ? response.json.prettyMessage : response.message;
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: message || undefined,
+      });
+    } else {
+      setNotifications({
+        type: 'success',
+        text: <Translate>Account updated</Translate>,
+      });
+      revalidator.revalidate();
+    }
+
+    resetField('password');
+    resetField('passwordConfirm');
+  };
 
   return (
     <div
@@ -63,7 +78,12 @@ const Account = () => {
       <SettingsContent>
         <SettingsContent.Header title="Account" />
         <SettingsContent.Body>
-          <form onSubmit={handleSubmit(submit)} id="account-form">
+          <form
+            id="account-form"
+            onSubmit={handleSubmit(async data =>
+              onSubmit(data, passwordConfirmation.current || '')
+            )}
+          >
             <Card className="mb-4" title={<Translate>General Information</Translate>}>
               <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div className="sm:col-span-1">
@@ -87,8 +107,18 @@ const Account = () => {
                     id="account-email"
                     hasErrors={!!errors.email}
                     label={<Translate>Email</Translate>}
-                    {...register('email', { required: true })}
+                    {...register('email', {
+                      required: true,
+                      validate: {
+                        format: email => validEmailFormat(email),
+                      },
+                    })}
                   />
+                  {errors.email && (
+                    <p className="mt-2 text-sm text-error-600">
+                      <Translate>A valid email is required</Translate>
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>
@@ -102,7 +132,7 @@ const Account = () => {
                     {...register('password')}
                     type="password"
                   />
-                  {errors.passwordConfirm && isSubmitted && (
+                  {errors.passwordConfirm && (
                     <p className="mt-2 text-sm text-error-600">
                       <Translate>Passwords do not match</Translate>
                     </p>
@@ -158,6 +188,8 @@ const Account = () => {
                 </div>
               </Card>
             )}
+
+            <button type="submit" hidden aria-hidden="true" disabled ref={formSubmit} />
           </form>
         </SettingsContent.Body>
         <SettingsContent.Footer>
@@ -170,14 +202,43 @@ const Account = () => {
               <Translate>Logout</Translate>
             </a>
 
-            <Button type="submit" form="account-form">
+            <Button
+              type="button"
+              onClick={async () => {
+                const validation = await trigger();
+                if (validation) {
+                  setConfirmationModal(true);
+                }
+              }}
+              disabled={!isDirty}
+            >
               <Translate>Update</Translate>
             </Button>
           </div>
         </SettingsContent.Footer>
       </SettingsContent>
 
-      <TwoFactorSetup isOpen={isSidepanelOpen} closePanel={() => setIsSidepanelOpen(false)} />
+      {userAccount.using2fa ? null : (
+        <TwoFactorSetup isOpen={isSidepanelOpen} closePanel={() => setIsSidepanelOpen(false)} />
+      )}
+
+      {confirmationModal && (
+        <ConfirmationModal
+          header="Confirm"
+          body="Confirm action"
+          usePassword
+          onCancelClick={() => setConfirmationModal(false)}
+          onAcceptClick={value => {
+            if (formSubmit.current) {
+              passwordConfirmation.current = value;
+              formSubmit.current.disabled = false;
+              formSubmit.current.click();
+              formSubmit.current.disabled = true;
+              setConfirmationModal(false);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

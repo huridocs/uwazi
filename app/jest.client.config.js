@@ -4,7 +4,7 @@ const { defaults } = require('jest-config');
 module.exports = {
   displayName: 'Client',
   testRunner: 'jest-jasmine2',
-  testMatch: ['**/react/**/specs/*spec.(j|t)s?(x)'],
+  testMatch: ['**/app/react/**/specs/*spec.(j|t)s?(x)'],
   testPathIgnorePatterns: [],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/setUpJestClient.js'],
@@ -23,6 +23,8 @@ module.exports = {
     '^app/UI/(.*)': '<rootDir>/react/UI/$1',
     '^uuid$': require.resolve('uuid'),
   },
-  transformIgnorePatterns: ['/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd)'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!(somePkg)|react-dnd|dnd-core|@react-dnd|@huridocs/react-text-selection-handler)',
+  ],
   snapshotSerializers: ['enzyme-to-json/serializer'],
 };

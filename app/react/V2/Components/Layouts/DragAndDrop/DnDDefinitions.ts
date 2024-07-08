@@ -9,6 +9,7 @@ interface IDnDOperations<T> {
   sortCallback?: Function;
   onChange?: (items: T[]) => void;
   itemsProperty?: string;
+  allowEditGroupsWithDnD?: boolean;
 }
 
 interface IDnDContext<T> {
@@ -44,12 +45,15 @@ const setIdAndParent = <T>(item: IDraggable<T | (T & { id?: string })>, parent?:
 const mapWithParent = <T>(
   items: T[],
   parent?: IDraggable<T>,
-  itemsProperty: string = 'items'
+  itemsProperty: string = 'items',
+  allowEditGroupsWithDnD: boolean = true
 ): IDraggable<T>[] =>
   items.map(item => {
     const draggableItem = {
       value: item,
-      ...(parent === undefined ? { container: 'root' } : {}),
+      ...(parent === undefined
+        ? { container: 'root', fixed: !allowEditGroupsWithDnD }
+        : { fixed: !allowEditGroupsWithDnD }),
     } as IDraggable<T & { id?: string }>;
     const subItems = get(draggableItem.value, itemsProperty);
     const itemWithId: IDraggable<T> = setIdAndParent(draggableItem, parent);
@@ -58,7 +62,12 @@ const mapWithParent = <T>(
         ...itemWithId,
         value: {
           ...itemWithId.value,
-          items: mapWithParent<T>(subItems as T[], itemWithId, itemsProperty),
+          items: mapWithParent<T>(
+            subItems as T[],
+            itemWithId,
+            itemsProperty,
+            allowEditGroupsWithDnD
+          ),
         },
       };
     }

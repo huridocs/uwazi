@@ -18,9 +18,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
+      - name: Setup Nodejs
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:

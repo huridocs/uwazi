@@ -490,7 +490,7 @@
   height: $switcher-height;
   margin: 0 3px;
   background-color: lighten($c-primary, 10%);
-  border-radius: $switcher-height / 2;
+  border-radius: calc($switcher-height / 2);
   border: 1px solid $c-primary;
   cursor: pointer;
 

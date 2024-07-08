@@ -6,7 +6,7 @@ import {
   SortingState,
   getExpandedRowModel,
 } from '@tanstack/react-table';
-import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
+import { useIsFirstRender } from 'app/V2/CustomHooks';
 import { TableProps, CheckBoxHeader, CheckBoxCell } from './TableElements';
 import { TableHeader } from './TableHeader';
 import { TableBody } from './TableBody';
@@ -30,6 +30,8 @@ const Table = <T,>({
   onSelection,
   subRowsKey,
   draggableRows = false,
+  allowEditGroupsWithDnD = true,
+  highLightGroups = true,
   onChange = () => {},
 }: TableProps<T>) => {
   const manualSorting = Boolean(setSorting);
@@ -56,7 +58,6 @@ const Table = <T,>({
               header: CheckBoxHeader,
               cell: CheckBoxCell,
             },
-            className: 'w-0',
           },
         ],
         [],
@@ -79,7 +80,8 @@ const Table = <T,>({
       sorting: sortingState,
       ...applyForSelection({ rowSelection }, {}, enableSelection),
     },
-    enableRowSelection: enableSelection,
+    enableRowSelection: (row: any) =>
+      Boolean(enableSelection && !row.original?.disableRowSelection),
     enableSubRowSelection: false,
     onRowSelectionChange: applyForSelection(setRowSelection, () => undefined, enableSelection),
     onSortingChange: sortingFunction,
@@ -99,7 +101,10 @@ const Table = <T,>({
       return;
     }
 
-    const sorted = table.getRowModel().rows.map(row => row.original);
+    const sorted = table
+      .getRowModel()
+      .rows.filter(row => !row.parentId)
+      .map(row => row.original);
     onChange(sorted);
     setSortedChanged(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -118,7 +123,7 @@ const Table = <T,>({
   };
 
   return (
-    <div className="relative overflow-x-auto border rounded-md shadow-sm border-gray-50">
+    <div className="relative w-full border rounded-md shadow-sm border-gray-50">
       <table className="w-full text-sm text-left" data-testid="table">
         {title && (
           <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
@@ -138,10 +143,12 @@ const Table = <T,>({
         </thead>
         <TableBody
           draggableRows={draggableRows}
+          allowEditGroupsWithDnD={allowEditGroupsWithDnD}
           items={data}
           table={table}
           subRowsKey={subRowsKey}
           onChange={handleOnChange}
+          highLightGroups={highLightGroups}
         />
       </table>
       {footer && <div className="p-4">{footer}</div>}

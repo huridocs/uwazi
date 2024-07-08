@@ -40,7 +40,14 @@ const loadEntityFromPublicForm = async data => {
 };
 
 const loadTemplate = async data => {
-  const templateData = await templates.getById(data.template || data._id);
+  let templateId = data.template || data._id;
+
+  if (data.entity) {
+    const entity = JSON.parse(data.entity);
+    templateId = entity.template;
+  }
+
+  const templateData = await templates.getById(templateId);
   return { ...data, templateData };
 };
 

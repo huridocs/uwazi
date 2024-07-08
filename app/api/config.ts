@@ -4,6 +4,7 @@ import { version } from '../../package.json';
 
 const {
   ROOT_PATH,
+  JSON_LOGS,
   UPLOADS_FOLDER,
   CUSTOM_UPLOADS_FOLDER,
   ACTIVITY_LOGS_FOLDER,
@@ -29,6 +30,8 @@ const onlyDBHOST = () => (DBHOST ? `mongodb://${DBHOST}/` : 'mongodb://127.0.0.1
 
 export const config = {
   VERSION: ENVIRONMENT ? version : `development-${version}`,
+
+  JSON_LOGS: JSON_LOGS || false,
 
   ENVIRONMENT: ENVIRONMENT || 'development',
 
@@ -82,6 +85,7 @@ export const config = {
       accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
     },
+    batchSize: parseInt(process.env.S3_BATCH_SIZE || '', 10) || 1000,
   },
   githubToken: process.env.GITHUB_TOKEN || '',
   queueName: QUEUE_NAME || 'uwazi_jobs',

@@ -181,6 +181,14 @@ export const suggestionsRoutes = (app: Application) => {
                   _id: objectIdSchema,
                   sharedId: { type: 'string' },
                   entityId: { type: 'string' },
+                  addedValues: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
+                  removedValues: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
                 },
               },
             },

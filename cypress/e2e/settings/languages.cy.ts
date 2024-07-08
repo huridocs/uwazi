@@ -12,8 +12,7 @@ const stringToTranslate = "*please keep this key secret and don't share it.";
 
 describe('Languages', () => {
   before(() => {
-    const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
-    cy.exec('yarn blank-state --force', { env });
+    cy.blankState();
     clearCookiesAndLogin('admin', 'change this password now');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.injectAxe();
@@ -51,7 +50,7 @@ describe('Languages', () => {
     it('should allow to cancel an action', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
       cy.contains('tr', 'Spanish').contains('Uninstall').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'No, cancel').click();
       cy.contains('Spanish').should('exist');
     });
@@ -61,7 +60,7 @@ describe('Languages', () => {
     it('should uninstall the language and remove it from the list', () => {
       cy.intercept('DELETE', 'api/translations/languages*').as('deleteLanguage');
       cy.contains('tr', 'French').contains('Uninstall').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'Uninstall').click();
 
       cy.wait('@deleteLanguage');
@@ -79,6 +78,26 @@ describe('Languages', () => {
       cy.contains('tr', 'Spanish').contains('Uninstall').should('not.exist');
       cy.contains('Dismiss').click();
     });
+    it('should use the default language if there is not specified locale', () => {
+      cy.clearAllCookies();
+      cy.visit('http://localhost:3000/login');
+      cy.contains('Usuario');
+      cy.get('input[name="username"').type('admin');
+      cy.get('input[name="password"').type('change this password now');
+      cy.intercept('POST', '/api/login').as('login');
+      cy.contains('button', 'Acceder').click();
+      cy.wait('@login');
+      cy.contains('ordenado por');
+    });
+    it('should change to other language different than default', () => {
+      cy.contains('button', 'Español').click();
+      cy.contains('a', 'English').click();
+      cy.on('uncaught:exception', (err, _runnable) => {
+        err.message.includes('Hydration failed');
+        return false;
+      });
+      cy.get('.only-desktop a[aria-label="Settings"]').click();
+    });
   });
 
   describe('Reset Language', () => {
@@ -87,7 +106,10 @@ describe('Languages', () => {
       cy.contains('span', 'Translations').click();
       cy.contains('tr', 'User Interface').contains('button', 'Translate').click();
       cy.contains('table', stringToTranslate).contains('tr', 'Español').find('input').clear();
-      cy.contains('table', stringToTranslate).contains('tr', 'Español').find('input').type('test');
+      cy.contains('table', stringToTranslate)
+        .contains('tr', 'Español')
+        .find('input')
+        .type('test', { delay: 0 });
       cy.contains('button', 'Save').click();
       cy.contains('Translations saved');
     });
@@ -96,7 +118,7 @@ describe('Languages', () => {
       cy.intercept('POST', 'api/translations/populate').as('resetLanguage');
       cy.contains('a span', 'Languages').click();
       cy.contains('tr', 'Spanish').contains('button', 'Reset').click();
-      cy.get('[data-testid=modal] input').type('CONFIRM');
+      cy.get('[data-testid=modal] input').type('CONFIRM', { delay: 0 });
       cy.contains('[data-testid=modal] button', 'Reset').click();
       cy.wait('@resetLanguage');
     });

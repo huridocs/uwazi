@@ -157,19 +157,19 @@ describe('csvLoader', () => {
     });
 
     it('should only import valid metadata', () => {
-      const metadataImported = Object.keys(imported[0].metadata);
-      expect(metadataImported).toEqual([
-        'text_label',
-        'numeric_label',
-        'select_label',
-        'not_defined_type',
-        'geolocation_geolocation',
-        'auto_id',
-        'additional_tag(s)',
-        'multi_select_label',
-        'date_label',
-        'language',
-      ]);
+      expect(imported[0].metadata).toEqual({
+        'additional_tag(s)': [{ value: 'tag1' }],
+        auto_id: [{ value: expect.any(String) }],
+        date_label: [{ value: 1641168000 }],
+        geolocation_geolocation: [{ value: { label: '', lat: 1, lon: 1 } }],
+        language: [{ value: 'English' }],
+        multi_select_label: [{ label: 'multivalue1', value: expect.any(String) }],
+        not_configured_on_csv: [],
+        not_defined_type: [{ value: 'notType1' }],
+        numeric_label: [{ value: 1977 }],
+        select_label: [{ label: 'thesauri1', value: expect.any(String) }],
+        text_label: [{ value: 'text value 1' }],
+      });
     });
 
     it('should ignore properties not configured in the template', () => {

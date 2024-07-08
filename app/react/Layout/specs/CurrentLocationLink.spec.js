@@ -4,7 +4,7 @@ import { CurrentLocationLink } from '../CurrentLocationLink';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: () => ({ pathname: 'pathanem', query: { param: 'value', param2: 'value2' } }),
+  useLocation: () => ({ pathname: 'pathanem', search: 'param=value&param2=value2' }),
 }));
 
 describe('Link', () => {
@@ -40,6 +40,6 @@ describe('Link', () => {
     props.queryParams = { param2: 'new value', test: 'test' };
     render();
     expect(component).toMatchSnapshot();
-    expect(component.props().to).toEqual('pathanem?param=value&param2=new%20value&test=test');
+    expect(component.props().to).toEqual('pathanem?param=value&param2=new+value&test=test');
   });
 });

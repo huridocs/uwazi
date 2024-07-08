@@ -8,16 +8,20 @@ import {
   MarkdownPropertyIcon,
   NumericPropertyIcon,
   TextPropertyIcon,
+  SelectPropertyIcon,
+  RelationshipPropertyIcon,
 } from 'app/V2/Components/CustomIcons';
 
 const SuggestionsTitle = ({
   property,
   templates,
   onFiltersButtonClicked,
+  activeFilters,
 }: {
   property: string;
   templates: ClientTemplateSchema[];
   onFiltersButtonClicked: () => void;
+  activeFilters: number;
 }) => {
   const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
   const template = allProperties.find(prop => prop.name === property);
@@ -34,20 +38,25 @@ const SuggestionsTitle = ({
     case 'markdown':
       propGraphics = <MarkdownPropertyIcon className="w-3" />;
       break;
+    case 'select':
+    case 'multiselect':
+      propGraphics = <SelectPropertyIcon className="w-3" />;
+      break;
+    case 'relationship':
+      propGraphics = <RelationshipPropertyIcon className="w-3" />;
+      break;
     default:
       propGraphics = <TextPropertyIcon className="w-3" />;
   }
 
   return (
     <div className="flex gap-4">
-      <div className="flex flex-wrap gap-2 content-center grow">
-        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
+      <div className="flex flex-wrap content-center gap-2 grow">
+        <span className="flex items-center justify-center font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full w-7 h-7">
           {propGraphics}
         </span>
         <span>{t(templates[0]?._id, template?.label, null, false)}</span>
-        <span className="italic font-normal">
-          <Translate>for</Translate>
-        </span>
+        <Translate className="italic font-normal">for</Translate>
         {templates.map(templateToDisplay => (
           <Pill
             color="gray"
@@ -61,8 +70,15 @@ const SuggestionsTitle = ({
 
       <div className="flex-none">
         <Button size="small" styling="light" onClick={onFiltersButtonClicked}>
-          <FunnelIcon className="inline px-1 w-5 text-gray-800" />
+          <FunnelIcon
+            className={`inline w-4 mr-2 ${activeFilters > 0 ? 'text-primary-900' : 'text-gray-800'} `}
+          />
           <Translate>Stats & Filters</Translate>
+          {activeFilters > 0 && (
+            <span className="px-3 py-[2px] ml-2 text-xs text-white rounded-md bg-primary-900">
+              {activeFilters}
+            </span>
+          )}
         </Button>
       </div>
     </div>

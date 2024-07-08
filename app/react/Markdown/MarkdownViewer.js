@@ -6,6 +6,7 @@ import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
 import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';
+import { ValidatedElement } from './ValidatedElement';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {
@@ -116,7 +117,11 @@ class MarkdownViewer extends Component {
       return false;
     }
 
-    return <div className="markdown-viewer">{ReactFromMarkdown}</div>;
+    return ValidatedElement(
+      'div',
+      { className: 'markdown-viewer' },
+      ...React.Children.toArray(ReactFromMarkdown)
+    );
   }
 }
 

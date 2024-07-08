@@ -42,7 +42,7 @@ describe('Sidepanel', () => {
     });
 
     it('should close the sidepanel when clicking outside', () => {
-      cy.get('.bg-gray-900').click();
+      cy.get('.bg-gray-900.opacity-50').click();
       cy.get('.bg-gray-900').should('not.exist');
       cy.contains('h1', 'My sidepanel').should('not.exist');
     });

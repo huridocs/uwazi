@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SelectionRegion, HandleTextSelection } from 'react-text-selection-handler';
+import { SelectionRegion, HandleTextSelection } from '@huridocs/react-text-selection-handler';
 import { advancedSort } from 'app/utils/advancedSort';
 import { PDFPage } from 'app/PDF';
 import { isClient } from '../../utils';
@@ -95,6 +95,7 @@ class PDF extends Component {
         url: file,
         cMapUrl,
         cMapPacked,
+        isEvalSupported: false,
       }).promise.then(pdf => {
         if (this._isMounted) {
           this.setState({ pdf });

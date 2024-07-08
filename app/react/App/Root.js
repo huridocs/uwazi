@@ -71,6 +71,13 @@ class Root extends Component {
       innerHtml += `window.__user__ = ${serialize(this.props.user, { isJSON: true })};`;
     }
 
+    if (this.props.loadingError) {
+      innerHtml += `window.__loadingError__ = ${serialize(this.props.loadingError, { isJSON: true })};`;
+    }
+    if (this.props.atomStoreData) {
+      innerHtml += `window.__atomStoreData__ = ${serialize(this.props.atomStoreData, { isJSON: true })};`;
+    }
+
     return (
       <script dangerouslySetInnerHTML={{ __html: innerHtml }} /> //eslint-disable-line
     );
@@ -125,6 +132,8 @@ Root.propTypes = {
   content: PropTypes.string,
   language: PropTypes.string,
   assets: PropTypes.object,
+  loadingError: PropTypes.object,
+  atomStoreData: PropTypes.object,
 };
 
 export { headTag };

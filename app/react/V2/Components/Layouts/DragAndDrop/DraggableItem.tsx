@@ -92,10 +92,12 @@ const DraggableItemComponent = <T,>({
       const { context: dropContext, parent: dropParent } =
         monitor.getDropResult<IItemComponentProps<T> & { parent: IDraggable<T> }>() || {};
 
+      const draggedItem = item.dndId === draggedResult.item.dndId ? draggedResult.item : item;
       if (
         hasValidContext(dropContext) &&
-        isNotAutoContained(item, draggedResult, dropParent) &&
-        hasNoItems(item)
+        isNotAutoContained(draggedItem, draggedResult, dropParent) &&
+        hasNoItems(item) &&
+        !draggedResult.item.fixed
       ) {
         context.addItem(draggedResult.item, dropParent);
       }
@@ -119,8 +121,8 @@ const DraggableItemComponent = <T,>({
     previewReference.current.style.opacity = getOpacityLevel(isDragging).toString();
   }
 
-  drag(ref);
-  drop(previewReference);
+  drag(drop(ref));
+  drag(drop(previewReference));
 
   const TagName = wrapperType;
 

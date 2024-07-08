@@ -1,15 +1,20 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
+import { FetchResponseError } from 'shared/JSONRequest';
 import { t, Translate } from 'app/I18N';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
-import { InputField, Select, MultiSelect, MultiSelectProps } from 'V2/Components/Forms';
-import { Button, Card, Sidepanel } from 'V2/Components/UI';
+import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
+import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
+import { validEmailFormat } from 'V2/shared/formatHelpers';
 import { UserRole } from 'shared/types/userSchema';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal';
+
+type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
@@ -39,26 +44,10 @@ const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: Clie
         existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
   );
 
-const calculateSelectedGroups = (
-  selectedGroups: MultiSelectProps['options'],
-  groups?: ClientUserGroupSchema[]
-) =>
-  selectedGroups
-    .filter(selectedGroup => selectedGroup.selected)
-    .map(selectedGroup => {
-      const group = groups?.find(originalGroup => originalGroup.name === selectedGroup.value);
-      return { _id: group?._id as string, name: group?.name as string };
-    });
-
-const getOptions = (groups?: ClientUserGroupSchema[], selectedUser?: ClientUserSchema) =>
-  (groups || []).map(group => {
-    const userGroups = selectedUser?.groups?.map(userGroup => userGroup.name);
-
-    if (userGroups?.includes(group.name)) {
-      return { label: group.name, value: group.name, selected: true };
-    }
-
-    return { label: group.name, value: group.name };
+const calculateSelectedGroups = (selectedGroups: string[], groups?: ClientUserGroupSchema[]) =>
+  selectedGroups.map(selectedGroup => {
+    const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
+    return { _id: group?._id as string, name: group?.name as string };
   });
 
 const getFieldError = (field: 'username' | 'password' | 'email', type?: string) => {
@@ -81,9 +70,10 @@ const getFieldError = (field: 'username' | 'password' | 'email', type?: string) 
 
   if (field === 'email') {
     switch (type) {
+      case 'format':
       case 'required':
-        return 'Email is required';
-      case 'validate':
+        return 'A valid email is required';
+      case 'isUnique':
         return 'Duplicated email';
       default:
         break;
@@ -107,31 +97,48 @@ const UserFormSidepanel = ({
 }: UserFormSidepanelProps) => {
   const fetcher = useFetcher();
   const [showModal, setShowModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const password = useRef<string>();
+  const actionType = useRef<SubmitType>();
+  const formSubmitRef = useRef<HTMLButtonElement>(null);
 
-  const defaultValues = {
-    username: '',
-    email: '',
-    password: '',
-    role: 'collaborator',
-    groups: [],
-  } as ClientUserSchema;
+  const defaultValues =
+    selectedUser ||
+    ({
+      username: '',
+      email: '',
+      password: '',
+      role: 'collaborator',
+      groups: [],
+    } as ClientUserSchema);
 
   const {
     register,
     handleSubmit,
-    reset,
+    trigger,
     formState: { errors },
     setValue,
   } = useForm({
     defaultValues,
-    values: selectedUser,
+    values: defaultValues,
   });
 
   const closeSidepanel = () => {
-    reset(defaultValues);
     setSelected(undefined);
     setShowSidepanel(false);
   };
+
+  useEffect(() => {
+    const { data: response, state } = fetcher;
+
+    if (
+      state === 'loading' &&
+      response &&
+      !(response instanceof FetchResponseError || response.status === 403)
+    ) {
+      closeSidepanel();
+    }
+  }, [fetcher]);
 
   const formSubmit = async (data: ClientUserSchema) => {
     const formData = new FormData();
@@ -142,22 +149,17 @@ const UserFormSidepanel = ({
     }
 
     formData.set('data', JSON.stringify(data));
+    formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-    setShowSidepanel(false);
-    reset(defaultValues);
   };
 
-  const onClickSubmit = (intent: string) => {
+  const onClickSubmit = () => {
     const formData = new FormData();
-    formData.set('intent', intent);
+    formData.set('intent', actionType.current || '');
     formData.set('data', JSON.stringify(selectedUser));
+    formData.set('confirmation', password.current || '');
     fetcher.submit(formData, { method: 'post' });
-
-    setShowSidepanel(false);
-    reset(defaultValues);
   };
-
-  const multiselectOptions = getOptions(groups, selectedUser);
 
   return (
     <>
@@ -216,7 +218,10 @@ const UserFormSidepanel = ({
                     errorMessage={getFieldError('email', errors.email?.type)}
                     {...register('email', {
                       required: true,
-                      validate: email => isUnique(email, selectedUser, users),
+                      validate: {
+                        isUnique: email => isUnique(email, selectedUser, users),
+                        format: email => validEmailFormat(email),
+                      },
                       maxLength: 256,
                     })}
                   />
@@ -244,7 +249,10 @@ const UserFormSidepanel = ({
                       <Button
                         type="button"
                         styling="light"
-                        onClick={() => onClickSubmit('reset-password')}
+                        onClick={() => {
+                          actionType.current = 'reset-password';
+                          onClickSubmit();
+                        }}
                       >
                         <Translate>Reset Password</Translate>
                       </Button>
@@ -252,7 +260,10 @@ const UserFormSidepanel = ({
                       <Button
                         type="button"
                         styling="light"
-                        onClick={() => onClickSubmit('reset-2fa')}
+                        onClick={() => {
+                          actionType.current = 'reset-2fa';
+                          setShowConfirmationModal(true);
+                        }}
                       >
                         <Translate>Reset 2FA</Translate>
                       </Button>
@@ -264,7 +275,10 @@ const UserFormSidepanel = ({
                       type="button"
                       styling="light"
                       color="error"
-                      onClick={() => onClickSubmit('unlock-user')}
+                      onClick={() => {
+                        actionType.current = 'unlock-user';
+                        setShowConfirmationModal(true);
+                      }}
                     >
                       <Translate>Unlock account</Translate>
                     </Button>
@@ -272,7 +286,7 @@ const UserFormSidepanel = ({
                 </div>
               </Card>
 
-              <div className="border rounded-md shadow-sm border-gray-50">
+              <div className="rounded-md border border-gray-50 shadow-sm">
                 <MultiSelect
                   label={
                     <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
@@ -283,13 +297,14 @@ const UserFormSidepanel = ({
                     const values = calculateSelectedGroups(selectedGroups, groups);
                     setValue('groups', values, { shouldDirty: true });
                   }}
-                  options={multiselectOptions}
+                  options={groups?.map(group => ({ label: group.name, value: group.name })) || []}
+                  value={selectedUser?.groups?.map(userGroup => userGroup.name) || []}
                   placeholder="Nothing selected"
                 />
               </div>
             </div>
           </Sidepanel.Body>
-          <Sidepanel.Footer>
+          <Sidepanel.Footer className="px-4 py-3">
             <div className="flex gap-2">
               <Button
                 className="flex-grow"
@@ -299,14 +314,46 @@ const UserFormSidepanel = ({
               >
                 <Translate>Cancel</Translate>
               </Button>
-              <Button className="flex-grow" type="submit">
+              <Button
+                className="flex-grow"
+                type="button"
+                onClick={async () => {
+                  const valid = await trigger();
+                  if (valid) {
+                    actionType.current = 'formSubmit';
+                    setShowConfirmationModal(true);
+                  }
+                }}
+              >
                 <Translate>Save</Translate>
               </Button>
             </div>
           </Sidepanel.Footer>
+          <button type="submit" hidden aria-hidden="true" disabled ref={formSubmitRef} />
         </form>
       </Sidepanel>
       <PermissionsListModal showModal={showModal} closeModal={() => setShowModal(false)} />
+      {showConfirmationModal && (
+        <ConfirmationModal
+          header="Confirm"
+          body="Confirm action"
+          usePassword
+          onCancelClick={() => setShowConfirmationModal(false)}
+          onAcceptClick={value => {
+            password.current = value;
+
+            if (actionType.current === 'formSubmit' && formSubmitRef.current) {
+              formSubmitRef.current.disabled = false;
+              formSubmitRef.current.click();
+              formSubmitRef.current.disabled = true;
+            } else {
+              onClickSubmit();
+            }
+
+            setShowConfirmationModal(false);
+          }}
+        />
+      )}
     </>
   );
 };

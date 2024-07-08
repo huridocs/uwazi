@@ -82,30 +82,37 @@ class PDFViewComponent extends Component {
   changePage(nextPage) {
     const { raw = 'false' } = searchParamsFromSearchParams(this.props.searchParams);
 
-    if (String(raw).toLowerCase() === 'false') {
+    const notRaw = String(raw).toLowerCase() === 'false';
+    if (notRaw) {
       return scrollToPage(nextPage);
     }
 
-    return this.changeBrowserHistoryPage(nextPage);
+    return this.changeBrowserHistoryPage(nextPage, notRaw);
   }
 
-  changeBrowserHistoryPage(newPage) {
+  changeBrowserHistoryPage(newPage, replace = true) {
     const { page, ...queryWithoutPage } = searchParamsFromSearchParams(this.props.searchParams);
 
     this.props.navigate(
-      `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`
+      `${this.props.location.pathname}${toUrlParams({ ...queryWithoutPage, page: newPage })}`,
+      { replace }
     );
   }
 
   render() {
     const query = searchParamsFromSearchParams(this.props.searchParams);
     const page = Number(query.page || 1);
-    const { pathname } = this.props.location;
+    const { filename } = defaultDoc(this.props.entity);
+    const sharedId = this.props.entity.get('sharedId');
     const raw = query.raw === 'true' || !isClient;
 
     return (
       <>
-        <Helmet>{raw && <link rel="canonical" href={`${pathname}?page=${page}`} />}</Helmet>
+        <Helmet>
+          {raw && (
+            <link rel="canonical" href={`/entity/${sharedId}?page=${page}&file=${filename}`} />
+          )}
+        </Helmet>
         <Viewer
           raw={raw}
           searchTerm={query.searchTerm}

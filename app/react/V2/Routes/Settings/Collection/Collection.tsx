@@ -4,26 +4,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-
-import * as SettingsAPI from 'app/V2/api/settings';
-import * as TemplatesAPI from 'app/V2/api/templates';
-
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
+import { isUndefined } from 'lodash';
+import { Tooltip } from 'flowbite-react';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import * as SettingsAPI from 'V2/api/settings';
+import * as TemplatesAPI from 'V2/api/templates';
 import { notificationAtom } from 'app/V2/atoms';
-
 import { InputField, Select, MultiSelect, Geolocation } from 'app/V2/Components/Forms';
 import { Button, Card } from 'app/V2/Components/UI';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate, t } from 'app/I18N';
 import { ClientSettings, Template } from 'app/apiResponseTypes';
-import { Tooltip } from 'flowbite-react';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { FetchResponseError } from 'shared/JSONRequest';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
-import { isUndefined } from 'lodash';
 
 const collectionLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -78,8 +76,8 @@ const Collection = () => {
   };
   const { links, custom, ...formData } = settings;
 
-  const setNotifications = useSetRecoilState(notificationAtom);
-  const setSettings = useSetRecoilState(settingsAtom);
+  const setNotifications = useSetAtom(notificationAtom);
+  const setSettings = useSetAtom(settingsAtom);
   const revalidator = useRevalidator();
   formData.private = !formData.private;
   const {
@@ -100,13 +98,21 @@ const Collection = () => {
       delete data.newNameGeneration;
     }
     data.private = !data.private;
-    await SettingsAPI.save(data);
-    await revalidator.revalidate();
-    setSettings(data);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Settings updated</Translate>,
-    });
+    const response = await SettingsAPI.save(data);
+    if (response instanceof FetchResponseError) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: response.message || undefined,
+      });
+    } else {
+      setSettings(response);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Settings updated</Translate>,
+      });
+    }
+    revalidator.revalidate();
   };
 
   const labelWithTip = (label: string, tip: React.ReactNode) => (
@@ -126,25 +132,21 @@ const Collection = () => {
   const templateOptions = templates.map(template => ({
     label: template.name,
     value: template._id,
-    selected: settings.allowedPublicTemplates?.includes(template._id),
   }));
 
   const mapLayersOptions = [
-    { label: 'Dark', value: 'Dark', selected: settings.mapLayers?.includes('Dark') },
+    { label: 'Dark', value: 'Dark' },
     {
       label: 'Streets',
       value: 'Streets',
-      selected: settings.mapLayers?.includes('Streets') || !settings.mapLayers?.length,
     },
     {
       label: 'Satellite',
       value: 'Satellite',
-      selected: settings.mapLayers?.includes('Satellite') || !settings.mapLayers?.length,
     },
     {
       label: 'Hybrid',
       value: 'Hybrid',
-      selected: settings.mapLayers?.includes('Hybrid') || !settings.mapLayers?.length,
     },
   ];
 
@@ -276,6 +278,7 @@ const Collection = () => {
                   label="Document OCR trigger"
                   tip={tips.ocrTrigger}
                   register={register}
+                  defaultChecked={formData.ocrServiceEnabled}
                 />
               </Card>
             )}
@@ -307,17 +310,16 @@ const Collection = () => {
                   label="Allow captcha bypass"
                   tip={tips.openPublicForm}
                   register={register}
+                  defaultChecked={formData.openPublicEndpoint}
                 />
                 <div className="sm:col-span-2">
                   <MultiSelect
                     label={labelWithTip('Whitelisted templates', tips.publicForm[2])}
                     options={templateOptions}
                     onChange={newValues => {
-                      setValue(
-                        'allowedPublicTemplates',
-                        newValues.filter(({ selected }) => selected).map(({ value }) => value)
-                      );
+                      setValue('allowedPublicTemplates', newValues);
                     }}
+                    value={settings.allowedPublicTemplates || []}
                   />
                 </div>
               </div>
@@ -348,12 +350,10 @@ const Collection = () => {
                     options={mapLayersOptions}
                     hasErrors={!!errors.mapLayers}
                     canBeEmpty={false}
-                    onChange={(newValues: any[]) => {
-                      const values: [string, ...string[]] = newValues
-                        .filter(({ selected }) => selected)
-                        .map(({ value }) => value) as [string, ...string[]];
+                    value={settings.mapLayers?.length ? settings.mapLayers : ['Streets']}
+                    onChange={newValues => {
                       clearErrors('mapLayers');
-                      if (!values.length) {
+                      if (!newValues.length) {
                         setError(
                           'mapLayers',
                           { type: 'custom', message: 'Map layers cannot be empty' },
@@ -361,7 +361,8 @@ const Collection = () => {
                         );
                         return;
                       }
-                      setValue('mapLayers', values);
+                      //@ts-ignore
+                      setValue('mapLayers', newValues);
                     }}
                   />
                 </div>

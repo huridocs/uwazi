@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -16,7 +16,7 @@ const getError = async (res: Response) => {
 };
 
 const useApiCaller = () => {
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const handleSuccess = async (res: Response, successMessageComponent: React.ReactNode) => {
     setNotifications({

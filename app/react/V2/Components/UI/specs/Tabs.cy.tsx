@@ -6,7 +6,7 @@ import * as stories from 'app/stories/Tabs.stories';
 
 const { Basic } = composeStories(stories);
 
-describe('Tabas', () => {
+describe('Tabs', () => {
   beforeEach(() => {
     mount(<Basic />);
   });

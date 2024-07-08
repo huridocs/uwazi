@@ -1,3 +1,5 @@
+import { PropertySchema } from './types/commonTypes';
+
 const propertyTypes = {
   date: 'date' as 'date',
   daterange: 'daterange' as 'daterange',
@@ -39,4 +41,21 @@ function getCompatibleTypes(type: keyof typeof propertyTypes): Array<keyof typeo
   }
 }
 
-export { propertyTypes, getCompatibleTypes };
+const propertyIsSelect = (propertyType: PropertySchema['type']) => propertyType === 'select';
+
+const propertyIsMultiselect = (propertyType: PropertySchema['type']) =>
+  propertyType === 'multiselect';
+
+const propertyIsSelectOrMultiSelect = (propertyType: PropertySchema['type']) =>
+  propertyIsSelect(propertyType) || propertyIsMultiselect(propertyType);
+
+const propertyIsRelationship = (propertyType: string) => propertyType === 'relationship';
+
+export {
+  propertyTypes,
+  getCompatibleTypes,
+  propertyIsSelect,
+  propertyIsMultiselect,
+  propertyIsSelectOrMultiSelect,
+  propertyIsRelationship,
+};

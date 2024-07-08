@@ -64,7 +64,7 @@ describe('Table', () => {
     mount(<WithActions />);
     cy.get('table > thead > tr > th:nth-child(3)').should(
       'have.class',
-      'px-6 py-3 w-1/3 bg-error-100 text-blue-600'
+      'px-6 py-3 w-1/4 bg-error-100 text-blue-600'
     );
   });
 
@@ -250,16 +250,26 @@ describe('Table', () => {
         .should('deep.equal', ['Entity 1 Entity a, Entity b', 'Entity 2', 'Entity 3']);
     });
 
-    it('should sort children of a group', () => {
+    it('should sort an expanded row by the header', () => {
+      mount(<NestedDnD />);
+      cy.contains('children').click();
+      cy.get('[data-testid="created_false"]').click();
+      cy.contains('children').click();
+      checkRowContent(1, ['Entity 3', data[2].description, '3']);
+      checkRowContent(2, ['Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Entity 1', data[1].description, '1']);
+      checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
+      checkRowContent(5, ['Entity b', data[1].children![1].description, '5']);
+    });
+
+    const checkChildrenSorting = (from: string, to: string, target: { x: number; y: number }) => {
       mount(<NestedDnD />);
 
       cy.contains('children').click();
-      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragstart');
-      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragleave');
-      cy.get('[data-testid="group_1.1"]').trigger('drop', {
-        target: { x: 5, y: 0 },
+      cy.get(from).drag(to, {
+        target,
+        force: true,
       });
-      cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
 
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
       checkRowContent(2, ['Entity 1', data[1].description, '1']);
@@ -271,6 +281,22 @@ describe('Table', () => {
         .should('have.length', 3)
         .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b, Entity a', 'Entity 3']);
+    };
+
+    it('should sort children of a group from top to bottom', () => {
+      checkChildrenSorting(
+        '[data-testid="group_1-draggable-item-0"]',
+        '[data-testid="group_1.1"]',
+        { x: 5, y: 30 }
+      );
+    });
+
+    it('should sort children of a group from bottom to top', () => {
+      checkChildrenSorting(
+        '[data-testid="group_1-draggable-item-1"]',
+        '[data-testid="group_1.0"]',
+        { x: 5, y: 0 }
+      );
     });
 
     it('should move a parent into a group', () => {
@@ -301,7 +327,7 @@ describe('Table', () => {
       cy.contains('children').click();
 
       cy.get('[data-testid="group_1-draggable-item-0"]').drag(
-        '[data-testid="root-draggable-item-1"]',
+        '[data-testid="root-draggable-item-0"]',
         {
           target: { x: 5, y: 0 },
           force: true,
@@ -318,6 +344,27 @@ describe('Table', () => {
         .should('have.length', 4)
         .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
         .should('deep.equal', ['Entity 2', 'Entity 1 Entity b', 'Entity 3', 'Entity a']);
+    });
+
+    describe('Fixed groups', () => {
+      it('should not move a child outsides a group if editableGroups is false', () => {
+        mount(<NestedDnD allowEditGroupsWithDnD={false} />);
+        cy.contains('children').click();
+
+        cy.get('[data-testid="group_1-draggable-item-0"]').drag(
+          '[data-testid="root-draggable-item-1"]',
+          {
+            target: { x: 5, y: 0 },
+            force: true,
+          }
+        );
+        cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
+        checkRowContent(1, ['Entity 2', data[0].description, '2']);
+        checkRowContent(2, ['Entity 1', data[1].description, '1']);
+        checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
+        checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
+        checkRowContent(5, ['Entity 3', data[2].description, '3']);
+      });
     });
   });
 });

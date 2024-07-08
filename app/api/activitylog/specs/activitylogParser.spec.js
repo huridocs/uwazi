@@ -51,6 +51,38 @@ describe('Activitylog Parser', () => {
 
     describe('routes: /api/entities and /api/documents', () => {
       describe('method: POST', () => {
+        it('should beautify CREATE with body when it is a multipart request', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/entities',
+              body: `{"entity":${JSON.stringify(`{"title":"New Entity","template":"${firstTemplate.toString()}"}`)}}`,
+            },
+            {
+              action: 'CREATE',
+              description: 'Created entity',
+              name: 'New Entity',
+              extra: 'of type Existing Template',
+            }
+          );
+        });
+
+        it('should beautify UPDATE with body when it is a multipart request', async () => {
+          await testBeautified(
+            {
+              method: 'POST',
+              url: '/api/entities',
+              body: `{"entity":${JSON.stringify(`{"sharedId": "m0asd", "title":"Existing Entity","template":"${firstTemplate.toString()}"}`)}}`,
+            },
+            {
+              action: 'UPDATE',
+              description: 'Updated entity',
+              name: 'Existing Entity (m0asd)',
+              extra: 'of type Existing Template',
+            }
+          );
+        });
+
         it('should beautify as CREATE when no ID found', async () => {
           await testBeautified(
             {

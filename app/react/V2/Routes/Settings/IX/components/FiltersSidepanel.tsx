@@ -47,6 +47,7 @@ const FiltersSidepanel = ({
     },
     nonLabeled: {
       noContext: false,
+      withSuggestion: false,
       noSuggestion: false,
       obsolete: false,
       others: false,
@@ -156,7 +157,18 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="No suggestion"
+                  label={<Translate>With suggestion</Translate>}
+                  {...register('nonLabeled.withSuggestion')}
+                  onChange={e => {
+                    checkOption(e, 'nonLabeled.withSuggestion');
+                  }}
+                />
+                <div className="flex-1 border-t border-dashed border-t-gray-200" />
+                <div className="flex-none">{aggregation.nonLabeled.withSuggestion}</div>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Checkbox
+                  label={<Translate>No suggestion</Translate>}
                   {...register('nonLabeled.noSuggestion')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.noSuggestion');
@@ -167,7 +179,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="No context"
+                  label={<Translate>No context</Translate>}
                   {...register('nonLabeled.noContext')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.noContext');
@@ -178,7 +190,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="Obsolete"
+                  label={<Translate>Obsolete</Translate>}
                   {...register('nonLabeled.obsolete')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.obsolete');
@@ -189,7 +201,7 @@ const FiltersSidepanel = ({
               </div>
               <div className="flex items-center space-x-1">
                 <Checkbox
-                  label="Others"
+                  label={<Translate>Others</Translate>}
                   {...register('nonLabeled.others')}
                   onChange={e => {
                     checkOption(e, 'nonLabeled.others');
@@ -201,7 +213,7 @@ const FiltersSidepanel = ({
             </div>
           </Card>
         </Sidepanel.Body>
-        <Sidepanel.Footer>
+        <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
             <Button className="flex-grow" type="button" styling="outline" onClick={clearFilters}>
               <Translate>Clear all</Translate>

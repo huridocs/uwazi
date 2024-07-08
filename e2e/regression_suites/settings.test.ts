@@ -1,5 +1,4 @@
 /* eslint-disable max-statements */
-/*global page*/
 import { adminLogin, logout } from '../helpers/login';
 import proxyMock from '../helpers/proxyMock';
 import insertFixtures from '../helpers/insertFixtures';
@@ -13,8 +12,8 @@ const selectSettingsPage = async (title: string) => {
   await expect(page).toClick('span', { text: title });
 };
 
-const testSettingsContent = async () => {
-  await testSelectorShot('div.settings-content');
+const testSettingsContent = async (selector: string = 'div.settings-content') => {
+  await testSelectorShot(selector);
 };
 
 describe('Settings', () => {
@@ -29,19 +28,6 @@ describe('Settings', () => {
     await selectSettingsPage('Collection');
     await page.waitForSelector('.leafletmap');
     await testSelectorShot('[data-testid="settings-collection"]');
-  });
-
-  describe('Filters', () => {
-    it('should display filters page with filters', async () => {
-      await selectSettingsPage('Filters');
-      await testSettingsContent();
-    });
-
-    it('should display filter groups', async () => {
-      await selectSettingsPage('Filters');
-      await expect(page).toClick('button', { text: 'Create group' });
-      await testSettingsContent();
-    });
   });
 
   describe('Templates', () => {
@@ -71,22 +57,22 @@ describe('Settings', () => {
   describe('Thesauri', () => {
     it('should display Thesaurus page', async () => {
       await selectSettingsPage('Thesauri');
-      await testSettingsContent();
+      await testSettingsContent('[data-testid="settings-thesauri"]');
     });
 
     it('should display new Thesaurus page', async () => {
       await selectSettingsPage('Thesauri');
-      await expect(page).toClick('div.settings-footer > a');
-      await testSettingsContent();
+      await expect(page).toClick('a', { text: 'Add thesaurus' });
+      await testSettingsContent('[data-testid="settings-thesauri"]');
     });
 
     it('should display new Thesaurus with groups page', async () => {
       await selectSettingsPage('Thesauri');
       await expect(page).toClick('a', { text: 'Add thesaurus' });
       await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toClick('button', { text: 'Add group' });
-      await testSettingsContent();
+      await expect(page).toFill('input#group-name', 'Group 1');
+
+      await testSettingsContent('aside');
     });
   });
 

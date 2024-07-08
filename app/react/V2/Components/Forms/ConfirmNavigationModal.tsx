@@ -1,10 +1,9 @@
 import React from 'react';
-import { SetterOrUpdater } from 'recoil';
 import { Translate } from 'app/I18N';
 import { Button, Modal } from '../UI';
 
 type confirmationModalType = {
-  setShowModal: SetterOrUpdater<boolean>;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onConfirm?: () => void;
 };
 

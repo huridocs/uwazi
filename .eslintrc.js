@@ -129,7 +129,20 @@ module.exports = {
     'react/self-closing-comp': ['warn'],
     'react/no-multi-comp': ['warn'],
     'react/jsx-closing-bracket-location': ['warn'],
-    'react/jsx-boolean-value': ['warn'],
+    'react/jsx-boolean-value': [
+      'warn',
+      'never',
+      {
+        always: [
+          'date-rangepicker',
+          'datepicker',
+          'inline-datepicker',
+          'datepicker-autohide',
+          'datepicker-buttons',
+          'datepicker-autoselect-today',
+        ],
+      },
+    ],
     'react/jsx-indent': ['off'],
     'react/jsx-indent-props': ['warn'],
     'react/no-array-index-key': ['warn'],
@@ -184,7 +197,15 @@ module.exports = {
     'react/no-unknown-property': [
       'error',
       {
-        ignore: ['no-translate'],
+        ignore: [
+          'no-translate',
+          'date-rangepicker',
+          'datepicker',
+          'inline-datepicker',
+          'datepicker-autohide',
+          'datepicker-buttons',
+          'datepicker-autoselect-today',
+        ],
       },
     ],
     //jsx-a11y
@@ -200,12 +221,9 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 'off',
     'jsx-a11y/mouse-events-have-key-events': 'off',
     'jsx-a11y/label-has-associated-control': 'off',
-    //react-hooks && recoil
+    //react-hooks
     'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': [
-      'warn',
-      { additionalHooks: '(useRecoilCallback|useRecoilTransaction_UNSTABLE)' },
-    ],
+    'react-hooks/exhaustive-deps': ['warn'],
   },
   overrides: [
     { files: ['app/**/*spec.js'], rules: { 'max-lines-per-function': 'off' } },

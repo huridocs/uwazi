@@ -1,5 +1,5 @@
 import '@4tw/cypress-drag-drop';
-
+import 'cypress-real-events';
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite
@@ -156,11 +156,6 @@ Cypress.Commands.add('clearAndType', (selector, value) => {
   cy.get(selector).type(value);
 });
 
-Cypress.Commands.add('waitForNotification', message => {
-  cy.contains(message).as('expectedMessage');
-  cy.get('@expectedMessage').should('not.exist');
-});
-
 // eslint-disable-next-line prefer-arrow-callback
 Cypress.Commands.addQuery('getByTestId', function getByTestId(id) {
   const getFn = cy.now('get', `[data-testid="${id}"]`);
@@ -181,6 +176,15 @@ Cypress.Commands.add('addTimeLink', (duration, label, index = 0) => {
   cy.contains('button', 'Add timelink').should('be.visible').click();
   const timeLinkSelector = `input[name="timelines.${index}.label"`;
   cy.get(timeLinkSelector).type(label);
+});
+
+Cypress.Commands.add('blankState', () => {
+  const env = { DATABASE_NAME: 'uwazi_e2e', INDEX_NAME: 'uwazi_e2e' };
+  cy.exec('yarn blank-state --force', { env, failOnNonZeroExit: false }).then(result => {
+    if (result.code === 1) {
+      cy.exec('yarn blank-state --force', { env });
+    }
+  });
 });
 
 export {};

@@ -47,6 +47,7 @@ const StoryComponent = (props: TableProps<SampleSchema> & { showUpdates?: boolea
           draggableRows={props.draggableRows === true}
           onChange={onChangeHandler}
           subRowsKey={props.subRowsKey}
+          allowEditGroupsWithDnD={props.allowEditGroupsWithDnD}
         />
       </div>
       {props.showUpdates === true && !firstLoad && (
@@ -153,9 +154,9 @@ const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
     )}
   </div>
 );
+
 const basicColumns = [
   columnHelper.accessor('title', { header: 'Title', id: 'title', cell: TitleCell }),
-
   columnHelper.accessor('description', { header: 'Description' }),
   columnHelper.accessor('created', {
     header: 'Date added',
@@ -165,23 +166,27 @@ const basicColumns = [
 ];
 
 const withActionsColumns = [
-  columnHelper.accessor('title', { id: 'title', header: 'Title' }),
+  columnHelper.accessor('title', {
+    id: 'title',
+    header: 'Title',
+    meta: { headerClassName: 'w-2/4' },
+  }),
   columnHelper.accessor('created', {
     id: 'created',
     header: 'Date added',
-    meta: { headerClassName: 'w-1/3' },
+    meta: { headerClassName: 'w-1/4' },
   }),
   columnHelper.accessor('description', {
     id: 'description',
     header: 'Description',
     enableSorting: false,
-    meta: { headerClassName: 'w-1/3 bg-error-100 text-blue-600' },
+    meta: { headerClassName: 'w-1/4 bg-error-100 text-blue-600' },
   }),
   columnHelper.display({
     id: 'action',
     header: 'Actions',
     cell: ActionsCell,
-    meta: { headerClassName: 'text-center' },
+    meta: { headerClassName: 'sr-only' },
   }),
 ];
 

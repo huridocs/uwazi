@@ -1,6 +1,12 @@
 import { SyncDBDataSource } from 'api/common.v2/database/SyncDBDataSource';
-import { ObjectId } from 'mongodb';
-import mongoose, { FilterQuery, QueryOptions, Schema, UpdateQuery } from 'mongoose';
+import { ObjectId, UpdateOptions } from 'mongodb';
+import mongoose, {
+  FilterQuery,
+  MongooseQueryOptions,
+  QueryOptions,
+  Schema,
+  UpdateQuery,
+} from 'mongoose';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { MultiTenantMongooseModel } from './MultiTenantMongooseModel';
 import { UpdateLogger, createUpdateLogHelper } from './logHelper';
@@ -22,6 +28,7 @@ export type EnforcedWithId<T> = T & { _id: ObjectId };
 export type UwaziFilterQuery<T> = FilterQuery<T>;
 export type UwaziUpdateQuery<T> = UpdateQuery<DataType<T>>;
 export type UwaziQueryOptions = QueryOptions;
+export type UwaziUpdateOptions<T> = (UpdateOptions & Omit<MongooseQueryOptions<T>, 'lean'>) | null;
 
 export class OdmModel<T> implements SyncDBDataSource<T, T> {
   db: MultiTenantMongooseModel<T>;
@@ -127,7 +134,7 @@ export class OdmModel<T> implements SyncDBDataSource<T, T> {
   async updateMany(
     conditions: UwaziFilterQuery<DataType<T>>,
     doc: UwaziUpdateQuery<T>,
-    options?: UwaziQueryOptions
+    options?: UwaziUpdateOptions<DataType<T>>
   ) {
     await this.logHelper.upsertLogMany(conditions);
     return this.db._updateMany(conditions, doc, options);

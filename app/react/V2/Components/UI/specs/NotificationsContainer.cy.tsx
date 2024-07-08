@@ -1,7 +1,7 @@
 import React from 'react';
-import { RecoilRoot, useSetRecoilState } from 'recoil';
+import { Provider, useSetAtom } from 'jotai';
 import { mount } from '@cypress/react18';
-import { Provider } from 'react-redux';
+import { Provider as ReduxProvider } from 'react-redux';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { notificationAtom, notificationAtomType } from 'V2/atoms';
 import { NotificationsContainer } from '../NotificationsContainer';
@@ -14,21 +14,21 @@ describe('Notifications container', () => {
   };
 
   const Component = () => {
-    const setNotification = useSetRecoilState(notificationAtom);
+    const setNotification = useSetAtom(notificationAtom);
 
     const onClick = () => {
       setNotification(notification);
     };
 
     return (
-      <Provider store={createStore()}>
+      <ReduxProvider store={createStore()}>
         <>
           <NotificationsContainer />
           <button type="button" id="send-notification" onClick={onClick}>
             Send notification
           </button>
         </>
-      </Provider>
+      </ReduxProvider>
     );
   };
 
@@ -38,9 +38,9 @@ describe('Notifications container', () => {
 
   beforeEach(() => {
     mount(
-      <RecoilRoot>
+      <Provider>
         <Component />
-      </RecoilRoot>
+      </Provider>
     );
   });
 

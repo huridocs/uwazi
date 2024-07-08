@@ -16,7 +16,7 @@ import { bindActionCreators } from 'redux';
 import Tip from 'app/Layout/Tip';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
-import { sanitizeThesauri } from 'app/Thesauri/components/ThesauriForm';
+import { sanitizeThesauri } from 'app/V2/Routes/Settings/Thesauri/helpers';
 import { NeedAuthorization } from 'app/Auth';
 import {
   DatePicker,

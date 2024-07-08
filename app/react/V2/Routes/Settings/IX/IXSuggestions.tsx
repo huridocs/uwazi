@@ -11,24 +11,33 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { Row, SortingState } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Button, Paginator, Table } from 'V2/Components/UI';
+import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
-import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
 import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
-import { updateSuggestions, updateSuggestionsByEntity } from './components/helpers';
+import {
+  updateSuggestions,
+  updateSuggestionsByEntity,
+  generateChildrenRows,
+} from './components/helpers';
+import {
+  SuggestionValue,
+  TableSuggestion,
+  MultiValueSuggestion,
+  SingleValueSuggestion,
+} from './types';
 
 const SUGGESTIONS_PER_PAGE = 100;
 const SORTABLE_PROPERTIES = ['entityTitle', 'segment', 'currentValue'];
@@ -51,28 +60,60 @@ const ixmessages = {
 };
 
 const IXSuggestions = () => {
-  const { suggestions, extractor, templates, aggregation, currentStatus, totalPages } =
-    useLoaderData() as {
-      totalPages: number;
-      suggestions: EntitySuggestionType[];
-      extractor: IXExtractorInfo;
-      templates: ClientTemplateSchema[];
-      aggregation: any;
-      currentStatus: ixStatus;
-    };
+  const {
+    suggestions,
+    extractor,
+    templates,
+    aggregation,
+    currentStatus,
+    totalPages,
+    activeFilters,
+  } = useLoaderData() as {
+    totalPages: number;
+    suggestions: TableSuggestion[];
+    extractor: IXExtractorInfo;
+    templates: ClientTemplateSchema[];
+    aggregation: any;
+    currentStatus: ixStatus;
+    _id: string;
+    activeFilters: number;
+  };
 
-  const [currentSuggestions, setCurrentSuggestions] = useState(suggestions);
-  useMemo(() => setCurrentSuggestions(suggestions), [suggestions]);
+  const [currentSuggestions, setCurrentSuggestions] = useState<TableSuggestion[]>(suggestions);
+  const [property, setProperty] = useState<ClientPropertySchema>();
+
+  useEffect(() => {
+    const template = templates.find(t => t._id === extractor.templates[0]);
+    const _property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(prop => prop.name === extractor.property)
+        : template?.properties.find(prop => prop.name === extractor.property);
+    setProperty(_property);
+  }, [templates, extractor]);
+
+  useMemo(() => {
+    if (property?.type === 'multiselect' || property?.type === 'relationship') {
+      const flatenedSuggestions = suggestions.map(suggestion =>
+        generateChildrenRows(suggestion as MultiValueSuggestion)
+      );
+      setCurrentSuggestions(flatenedSuggestions);
+      return;
+    }
+
+    setCurrentSuggestions(
+      suggestions.map(suggestion => ({ ...suggestion, isChild: false }) as SingleValueSuggestion)
+    );
+  }, [suggestions, property]);
 
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
-  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<EntitySuggestionType>();
-  const [selected, setSelected] = useState<Row<EntitySuggestionType>[]>([]);
+  const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
+  const [selected, setSelected] = useState<Row<TableSuggestion>[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const [status, setStatus] = useState<{
     status: ixStatus;
     message?: string;
@@ -104,15 +145,15 @@ const IXSuggestions = () => {
     }
 
     if (sorting.length && sorting[0].id) {
-      const property = sorting[0].id;
+      const _property = sorting[0].id;
 
-      if (!SORTABLE_PROPERTIES.includes(property)) {
+      if (!SORTABLE_PROPERTIES.includes(_property)) {
         return;
       }
 
       const order = sorting[0].desc ? 'desc' : 'asc';
 
-      navigate(`${location.pathname}?sort={"property":"${property}","order":"${order}"}`, {
+      navigate(`${location.pathname}?sort={"property":"${_property}","order":"${order}"}`, {
         replace: true,
       });
     }
@@ -121,15 +162,31 @@ const IXSuggestions = () => {
   const filteredTemplates = () =>
     templates ? templates.filter(template => extractor.templates.includes(template._id)) : [];
 
-  const acceptSuggestions = async (acceptedSuggestions: EntitySuggestionType[]) => {
+  const acceptSuggestions = async (acceptedSuggestions: TableSuggestion[]) => {
     try {
-      await suggestionsAPI.accept(
-        acceptedSuggestions.map(acceptedSuggestion => ({
-          _id: acceptedSuggestion._id as ObjectIdSchema,
+      const preparedSuggestions = acceptedSuggestions.map(acceptedSuggestion => {
+        let addedValues: SuggestionValue[] | undefined;
+        let removedValues: SuggestionValue[] | undefined;
+
+        if (acceptedSuggestion.isChild) {
+          addedValues = acceptedSuggestion.suggestedValue
+            ? ([acceptedSuggestion.suggestedValue] as SuggestionValue[])
+            : undefined;
+          removedValues = acceptedSuggestion.currentValue
+            ? ([acceptedSuggestion.currentValue] as SuggestionValue[])
+            : undefined;
+        }
+
+        return {
+          _id: acceptedSuggestion._id,
           sharedId: acceptedSuggestion.sharedId,
           entityId: acceptedSuggestion.entityId,
-        }))
-      );
+          addedValues,
+          removedValues,
+        };
+      });
+
+      await suggestionsAPI.accept(preparedSuggestions);
       setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
       setNotifications({
         type: 'success',
@@ -162,27 +219,7 @@ const IXSuggestions = () => {
     } catch (error) {}
   };
 
-  const showPageNumbers = () => {
-    const page = searchParams.has('page') ? Number(searchParams.get('page')) : 1;
-    const from = (page - 1) * SUGGESTIONS_PER_PAGE + 1;
-    return (
-      <div className="text-sm font-semibold text-center text-gray-900">
-        <span className="font-light text-gray-500">
-          <Translate>Showing</Translate>
-        </span>
-        &nbsp;
-        {from}-{from + currentSuggestions.length - 1}
-        &nbsp;
-        <span className="font-light text-gray-500">
-          <Translate>of</Translate>
-        </span>
-        &nbsp;
-        {totalPages}
-      </div>
-    );
-  };
-
-  const openPDFSidepanel = (selectedSuggestion: EntitySuggestionType) => {
+  const openPDFSidepanel = (selectedSuggestion: TableSuggestion) => {
     setSidepanelSuggestion(selectedSuggestion);
     setSidepanel('pdf');
   };
@@ -202,10 +239,11 @@ const IXSuggestions = () => {
           path={new Map([['Metadata extraction', '/settings/metadata_extraction']])}
           title={extractor.name}
         />
-
         <SettingsContent.Body>
-          <Table<EntitySuggestionType>
+          <Table<TableSuggestion>
             data={currentSuggestions}
+            highLightGroups={false}
+            subRowsKey="children"
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
@@ -218,6 +256,7 @@ const IXSuggestions = () => {
                 onFiltersButtonClicked={() => {
                   setSidepanel('filters');
                 }}
+                activeFilters={activeFilters}
               />
             }
             enableSelection
@@ -226,7 +265,12 @@ const IXSuggestions = () => {
             onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
-                <div className="">{showPageNumbers()}</div>
+                <PaginationState
+                  page={Number(searchParams.get('page') || 1)}
+                  size={SUGGESTIONS_PER_PAGE}
+                  total={aggregation.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  currentLength={currentSuggestions.length}
+                />
                 <div>
                   <Paginator
                     totalPages={totalPages}
@@ -246,7 +290,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -274,7 +318,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -312,10 +356,13 @@ const IXSuggestions = () => {
 
       <PDFSidepanel
         showSidepanel={sidepanel === 'pdf'}
+        property={property}
         setShowSidepanel={closeSidepanel}
-        suggestion={sidepanelSuggestion}
+        suggestion={sidepanelSuggestion as EntitySuggestionType}
         onEntitySave={updatedEntity =>
-          setCurrentSuggestions(updateSuggestionsByEntity(currentSuggestions, updatedEntity))
+          setCurrentSuggestions(
+            updateSuggestionsByEntity(currentSuggestions, updatedEntity, property)
+          )
         }
       />
     </div>
@@ -328,10 +375,14 @@ const IXSuggestionsLoader =
     if (!extractorId) throw new Error('extractorId is required');
     const searchParams = new URLSearchParams(request.url.split('?')[1]);
     const filter: any = { extractorId };
+    let activeFilters = 0;
     if (searchParams.has('filter')) {
       filter.customFilter = JSON.parse(searchParams.get('filter')!);
+      activeFilters = [
+        ...Object.values(filter.customFilter.labeled),
+        ...Object.values(filter.customFilter.nonLabeled),
+      ].filter(Boolean).length;
     }
-
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
     const suggestionsList: { suggestions: EntitySuggestionType[]; totalPages: number } =
@@ -358,6 +409,7 @@ const IXSuggestionsLoader =
       templates,
       aggregation,
       currentStatus: currentStatus.status,
+      activeFilters,
     };
   };
 

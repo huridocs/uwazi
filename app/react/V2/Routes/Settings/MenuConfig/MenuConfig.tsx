@@ -5,7 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 
 import { Row } from '@tanstack/react-table';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 
 import { Translate } from 'app/I18N';
 import { isEqual } from 'lodash';
@@ -30,7 +30,7 @@ const menuConfigloader =
 const MenuConfig = () => {
   const links = useLoaderData() as ClientSettingsLinkSchema[];
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
   const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
   const [formValues, setFormValues] = useState<ClientSettingsLinkSchema & { groupId?: string }>(
@@ -38,7 +38,7 @@ const MenuConfig = () => {
   );
   const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const setSettings = useSetRecoilState(settingsAtom);
+  const setSettings = useSetAtom(settingsAtom);
 
   useEffect(() => {
     const linksWIthid = links?.map(link => {
@@ -59,20 +59,16 @@ const MenuConfig = () => {
       delete link._id;
     }
     if (link.sublinks) {
-      link.sublinks = link.sublinks.map(sublink => {
-        const { _id, ...rest } = sublink;
-        return rest;
-      });
+      link.sublinks =
+        link.sublinks.map(sublink => {
+          const { _id, ...rest } = sublink;
+          return rest;
+        }) || [];
     }
     return link;
   };
 
-  const blocker = useBlocker(
-    !isEqual(
-      links,
-      linkChanges.map(l => sanitizeIds(l))
-    )
-  );
+  const blocker = useBlocker(!isEqual(links, linkChanges.map(sanitizeIds)));
 
   useMemo(() => {
     if (blocker.state === 'blocked') {
@@ -112,7 +108,6 @@ const MenuConfig = () => {
     let newLinks = linkChanges.filter(
       link => !selectedLinks.find(selected => selected.original._id === link._id)
     );
-
     newLinks = newLinks.map(link => {
       if (link.sublinks) {
         link.sublinks = link.sublinks.filter(
@@ -205,7 +200,7 @@ const MenuConfig = () => {
         }
         isOpen={isSidepanelOpen}
         closeSidepanelFunction={() => setIsSidepanelOpen(false)}
-        size="large"
+        size="medium"
         withOverlay
       >
         <MenuForm

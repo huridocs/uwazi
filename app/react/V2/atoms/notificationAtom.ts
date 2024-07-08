@@ -1,12 +1,9 @@
-import { atom } from 'recoil';
+import { atomWithReset } from 'jotai/utils';
 import { NotificationProps } from '../Components/UI/Notification';
 
 type notificationAtomType = Omit<NotificationProps, 'dismissAction'>;
 
-const notificationAtom = atom({
-  key: 'Notification',
-  default: {} as notificationAtomType,
-});
+const notificationAtom = atomWithReset({} as notificationAtomType);
 
 export type { notificationAtomType };
 export { notificationAtom };

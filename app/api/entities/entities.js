@@ -113,9 +113,11 @@ async function updateEntity(entity, _template, unrestricted = false) {
         await prev;
         if (entity[metadataParent]) {
           toSave[metadataParent] = { ...(toSave[metadataParent] || entity[metadataParent]) };
-          toSyncProperties.forEach(p => {
-            toSave[metadataParent][p] = entity[metadataParent][p] || [];
-          });
+          toSyncProperties
+            .filter(p => entity[metadataParent][p])
+            .forEach(p => {
+              toSave[metadataParent][p] = entity[metadataParent][p];
+            });
           toSave[metadataParent] = await denormalizeMetadata(
             toSave[metadataParent],
             toSave.language,
@@ -225,6 +227,10 @@ function sanitize(doc, template) {
   }
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
+    if (!sanitizedMetadata[name]) {
+      return Object.assign(sanitizedMetadata, { [name]: [] });
+    }
+
     if (
       [propertyTypes.multiselect, propertyTypes.relationship].includes(type) &&
       sanitizedMetadata[name]
@@ -526,17 +532,6 @@ export default {
     return doc;
   },
 
-  async saveMultiple(docs) {
-    await docs.reduce(async (prev, doc) => {
-      await prev;
-      await validateEntity(doc);
-    }, Promise.resolve());
-
-    const response = await model.saveMultiple(docs);
-    await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
-    return response;
-  },
-
   async multipleUpdate(ids, values, params) {
     const { diffMetadata = {}, ...pureValues } = values;
 
@@ -757,15 +752,36 @@ export default {
 
   /** Propagate the deletion metadata.value id to all entity metadata. */
   async deleteFromMetadata(deletedId, propertyContent, propTypes) {
+    const includesRelationships = propTypes.includes(propertyTypes.relationship);
     const allTemplates = await templates.get({
-      'properties.content': { $in: [propertyContent, ''] },
+      $or: [
+        {
+          'properties.content': { $in: [propertyContent, ''] },
+        },
+        ...(includesRelationships
+          ? [
+              {
+                properties: {
+                  $elemMatch: {
+                    type: propertyTypes.relationship,
+                    content: null,
+                  },
+                },
+              },
+            ]
+          : []),
+      ],
     });
     const allProperties = allTemplates.reduce((m, t) => m.concat(t.properties), []);
     const properties = allProperties.filter(p => propTypes.includes(p.type));
     const query = { $or: [] };
     const changes = {};
     const contentMatches = p =>
-      (p.content && p.content.toString() === propertyContent.toString()) || p.content === '';
+      (p.content && p.content.toString() === propertyContent.toString()) ||
+      p.content === '' ||
+      (includesRelationships &&
+        p.type === propertyTypes.relationship &&
+        typeof p.content === 'undefined');
     query.$or = properties
       .filter(p => propertyContent && contentMatches(p))
       .map(property => {

@@ -3,6 +3,17 @@
 
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 
+export interface ParagraphSchema {
+  left?: number;
+  top?: number;
+  width?: number;
+  height?: number;
+  page_number?: number;
+  text?: string;
+}
+
+export type ParagraphsSchema = ParagraphSchema[];
+
 export interface SegmentationType {
   _id?: ObjectIdSchema;
   autoexpire?: number | null;
@@ -13,13 +24,6 @@ export interface SegmentationType {
   segmentation?: {
     page_width?: number;
     page_height?: number;
-    paragraphs?: {
-      left?: number;
-      top?: number;
-      width?: number;
-      height?: number;
-      page_number?: number;
-      text?: string;
-    }[];
+    paragraphs?: ParagraphsSchema;
   };
 }

@@ -17,10 +17,11 @@ import { filesModel } from 'api/files/filesModel';
 import entities from 'api/entities/entities';
 import settings from 'api/settings/settings';
 import templatesModel from 'api/templates/templates';
+import dictionatiesModel from 'api/thesauri/dictionariesModel';
 import request from 'shared/JSONRequest';
 import languages from 'shared/languages';
 import { EntitySchema } from 'shared/types/entityType';
-import { ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
+import { ExtractedMetadataSchema, ObjectIdSchema, PropertySchema } from 'shared/types/commonTypes';
 import { ModelStatus } from 'shared/types/IXModelSchema';
 import { IXSuggestionType } from 'shared/types/suggestionType';
 import { FileType } from 'shared/types/fileType';
@@ -28,34 +29,87 @@ import {
   FileWithAggregation,
   getFilesForTraining,
   getFilesForSuggestions,
+  propertyTypeIsWithoutExtractedMetadata,
+  propertyTypeIsSelectOrMultiSelect,
 } from 'api/services/informationextraction/getFiles';
 import { Suggestions } from 'api/suggestions/suggestions';
 import { IXExtractorType } from 'shared/types/extractorType';
 import { IXModelType } from 'shared/types/IXModelType';
-import { stringToTypeOfProperty } from 'shared/stringToTypeOfProperty';
+import { ParagraphSchema } from 'shared/types/segmentationType';
 import ixmodels from './ixmodels';
 import { IXModelsModel } from './IXModelsModel';
 import { Extractors } from './ixextractors';
+import {
+  CommonSuggestion,
+  RawSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  formatSuggestion,
+} from './suggestionFormatting';
 
-type RawSuggestion = {
-  tenant: string;
+const defaultTrainingLanguage = 'en';
+
+type TaskTypes = 'suggestions' | 'create_model';
+
+interface TaskParameters {
   id: string;
+  multi_value?: boolean;
+  options?: { label: string; id: string }[];
+}
+
+type ResultParameters = TaskParameters;
+
+interface InternalResultParameters {
+  id: ObjectId;
+}
+
+type IXResultsMessage = ResultsMessage<TaskTypes, ResultParameters>;
+
+type InternalIXResultsMessage = ResultsMessage<TaskTypes, InternalResultParameters>;
+
+interface CommonMaterialsData {
   xml_file_name: string;
-  text: string;
-  segment_text: string;
-  segments_boxes: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-    page_number: number;
-  }[];
-};
+  id: string;
+  tenant: string;
+  xml_segments_boxes?: ParagraphSchema[];
+  page_width?: number;
+  page_height?: number;
+}
+
+interface LabeledMaterialsData extends CommonMaterialsData {
+  language_iso: string;
+}
+
+interface TextSelectionMaterialsData extends LabeledMaterialsData {
+  label_text: FileWithAggregation['propertyValue'];
+  label_segments_boxes:
+    | (Omit<ParagraphSchema, 'page_number'> & { page_number?: string })[]
+    | undefined;
+}
+
+interface ValuesSelectionMaterialsData extends LabeledMaterialsData {
+  values: { id: string; label: string }[];
+}
+
+type MaterialsData =
+  | CommonMaterialsData
+  | TextSelectionMaterialsData
+  | ValuesSelectionMaterialsData;
+
+async function fetchCandidates(property: PropertySchema) {
+  const defaultLanguageKey = (await settings.getDefaultLanguage()).key;
+  const query: { template?: ObjectId; language: string } = {
+    language: defaultLanguageKey,
+  };
+  if (property.content !== '') query.template = new ObjectId(property.content);
+  const candidates = await entities.getUnrestricted(query, ['title', 'sharedId']);
+  return candidates;
+}
 
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: TaskManager;
+  public taskManager: TaskManager<TaskTypes, TaskParameters, ResultParameters>;
 
   static mock: any;
 
@@ -70,7 +124,7 @@ class InformationExtraction {
     this.taskManager.subscribeToResults();
   }
 
-  requestResults = async (message: ResultsMessage) => {
+  requestResults = async (message: InternalIXResultsMessage) => {
     const response = await request.get(message.data_url);
 
     return JSON.parse(response.json);
@@ -88,6 +142,43 @@ class InformationExtraction {
     return request.uploadFile(url, xmlName, fileContent);
   };
 
+  extendMaterialsWithLabeledData = (
+    propertyLabeledData: ExtractedMetadataSchema | undefined,
+    propertyValue: FileWithAggregation['propertyValue'],
+    propertyType: FileWithAggregation['propertyType'],
+    file: FileWithAggregation,
+    _data: CommonMaterialsData
+  ): MaterialsData => {
+    const language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
+
+    let data: MaterialsData = { ..._data, language_iso };
+
+    const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
+
+    if (!noExtractedData && propertyLabeledData) {
+      data = {
+        ...data,
+        label_text: propertyValue || propertyLabeledData?.selection?.text,
+        label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
+          const { page, ...rectangle } = r;
+          return { ...rectangle, page_number: page };
+        }),
+      };
+    }
+
+    if (noExtractedData) {
+      if (!Array.isArray(propertyValue)) {
+        throw new Error('Property value should be an array');
+      }
+      data = {
+        ...data,
+        values: propertyValue.map(({ value, label }) => ({ id: value, label })),
+      };
+    }
+
+    return data;
+  };
+
   sendMaterials = async (
     files: FileWithAggregation[],
     extractor: IXExtractorType,
@@ -102,14 +193,17 @@ class InformationExtraction {
         const propertyLabeledData = file.extractedMetadata?.find(
           labeledData => labeledData.name === extractor.property
         );
+        const { propertyValue, propertyType } = file;
 
-        if (!xmlExists || (type === 'labeled_data' && !propertyLabeledData)) {
-          return;
-        }
+        const missingData = propertyTypeIsWithoutExtractedMetadata(propertyType)
+          ? !propertyValue
+          : type === 'labeled_data' && !propertyLabeledData;
+
+        if (!xmlExists || missingData) return;
 
         await InformationExtraction.sendXmlToService(serviceUrl, xmlName, extractor._id, type);
 
-        let data: any = {
+        let data: MaterialsData = {
           xml_file_name: xmlName,
           id: extractor._id.toString(),
           tenant: tenants.current().name,
@@ -118,17 +212,14 @@ class InformationExtraction {
           page_height: file.segmentation.segmentation?.page_height,
         };
 
-        if (type === 'labeled_data' && propertyLabeledData) {
-          const defaultTrainingLanguage = 'en';
-          data = {
-            ...data,
-            language_iso: languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage,
-            label_text: file.propertyValue || propertyLabeledData.selection?.text,
-            label_segments_boxes: propertyLabeledData.selection?.selectionRectangles?.map(r => {
-              const { page, ...selection } = r;
-              return { ...selection, page_number: page };
-            }),
-          };
+        if (type === 'labeled_data' && !missingData) {
+          data = this.extendMaterialsWithLabeledData(
+            propertyLabeledData,
+            propertyValue,
+            propertyType,
+            file,
+            data
+          );
         }
         await request.post(urljoin(serviceUrl, type), data);
         if (type === 'prediction_data') {
@@ -171,7 +262,7 @@ class InformationExtraction {
     return this._getEntityFromFile(file);
   };
 
-  saveSuggestions = async (message: ResultsMessage) => {
+  saveSuggestions = async (message: InternalIXResultsMessage) => {
     const templates = await templatesModel.get();
     const rawSuggestions: RawSuggestion[] = await this.requestResults(message);
     const [extractor] = await Extractors.get({ _id: message.params?.id });
@@ -197,45 +288,22 @@ class InformationExtraction {
           fileId: segmentation.fileID,
         });
 
-        let status: 'ready' | 'failed' = 'ready';
-        let error = '';
-
         const allProps: PropertySchema[] = _.flatMap(
           templates,
           template => template.properties || []
         );
-        const property = allProps.find(p => p.name === extractor.property);
+        const property =
+          extractor.property === 'title'
+            ? { name: 'title' as 'title', type: 'title' as 'title' }
+            : allProps.find(p => p.name === extractor.property);
 
-        const suggestedValue = stringToTypeOfProperty(
-          rawSuggestion.text,
-          property?.type,
-          currentSuggestion?.language || entity.language
+        const suggestion = await formatSuggestion(
+          property,
+          rawSuggestion,
+          currentSuggestion,
+          entity,
+          message
         );
-
-        if (suggestedValue === null) {
-          status = 'failed';
-          error = 'Invalid value for property type';
-        }
-
-        if (!message.success) {
-          status = 'failed';
-          error = message.error_message ? message.error_message : 'Unknown error';
-        }
-
-        const suggestion: IXSuggestionType = {
-          ...currentSuggestion,
-          suggestedValue,
-          ...(property?.type === 'date' ? { suggestedText: rawSuggestion.text } : {}),
-          segment: rawSuggestion.segment_text,
-          status,
-          error,
-          date: new Date().getTime(),
-          selectionRectangles: rawSuggestion.segments_boxes.map((box: any) => {
-            const rect = { ...box, page: box.page_number.toString() };
-            delete rect.page_number;
-            return rect;
-          }),
-        };
 
         return Suggestions.save(suggestion);
       })
@@ -314,10 +382,39 @@ class InformationExtraction {
       return { status: 'error', message: 'No labeled data' };
     }
 
+    const template = await templatesModel.getById(extractor.templates[0]);
+    const property =
+      extractor.property === 'title'
+        ? template?.commonProperties?.find(p => p.name === extractor.property)
+        : template?.properties?.find(p => p.name === extractor.property);
+
+    if (!property) {
+      return { status: 'error', message: 'Property not found' };
+    }
+
+    const params: TaskParameters = {
+      id: extractorId.toString(),
+      multi_value: property.type === 'multiselect' || property.type === 'relationship',
+    };
+
+    if (propertyTypeIsSelectOrMultiSelect(property.type)) {
+      const thesauri = await dictionatiesModel.getById(property.content);
+
+      params.options =
+        thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
+    }
+    if (property.type === 'relationship') {
+      const candidates = await fetchCandidates(property);
+      params.options = candidates.map(candidate => ({
+        label: candidate.title || '',
+        id: candidate.sharedId || '',
+      }));
+    }
+
     await this.taskManager.startTask({
       task: 'create_model',
       tenant: tenants.current().name,
-      params: { id: extractorId.toString() },
+      params,
     });
 
     await this.saveModelProcess(extractorId);
@@ -398,9 +495,9 @@ class InformationExtraction {
     });
   };
 
-  processResults = async (_message: ResultsMessage): Promise<void> => {
+  processResults = async (_message: IXResultsMessage): Promise<void> => {
     await tenants.run(async () => {
-      const message = {
+      const message: InternalIXResultsMessage = {
         ..._message,
         params: { ..._message.params, id: new ObjectId(_message.params!.id) },
       };
@@ -439,7 +536,7 @@ class InformationExtraction {
     };
   };
 
-  updateSuggestionStatus = async (message: ResultsMessage, currentModel: IXModelType) => {
+  updateSuggestionStatus = async (message: InternalIXResultsMessage, currentModel: IXModelType) => {
     const suggestionsStatus = await this.getSuggestionsStatus(
       message.params!.id,
       currentModel.creationDate
@@ -456,3 +553,11 @@ class InformationExtraction {
 }
 
 export { InformationExtraction };
+export type {
+  IXResultsMessage,
+  InternalIXResultsMessage,
+  CommonSuggestion,
+  TextSelectionSuggestion,
+  ValuesSelectionSuggestion,
+  RawSuggestion,
+};

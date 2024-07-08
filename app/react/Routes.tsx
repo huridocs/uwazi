@@ -3,30 +3,12 @@ import React from 'react';
 import { createRoutesFromElements, Route } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import { App } from 'app/App/App';
-import Activitylog from 'app/Activitylog/Activitylog';
-import Configure2fa from 'app/Auth2fa/Configure2fa';
 import { LibraryCards } from 'app/Library/Library';
 import { LibraryMap } from 'app/Library/LibraryMap';
-import { EditRelationType } from 'app/RelationTypes/EditRelationType';
-import NewRelationType from 'app/RelationTypes/NewRelationType';
-import {
-  PreserveSettings,
-  Customisation,
-  CustomUploads,
-  EntityTypesList,
-  FiltersForm,
-  RelationTypesList,
-  Settings,
-  ThesauriList,
-  Dashboard,
-} from 'app/Settings';
+import { PreserveSettings, EntityTypesList, Settings } from 'app/Settings';
 import { EditTemplate } from 'app/Templates/EditTemplate';
 import NewTemplate from 'app/Templates/NewTemplate';
-import { EditThesauri } from 'app/Thesauri/EditThesauri';
-import NewThesauri from 'app/Thesauri/NewThesauri';
-import ThesaurusCockpit from 'app/Thesauri/ThesaurusCockpit';
 import { Login } from 'app/Users/Login';
-import GeneralError from 'app/App/ErrorHandling/GeneralError';
 import { Users, usersLoader, userAction } from 'V2/Routes/Settings/Users/Users';
 import { Collection, collectionLoader } from 'V2/Routes/Settings/Collection/Collection';
 import { LibraryTable } from 'app/Library/LibraryTable';
@@ -41,18 +23,33 @@ import {
   editTranslationsLoader,
   editTranslationsAction,
 } from 'V2/Routes/Settings/Translations/EditTranslations';
+import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
+
+import {
+  ThesaurusForm,
+  theasauriListLoader,
+  ThesauriList,
+  editTheasaurusLoader,
+} from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
+import {
+  RelationshipTypes,
+  relationshipTypesLoader,
+} from 'V2/Routes/Settings/RelationshipTypes/RelationshipTypes';
 import { LanguagesList, languagesListLoader } from 'V2/Routes/Settings/Languages/LanguagesList';
 import { Account, accountLoader } from 'V2/Routes/Settings/Account/Account';
-import { dashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
+import { IXdashboardLoader, IXDashboard } from 'V2/Routes/Settings/IX/IXDashboard';
 import { IXSuggestions, IXSuggestionsLoader } from 'V2/Routes/Settings/IX/IXSuggestions';
-import { PageEditor, pageEditorLoader } from 'V2/Routes/Settings/Pages/PageEditor';
-import { PagesList, pagesListLoader } from './V2/Routes/Settings/Pages/PagesList';
+import { PageEditor, pageEditorLoader, PagesList, pagesListLoader } from 'V2/Routes/Settings/Pages';
+import { customisationLoader, Customisation } from 'V2/Routes/Settings/Customization/Customization';
+import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
+import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
+import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
+import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
 import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
-import { RouteErrorBoundary } from './App/ErrorHandling/RouteErrorBoundary';
 import ResetPassword from './Users/ResetPassword';
 import ConnectedUnlockAccount from './Users/UnlockAccount';
 import OneUpReview from './Review/OneUpReview';
@@ -81,8 +78,11 @@ const getRoutesLayout = (
     <Route path="review" element={adminsOnlyRoute(<OneUpReview />)} />
     <Route path="settings" element={loggedInUsersRoute(<Settings />)}>
       <Route path="account" element={<Account />} loader={accountLoader(headers)} />
-      <Route path="dashboard" element={adminsOnlyRoute(<Dashboard />)} />
-      <Route path="2fa" element={loggedInUsersRoute(<Configure2fa />)} />
+      <Route
+        path="dashboard"
+        element={adminsOnlyRoute(<Dashboard />)}
+        loader={dashboardLoader(headers)}
+      />
       <Route
         path="navlinks"
         element={adminsOnlyRoute(<MenuConfig />)}
@@ -113,26 +113,38 @@ const getRoutesLayout = (
         <Route path="new" element={adminsOnlyRoute(<NewTemplate />)} />
         <Route path="edit/:templateId" element={adminsOnlyRoute(<EditTemplate />)} />
       </Route>
-      <Route
-        path="metadata_extraction"
-        element={adminsOnlyRoute(<IXDashboard />)}
-        loader={dashboardLoader(headers)}
-      />
-      <Route
-        path="metadata_extraction/suggestions/:extractorId"
-        loader={IXSuggestionsLoader(headers)}
-        element={adminsOnlyRoute(<IXSuggestions />)}
-      />
-      <Route path="connections">
-        <Route index element={adminsOnlyRoute(<RelationTypesList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewRelationType />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditRelationType />)} />
+      <Route path="metadata_extraction">
+        <Route
+          index
+          element={adminsOnlyRoute(<IXDashboard />)}
+          loader={IXdashboardLoader(headers)}
+        />
+        <Route
+          path="suggestions/:extractorId"
+          loader={IXSuggestionsLoader(headers)}
+          element={adminsOnlyRoute(<IXSuggestions />)}
+        />
       </Route>
-      <Route path="dictionaries">
-        <Route index element={adminsOnlyRoute(<ThesauriList />)} />
-        <Route path="new" element={adminsOnlyRoute(<NewThesauri />)} />
-        <Route path="edit/:_id" element={adminsOnlyRoute(<EditThesauri />)} />
-        <Route path="cockpit/:_id" element={adminsOnlyRoute(<ThesaurusCockpit />)} />
+      <Route path="relationship-types">
+        <Route
+          index
+          element={adminsOnlyRoute(<RelationshipTypes />)}
+          loader={relationshipTypesLoader(headers)}
+        />
+      </Route>
+
+      <Route path="thesauri">
+        <Route
+          index
+          element={adminsOnlyRoute(<ThesauriList />)}
+          loader={theasauriListLoader(headers)}
+        />
+        <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
+        <Route
+          path="edit/:_id"
+          element={adminsOnlyRoute(<ThesaurusForm />)}
+          loader={editTheasaurusLoader(headers)}
+        />
       </Route>
       <Route
         path="languages"
@@ -152,10 +164,26 @@ const getRoutesLayout = (
           action={editTranslationsAction()}
         />
       </Route>
-      <Route path="filters" element={adminsOnlyRoute(<FiltersForm />)} />
-      <Route path="customisation" element={adminsOnlyRoute(<Customisation />)} />
-      <Route path="custom-uploads" element={adminsOnlyRoute(<CustomUploads />)} />
-      <Route path="activitylog" element={adminsOnlyRoute(<Activitylog />)} />
+      <Route
+        path="filters"
+        element={adminsOnlyRoute(<FiltersTable />)}
+        loader={filtersLoader(headers)}
+      />
+      <Route
+        path="customisation"
+        element={adminsOnlyRoute(<Customisation />)}
+        loader={customisationLoader(headers)}
+      />
+      <Route
+        path="activitylog"
+        element={adminsOnlyRoute(<ActivityLog />)}
+        loader={activityLogLoader(headers, { settings })}
+      />
+      <Route
+        path="custom-uploads"
+        element={adminsOnlyRoute(<CustomUploads />)}
+        loader={customUploadsLoader(headers)}
+      />
       <Route
         path="newrelmigration"
         element={
@@ -176,7 +204,7 @@ const getRoutes = (
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
-      <Route path=":lang">
+      <Route path="/:lang">
         {layout}
         <Route path="*" element={<GeneralError />} />
       </Route>

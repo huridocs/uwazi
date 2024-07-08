@@ -7,6 +7,69 @@ import { propertyTypes } from 'shared/propertyTypes';
 
 export const emitSchemaTypes = true;
 
+const commonSuggestionMessageProperties = {
+  tenant: { type: 'string', minLength: 1 },
+  id: { type: 'string', minLength: 1 },
+  xml_file_name: { type: 'string', minLength: 1 },
+};
+
+export const CommonSuggestionSchema = {
+  type: 'object',
+  title: 'CommonSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'segment_text'],
+};
+
+export const TextSelectionSuggestionSchema = {
+  type: 'object',
+  title: 'TextSelectionSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+    text: { type: 'string' },
+    segment_text: { type: 'string' },
+    segments_boxes: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          top: { type: 'number' },
+          left: { type: 'number' },
+          width: { type: 'number' },
+          height: { type: 'number' },
+          page_number: { type: 'number' },
+        },
+        required: ['top', 'left', 'width', 'height', 'page_number'],
+      },
+    },
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'text', 'segment_text', 'segments_boxes'],
+};
+
+export const ValuesSelectionSuggestionSchema = {
+  type: 'object',
+  title: 'ValuesSelectionSuggestion',
+  properties: {
+    ...commonSuggestionMessageProperties,
+    values: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          id: { type: 'string', minLength: 1 },
+          label: { type: 'string', minLength: 1 },
+        },
+        required: ['id', 'label'],
+      },
+    },
+    segment_text: { type: 'string' },
+  },
+  required: ['tenant', 'id', 'xml_file_name', 'values', 'segment_text'],
+};
+
 export const IXSuggestionStateSchema = {
   type: 'object',
   additionalProperties: false,
@@ -37,7 +100,12 @@ export const IXSuggestionSchema = {
   type: 'object',
   additionalProperties: false,
   title: 'IXSuggestionType',
-  definitions: { objectIdSchema, propertyTypes, propertyValueSchema, IXSuggestionStateSchema },
+  definitions: {
+    objectIdSchema,
+    propertyTypes,
+    propertyValueSchema,
+    IXSuggestionStateSchema,
+  },
   properties: {
     _id: objectIdSchema,
     entityId: { type: 'string', minLength: 1 },
@@ -45,7 +113,15 @@ export const IXSuggestionSchema = {
     entityTemplate: { type: 'string', minLength: 1 },
     fileId: objectIdSchema,
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: propertyValueSchema,
+    suggestedValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
     suggestedText: { type: 'string' },
     segment: { type: 'string', minLength: 1 },
     language: { type: 'string', minLength: 1 },
@@ -62,7 +138,6 @@ export const IXSuggestionSchema = {
     'extractorId',
     'entityTemplate',
     'suggestedValue',
-    'segment',
     'language',
   ],
 };
@@ -81,8 +156,24 @@ export const EntitySuggestionSchema = {
     fileId: { type: 'string', minLength: 1 },
     entityTitle: { type: 'string', minLength: 1 },
     propertyName: { type: 'string', minLength: 1 },
-    suggestedValue: propertyValueSchema,
-    currentValue: propertyValueSchema,
+    suggestedValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
+    currentValue: {
+      anyOf: [
+        propertyValueSchema,
+        {
+          type: 'array',
+          items: propertyValueSchema,
+        },
+      ],
+    },
     labeledValue: propertyValueSchema,
     selectionRectangles: selectionRectanglesSchema,
     segment: { type: 'string', minLength: 1 },
@@ -125,13 +216,14 @@ export const SuggestionCustomFilterSchema = {
     nonLabeled: {
       type: 'object',
       properties: {
+        withSuggestion: { type: 'boolean' },
         noSuggestion: { type: 'boolean' },
         noContext: { type: 'boolean' },
         obsolete: { type: 'boolean' },
         others: { type: 'boolean' },
       },
       additionalProperties: false,
-      required: ['noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
     },
   },
   required: ['labeled', 'nonLabeled'],
@@ -209,9 +301,10 @@ export const IXSuggestionAggregationSchema = {
     nonLabeled: {
       type: 'object',
       additionalProperties: false,
-      required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['_count', 'withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
       properties: {
         _count: { type: 'number' },
+        withSuggestion: { type: 'number' },
         noSuggestion: { type: 'number' },
         noContext: { type: 'number' },
         obsolete: { type: 'number' },

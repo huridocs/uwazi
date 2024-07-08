@@ -30,17 +30,6 @@ const isUnique = (
       userGroup.name.trim().toLowerCase() === name.trim().toLowerCase()
   );
 
-const getAvailableUsers = (users?: ClientUserSchema[], selectedGroup?: ClientUserGroupSchema) =>
-  users?.map(user => {
-    const members = selectedGroup?.members?.map(member => member.refId);
-
-    if (members?.includes(user._id || '')) {
-      return { label: user.username, value: user._id as string, selected: true };
-    }
-
-    return { label: user.username, value: user._id as string };
-  });
-
 const getFieldError = (type?: string) => {
   switch (type) {
     case 'required':
@@ -66,21 +55,19 @@ const GroupFormSidepanel = ({
 }: GroupFormSidepanelProps) => {
   const fetcher = useFetcher();
 
-  const defaultValues = { name: '', members: [] } as UserGroupSchema;
+  const defaultValues = selectedGroup || ({ name: '', members: [] } as UserGroupSchema);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    reset,
   } = useForm({
     defaultValues,
-    values: selectedGroup,
+    values: defaultValues,
   });
 
   const closeSidepanel = () => {
-    reset(defaultValues);
     setSelected(undefined);
     setShowSidepanel(false);
   };
@@ -100,20 +87,7 @@ const GroupFormSidepanel = ({
 
     formData.set('data', JSON.stringify(formattedData));
     fetcher.submit(formData, { method: 'post' });
-    setShowSidepanel(false);
-    reset(defaultValues);
-  };
-
-  const availableUsers = getAvailableUsers(users, selectedGroup);
-
-  const onChange = (options: { label: string; value: string; selected?: boolean }[]) => {
-    const selected = options
-      .filter(option => option.selected)
-      .map(option => ({
-        refId: option.value,
-      }));
-
-    setValue('members', selected, { shouldDirty: true });
+    closeSidepanel();
   };
 
   return (
@@ -144,21 +118,30 @@ const GroupFormSidepanel = ({
               </div>
             </Card>
 
-            <div className="mb-5 border rounded-md shadow-sm border-gray-50">
+            <div className="mb-5 rounded-md border border-gray-50 shadow-sm">
               <MultiSelect
                 label={
                   <Translate className="block w-full text-base font-semibold bg-gray-50 text-primary-700">
                     Members
                   </Translate>
                 }
-                onChange={options => onChange(options)}
-                options={availableUsers || []}
+                onChange={selected =>
+                  setValue(
+                    'members',
+                    selected.map(s => ({ refId: s })),
+                    { shouldDirty: true }
+                  )
+                }
+                options={
+                  users?.map(user => ({ label: user.username, value: user._id as string })) || []
+                }
+                value={selectedGroup?.members?.map(member => member.refId) || []}
                 placeholder="Nothing selected"
               />
             </div>
           </div>
         </Sidepanel.Body>
-        <Sidepanel.Footer>
+        <Sidepanel.Footer className="px-4 py-3">
           <div className="flex gap-2">
             <Button className="flex-grow" type="button" styling="outline" onClick={closeSidepanel}>
               <Translate>Cancel</Translate>

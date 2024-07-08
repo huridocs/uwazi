@@ -331,31 +331,28 @@ describe('preserveSync', () => {
             metadata: {
               url: [{ value: { url: 'http://www.url1test.org', label: '' } }],
               source: [{ label: 'www.url1test.org' }],
+              preservation_date: [{ value: 1 }],
             },
           },
           {
             metadata: {
               url: [{ value: { url: 'http://www.url2test.org', label: '' } }],
               source: [{ label: 'www.url2test.org' }],
+              preservation_date: [{ value: 2 }],
             },
           },
           {
             metadata: {
               url: [{ value: { url: 'http://www.url3test.org', label: '' } }],
               source: [{ label: 'www.url3test.org' }],
+              preservation_date: [{ value: 3 }],
             },
           },
           {
-            metadata: expect.not.objectContaining({
-              url: expect.anything(),
-              source: expect.anything(),
-            }),
+            metadata: { url: [], source: [], preservation_date: [] },
           },
           {
-            metadata: expect.not.objectContaining({
-              url: expect.anything(),
-              source: expect.anything(),
-            }),
+            metadata: { url: [], source: [], preservation_date: [] },
           },
         ]);
       }, tenantName);
@@ -375,8 +372,8 @@ describe('preserveSync', () => {
           {
             metadata: { preservation_date: [{ value: 3 }] },
           },
-          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
-          { metadata: expect.not.objectContaining({ preservation_date: expect.anything() }) },
+          { metadata: { preservation_date: [] } },
+          { metadata: { preservation_date: [] } },
         ]);
       }, tenantName);
     });

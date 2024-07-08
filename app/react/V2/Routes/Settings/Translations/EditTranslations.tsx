@@ -12,7 +12,7 @@ import {
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { advancedSort } from 'app/utils/advancedSort';
 import { ClientTranslationSchema } from 'app/istore';
@@ -180,7 +180,7 @@ const EditTranslations = () => {
 
   const [hideTranslated, setHideTranslated] = useState(false);
   const fetcher = useFetcher();
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
   const [showModal, setShowModal] = useState(false);
   const fileInputRef: React.MutableRefObject<HTMLInputElement | null> = useRef(null);
 
@@ -302,7 +302,7 @@ const EditTranslations = () => {
                 />
               </form>
             ) : (
-              <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
+              <div className="flex gap-2 items-center p-4 rounded-md border border-gray-50 bg-primary-50">
                 <InformationCircleIcon className="w-10 text-primary-800" />
                 <span className="text-primary-800">
                   <Translate>There are no untranslated terms</Translate>
@@ -313,7 +313,7 @@ const EditTranslations = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex justify-end gap-2">
+          <div className="flex gap-2 justify-end">
             <div className="flex-1">
               {contextId === 'System' && (
                 <>

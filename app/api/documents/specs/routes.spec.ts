@@ -29,13 +29,13 @@ describe('document routes', () => {
     it('should return raw page', async () => {
       let res: SuperTestResponse = await request(app)
         .get('/api/documents/page')
-        .query({ _id: document1.toString(), page: '1' });
+        .query({ _id: document1.toString(), page: 1 });
 
       expect(res.body).toEqual({ data: 'page 1' });
 
       res = await request(app)
         .get('/api/documents/page')
-        .query({ _id: document1.toString(), page: '2' });
+        .query({ _id: document1.toString(), page: 2 });
 
       expect(res.body).toEqual({ data: 'page 2' });
     });
@@ -43,13 +43,21 @@ describe('document routes', () => {
     it('should return an error when pages does not exists', async () => {
       const res: SuperTestResponse = await request(app)
         .get('/api/documents/page')
-        .query({ _id: document1.toString(), page: 'unexistent' });
+        .query({ _id: document1.toString(), page: 9999 });
 
       expect(res.body).toEqual(
         expect.objectContaining({
           error: 'page does not exists',
         })
       );
+    });
+
+    it('should only accept numbers for page', async () => {
+      const res: SuperTestResponse = await request(app)
+        .get('/api/documents/page')
+        .query({ _id: document1.toString(), page: 'not a number' });
+
+      expect(res.status).toEqual(400);
     });
 
     it('should return error when file does not exists', async () => {

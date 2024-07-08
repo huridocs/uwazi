@@ -12,7 +12,7 @@ import {
   useRevalidator,
 } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil';
+import { useSetAtom } from 'jotai';
 import { debounce } from 'lodash';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import { Translate, t } from 'app/I18N';
@@ -44,7 +44,7 @@ const PageEditor = () => {
   const revalidator = useRevalidator();
   const navigate = useNavigate();
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
-  const setNotifications = useSetRecoilState(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
   const debouncedChangeHandler = useMemo(() => (handler: () => void) => debounce(handler, 500), []);
 
@@ -166,7 +166,7 @@ const PageEditor = () => {
                     id="page-url"
                   />
 
-                  {getValues('sharedId') && (
+                  {getValues('sharedId') && !getValues('entityView') && (
                     <Link
                       target="_blank"
                       to={`/${getPageUrl(getValues('sharedId')!, getValues('title'))}`}
@@ -183,7 +183,7 @@ const PageEditor = () => {
               </form>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Code" key="html" label={<Translate>Code</Translate>}>
+            <Tabs.Tab id="Code" key="html" label={<Translate>Markdown</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <HTMLNotification />
                 <div className="pt-2 h-full">
@@ -205,7 +205,7 @@ const PageEditor = () => {
               </div>
             </Tabs.Tab>
 
-            <Tabs.Tab id="Advanced" label={<Translate>Advanced</Translate>}>
+            <Tabs.Tab id="Advanced" label={<Translate>Javascript</Translate>}>
               <div className="flex flex-col gap-2 h-full">
                 <JSNotification />
                 <div className="pt-2 h-full">

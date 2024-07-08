@@ -26,6 +26,7 @@ export const BODY_REQUIRED_ENDPOINTS = [
   '/api/files/upload/custom',
   '/api/attachments/upload',
   '/api/public',
+  '/api/entities',
 ];
 
 function mustBeLogged(baseurl: string, method: string, body: { [k: string]: any }) {

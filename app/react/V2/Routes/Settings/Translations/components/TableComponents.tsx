@@ -27,11 +27,11 @@ type TranslationsTableType = {
 };
 
 const LanguageHeader = () => <Translate>Language</Translate>;
-const StatusHeader = () => <Translate className="sr-only">Language Code</Translate>;
+const StatusHeader = () => <Translate>Language Code</Translate>;
 const FieldKeyHeader = () => <Translate>Value</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
+const ActionHeader = () => <Translate>Action</Translate>;
 
 const RenderButton = ({ cell }: CellContext<ClientTranslationContextSchema, any>) => (
   <Link to={`edit/${cell.row.original.id}`}>
@@ -81,6 +81,7 @@ const TranslationsTables = ({
       header: StatusHeader,
       cell: LanguagePill,
       enableSorting: false,
+      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }),
     columnHelper.accessor('fieldKey', {
       header: FieldKeyHeader,
@@ -110,4 +111,4 @@ const TranslationsTables = ({
   );
 };
 
-export { RenderButton, ContextPill, TranslationsTables, ActionHeader, LabelHeader, TypeHeader };
+export { RenderButton, ContextPill, TranslationsTables, LabelHeader, TypeHeader, ActionHeader };
