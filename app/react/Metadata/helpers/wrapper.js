@@ -36,6 +36,7 @@ const prepareFiles = async (mediaProperties, values) => {
 
           files.push(file);
 
+          //We cannot revoke here
           return URL.revokeObjectURL(url);
         }
 
