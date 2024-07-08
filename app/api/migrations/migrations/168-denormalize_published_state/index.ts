@@ -3,7 +3,7 @@ import { Db, FindCursor } from 'mongodb';
 import { Entity, Metadata, Template } from './types';
 
 export default {
-  delta: 161,
+  delta: 168,
 
   name: 'denormalize_published_state',
 

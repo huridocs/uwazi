@@ -29,7 +29,7 @@ afterAll(async () => {
 
 describe('migration test', () => {
   it('should have a delta number', () => {
-    expect(migration.delta).toBe(161);
+    expect(migration.delta).toBe(168);
   });
 
   describe('if there is nothing to denormalize', () => {
