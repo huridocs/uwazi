@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { isUndefined } from 'lodash';
 import { Tooltip } from 'flowbite-react';
+import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import * as SettingsAPI from 'V2/api/settings';
 import * as TemplatesAPI from 'V2/api/templates';
 import { notificationAtom } from 'app/V2/atoms';
@@ -18,7 +19,7 @@ import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Translate, t } from 'app/I18N';
 import { ClientSettings, Template } from 'app/apiResponseTypes';
-import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
+import { FetchResponseError } from 'shared/JSONRequest';
 import * as tips from './collectionSettingsTips';
 import { CollectionOptionToggle } from './CollectionOptionToggle';
 
@@ -97,13 +98,21 @@ const Collection = () => {
       delete data.newNameGeneration;
     }
     data.private = !data.private;
-    await SettingsAPI.save(data);
-    await revalidator.revalidate();
-    setSettings(data);
-    setNotifications({
-      type: 'success',
-      text: <Translate>Settings updated</Translate>,
-    });
+    const response = await SettingsAPI.save(data);
+    if (response instanceof FetchResponseError) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: response.message || undefined,
+      });
+    } else {
+      setSettings(response);
+      setNotifications({
+        type: 'success',
+        text: <Translate>Settings updated</Translate>,
+      });
+    }
+    revalidator.revalidate();
   };
 
   const labelWithTip = (label: string, tip: React.ReactNode) => (

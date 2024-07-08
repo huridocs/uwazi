@@ -1,6 +1,7 @@
 import winston from 'winston';
 import GrayLogTransport from './GrayLogTransport';
 import { formatter } from './infoFormat';
+import { config } from '../config';
 
 let DATABASE_NAME = 'localhost';
 let LOGS_DIR = './log';
@@ -36,7 +37,7 @@ const createErrorLog = () => {
     cb();
   };
 
-  if (process.env.USE_GRAYLOG) {
+  if (process.env.USE_GRAYLOG && !config.JSON_LOGS) {
     const graylogTransport = new GrayLogTransport({
       format: formatter(DATABASE_NAME),
       instance_name: DATABASE_NAME,
