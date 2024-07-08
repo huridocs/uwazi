@@ -565,7 +565,7 @@ describe('entities', () => {
 
     it('should sanitize the entities', async () => {
       const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-      await entities.updateMetdataFromRelationships(['shared'], 'en');
+      await entities.updateMetadataFromRelationships(['shared'], 'en');
 
       expect(sanitizationSpy.mock.calls).toMatchObject([
         [
