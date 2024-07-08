@@ -57,7 +57,6 @@ const deny = () => {
 
 const measureActiveUser = (optedIn: boolean) => {
   try {
-    console.log('Opted in: ', optedIn);
     if (optedIn) {
       grant();
     } else {
