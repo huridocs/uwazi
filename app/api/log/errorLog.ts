@@ -1,6 +1,6 @@
 import winston from 'winston';
 import GrayLogTransport from './GrayLogTransport';
-import { formatter, jsonFormatter } from './infoFormat';
+import { formatter } from './infoFormat';
 import { config } from '../config';
 
 let DATABASE_NAME = 'localhost';
