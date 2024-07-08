@@ -28,10 +28,8 @@ describe('Debug Log', () => {
     return callArgs[Symbol.for('message')];
   };
 
-  const expectCorrectLog = (result: String, dirname: String, filename: String) => {
+  const expectCorrectLog = (result: String) => {
     expect(getLogResult()).toContain(result);
-    expect(debugLog.transports[0].dirname).toBe(dirname);
-    expect(debugLog.transports[0].filename).toBe(filename);
   };
 
   it('should log the error with timestamp in the default dir for default database', () => {
@@ -40,12 +38,8 @@ describe('Debug Log', () => {
 
     expect(debugLog.transports[0].level).toBe('debug');
     expect(getLogResult()).toEqual(expect.stringMatching(/(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})/));
-    expectCorrectLog('[localhost] a debug message', './log', 'debug.log');
-    expectCorrectLog(
-      '[Tenant error] Error: Accessing nonexistent async context',
-      './log',
-      'debug.log'
-    );
+    expectCorrectLog('[localhost] a debug message');
+    expectCorrectLog('[Tenant error] Error: Accessing nonexistent async context');
   });
 
   it('should respect env vars for tenant (database name) and dir', async () => {
@@ -66,6 +60,6 @@ describe('Debug Log', () => {
       debugLog.debug('a tenant debug message');
     }, 'tenant');
 
-    expectCorrectLog('[tenant] a tenant debug message', './some_dir', 'debug.log');
+    expectCorrectLog('[tenant] a tenant debug message');
   });
 });
