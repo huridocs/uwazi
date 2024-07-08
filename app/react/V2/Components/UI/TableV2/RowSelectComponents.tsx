@@ -27,6 +27,7 @@ const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: R
         disabled={disabled}
         onChange={onChange}
         key={row.id}
+        id={row.id}
         checked={checked}
       />
     </label>
@@ -54,6 +55,7 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
         className="cursor-pointer"
         onChange={onChange}
         key="checkbox-header"
+        id="checkbox-header"
       />
     </label>
   );
