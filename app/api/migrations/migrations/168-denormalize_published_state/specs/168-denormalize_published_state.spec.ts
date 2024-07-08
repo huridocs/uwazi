@@ -85,6 +85,14 @@ describe('migration test', () => {
             { value: 'unpublishedDoc2', label: 'unpublishedDoc2', published: false },
           ],
         },
+        {
+          relationship_to_any: [
+            { value: 'publishedDoc1', label: 'publishedDoc1', published: true },
+            { value: 'unpublishedDoc1', label: 'unpublishedDoc1', published: false },
+            { value: 'publishedDoc2', label: 'publishedDoc2', published: true },
+            { value: 'unpublishedDoc2', label: 'unpublishedDoc2', published: false },
+          ],
+        },
       ]);
     });
 

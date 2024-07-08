@@ -60,9 +60,9 @@ const templateWithRelationship = {
   ],
 };
 
-const templateWithTwoRelationships = {
+const templateWithMultipleRelationships = {
   _id: new ObjectId(),
-  name: 'Template With Two Relationships',
+  name: 'Template With Multiple Relationships',
   properties: [
     {
       _id: new ObjectId(),
@@ -78,6 +78,13 @@ const templateWithTwoRelationships = {
       type: 'relationship' as 'relationship',
       content: sourceTemplate2._id.toString(),
     },
+    {
+      _id: new ObjectId(),
+      label: 'Relationship To Any',
+      name: 'relationship_to_any',
+      type: 'relationship' as 'relationship',
+      content: '',
+    },
   ],
 };
 
@@ -88,7 +95,7 @@ const publishedSourceTitle1 = 'publishedDoc1';
 const publishedSourceTitle2 = 'publishedDoc2';
 
 const fixtures: Fixture = {
-  templates: [...unchangedFixtures.templates, sourceTemplate2, templateWithTwoRelationships],
+  templates: [...unchangedFixtures.templates, sourceTemplate2, templateWithMultipleRelationships],
   entities: [
     ...unchangedFixtures.entities,
     {
@@ -143,7 +150,7 @@ const fixtures: Fixture = {
       title: 'docWithTwoRelationships',
       sharedId: 'docWithTwoRelationships',
       language: 'en',
-      template: templateWithTwoRelationships._id,
+      template: templateWithMultipleRelationships._id,
       published: true,
       metadata: {
         relationship_to_source: [
@@ -151,6 +158,22 @@ const fixtures: Fixture = {
           { value: unpublishedSourceTitle1, label: unpublishedSourceTitle1 },
         ],
         relationship_to_source_2: [
+          { value: publishedSourceTitle2, label: publishedSourceTitle2 },
+          { value: unpublishedSourceTitle2, label: unpublishedSourceTitle2 },
+        ],
+      },
+    },
+    {
+      id: new ObjectId(),
+      title: 'docWithRelationshipToAny',
+      sharedId: 'docWithRelationshipToAny',
+      language: 'en',
+      template: templateWithMultipleRelationships._id,
+      published: true,
+      metadata: {
+        relationship_to_any: [
+          { value: publishedSourceTitle1, label: publishedSourceTitle1 },
+          { value: unpublishedSourceTitle1, label: unpublishedSourceTitle1 },
           { value: publishedSourceTitle2, label: publishedSourceTitle2 },
           { value: unpublishedSourceTitle2, label: unpublishedSourceTitle2 },
         ],
