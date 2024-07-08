@@ -19,16 +19,35 @@ const addTenant = (info: any, { instanceName }: { instanceName: string }) => {
 
 const formatInfo = (info: any) => {
   const message = info.message && info.message.join ? info.message.join('\n') : info.message;
-  return `${info.timestamp} [${info.tenant}] ${message}${
-    info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''
-  }`;
+  return `${info.timestamp} [${info.tenant}] ${message}${info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''}`;
 };
 
-const formatter = (DATABASE_NAME: String) =>
+const jsonFormatter = (DATABASE_NAME: String) =>
   winston.format.combine(
+    winston.format.timestamp(),
+    winston.format(addTenant)({ instanceName: DATABASE_NAME }),
+    winston.format.printf(info =>
+      JSON.stringify({
+        application_name: 'Uwazi',
+        level: info.level,
+        timestamp: info.timestamp,
+        environment: config.ENVIRONMENT,
+        tenant: info.tenant,
+        message: formatInfo(info),
+        tenantError: info.tenantError,
+      })
+    )
+  );
+
+const formatter = (DATABASE_NAME: String) => {
+  if (config.JSON_LOGS) {
+    return jsonFormatter(DATABASE_NAME);
+  }
+  return winston.format.combine(
     winston.format.timestamp(),
     winston.format(addTenant)({ instanceName: DATABASE_NAME }),
     winston.format.printf(info => formatInfo(info))
   );
+};
 
-export { formatter, addTenant, formatInfo };
+export { jsonFormatter, formatter, addTenant, formatInfo };
