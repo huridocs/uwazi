@@ -282,6 +282,7 @@ export interface MetadataObjectSchema {
   timeLinks?: string;
   parent?: SelectParentSchema;
   published?: boolean;
+  renderLink?: boolean;
   [k: string]: unknown | undefined;
 }
 
