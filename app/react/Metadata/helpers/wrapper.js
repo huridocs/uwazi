@@ -7,7 +7,7 @@ const prepareFiles = async (mediaProperties, values) => {
   const entityAttachments = [];
   const files = [];
 
-  if (values.metadata || mediaProperties.length === 0) {
+  if (values.metadata) {
     await Promise.all(
       mediaProperties.map(async p => {
         if (!values.metadata[p.name] || /^https?:\/\//.test(values.metadata[p.name])) {
@@ -35,8 +35,6 @@ const prepareFiles = async (mediaProperties, values) => {
           });
 
           files.push(file);
-
-          return URL.revokeObjectURL(values.metadata[p.name]);
         }
       })
     );
@@ -63,33 +61,34 @@ function wrapEntityMetadata(entity, template) {
     );
 
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
-    let fileLocalID;
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
-    if (property && entity.metadata[key]) {
-      const fieldValue = entity.metadata[key].data || entity.metadata[key];
-      const mediaExpGroups = fieldValue.match(/^\(?([\w+]{10,15})(, ({.+})\))?|$/);
+    const fieldValue = entity.metadata[key].data || entity.metadata[key];
+    let fileLocalID = fieldValue;
+    if (property && entity.metadata[key] && property.type === 'media') {
+      const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
+      const mediaExpGroups = fieldValue.match(uniqueIdTimeLinksExp);
       if (isString(fieldValue) && mediaExpGroups && mediaExpGroups[1]) {
-        [, fileLocalID, , timeLinks] = mediaExpGroups || ['', fieldValue];
+        [, fileLocalID = fieldValue, , timeLinks] = mediaExpGroups || [];
       }
       if (fileLocalID && fileLocalID.length < 20 && timeLinks) {
         newFileMetadataValues[fileLocalID] = { ...newFileMetadataValues[fileLocalID], timeLinks };
       }
     }
-    const newFileMetadataValue = newFileMetadataValues[fileLocalID] || fileLocalID;
+
+    const metadataValue = newFileMetadataValues[fileLocalID] || fieldValue;
     return {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])
         ? entity.metadata[key].map(v => ({ value: v }))
-        : [newFileMetadataValue || { value: entity.metadata[key]?.data || entity.metadata[key] }],
+        : [metadataValue || { value: entity.metadata[key]?.data || entity.metadata[key] }],
     };
   }, {});
   // suggestedMetadata is always in metadata-object form.
   return { ...entity, metadata };
 }
 
-const prepareMetadataAndFiles = async (values, attachedFiles, template) => {
-  const mediaProperties = template.properties.filter(p => p.type === 'image' || p.type === 'media');
+const prepareMetadataAndFiles = async (values, attachedFiles, template, mediaProperties) => {
   const { metadataFiles, entityAttachments, files } = await prepareFiles(mediaProperties, values);
   const fields = { ...values.metadata, ...metadataFiles };
   const entity = { ...values, metadata: fields, attachments: entityAttachments };

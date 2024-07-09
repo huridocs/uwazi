@@ -54,17 +54,8 @@ class PublicFormComponent extends Component {
 
   constructor(props) {
     super(props);
-    this.removeAttachment = this.removeAttachment.bind(this);
-    this.fileDropped = this.fileDropped.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.validators = {
-      captcha: { required: val => val && val.text.length },
-      ...validator.generate(props.template.toJS()),
-    };
-    const generatedIdTitle = props.template
-      .get('commonProperties')
-      .find(p => p.get('name') === 'title' && p.get('generatedId') === true);
-    this.state = { submiting: false, files: [], generatedIdTitle };
+    this.initLocalState(props);
+
     this.refreshFn = refresh => {
       this.refreshCaptcha = refresh;
     };
@@ -72,16 +63,18 @@ class PublicFormComponent extends Component {
 
   async handleSubmit(_values) {
     const { submit, remote } = this.props;
+
     const values = await prepareMetadataAndFiles(
       _values,
       this.state.files,
-      this.props.template.toJS()
+      this.template,
+      this.mediaProperties
     );
     try {
       this.setState({ submiting: true });
       const submitResult = await submit(values, remote);
       await submitResult.promise;
-      this.resetForm();
+      this.resetForm(_values);
       this.setState({ submiting: false, files: [] });
     } catch (e) {
       this.setState({ submiting: false });
@@ -91,6 +84,25 @@ class PublicFormComponent extends Component {
 
   attachDispatch(dispatch) {
     this.formDispatch = dispatch;
+  }
+
+  initLocalState(props) {
+    this.removeAttachment = this.removeAttachment.bind(this);
+    this.fileDropped = this.fileDropped.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    const template = props.template.toJS();
+    this.template = template;
+    this.mediaProperties = template.properties.filter(
+      p => p.type === 'image' || p.type === 'media'
+    );
+    const generatedIdTitle = props.template
+      .get('commonProperties')
+      .find(p => p.get('name') === 'title' && p.get('generatedId') === true);
+    this.state = { submiting: false, files: [], generatedIdTitle };
+    this.validators = {
+      captcha: { required: val => val && val.text.length },
+      ...validator.generate(template),
+    };
   }
 
   async removeAttachment(removedFile) {
@@ -103,7 +115,10 @@ class PublicFormComponent extends Component {
     }
   }
 
-  resetForm() {
+  resetForm(_values) {
+    this.mediaProperties.forEach(property => {
+      URL.revokeObjectURL(_values.metadata[property.name.data] || '');
+    });
     this.formDispatch(actions.reset('publicform'));
     if (this.state.generatedIdTitle) {
       this.formDispatch(actions.load('publicform', { title: generateID(3, 4, 4) }));
