@@ -783,6 +783,59 @@ describe('entities', () => {
         });
       });
     });
+
+    it('should remove the renderrenderLink flags from the metadata', async () => {
+      const doc1 = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: {
+          friends: [
+            { value: 'id1', label: 'label1', type: 'entity', renderLink: true },
+            { value: 'id2', label: 'label2', type: 'entity', renderLink: false },
+          ],
+          enemies: [
+            { value: 'shared1', renderLink: true },
+            { value: 'shared2', renderLink: false },
+          ],
+        },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { language: 'en' });
+      const doc = await entities.getById('shared', 'en');
+      expect(doc.metadata.friends).toEqual([
+        { value: 'id1', label: 'entity one', type: 'entity', published: false, icon: null },
+        { value: 'id2', label: 'entity two', type: 'entity', published: false, icon: null },
+      ]);
+      expect(doc.metadata.enemies).toEqual([
+        {
+          icon: null,
+          value: 'shared1',
+          label: 'EN',
+          type: 'entity',
+          published: true,
+          inheritedType: 'text',
+          inheritedValue: [
+            {
+              value: 'text',
+            },
+          ],
+        },
+        {
+          icon: null,
+          value: 'shared2',
+          label: 'shared2title',
+          type: 'entity',
+          published: false,
+          inheritedType: 'text',
+          inheritedValue: [
+            {
+              value: 'something to be inherited',
+            },
+          ],
+        },
+      ]);
+    });
   });
 
   describe('get', () => {

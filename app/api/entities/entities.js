@@ -221,10 +221,22 @@ async function getEntityTemplate(doc, language) {
 const uniqueMetadataObject = (elem, pos, arr) =>
   elem.value && arr.findIndex(e => e.value === elem.value) === pos;
 
+function commonSanitization(metadata) {
+  Object.values(metadata).forEach(valueList => {
+    valueList.forEach(metadataValue => {
+      if ('renderLink' in metadataValue) {
+        delete metadataValue.renderLink;
+      }
+    });
+  });
+}
+
 function sanitize(doc, template) {
   if (!doc.metadata || !template) {
     return doc;
   }
+
+  commonSanitization(doc.metadata);
 
   const metadata = template.properties.reduce((sanitizedMetadata, { type, name }) => {
     if (!sanitizedMetadata[name]) {
