@@ -386,8 +386,13 @@ const extendSelect = select => {
   return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
 };
 
+const postProcessMetadata = (entities) => {
+  return entities;
+};
+
 export default {
   denormalizeMetadata,
+  postProcessMetadata,
   sanitize,
   updateEntity,
   createEntity,
@@ -512,7 +517,8 @@ export default {
   async get(query, select, options = {}) {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    const entities = await model.get(query, extendedSelect, restOfOptions);
+    let entities = await model.get(query, extendedSelect, restOfOptions);
+    entities = this.postProcessMetadata(entities);
 
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },

@@ -2,6 +2,7 @@
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
+import { ObjectId } from 'mongodb';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
@@ -891,6 +892,48 @@ describe('entities', () => {
       checkEntityGetResult(result[0], 'TitleA', null, null);
       checkEntityGetResult(result[1], 'TitleB', null, null);
       checkEntityGetResult(result[2], 'TitleC', null, null);
+    });
+
+    it('should post process metadata', async () => {
+      const postProcessSpy = jest.spyOn(entities, 'postProcessMetadata');
+      await entities.get({ sharedId: 'other' });
+      expect(postProcessSpy).toHaveBeenCalledWith([
+        {
+          _id: unpublishedDocId,
+          sharedId: 'other',
+          type: 'entity',
+          template: templateId,
+          language: 'en',
+          title: 'Unpublished entity',
+          published: false,
+          metadata: {
+            property2: [{ value: 'value1' }],
+            enemies: [
+              { icon: null, label: 'shouldNotChange', type: 'entity', value: 'shared1' },
+              { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
+              { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
+            ],
+          },
+          attachments: [],
+          documents: [],
+        },
+        {
+          _id: expect.any(ObjectId),
+          sharedId: 'other',
+          template: templateId,
+          title: 'Unpublished entity ES',
+          language: 'es',
+          metadata: {
+            enemies: [
+              { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },
+              { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
+            ],
+          },
+          attachments: [],
+          documents: [],
+        },
+      ]);
+      postProcessSpy.mockRestore();
     });
 
     it.each([
