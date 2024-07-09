@@ -23,6 +23,7 @@ const createConsoleTransport = () =>
     handleExceptions: true,
     level: 'error',
     format: formatter(DATABASE_NAME),
+    silent: process.env.NODE_ENV === 'test',
   });
 
 const createErrorLog = () => {
