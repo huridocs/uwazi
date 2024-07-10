@@ -42,8 +42,8 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.contains('[data-testid=settings-content-footer] button.bg-success-700', 'Save').click();
-      cy.contains('Saved successfully').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.contains('Saved successfully');
+      cy.contains('Dismiss').click();
       cy.contains('Basic').click();
       cy.get('input[id="page-url"]').then(url => {
         cy.contains('a', 'Menu').click();
@@ -97,8 +97,8 @@ describe('Public Form', () => {
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(501);
       cy.contains('button.bg-success-700', 'Save').click();
-      cy.contains('Saved successfully').as('successMessage');
-      cy.get('@successMessage').should('not.exist');
+      cy.contains('Saved successfully');
+      cy.contains('Dismiss').click();
     });
 
     it('should revisit the page and fill the text, select and date fields', () => {
@@ -149,7 +149,7 @@ describe('Public Form', () => {
       cy.get('div[role=dialog] input[type=file]').selectFile('./cypress/test_files/batman.jpg', {
         force: true,
       });
-      cy.get('.form-group.image', { timeout: 200 }).eq(1).scrollIntoView();
+      cy.get('.form-group.image').should('have.length', 2);
     });
 
     it('should fill the captcha and save', () => {
@@ -157,7 +157,8 @@ describe('Public Form', () => {
       cy.intercept('POST', '/api/public').as('publish');
       cy.contains('button', 'Submit').click();
       cy.wait('@publish');
-      cy.contains('Success');
+      cy.contains('Success').as('successMessage');
+      cy.get('@successMessage').should('not.exist');
     });
   });
 
