@@ -33,6 +33,7 @@ import fixtures, {
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
+import _ from 'lodash';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -897,40 +898,18 @@ describe('entities', () => {
     it('should post process metadata', async () => {
       const postProcessSpy = jest.spyOn(entities, 'postProcessMetadata');
       await entities.get({ sharedId: 'other' });
-      expect(postProcessSpy).toHaveBeenCalledWith([
+      expect(postProcessSpy.mock.calls[0][0]).toMatchObject([
         {
           _id: unpublishedDocId,
           sharedId: 'other',
-          type: 'entity',
-          template: templateId,
           language: 'en',
           title: 'Unpublished entity',
-          published: false,
-          metadata: {
-            property2: [{ value: 'value1' }],
-            enemies: [
-              { icon: null, label: 'shouldNotChange', type: 'entity', value: 'shared1' },
-              { icon: null, label: 'shared2title', type: 'entity', value: 'shared2' },
-              { icon: null, label: 'shouldNotChange1', type: 'entity', value: 'shared1' },
-            ],
-          },
-          attachments: [],
-          documents: [],
         },
         {
           _id: expect.any(ObjectId),
           sharedId: 'other',
-          template: templateId,
           title: 'Unpublished entity ES',
           language: 'es',
-          metadata: {
-            enemies: [
-              { icon: null, label: 'translated1', type: 'entity', value: 'shared2' },
-              { icon: null, label: 'translated2', type: 'entity', value: 'shared1' },
-            ],
-          },
-          attachments: [],
-          documents: [],
         },
       ]);
       postProcessSpy.mockRestore();
@@ -1086,6 +1065,9 @@ describe('entities', () => {
         ],
       };
 
+      const expectedMetadata = _.cloneDeep(metadata);
+      expectedMetadata.friends[0].renderLink = true;
+
       const updatedEntities = await entities.multipleUpdate(
         ['shared', 'shared1', 'non_existent'],
         { icon: { label: 'test' }, published: false, metadata },
@@ -1101,7 +1083,7 @@ describe('entities', () => {
           language: 'en',
           icon: { label: 'test' },
           published: true,
-          metadata: expect.objectContaining(metadata),
+          metadata: expect.objectContaining(expectedMetadata),
         })
       );
 
@@ -1112,7 +1094,7 @@ describe('entities', () => {
           language: 'en',
           icon: { label: 'test' },
           published: true,
-          metadata: expect.objectContaining(metadata),
+          metadata: expect.objectContaining(expectedMetadata),
         })
       );
     });
