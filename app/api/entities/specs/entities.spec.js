@@ -785,7 +785,7 @@ describe('entities', () => {
       });
     });
 
-    it('should remove the renderrenderLink flags from the metadata', async () => {
+    it('should remove the renderLink flags from the metadata', async () => {
       const doc1 = {
         _id: batmanFinishesId,
         sharedId: 'shared',
