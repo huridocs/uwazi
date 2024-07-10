@@ -30,7 +30,6 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 
 const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   const isParent = row.getCanExpand() || row.originalSubRows;
-  const isChild = row.parentId;
   const expanded = row.getIsExpanded();
   const isEmpty = row.originalSubRows?.length === 0;
 
@@ -42,35 +41,28 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
     id: `${row.id}-dropzone`,
   });
 
-  const style: CSSProperties = {
-    ...(isDragging && {
-      transform: CSS.Transform.toString({
-        x: transform?.x || 1,
-        y: transform?.y || 1,
-        scaleX: 1,
-        scaleY: 1,
-      }),
+  const draggingStyles: CSSProperties = {
+    transformOrigin: 'left',
+    transform: CSS.Transform.toString({
+      x: 0,
+      y: transform?.y || 0,
+      scaleX: 0.7,
+      scaleY: 0.7,
     }),
-    opacity: isDragging ? 0.8 : 1,
-    zIndex: isDragging ? 1 : 0,
+    // rotate: '-10deg',
+    cursor: 'grabbing',
+    zIndex: 1,
     position: 'relative',
-  };
-
-  const getClassName = () => {
-    if (isOver) {
-      return 'bg-red-500 text-white';
-    }
-
-    if (isParent || isChild) {
-      return 'bg-success-300';
-    }
-
-    return 'bg-primary-300';
+    left: 0,
   };
 
   return (
     <>
-      <tr ref={setNodeRef} style={style} className={getClassName()}>
+      <tr
+        style={isDragging ? draggingStyles : undefined}
+        ref={setNodeRef}
+        className={`border-y-4 border-transparent ${expanded ? 'bg-indigo-300 border-indigo-300' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
+      >
         {row.getVisibleCells().map(cell => (
           <td key={cell.id} style={{ width: cell.column.getSize() }}>
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -80,8 +72,7 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       {isParent && isEmpty && expanded && (
         <tr
           ref={dropNoderef}
-          style={style}
-          className={isOverDropzone ? 'text-white bg-red-500' : ''}
+          className={`border-y-4 border-transparent ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
         >
           <td>dropzone</td>
         </tr>
