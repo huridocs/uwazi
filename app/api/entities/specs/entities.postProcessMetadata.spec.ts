@@ -1,11 +1,17 @@
+import users from 'api/users/users';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserRole } from 'shared/types/userSchema';
 import entities from '../entities';
-import users from 'api/users/users';
 
 const factory = getFixturesFactory();
+
+const adminPermission = {
+  refId: factory.id('admin').toString(),
+  type: 'user' as 'user',
+  level: 'write' as 'write',
+};
 
 const fixtures: DBFixture = {
   users: [
@@ -26,6 +32,17 @@ const fixtures: DBFixture = {
         relationType: factory.idString('related_to_any'),
       }),
     ]),
+    factory.template('target2', [
+      factory.property('unrelated_text', 'text'),
+      factory.property('other_relationship', 'relationship', {
+        content: factory.idString('source'),
+        relationType: factory.idString('related'),
+      }),
+      factory.property('other_relationship_to_any', 'relationship', {
+        content: '',
+        relationType: factory.idString('related_to_any'),
+      }),
+    ]),
   ],
   entities: [
     factory.entity(
@@ -35,19 +52,23 @@ const fixtures: DBFixture = {
       {
         published: false,
         user: factory.id('admin'),
-        permissions: [factory.entityPermission('admin', 'user', 'write')],
+        permissions: [adminPermission],
       }
     ),
     factory.entity(
       'S2',
       'source',
-      { text: [{ value: 'shared unpublished' }] },
+      { text: [{ value: 'admin shared with collaborators unpublished' }] },
       {
         published: false,
         user: factory.id('admin'),
         permissions: [
-          factory.entityPermission('admin', 'user', 'write'),
-          factory.entityPermission('collaborator', 'user', 'read'),
+          adminPermission,
+          {
+            refId: factory.id('collaborator').toString(),
+            type: 'user',
+            level: 'read',
+          },
         ],
       }
     ),
@@ -58,7 +79,13 @@ const fixtures: DBFixture = {
       {
         published: false,
         user: factory.id('collaborator'),
-        permissions: [factory.entityPermission('collaborator', 'user', 'write')],
+        permissions: [
+          {
+            refId: factory.id('collaborator').toString(),
+            type: 'user',
+            level: 'write',
+          },
+        ],
       }
     ),
     factory.entity(
@@ -68,7 +95,7 @@ const fixtures: DBFixture = {
       {
         published: true,
         user: factory.id('admin'),
-        permissions: [factory.entityPermission('admin', 'user', 'write')],
+        permissions: [adminPermission],
       }
     ),
     factory.entity(
@@ -88,7 +115,41 @@ const fixtures: DBFixture = {
       {
         published: true,
         user: factory.id('admin'),
-        permissions: [factory.entityPermission('admin', 'user', 'write')],
+        permissions: [adminPermission],
+      }
+    ),
+    factory.entity(
+      'T2',
+      'target2',
+      {
+        unrelated_text: [{ value: 'admin published with relationships 2' }],
+        other_relationship: [
+          { value: 'S1', label: 'S1', type: 'entity', published: false },
+          { value: 'S3', label: 'S3', type: 'entity', published: false },
+        ],
+        other_relationship_to_any: [
+          { value: 'S2', label: 'S2', type: 'entity', published: false },
+          { value: 'S4', label: 'S4', type: 'entity', published: true },
+        ],
+      },
+      {
+        published: true,
+        user: factory.id('admin'),
+        permissions: [adminPermission],
+      }
+    ),
+    factory.entity(
+      'T3',
+      'target',
+      {
+        unrelated_text: [{ value: 'admin published with empty relationships' }],
+        relationship: [],
+        relationship_to_any: [],
+      },
+      {
+        published: true,
+        user: factory.id('admin'),
+        permissions: [adminPermission],
       }
     ),
   ],
@@ -102,17 +163,41 @@ describe('postProcessMetadata', () => {
   });
 
   it('should append the renderLink flag to relationship metadata', async () => {
-    const [entity] = await entities.get({ sharedId: 'T1' });
+    const metadata = (await entities.get({ sharedId: { $in: ['T1', 'T2'] } })).map(
+      (e: any) => e.metadata
+    );
+    expect(metadata).toEqual([
+      {
+        unrelated_text: [{ value: 'admin published with relationships' }],
+        relationship: [
+          { value: 'S1', label: 'S1', type: 'entity', published: false },
+          { value: 'S2', label: 'S2', type: 'entity', published: false, renderLink: true },
+        ],
+        relationship_to_any: [
+          { value: 'S3', label: 'S3', type: 'entity', published: false, renderLink: true },
+          { value: 'S4', label: 'S4', type: 'entity', published: true, renderLink: true },
+        ],
+      },
+      {
+        unrelated_text: [{ value: 'admin published with relationships 2' }],
+        other_relationship: [
+          { value: 'S1', label: 'S1', type: 'entity', published: false },
+          { value: 'S3', label: 'S3', type: 'entity', published: false, renderLink: true },
+        ],
+        other_relationship_to_any: [
+          { value: 'S2', label: 'S2', type: 'entity', published: false, renderLink: true },
+          { value: 'S4', label: 'S4', type: 'entity', published: true, renderLink: true },
+        ],
+      },
+    ]);
+  });
+
+  it('should not fail on empty relationships', async () => {
+    const [entity] = await entities.get({ sharedId: 'T3' });
     expect(entity.metadata).toEqual({
-      unrelated_text: [{ value: 'admin published with relationships' }],
-      relationship: [
-        { value: 'S1', label: 'S1', type: 'entity', published: false, renderLink: false },
-        { value: 'S2', label: 'S2', type: 'entity', published: false, renderLink: true },
-      ],
-      relationship_to_any: [
-        { value: 'S3', label: 'S3', type: 'entity', published: false, renderLink: true },
-        { value: 'S4', label: 'S4', type: 'entity', published: true, renderLink: true },
-      ],
+      unrelated_text: [{ value: 'admin published with empty relationships' }],
+      relationship: [],
+      relationship_to_any: [],
     });
   });
 });

@@ -386,8 +386,41 @@ const extendSelect = select => {
   return Object.keys(select).length > 0 ? { sharedId: 1, ...select } : select;
 };
 
-const postProcessMetadata = (entities) => {
-  return entities;
+const postProcessMetadata = async entities => {
+  const templateIds = entities.map(e => e.template);
+  const usedTemplates = await templates.get({ _id: { $in: templateIds } });
+  const relationshipPropertyNames = new Set(
+    usedTemplates
+      .map(t => t.properties.filter(p => p.type === propertyTypes.relationship).map(p => p.name))
+      .flat()
+  );
+  if (relationshipPropertyNames.size === 0) return;
+  const loopOverRelationshipMetadata = (entityList, callback) => {
+    entityList.forEach(entity => {
+      Object.keys(entity.metadata).forEach(propertyName => {
+        if (relationshipPropertyNames.has(propertyName)) {
+          entity.metadata[propertyName].forEach(callback);
+        }
+      });
+    });
+  };
+
+  const referedSharedIds = new Set();
+  loopOverRelationshipMetadata(entities, metadataValue => {
+    if (!metadataValue.published) {
+      referedSharedIds.add(metadataValue.value);
+    }
+  });
+
+  const allowedEntries = referedSharedIds.size
+    ? await model.get({ sharedId: { $in: Array.from(referedSharedIds) } }, 'sharedId')
+    : [];
+  const allowedSharedIds = new Set(allowedEntries.map(e => e.sharedId));
+  loopOverRelationshipMetadata(entities, metadataValue => {
+    if (metadataValue.published || allowedSharedIds.has(metadataValue.value)) {
+      metadataValue.renderLink = true;
+    }
+  });
 };
 
 export default {
@@ -517,8 +550,8 @@ export default {
   async get(query, select, options = {}) {
     const { withoutDocuments, documentsFullText, ...restOfOptions } = options;
     const extendedSelect = withoutDocuments ? select : extendSelect(select);
-    let entities = await model.get(query, extendedSelect, restOfOptions);
-    entities = this.postProcessMetadata(entities);
+    const entities = await model.get(query, extendedSelect, restOfOptions);
+    await this.postProcessMetadata(entities);
 
     return withoutDocuments ? entities : withDocuments(entities, documentsFullText);
   },
