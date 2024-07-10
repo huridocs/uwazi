@@ -162,14 +162,10 @@ describe('Public Form', () => {
   });
 
   describe('check created entities', () => {
-    before(() => {
+    it('should check the first entity', () => {
       cy.get('a[aria-label="Library"]').click();
       cy.contains('Published', { timeout: 100 });
-      selectPublishedEntities();
       selectRestrictedEntities();
-    });
-
-    it('should check the first entity', () => {
       cy.contains('h2', 'Test public submit entity').click();
       cy.contains('Test public submit entity');
     });
