@@ -391,7 +391,9 @@ const postProcessMetadata = async entities => {
   const usedTemplates = await templates.get({ _id: { $in: templateIds } });
   const relationshipPropertyNames = new Set(
     usedTemplates
-      .map(t => t.properties.filter(p => p.type === propertyTypes.relationship).map(p => p.name))
+      .map(t =>
+        (t.properties || []).filter(p => p.type === propertyTypes.relationship).map(p => p.name)
+      )
       .flat()
   );
   if (relationshipPropertyNames.size === 0) return;
