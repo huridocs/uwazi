@@ -1,4 +1,4 @@
-import { selectPublishedEntities, selectRestrictedEntities } from '../helpers';
+import { selectRestrictedEntities } from '../helpers';
 import { clearCookiesAndLogin } from '../helpers/login';
 
 describe('Public Form', () => {
