@@ -76,7 +76,7 @@ function wrapEntityMetadata(entity, template) {
       }
     }
 
-    const metadataValue = newFileMetadataValues[fileLocalID] || fieldValue;
+    const metadataValue = newFileMetadataValues[fileLocalID];
     return {
       ...wrappedMo,
       [key]: Array.isArray(entity.metadata[key])
