@@ -1,6 +1,6 @@
 import winston from 'winston';
 import GrayLogTransport from './GrayLogTransport';
-import { formatter, jsonFormatter } from './infoFormat';
+import { formatter } from './infoFormat';
 import { config } from '../config';
 
 let DATABASE_NAME = 'localhost';
@@ -23,26 +23,15 @@ const createConsoleTransport = () =>
     handleExceptions: true,
     level: 'error',
     format: formatter(DATABASE_NAME),
-  });
-
-const createJSONConsoleTransport = () =>
-  new winston.transports.Console({
-    handleExceptions: true,
-    level: 'error',
-    format: jsonFormatter(DATABASE_NAME),
+    silent: process.env.NODE_ENV === 'test',
   });
 
 const createErrorLog = () => {
   DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
   LOGS_DIR = process.env.LOGS_DIR ? process.env.LOGS_DIR : './log';
 
-  let transports = [createFileTransport(), createConsoleTransport()];
-  if (config.JSON_LOGS) {
-    transports = [createJSONConsoleTransport()];
-  }
-
   const logger: ExtendedLogger = winston.createLogger({
-    transports,
+    transports: [createFileTransport(), createConsoleTransport()],
   });
 
   logger.closeGraylog = (cb = () => {}) => {
