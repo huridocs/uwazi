@@ -63,7 +63,7 @@ function wrapEntityMetadata(entity, template) {
   const metadata = Object.keys(entity.metadata).reduce((wrappedMo, key) => {
     let timeLinks;
     const property = mediaProperties.find(p => p.name === key);
-    const fieldValue = entity.metadata[key].data || entity.metadata[key];
+    const fieldValue = entity.metadata[key]?.data || entity.metadata[key];
     let fileLocalID = fieldValue;
     if (property && entity.metadata[key] && property.type === 'media') {
       const uniqueIdTimeLinksExp = /^\(?([\w+]{5,15})(, ({.+})\))?|$/;
