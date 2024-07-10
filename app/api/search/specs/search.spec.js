@@ -1,3 +1,4 @@
+import entities from 'api/entities';
 import { elastic } from 'api/search';
 import { search } from 'api/search/search';
 import date from 'api/utils/date';
@@ -439,7 +440,7 @@ describe('search', () => {
   });
 
   it('should filter by a relationship property', async () => {
-    const entities = await search.search(
+    const searchResult = await search.search(
       {
         types: [ids.template1],
         filters: { relationship: { values: ['shared2'] } },
@@ -447,12 +448,12 @@ describe('search', () => {
       'en'
     );
 
-    expect(entities.rows.length).toBe(1);
-    expect(entities.rows[0].title).toBe('Batman finishes en');
+    expect(searchResult.rows.length).toBe(1);
+    expect(searchResult.rows[0].title).toBe('Batman finishes en');
   });
 
   it('should filter by daterange metadata', async () => {
-    let entities = await search.search(
+    let searchResult = await search.search(
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: 1579533735 } },
@@ -463,10 +464,10 @@ describe('search', () => {
       editorUser
     );
 
-    expect(entities.rows.length).toBe(1);
-    expect(entities.rows[0].title).toBe('metadata1');
+    expect(searchResult.rows.length).toBe(1);
+    expect(searchResult.rows[0].title).toBe('metadata1');
 
-    entities = await search.search(
+    searchResult = await search.search(
       {
         types: [ids.templateMetadata1],
         filters: { daterange: { from: 1547997735, to: null } },
@@ -477,9 +478,9 @@ describe('search', () => {
       editorUser
     );
 
-    expect(entities.rows.length).toBe(2);
-    expect(entities.rows[0].title).toBe('metadata1');
-    expect(entities.rows[1].title).toBe('Metadata2');
+    expect(searchResult.rows.length).toBe(2);
+    expect(searchResult.rows[0].title).toBe('metadata1');
+    expect(searchResult.rows[1].title).toBe('Metadata2');
   });
 
   it('should filter by fullText, and return template aggregations based on the filter the language and the published status', async () => {
@@ -504,8 +505,8 @@ describe('search', () => {
 
     it('should only get entities with geolocation fields ', async () => {
       userFactory.mock(undefined);
-      const entities = await search.search({ searchTerm: '', geolocation: true }, 'en');
-      expect(entities.rows.length).toBe(4);
+      const searchResult = await search.search({ searchTerm: '', geolocation: true }, 'en');
+      expect(searchResult.rows.length).toBe(4);
     });
 
     it('should only select title and geolocation fields ', async () => {
@@ -1022,24 +1023,24 @@ describe('search', () => {
 
   it('sort by metadata values', async () => {
     userFactory.mock(undefined);
-    const entities = await search.search(
+    const searchResult = await search.search(
       { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.date' },
       'en'
     );
-    expect(entities.rows[2].title).toBe('metadata1');
-    expect(entities.rows[1].title).toBe('Metadata2');
-    expect(entities.rows[0].title).toBe('metádata3');
+    expect(searchResult.rows[2].title).toBe('metadata1');
+    expect(searchResult.rows[1].title).toBe('Metadata2');
+    expect(searchResult.rows[0].title).toBe('metádata3');
   });
 
   it('sort by denormalized values', async () => {
     userFactory.mock(undefined);
-    const entities = await search.search(
+    const searchResult = await search.search(
       { types: [ids.templateMetadata1], order: 'desc', sort: 'metadata.select1' },
       'en'
     );
-    expect(entities.rows[2].title).toBe('Metadata2');
-    expect(entities.rows[1].title).toBe('metádata3');
-    expect(entities.rows[0].title).toBe('metadata1');
+    expect(searchResult.rows[2].title).toBe('Metadata2');
+    expect(searchResult.rows[1].title).toBe('metádata3');
+    expect(searchResult.rows[0].title).toBe('metadata1');
   });
 
   it('sort by inherited values', async () => {
@@ -1243,5 +1244,13 @@ describe('search', () => {
       'en'
     );
     expect(resultsFound.rows.length).toBe(1);
+  });
+
+  it('should postprocess metadata in rows', async () => {
+    const postProcessSpy = jest.spyOn(entities, 'postProcessMetadata');
+    userFactory.mock(undefined);
+    const searchResult = await search.search({ types: [ids.template1] }, 'es');
+    expect(postProcessSpy).toHaveBeenCalledWith(searchResult.rows);
+    postProcessSpy.mockRestore();
   });
 });

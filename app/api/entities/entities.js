@@ -397,6 +397,7 @@ const postProcessMetadata = async entities => {
   if (relationshipPropertyNames.size === 0) return;
   const loopOverRelationshipMetadata = (entityList, callback) => {
     entityList.forEach(entity => {
+      if (!entity.metadata) return;
       Object.keys(entity.metadata).forEach(propertyName => {
         if (relationshipPropertyNames.has(propertyName)) {
           entity.metadata[propertyName].forEach(callback);

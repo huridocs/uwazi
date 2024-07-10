@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import entities from 'api/entities';
 import date from 'api/utils/date';
 import propertiesHelper from 'shared/commonProperties';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
@@ -627,6 +628,7 @@ const processResponse = async (response, templates, dictionaries, language, filt
     result.obsoleteMetadata = v2processors.obsoleteMetadata(hit);
     return result;
   });
+  await entities.postProcessMetadata(rows);
   const sanitizedAggregations = await _sanitizeAggregations(
     response.body.aggregations.all,
     templates,
