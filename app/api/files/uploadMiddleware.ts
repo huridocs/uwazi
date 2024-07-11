@@ -1,12 +1,12 @@
-import path from 'path';
 import { generateFileName } from 'api/files';
-import { Request, Response, NextFunction } from 'express';
+import { tenants } from 'api/tenants';
+import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
+import path from 'path';
 import { FileType } from 'shared/types/fileType';
+import { debugLog, errorLog } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
-import { errorLog } from 'api/log';
-import { tenants } from 'api/tenants';
 import { storage } from './storage';
 
 type multerCallback = (error: Error | null, destination: string) => void;
@@ -22,7 +22,7 @@ const processOriginalFileName = (req: Request) => {
     return req.body.originalname;
   }
 
-  errorLog.debug(
+  debugLog.debug(
     `[${
       tenants.current().name
       // eslint-disable-next-line max-len
@@ -74,7 +74,7 @@ const applyFilesOriginalnames = (req: Request) => {
           // eslint-disable-next-line no-param-reassign
           file.originalname = originalnameInBody;
         } else {
-          errorLog.debug(
+          errorLog.error(
             `[${
               tenants.current().name
               // eslint-disable-next-line max-len

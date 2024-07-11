@@ -1,7 +1,6 @@
 import { setUpApp } from 'api/utils/testingRoutes';
 import request from 'supertest';
 
-import { errorLog } from 'api/log';
 import { WithId } from 'api/odm/model.js';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { NextFunction, Request, Response } from 'express';
@@ -193,15 +192,6 @@ describe('users routes', () => {
 
     describe('/recoverpassword', () => {
       let originalSilent: boolean | undefined;
-
-      beforeAll(() => {
-        originalSilent = errorLog.transports[1].silent;
-        errorLog.transports[1].silent = true;
-      });
-
-      afterAll(() => {
-        errorLog.transports[1].silent = originalSilent;
-      });
 
       it.each([
         { value: undefined, keyword: 'required' },

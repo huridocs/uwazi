@@ -37,7 +37,7 @@ const restoreSettings = async () => {
 
 const endScriptProcedures = async () =>
   new Promise((resolve, reject) => {
-    errorLog.closeGraylog(async () => {
+    (async () => {
       try {
         await restoreSettings();
         await DB.disconnect();
@@ -45,7 +45,7 @@ const endScriptProcedures = async () =>
       } catch (err) {
         reject(err);
       }
-    });
+    })();
   });
 
 const indexEntities = async () => {
