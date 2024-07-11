@@ -12,7 +12,7 @@ import fs from 'fs/promises';
 import { fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
-import { errorLog } from '../../log';
+import { legacyLogger } from '../../log';
 import { createDirIfNotExists, deleteFiles } from '../filesystem';
 
 const mockExport = jest.fn();
@@ -68,7 +68,7 @@ describe('upload routes', () => {
       };
     });
     await db.setupFixturesAndContext(fixtures);
-    jest.spyOn(errorLog, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'error'); //just to avoid annoying console outpu.mockImplementation(() => {});
   });
 
   describe('api/public', () => {

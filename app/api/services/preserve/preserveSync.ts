@@ -1,6 +1,6 @@
 import entities from 'api/entities';
 import { files, generateFileName, storage } from 'api/files';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { EnforcedWithId } from 'api/odm';
 import settings from 'api/settings';
 import templates from 'api/templates';
@@ -138,7 +138,7 @@ const saveEvidence =
         })
       );
     } catch (error) {
-      errorLog.error(error);
+      legacyLogger.error(error);
     }
   };
 
