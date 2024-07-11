@@ -2,6 +2,7 @@ import React, { useEffect, Ref, ChangeEventHandler, useRef, useImperativeHandle 
 import moment from 'moment';
 import { isNumber } from 'lodash';
 import { DatepickerProps as FlowbiteDatepickerProps } from 'flowbite-react';
+//Module has no types
 //@ts-ignore
 import Datepicker from 'flowbite-datepicker/Datepicker';
 import 'flowbite/dist/flowbite.min.css';
@@ -67,7 +68,6 @@ const datePickerOptionsByLocale = (language: string, labelToday: string, labelCl
 
 const validateLocale = (language: string) => {
   try {
-    // @ts-expect-error
     Intl.getCanonicalLocales(language);
     return language;
   } catch (_err) {
@@ -143,7 +143,7 @@ const DatePickerComponent = React.forwardRef(
 
     return (
       <div className="tw-content">
-        <div id="tw-container" className={`${className} absolute tw-datepicker z-50`} />
+        <div id="tw-container" className={`absolute z-50 ${className} tw-datepicker`} />
         <div className="tw-datepicker">
           <Label htmlFor={id} hideLabel={hideLabel} hasErrors={Boolean(hasErrors || errorMessage)}>
             {label}
@@ -165,11 +165,11 @@ const DatePickerComponent = React.forwardRef(
               ref={ref}
               disabled={disabled}
               value={value}
-              className={`${fieldStyles} disabled:text-gray-500 block flex-1 w-full text-sm `}
+              className={`block flex-1 w-full text-sm ${fieldStyles} disabled:text-gray-500`}
               placeholder={placeholder}
               autoComplete={autoComplete}
             />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none ">
+            <div className="flex absolute inset-y-0 right-0 items-center pr-3 pointer-events-none">
               <svg
                 aria-hidden="true"
                 className="w-5 h-5 text-gray-500 dark:text-gray-400"
