@@ -37,6 +37,8 @@ type TableProps<T extends RowWithId<T>> = {
   dataState: [state: T[], setter?: React.Dispatch<React.SetStateAction<T[]>>];
   selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
   sorting?: 'dnd' | 'headers';
+  header?: React.ReactNode;
+  footer?: React.ReactNode;
   className?: string;
 };
 
@@ -45,6 +47,8 @@ const Table = <T extends RowWithId<T>>({
   dataState,
   selectionState,
   sorting,
+  header,
+  footer,
   className,
 }: TableProps<T>) => {
   const [state, setState] = dataState;
@@ -64,6 +68,7 @@ const Table = <T extends RowWithId<T>>({
         id: 'group-button',
         cell: GroupCell,
         header: GroupHeader,
+        size: 0,
       });
     }
 
@@ -72,6 +77,7 @@ const Table = <T extends RowWithId<T>>({
         id: 'select',
         header: IndeterminateCheckboxHeader,
         cell: IndeterminateCheckboxRow,
+        size: 0,
       });
     }
 
@@ -80,7 +86,7 @@ const Table = <T extends RowWithId<T>>({
         id: 'drag-handle',
         cell: RowDragHandleCell,
         header: DnDHeader,
-        size: 60,
+        size: 0,
       });
     }
 
@@ -149,38 +155,52 @@ const Table = <T extends RowWithId<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <table className={`w-full ${className || ''}`}>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                const headerSorting = sorting === 'headers' && header.column.getCanSort();
-                return (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    onClick={headerSorting ? header.column.getToggleSortingHandler() : undefined}
-                  >
-                    <div
-                      className={`flex ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+      <div className="rounded-md shadow">
+        <table className={`w-full ${className || ''}`}>
+          {header && <caption className="p-4">{header}</caption>}
+
+          <thead className="bg-gray-50">
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((hdr, index) => {
+                  const headerSorting = sorting === 'headers' && hdr.column.getCanSort();
+                  let calculatedPadding = '';
+
+                  if (index === 0) {
+                    calculatedPadding = 'pl-4';
+                  } else if (index === headerGroup.headers.length - 1) {
+                    calculatedPadding = 'pr-4';
+                  }
+
+                  return (
+                    <th
+                      key={hdr.id}
+                      colSpan={hdr.colSpan}
+                      className={`py-4 border-b ${calculatedPadding}`}
+                      onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {headerSorting && <SortingChevrons sorting={header.column.getIsSorted()} />}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
-            {table.getRowModel().rows.map(row => (
-              <DraggableRow key={row.id} row={row} />
+                      <div
+                        className={`flex uppercase text-gray-500 text-sm ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+                      >
+                        {flexRender(hdr.column.columnDef.header, hdr.getContext())}
+                        {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}
+                      </div>
+                    </th>
+                  );
+                })}
+              </tr>
             ))}
-          </SortableContext>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
+              {table.getRowModel().rows.map(row => (
+                <DraggableRow key={row.id} row={row} />
+              ))}
+            </SortableContext>
+          </tbody>
+          {footer && <div className="p-4">{footer}</div>}
+        </table>
+      </div>
     </DndContext>
   );
 };

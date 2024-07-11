@@ -45,6 +45,12 @@ const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps)
           selectionState={checkboxes ? [selected, setSelected] : undefined}
           columns={columns}
           sorting={sorting}
+          header={
+            <div>
+              <h2 className="text-lg float-start">Table heading</h2>
+            </div>
+          }
+          footer={<p className="">My table footer</p>}
         />
         <div className="flex gap-2 mt-4">
           <Button

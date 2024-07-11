@@ -21,8 +21,7 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   }
 
   return (
-    <button {...attributes} {...listeners} type="button">
-      🟰
+    <button {...attributes} {...listeners} type="button" className="w-2 h-6 bg-primary-700">
       <span className="sr-only">{`${t('System', 'Drag row', null, false)} ${parentRow ? `${parentRow.index + 1}-${row.index + 1}` : `${row.index + 1}`}`}</span>
     </button>
   );
@@ -60,20 +59,32 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`border-y-4 border-transparent ${expanded ? 'bg-indigo-300 border-indigo-300' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
+        className={`border-b ${expanded ? 'bg-indigo-300 border-indigo-300' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
       >
-        {row.getVisibleCells().map(cell => (
-          <td key={cell.id} style={{ width: cell.column.getSize() }}>
-            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-          </td>
-        ))}
+        {row.getVisibleCells().map((cell, index) => {
+          let calculatedPadding = '';
+
+          if (index === 0) {
+            calculatedPadding = 'pl-4';
+          } else if (index === row.getVisibleCells().length - 1) {
+            calculatedPadding = 'pr-4';
+          }
+
+          return (
+            <td
+              key={cell.id}
+              style={{ width: cell.column.getSize() }}
+              className={`py-4 ${calculatedPadding}`}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </td>
+          );
+        })}
       </tr>
+
       {isParent && isEmpty && expanded && (
-        <tr
-          ref={dropNoderef}
-          className={`border-y-4 border-transparent ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
-        >
-          <td>dropzone</td>
+        <tr ref={dropNoderef} className={`border-b ${isOverDropzone ? 'border-b-indigo-700' : ''}`}>
+          <td className="p-4">dropzone</td>
         </tr>
       )}
     </>

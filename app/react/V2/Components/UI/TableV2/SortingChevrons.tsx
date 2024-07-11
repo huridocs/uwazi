@@ -9,12 +9,12 @@ type SortingChevronsProps = {
 const SortingChevrons = ({ sorting }: SortingChevronsProps) => {
   switch (sorting) {
     case false:
-      return <ChevronUpDownIcon className="ml-4 w-4" />;
+      return <ChevronUpDownIcon className="w-4" />;
     case 'asc':
-      return <ChevronUpIcon className="ml-4 w-4" />;
+      return <ChevronUpIcon className="w-4" />;
     case 'desc':
     default:
-      return <ChevronDownIcon className="ml-4 w-4" />;
+      return <ChevronDownIcon className="w-4" />;
   }
 };
 

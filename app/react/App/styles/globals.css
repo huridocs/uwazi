@@ -1704,6 +1704,10 @@ input[type="range"]::-ms-fill-lower {
   grid-column: span 2 / span 2;
 }
 
+.float-start {
+  float: inline-start;
+}
+
 .float-right {
   float: right;
 }
@@ -1799,10 +1803,6 @@ input[type="range"]::-ms-fill-lower {
 
 .ml-3 {
   margin-left: 0.75rem;
-}
-
-.ml-4 {
-  margin-left: 1rem;
 }
 
 .ml-auto {
@@ -2618,11 +2618,6 @@ input[type="range"]::-ms-fill-lower {
   border-bottom-width: 1px;
 }
 
-.border-y-4 {
-  border-top-width: 4px;
-  border-bottom-width: 4px;
-}
-
 .border-b {
   border-bottom-width: 1px;
 }
@@ -3196,6 +3191,10 @@ input[type="range"]::-ms-fill-lower {
 
 .pr-3 {
   padding-right: 0.75rem;
+}
+
+.pr-4 {
+  padding-right: 1rem;
 }
 
 .ps-3 {
