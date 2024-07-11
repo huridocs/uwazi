@@ -1,7 +1,7 @@
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import * as os from 'os';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { createError } from 'api/utils';
 import { spawn } from 'child-process-promise';
 import EventEmitter from 'events';
@@ -74,7 +74,7 @@ class PDF extends EventEmitter {
       await storage.storeFile(response, createReadStream(thumbnailPath), 'thumbnail');
     } catch (err) {
       response = err;
-      errorLog.error(err.stderr);
+      legacyLogger.error(err.stderr);
     }
 
     return Promise.resolve(response);

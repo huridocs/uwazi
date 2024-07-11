@@ -4,7 +4,6 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import { permissionRoutes } from 'api/permissions/routes';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { collaborators } from 'api/permissions/collaborators';
-import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PUBLIC_PERMISSION } from '../publicPermission';
 import { MemberWithPermission } from 'shared/types/entityPermisions';
@@ -89,17 +88,6 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
-      let originalSilent: boolean | undefined;
-
-      beforeAll(() => {
-        originalSilent = errorLog.transports[1].silent;
-        errorLog.transports[1].silent = true;
-      });
-
-      afterAll(() => {
-        errorLog.transports[1].silent = originalSilent;
-      });
-
       it('should handle errors on POST', async () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
           throw new Error('error on save');

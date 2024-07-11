@@ -3,7 +3,6 @@ import { saveEntity } from 'api/entities/entitySavingManager';
 import * as os from 'os';
 import { attachmentsPath, fileExistsOnPath, files as filesAPI, uploadsPath } from 'api/files';
 import * as processDocumentApi from 'api/files/processDocument';
-import { errorLog } from 'api/log';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
 import { advancedSort } from 'app/utils/advancedSort';
@@ -13,7 +12,6 @@ import { ObjectId } from 'mongodb';
 import path from 'path';
 import { EntityWithFilesSchema } from 'shared/types/entityType';
 import waitForExpect from 'wait-for-expect';
-import { Logger } from 'winston';
 import entities from '../entities';
 import {
   anotherTextFile,
@@ -209,11 +207,8 @@ describe('entitySavingManager', () => {
 
     describe('file save error', () => {
       let entity: EntityWithFilesSchema;
-      let originalSilent: boolean | undefined;
 
       beforeAll(() => {
-        originalSilent = errorLog.transports[1].silent;
-        errorLog.transports[1].silent = true;
         entity = {
           _id: entity1Id,
           sharedId: 'shared1',
@@ -221,10 +216,6 @@ describe('entitySavingManager', () => {
           template: template1Id,
           attachments: [{ ...textFile }, { originalname: 'malformed url', url: 'malformed' }],
         };
-      });
-
-      afterAll(() => {
-        errorLog.transports[1].silent = originalSilent;
       });
 
       it('should continue saving if a file fails to save', async () => {
@@ -603,7 +594,6 @@ describe('entitySavingManager', () => {
         });
 
         it('should return an error if an existing main document cannot be saved', async () => {
-          jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({}) as Logger);
           jest.spyOn(filesAPI, 'save').mockRejectedValueOnce({ error: { name: 'failed' } });
 
           const { errors } = await saveEntity(

@@ -3,7 +3,6 @@ import request, { Response as SuperTestResponse } from 'supertest';
 import { Application, Request, Response, NextFunction } from 'express';
 
 import { search } from 'api/search';
-import { errorLog } from 'api/log';
 import { uploadsPath, customUploadsPath, storage } from 'api/files';
 import { setUpApp, socketEmit, iosocket, TestEmitSources } from 'api/utils/testingRoutes';
 import { FileType } from 'shared/types/fileType';
@@ -12,7 +11,6 @@ import entities from 'api/entities';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { Logger } from 'winston';
 import { fixtures, templateId, importTemplate } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
@@ -30,7 +28,6 @@ describe('upload routes', () => {
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(Date, 'now').mockReturnValue(1000);
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
     await testingEnvironment.setUp(fixtures);
   });
 
