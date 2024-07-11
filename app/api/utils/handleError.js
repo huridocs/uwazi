@@ -1,4 +1,4 @@
-import { legacyLogger, debugLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import Ajv from 'ajv';
 import { createError } from 'api/utils/index';
 import { appContext } from 'api/utils/AppContext';
@@ -122,7 +122,7 @@ const sendLog = (data, error, errorOptions) => {
   if (data.code === 500) {
     legacyLogger.error(messageToLog, errorOptions);
   } else if (data.code === 400) {
-    debugLog.debug(messageToLog, errorOptions);
+    legacyLogger.debug(messageToLog, errorOptions);
   }
 };
 

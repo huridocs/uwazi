@@ -1,5 +1,5 @@
 import { createError } from 'api/utils';
-import { legacyLogger, debugLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { appContext } from 'api/utils/AppContext';
@@ -13,7 +13,7 @@ describe('handleError', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
-    jest.spyOn(debugLog, 'debug').mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'debug').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
@@ -129,7 +129,7 @@ original error: {
   describe('when error is 400', () => {
     it('should log it using debugLog', () => {
       handleError(createError('test error', 400));
-      expect(debugLog.debug.mock.calls[0][0]).toContain('test error');
+      expect(legacyLogger.debug.mock.calls[0][0]).toContain('test error');
     });
 
     describe('and is instance of Error', () => {
@@ -137,7 +137,7 @@ original error: {
         const error = new Error('test error');
         error.name = 'Original error';
         handleError(createError(error, 400));
-        expect(debugLog.debug.mock.calls[0][0]).toContain('Original error');
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('Original error');
       });
     });
   });
@@ -147,7 +147,7 @@ original error: {
       handleError(createError('test error', 400), {
         req: { body: { username: 'admin', password: '1234' } },
       });
-      expect(debugLog.debug.mock.calls).toMatchSnapshot();
+      expect(legacyLogger.debug.mock.calls).toMatchSnapshot();
     });
   });
 

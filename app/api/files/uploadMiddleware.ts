@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
-import { debugLog, legacyLogger } from 'api/log';
+import { legacyLogger } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { storage } from './storage';
@@ -22,7 +22,7 @@ const processOriginalFileName = (req: Request) => {
     return req.body.originalname;
   }
 
-  debugLog.debug(
+  legacyLogger.debug(
     `[${
       tenants.current().name
       // eslint-disable-next-line max-len

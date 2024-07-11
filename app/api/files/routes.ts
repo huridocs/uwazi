@@ -6,7 +6,7 @@ import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
-import { debugLog, legacyLogger } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
@@ -46,7 +46,7 @@ export default (app: Application) => {
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
         legacyLogger.error(err);
-        debugLog.debug(err);
+        legacyLogger.debug(err);
         const [file] = await files.get({ filename: req.file.filename });
         res.json(file);
         req.emitToSessionSocket('conversionFailed', req.body.entity);
