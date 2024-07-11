@@ -49,11 +49,10 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       scaleX: 0.7,
       scaleY: 0.7,
     }),
-    // rotate: '-10deg',
     cursor: 'grabbing',
     zIndex: 1,
     position: 'relative',
-    left: 0,
+    opacity: 0.9,
   };
 
   return (
