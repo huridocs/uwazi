@@ -1,6 +1,6 @@
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
-import { createErrorLog } from '../errorLog';
+import { createErrorLog } from '../logger';
 
 let lastLogMessage = '';
 

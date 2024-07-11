@@ -191,8 +191,6 @@ describe('users routes', () => {
     });
 
     describe('/recoverpassword', () => {
-      let originalSilent: boolean | undefined;
-
       it.each([
         { value: undefined, keyword: 'required' },
         { value: 'a', keyword: 'minLength' },

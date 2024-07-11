@@ -173,8 +173,6 @@ describe('usergroups routes', () => {
   });
 
   describe('error handling', () => {
-    let originalSilent: boolean | undefined;
-
     it.each([getUserGroups, postUserGroup, deleteUserGroup])(
       'should handle server errors',
       async (

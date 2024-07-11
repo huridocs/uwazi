@@ -88,8 +88,6 @@ describe('permissions routes', () => {
     });
 
     describe('Error Handling', () => {
-      let originalSilent: boolean | undefined;
-
       it('should handle errors on POST', async () => {
         jest.spyOn(entitiesPermissions, 'set').mockImplementation(() => {
           throw new Error('error on save');
