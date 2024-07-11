@@ -5,7 +5,7 @@ import { WithId } from 'api/odm';
 import { files as filesAPI, storage } from 'api/files';
 import { processDocument } from 'api/files/processDocument';
 import { search } from 'api/search';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { prettifyError } from 'api/utils/handleError';
 import { ClientEntitySchema } from 'app/istore';
 import { FileType } from 'shared/types/fileType';
@@ -190,7 +190,7 @@ const saveFiles = async (
       try {
         await filesAPI.save(file, false);
       } catch (e) {
-        errorLog.error(prettifyError(e));
+        legacyLogger.error(prettifyError(e));
         saveResults.push(`Could not save file/s: ${file.originalname}`);
       }
     })
@@ -205,7 +205,7 @@ const saveFiles = async (
         .filter(result => result.status === 'rejected')
         .map(rejected => {
           const { reason } = rejected as PromiseRejectedResult;
-          return errorLog.error(prettifyError(reason));
+          return legacyLogger.error(prettifyError(reason));
         });
 
       if (socketEmiter) {

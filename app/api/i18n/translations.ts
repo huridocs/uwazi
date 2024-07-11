@@ -2,7 +2,7 @@ import { CSVLoader } from 'api/csv';
 import { generateFileName } from 'api/files';
 import { CreateTranslationsData } from 'api/i18n.v2/services/CreateTranslationsService';
 import { DefaultTranslations } from 'api/i18n/defaultTranslations';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { EnforcedWithId, WithId } from 'api/odm';
 import settings from 'api/settings/settings';
 import thesauri from 'api/thesauri/thesauri';
@@ -322,7 +322,7 @@ export default {
     try {
       languagesWithTranslations = await DefaultTranslations.retrieveAvailablePredefinedLanguages();
     } catch (e) {
-      errorLog.error(prettifyError(e));
+      legacyLogger.error(prettifyError(e));
       return availableLanguages;
     }
     return availableLanguages.map(language => ({
