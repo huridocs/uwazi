@@ -32,11 +32,18 @@ describe('PublicForm', () => {
   let instance;
   let submit;
   let request;
+  const mockedRevokeObjectURL = jest.fn();
 
   beforeEach(() => {
+    URL.revokeObjectURL = mockedRevokeObjectURL;
     request = Promise.resolve({ promise: Promise.resolve('ok') });
     submit = jasmine.createSpy('submit').and.callFake(async () => request);
   });
+
+  afterAll(() => {
+    mockedRevokeObjectURL.mockReset();
+  });
+
   const prepareMocks = () => {
     instance = component.instance();
     instance.refreshCaptcha = jest.fn();
@@ -166,7 +173,11 @@ describe('PublicForm', () => {
   it('should refresh the captcha and clear the form after submit', async () => {
     render();
     const formSubmit = component.find(LocalForm).props().onSubmit;
-    await formSubmit({ title: 'test' });
+    await formSubmit({
+      title: 'test',
+      metadata: { image: { data: 'blob:http://localhost:3000/blob/file_id' } },
+    });
+    expect(mockedRevokeObjectURL).toHaveBeenCalledWith('blob:http://localhost:3000/blob/file_id');
     expect(instance.refreshCaptcha).toHaveBeenCalled();
     expect(instance.formDispatch).toHaveBeenCalledWith({
       model: 'publicform',
