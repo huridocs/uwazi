@@ -1,11 +1,12 @@
 /* eslint-disable max-statements */
+import { StandardLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { getIdMapper } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
-import { ObjectId } from 'mongodb';
-import { getConnection } from '../getConnectionForCurrentTenant';
+import { MongoClient, ObjectId } from 'mongodb';
 import { MongoDataSource } from '../MongoDataSource';
-import { DefaultTransactionManager } from '../data_source_defaults';
+import { MongoTransactionManager } from '../MongoTransactionManager';
+import { getClient, getConnection, getTenant } from '../getConnectionForCurrentTenant';
 
 const id = getIdMapper();
 
@@ -36,6 +37,9 @@ const updateLogsBlankState = [
     deleted: false,
   },
 ];
+
+const createTransactionManager = (client?: MongoClient) =>
+  new MongoTransactionManager(client ?? getClient(), new StandardLogger(() => {}, getTenant()));
 
 beforeEach(async () => {
   await testingEnvironment.setUp({
@@ -662,7 +666,7 @@ describe('collection with automatic log to updatelogs', () => {
         expectedResult,
         expectedDBStateOnTransactionError = updateLogsBlankState,
       }) => {
-        const transactionManager1 = DefaultTransactionManager();
+        const transactionManager1 = createTransactionManager();
         const dataSource1 = new DataSource(getConnection(), transactionManager1);
 
         try {
@@ -679,7 +683,7 @@ describe('collection with automatic log to updatelogs', () => {
           );
         }
 
-        const transactionManager2 = DefaultTransactionManager();
+        const transactionManager2 = createTransactionManager();
         const dataSource2 = new DataSource(getConnection(), transactionManager2);
 
         const result = await transactionManager2.run(async () => callback(dataSource2));
