@@ -6,7 +6,7 @@ import { CSVLoader } from 'api/csv';
 import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
-import { debugLog, errorLog } from 'api/log';
+import { debugLog, legacyLogger } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
@@ -45,7 +45,7 @@ export default (app: Application) => {
         res.json(savedFile);
         req.emitToSessionSocket('documentProcessed', req.body.entity);
       } catch (err) {
-        errorLog.error(err);
+        legacyLogger.error(err);
         debugLog.debug(err);
         const [file] = await files.get({ filename: req.file.filename });
         res.json(file);

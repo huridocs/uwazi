@@ -1,7 +1,7 @@
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { storage } from 'api/files/storage';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
@@ -103,7 +103,7 @@ describe('preserveSync', () => {
 
   describe('sync', () => {
     beforeAll(async () => {
-      errorLog.error = jest.fn();
+      legacyLogger.error = jest.fn();
       await tenants.run(async () => {
         const evidences = [
           fakeEvidence(1, 'title of url1'),

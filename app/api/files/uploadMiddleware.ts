@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { FileType } from 'shared/types/fileType';
-import { debugLog, errorLog } from 'api/log';
+import { debugLog, legacyLogger } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
 import { storage } from './storage';
@@ -74,7 +74,7 @@ const applyFilesOriginalnames = (req: Request) => {
           // eslint-disable-next-line no-param-reassign
           file.originalname = originalnameInBody;
         } else {
-          errorLog.error(
+          legacyLogger.error(
             `[${
               tenants.current().name
               // eslint-disable-next-line max-len

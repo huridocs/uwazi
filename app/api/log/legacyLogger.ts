@@ -1,6 +1,6 @@
 import { formatter } from './infoFormat';
 
-const createErrorLog = (logger: (message: string) => void) => {
+const createLegacyLogger = (logger: (message: string) => void) => {
   const DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
 
   return {
@@ -10,6 +10,15 @@ const createErrorLog = (logger: (message: string) => void) => {
           DATABASE_NAME,
           message,
           level: 'error',
+        })
+      );
+    },
+    debug(message: string) {
+      logger(
+        formatter({
+          DATABASE_NAME,
+          message,
+          level: 'debug',
         })
       );
     },
@@ -23,6 +32,8 @@ const defaultLogger = (message: string) => {
 
 const silentLogger = () => {};
 
-const errorLog = createErrorLog(process.env.NODE_ENV === 'test' ? silentLogger : defaultLogger);
+const legacyLogger = createLegacyLogger(
+  process.env.NODE_ENV === 'test' ? silentLogger : defaultLogger
+);
 
-export { createErrorLog, errorLog };
+export { createLegacyLogger, legacyLogger };

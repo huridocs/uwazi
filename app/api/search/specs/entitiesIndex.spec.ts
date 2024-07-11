@@ -1,4 +1,4 @@
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import db from 'api/utils/testing_db';
@@ -35,10 +35,10 @@ describe('entitiesIndex', () => {
     };
 
     it('indexing without errors', async () => {
-      jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+      jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
       await loadFailingFixtures();
       await search.indexEntities({ title: 'Entity with index Problems 1' }, '', 1);
-      expect(errorLog.error).not.toHaveBeenCalled();
+      expect(legacyLogger.error).not.toHaveBeenCalled();
       await elasticTesting.refresh();
       const indexedEntities = await search.search({}, 'en');
       expect(indexedEntities.rows.length).toBe(1);

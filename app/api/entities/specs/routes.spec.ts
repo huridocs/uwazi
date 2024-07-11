@@ -6,7 +6,7 @@ import db from 'api/utils/testing_db';
 
 import * as entitySavingManager from 'api/entities/entitySavingManager';
 import routes from 'api/entities/routes';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import templates from 'api/templates';
 import thesauri from 'api/thesauri';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
@@ -231,7 +231,7 @@ describe('entities routes', () => {
       jest
         .spyOn(thesauri, 'templateToThesauri')
         .mockImplementation(async () => Promise.resolve({}));
-      jest.spyOn(errorLog, 'error').mockImplementation(() => ({}));
+      jest.spyOn(legacyLogger, 'error').mockImplementation(() => ({}));
 
       await request(app)
         .post('/api/entities')
@@ -241,7 +241,7 @@ describe('entities routes', () => {
         .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
         .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4');
 
-      expect(errorLog.error).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+      expect(legacyLogger.error).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 });

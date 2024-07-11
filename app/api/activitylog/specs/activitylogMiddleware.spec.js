@@ -3,7 +3,7 @@ import { deleteFile, storage } from 'api/files';
 import { tenants } from 'api/tenants';
 import date from 'api/utils/date';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
 import waitForExpect from 'wait-for-expect';
@@ -106,28 +106,28 @@ describe('activitylogMiddleware', () => {
   });
 
   it('should catch errors when saving log entry on db', async () => {
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}));
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => ({}));
     jest
       .spyOn(activitylog, 'save')
       .mockImplementation(async () => Promise.reject(new Error('activitylog save error')));
 
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
-      expect(errorLog.error).toHaveBeenCalled();
-      expect(errorLog.error.mock.calls[0][0]).toMatch('activitylog save error');
+      expect(legacyLogger.error).toHaveBeenCalled();
+      expect(legacyLogger.error.mock.calls[0][0]).toMatch('activitylog save error');
     });
   });
 
   it('should catch errors when saving log entry on filesystem', async () => {
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}));
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => ({}));
     jest
       .spyOn(storage, 'storeFile')
       .mockImplementation(async () => Promise.reject(new Error('storage save error')));
 
     activitylogMiddleware(req, res, next);
     await waitForExpect(() => {
-      expect(errorLog.error).toHaveBeenCalled();
-      expect(errorLog.error.mock.calls[0][0]).toMatch('storage save error');
+      expect(legacyLogger.error).toHaveBeenCalled();
+      expect(legacyLogger.error.mock.calls[0][0]).toMatch('storage save error');
     });
   });
 

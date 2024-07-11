@@ -10,7 +10,7 @@ import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
 import elasticMapFactory from './elastic_mapping/elasticMapFactory';
-import { errorLog } from '../app/api/log';
+import { legacyLogger } from '../app/api/log';
 
 const getIndexUrl = () => {
   const elasticUrl = config.elasticsearch_nodes[0];
@@ -119,7 +119,7 @@ const processErrors = async err => {
       err instanceof Error
         ? `${err.message}\r\n${JSON.stringify(err, null, ' ')}`
         : JSON.stringify(err, null, ' ');
-    errorLog.error(`Uncaught Reindex error.\r\n${errorMsg}\r\nWill exit with (1)\r\n`);
+    legacyLogger.error(`Uncaught Reindex error.\r\n${errorMsg}\r\nWill exit with (1)\r\n`);
     await endScriptProcedures();
     throw err;
   }

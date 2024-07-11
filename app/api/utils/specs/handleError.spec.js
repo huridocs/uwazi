@@ -1,5 +1,5 @@
 import { createError } from 'api/utils';
-import { errorLog, debugLog } from 'api/log';
+import { legacyLogger, debugLog } from 'api/log';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { appContext } from 'api/utils/AppContext';
@@ -12,7 +12,7 @@ const { ConnectionError } = elasticErrors;
 describe('handleError', () => {
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     jest.spyOn(debugLog, 'debug').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
@@ -35,7 +35,7 @@ describe('handleError', () => {
         const error = new ConnectionError('test error', { meta: 'some meta' });
         handleError(error);
 
-        expect(errorLog.error).toHaveBeenCalledWith(
+        expect(legacyLogger.error).toHaveBeenCalledWith(
           `requestId: ${contextRequestId} \n${error.stack}
 original error: {
  "name": "ConnectionError",
@@ -51,7 +51,7 @@ original error: {
         const error = new Error('error');
         handleError(error);
 
-        expect(errorLog.error).toHaveBeenCalledWith(
+        expect(legacyLogger.error).toHaveBeenCalledWith(
           `requestId: ${contextRequestId} \n${error.stack}\noriginal error: {}`,
           {}
         );
@@ -66,10 +66,10 @@ original error: {
 
       it('should not log the error when code is not 500', () => {
         handleError(createError('test error', 400));
-        expect(errorLog.error).not.toHaveBeenCalled();
+        expect(legacyLogger.error).not.toHaveBeenCalled();
 
         handleError(createError('test error'));
-        expect(errorLog.error).toHaveBeenCalledWith(
+        expect(legacyLogger.error).toHaveBeenCalledWith(
           `requestId: ${contextRequestId} \ntest error`,
           {}
         );
@@ -176,10 +176,10 @@ original error: {
 describe('handleError without context', () => {
   it('should append a tenant error message to the original error', () => {
     jest.restoreAllMocks();
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     const error = handleError(new Error('original error message'));
     expect(error.prettyMessage).toEqual('original error message');
-    expect(errorLog.error).toHaveBeenCalledWith(
+    expect(legacyLogger.error).toHaveBeenCalledWith(
       expect.stringMatching(
         /\nError: original error message[\w\W]*Accessing nonexistent async context/
       ),
