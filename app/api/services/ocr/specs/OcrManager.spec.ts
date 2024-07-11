@@ -1,4 +1,6 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
+import fetch from 'cross-fetch';
 import fetchMock from 'fetch-mock';
 import { files, storage } from 'api/files';
 import * as filesApi from 'api/files/filesystem';
@@ -18,6 +20,11 @@ import { fixtures, fixturesFactory } from './fixtures/fixtures';
 import { cleanupRecordsOfFiles } from '../ocrRecords';
 
 jest.mock('api/services/tasksmanager/TaskManager.ts');
+
+Object.assign(fetchMock.config, {
+  Response,
+  fetch,
+});
 
 class Mocks {
   jestMocks: { [k: string]: jest.SpyInstance };

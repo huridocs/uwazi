@@ -1,12 +1,10 @@
 import translations from 'api/i18n';
-import { errorLog } from 'api/log';
 import * as entitiesIndex from 'api/search/entitiesIndex';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import { testingDB } from 'api/utils/testing_db';
 import { Application, NextFunction } from 'express';
 import request from 'supertest';
-import { Logger } from 'winston';
 import templateRoutes from '../routes';
 import templates from '../templates';
 import { fixtureFactory, fixtures, templateCommonProperties } from './fixtures/routesFixtures';
@@ -248,7 +246,6 @@ describe('templates routes', () => {
 
     describe('when there is an error other than mapping conflict', () => {
       it('should throw the error', async () => {
-        jest.spyOn(errorLog, 'error').mockImplementationOnce(() => ({}) as Logger);
         jest.spyOn(entitiesIndex, 'updateMapping').mockImplementation(() => {
           throw new Error('not 409');
         });

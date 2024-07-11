@@ -1,6 +1,7 @@
+import fetch from 'cross-fetch';
+import backend from 'fetch-mock';
 import { attachmentsPath, setupTestUploadedPaths } from 'api/files';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import backend from 'fetch-mock';
 import 'cross-fetch/polyfill';
 // eslint-disable-next-line node/no-restricted-import
 import { tenants } from 'api/tenants';
@@ -9,6 +10,11 @@ import { readFile, writeFile } from 'fs/promises';
 import JSONRequest from 'shared/JSONRequest';
 import { Readable } from 'stream';
 import { convertToPDFService, MimeTypeNotSupportedForConversion } from '../convertToPdfService';
+
+Object.assign(backend.config, {
+  Response,
+  fetch,
+});
 
 describe('ConvertToPDFService', () => {
   const serviceURL = 'http://service.uwazi.io/';

@@ -280,7 +280,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     language
   );
 
-  const { globalMatomo } = tenants.current();
+  const { globalMatomo, ciMatomoActive } = tenants.current();
   const { initialStore, initialState, loadingError } = await setReduxState(
     req,
     reduxState,
@@ -317,7 +317,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
       reduxData={initialState}
       assets={assets}
       loadingError={loadingError}
-      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }) }}
+      atomStoreData={{ ...atomStoreData, ...(globalMatomo && { globalMatomo }), ciMatomoActive }}
     />
   );
 

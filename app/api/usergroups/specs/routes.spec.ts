@@ -6,7 +6,6 @@ import { setUpApp } from 'api/utils/testingRoutes';
 import userGroupRoutes from 'api/usergroups/routes';
 import { testingTenants } from 'api/utils/testingTenants';
 import request, { Response as SuperTestResponse } from 'supertest';
-import { errorLog } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import userGroups from '../userGroups';
 
@@ -174,17 +173,6 @@ describe('usergroups routes', () => {
   });
 
   describe('error handling', () => {
-    let originalSilent: boolean | undefined;
-
-    beforeAll(() => {
-      originalSilent = errorLog.transports[1].silent;
-      errorLog.transports[1].silent = true;
-    });
-
-    afterAll(() => {
-      errorLog.transports[1].silent = originalSilent;
-    });
-
     it.each([getUserGroups, postUserGroup, deleteUserGroup])(
       'should handle server errors',
       async (

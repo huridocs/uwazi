@@ -1,11 +1,9 @@
 import request from 'supertest';
 import { Application } from 'express';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { errorLog } from 'api/log';
 import { elastic } from 'api/search';
 
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { Logger } from 'winston';
 import { searchRoutes } from '../routes';
 
 import {
@@ -192,7 +190,6 @@ describe('entities get searchString', () => {
         jest.spyOn(elastic, 'search').mockImplementation(() => {
           throw new Error('Error for test');
         });
-        jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
         const { body, status } = await request(app).get('/api/v2/search');
 
         expect(status).toBe(500);
