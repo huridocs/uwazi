@@ -117,7 +117,7 @@ class PublicFormComponent extends Component {
 
   resetForm(_values) {
     this.mediaProperties.forEach(property => {
-      URL.revokeObjectURL(_values.metadata[property.name]?.data || '');
+      URL.revokeObjectURL(_values.metadata?.[property.name]?.data || '');
     });
     this.formDispatch(actions.reset('publicform'));
     if (this.state.generatedIdTitle) {
