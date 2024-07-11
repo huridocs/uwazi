@@ -1,13 +1,13 @@
 import { config } from 'api/config';
 import testingDB from 'api/utils/testing_db';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import fixtures, { connectionWithRangeId, documentId } from './fixtures.js';
 import migration from '../index.js';
 
 describe('migration add-file-field-to-connections', () => {
   beforeEach(async () => {
     jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     config.defaultTenant.uploadedDocuments = __dirname;
     await testingDB.setupFixturesAndContext(fixtures);
   });

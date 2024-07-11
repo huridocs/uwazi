@@ -1,7 +1,7 @@
 import { detectLanguage } from 'shared/detectLanguage';
 import { language as languages } from 'shared/languagesList';
 import entities from 'api/entities';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
@@ -32,7 +32,7 @@ const preprocessEntitiesToIndex = async entitiesToIndex => {
 const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   if (itemsWithErrors.length === 0) return;
   if (logError) {
-    errorLog.error(
+    legacyLogger.error(
       `ERROR! Failed to index documents.\r\n${JSON.stringify(itemsWithErrors, null, ' ')}\r\n`
     );
   }
