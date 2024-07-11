@@ -1,5 +1,3 @@
-import winston from 'winston';
-
 import { tenants } from 'api/tenants';
 import { config } from 'api/config';
 
@@ -22,32 +20,26 @@ const formatInfo = (info: any) => {
   return `${info.timestamp} [${info.tenant}] ${message}${info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''}`;
 };
 
-const jsonFormatter = (DATABASE_NAME: String) =>
-  winston.format.combine(
-    winston.format.timestamp(),
-    winston.format(addTenant)({ instanceName: DATABASE_NAME }),
-    winston.format.printf(info =>
-      JSON.stringify({
-        application_name: 'Uwazi',
-        level: info.level,
-        timestamp: info.timestamp,
-        environment: config.ENVIRONMENT,
-        tenant: info.tenant,
-        message: formatInfo(info),
-        tenantError: info.tenantError,
-      })
-    )
-  );
+const jsonFormatter = (info: { [k: string]: string }) =>
+  JSON.stringify({
+    application_name: 'Uwazi',
+    level: info.level,
+    timestamp: info.timestamp,
+    environment: config.ENVIRONMENT,
+    tenant: info.tenant,
+    message: formatInfo(info),
+    tenantError: info.tenantError,
+  });
 
-const formatter = (DATABASE_NAME: String) => {
+const formatter = ({ DATABASE_NAME, message, level }: { [k: string]: string }) => {
+  let info = { message, timestamp: new Date(Date.now()).toISOString(), level };
+  info = addTenant(info, { instanceName: DATABASE_NAME });
+
   if (config.JSON_LOGS) {
-    return jsonFormatter(DATABASE_NAME);
+    return jsonFormatter(info);
   }
-  return winston.format.combine(
-    winston.format.timestamp(),
-    winston.format(addTenant)({ instanceName: DATABASE_NAME }),
-    winston.format.printf(info => formatInfo(info))
-  );
+
+  return formatInfo(info);
 };
 
 export { jsonFormatter, formatter, addTenant, formatInfo };

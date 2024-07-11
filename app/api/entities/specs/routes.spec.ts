@@ -14,7 +14,6 @@ import path from 'path';
 import { AccessLevels, PermissionType } from 'shared/types/permissionSchema';
 import { UserRole } from 'shared/types/userSchema';
 import { ObjectId } from 'mongodb';
-import { Logger } from 'winston';
 import fixtures, { permissions } from './fixtures';
 
 jest.mock(
@@ -232,7 +231,7 @@ describe('entities routes', () => {
       jest
         .spyOn(thesauri, 'templateToThesauri')
         .mockImplementation(async () => Promise.resolve({}));
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({}) as Logger);
+      jest.spyOn(errorLog, 'error').mockImplementation(() => ({}));
 
       await request(app)
         .post('/api/entities')
@@ -242,7 +241,7 @@ describe('entities routes', () => {
         .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 3')
         .attach('attachments[1]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español 4');
 
-      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+      expect(errorLog.error).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 });

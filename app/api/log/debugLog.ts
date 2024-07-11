@@ -1,25 +1,28 @@
-import winston from 'winston';
 import { formatter } from './infoFormat';
 
-let DATABASE_NAME = 'localhost';
-let LOGS_DIR = './log';
+const createDebugLog = (logger: (message: string) => void) => {
+  const DATABASE_NAME = process.env.DATABASE_NAME ? process.env.DATABASE_NAME : 'localhost';
 
-const createDebugLog = () => {
-  DATABASE_NAME = process.env.DATABASE_NAME || DATABASE_NAME;
-  LOGS_DIR = process.env.LOGS_DIR || LOGS_DIR;
-
-  return winston.createLogger({
-    transports: [
-      new winston.transports.Console({
-        silent: process.env.NODE_ENV === 'test',
-        handleExceptions: true,
-        level: 'debug',
-        format: formatter(DATABASE_NAME),
-      }),
-    ],
-  });
+  return {
+    debug(message: string) {
+      logger(
+        formatter({
+          DATABASE_NAME,
+          message,
+          level: 'debug',
+        })
+      );
+    },
+  };
 };
 
-const debugLog = createDebugLog();
+const defaultLogger = (message: string) => {
+  // eslint-disable-next-line no-console
+  console.log(message);
+};
+
+const silentLogger = () => {};
+
+const debugLog = createDebugLog(process.env.NODE_ENV === 'test' ? silentLogger : defaultLogger);
 
 export { debugLog, createDebugLog };
