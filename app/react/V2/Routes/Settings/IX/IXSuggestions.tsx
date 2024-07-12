@@ -126,9 +126,9 @@ const IXSuggestions = () => {
       (extractorId: string, modelStatus: string, _: string, data: any) => {
         if (extractorId === extractor._id) {
           setStatus({ status: modelStatus as ixStatus, data });
+          revalidate();
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus({ status: 'ready' });
-            revalidate();
           }
         }
       }
