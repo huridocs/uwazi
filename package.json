@@ -107,7 +107,7 @@
     "@sentry/node": "^7.114.0",
     "@sentry/react": "7.114.0",
     "@sentry/tracing": "^7.114.0",
-    "@smithy/node-http-handler": "^3.1.1",
+    "@smithy/node-http-handler": "^3.1.2",
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
     "@supercharge/promise-pool": "^3.2.0",
