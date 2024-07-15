@@ -128,7 +128,7 @@ const Table = <T extends RowWithId<T>>({
   useEffect(() => {
     if (setData) {
       if (sortingState.length === 0) {
-        setData(originalState.current!);
+        setData(cloneDeep(originalState.current!));
       } else {
         const { rows } = table.getSortedRowModel();
         setData(sortHandler(rows));
