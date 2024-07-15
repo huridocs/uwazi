@@ -52,6 +52,8 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
     zIndex: 1,
     position: 'relative',
     opacity: 0.9,
+    outline: 'rgb(81 69 205) solid 4px',
+    backgroundColor: 'white',
   };
 
   return (
@@ -59,7 +61,7 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`border-b ${expanded ? 'bg-indigo-300 border-indigo-300' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
+        className={`border-b hover:bg-gray-50 ${expanded ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
       >
         {row.getVisibleCells().map((cell, index) => {
           let calculatedPadding = '';
@@ -74,7 +76,7 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
             <td
               key={cell.id}
               style={{ width: cell.column.getSize() }}
-              className={`py-4 ${calculatedPadding}`}
+              className={`py-2 ${calculatedPadding}`}
             >
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </td>
@@ -84,7 +86,7 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
 
       {isParent && isEmpty && expanded && (
         <tr ref={dropNoderef} className={`border-b ${isOverDropzone ? 'border-b-indigo-700' : ''}`}>
-          <td className="p-4">dropzone</td>
+          <td className="px-4 py-2">dropzone</td>
         </tr>
       )}
     </>
