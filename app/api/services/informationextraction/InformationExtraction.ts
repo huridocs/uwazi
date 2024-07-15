@@ -399,9 +399,12 @@ class InformationExtraction {
 
     if (propertyTypeIsSelectOrMultiSelect(property.type)) {
       const thesauri = await dictionatiesModel.getById(property.content);
+      const [groups, rootValues] = _.partition(thesauri?.values || [], r => r.values);
+      const groupedValues = groups.map(group => group.values || []).flat();
+      const allValues = rootValues.concat(groupedValues);
 
       params.options =
-        thesauri?.values?.map(value => ({ label: value.label, id: value.id as string })) || [];
+        allValues.map(value => ({ label: value.label, id: value.id as string })) || [];
     }
     if (property.type === 'relationship') {
       const candidates = await fetchCandidates(property);
