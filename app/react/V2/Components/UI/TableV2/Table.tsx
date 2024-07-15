@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,6 +21,7 @@ import {
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { cloneDeep } from 'lodash';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
 import { dndSortHandler, getRowIds, sortHandler, equalityById } from './helpers';
@@ -34,9 +35,10 @@ type RowWithId<T extends { rowId: string }> = {
 
 type TableProps<T extends RowWithId<T>> = {
   columns: ColumnDef<T, any>[];
-  dataState: [state: T[], setter?: React.Dispatch<React.SetStateAction<T[]>>];
+  data: T[];
+  setData?: React.Dispatch<React.SetStateAction<T[]>>;
   selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
-  sorting?: 'dnd' | 'headers';
+  dndEnabled?: boolean;
   header?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
@@ -44,24 +46,26 @@ type TableProps<T extends RowWithId<T>> = {
 
 const Table = <T extends RowWithId<T>>({
   columns,
-  dataState,
+  data,
+  setData,
   selectionState,
-  sorting,
+  dndEnabled,
   header,
   footer,
   className,
 }: TableProps<T>) => {
-  const [state, setState] = dataState;
+  const rowIds = useMemo(() => getRowIds(data), [data]);
   const [rowSelection, setRowSelection] = selectionState || [null, null];
   const [sortingState, setSortingState] = useState<SortingState>([]);
-  const rowIds = useMemo(() => getRowIds(state), [state]);
+  const originalState = useRef<T[]>();
+  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>();
 
-  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>([...rowIds]);
-  const originalState = useRef([...state]);
+  if (!originalState.current) originalState.current = cloneDeep(data);
+  if (!originalRowIds.current) originalRowIds.current = [...rowIds];
 
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
-    const hasGroups = state.find(item => item.subRows);
+    const hasGroups = data.find(item => item.subRows);
 
     if (hasGroups) {
       tableColumns.unshift({
@@ -81,7 +85,7 @@ const Table = <T extends RowWithId<T>>({
       });
     }
 
-    if (sorting === 'dnd') {
+    if (dndEnabled) {
       tableColumns.unshift({
         id: 'drag-handle',
         cell: RowDragHandleCell,
@@ -91,10 +95,10 @@ const Table = <T extends RowWithId<T>>({
     }
 
     return tableColumns;
-  }, [columns, rowSelection, sorting]);
+  }, [columns, rowSelection, dndEnabled]);
 
   const table = useReactTable({
-    data: state,
+    data,
     columns: memoizedColumns,
     state: {
       sorting: sortingState,
@@ -110,10 +114,10 @@ const Table = <T extends RowWithId<T>>({
   });
 
   useEffect(() => {
-    const isEqual = equalityById(originalRowIds.current, rowIds);
+    const isEqual = equalityById(originalRowIds.current!, rowIds);
 
     if (!isEqual) {
-      originalState.current = [...state];
+      originalState.current = cloneDeep(data);
       originalRowIds.current = [...rowIds];
       if (setRowSelection) {
         setRowSelection({});
@@ -122,12 +126,12 @@ const Table = <T extends RowWithId<T>>({
   }, [rowIds]);
 
   useEffect(() => {
-    if (setState) {
+    if (setData) {
       if (sortingState.length === 0) {
-        setState(originalState.current);
+        setData(originalState.current!);
       } else {
         const { rows } = table.getSortedRowModel();
-        setState(sortHandler(rows));
+        setData(sortHandler(rows));
       }
     }
   }, [sortingState]);
@@ -136,8 +140,8 @@ const Table = <T extends RowWithId<T>>({
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
-      if (setState) {
-        setState(() => dndSortHandler(state, rowIds, active.id, over.id));
+      if (setData) {
+        setData(() => dndSortHandler(data, rowIds, active.id, over.id));
       }
     }
   };
@@ -163,7 +167,7 @@ const Table = <T extends RowWithId<T>>({
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((hdr, index) => {
-                  const headerSorting = sorting === 'headers' && hdr.column.getCanSort();
+                  const headerSorting = hdr.column.getCanSort();
                   let calculatedPadding = '';
 
                   if (index === 0) {
@@ -179,12 +183,12 @@ const Table = <T extends RowWithId<T>>({
                       className={`py-4 border-b ${calculatedPadding}`}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
-                      <div
+                      <span
                         className={`flex uppercase text-gray-500 text-sm ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
                       >
                         {flexRender(hdr.column.columnDef.header, hdr.getContext())}
                         {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}
-                      </div>
+                      </span>
                     </th>
                   );
                 })}
@@ -198,8 +202,8 @@ const Table = <T extends RowWithId<T>>({
               ))}
             </SortableContext>
           </tbody>
-          {footer && <div className="p-4">{footer}</div>}
         </table>
+        {footer && <div className="p-4">{footer}</div>}
       </div>
     </DndContext>
   );

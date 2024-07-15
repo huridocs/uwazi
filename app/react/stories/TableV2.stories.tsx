@@ -10,7 +10,7 @@ import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fi
 type StoryProps = {
   tableData: any[];
   checkboxes: boolean;
-  sorting: NewTableProps<BasicData | DataWithGroups>['sorting'];
+  dndEnabled: boolean;
   columns: NewTableProps<BasicData | DataWithGroups>['columns'];
 };
 
@@ -19,7 +19,7 @@ const nestedColumnHelper = createColumnHelper<DataWithGroups>();
 
 const basicColumns = [
   basicColumnHelper.accessor('title', { header: 'Title' }),
-  basicColumnHelper.accessor('description', { header: 'Description' }),
+  basicColumnHelper.accessor('description', { header: 'Description', enableSorting: false }),
   basicColumnHelper.accessor('created', {
     header: 'Date added',
   }),
@@ -27,13 +27,13 @@ const basicColumns = [
 
 const nestedColumns = [
   nestedColumnHelper.accessor('title', { header: 'Title' }),
-  nestedColumnHelper.accessor('description', { header: 'Description' }),
+  nestedColumnHelper.accessor('description', { header: 'Description', enableSorting: false }),
   nestedColumnHelper.accessor('created', {
     header: 'Date added',
   }),
 ];
 
-const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps) => {
+const StoryComponent = ({ tableData, columns, dndEnabled, checkboxes }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
 
@@ -41,10 +41,11 @@ const StoryComponent = ({ tableData, columns, sorting, checkboxes }: StoryProps)
     <div className="tw-content">
       <div className="w-full">
         <NewTable
-          dataState={[dataState, setDataState]}
+          data={dataState}
+          setData={setDataState}
           selectionState={checkboxes ? [selected, setSelected] : undefined}
           columns={columns}
-          sorting={sorting}
+          dndEnabled={dndEnabled}
           header={
             <div>
               <h2 className="text-lg float-start">Table heading</h2>
@@ -145,7 +146,7 @@ const Primary: Story = {
       <StoryComponent
         tableData={args.tableData}
         columns={args.columns}
-        sorting={args.sorting}
+        dndEnabled={args.dndEnabled}
         checkboxes={args.checkboxes}
       />
     </Provider>
@@ -157,7 +158,7 @@ const Basic = {
   args: {
     tableData: basicData,
     columns: basicColumns,
-    sorting: 'dnd',
+    dndEnabled: true,
     checkboxes: true,
   },
 };
@@ -167,7 +168,7 @@ const Nested = {
   args: {
     tableData: dataWithGroups,
     columns: nestedColumns,
-    sorting: 'dnd',
+    dndEnabled: true,
     checkboxes: true,
   },
 };

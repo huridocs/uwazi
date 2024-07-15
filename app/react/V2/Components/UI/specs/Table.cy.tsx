@@ -28,7 +28,7 @@ describe('Table', () => {
 
   it('Should return a table with the columns and row specified', () => {
     Basic.args.checkboxes = false;
-    Basic.args.sorting = undefined;
+    Basic.args.dndEnabled = false;
     mount(<Basic />);
     const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['Title', 'Description', 'Date added']);
@@ -59,7 +59,7 @@ describe('Table', () => {
   describe('Sorting', () => {
     it('Should be sortable by title', () => {
       Basic.args.checkboxes = false;
-      Basic.args.sorting = 'headers';
+      Basic.args.dndEnabled = false;
       mount(<Basic />);
 
       cy.get('th').contains('Title').click();
@@ -73,6 +73,7 @@ describe('Table', () => {
 
     it('should return to the default sorting', () => {
       Basic.args.checkboxes = false;
+      Basic.args.dndEnabled = false;
       mount(<Basic />);
       // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click().click();
@@ -86,6 +87,7 @@ describe('Table', () => {
 
     it('should keep selections when sorting', () => {
       Basic.args.checkboxes = true;
+      Basic.args.dndEnabled = false;
       mount(<Basic />);
 
       cy.get('tbody').within(() => {
@@ -102,12 +104,71 @@ describe('Table', () => {
       });
     });
 
-    it('should sort items in groups', () => {});
+    it('should sort items in groups', () => {
+      mount(<Nested />);
+      cy.contains('Open group 1').click();
 
-    xit('should disable sorting when defined in the columns', () => {
-      mount(<WithActions />);
-      cy.get('tr th').contains('Description').click();
-      checkRowContent(1, ['Entity 2', '2', data[0].description]);
+      checkRowContent(1, [
+        'Drag row 1',
+        'Select',
+        'Group',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
+      checkRowContent(2, [
+        'Drag row 1-1',
+        'Select',
+        '',
+        'Sub 1-1',
+        dataWithNested[0].subRows[0].description,
+        '5',
+      ]);
+      checkRowContent(3, [
+        'Drag row 1-2',
+        'Select',
+        '',
+        'Sub 1-2',
+        dataWithNested[0].subRows[1].description,
+        '7',
+      ]);
+
+      cy.get('th').contains('Title').click().click();
+
+      checkRowContent(6, [
+        'Drag row 6',
+        'Select',
+        'Group',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
+      checkRowContent(7, [
+        'Drag row 6-1',
+        'Select',
+        '',
+        'Sub 1-2',
+        dataWithNested[0].subRows[1].description,
+        '7',
+      ]);
+      checkRowContent(8, [
+        'Drag row 6-2',
+        'Select',
+        '',
+        'Sub 1-1',
+        dataWithNested[0].subRows[0].description,
+        '5',
+      ]);
+    });
+
+    it('should disable sorting when defined in the columns', () => {
+      mount(<Basic />);
+      cy.get('tr th').contains('Title').children().should('have.length', 1);
+      cy.get('tr th').contains('Description').children().should('have.length', 0);
+      cy.get('tr th').contains('Date added').children().should('have.length', 1);
+
+      cy.get('th').contains('Description').click();
+      checkRowContent(1, ['Select', 'Entity 2', data[0].description, '2']);
     });
 
     xit('should allow external control of sorting', () => {
@@ -125,6 +186,11 @@ describe('Table', () => {
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
       checkRowContent(2, ['Entity 3', data[2].description, '3']);
       checkRowContent(3, ['Entity 1', data[1].description, '1']);
+    });
+
+    xit('should reset sorting state when using dnd after sorting', () => {
+      Basic.args.checkboxes = false;
+      Basic.args.dndEnabled = true;
     });
   });
 
@@ -158,7 +224,7 @@ describe('Table', () => {
 
   describe('DnD', () => {
     beforeEach(() => {
-      Basic.args.sorting = 'dnd';
+      Basic.args.dndEnabled = true;
       mount(<Basic />);
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 2 Entity 1 Entity 4 Entity 3 Entity 5');
@@ -225,7 +291,7 @@ describe('Table', () => {
 
   describe('Nested data', () => {
     beforeEach(() => {
-      Basic.args.sorting = 'dnd';
+      Basic.args.dndEnabled = true;
       Basic.args.checkbox = true;
       mount(<Nested />);
       cy.get('[data-testid="sorted-items"]').within(() => {

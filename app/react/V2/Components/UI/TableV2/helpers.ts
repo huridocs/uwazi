@@ -1,6 +1,6 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { Row } from 'react-table';
 import { cloneDeep } from 'lodash';
+import { Row } from '@tanstack/react-table';
 import { RowWithId, TableProps } from './Table';
 
 const equalityById = (
@@ -15,7 +15,7 @@ const equalityById = (
   return newState.every(obj => idsSet.has(obj.id));
 };
 
-const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) => {
+const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['data']) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];
 
   data.forEach(element => {
@@ -37,11 +37,11 @@ const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['dataState'][0]) 
 
 // eslint-disable-next-line max-statements
 const dndSortHandler = <T extends RowWithId<T>>(
-  currentState: TableProps<T>['dataState'][0],
+  currentState: TableProps<T>['data'],
   dataIds: { id: UniqueIdentifier; parentId?: string }[],
   activeId: string | number,
   overId: string | number
-): TableProps<T>['dataState'][0] => {
+): TableProps<T>['data'] => {
   const state = cloneDeep(currentState);
 
   const { activeParent, overParent } = dataIds.reduce(

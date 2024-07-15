@@ -11,7 +11,7 @@ type DataWithGroups = BasicData & {
   subRows?: { rowId: string; title: string; description: string; created: number }[];
 };
 
-const tableData: TableProps<DataWithGroups>['dataState'][0] = [
+const tableData: TableProps<DataWithGroups>['data'] = [
   {
     rowId: '1',
     title: 'Group 1',
