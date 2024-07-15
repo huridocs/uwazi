@@ -38,7 +38,8 @@ type TableProps<T extends RowWithId<T>> = {
   data: T[];
   setData?: React.Dispatch<React.SetStateAction<T[]>>;
   selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
-  dndEnabled?: boolean;
+  enableDnd?: boolean;
+  defaultSorting?: SortingState;
   header?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
@@ -49,16 +50,17 @@ const Table = <T extends RowWithId<T>>({
   data,
   setData,
   selectionState,
-  dndEnabled,
+  enableDnd,
+  defaultSorting,
   header,
   footer,
   className,
 }: TableProps<T>) => {
   const rowIds = useMemo(() => getRowIds(data), [data]);
   const [rowSelection, setRowSelection] = selectionState || [null, null];
-  const [sortingState, setSortingState] = useState<SortingState>([]);
-  const originalState = useRef<T[]>();
-  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>();
+  const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
+  const originalState = useRef<T[]>([]);
+  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>([]);
 
   if (!originalState.current) originalState.current = cloneDeep(data);
   if (!originalRowIds.current) originalRowIds.current = [...rowIds];
@@ -85,7 +87,7 @@ const Table = <T extends RowWithId<T>>({
       });
     }
 
-    if (dndEnabled) {
+    if (enableDnd) {
       tableColumns.unshift({
         id: 'drag-handle',
         cell: RowDragHandleCell,
@@ -95,7 +97,7 @@ const Table = <T extends RowWithId<T>>({
     }
 
     return tableColumns;
-  }, [columns, rowSelection, dndEnabled]);
+  }, [columns, rowSelection, enableDnd]);
 
   const table = useReactTable({
     data,
@@ -114,7 +116,7 @@ const Table = <T extends RowWithId<T>>({
   });
 
   useEffect(() => {
-    const isEqual = equalityById(originalRowIds.current!, rowIds);
+    const isEqual = equalityById(originalRowIds.current, rowIds);
 
     if (!isEqual) {
       originalState.current = cloneDeep(data);
@@ -128,7 +130,7 @@ const Table = <T extends RowWithId<T>>({
   useEffect(() => {
     if (setData) {
       if (sortingState.length === 0) {
-        setData(cloneDeep(originalState.current!));
+        setData(cloneDeep(originalState.current));
       } else {
         const { rows } = table.getSortedRowModel();
         setData(sortHandler(rows));

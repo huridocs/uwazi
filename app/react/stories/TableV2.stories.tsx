@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
 import uniqueID from 'shared/uniqueID';
 import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
@@ -10,7 +10,8 @@ import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fi
 type StoryProps = {
   tableData: any[];
   checkboxes: boolean;
-  dndEnabled: boolean;
+  enableDnd: boolean;
+  defaultSorting: SortingState;
   columns: NewTableProps<BasicData | DataWithGroups>['columns'];
 };
 
@@ -33,7 +34,13 @@ const nestedColumns = [
   }),
 ];
 
-const StoryComponent = ({ tableData, columns, dndEnabled, checkboxes }: StoryProps) => {
+const StoryComponent = ({
+  tableData,
+  columns,
+  enableDnd,
+  checkboxes,
+  defaultSorting,
+}: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
 
@@ -45,7 +52,8 @@ const StoryComponent = ({ tableData, columns, dndEnabled, checkboxes }: StoryPro
           setData={setDataState}
           selectionState={checkboxes ? [selected, setSelected] : undefined}
           columns={columns}
-          dndEnabled={dndEnabled}
+          defaultSorting={defaultSorting}
+          enableDnd={enableDnd}
           header={
             <div>
               <h2 className="text-lg float-start">Table heading</h2>
@@ -146,8 +154,9 @@ const Primary: Story = {
       <StoryComponent
         tableData={args.tableData}
         columns={args.columns}
-        dndEnabled={args.dndEnabled}
+        enableDnd={args.enableDnd}
         checkboxes={args.checkboxes}
+        defaultSorting={args.defaultSorting}
       />
     </Provider>
   ),
@@ -158,8 +167,9 @@ const Basic = {
   args: {
     tableData: basicData,
     columns: basicColumns,
-    dndEnabled: true,
+    enableDnd: true,
     checkboxes: true,
+    defaultSorting: undefined,
   },
 };
 
@@ -168,8 +178,9 @@ const Nested = {
   args: {
     tableData: dataWithGroups,
     columns: nestedColumns,
-    dndEnabled: true,
+    enableDnd: true,
     checkboxes: true,
+    defaultSorting: undefined,
   },
 };
 
