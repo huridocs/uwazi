@@ -4,6 +4,7 @@ import { store } from 'app/store';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema } from 'app/istore';
 import { globalMatomoAtom } from './globalMatomoAtom';
+import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
 import { settingsAtom } from './settingsAtom';
 import { templatesAtom } from './templatesAtom';
@@ -18,6 +19,7 @@ type AtomStoreData = {
   thesauri?: ClientThesaurus[];
   templates?: ClientTemplateSchema[];
   user?: ClientUserSchema;
+  ciMatomoActive?: boolean;
 };
 
 declare global {
@@ -29,8 +31,10 @@ declare global {
 const atomStore = createStore();
 
 if (isClient && window.__atomStoreData__) {
-  const { globalMatomo, locale, settings, thesauri, templates, user } = window.__atomStoreData__;
+  const { globalMatomo, locale, settings, thesauri, templates, user, ciMatomoActive } =
+    window.__atomStoreData__;
 
+  if (ciMatomoActive) atomStore.set(ciMatomoActiveAtom, ciMatomoActive);
   if (globalMatomo) atomStore.set(globalMatomoAtom, { ...globalMatomo });
   if (settings) atomStore.set(settingsAtom, settings);
   if (thesauri) atomStore.set(thesauriAtom, thesauri);
