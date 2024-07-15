@@ -197,7 +197,7 @@ describe('Table', () => {
   describe('Selections', () => {
     beforeEach(() => {
       Basic.args.checkboxes = true;
-      Basic.args.sorting = 'dnd';
+      Basic.args.dndEnabled = true;
       mount(<Basic />);
       cy.contains('Select all').click();
       cy.get('tbody').within(() => {
@@ -292,7 +292,7 @@ describe('Table', () => {
   describe('Nested data', () => {
     beforeEach(() => {
       Basic.args.dndEnabled = true;
-      Basic.args.checkbox = true;
+      Basic.args.checkboxes = true;
       mount(<Nested />);
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Group 1 Group 2 Group 3 Group 4 Item 1 Item 2');
