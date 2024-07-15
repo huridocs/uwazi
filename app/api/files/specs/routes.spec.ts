@@ -47,14 +47,16 @@ describe('files routes', () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
     await testingEnvironment.setUp(fixtures);
-    requestMockedUser = collabUser;
-    testingEnvironment.setPermissions(collabUser);
+    requestMockedUser = adminUser;
+    testingEnvironment.setPermissions(adminUser);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
     beforeEach(async () => {
+      testingEnvironment.setPermissions(adminUser);
+      requestMockedUser = adminUser;
       await request(app)
         .post('/api/files')
         .send({ _id: uploadId.toString(), originalname: 'newName' });
@@ -130,6 +132,20 @@ describe('files routes', () => {
 
         expect(rest.status).toBe(400);
       });
+    });
+
+    it('should allow modification if and only if user has permission for the entity', async () => {
+      testingEnvironment.setPermissions(collabUser);
+      await request(app)
+        .post('/api/files')
+        .send({ _id: restrictedUploadId2.toString(), originalname: 'changed' })
+        .expect(404);
+
+      testingEnvironment.setPermissions(writerUser);
+      await request(app)
+        .post('/api/files')
+        .send({ _id: restrictedUploadId2.toString(), originalname: 'changed2' })
+        .expect(200);
     });
   });
 

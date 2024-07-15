@@ -1,4 +1,6 @@
-import { Application, Request } from 'express';
+/* eslint-disable max-statements */
+/* eslint-disable max-lines */
+import { Application, Request, Response } from 'express';
 
 import activitylogMiddleware from 'api/activitylog/activitylogMiddleware';
 import needsAuthorization from 'api/auth/authMiddleware';
@@ -10,21 +12,34 @@ import { debugLog, errorLog } from 'api/log';
 import { FileType } from 'shared/types/fileType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { files } from './files';
 import { createError, handleError, validation } from '../utils';
 import { storage } from './storage';
-import { permissionsContext } from 'api/permissions/permissionsContext';
+import { EntitySchema } from 'shared/types/entityType';
 
-const checkPermission = async (file: FileType): Promise<boolean> => {
-  if (file.type === 'custom' && permissionsContext.getUserInContext()?.role !== 'admin') {
-    return false;
+const checkPermission = async (
+  file: FileType,
+  level: 'read' | 'write' = 'read'
+): Promise<boolean> => {
+  const user = permissionsContext.getUserInContext()!;
+  if (file.type === 'custom' && user.role !== 'admin') {
+    return level === 'read';
   }
 
-  if (!file.entity) return true;
-  const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
+  if (['admin', 'editor'].includes(user.role)) return true;
+
+  const relatedEntities: EntitySchema[] = await entities.get({ sharedId: file.entity }, '_id', {
     withoutDocuments: true,
   });
-  return !!relatedEntities.length;
+  return level === 'read'
+    ? !!relatedEntities.length
+    : relatedEntities.every(
+        entity =>
+          !!(entity.permissions || []).find(
+            permission => permission.refId.toString() === user._id?.toString() && level === 'write'
+          )
+      );
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
@@ -103,13 +118,14 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    (req, res, next) => {
-      files
-        .save(req.body)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req, res) => {
+      const [fileToUpdate] = await files.get({ _id: req.body._id });
+      if (!fileToUpdate || (fileToUpdate && !(await checkPermission(fileToUpdate)))) {
+        throw createError('file not found', 404);
+      }
+
+      const result = await files.save(req.body);
+      res.json(result);
     }
   );
 
@@ -238,7 +254,7 @@ export default (app: Application) => {
       },
     }),
 
-    async (req: Request<{}, {}, {}, { _id: string }>, res) => {
+    async (req: Request<{}, {}, {}, { _id: string }>, res: Response) => {
       const [fileToDelete] = await files.get({ _id: req.query._id });
       if (!fileToDelete || !(await checkPermission(fileToDelete))) {
         throw createError('file not found', 404);
