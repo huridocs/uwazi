@@ -1,6 +1,6 @@
 import { appContext } from 'api/utils/AppContext';
 import middleware from '../error_handling_middleware.js';
-import { errorLog } from '../../log';
+import { legacyLogger } from '../../log';
 
 describe('Error handling middleware', () => {
   let next;
@@ -12,7 +12,7 @@ describe('Error handling middleware', () => {
     req = {};
     next = jest.fn();
     res = { json: jest.fn(), status: jest.fn() };
-    jest.spyOn(errorLog, 'error').mockImplementation(() => {});
+    jest.spyOn(legacyLogger, 'error').mockImplementation(() => {});
     jest.spyOn(appContext, 'get').mockReturnValue(contextRequestId);
   });
 
@@ -34,7 +34,7 @@ describe('Error handling middleware', () => {
     req.originalUrl = 'url';
     middleware(error, req, res, next);
 
-    expect(errorLog.error).toHaveBeenCalledWith(
+    expect(legacyLogger.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nurl: url\nerror`,
       {}
     );
@@ -44,14 +44,14 @@ describe('Error handling middleware', () => {
     const error = { message: 'error', code: 500 };
     req.body = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
-    expect(errorLog.error).toHaveBeenCalledWith(
+    expect(legacyLogger.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nbody: ${JSON.stringify(req.body, null, ' ')}\nerror`,
       {}
     );
 
     req.body = {};
     middleware(error, req, res, next);
-    expect(errorLog.error).toHaveBeenCalledWith(`requestId: ${contextRequestId} \nerror`, {});
+    expect(legacyLogger.error).toHaveBeenCalledWith(`requestId: ${contextRequestId} \nerror`, {});
   });
 
   it('should log the error query', () => {
@@ -59,7 +59,7 @@ describe('Error handling middleware', () => {
     req.query = { param: 'value', param2: 'value2' };
     middleware(error, req, res, next);
 
-    expect(errorLog.error).toHaveBeenCalledWith(
+    expect(legacyLogger.error).toHaveBeenCalledWith(
       `requestId: ${contextRequestId} \nquery: ${JSON.stringify(req.query, null, ' ')}\nerror`,
       {}
     );

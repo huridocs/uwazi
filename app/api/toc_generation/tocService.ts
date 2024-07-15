@@ -1,6 +1,6 @@
 import { files, storage } from 'api/files';
 import { prettifyError } from 'api/utils/handleError';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import request from 'shared/JSONRequest';
 import entities from 'api/entities';
 import { TocSchema } from 'shared/types/commonTypes';
@@ -86,7 +86,7 @@ const tocService = {
         );
       } catch (e) {
         await handleError(e, nextFile);
-        errorLog.error(prettifyError(e).prettyMessage);
+        legacyLogger.error(prettifyError(e).prettyMessage);
       }
     }
   },

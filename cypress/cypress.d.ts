@@ -13,7 +13,7 @@ declare global {
 
     interface Chainable {
       selection(subject: string, fn: any): Chainable;
-      setSelection(subject: string, query: string | object, endQuery: any[]): Chainable;
+      setSelection(subject: string, query?: string | object, endQuery?: any[]): Chainable;
       clearAndType(selector: string, value: string, options? = {}): Chainable;
       addTimeLink(duration: number, label: string, index?: number): Chainable;
       blankState(): Chainable;
