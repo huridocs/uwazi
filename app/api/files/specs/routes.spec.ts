@@ -4,7 +4,7 @@ import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
@@ -12,7 +12,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
-import { Logger } from 'winston';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
@@ -45,7 +44,6 @@ describe('files routes', () => {
 
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
     await testingEnvironment.setUp(fixtures);
     requestMockedUser = collabUser;
     testingEnvironment.setPermissions(collabUser);
@@ -341,7 +339,7 @@ describe('files routes', () => {
 
   describe('POST/files/upload/document', () => {
     it('should save the attached file', async () => {
-      jest.spyOn(errorLog, 'debug').mockImplementation(() => ({}) as Logger);
+      jest.spyOn(legacyLogger, 'debug').mockImplementation(() => ({}));
       const response = await request(app)
         .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));
@@ -349,7 +347,7 @@ describe('files routes', () => {
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
 
       expect(await storage.fileExists(file.filename!, 'document')).toBe(true);
-      expect(errorLog.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
+      expect(legacyLogger.debug).toHaveBeenCalledWith(expect.stringContaining('Deprecation'));
     });
   });
 

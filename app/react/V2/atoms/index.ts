@@ -5,6 +5,7 @@ export { templatesAtom } from './templatesAtom';
 export { translationsAtom } from './translationsAtom';
 export { thesauriAtom } from './thesauriAtom';
 export { globalMatomoAtom } from './globalMatomoAtom';
+export { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 export { userAtom } from './userAtom';
 export type { AtomStoreData } from './store';
 export type { notificationAtomType } from './notificationAtom';

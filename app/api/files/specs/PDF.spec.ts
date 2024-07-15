@@ -1,4 +1,4 @@
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PDF } from '../PDF';
 import { uploadsPath, deleteFile, fileExistsOnPath } from '../filesystem';
@@ -76,7 +76,7 @@ describe('PDF', () => {
     });
 
     it('should return the error when there is one', async () => {
-      errorLog.error = jest.fn();
+      legacyLogger.error = jest.fn();
       pdf = new PDF({ filename: '/missingpath/pdf.pdf' });
 
       const thumbnailResponse = await pdf.createThumbnail('documentId');

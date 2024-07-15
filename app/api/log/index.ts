@@ -1,2 +1,1 @@
-export { errorLog } from './errorLog';
-export { debugLog } from './debugLog';
+export { legacyLogger } from './legacyLogger';

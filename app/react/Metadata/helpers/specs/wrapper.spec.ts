@@ -206,7 +206,13 @@ describe('prepareMetadataAndFiles', () => {
       headers: { 'Content-Type': 'some/mimetype' },
     });
 
-    const wrappedEntity = await prepareMetadataAndFiles(entity, [document], template);
+    const mediaProperties = template.properties.filter(prop => prop.type === 'image');
+    const wrappedEntity = await prepareMetadataAndFiles(
+      entity,
+      [document],
+      template,
+      mediaProperties
+    );
     expect(wrappedEntity.metadata).toEqual({
       image_2: [
         {
