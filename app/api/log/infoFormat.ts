@@ -17,9 +17,7 @@ const addTenant = (info: any, { instanceName }: { instanceName: string }) => {
 
 const formatInfo = (info: any) => {
   const message = info.message && info.message.join ? info.message.join('\n') : info.message;
-  return `${info.timestamp} [${info.tenant}] ${message}${
-    info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''
-  }`;
+  return `${info.timestamp} [${info.tenant}] ${message}${info.tenantError ? `\n[Tenant error] ${info.tenantError}` : ''}`;
 };
 
 const jsonFormatter = (info: { [k: string]: string }) =>

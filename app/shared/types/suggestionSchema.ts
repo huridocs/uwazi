@@ -216,13 +216,14 @@ export const SuggestionCustomFilterSchema = {
     nonLabeled: {
       type: 'object',
       properties: {
+        withSuggestion: { type: 'boolean' },
         noSuggestion: { type: 'boolean' },
         noContext: { type: 'boolean' },
         obsolete: { type: 'boolean' },
         others: { type: 'boolean' },
       },
       additionalProperties: false,
-      required: ['noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
     },
   },
   required: ['labeled', 'nonLabeled'],
@@ -300,9 +301,10 @@ export const IXSuggestionAggregationSchema = {
     nonLabeled: {
       type: 'object',
       additionalProperties: false,
-      required: ['_count', 'noSuggestion', 'noContext', 'obsolete', 'others'],
+      required: ['_count', 'withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
       properties: {
         _count: { type: 'number' },
+        withSuggestion: { type: 'number' },
         noSuggestion: { type: 'number' },
         noContext: { type: 'number' },
         obsolete: { type: 'number' },

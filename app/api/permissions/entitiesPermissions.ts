@@ -1,4 +1,8 @@
+import { WithId } from 'mongodb';
+
+import { model as entityModel } from 'api/entities';
 import entities from 'api/entities/entities';
+import { search } from 'api/search';
 import users from 'api/users/users';
 import userGroups from 'api/usergroups/userGroups';
 import { unique } from 'api/utils/filters';
@@ -14,6 +18,8 @@ import { MemberWithPermission } from 'shared/types/entityPermisions';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
 import { permissionsContext } from './permissionsContext';
 import { PUBLIC_PERMISSION } from './publicPermission';
+
+type PermissionUpdate = WithId<Pick<EntitySchema, '_id' | 'permissions' | 'published'>>;
 
 const setAdditionalData = (
   referencedList: { _id: ObjectIdSchema }[],
@@ -75,20 +81,29 @@ const publishingChanged = (newPublishedValue: boolean, currentEntities: EntitySc
     false
   );
 
-const replaceMixedAccess = (entity: EntitySchema, newPermissions: PermissionSchema[]) =>
+const replaceMixedAccess = (
+  entity: EntitySchema,
+  newPermissions: PermissionSchema[]
+): PermissionSchema[] =>
   newPermissions
     .map(newPermission => {
       if (newPermission.level !== MixedAccess.MIXED) return newPermission;
 
       return entity.permissions?.find(p => p.refId.toString() === newPermission.refId.toString());
     })
-    .filter(p => p);
+    .filter(p => p) as PermissionSchema[];
 
 const getPublishingQuery = (newPublicPermission?: PermissionSchema) => {
   if (newPublicPermission && newPublicPermission.level === MixedAccess.MIXED) return {};
 
   return { published: !!newPublicPermission };
 };
+
+async function saveEntities(updates: PermissionUpdate[]) {
+  const response = await entityModel.saveMultiple(updates);
+  await search.indexEntities({ _id: { $in: response.map(d => d._id) } }, '+fullText');
+  return response;
+}
 
 export const entitiesPermissions = {
   set: async (permissionsData: PermissionsDataSchema) => {
@@ -116,13 +131,13 @@ export const entitiesPermissions = {
       throw new Error('Insuficient permissions to share/unshare publicly');
     }
 
-    const toSave = currentEntities.map(entity => ({
-      _id: entity._id,
+    const toSave: PermissionUpdate[] = currentEntities.map(entity => ({
+      _id: entity._id!,
       permissions: replaceMixedAccess(entity, nonPublicPermissions),
       ...getPublishingQuery(publicPermission),
     }));
 
-    await entities.saveMultiple(toSave);
+    await saveEntities(toSave);
   },
 
   get: async (sharedIds: string[]) => {
