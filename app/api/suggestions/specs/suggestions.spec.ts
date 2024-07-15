@@ -922,9 +922,20 @@ describe('suggestions', () => {
         const { acceptedSuggestion, metadataValues, allFiles } =
           await prepareAndAcceptSelectSuggestion('A', 'en', 'property_select', 'select_extractor');
         expect(acceptedSuggestion.state).toEqual(matchState());
-        expect(metadataValues).toMatchObject([
+        expect(metadataValues).toEqual([
           [{ value: 'A', label: 'A' }],
           [{ value: 'A', label: 'Aes' }],
+        ]);
+        expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
+      });
+
+      it('should handle grouped values', async () => {
+        const { acceptedSuggestion, metadataValues, allFiles } =
+          await prepareAndAcceptSelectSuggestion('1A', 'en', 'property_select', 'select_extractor');
+        expect(acceptedSuggestion.state).toEqual(matchState());
+        expect(metadataValues).toEqual([
+          [{ value: '1A', label: '1A', parent: { value: '1', label: '1' } }],
+          [{ value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } }],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
       });
@@ -1022,14 +1033,14 @@ describe('suggestions', () => {
             'multiselect_extractor'
           );
         expect(acceptedSuggestion.state).toEqual(matchState());
-        expect(metadataValues).toMatchObject([
+        expect(metadataValues).toEqual([
           [
-            { value: '1A', label: '1A' },
-            { value: '1B', label: '1B' },
+            { value: '1A', label: '1A', parent: { value: '1', label: '1' } },
+            { value: '1B', label: '1B', parent: { value: '1', label: '1' } },
           ],
           [
-            { value: '1A', label: '1Aes' },
-            { value: '1B', label: '1Bes' },
+            { value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } },
+            { value: '1B', label: '1Bes', parent: { value: '1', label: '1es' } },
           ],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
@@ -1047,15 +1058,15 @@ describe('suggestions', () => {
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
-        expect(metadataValues).toMatchObject([
+        expect(metadataValues).toEqual([
           [
             { value: 'A', label: 'A' },
-            { value: '1A', label: '1A' },
+            { value: '1A', label: '1A', parent: { value: '1', label: '1' } },
             { value: 'B', label: 'B' },
           ],
           [
             { value: 'A', label: 'Aes' },
-            { value: '1A', label: '1Aes' },
+            { value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } },
             { value: 'B', label: 'Bes' },
           ],
         ]);
@@ -1074,14 +1085,14 @@ describe('suggestions', () => {
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
-        expect(metadataValues).toMatchObject([
+        expect(metadataValues).toEqual([
           [
             { value: 'A', label: 'A' },
-            { value: '1A', label: '1A' },
+            { value: '1A', label: '1A', parent: { value: '1', label: '1' } },
           ],
           [
             { value: 'A', label: 'Aes' },
-            { value: '1A', label: '1Aes' },
+            { value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } },
           ],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
@@ -1099,9 +1110,9 @@ describe('suggestions', () => {
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState(false));
-        expect(metadataValues).toMatchObject([
-          [{ value: '1A', label: '1A' }],
-          [{ value: '1A', label: '1Aes' }],
+        expect(metadataValues).toEqual([
+          [{ value: '1A', label: '1A', parent: { value: '1', label: '1' } }],
+          [{ value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } }],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
       });
@@ -1118,14 +1129,14 @@ describe('suggestions', () => {
             }
           );
         expect(acceptedSuggestion.state).toEqual(matchState());
-        expect(metadataValues).toMatchObject([
+        expect(metadataValues).toEqual([
           [
             { value: 'A', label: 'A' },
-            { value: '1A', label: '1A' },
+            { value: '1A', label: '1A', parent: { value: '1', label: '1' } },
           ],
           [
             { value: 'A', label: 'Aes' },
-            { value: '1A', label: '1Aes' },
+            { value: '1A', label: '1Aes', parent: { value: '1', label: '1es' } },
           ],
         ]);
         expect(allFiles).toEqual(selectAcceptanceFixtureBase.files);
