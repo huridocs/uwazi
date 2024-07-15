@@ -2883,6 +2883,11 @@ input[type="range"]::-ms-fill-lower {
   background-color: rgb(49 196 141 / var(--tw-bg-opacity));
 }
 
+.bg-indigo-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 237 255 / var(--tw-bg-opacity));
+}
+
 .bg-indigo-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(205 219 254 / var(--tw-bg-opacity));
@@ -3089,11 +3094,6 @@ input[type="range"]::-ms-fill-lower {
   padding-right: 2px;
 }
 
-.px-\[7px\] {
-  padding-left: 7px;
-  padding-right: 7px;
-}
-
 .py-0 {
   padding-top: 0px;
   padding-bottom: 0px;
@@ -3142,11 +3142,6 @@ input[type="range"]::-ms-fill-lower {
 .py-\[2px\] {
   padding-top: 2px;
   padding-bottom: 2px;
-}
-
-.py-\[3px\] {
-  padding-top: 3px;
-  padding-bottom: 3px;
 }
 
 .pb-14 {

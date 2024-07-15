@@ -17,7 +17,7 @@ const GroupCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       icon={expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
       onClick={() => row.toggleExpanded()}
       color="indigo"
-      className="bg-indigo-200 rounded-md border-none drop-shadow-none"
+      className="bg-indigo-100 rounded-md border-none drop-shadow-none"
     >
       <span className="sr-only">{`${t('System', 'Open group', null, false)} ${`${row.index + 1}`}`}</span>
       <Translate>Group</Translate>
