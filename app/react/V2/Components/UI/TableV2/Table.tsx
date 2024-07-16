@@ -24,7 +24,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { cloneDeep } from 'lodash';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
-import { dndSortHandler, getRowIds, sortHandler, equalityById } from './helpers';
+import { dndSortHandler, getRowIds, sortHandler } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
 import { GroupCell, GroupHeader } from './GroupComponents';
 
@@ -61,6 +61,7 @@ const Table = <T extends RowWithId<T>>({
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
   const originalState = useRef<T[]>([]);
   const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>([]);
+  const disableSortingEffect = useRef(false);
 
   if (!originalState.current) originalState.current = cloneDeep(data);
   if (!originalRowIds.current) originalRowIds.current = [...rowIds];
@@ -116,24 +117,22 @@ const Table = <T extends RowWithId<T>>({
   });
 
   useEffect(() => {
-    const isEqual = equalityById(originalRowIds.current, rowIds);
-
-    if (!isEqual) {
-      originalState.current = cloneDeep(data);
-      originalRowIds.current = [...rowIds];
-      if (setRowSelection) {
-        setRowSelection({});
-      }
+    originalState.current = cloneDeep(data);
+    originalRowIds.current = [...rowIds];
+    if (setRowSelection) {
+      setRowSelection({});
     }
-  }, [rowIds]);
+  }, [rowIds.length]);
 
   useEffect(() => {
-    if (setData) {
-      if (sortingState.length === 0) {
-        setData(cloneDeep(originalState.current));
-      } else {
+    if (disableSortingEffect.current) {
+      disableSortingEffect.current = false;
+    } else if (setData) {
+      if (sortingState.length) {
         const { rows } = table.getSortedRowModel();
         setData(sortHandler(rows));
+      } else {
+        setData(originalState.current);
       }
     }
   }, [sortingState]);
@@ -143,11 +142,18 @@ const Table = <T extends RowWithId<T>>({
 
     if (active && over && active.id !== over.id) {
       if (setData) {
-        setData(() => dndSortHandler(data, rowIds, active.id, over.id));
+        setData(() => {
+          let tableRows = data;
+          if (sortingState.length) {
+            table.resetSorting();
+            tableRows = table.getSortedRowModel().rows.map(row => row.original);
+            return dndSortHandler(tableRows, rowIds, active.id, over.id);
+          }
+          return dndSortHandler(tableRows, rowIds, active.id, over.id);
+        });
       }
     }
   };
-
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
@@ -160,6 +166,9 @@ const Table = <T extends RowWithId<T>>({
       modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
       sensors={sensors}
+      onDragStart={() => {
+        disableSortingEffect.current = true;
+      }}
     >
       <div className="rounded-md shadow">
         <table className={`w-full ${className || ''}`}>

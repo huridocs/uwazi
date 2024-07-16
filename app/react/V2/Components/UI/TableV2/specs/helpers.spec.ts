@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { getRowIds, dndSortHandler, equalityById } from '../helpers';
+import { getRowIds, dndSortHandler } from '../helpers';
 import { tableData } from './fixtures';
 
 describe('row id generator', () => {
@@ -306,26 +306,5 @@ describe('DnD table sort handler', () => {
       description: 'Third group',
       subRows: [],
     });
-  });
-});
-
-describe('compare row ids', () => {
-  it('should return false when states have different length', () => {
-    expect(equalityById([{ id: '1' }, { id: '2' }], [{ id: '1' }])).toBe(false);
-  });
-
-  it('should return true when they are equal', () => {
-    expect(
-      equalityById([{ id: '1' }, { id: '2' }, { id: '3' }], [{ id: '1' }, { id: '2' }, { id: '3' }])
-    ).toBe(true);
-    expect(
-      equalityById([{ id: '1' }, { id: '2' }, { id: '3' }], [{ id: '3' }, { id: '1' }, { id: '2' }])
-    ).toBe(true);
-  });
-
-  it('should return false if there is a difference', () => {
-    expect(
-      equalityById([{ id: '1' }, { id: '2' }, { id: '3' }], [{ id: '1' }, { id: '4' }, { id: '3' }])
-    ).toBe(false);
   });
 });

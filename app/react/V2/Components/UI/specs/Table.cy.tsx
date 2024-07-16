@@ -197,10 +197,15 @@ describe('Table', () => {
       checkRowContent(3, ['Entity 3', data[3].description, '3']);
     });
 
-    xit('should reset sorting state when using dnd after sorting', () => {
+    it('should reset sorting state when using dnd after sorting', () => {
       Basic.args.defaultSorting = undefined;
       Basic.args.checkboxes = false;
       Basic.args.enableDnd = true;
+
+      mount(<Nested />);
+      cy.contains('Open group 1').click();
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
+      cy.get('th').contains('Title').click().click();
     });
   });
 
@@ -301,9 +306,12 @@ describe('Table', () => {
 
   describe('Nested data', () => {
     beforeEach(() => {
-      Basic.args.enableDnd = true;
-      Basic.args.checkboxes = true;
+      Nested.args.enableDnd = true;
+      Nested.args.checkboxes = true;
       mount(<Nested />);
+    });
+
+    it('should check the content', () => {
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Group 1 Group 2 Group 3 Group 4 Item 1 Item 2');
       });
@@ -374,8 +382,6 @@ describe('Table', () => {
     });
 
     it('should sort children element with dnd', () => {
-      mount(<Nested />);
-
       cy.get('tbody').within(() => {
         cy.contains('Open group 1').click();
         cy.contains('Open group 3').click();
