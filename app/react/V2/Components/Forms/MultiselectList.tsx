@@ -9,7 +9,6 @@ import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
-import { set } from 'mongoose';
 
 interface Option {
   label: string | React.ReactNode;
