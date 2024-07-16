@@ -15,6 +15,7 @@ type Tenant = {
     s3Storage?: boolean;
   };
   globalMatomo?: { id: string; url: string };
+  ciMatomoActive?: boolean;
 };
 
 class Tenants {

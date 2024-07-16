@@ -2,7 +2,6 @@ import { ConnectOptions } from 'mongoose';
 import { DB } from 'api/odm';
 import { tenants } from 'api/tenants/tenantContext';
 import { config } from 'api/config';
-import { errorLog } from 'api/log';
 import { migrator } from './migrator';
 
 let auth: ConnectOptions;
@@ -21,8 +20,6 @@ export const runMigration = async () => {
   await tenants.run(async () => {
     migrations = await migrator.migrate(db);
   });
-  //@ts-ignore
-  errorLog.closeGraylog();
   await DB.disconnect();
 
   const reindexNeeded = migrations.some(migration => migration.reindex === true);

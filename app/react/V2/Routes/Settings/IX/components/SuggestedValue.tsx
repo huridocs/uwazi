@@ -8,6 +8,7 @@ import { EntitySuggestionType } from 'shared/types/suggestionType';
 import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { thesauriAtom } from 'V2/atoms';
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 
 const SuggestedValue = ({
   value,
@@ -44,6 +45,23 @@ const SuggestedValue = ({
   const { content, type } = property || {};
   const thesaurus = thesauris.find(t => t._id === content);
 
+  const getLabelFromThesaurus = (id: string, _thesaurus: ClientThesaurus | undefined) => {
+    if (!_thesaurus) {
+      return '';
+    }
+
+    const flattenedValues = _thesaurus.values.reduce((acc: any, v) => {
+      if (v.values) {
+        return [...acc, ...v.values];
+      }
+      return [...acc, v];
+    }, []);
+
+    const thesaurusValue = flattenedValues.find((v: ClientThesaurusValue) => v.id === id);
+
+    return thesaurusValue?.label || '';
+  };
+
   const getCurrentValue = () => {
     if (value === '' || value === undefined) {
       return '-';
@@ -53,7 +71,7 @@ const SuggestedValue = ({
     }
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const label = thesaurus?.values.find(v => v.id === value)?.label;
+      const label = getLabelFromThesaurus(value as string, thesaurus);
       return <Translate context={content}>{label}</Translate>;
     }
 
@@ -68,7 +86,7 @@ const SuggestedValue = ({
       return secondsToDate((suggestion.suggestedValue as string | number) || '', locale);
     }
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {
-      const label = thesaurus?.values.find(v => v.id === suggestion.suggestedValue)?.label;
+      const label = getLabelFromThesaurus(suggestion.suggestedValue as string, thesaurus);
       return <Translate context={content}>{label}</Translate>;
     }
     return suggestion.suggestedValue!.toString();

@@ -1,12 +1,10 @@
 import 'cross-fetch/polyfill';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
-import { Logger } from 'winston';
 
 import * as csvApi from 'api/csv/csvLoader';
 import { TranslationDBO } from 'api/i18n.v2/schemas/TranslationDBO';
 import i18nRoutes from 'api/i18n/routes';
-import { errorLog } from 'api/log';
 import settings from 'api/settings';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -186,7 +184,6 @@ describe('i18n translations routes', () => {
 
       describe('when github returns any error', () => {
         it('should return an unaltered version of the languages list', async () => {
-          jest.spyOn(errorLog, 'error').mockImplementation(() => ({}) as Logger);
           DefaultTranslations.CONTENTS_DIRECTORY = `${__dirname}/non_valid`;
 
           const responseLanguages = await request(app).get('/api/languages').expect(200);

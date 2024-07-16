@@ -12,6 +12,7 @@ import { syncWorker } from 'api/sync/syncWorker';
 import { InformationExtraction } from 'api/services/informationextraction/InformationExtraction';
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
+import { handleError } from './api/utils/handleError.js';
 
 let dbAuth = {};
 
@@ -22,6 +23,14 @@ if (process.env.DBUSER) {
     pass: process.env.DBPASS,
   };
 }
+
+const uncaughtError = (error: Error) => {
+  handleError(error, { uncaught: true });
+  process.exit(1);
+};
+
+process.on('unhandledRejection', uncaughtError);
+process.on('uncaughtException', uncaughtError);
 
 DB.connect(config.DBHOST, dbAuth)
   .then(async () => {

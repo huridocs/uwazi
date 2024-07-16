@@ -1,13 +1,14 @@
+import fetch from 'cross-fetch';
+import backend from 'fetch-mock';
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
 import { storage } from 'api/files/storage';
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import { tenants } from 'api/tenants';
 import thesauri from 'api/thesauri';
 import db from 'api/utils/testing_db';
-import backend from 'fetch-mock';
 import path from 'path';
 import qs from 'qs';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
@@ -17,11 +18,16 @@ import { URL } from 'url';
 import fs from 'fs/promises';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+import { Tenant } from 'api/tenants/tenantContext';
+import { config } from 'api/config';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
-import { Tenant } from 'api/tenants/tenantContext';
-import { config } from 'api/config';
+
+Object.assign(backend.config, {
+  Response,
+  fetch,
+});
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
@@ -103,7 +109,7 @@ describe('preserveSync', () => {
 
   describe('sync', () => {
     beforeAll(async () => {
-      errorLog.error = jest.fn();
+      legacyLogger.error = jest.fn();
       await tenants.run(async () => {
         const evidences = [
           fakeEvidence(1, 'title of url1'),

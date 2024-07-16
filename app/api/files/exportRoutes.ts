@@ -5,7 +5,7 @@ import { createWriteStream } from 'fs';
 import fs from 'fs/promises';
 import QueryString from 'qs';
 
-import { errorLog } from 'api/log';
+import { legacyLogger } from 'api/log';
 import { search } from 'api/search';
 import { CSVExporter } from 'api/csv';
 import settings from 'api/settings';
@@ -23,7 +23,7 @@ export default (app: Application) => {
     try {
       await fs.unlink(filePath);
     } catch (err) {
-      errorLog.error(`Error unlinking exported file: ${filePath}`);
+      legacyLogger.error(`Error unlinking exported file: ${filePath}`);
     }
   };
 
