@@ -186,7 +186,7 @@
     "pdfjs-dist": "^4.3.136",
     "postcss-loader": "^8.1.1",
     "postcss-prefix-selector": "^1.16.0",
-    "prom-client": "^15.1.2",
+    "prom-client": "^15.1.3",
     "prop-types": "^15.8.1",
     "qrcode.react": "^3.1.0",
     "qs": "^6.12.3",
