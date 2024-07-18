@@ -5418,10 +5418,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/qs@*", "@types/qs@^6.9.14", "@types/qs@^6.9.5":
-  version "6.9.14"
-  resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.14.tgz#169e142bfe493895287bee382af6039795e9b75b"
-  integrity sha512-5khscbd3SwWMhFqylJBLQ0zIu7c1K6Vz0uBIt915BI3zV0q1nfjRQD3RqSBcPaO6PHEF4ov/t9y89fSiyThlPA==
+"@types/qs@*", "@types/qs@^6.9.15", "@types/qs@^6.9.5":
+  version "6.9.15"
+  resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.15.tgz#adde8a060ec9c305a82de1babc1056e73bd64dce"
+  integrity sha512-uXHQKES6DQKKCLh441Xv/dwxOq1TVS3JPUMlEqoEglvlhR6Mxnlew/Xq/LRVHpLyk7iK3zODe1qYHIMltO7XGg==
 
 "@types/range-parser@*":
   version "1.2.3"
@@ -10171,10 +10171,10 @@ flow-parser@0.*:
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.206.0.tgz#f4f794f8026535278393308e01ea72f31000bfef"
   integrity sha512-HVzoK3r6Vsg+lKvlIZzaWNBVai+FXTX1wdYhz/wVlH13tb/gOdLXmlTqy6odmTBhT5UoWUbq0k8263Qhr9d88w==
 
-flowbite-datepicker@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/flowbite-datepicker/-/flowbite-datepicker-1.2.6.tgz#97fbd46496ec72f0322e5ea4d3d2462437ec1c0e"
-  integrity sha512-UbU/xXs9HFiwWfL4M1vpwIo8EpS0NUQSOvYnp0Z9u3N118nU7lPFGoUOq7su9d0aOJy9FssXzx1SZwN8MXhE1g==
+flowbite-datepicker@^1.2.7:
+  version "1.2.7"
+  resolved "https://registry.yarnpkg.com/flowbite-datepicker/-/flowbite-datepicker-1.2.7.tgz#274cc882a6a71ecffdca39b20409e986d40ebbdf"
+  integrity sha512-lT0SOrux9Hu9TMO1EG03r9B8VMppRr0wmz+M4YC9qVR0BCG83Qaky4HGHcAehcoBSXh13DfIg0jFKwSxWZuXBA==
   dependencies:
     flowbite "^2.0.0"
 
@@ -15072,10 +15072,10 @@ qs@6.11.0:
   dependencies:
     side-channel "^1.0.4"
 
-qs@^6.10.0, qs@^6.11.0, qs@^6.11.2, qs@^6.12.1:
-  version "6.12.1"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.12.1.tgz#39422111ca7cbdb70425541cba20c7d7b216599a"
-  integrity sha512-zWmv4RSuB9r2mYQw3zxQuHWeU+42aKi1wWig/j4ele4ygELZ7PEO6MM7rim9oAQH2A5MWfsAVf/jPvTPgCbvUQ==
+qs@^6.10.0, qs@^6.11.0, qs@^6.11.2, qs@^6.12.3:
+  version "6.12.3"
+  resolved "https://registry.yarnpkg.com/qs/-/qs-6.12.3.tgz#e43ce03c8521b9c7fd7f1f13e514e5ca37727754"
+  integrity sha512-AWJm14H1vVaO/iNZ4/hO+HyaTehuy9nRqVdkTqlJt0HWvBiBIEXFmb4C0DGeYo3Xes9rrEW+TxHsaigCbN5ICQ==
   dependencies:
     side-channel "^1.0.6"
 
