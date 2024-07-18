@@ -246,12 +246,6 @@ describe('Table', () => {
         cy.contains('Entity 5');
       });
     });
-
-    it('should reset selections when data changes', () => {
-      cy.contains('button', 'Add new item').click();
-      cy.contains('button', 'Save changes').click();
-      cy.get('[data-testid="selected-items"] > div').should('be.empty');
-    });
   });
 
   describe('DnD', () => {
@@ -529,7 +523,7 @@ describe('Table', () => {
 
       cy.contains('button', 'Save changes').click();
 
-      cy.get('[data-testid="selected-items"]').within(() => {
+      cy.get('[data-testid="selected-subrows"]').within(() => {
         cy.contains('Item 2');
       });
     });

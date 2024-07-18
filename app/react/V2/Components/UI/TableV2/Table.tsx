@@ -126,10 +126,6 @@ const Table = <T extends RowWithId<T>>({
   }, [data]);
 
   useEffect(() => {
-    setRowSelection({});
-  }, [rowIds.length]);
-
-  useEffect(() => {
     if (onChange) {
       let updatedData = dataState;
       if (sortingState.length) {
