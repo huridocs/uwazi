@@ -231,13 +231,20 @@ describe('Table', () => {
       checkRowContent(8, [undefined, 'Sub 1-1', dataWithNested[0].subRows[0].description, '5']);
     });
 
-    xit('should allow external control of sorting', () => {
+    it('should allow manually controlling the sorting', () => {
       const setSortingSpy = cy.stub().as('setSortingSpy');
+      Basic.args.enableSelections = false;
+      Basic.args.enableDnd = false;
+      Basic.args.sortingFn = setSortingSpy;
 
-      mount(<Basic setSorting={setSortingSpy} />);
-      cy.get('tr th').contains('Title').realClick();
+      mount(<Basic />);
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
+      cy.get('th').contains('Title').realClick();
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
 
-      cy.get('@setSortingSpy').should('have.been.calledOnce');
+      cy.get('@setSortingSpy').should('have.been.calledTwice');
+      cy.get('@setSortingSpy').should('have.been.calledWith', []);
+      cy.get('@setSortingSpy').should('have.been.calledWith', [{ id: 'title', desc: false }]);
     });
   });
 

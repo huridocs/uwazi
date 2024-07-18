@@ -12,7 +12,7 @@ type StoryProps = {
   enableDnd: boolean;
   enableSelections: boolean;
   defaultSorting: SortingState;
-  manualSorting: boolean;
+  sortingFn?: () => void;
 };
 
 const basicColumnHelper = createColumnHelper<BasicData>();
@@ -40,7 +40,7 @@ const StoryComponent = ({
   enableDnd,
   enableSelections,
   defaultSorting,
-  manualSorting,
+  sortingFn,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
@@ -61,9 +61,9 @@ const StoryComponent = ({
             currentSelections.current = selectedRows;
             setSorting(sortingState);
           }}
+          sortingFn={sortingFn}
           enableDnd={enableDnd}
           enableSelections={enableSelections}
-          manualSorting={manualSorting}
           header={
             <div className="flex flex-col gap-1 items-start">
               <h2 className="text-lg">Table heading</h2>
@@ -177,7 +177,7 @@ const Primary: Story = {
         enableDnd={args.enableDnd}
         enableSelections={args.enableSelections}
         defaultSorting={args.defaultSorting}
-        manualSorting={args.manualSorting}
+        sortingFn={args.sortingFn}
       />
     </Provider>
   ),
@@ -191,7 +191,6 @@ const Basic = {
     enableDnd: true,
     enableSelections: true,
     defaultSorting: undefined,
-    manualSorting: undefined,
   },
 };
 
@@ -203,7 +202,6 @@ const Nested = {
     enableDnd: true,
     enableSelections: true,
     defaultSorting: undefined,
-    manualSorting: undefined,
   },
 };
 

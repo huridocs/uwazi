@@ -47,7 +47,7 @@ type TableProps<T extends RowWithId<T>> = {
   enableDnd?: boolean;
   enableSelections?: boolean;
   defaultSorting?: SortingState;
-  manualSorting?: boolean;
+  sortingFn?: (sorting: SortingState) => void;
   header?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
@@ -60,7 +60,7 @@ const Table = <T extends RowWithId<T>>({
   enableDnd,
   enableSelections,
   defaultSorting,
-  manualSorting,
+  sortingFn,
   header,
   footer,
   className,
@@ -114,8 +114,8 @@ const Table = <T extends RowWithId<T>>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
+    manualSorting: Boolean(sortingFn),
     onSortingChange: setSortingState,
-    manualSorting,
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(setRowSelection && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
@@ -134,6 +134,12 @@ const Table = <T extends RowWithId<T>>({
       onChange({ rows: updatedData, selectedRows: rowSelection, sortingState });
     }
   }, [dataState, onChange, rowSelection, sortingState, table]);
+
+  useEffect(() => {
+    if (sortingFn) {
+      sortingFn(sortingState);
+    }
+  }, [sortingFn, sortingState]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
