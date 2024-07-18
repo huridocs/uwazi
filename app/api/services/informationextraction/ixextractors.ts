@@ -14,9 +14,9 @@ import { IXExtractorModel as model } from './IXExtractorModel';
 
 type AllowedPropertyTypes =
   | Subset<
-      PropertyTypeSchema,
-      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
-    >
+    PropertyTypeSchema,
+    'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
+  >
   | 'title';
 
 const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
@@ -151,6 +151,7 @@ export const Extractors = {
     await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });
 
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
+    await model.delete({ templates: { $size: 0 } });
   },
 };
 
