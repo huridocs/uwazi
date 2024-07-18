@@ -1,17 +1,16 @@
+import { ObjectId } from 'mongodb';
 import Ajv, { ErrorObject } from 'ajv';
 import { isUndefined, isNull } from 'util';
 import { ensure } from 'shared/tsUtils';
 import { propertyTypes } from 'shared/propertyTypes';
-import entities from 'api/entities';
-import thesauris from 'api/thesauri';
 import { PropertySchema, MetadataObjectSchema } from 'shared/types/commonTypes';
 import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
-
 import { TemplateSchema } from 'shared/types/templateType';
+import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
+import entities from 'api/entities';
+import thesauris from 'api/thesauri';
 import { flatThesaurusValues } from 'api/thesauri/thesauri';
 import { validators, customErrorMessages } from './metadataValidators';
-import { ObjectId } from 'mongodb';
-import { arrayBidirectionalDiff } from 'shared/data_utils/arrayBidirectionalDiff';
 
 const hasValue = (value: any) => !isUndefined(value) && !isNull(value);
 
@@ -219,21 +218,6 @@ const validateSameRelationshipsMatch = (
       ];
 };
 
-const validateFieldSize = (
-  property: PropertySchema,
-  entity: EntitySchema,
-  value: MetadataObjectSchema[] = []
-) => {
-  if (
-    property.type !== propertyTypes.markdown &&
-    hasValue(value) &&
-    !validators.validateLuceneBytesLimit(value)
-  ) {
-    return [validationError({ message: customErrorMessages.length_exceeded }, property, entity)];
-  }
-  return [];
-};
-
 export const validateMetadataField = async (
   property: PropertySchema,
   entity: EntitySchema,
@@ -244,7 +228,6 @@ export const validateMetadataField = async (
   const errors: ErrorObject[] = [
     ...validateRequired(property, entity, value),
     ...validateType(property, entity, value),
-    ...validateFieldSize(property, entity, value),
     ...validateSameRelationshipsMatch(property, entity, template, value),
     ...(await validateRelationshipForeignIds(property, entity, value)),
     ...(await validateDictionariesForeignIds(property, entity, value)),
