@@ -14,9 +14,9 @@ import { IXExtractorModel as model } from './IXExtractorModel';
 
 type AllowedPropertyTypes =
   | Subset<
-    PropertyTypeSchema,
-    'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
-  >
+      PropertyTypeSchema,
+      'text' | 'numeric' | 'date' | 'select' | 'multiselect' | 'relationship'
+    >
   | 'title';
 
 const ALLOWED_PROPERTY_TYPES: AllowedPropertyTypes[] = [
