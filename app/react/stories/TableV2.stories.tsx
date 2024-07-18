@@ -79,7 +79,7 @@ const StoryComponent = ({
               setDataState([
                 ...currentDataState.current,
                 {
-                  rowId: itemCounter,
+                  rowId: `new-${itemCounter}`,
                   title: `New item ${itemCounter}`,
                   description: `Description for ${itemCounter}`,
                   created: Date.now(),
