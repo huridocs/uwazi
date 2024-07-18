@@ -151,7 +151,7 @@ export const Extractors = {
     await model.updateMany({ _id: { $in: extractorIds } }, { $pull: { templates: templateId } });
 
     await Suggestions.delete({ entityTemplate: templateId, extractorId: { $in: extractorIds } });
-    await model.delete({ templates: { $size: 0 } });
+    await model.delete({ _id: { $in: extractorIds }, templates: { $size: 0 } });
   },
 };
 
