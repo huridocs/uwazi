@@ -146,7 +146,7 @@
     "express-session": "1.18.0",
     "filesize": "^10.1.0",
     "flag-icon-css": "^4.1.7",
-    "flowbite": "^2.3.0",
+    "flowbite": "^2.4.1",
     "flowbite-datepicker": "^1.2.7",
     "flowbite-react": "^0.10.1",
     "formatcoords": "^1.1.3",
