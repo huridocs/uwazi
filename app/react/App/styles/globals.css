@@ -1704,10 +1704,6 @@ input[type="range"]::-ms-fill-lower {
   grid-column: span 2 / span 2;
 }
 
-.float-start {
-  float: inline-start;
-}
-
 .float-right {
   float: right;
 }

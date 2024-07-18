@@ -4,7 +4,7 @@ import React, { CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
-import { t, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { RowWithId } from './Table';
 
 const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
@@ -14,7 +14,6 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 
   const canExpand = row.originalSubRows;
   const expanded = row.getIsExpanded();
-  const parentRow = row.getParentRow();
 
   if (canExpand && expanded && isDragging) {
     row.toggleExpanded();
@@ -22,13 +21,14 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 
   return (
     <button {...attributes} {...listeners} type="button" className="w-2 h-6 bg-primary-700">
-      <span className="sr-only">{`${t('System', 'Drag row', null, false)} ${parentRow ? `${parentRow.index + 1}-${row.index + 1}` : `${row.index + 1}`}`}</span>
+      <span className="sr-only">
+        <Translate>Drag row</Translate>
+      </span>
     </button>
   );
 };
 
 const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
-  const isParent = row.getCanExpand() || row.originalSubRows;
   const expanded = row.getIsExpanded();
   const isEmpty = row.originalSubRows?.length === 0;
 
@@ -84,7 +84,7 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
         })}
       </tr>
 
-      {isParent && isEmpty && expanded && (
+      {isEmpty && expanded && (
         <tr ref={dropNoderef} className={`border-b ${isOverDropzone ? 'border-b-indigo-700' : ''}`}>
           <td className="px-4 py-2">dropzone</td>
         </tr>

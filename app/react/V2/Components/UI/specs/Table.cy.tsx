@@ -27,7 +27,7 @@ describe('Table', () => {
   });
 
   it('Should return a table with the columns and row specified', () => {
-    Basic.args.checkboxes = false;
+    Basic.args.enableSelections = false;
     Basic.args.enableDnd = false;
     mount(<Basic />);
     const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
@@ -64,11 +64,12 @@ describe('Table', () => {
     });
 
     it('Should be sortable by title', () => {
-      Basic.args.checkboxes = false;
+      Basic.args.enableSelections = false;
       Basic.args.enableDnd = false;
       mount(<Basic />);
 
       cy.get('th').contains('Title').click();
+      cy.contains('button', 'Save changes').click();
 
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
@@ -92,7 +93,7 @@ describe('Table', () => {
     });
 
     it('should keep selections when sorting', () => {
-      Basic.args.checkboxes = true;
+      Basic.args.enableSelections = true;
       Basic.args.enableDnd = false;
       mount(<Basic />);
 
@@ -103,6 +104,7 @@ describe('Table', () => {
 
       // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click();
+      cy.contains('button', 'Save changes').click();
 
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Entity 2');
@@ -112,10 +114,12 @@ describe('Table', () => {
 
     it('should sort items in groups', () => {
       mount(<Nested />);
-      cy.contains('Open group 1').click();
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
 
       checkRowContent(1, [
-        'Drag row 1',
+        'Drag row',
         'Select',
         'Group',
         'Group 1',
@@ -123,7 +127,7 @@ describe('Table', () => {
         '10',
       ]);
       checkRowContent(2, [
-        'Drag row 1-1',
+        'Drag row',
         'Select',
         '',
         'Sub 1-1',
@@ -131,7 +135,7 @@ describe('Table', () => {
         '5',
       ]);
       checkRowContent(3, [
-        'Drag row 1-2',
+        'Drag row',
         'Select',
         '',
         'Sub 1-2',
@@ -139,10 +143,11 @@ describe('Table', () => {
         '7',
       ]);
 
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click();
 
       checkRowContent(6, [
-        'Drag row 6',
+        'Drag row',
         'Select',
         'Group',
         'Group 1',
@@ -150,7 +155,7 @@ describe('Table', () => {
         '10',
       ]);
       checkRowContent(7, [
-        'Drag row 6-1',
+        'Drag row',
         'Select',
         '',
         'Sub 1-2',
@@ -158,7 +163,7 @@ describe('Table', () => {
         '7',
       ]);
       checkRowContent(8, [
-        'Drag row 6-2',
+        'Drag row',
         'Select',
         '',
         'Sub 1-1',
@@ -187,7 +192,7 @@ describe('Table', () => {
     });
 
     it('Should sort the rows with the sorting state specified', () => {
-      Basic.args.checkboxes = false;
+      Basic.args.enableSelections = false;
       Basic.args.enableDnd = false;
       Basic.args.defaultSorting = [{ id: 'created', desc: false }];
       mount(<Basic />);
@@ -199,19 +204,29 @@ describe('Table', () => {
 
     it('should reset sorting state when using dnd after sorting', () => {
       Basic.args.defaultSorting = undefined;
-      Basic.args.checkboxes = false;
+      Basic.args.enableSelections = false;
       Basic.args.enableDnd = true;
-
       mount(<Nested />);
-      cy.contains('Open group 1').click();
+
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
       // eslint-disable-next-line cypress/unsafe-to-chain-command
       cy.get('th').contains('Title').click().click();
+      cy.contains('Sorted by title');
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(6),
+        cy.get('button[aria-roledescription="sortable"]').eq(2)
+      );
+
+      cy.contains('No sorting');
     });
   });
 
   describe('Selections', () => {
     beforeEach(() => {
-      Basic.args.checkboxes = true;
+      Basic.args.enableSelections = true;
       Basic.args.enableDnd = true;
       mount(<Basic />);
       cy.contains('Select all').click();
@@ -219,9 +234,10 @@ describe('Table', () => {
         cy.get('input[type="checkbox"]').eq(0).uncheck();
         cy.get('input[type="checkbox"]').eq(2).uncheck();
       });
+      cy.contains('button', 'Save changes').click();
     });
 
-    it('should select and uselect some items', () => {
+    it('should check the current selections', () => {
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Entity 1');
         cy.contains('Entity 2').should('not.exist');
@@ -233,6 +249,7 @@ describe('Table', () => {
 
     it('should reset selections when data changes', () => {
       cy.contains('button', 'Add new item').click();
+      cy.contains('button', 'Save changes').click();
       cy.get('[data-testid="selected-items"] > div').should('be.empty');
     });
   });
@@ -247,29 +264,26 @@ describe('Table', () => {
     });
 
     it('should sort rows by dragging', () => {
-      cy.contains('button', 'Drag row 2').drag('button:contains("Drag row 1")', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(1),
+        cy.get('button[aria-roledescription="sortable"]').eq(0)
+      );
 
-      cy.get('[data-testid="sorted-items"]').within(() => {
-        cy.contains('Entity 1 Entity 2 Entity 4 Entity 3 Entity 5');
-      });
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(3),
+        cy.get('button[aria-roledescription="sortable"]').eq(2)
+      );
 
-      cy.contains('button', 'Drag row 3').drag('button:contains("Drag row 4")', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
+      checkRowContent(1, ['Drag row', 'Select', 'Entity 1', data[1].description, '1']);
+      checkRowContent(2, ['Drag row', 'Select', 'Entity 2', data[0].description, '2']);
+      checkRowContent(3, ['Drag row', 'Select', 'Entity 3', data[3].description, '3']);
+      checkRowContent(4, ['Drag row', 'Select', 'Entity 4', data[2].description, '4']);
+      checkRowContent(5, ['Drag row', 'Select', 'Entity 5', data[4].description, '5']);
 
+      cy.contains('button', 'Save changes').click();
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
       });
-
-      checkRowContent(1, ['Drag row 1', 'Select', 'Entity 1', data[1].description, '1']);
-      checkRowContent(2, ['Drag row 2', 'Select', 'Entity 2', data[0].description, '2']);
-      checkRowContent(3, ['Drag row 3', 'Select', 'Entity 3', data[3].description, '3']);
-      checkRowContent(4, ['Drag row 4', 'Select', 'Entity 4', data[2].description, '4']);
-      checkRowContent(5, ['Drag row 5', 'Select', 'Entity 5', data[4].description, '5']);
     });
 
     it('should keep selections while dragging', () => {
@@ -278,36 +292,31 @@ describe('Table', () => {
         cy.get('input[type="checkbox"]').eq(2).check();
       });
 
-      cy.contains('button', 'Drag row 2').drag('button:contains("Drag row 1")', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(1),
+        cy.get('button[aria-roledescription="sortable"]').eq(0)
+      );
 
-      cy.contains('button', 'Drag row 3').drag('button:contains("Drag row 4")', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
+      cy.contains('button', 'Save changes').click();
 
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Entity 1').should('not.exist');
         cy.contains('Entity 2');
-        cy.contains('Entity 3').should('not.exist');
         cy.contains('Entity 4');
+        cy.contains('Entity 3').should('not.exist');
         cy.contains('Entity 5').should('not.exist');
       });
+
+      cy.get('[data-testid="sorted-items"]').within(() => {
+        cy.contains('Entity 1 Entity 2 Entity 4 Entity 3 Entity 5');
+      });
     });
-
-    it('should add an item to an empty group', () => {});
-
-    it('should empty a group by dragging all items out of it', () => {});
-
-    it('should not loose selections when dragging into a dropzone', () => {});
   });
 
   describe('Nested data', () => {
     beforeEach(() => {
       Nested.args.enableDnd = true;
-      Nested.args.checkboxes = true;
+      Nested.args.enableSelections = true;
       mount(<Nested />);
     });
 
@@ -316,7 +325,7 @@ describe('Table', () => {
         cy.contains('Group 1 Group 2 Group 3 Group 4 Item 1 Item 2');
       });
       checkRowContent(1, [
-        'Drag row 1',
+        'Drag row',
         'Select',
         'Group',
         'Group 1',
@@ -324,7 +333,7 @@ describe('Table', () => {
         '10',
       ]);
       checkRowContent(2, [
-        'Drag row 2',
+        'Drag row',
         'Select',
         'Group',
         'Group 2',
@@ -332,7 +341,7 @@ describe('Table', () => {
         '20',
       ]);
       checkRowContent(3, [
-        'Drag row 3',
+        'Drag row',
         'Select',
         'Group',
         'Group 3',
@@ -340,7 +349,7 @@ describe('Table', () => {
         '30',
       ]);
       checkRowContent(4, [
-        'Drag row 4',
+        'Drag row',
         'Select',
         'Group',
         'Group 4',
@@ -348,7 +357,7 @@ describe('Table', () => {
         '40',
       ]);
       checkRowContent(5, [
-        'Drag row 5',
+        'Drag row',
         'Select',
         undefined,
         'Item 1',
@@ -356,7 +365,7 @@ describe('Table', () => {
         '50',
       ]);
       checkRowContent(6, [
-        'Drag row 6',
+        'Drag row',
         'Select',
         undefined,
         'Item 2',
@@ -367,9 +376,15 @@ describe('Table', () => {
 
     it('should expand groups and check for accessibility', () => {
       cy.get('tbody').within(() => {
-        cy.contains('Open group 1').click();
-        cy.contains('Open group 2').click();
-        cy.contains('Open group 3').click();
+        cy.contains('tr', 'Group 1').within(() => {
+          cy.contains('button', 'Open group').click();
+        });
+        cy.contains('tr', 'Group 2').within(() => {
+          cy.contains('button', 'Open group').click();
+        });
+        cy.contains('tr', 'Group 3').within(() => {
+          cy.contains('button', 'Open group').click();
+        });
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
         cy.contains('td', 'Sub 2-1');
@@ -383,29 +398,33 @@ describe('Table', () => {
 
     it('should sort children element with dnd', () => {
       cy.get('tbody').within(() => {
-        cy.contains('Open group 1').click();
-        cy.contains('Open group 3').click();
+        cy.contains('tr', 'Group 1').within(() => {
+          cy.contains('Open group').click();
+        });
+        cy.contains('tr', 'Group 3').within(() => {
+          cy.contains('Open group').click();
+        });
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
         cy.contains('td', 'Sub 3-1');
         cy.contains('td', 'Sub 3-2');
       });
 
-      cy.contains('button', 'Drag row 3-1').drag('button:contains("Drag row 1-1")', {
-        target: { x: 5, y: 0 },
-        force: true,
-      });
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(5),
+        cy.get('button[aria-roledescription="sortable"]').eq(1)
+      );
 
       checkRowContent(1, [
-        'Drag row 1',
+        'Drag row',
         'Select',
-        'Open group 1',
+        'Open group',
         'Group 1',
         dataWithNested[0].description,
         '10',
       ]);
       checkRowContent(2, [
-        'Drag row 1-1',
+        'Drag row',
         'Select',
         undefined,
         'Sub 3-1',
@@ -413,9 +432,106 @@ describe('Table', () => {
         '12',
       ]);
 
+      cy.contains('button', 'Save changes').click();
+
       cy.get('[data-testid="sorted-subrows"] > .flex > :nth-child(1)').contains(
         '|Group 1 - Sub 3-1|'
       );
+    });
+
+    it('should add an item to an empty group', () => {
+      cy.contains('tr', 'Group 4').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
+      cy.contains('tr', 'Group 3').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(3),
+        cy.get('td').contains('dropzone')
+      );
+
+      checkRowContent(5, [
+        'Drag row',
+        'Select',
+        'Open group',
+        'Group 4',
+        dataWithNested[3].description,
+        '40',
+      ]);
+      checkRowContent(6, [
+        'Drag row',
+        'Select',
+        undefined,
+        'Sub 3-1',
+        dataWithNested[2].subRows[0].description,
+        '12',
+      ]);
+    });
+
+    it('should empty a group by dragging all items out of it', () => {
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
+
+      cy.contains('tr', 'dropzone').should('not.exist');
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(1),
+        cy.get('button[aria-roledescription="sortable"]').eq(0)
+      );
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(2),
+        cy.get('button[aria-roledescription="sortable"]').eq(0)
+      );
+
+      cy.contains('tr', 'dropzone').should('exist');
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(7),
+        cy.get('td').contains('dropzone')
+      );
+
+      checkRowContent(3, [
+        'Drag row',
+        'Select',
+        'Open group',
+        'Group 1',
+        dataWithNested[0].description,
+        '10',
+      ]);
+      checkRowContent(4, [
+        'Drag row',
+        'Select',
+        undefined,
+        'Item 2',
+        dataWithNested[5].description,
+        '60',
+      ]);
+
+      cy.contains('tr', 'dropzone').should('not.exist');
+    });
+
+    it('should not loose selections when dragging into a dropzone', () => {
+      cy.contains('tr', 'Group 4').within(() => {
+        cy.contains('button', 'Open group').click();
+      });
+
+      cy.contains('tr', 'Item 2').within(() => {
+        cy.get('input[type="checkbox"]').check();
+      });
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(5),
+        cy.get('td').contains('dropzone')
+      );
+
+      cy.contains('button', 'Save changes').click();
+
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Item 2');
+      });
     });
 
     // xit('should sort an expanded row by the header', () => {

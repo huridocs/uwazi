@@ -1,6 +1,5 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { cloneDeep } from 'lodash';
-import { Row } from '@tanstack/react-table';
 import { RowWithId, TableProps } from './Table';
 
 const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['data']) => {
@@ -75,13 +74,4 @@ const dndSortHandler = <T extends RowWithId<T>>(
   return state;
 };
 
-const sortHandler = <T extends RowWithId<T>>(rows: Row<T>[]) =>
-  rows.map(row => {
-    const { original, subRows } = row;
-    if (subRows.length) {
-      original.subRows = subRows.map(subRow => subRow.original);
-    }
-    return original;
-  });
-
-export { getRowIds, dndSortHandler, sortHandler };
+export { getRowIds, dndSortHandler };

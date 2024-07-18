@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
-import uniqueID from 'shared/uniqueID';
 import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
-  tableData: any[];
-  checkboxes: boolean;
-  enableDnd: boolean;
-  defaultSorting: SortingState;
   columns: NewTableProps<BasicData | DataWithGroups>['columns'];
+  tableData: any[];
+  enableDnd: boolean;
+  enableSelections: boolean;
+  defaultSorting: SortingState;
+  manualSorting: boolean;
 };
 
 const basicColumnHelper = createColumnHelper<BasicData>();
@@ -35,28 +35,39 @@ const nestedColumns = [
 ];
 
 const StoryComponent = ({
-  tableData,
   columns,
+  tableData,
   enableDnd,
-  checkboxes,
+  enableSelections,
   defaultSorting,
+  manualSorting,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const currentDataState = useRef(tableData);
+  const currentSelections = useRef({});
+  const [itemCounter, setItemCounter] = useState(1);
 
   return (
     <div className="tw-content">
       <div className="w-full">
         <NewTable
           data={dataState}
-          setData={setDataState}
-          selectionState={checkboxes ? [selected, setSelected] : undefined}
           columns={columns}
           defaultSorting={defaultSorting}
+          onChange={({ rows, selectedRows, sortingState }) => {
+            currentDataState.current = rows;
+            currentSelections.current = selectedRows;
+            setSorting(sortingState);
+          }}
           enableDnd={enableDnd}
+          enableSelections={enableSelections}
+          manualSorting={manualSorting}
           header={
-            <div>
-              <h2 className="text-lg float-start">Table heading</h2>
+            <div className="flex flex-col gap-1 items-start">
+              <h2 className="text-lg">Table heading</h2>
+              <p>{sorting.length ? `Sorted by ${sorting[0].id}` : 'No sorting'}</p>
             </div>
           }
           footer={<p className="">My table footer</p>}
@@ -65,27 +76,27 @@ const StoryComponent = ({
           <Button
             styling="outline"
             onClick={() => {
-              setDataState(dataState.slice(0, dataState.length - 1));
+              setDataState([
+                ...currentDataState.current,
+                {
+                  rowId: itemCounter,
+                  title: `New item ${itemCounter}`,
+                  description: `Description for ${itemCounter}`,
+                  created: Date.now(),
+                },
+              ]);
+              setItemCounter(itemCounter + 1);
             }}
           >
-            Remove last item
+            Add new item
           </Button>
           <Button
             styling="outline"
             onClick={() => {
-              const id = uniqueID();
-              setDataState([
-                ...dataState,
-                {
-                  rowId: id,
-                  title: `New item ${id}`,
-                  description: `Description for ${id}`,
-                  created: Date.now(),
-                },
-              ]);
+              setDataState(currentDataState.current.slice(0, dataState.length - 1));
             }}
           >
-            Add new item
+            Remove last item
           </Button>
           <Button
             styling="outline"
@@ -94,6 +105,15 @@ const StoryComponent = ({
             }}
           >
             Reset data
+          </Button>
+          <Button
+            styling="solid"
+            onClick={() => {
+              setDataState(currentDataState.current);
+              setSelected(currentSelections.current);
+            }}
+          >
+            Save changes
           </Button>
         </div>
       </div>
@@ -155,8 +175,9 @@ const Primary: Story = {
         tableData={args.tableData}
         columns={args.columns}
         enableDnd={args.enableDnd}
-        checkboxes={args.checkboxes}
+        enableSelections={args.enableSelections}
         defaultSorting={args.defaultSorting}
+        manualSorting={args.manualSorting}
       />
     </Provider>
   ),
@@ -168,8 +189,9 @@ const Basic = {
     tableData: basicData,
     columns: basicColumns,
     enableDnd: true,
-    checkboxes: true,
+    enableSelections: true,
     defaultSorting: undefined,
+    manualSorting: undefined,
   },
 };
 
@@ -179,8 +201,9 @@ const Nested = {
     tableData: dataWithGroups,
     columns: nestedColumns,
     enableDnd: true,
-    checkboxes: true,
+    enableSelections: true,
     defaultSorting: undefined,
+    manualSorting: undefined,
   },
 };
 

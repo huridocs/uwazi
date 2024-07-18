@@ -19,8 +19,8 @@ const GroupCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       color="indigo"
       className="bg-indigo-100 rounded-md border-none drop-shadow-none"
     >
-      <span className="sr-only">{`${t('System', 'Open group', null, false)} ${`${row.index + 1}`}`}</span>
       <Translate>Group</Translate>
+      <Translate className="sr-only">Open group</Translate>
     </EmbededButton>
   ) : null;
 };

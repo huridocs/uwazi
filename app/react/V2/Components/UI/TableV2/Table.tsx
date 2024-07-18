@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -7,6 +7,7 @@ import {
   getExpandedRowModel,
   SortingState,
   getSortedRowModel,
+  RowSelectionState,
 } from '@tanstack/react-table';
 import {
   DragEndEvent,
@@ -17,14 +18,12 @@ import {
   useSensors,
   DndContext,
   closestCenter,
-  UniqueIdentifier,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { cloneDeep } from 'lodash';
 import { DraggableRow, RowDragHandleCell, DnDHeader } from './DnDComponents';
 import { IndeterminateCheckboxHeader, IndeterminateCheckboxRow } from './RowSelectComponents';
-import { dndSortHandler, getRowIds, sortHandler } from './helpers';
+import { dndSortHandler, getRowIds } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
 import { GroupCell, GroupHeader } from './GroupComponents';
 
@@ -36,10 +35,19 @@ type RowWithId<T extends { rowId: string }> = {
 type TableProps<T extends RowWithId<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
-  setData?: React.Dispatch<React.SetStateAction<T[]>>;
-  selectionState?: [state: {}, setter: React.Dispatch<React.SetStateAction<{}>>];
+  onChange?: ({
+    rows,
+    selectedRows,
+    sortingState,
+  }: {
+    rows: T[];
+    selectedRows: RowSelectionState;
+    sortingState: SortingState;
+  }) => void;
   enableDnd?: boolean;
+  enableSelections?: boolean;
   defaultSorting?: SortingState;
+  manualSorting?: boolean;
   header?: React.ReactNode;
   footer?: React.ReactNode;
   className?: string;
@@ -48,24 +56,20 @@ type TableProps<T extends RowWithId<T>> = {
 const Table = <T extends RowWithId<T>>({
   columns,
   data,
-  setData,
-  selectionState,
+  onChange,
   enableDnd,
+  enableSelections,
   defaultSorting,
+  manualSorting,
   header,
   footer,
   className,
 }: TableProps<T>) => {
-  const rowIds = useMemo(() => getRowIds(data), [data]);
-  const [rowSelection, setRowSelection] = selectionState || [null, null];
+  const [dataState, setDataState] = useState(data);
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
-  const originalState = useRef<T[]>([]);
-  const originalRowIds = useRef<{ id: UniqueIdentifier; parentId?: string }[]>([]);
-  const disableSortingEffect = useRef(false);
 
-  if (!originalState.current) originalState.current = cloneDeep(data);
-  if (!originalRowIds.current) originalRowIds.current = [...rowIds];
-
+  const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
   const memoizedColumns = useMemo<ColumnDef<T, any>[]>(() => {
     const tableColumns = [...columns];
     const hasGroups = data.find(item => item.subRows);
@@ -79,7 +83,7 @@ const Table = <T extends RowWithId<T>>({
       });
     }
 
-    if (rowSelection) {
+    if (enableSelections) {
       tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
@@ -98,10 +102,10 @@ const Table = <T extends RowWithId<T>>({
     }
 
     return tableColumns;
-  }, [columns, rowSelection, enableDnd]);
+  }, [columns, data, enableSelections, enableDnd]);
 
   const table = useReactTable({
-    data,
+    data: dataState,
     columns: memoizedColumns,
     state: {
       sorting: sortingState,
@@ -111,49 +115,45 @@ const Table = <T extends RowWithId<T>>({
     getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     onSortingChange: setSortingState,
+    manualSorting,
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(setRowSelection && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
   });
 
   useEffect(() => {
-    originalState.current = cloneDeep(data);
-    originalRowIds.current = [...rowIds];
-    if (setRowSelection) {
-      setRowSelection({});
-    }
+    setDataState(data);
+  }, [data]);
+
+  useEffect(() => {
+    setRowSelection({});
   }, [rowIds.length]);
 
   useEffect(() => {
-    if (disableSortingEffect.current) {
-      disableSortingEffect.current = false;
-    } else if (setData) {
+    if (onChange) {
+      let updatedData = dataState;
       if (sortingState.length) {
-        const { rows } = table.getSortedRowModel();
-        setData(sortHandler(rows));
-      } else {
-        setData(originalState.current);
+        updatedData = table.getSortedRowModel().rows.map(row => row.original);
       }
+      onChange({ rows: updatedData, selectedRows: rowSelection, sortingState });
     }
-  }, [sortingState]);
+  }, [dataState, onChange, rowSelection, sortingState, table]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active && over && active.id !== over.id) {
-      if (setData) {
-        setData(() => {
-          let tableRows = data;
-          if (sortingState.length) {
-            table.resetSorting();
-            tableRows = table.getSortedRowModel().rows.map(row => row.original);
-            return dndSortHandler(tableRows, rowIds, active.id, over.id);
-          }
-          return dndSortHandler(tableRows, rowIds, active.id, over.id);
-        });
-      }
+      setDataState(() => {
+        let tableRows = dataState;
+        if (sortingState.length) {
+          table.resetSorting();
+          tableRows = table.getSortedRowModel().rows.map(row => row.original);
+        }
+        return dndSortHandler(tableRows, rowIds, active.id, over.id);
+      });
     }
   };
+
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
@@ -166,9 +166,6 @@ const Table = <T extends RowWithId<T>>({
       modifiers={[restrictToVerticalAxis]}
       onDragEnd={handleDragEnd}
       sensors={sensors}
-      onDragStart={() => {
-        disableSortingEffect.current = true;
-      }}
     >
       <div className="rounded-md shadow">
         <table className={`w-full ${className || ''}`}>
