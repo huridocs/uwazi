@@ -116,6 +116,7 @@ export const Extractors = {
     await createBlankSuggestionsForExtractor(saved);
     return saved;
   },
+
   update: async (id: string, name: string, property: string, templateIds: string[]) => {
     const [extractor] = await model.get({ _id: new ObjectId(id) });
     if (!extractor) throw Error('Missing extractor.');

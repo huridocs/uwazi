@@ -241,7 +241,10 @@ const suggestionsTableColumnsBuilder: Function = (
   acceptSuggestions: (suggestions: TableSuggestion[]) => void,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
 ) => {
-  const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
+  const allProperties = [
+    ...(templates[0]?.commonProperties || []),
+    ...(templates[0]?.properties || []),
+  ];
 
   return [
     suggestionColumnHelper.accessor('entityTitle', {

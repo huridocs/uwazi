@@ -1055,7 +1055,7 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
     expect(suggestions).toEqual([]);
   });
 
-  it('should not act if the feature is not enabld', async () => {
+  it('should not act if the feature is not enabled', async () => {
     await disableFeatures();
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();

@@ -23,7 +23,10 @@ const SuggestionsTitle = ({
   onFiltersButtonClicked: () => void;
   activeFilters: number;
 }) => {
-  const allProperties = [...(templates[0].commonProperties || []), ...templates[0].properties];
+  const allProperties = [
+    ...(templates[0]?.commonProperties || []),
+    ...(templates[0]?.properties || []),
+  ];
   const template = allProperties.find(prop => prop.name === property);
 
   let propGraphics: string | React.ReactNode = '_';
