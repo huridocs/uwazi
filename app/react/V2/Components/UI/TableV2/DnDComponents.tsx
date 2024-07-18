@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
@@ -15,9 +15,11 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   const canExpand = row.originalSubRows;
   const expanded = row.getIsExpanded();
 
-  if (canExpand && expanded && isDragging) {
-    row.toggleExpanded();
-  }
+  useEffect(() => {
+    if (canExpand && expanded && isDragging) {
+      row.toggleExpanded();
+    }
+  }, [isDragging]);
 
   return (
     <button {...attributes} {...listeners} type="button" className="w-2 h-6 bg-primary-700">
