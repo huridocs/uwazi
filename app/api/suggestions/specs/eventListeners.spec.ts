@@ -873,7 +873,10 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       })
     );
 
-    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+    const extractors = await testingDB.mongodb
+      ?.collection('ixextractors')
+      .find({ templates: { $not: { $size: 0 } } })
+      .toArray();
 
     expect(extractors).toEqual([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
@@ -884,7 +887,6 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         extractedTemplateName,
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
       fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
@@ -894,7 +896,6 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       ]),
       fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
       fixturesFactory.ixExtractor('extractor7', 'multiselect_property', [extractedTemplateName]),
-      fixturesFactory.ixExtractor('extractor8', 'relationship_property', []),
     ]);
 
     const suggestions = await testingDB.mongodb?.collection('ixsuggestions').find({}).toArray();
@@ -959,7 +960,10 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       })
     );
 
-    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+    const extractors = await testingDB.mongodb
+      ?.collection('ixextractors')
+      .find({ templates: { $not: { $size: 0 } } })
+      .toArray();
 
     expect(extractors).toEqual([
       fixturesFactory.ixExtractor('title_extractor', 'title', [
@@ -970,7 +974,6 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         extractedTemplateName,
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
       fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
@@ -979,7 +982,6 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
         otherExtractedTemplateName,
       ]),
       fixturesFactory.ixExtractor('extractor6', 'select_property', [extractedTemplateName]),
-      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', []),
       fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
     ]);
 
@@ -1012,6 +1014,45 @@ describe(`On ${TemplateUpdatedEvent.name}`, () => {
       },
     ]);
   });
+
+  it('should delete the extractor itself if it does not contain any templates', async () => {
+    await applicationEventsBus.emit(
+      new TemplateUpdatedEvent({
+        before: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property', propertyTypes.multiselect),
+            fixturesFactory.property('relationship_property', propertyTypes.relationship),
+          ],
+        },
+        after: {
+          _id: fixturesFactory.id(extractedTemplateName),
+          name: extractedTemplateName,
+          properties: [
+            fixturesFactory.property('not_extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('not_extracted_property_2', propertyTypes.numeric),
+            fixturesFactory.property('extracted_property_1', propertyTypes.text),
+            fixturesFactory.property('extracted_property_2_renamed', propertyTypes.numeric),
+            fixturesFactory.property('select_property', propertyTypes.select),
+            fixturesFactory.property('multiselect_property_renamed', propertyTypes.multiselect),
+            fixturesFactory.property('relationship_property', propertyTypes.relationship),
+          ],
+        },
+      })
+    );
+
+    const extractorsWithoutTemplates = await testingDB.mongodb
+      ?.collection('ixextractors')
+      .countDocuments({ templates: { $size: 0 } });
+
+    expect(extractorsWithoutTemplates).toEqual(0);
+  });
 });
 
 describe(`On ${TemplateDeletedEvent.name}`, () => {
@@ -1022,14 +1063,16 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
       })
     );
 
-    const extractors = await testingDB.mongodb?.collection('ixextractors').find({}).toArray();
+    const extractors = await testingDB.mongodb
+      ?.collection('ixextractors')
+      .find({ templates: { $not: { $size: 0 } } })
+      .toArray();
 
     expect(extractors).toEqual([
       fixturesFactory.ixExtractor('title_extractor', 'title', [otherExtractedTemplateName]),
       fixturesFactory.ixExtractor('extractor1', 'extracted_property_1', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor2', 'extracted_property_2', []),
       fixturesFactory.ixExtractor('extractor3', 'some_property', ['some_other_template']),
       fixturesFactory.ixExtractor('extractor4', 'extracted_property_2_1', [
         otherExtractedTemplateName,
@@ -1037,10 +1080,21 @@ describe(`On ${TemplateDeletedEvent.name}`, () => {
       fixturesFactory.ixExtractor('extractor5', 'extracted_property_2_2', [
         otherExtractedTemplateName,
       ]),
-      fixturesFactory.ixExtractor('extractor6', 'select_property', []),
-      fixturesFactory.ixExtractor('extractor7', 'multiselect_property', []),
-      fixturesFactory.ixExtractor('extractor8', 'relationship_property', []),
     ]);
+  });
+
+  it('should delete the extractor itself if it does not contain any templates', async () => {
+    await applicationEventsBus.emit(
+      new TemplateDeletedEvent({
+        templateId: fixturesFactory.id(extractedTemplateName).toString(),
+      })
+    );
+
+    const extractorsWithoutTemplates = await testingDB.mongodb
+      ?.collection('ixextractors')
+      .countDocuments({ templates: { $size: 0 } });
+
+    expect(extractorsWithoutTemplates).toEqual(0);
   });
 
   it('should delete the suggestions related to the template', async () => {
