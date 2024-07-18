@@ -59,7 +59,7 @@ describe('Table', () => {
   describe('Sorting', () => {
     after(() => {
       Basic.args.defaultSorting = undefined;
-      Basic.args.checkboxes = false;
+      Basic.args.enableSelections = false;
       Basic.args.enableDnd = false;
     });
 
@@ -68,8 +68,8 @@ describe('Table', () => {
       Basic.args.enableDnd = false;
       mount(<Basic />);
 
-      cy.get('th').contains('Title').click();
-      cy.contains('button', 'Save changes').click();
+      cy.get('th').contains('Title').realClick();
+      cy.contains('button', 'Save changes').realClick();
 
       checkRowContent(1, ['Entity 1', data[1].description, '1']);
       checkRowContent(2, ['Entity 2', data[0].description, '2']);
@@ -79,11 +79,10 @@ describe('Table', () => {
     });
 
     it('should return to the default sorting', () => {
-      Basic.args.checkboxes = false;
+      Basic.args.enableSelections = false;
       Basic.args.enableDnd = false;
       mount(<Basic />);
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.get('th').contains('Title').click().click().click();
+      cy.get('th').contains('Title').realClick().realClick().realClick();
 
       checkRowContent(1, ['Entity 2', data[0].description, '2']);
       checkRowContent(2, ['Entity 1', data[1].description, '1']);
@@ -102,9 +101,8 @@ describe('Table', () => {
         cy.get('input[type="checkbox"]').eq(2).check();
       });
 
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.get('th').contains('Title').click().click();
-      cy.contains('button', 'Save changes').click();
+      cy.get('th').contains('Title').realClick().realClick();
+      cy.contains('button', 'Save changes').realClick();
 
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Entity 2');
@@ -115,7 +113,7 @@ describe('Table', () => {
     it('should sort items in groups', () => {
       mount(<Nested />);
       cy.contains('tr', 'Group 1').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
 
       checkRowContent(1, [
@@ -143,8 +141,7 @@ describe('Table', () => {
         '7',
       ]);
 
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.get('th').contains('Title').click().click();
+      cy.get('th').contains('Title').realClick().realClick();
 
       checkRowContent(6, [
         'Drag row',
@@ -178,17 +175,8 @@ describe('Table', () => {
       cy.get('tr th').contains('Description').children().should('have.length', 0);
       cy.get('tr th').contains('Date added').children().should('have.length', 1);
 
-      cy.get('th').contains('Description').click();
+      cy.get('th').contains('Description').realClick();
       checkRowContent(1, ['Select', 'Entity 2', data[0].description, '2']);
-    });
-
-    xit('should allow external control of sorting', () => {
-      const setSortingSpy = cy.stub().as('setSortingSpy');
-
-      mount(<Basic setSorting={setSortingSpy} />);
-      cy.get('tr th').contains('Title').click();
-
-      cy.get('@setSortingSpy').should('have.been.calledOnce');
     });
 
     it('Should sort the rows with the sorting state specified', () => {
@@ -209,10 +197,10 @@ describe('Table', () => {
       mount(<Nested />);
 
       cy.contains('tr', 'Group 1').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.get('th').contains('Title').click().click();
+
+      cy.get('th').contains('Title').realClick().realClick();
       cy.contains('Sorted by title');
 
       cy.realDragAndDrop(
@@ -222,6 +210,35 @@ describe('Table', () => {
 
       cy.contains('No sorting');
     });
+
+    it('it should sort items within groups', () => {
+      Nested.args.enableSelections = false;
+      Nested.args.enableDnd = false;
+      mount(<Nested />);
+
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+
+      checkRowContent(1, ['Open group', 'Group 1', dataWithNested[0].description, '10']);
+      checkRowContent(2, [undefined, 'Sub 1-1', dataWithNested[0].subRows[0].description, '5']);
+      checkRowContent(3, [undefined, 'Sub 1-2', dataWithNested[0].subRows[1].description, '7']);
+
+      cy.contains('th', 'Title').realClick().realClick();
+
+      checkRowContent(6, ['Open group', 'Group 1', dataWithNested[0].description, '10']);
+      checkRowContent(7, [undefined, 'Sub 1-2', dataWithNested[0].subRows[1].description, '7']);
+      checkRowContent(8, [undefined, 'Sub 1-1', dataWithNested[0].subRows[0].description, '5']);
+    });
+
+    xit('should allow external control of sorting', () => {
+      const setSortingSpy = cy.stub().as('setSortingSpy');
+
+      mount(<Basic setSorting={setSortingSpy} />);
+      cy.get('tr th').contains('Title').realClick();
+
+      cy.get('@setSortingSpy').should('have.been.calledOnce');
+    });
   });
 
   describe('Selections', () => {
@@ -229,12 +246,12 @@ describe('Table', () => {
       Basic.args.enableSelections = true;
       Basic.args.enableDnd = true;
       mount(<Basic />);
-      cy.contains('Select all').click();
+      cy.contains('Select all').realClick();
       cy.get('tbody').within(() => {
         cy.get('input[type="checkbox"]').eq(0).uncheck();
         cy.get('input[type="checkbox"]').eq(2).uncheck();
       });
-      cy.contains('button', 'Save changes').click();
+      cy.contains('button', 'Save changes').realClick();
     });
 
     it('should check the current selections', () => {
@@ -274,7 +291,7 @@ describe('Table', () => {
       checkRowContent(4, ['Drag row', 'Select', 'Entity 4', data[2].description, '4']);
       checkRowContent(5, ['Drag row', 'Select', 'Entity 5', data[4].description, '5']);
 
-      cy.contains('button', 'Save changes').click();
+      cy.contains('button', 'Save changes').realClick();
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 1 Entity 2 Entity 3 Entity 4 Entity 5');
       });
@@ -291,7 +308,7 @@ describe('Table', () => {
         cy.get('button[aria-roledescription="sortable"]').eq(0)
       );
 
-      cy.contains('button', 'Save changes').click();
+      cy.contains('button', 'Save changes').realClick();
 
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Entity 1').should('not.exist');
@@ -371,13 +388,13 @@ describe('Table', () => {
     it('should expand groups and check for accessibility', () => {
       cy.get('tbody').within(() => {
         cy.contains('tr', 'Group 1').within(() => {
-          cy.contains('button', 'Open group').click();
+          cy.contains('button', 'Open group').realClick();
         });
         cy.contains('tr', 'Group 2').within(() => {
-          cy.contains('button', 'Open group').click();
+          cy.contains('button', 'Open group').realClick();
         });
         cy.contains('tr', 'Group 3').within(() => {
-          cy.contains('button', 'Open group').click();
+          cy.contains('button', 'Open group').realClick();
         });
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
@@ -393,10 +410,10 @@ describe('Table', () => {
     it('should sort children element with dnd', () => {
       cy.get('tbody').within(() => {
         cy.contains('tr', 'Group 1').within(() => {
-          cy.contains('Open group').click();
+          cy.contains('Open group').realClick();
         });
         cy.contains('tr', 'Group 3').within(() => {
-          cy.contains('Open group').click();
+          cy.contains('Open group').realClick();
         });
         cy.contains('td', 'Sub 1-1');
         cy.contains('td', 'Sub 1-2');
@@ -426,7 +443,7 @@ describe('Table', () => {
         '12',
       ]);
 
-      cy.contains('button', 'Save changes').click();
+      cy.contains('button', 'Save changes').realClick();
 
       cy.get('[data-testid="sorted-subrows"] > .flex > :nth-child(1)').contains(
         '|Group 1 - Sub 3-1|'
@@ -435,10 +452,10 @@ describe('Table', () => {
 
     it('should add an item to an empty group', () => {
       cy.contains('tr', 'Group 4').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
       cy.contains('tr', 'Group 3').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
 
       cy.realDragAndDrop(
@@ -466,7 +483,7 @@ describe('Table', () => {
 
     it('should empty a group by dragging all items out of it', () => {
       cy.contains('tr', 'Group 1').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
 
       cy.contains('tr', 'dropzone').should('not.exist');
@@ -509,7 +526,7 @@ describe('Table', () => {
 
     it('should not loose selections when dragging into a dropzone', () => {
       cy.contains('tr', 'Group 4').within(() => {
-        cy.contains('button', 'Open group').click();
+        cy.contains('button', 'Open group').realClick();
       });
 
       cy.contains('tr', 'Item 2').within(() => {
@@ -521,128 +538,13 @@ describe('Table', () => {
         cy.get('td').contains('dropzone')
       );
 
-      cy.contains('button', 'Save changes').click();
+      cy.contains('button', 'Save changes').realClick();
 
       cy.get('[data-testid="selected-subrows"]').within(() => {
         cy.contains('Item 2');
       });
     });
 
-    // xit('should sort an expanded row by the header', () => {
-    //   mount(<NestedDnD />);
-    //   cy.contains('children').click();
-    //   cy.get('[data-testid="created_false"]').click();
-    //   cy.contains('children').click();
-    //   checkRowContent(1, ['Entity 3', data[2].description, '3']);
-    //   checkRowContent(2, ['Entity 2', data[0].description, '2']);
-    //   checkRowContent(3, ['Entity 1', data[1].description, '1']);
-    //   checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
-    //   checkRowContent(5, ['Entity b', data[1].children![1].description, '5']);
-    // });
-
-    // const checkChildrenSorting = (from: string, to: string, target: { x: number; y: number }) => {
-    //   mount(<NestedDnD />);
-
-    //   cy.contains('children').click();
-    //   cy.get(from).drag(to, {
-    //     target,
-    //     force: true,
-    //   });
-
-    //   checkRowContent(1, ['Entity 2', data[0].description, '2']);
-    //   checkRowContent(2, ['Entity 1', data[1].description, '1']);
-    //   checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
-    //   checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
-    //   checkRowContent(5, ['Entity 3', data[2].description, '3']);
-
-    //   cy.get('[data-testid="update_items"] > ul > li')
-    //     .should('have.length', 3)
-    //     .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-    //     .should('deep.equal', ['Entity 2', 'Entity 1 Entity b, Entity a', 'Entity 3']);
-    // };
-
-    // xit('should sort children of a group from top to bottom', () => {
-    //   checkChildrenSorting(
-    //     '[data-testid="group_1-draggable-item-0"]',
-    //     '[data-testid="group_1.1"]',
-    //     { x: 5, y: 30 }
-    //   );
-    // });
-
-    // xit('should sort children of a group from bottom to top', () => {
-    //   checkChildrenSorting(
-    //     '[data-testid="group_1-draggable-item-1"]',
-    //     '[data-testid="group_1.0"]',
-    //     { x: 5, y: 0 }
-    //   );
-    // });
-
-    // xit('should move a parent into a group', () => {
-    //   mount(<NestedDnD />);
-    //   cy.contains('children').click();
-
-    //   cy.get('[data-testid="root-draggable-item-0"]').trigger('dragstart');
-    //   cy.get('[data-testid="root-draggable-item-0"]').trigger('dragleave');
-    //   cy.get('[data-testid="group_1.0"]').trigger('drop', {
-    //     target: { x: 5, y: 0 },
-    //   });
-    //   cy.get('[data-testid="root-draggable-item-0"]').trigger('dragend');
-    //   cy.contains('children').click();
-    //   checkRowContent(1, ['Entity 1', data[1].description, '1']);
-    //   checkRowContent(2, ['Entity a', data[1].children![0].description, '4']);
-    //   checkRowContent(3, ['Entity b', data[1].children![1].description, '5']);
-    //   checkRowContent(4, ['Entity 2', data[0].description, '2']);
-    //   checkRowContent(5, ['Entity 3', data[2].description, '3']);
-
-    //   cy.get('[data-testid="update_items"] > ul > li')
-    //     .should('have.length', 2)
-    //     .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-    //     .should('deep.equal', ['Entity 1 Entity a, Entity b, Entity 2', 'Entity 3']);
-    // });
-
-    // xit('should move a child outsides a group', () => {
-    //   mount(<NestedDnD />);
-    //   cy.contains('children').click();
-
-    //   cy.get('[data-testid="group_1-draggable-item-0"]').drag(
-    //     '[data-testid="root-draggable-item-0"]',
-    //     {
-    //       target: { x: 5, y: 0 },
-    //       force: true,
-    //     }
-    //   );
-    //   cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
-    //   cy.contains('children').click();
-    //   checkRowContent(1, ['Entity 2', data[0].description, '2']);
-    //   checkRowContent(2, ['Entity 1', data[1].description, '1']);
-    //   checkRowContent(3, ['Entity 3', data[2].description, '3']);
-    //   checkRowContent(4, ['Entity a', data[1].children![0].description, '4']);
-
-    //   cy.get('[data-testid="update_items"] > ul > li')
-    //     .should('have.length', 4)
-    //     .then($els => Cypress.$.makeArray($els).map(el => el.innerText))
-    //     .should('deep.equal', ['Entity 2', 'Entity 1 Entity b', 'Entity 3', 'Entity a']);
-    // });
-
-    // xdescribe('Fixed groups', () => {
-    //   it('should not move a child outsides a group if editableGroups is false', () => {
-    //     mount(<NestedDnD allowEditGroupsWithDnD={false} />);
-    //     cy.contains('children').click();
-
-    //     cy.get('[data-testid="group_1-draggable-item-0"]').drag(
-    //       '[data-testid="root-draggable-item-1"]',
-    //       {
-    //         target: { x: 5, y: 0 },
-    //         force: true,
-    //       }
-    //     );
-    //     cy.get('[data-testid="group_1-draggable-item-0"]').trigger('dragend');
-    //     checkRowContent(1, ['Entity 2', data[0].description, '2']);
-    //     checkRowContent(2, ['Entity 1', data[1].description, '1']);
-    //     checkRowContent(3, ['Entity a', data[1].children![0].description, '4']);
-    //     checkRowContent(4, ['Entity b', data[1].children![1].description, '5']);
-    //     checkRowContent(5, ['Entity 3', data[2].description, '3']);
-    //   });
-    // });
+    xit('should disable editing groups with dnd', () => {});
   });
 });
