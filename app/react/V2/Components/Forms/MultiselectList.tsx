@@ -27,6 +27,7 @@ interface MultiselectListProps {
   foldableGroups?: boolean;
   singleSelect?: boolean;
   allowSelelectAll?: boolean;
+  startOnSelected?: boolean;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -46,12 +47,23 @@ const MultiselectList = ({
   foldableGroups = false,
   singleSelect = false,
   allowSelelectAll = false,
+  startOnSelected = false,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
-  const [showAll, setShowAll] = useState<boolean>(true);
+  const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (startOnSelected) {
+      const groupsToExpand = items
+        .filter(item => item.items?.some(childItem => value?.includes(childItem.value)))
+        .map(item => item.value);
+
+      setOpenGroups(groupsToExpand);
+    }
+  }, [items, value, startOnSelected]);
 
   useEffect(() => {
     if (value) {
@@ -251,12 +263,13 @@ const MultiselectList = ({
               {
                 label: <Translate>All</Translate>,
                 value: 'true',
-                defaultChecked: true,
+                defaultChecked: !startOnSelected,
               },
               {
                 label: <SelectedCounter selectedItems={selectedItems} />,
                 value: 'false',
                 disabled: selectedItems.length === 0,
+                defaultChecked: startOnSelected,
               },
             ]}
             onChange={applyFilter}

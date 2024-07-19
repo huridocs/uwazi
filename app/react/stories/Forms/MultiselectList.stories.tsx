@@ -15,7 +15,7 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-content">
-        <div className="p-4 m-auto w-full md:w-1/2">
+        <div className="w-full p-4 m-auto md:w-1/2">
           <MultiselectList
             label={args.label}
             items={args.items}
@@ -24,6 +24,8 @@ const Primary: Story = {
             checkboxes={args.checkboxes}
             foldableGroups={args.foldableGroups}
             allowSelelectAll={args.allowSelelectAll}
+            startOnSelected={args.startOnSelected}
+            value={args.value}
           />
         </div>
       </div>
@@ -39,6 +41,7 @@ const Basic: Story = {
     foldableGroups: true,
     hasErrors: false,
     allowSelelectAll: false,
+    startOnSelected: false,
     items: [
       { searchLabel: 'Someone', label: 'Someone', value: 'someone' },
       { searchLabel: 'Another', label: 'Another', value: 'another' },
@@ -121,6 +124,47 @@ const WithGroups: Story = {
   },
 };
 
-export { Basic, WithError, WithGroups };
+const InitialState: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    value: ['red', 'orange', 'banana'],
+    startOnSelected: true,
+    items: [
+      {
+        searchLabel: 'Colors',
+        label: 'Colors',
+        value: 'colors',
+        items: [
+          { searchLabel: 'Red', label: 'Red', value: 'red' },
+          { searchLabel: 'Blue', label: 'Blue', value: 'blue' },
+          { searchLabel: 'Green', label: 'Green', value: 'green' },
+        ],
+      },
+      {
+        searchLabel: 'Animals',
+        label: 'Animals',
+        value: 'animals',
+        items: [
+          { searchLabel: 'Dog', label: 'Dog', value: 'dog' },
+          { searchLabel: 'Cat', label: 'Cat', value: 'cat' },
+          { searchLabel: 'Bird', label: 'Bird', value: 'bird' },
+        ],
+      },
+      {
+        searchLabel: 'Fruits',
+        label: 'Fruits',
+        value: 'fruits',
+        items: [
+          { searchLabel: 'Apple', label: 'Apple', value: 'apple' },
+          { searchLabel: 'Banana', label: 'Banana', value: 'banana' },
+          { searchLabel: 'Orange', label: 'Orange', value: 'orange' },
+        ],
+      },
+    ],
+  },
+};
+
+export { Basic, WithError, WithGroups, InitialState };
 
 export default meta;
