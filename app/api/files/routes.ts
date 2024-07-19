@@ -57,6 +57,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
+    // AUDIT - [x] this should be only admin
     needsAuthorization(['admin']),
     uploadMiddleware('custom'),
     activitylogMiddleware,
@@ -92,10 +93,10 @@ export default (app: Application) => {
   app.post(
     '/api/files',
     // AUDIT
-    // the needsAuth is probably correct but,
-    // editors should not be able to create custom files
-    // collaborators should not be allowed to create custom files
-    // collaborators should not be allowed to create files attached to entities that they do not have permissions on
+    // - [x] the needsAuth is probably correct but,
+    // - [x] editors should not be able to create custom files
+    // - [x] collaborators should not be allowed to create custom files
+    // - [x] collaborators should not be allowed to create files attached to entities that they do not have permissions on
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
@@ -103,13 +104,16 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    (req, res, next) => {
-      files
-        .save(req.body)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req, res) => {
+      if (['editor', 'collaborator'].includes(req.user.role || '') && req.body.type === 'custom') {
+        throw createError('forbidden file type', 401);
+      }
+
+      if (!(await checkEntityPermission(req.body))) {
+        throw createError('file not found', 404);
+      }
+      const result = await files.save(req.body);
+      res.json(result);
     }
   );
 
@@ -224,8 +228,8 @@ export default (app: Application) => {
     '/api/files',
     // AUDIT
     // - [x] the needsAuth is probably correct but,
-    // editors should not be able to delete custom files
-    // collaborators should not be allowed to delete custom files
+    // - [ ] editors should not be able to delete custom files
+    // - [ ] collaborators should not be allowed to delete custom files
     // - [x] collaborators should not be allowed to delete files attached to entities that they do not have permissions on
     needsAuthorization(['admin', 'editor', 'collaborator']),
 
@@ -259,9 +263,10 @@ export default (app: Application) => {
   app.get(
     '/api/files',
     // AUDIT
-    // the needsAuth is probably correct but,
-    // editors should not be able to upload custom uploads
-    // and collaborators should not be allowed to upload custom files or files attached to entities that they do not have permissions on ?
+    // - [x] the needsAuth is probably correct but.
+    // - [ ] editors should not be able to see custom uploads.
+    // - [ ] collaborators should not be allowed to see custom files.
+    // - [ ] collaborators should not be allowed to see files attached to entities that they do not have permissions on.
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',

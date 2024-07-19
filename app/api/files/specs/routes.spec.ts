@@ -3,6 +3,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
+import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
 import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
@@ -12,14 +13,16 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
+import { UserSchema } from 'shared/types/userType';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { storage } from '../storage';
 import {
   adminUser,
+  collabUser,
   externalUrlFileId,
   fixtures,
   restrictedUploadId2,
@@ -31,8 +34,7 @@ import {
 expect.extend({ toEmitEvent, toEmitEventWith });
 
 describe('files routes', () => {
-  const collabUser = fixtures.users!.find(u => u.username === 'collab');
-  let requestMockedUser = collabUser;
+  let requestMockedUser: UserSchema = collabUser;
 
   const app: Application = setUpApp(
     uploadRoutes,
@@ -42,91 +44,143 @@ describe('files routes', () => {
     }
   );
 
+  const mockCurrentUser = (user: UserSchema) => {
+    requestMockedUser = user;
+    testingEnvironment.setPermissions(user);
+  };
+
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
-    requestMockedUser = collabUser;
-    testingEnvironment.setPermissions(collabUser);
+    mockCurrentUser(collabUser);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
-    beforeEach(async () => {
-      await request(app)
-        .post('/api/files')
-        .send({ _id: uploadId.toString(), originalname: 'newName' });
-    });
-
-    it('should save file on the body', async () => {
-      const [upload] = await files.get({ _id: uploadId.toString() });
-      expect(upload).toEqual(
-        expect.objectContaining({
-          originalname: 'newName',
-        })
-      );
-    });
-
-    it('should reindex all entities that are related to the saved file', async () => {
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
-    });
-
-    it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
-      const emitSpy = spyOnEmit();
-
-      const [original] = await files.get({ _id: uploadId });
-
-      await request(app)
-        .post('/api/files')
-        .send({
-          ...original,
-          extractedMetadata: [
-            {
-              name: 'propertyName',
-              selection: {
-                text: 'something',
-                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
-              },
-            },
-          ],
-        });
-
-      const [after] = await files.get({ _id: uploadId });
-      emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
-      emitSpy.restore();
-    });
-
-    it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
-      const fileInfo = {
-        creationDate: 1,
-        entity: 'someid',
-        originalname: 'doc.pdf',
-        type: 'document',
-        language: 'eng',
-      };
-      const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
-      await expect(caller).toEmitEventWith(FileCreatedEvent, {
-        newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
-      });
-      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
-    });
-
-    describe('when external url file', () => {
-      it('should guess the mimetype', async () => {
+    describe('editor user', () => {
+      it('should not have permissions to post files that are of type custom', async () => {
+        mockCurrentUser(editorUser);
         await request(app)
           .post('/api/files')
-          .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
+          .expect(401);
+      });
+    });
 
-        const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
-        expect(file.mimetype).toBe('image/png');
+    describe('collaborator user', () => {
+      it('should not have permissions to post files that are of type custom', async () => {
+        mockCurrentUser(collabUser);
+        await request(app)
+          .post('/api/files')
+          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
+          .expect(401);
       });
 
-      it('should return a validation error for a no secured url', async () => {
-        const rest = await request(app)
+      it('should not have permissions to post files without permission', async () => {
+        mockCurrentUser(writerUser);
+        await request(app)
           .post('/api/files')
-          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          .send({
+            _id: uploadId.toString(),
+            entity: 'restrictedSharedId',
+            originalname: 'custom_file',
+            type: 'document',
+          })
+          .expect(200);
 
-        expect(rest.status).toBe(400);
+        mockCurrentUser(collabUser);
+        await request(app)
+          .post('/api/files')
+          .send({
+            _id: uploadId.toString(),
+            entity: 'restrictedSharedId',
+            originalname: 'custom_file',
+            type: 'document',
+          })
+          .expect(404);
+      });
+    });
+
+    describe('Basic save', () => {
+      beforeEach(async () => {
+        mockCurrentUser(adminUser);
+        await request(app)
+          .post('/api/files')
+          .send({ _id: uploadId.toString(), originalname: 'newName', entity: 'sharedId1' })
+          .expect(200);
+      });
+
+      it('should save file on the body', async () => {
+        const uploads = await files.get({ _id: uploadId.toString() });
+        expect(uploads[0]).toEqual(
+          expect.objectContaining({
+            originalname: 'newName',
+          })
+        );
+      });
+
+      it('should reindex all entities that are related to the saved file', async () => {
+        expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+      });
+
+      it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
+        const emitSpy = spyOnEmit();
+
+        const [original] = await files.get({ _id: uploadId });
+
+        await request(app)
+          .post('/api/files')
+          .send({
+            ...original,
+            extractedMetadata: [
+              {
+                name: 'propertyName',
+                selection: {
+                  text: 'something',
+                  selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+                },
+              },
+            ],
+          });
+
+        const [after] = await files.get({ _id: uploadId });
+        emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
+        emitSpy.restore();
+      });
+
+      it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
+        const fileInfo = {
+          creationDate: 1,
+          entity: 'sharedId1',
+          originalname: 'doc.pdf',
+          type: 'document',
+          language: 'eng',
+        };
+        const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
+        await expect(caller).toEmitEventWith(FileCreatedEvent, {
+          newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
+        });
+        await expect(caller).not.toEmitEvent(FileUpdatedEvent);
+      });
+
+      describe('when external url file', () => {
+        it('should guess the mimetype', async () => {
+          await request(app)
+            .post('/api/files')
+            .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+          const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
+          expect(file.mimetype).toBe('image/png');
+        });
+
+        it('should return a validation error for a no secured url', async () => {
+          const rest = await request(app)
+            .post('/api/files')
+            .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+          expect(rest.status).toBe(400);
+        });
       });
     });
   });
