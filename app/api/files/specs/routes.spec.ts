@@ -210,7 +210,7 @@ describe('files routes', () => {
 
     it('should delete upload and return the response', async () => {
       await request(app)
-        .post('/api/files/upload/custom')
+        .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
