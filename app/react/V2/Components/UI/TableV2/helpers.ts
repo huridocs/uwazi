@@ -51,24 +51,48 @@ const dndSortHandler = <T extends RowWithId<T>>({
   );
 
   if (disableEditingGroups && activeParent !== overParent) {
-    return state;
+    return currentState;
   }
 
-  const activePosition = activeParent
-    ? state
-        .find(item => item.rowId === activeParent)
-        ?.subRows?.findIndex(element => element.rowId === activeId)
-    : state.findIndex(element => element.rowId === activeId);
+  const { active: activePosition = 0, dropped: droppedPosition = 0 } = state.reduce(
+    // eslint-disable-next-line max-statements
+    ({ active, dropped }, item, index) => {
+      let droppedIndex = dropped;
+      let activeIndex = active;
 
-  const droppedPosition = overParent
-    ? state
-        .find(item => item.rowId === overParent)
-        ?.subRows?.findIndex(element => element.rowId === overId)
-    : state.findIndex(element => element.rowId === overId);
+      if (active === undefined) {
+        if (item.rowId === activeParent) {
+          activeIndex = item.subRows?.findIndex(element => element.rowId === activeId) || 0;
+        } else if (item.rowId === activeId) {
+          activeIndex = index;
+        }
+      }
+
+      if (dropped === undefined) {
+        if (item.rowId === overParent) {
+          droppedIndex = item.subRows?.findIndex(element => element.rowId === overId) || 0;
+        } else if (item.rowId === overId) {
+          droppedIndex = index;
+        }
+      }
+
+      return {
+        active: activeIndex,
+        dropped: droppedIndex,
+      };
+    },
+    {
+      active: undefined,
+      dropped: undefined,
+    } as {
+      active?: number;
+      dropped?: number;
+    }
+  );
 
   const activeElement = activeParent
     ? state.find(item => item.rowId === activeParent)?.subRows?.splice(activePosition, 1)[0]
-    : state.splice(activePosition, 1)[0];
+    : state.splice(activePosition || 0, 1)[0];
 
   if (!activeElement || (Object.hasOwn(activeElement, 'subRows') && overParent)) {
     return currentState;
