@@ -44,7 +44,7 @@ type TableProps<T extends RowWithId<T>> = {
     selectedRows: RowSelectionState;
     sortingState: SortingState;
   }) => void;
-  enableDnd?: boolean;
+  dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections?: boolean;
   defaultSorting?: SortingState;
   sortingFn?: (sorting: SortingState) => void;
@@ -57,7 +57,7 @@ const Table = <T extends RowWithId<T>>({
   columns,
   data,
   onChange,
-  enableDnd,
+  dnd,
   enableSelections,
   defaultSorting,
   sortingFn,
@@ -92,7 +92,7 @@ const Table = <T extends RowWithId<T>>({
       });
     }
 
-    if (enableDnd) {
+    if (dnd?.enable) {
       tableColumns.unshift({
         id: 'drag-handle',
         cell: RowDragHandleCell,
@@ -102,7 +102,7 @@ const Table = <T extends RowWithId<T>>({
     }
 
     return tableColumns;
-  }, [columns, data, enableSelections, enableDnd]);
+  }, [columns, data, enableSelections, dnd]);
 
   const table = useReactTable({
     data: dataState,
@@ -151,7 +151,13 @@ const Table = <T extends RowWithId<T>>({
           table.resetSorting();
           tableRows = table.getSortedRowModel().rows.map(row => row.original);
         }
-        return dndSortHandler(tableRows, rowIds, active.id, over.id);
+        return dndSortHandler({
+          currentState: tableRows,
+          dataIds: rowIds,
+          activeId: active.id,
+          overId: over.id,
+          disableEditingGroups: dnd?.disableEditingGroups,
+        });
       });
     }
   };

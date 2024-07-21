@@ -26,9 +26,13 @@ describe('Table', () => {
     cy.checkA11y();
   });
 
-  it('Should return a table with the columns and row specified', () => {
+  beforeEach(() => {
+    Basic.args.defaultSorting = undefined;
     Basic.args.enableSelections = false;
-    Basic.args.enableDnd = false;
+    Basic.args.dnd = { enable: false, disableEditingGroups: false };
+  });
+
+  it('Should return a table with the columns and row specified', () => {
     mount(<Basic />);
     const toStrings = (cells: JQuery<HTMLElement>) => map(cells, 'textContent');
     cy.get('tr th').then(toStrings).should('eql', ['Title', 'Description', 'Date added']);
@@ -57,15 +61,7 @@ describe('Table', () => {
   });
 
   describe('Sorting', () => {
-    after(() => {
-      Basic.args.defaultSorting = undefined;
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = false;
-    });
-
     it('Should be sortable by title', () => {
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = false;
       mount(<Basic />);
 
       cy.get('th').contains('Title').realClick();
@@ -79,8 +75,6 @@ describe('Table', () => {
     });
 
     it('should return to the default sorting', () => {
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = false;
       mount(<Basic />);
       cy.get('th').contains('Title').realClick().realClick().realClick();
 
@@ -93,7 +87,6 @@ describe('Table', () => {
 
     it('should keep selections when sorting', () => {
       Basic.args.enableSelections = true;
-      Basic.args.enableDnd = false;
       mount(<Basic />);
 
       cy.get('tbody').within(() => {
@@ -176,12 +169,10 @@ describe('Table', () => {
       cy.get('tr th').contains('Date added').children().should('have.length', 1);
 
       cy.get('th').contains('Description').realClick();
-      checkRowContent(1, ['Select', 'Entity 2', data[0].description, '2']);
+      checkRowContent(1, ['Entity 2', data[0].description, '2']);
     });
 
     it('Should sort the rows with the sorting state specified', () => {
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = false;
       Basic.args.defaultSorting = [{ id: 'created', desc: false }];
       mount(<Basic />);
 
@@ -191,9 +182,7 @@ describe('Table', () => {
     });
 
     it('should reset sorting state when using dnd after sorting', () => {
-      Basic.args.defaultSorting = undefined;
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = true;
+      Basic.args.dnd = { enable: true };
       mount(<Nested />);
 
       cy.contains('tr', 'Group 1').within(() => {
@@ -212,8 +201,8 @@ describe('Table', () => {
     });
 
     it('it should sort items within groups', () => {
+      Nested.args.dnd = { enable: false };
       Nested.args.enableSelections = false;
-      Nested.args.enableDnd = false;
       mount(<Nested />);
 
       cy.contains('tr', 'Group 1').within(() => {
@@ -233,8 +222,6 @@ describe('Table', () => {
 
     it('should allow manually controlling the sorting', () => {
       const setSortingSpy = cy.stub().as('setSortingSpy');
-      Basic.args.enableSelections = false;
-      Basic.args.enableDnd = false;
       Basic.args.sortingFn = setSortingSpy;
 
       mount(<Basic />);
@@ -251,7 +238,7 @@ describe('Table', () => {
   describe('Selections', () => {
     beforeEach(() => {
       Basic.args.enableSelections = true;
-      Basic.args.enableDnd = true;
+      Basic.args.dnd = { enable: true };
       mount(<Basic />);
       cy.contains('Select all').realClick();
       cy.get('tbody').within(() => {
@@ -274,7 +261,8 @@ describe('Table', () => {
 
   describe('DnD', () => {
     beforeEach(() => {
-      Basic.args.enableDnd = true;
+      Basic.args.dnd = { enable: true };
+      Basic.args.enableSelections = true;
       mount(<Basic />);
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 2 Entity 1 Entity 4 Entity 3 Entity 5');
@@ -333,7 +321,7 @@ describe('Table', () => {
 
   describe('Nested data', () => {
     beforeEach(() => {
-      Nested.args.enableDnd = true;
+      Nested.args.dnd = { enable: true };
       Nested.args.enableSelections = true;
       mount(<Nested />);
     });
@@ -552,6 +540,42 @@ describe('Table', () => {
       });
     });
 
-    xit('should disable editing groups with dnd', () => {});
+    it('should disable editing groups with dnd and allow sorting them internally', () => {
+      Nested.args.dnd = { enable: true, disableEditingGroups: true };
+      mount(<Nested />);
+
+      cy.contains('tr', 'Group 4').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(5),
+        cy.get('td').contains('dropzone')
+      );
+
+      checkRowContent(5, ['dropzone']);
+
+      cy.contains('tr', 'Group 2').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(7),
+        cy.get('td').contains('Sub 2-1')
+      );
+
+      checkRowContent(2, ['Drag row', 'Select', 'Group', 'Group 2']);
+      checkRowContent(3, ['Drag row', 'Select', '', 'Sub 2-1']);
+      checkRowContent(4, ['Drag row', 'Select', '', 'Sub 2-2']);
+      checkRowContent(9, ['Drag row', 'Select', '', 'Item 2']);
+
+      cy.realDragAndDrop(
+        cy.get('button[aria-roledescription="sortable"]').eq(2),
+        cy.get('td').contains('Sub 2-2')
+      );
+
+      checkRowContent(3, ['Drag row', 'Select', '', 'Sub 2-2']);
+      checkRowContent(4, ['Drag row', 'Select', '', 'Sub 2-1']);
+    });
   });
 });

@@ -190,9 +190,9 @@ Cypress.Commands.add('blankState', () => {
 Cypress.Commands.add('realDragAndDrop', (subject, target) => {
   subject
     .realMouseDown({ button: 'left', position: 'center' })
-    .realMouseMove(0, 10, { position: 'center' })
+    .realMouseMove(0, 0, { position: 'center' })
     .wait(100);
-  target.realMouseMove(0, 10, { position: 'center' }).realMouseUp().wait(100);
+  target.realMouseMove(0, 0, { position: 'center' }).realMouseUp().wait(100);
 });
 
 export {};

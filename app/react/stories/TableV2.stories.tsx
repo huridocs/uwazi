@@ -9,7 +9,7 @@ import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fi
 type StoryProps = {
   columns: NewTableProps<BasicData | DataWithGroups>['columns'];
   tableData: any[];
-  enableDnd: boolean;
+  dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections: boolean;
   defaultSorting: SortingState;
   sortingFn?: () => void;
@@ -37,7 +37,7 @@ const nestedColumns = [
 const StoryComponent = ({
   columns,
   tableData,
-  enableDnd,
+  dnd,
   enableSelections,
   defaultSorting,
   sortingFn,
@@ -62,7 +62,7 @@ const StoryComponent = ({
             setSorting(sortingState);
           }}
           sortingFn={sortingFn}
-          enableDnd={enableDnd}
+          dnd={dnd}
           enableSelections={enableSelections}
           header={
             <div className="flex flex-col gap-1 items-start">
@@ -174,7 +174,7 @@ const Primary: Story = {
       <StoryComponent
         tableData={args.tableData}
         columns={args.columns}
-        enableDnd={args.enableDnd}
+        dnd={{ enable: args.dnd?.enable, disableEditingGroups: args.dnd?.disableEditingGroups }}
         enableSelections={args.enableSelections}
         defaultSorting={args.defaultSorting}
         sortingFn={args.sortingFn}
@@ -186,22 +186,20 @@ const Primary: Story = {
 const Basic = {
   ...Primary,
   args: {
-    tableData: basicData,
-    columns: basicColumns,
-    enableDnd: true,
+    dnd: { enable: true, disableEditingGroups: false },
     enableSelections: true,
     defaultSorting: undefined,
+    tableData: basicData,
+    columns: basicColumns,
   },
 };
 
 const Nested = {
   ...Primary,
   args: {
+    ...Basic.args,
     tableData: dataWithGroups,
     columns: nestedColumns,
-    enableDnd: true,
-    enableSelections: true,
-    defaultSorting: undefined,
   },
 };
 

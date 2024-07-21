@@ -23,12 +23,19 @@ const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['data']) => {
 };
 
 // eslint-disable-next-line max-statements
-const dndSortHandler = <T extends RowWithId<T>>(
-  currentState: TableProps<T>['data'],
-  dataIds: { id: UniqueIdentifier; parentId?: string }[],
-  activeId: string | number,
-  overId: string | number
-): TableProps<T>['data'] => {
+const dndSortHandler = <T extends RowWithId<T>>({
+  currentState,
+  dataIds,
+  activeId,
+  overId,
+  disableEditingGroups,
+}: {
+  currentState: TableProps<T>['data'];
+  dataIds: { id: UniqueIdentifier; parentId?: string }[];
+  activeId: string | number;
+  overId: string | number;
+  disableEditingGroups?: boolean;
+}): TableProps<T>['data'] => {
   const state = cloneDeep(currentState);
 
   const { activeParent, overParent } = dataIds.reduce(
@@ -42,6 +49,10 @@ const dndSortHandler = <T extends RowWithId<T>>(
       overParent?: string;
     }
   );
+
+  if (disableEditingGroups && activeParent !== overParent) {
+    return state;
+  }
 
   const activePosition = activeParent
     ? state
