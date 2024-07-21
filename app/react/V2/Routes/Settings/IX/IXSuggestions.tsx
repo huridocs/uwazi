@@ -17,7 +17,7 @@ import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
+import { Button, PaginationState, Paginator, Table_deprecated as Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
@@ -290,7 +290,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -318,7 +318,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"

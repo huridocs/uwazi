@@ -2,12 +2,12 @@ import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
-import { Button, NewTable, NewTableProps } from 'V2/Components/UI';
+import { Button, Table, TableProps } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
-  columns: NewTableProps<BasicData | DataWithGroups>['columns'];
+  columns: TableProps<BasicData | DataWithGroups>['columns'];
   tableData: any[];
   dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections: boolean;
@@ -52,7 +52,7 @@ const StoryComponent = ({
   return (
     <div className="tw-content">
       <div className="w-full">
-        <NewTable
+        <Table
           data={dataState}
           columns={columns}
           defaultSorting={defaultSorting}
@@ -162,7 +162,7 @@ const StoryComponent = ({
 };
 
 const meta: Meta<StoryProps> = {
-  title: 'Components/NewTable',
+  title: 'Components/TableV2',
   component: StoryComponent,
 };
 

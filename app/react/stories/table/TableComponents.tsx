@@ -1,12 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { get } from 'lodash';
 import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
-import { EmbededButton, Table, TableProps } from 'V2/Components/UI';
+import {
+  EmbededButton,
+  Table_deprecated as Table,
+  TableProps_deprecated as TableProps,
+} from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
-import { DataWithGroups } from './fixtures';
+import { get } from 'lodash';
 
 type SampleSchema = {
   title: string;

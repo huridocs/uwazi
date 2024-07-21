@@ -5,7 +5,7 @@ import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react
 import { Row } from '@tanstack/react-table';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table_deprecated as Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import {

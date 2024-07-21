@@ -8,7 +8,7 @@ import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
-import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table_deprecated as Table } from 'V2/Components/UI';
 import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { IXExtractorInfo } from 'V2/shared/types';

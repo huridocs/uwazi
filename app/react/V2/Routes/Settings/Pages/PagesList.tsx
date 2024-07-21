@@ -6,7 +6,7 @@ import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
-import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
+import { Button, ConfirmationModal, Table_deprecated as Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Page } from 'app/V2/shared/types';
 import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
