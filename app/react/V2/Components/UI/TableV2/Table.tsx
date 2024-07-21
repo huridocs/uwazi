@@ -182,21 +182,14 @@ const Table = <T extends RowWithId<T>>({
           <thead className="bg-gray-50">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map((hdr, index) => {
+                {headerGroup.headers.map(hdr => {
                   const headerSorting = hdr.column.getCanSort();
-                  let calculatedPadding = '';
-
-                  if (index === 0) {
-                    calculatedPadding = 'pl-4';
-                  } else if (index === headerGroup.headers.length - 1) {
-                    calculatedPadding = 'pr-4';
-                  }
 
                   return (
                     <th
                       key={hdr.id}
                       colSpan={hdr.colSpan}
-                      className={`py-4 border-b ${calculatedPadding}`}
+                      className="p-4 border-b"
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span

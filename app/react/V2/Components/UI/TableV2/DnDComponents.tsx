@@ -22,7 +22,18 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   }, [isDragging]);
 
   return (
-    <button {...attributes} {...listeners} type="button" className="w-2 h-6 bg-primary-700">
+    <button
+      {...attributes}
+      {...listeners}
+      type="button"
+      style={{
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%,-50%)',
+      }}
+      className={`w-4 h-4/5  transition-colors ${isDragging ? 'bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-700'}`}
+    >
       <span className="sr-only">
         <Translate>Drag row</Translate>
       </span>
@@ -63,27 +74,13 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`border-b hover:bg-gray-50 ${expanded ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
+        className={`border-b hover:bg-gray-50 transition-colors ${expanded ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
       >
-        {row.getVisibleCells().map((cell, index) => {
-          let calculatedPadding = '';
-
-          if (index === 0) {
-            calculatedPadding = 'pl-4';
-          } else if (index === row.getVisibleCells().length - 1) {
-            calculatedPadding = 'pr-4';
-          }
-
-          return (
-            <td
-              key={cell.id}
-              style={{ width: cell.column.getSize() }}
-              className={`py-2 ${calculatedPadding}`}
-            >
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          );
-        })}
+        {row.getVisibleCells().map(cell => (
+          <td key={cell.id} style={{ width: cell.column.getSize() }} className="relative px-4 py-2">
+            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          </td>
+        ))}
       </tr>
 
       {isEmpty && expanded && (
