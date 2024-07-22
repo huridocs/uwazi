@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.176.0",
+  "version": "1.176.1",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -81,6 +81,7 @@
     "bl": "^4.0.3",
     "trim": "0.0.3",
     "normalize-url": "6.0.1",
+    "node-fetch": "2.6.7",
     "@types/istanbul-lib-report": "^3.0.0",
     "underscore": "^1.13.6",
     "socket.io-parser": "4.2.4",
@@ -134,7 +135,6 @@
     "cookie": "0.6.0",
     "cookie-parser": "1.4.6",
     "cors": "^2.8.5",
-    "cross-fetch": "^4.0.0",
     "crypto-js": "^4.2.0",
     "csvtojson": "^2.0.10",
     "date-fns": "^3.6.0",
@@ -157,6 +157,7 @@
     "immutability-helper": "^3.1.1",
     "immutable": "^3.7.6",
     "is-reachable": "^5.2.1",
+    "isomorphic-fetch": "3.0.0",
     "jotai": "^2.8.0",
     "json-schema": "^0.4.0",
     "json-schema-to-typescript": "^13.1.2",

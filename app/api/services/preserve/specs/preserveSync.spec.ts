@@ -1,4 +1,3 @@
-import fetch from 'cross-fetch';
 import backend from 'fetch-mock';
 import entities from 'api/entities';
 import { generateFileName, testingUploadPaths } from 'api/files/filesystem';
@@ -23,11 +22,6 @@ import { config } from 'api/config';
 import { preserveSync } from '../preserveSync';
 import { preserveSyncModel } from '../preserveSyncModel';
 import { anotherTemplateId, fixtures, templateId, thesauri1Id, user } from './fixtures';
-
-Object.assign(backend.config, {
-  Response,
-  fetch,
-});
 
 const mockVault = async (evidences: any[], token: string = '', isoDate = '') => {
   const host = 'http://preserve-testing.org';
