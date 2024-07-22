@@ -2269,6 +2269,10 @@ input[type="range"]::-ms-fill-lower {
   flex-grow: 1;
 }
 
+.table-fixed {
+  table-layout: fixed;
+}
+
 .border-collapse {
   border-collapse: collapse;
 }

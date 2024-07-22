@@ -46,7 +46,7 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
         top: '50%',
         transform: 'translate(-50%,-50%)',
       }}
-      className={`w-4 h-4/5  transition-colors ${isDragging ? 'bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-700'}`}
+      className={`w-4 h-4/5 transition-colors ${isDragging ? 'bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-700'}`}
     >
       <span className="sr-only">
         <Translate>Drag row</Translate>
@@ -97,7 +97,7 @@ const DraggableRow = <T extends RowWithId<T>>({
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`text-indigo-700 border-b transition-colors hover:bg-gray-50 ${parentChildStyles}`}
+        className={`text-gray-900 border-b transition-colors hover:bg-gray-50 ${parentChildStyles}`}
       >
         {row.getVisibleCells().map(cell => (
           <td key={cell.id} style={{ width: cell.column.getSize() }} className="relative px-4 py-2">
@@ -109,7 +109,7 @@ const DraggableRow = <T extends RowWithId<T>>({
       {isEmpty && expanded && (
         <tr
           ref={dropNoderef}
-          className={`border-b text-indigo-700 transition-colors bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100 ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
+          className={`border-b text-gray-900 transition-colors bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100 ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
         >
           <td className="px-4 py-2" colSpan={colSpan}>
             <Translate>Drop to add</Translate>

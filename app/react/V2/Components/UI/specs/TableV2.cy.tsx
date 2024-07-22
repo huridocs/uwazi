@@ -453,7 +453,7 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(3),
-        cy.get('td').contains('dropzone')
+        cy.get('td').contains('Drop to add')
       );
 
       checkRowContent(5, [
@@ -479,7 +479,7 @@ describe('Table', () => {
         cy.contains('button', 'Open group').realClick();
       });
 
-      cy.contains('tr', 'dropzone').should('not.exist');
+      cy.contains('tr', 'Drop to add').should('not.exist');
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(1),
@@ -490,11 +490,11 @@ describe('Table', () => {
         cy.get('button[aria-roledescription="sortable"]').eq(0)
       );
 
-      cy.contains('tr', 'dropzone').should('exist');
+      cy.contains('tr', 'Drop to add').should('exist');
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(7),
-        cy.get('td').contains('dropzone')
+        cy.get('td').contains('Drop to add')
       );
 
       checkRowContent(3, [
@@ -514,7 +514,7 @@ describe('Table', () => {
         '60',
       ]);
 
-      cy.contains('tr', 'dropzone').should('not.exist');
+      cy.contains('tr', 'Drop to add').should('not.exist');
     });
 
     it('should not loose selections when dragging into a dropzone', () => {
@@ -528,7 +528,7 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(5),
-        cy.get('td').contains('dropzone')
+        cy.get('td').contains('Drop to add')
       );
 
       cy.contains('button', 'Save changes').realClick();
@@ -548,10 +548,10 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(5),
-        cy.get('td').contains('dropzone')
+        cy.get('td').contains('Drop to add')
       );
 
-      checkRowContent(5, ['dropzone']);
+      checkRowContent(5, ['Drop to add']);
 
       cy.contains('tr', 'Group 2').within(() => {
         cy.contains('button', 'Open group').realClick();

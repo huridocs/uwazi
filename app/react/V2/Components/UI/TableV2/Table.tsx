@@ -79,7 +79,7 @@ const Table = <T extends RowWithId<T>>({
         id: 'group-button',
         cell: GroupCell,
         header: GroupHeader,
-        size: 0,
+        size: 80,
       });
     }
 
@@ -176,7 +176,7 @@ const Table = <T extends RowWithId<T>>({
       sensors={sensors}
     >
       <div className="rounded-md shadow">
-        <table className={`w-full ${className || ''}`}>
+        <table className={`w-full table-fixed ${className || ''}`}>
           {header && <caption className="p-4">{header}</caption>}
 
           <thead className="bg-gray-50">
@@ -190,6 +190,7 @@ const Table = <T extends RowWithId<T>>({
                       key={hdr.id}
                       colSpan={hdr.colSpan}
                       className="p-4 border-b"
+                      style={{ width: hdr.column.getSize() }}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
