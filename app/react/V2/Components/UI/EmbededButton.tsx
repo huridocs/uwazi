@@ -58,7 +58,7 @@ const EmbededButton = ({
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-1 text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-none`}
+      className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-[2px] text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-none`}
       form={form}
     >
       <div className="flex flex-row gap-1 justify-center items-center">
