@@ -57,7 +57,6 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
-    // AUDIT - [x] this should be only admin
     needsAuthorization(['admin']),
     uploadMiddleware('custom'),
     activitylogMiddleware,
@@ -92,11 +91,6 @@ export default (app: Application) => {
 
   app.post(
     '/api/files',
-    // AUDIT
-    // - [x] the needsAuth is probably correct but,
-    // - [x] editors should not be able to create custom files
-    // - [x] collaborators should not be allowed to create custom files
-    // - [x] collaborators should not be allowed to create files attached to entities that they do not have permissions on
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
@@ -226,11 +220,6 @@ export default (app: Application) => {
 
   app.delete(
     '/api/files',
-    // AUDIT
-    // - [x] the needsAuth is probably correct but,
-    // - [x] editors should not be able to delete custom files
-    // - [x] collaborators should not be allowed to delete custom files
-    // - [x] collaborators should not be allowed to delete files attached to entities that they do not have permissions on
     needsAuthorization(['admin', 'editor', 'collaborator']),
 
     validation.validateRequest({
@@ -269,11 +258,6 @@ export default (app: Application) => {
 
   app.get(
     '/api/files',
-    // AUDIT
-    // - [x] the needsAuth is probably correct but.
-    // - [ ] editors should not be able to see custom uploads.
-    // - [ ] collaborators should not be allowed to see custom files.
-    // - [x]* collaborators should not be allowed to see files attached to entities that they do not have permissions on.
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',
