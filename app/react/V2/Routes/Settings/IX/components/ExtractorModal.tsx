@@ -189,6 +189,7 @@ const ExtractorModal = ({
             checkboxes
             foldableGroups
             allowSelelectAll={values.length > 0}
+            startOnSelected={values.length > 0}
           />
         </div>
         <div className={`${step !== 2 && 'hidden'} mt-6`}>

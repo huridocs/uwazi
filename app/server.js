@@ -77,7 +77,7 @@ const http = Server(app);
 
 const uncaughtError = error => {
   handleError(error, { uncaught: true });
-  throw error;
+  process.exit(1);
 };
 
 process.on('unhandledRejection', uncaughtError);

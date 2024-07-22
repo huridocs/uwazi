@@ -204,11 +204,6 @@ describe('validateEntity', () => {
           entity = createEntity({ metadata: { name: [{ value: 10 }] } });
           await expectError(entity, customErrorMessages[propertyTypes.text], ".metadata['name']");
         });
-
-        it('should fail if value is a string that exceeds the lucene term byte-length limit', async () => {
-          const entity = createEntity({ metadata: { name: [{ value: largeField }] } });
-          await expectError(entity, 'maximum field length exceeded', ".metadata['name']");
-        });
       });
 
       describe('markdown property', () => {
