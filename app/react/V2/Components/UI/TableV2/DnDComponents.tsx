@@ -7,6 +7,9 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { RowWithId } from './Table';
 
+const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
+const childIndicatorClass = 'shadow-[inset_4px_0_#3949AB]';
+
 const inactiveGradientStyle: CSSProperties = {
   position: 'absolute',
   left: '50%',
@@ -26,7 +29,7 @@ const getSytles = (expanded: boolean, isOver: boolean) => {
   const expandedGroupStyles = expanded
     ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
     : '';
-  const dndHoverStyles = isOver ? 'border-b-indigo-700' : '';
+  const dndHoverStyles = isOver ? dndHoverClass : '';
   return `${expandedGroupStyles} ${dndHoverStyles}`;
 };
 
@@ -117,7 +120,7 @@ const DraggableRow = <T extends RowWithId<T>>({
           <td
             key={cell.id}
             style={{ width: cell.column.getSize() }}
-            className={`relative px-4 py-2 ${isChild && groupColumnIndex === index ? 'border-l border-l-indigo-700' : ''}`}
+            className={`relative px-4 py-2 ${isChild && groupColumnIndex === index ? childIndicatorClass : ''}`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
@@ -127,7 +130,7 @@ const DraggableRow = <T extends RowWithId<T>>({
       {isEmpty && expanded && (
         <tr
           ref={dropNoderef}
-          className={`border-b text-gray-900 transition-colors ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
+          className={`border-b text-gray-900 transition-colors ${isOverDropzone ? dndHoverClass : ''}`}
         >
           <td className="px-4 py-3 text-sm italic text-gray-600" colSpan={colSpan}>
             {dndEnabled ? (
