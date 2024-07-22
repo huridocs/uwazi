@@ -228,8 +228,8 @@ export default (app: Application) => {
     '/api/files',
     // AUDIT
     // - [x] the needsAuth is probably correct but,
-    // - [ ] editors should not be able to delete custom files
-    // - [ ] collaborators should not be allowed to delete custom files
+    // - [x] editors should not be able to delete custom files
+    // - [x] collaborators should not be allowed to delete custom files
     // - [x] collaborators should not be allowed to delete files attached to entities that they do not have permissions on
     needsAuthorization(['admin', 'editor', 'collaborator']),
 
@@ -253,6 +253,13 @@ export default (app: Application) => {
         throw createError('file not found', 404);
       }
 
+      if (
+        ['editor', 'collaborator'].includes(req.user.role || '') &&
+        fileToDelete.type === 'custom'
+      ) {
+        throw createError('file not found', 404);
+      }
+
       const [deletedFile] = await files.delete({ _id: req.query._id });
       const thumbnailFileName = `${deletedFile._id}.jpg`;
       await files.delete({ filename: thumbnailFileName });
@@ -266,7 +273,7 @@ export default (app: Application) => {
     // - [x] the needsAuth is probably correct but.
     // - [ ] editors should not be able to see custom uploads.
     // - [ ] collaborators should not be allowed to see custom files.
-    // - [ ] collaborators should not be allowed to see files attached to entities that they do not have permissions on.
+    // - [x]* collaborators should not be allowed to see files attached to entities that they do not have permissions on.
     needsAuthorization(['admin', 'editor', 'collaborator']),
     validation.validateRequest({
       type: 'object',

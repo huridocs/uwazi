@@ -11,6 +11,7 @@ const uploadId = db.id();
 const uploadId2 = db.id();
 const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
+const customFileId = db.id();
 const templateId = fixturesFactory.id('template');
 const importTemplate = db.id();
 const writerUserId = db.id();
@@ -64,6 +65,15 @@ const fixtures: DBFixture = {
       entity: 'restrictedSharedId',
       originalname: 'customPdf',
       filename: customPdfFileName,
+      mimetype: 'application/pdf',
+      type: 'custom',
+      language: 'eng',
+    },
+    {
+      _id: customFileId,
+      entity: 'restrictedSharedId',
+      originalname: 'customPdf',
+      filename: 'custom_file.pdf',
       mimetype: 'application/pdf',
       type: 'custom',
       language: 'eng',
@@ -217,6 +227,7 @@ export {
   customPdfFileName,
   uploadId,
   uploadId2,
+  customFileId,
   restrictedUploadId,
   restrictedUploadId2,
   templateId,

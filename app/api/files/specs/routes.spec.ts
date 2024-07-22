@@ -23,6 +23,7 @@ import { storage } from '../storage';
 import {
   adminUser,
   collabUser,
+  customFileId,
   externalUrlFileId,
   fixtures,
   restrictedUploadId2,
@@ -286,6 +287,15 @@ describe('files routes', () => {
         .delete('/api/files')
         .query({ _id: restrictedUploadId2.toString() })
         .expect(200);
+    });
+
+    it('should allow deletion of custom files only if the user is an admin', async () => {
+      mockCurrentUser(editorUser);
+      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(404);
+      mockCurrentUser(collabUser);
+      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(404);
+      mockCurrentUser(adminUser);
+      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(200);
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {
