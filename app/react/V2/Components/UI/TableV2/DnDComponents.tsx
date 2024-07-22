@@ -1,18 +1,32 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { CSSProperties, useEffect } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { RowWithId } from './Table';
 
+const inactiveGradientStyle: CSSProperties = {
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transform: 'translate(-50%,-50%)',
+  width: '16px',
+  height: '80%',
+  background: 'radial-gradient(circle, #c5cae9 25%, transparent 26%) 0% 0% / 8px 10px',
+};
+
+const activeGradientStyle: CSSProperties = {
+  ...inactiveGradientStyle,
+  background: 'radial-gradient(circle, #303f9f 25%, transparent 26%) 0% 0% / 8px 10px',
+};
+
 const getSytles = (expanded: boolean, isOver: boolean) => {
   const expandedGroupStyles = expanded
-    ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400'
+    ? 'bg-indigo-100 border-indigo-100 hover:bg-indigo-200 hover:border-indigo-200'
     : '';
   const dndHoverStyles = isOver ? 'border-b-indigo-700' : '';
-
   return `${expandedGroupStyles} ${dndHoverStyles}`;
 };
 
@@ -20,6 +34,7 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
+  const [handlerStyle, setHandlerStyle] = useState(inactiveGradientStyle);
 
   const canExpand = row.originalSubRows;
   const expanded = row.getIsExpanded();
@@ -34,14 +49,14 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
     <button
       {...attributes}
       {...listeners}
-      type="button"
-      style={{
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%,-50%)',
+      onMouseEnter={() => {
+        setHandlerStyle(activeGradientStyle);
       }}
-      className={`w-4 h-4/5 transition-colors ${isDragging ? 'bg-indigo-700' : 'bg-indigo-200 hover:bg-indigo-700'}`}
+      onMouseLeave={() => {
+        setHandlerStyle(inactiveGradientStyle);
+      }}
+      type="button"
+      style={isDragging ? activeGradientStyle : handlerStyle}
     >
       <span className="sr-only">
         <Translate>Drag row</Translate>
@@ -53,11 +68,13 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 const DraggableRow = <T extends RowWithId<T>>({
   row,
   colSpan,
-  firstDataColumndIndex,
+  groupColumnIndex,
+  dndEnabled,
 }: {
   row: Row<T>;
   colSpan: number;
-  firstDataColumndIndex: number;
+  groupColumnIndex: number;
+  dndEnabled: boolean;
 }) => {
   const expanded = row.getIsExpanded();
   const isEmpty = row.originalSubRows?.length === 0;
@@ -100,7 +117,7 @@ const DraggableRow = <T extends RowWithId<T>>({
           <td
             key={cell.id}
             style={{ width: cell.column.getSize() }}
-            className={`relative px-4 py-2 ${isChild && firstDataColumndIndex === index ? 'border-l border-l-indigo-700' : ''}`}
+            className={`relative px-4 py-2 ${isChild && groupColumnIndex === index ? 'border-l border-l-indigo-700' : ''}`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
@@ -113,9 +130,11 @@ const DraggableRow = <T extends RowWithId<T>>({
           className={`border-b text-gray-900 transition-colors ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
         >
           <td className="px-4 py-3 text-sm italic text-gray-600" colSpan={colSpan}>
-            &#91;
-            <Translate>Empty group. Drop here to add</Translate>
-            &#93;
+            {dndEnabled ? (
+              <Translate>Empty group. Drop here to add</Translate>
+            ) : (
+              <Translate>This group is empty</Translate>
+            )}
           </td>
         </tr>
       )}

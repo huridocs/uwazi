@@ -17,9 +17,9 @@ const GroupCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       icon={expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
       onClick={() => row.toggleExpanded()}
       color="indigo"
-      className="bg-indigo-100 rounded-md border-none drop-shadow-none"
+      className={`${expanded ? 'bg-indigo-300' : 'bg-indigo-100'} rounded-md border-none drop-shadow-none`}
     >
-      <Translate>Group</Translate>
+      <Translate className={`${expanded ? 'text-indigo-800' : 'text-indigo-700'}`}>Group</Translate>
       <Translate className="sr-only">Open group</Translate>
     </EmbededButton>
   ) : null;

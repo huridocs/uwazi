@@ -453,7 +453,7 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(3),
-        cy.get('td').contains('Drop to add')
+        cy.get('td').contains('Empty group. Drop here to add')
       );
 
       checkRowContent(5, [
@@ -479,7 +479,7 @@ describe('Table', () => {
         cy.contains('button', 'Open group').realClick();
       });
 
-      cy.contains('tr', 'Drop to add').should('not.exist');
+      cy.contains('tr', 'Empty group. Drop here to add').should('not.exist');
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(1),
@@ -490,11 +490,11 @@ describe('Table', () => {
         cy.get('button[aria-roledescription="sortable"]').eq(0)
       );
 
-      cy.contains('tr', 'Drop to add').should('exist');
+      cy.contains('tr', 'Empty group. Drop here to add').should('exist');
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(7),
-        cy.get('td').contains('Drop to add')
+        cy.get('td').contains('Empty group. Drop here to add')
       );
 
       checkRowContent(3, [
@@ -514,7 +514,7 @@ describe('Table', () => {
         '60',
       ]);
 
-      cy.contains('tr', 'Drop to add').should('not.exist');
+      cy.contains('tr', 'Empty group. Drop here to add').should('not.exist');
     });
 
     it('should not loose selections when dragging into a dropzone', () => {
@@ -528,7 +528,7 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(5),
-        cy.get('td').contains('Drop to add')
+        cy.get('td').contains('Empty group. Drop here to add')
       );
 
       cy.contains('button', 'Save changes').realClick();
@@ -548,10 +548,10 @@ describe('Table', () => {
 
       cy.realDragAndDrop(
         cy.get('button[aria-roledescription="sortable"]').eq(5),
-        cy.get('td').contains('Drop to add')
+        cy.get('td').contains('Empty group. Drop here to add')
       );
 
-      checkRowContent(5, ['Drop to add']);
+      checkRowContent(5, ['Empty group. Drop here to add']);
 
       cy.contains('tr', 'Group 2').within(() => {
         cy.contains('button', 'Open group').realClick();
@@ -574,6 +574,18 @@ describe('Table', () => {
 
       checkRowContent(3, ['Drag row', 'Select', '', 'Sub 2-2']);
       checkRowContent(4, ['Drag row', 'Select', '', 'Sub 2-1']);
+    });
+
+    it('should render the correct text for empty groups based on dnd status', () => {
+      Nested.args.dnd = { enable: false };
+      Nested.args.enableSelections = false;
+      mount(<Nested />);
+
+      cy.contains('tr', 'Group 4').within(() => {
+        cy.contains('button', 'Open group').realClick();
+      });
+
+      cy.contains('This group is empty');
     });
   });
 });

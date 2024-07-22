@@ -70,16 +70,14 @@ const Table = <T extends RowWithId<T>>({
   const [sortingState, setSortingState] = useState<SortingState>(defaultSorting || []);
 
   const rowIds = useMemo(() => getRowIds(dataState), [dataState]);
-  const { memoizedColumns, firstDataColumndIndex } = useMemo<{
+  const { memoizedColumns, groupColumnIndex } = useMemo<{
     memoizedColumns: ColumnDef<T, any>[];
-    firstDataColumndIndex: number;
+    groupColumnIndex: number;
   }>(() => {
     const tableColumns = [...columns];
     const hasGroups = data.find(item => item.subRows);
-    let firstDataColumndIndex = 0;
 
     if (hasGroups) {
-      firstDataColumndIndex = firstDataColumndIndex + 1;
       tableColumns.unshift({
         id: 'group-button',
         cell: GroupCell,
@@ -89,7 +87,6 @@ const Table = <T extends RowWithId<T>>({
     }
 
     if (enableSelections) {
-      firstDataColumndIndex = firstDataColumndIndex + 1;
       tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
@@ -99,7 +96,6 @@ const Table = <T extends RowWithId<T>>({
     }
 
     if (dnd?.enable) {
-      firstDataColumndIndex = firstDataColumndIndex + 1;
       tableColumns.unshift({
         id: 'drag-handle',
         cell: RowDragHandleCell,
@@ -108,7 +104,10 @@ const Table = <T extends RowWithId<T>>({
       });
     }
 
-    return { memoizedColumns: tableColumns, firstDataColumndIndex };
+    return {
+      memoizedColumns: tableColumns,
+      groupColumnIndex: 0 + Number(enableSelections) + Number(dnd?.enable),
+    };
   }, [columns, data, enableSelections, dnd]);
 
   const table = useReactTable({
@@ -219,7 +218,8 @@ const Table = <T extends RowWithId<T>>({
                   key={row.id}
                   row={row}
                   colSpan={memoizedColumns.length}
-                  firstDataColumndIndex={firstDataColumndIndex}
+                  groupColumnIndex={groupColumnIndex}
+                  dndEnabled={!!dnd?.enable}
                 />
               ))}
             </SortableContext>
