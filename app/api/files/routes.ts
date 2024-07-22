@@ -288,14 +288,13 @@ export default (app: Application) => {
         },
       },
     }),
-    (req, res, next) => {
-      files
-        .get(req.query)
-        .then(async result => filterByEntityPermissions(result))
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req, res) => {
+      let { query } = req;
+      if (['editor', 'collaborator'].includes(req.user.role || '')) {
+        query = { $and: [query, { type: { $ne: 'custom' } }] };
+      }
+      const result = await files.get(query);
+      res.json(await filterByEntityPermissions(result));
     }
   );
 

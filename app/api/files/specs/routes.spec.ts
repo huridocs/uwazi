@@ -201,6 +201,28 @@ describe('files routes', () => {
       ]);
     });
 
+    it('should return custom type files only if the user is admin', async () => {
+      mockCurrentUser(writerUser);
+      let response: SuperTestResponse = await request(app)
+        .get('/api/files')
+        .query({ type: 'custom' })
+        .expect(200);
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([]);
+
+      mockCurrentUser(collabUser);
+      response = await request(app).get('/api/files').query({ type: 'custom' }).expect(200);
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([]);
+
+      mockCurrentUser(adminUser);
+      response = await request(app).get('/api/files').query({ type: 'custom' }).expect(200);
+      expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'customPdf',
+        'customPdf',
+        'fileNotONDisk',
+        'upload3',
+      ]);
+    });
+
     it('should return all uploads for an admin', async () => {
       testingEnvironment.setPermissions(adminUser);
       const response: SuperTestResponse = await request(app)
