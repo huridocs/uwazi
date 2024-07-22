@@ -7,17 +7,12 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { RowWithId } from './Table';
 
-const getSytles = (expanded: boolean, isOver: boolean, isChildren: boolean) => {
+const getSytles = (expanded: boolean, isOver: boolean) => {
   const expandedGroupStyles = expanded
     ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400'
     : '';
-  const childrenStyles =
-    'bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100';
   const dndHoverStyles = isOver ? 'border-b-indigo-700' : '';
 
-  if (isChildren) {
-    return `${childrenStyles} ${dndHoverStyles}`;
-  }
   return `${expandedGroupStyles} ${dndHoverStyles}`;
 };
 
@@ -58,13 +53,15 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
 const DraggableRow = <T extends RowWithId<T>>({
   row,
   colSpan,
+  firstDataColumndIndex,
 }: {
   row: Row<T>;
   colSpan: number;
+  firstDataColumndIndex: number;
 }) => {
   const expanded = row.getIsExpanded();
   const isEmpty = row.originalSubRows?.length === 0;
-  const isChildren = Boolean(row.getParentRow());
+  const isChild = row.depth > 0;
 
   const { transform, setNodeRef, isDragging, isOver } = useSortable({
     id: row.id,
@@ -90,17 +87,21 @@ const DraggableRow = <T extends RowWithId<T>>({
     backgroundColor: 'white',
   };
 
-  const parentChildStyles = getSytles(expanded, isOver, isChildren);
+  const rowStyles = getSytles(expanded, isOver);
 
   return (
     <>
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`text-gray-900 border-b transition-colors hover:bg-gray-50 ${parentChildStyles}`}
+        className={`text-gray-900 border-b transition-colors hover:bg-gray-50 ${rowStyles}`}
       >
-        {row.getVisibleCells().map(cell => (
-          <td key={cell.id} style={{ width: cell.column.getSize() }} className="relative px-4 py-2">
+        {row.getVisibleCells().map((cell, index) => (
+          <td
+            key={cell.id}
+            style={{ width: cell.column.getSize() }}
+            className={`relative px-4 py-2 ${isChild && firstDataColumndIndex === index ? 'border-l border-l-indigo-700' : ''}`}
+          >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>
         ))}
@@ -109,10 +110,12 @@ const DraggableRow = <T extends RowWithId<T>>({
       {isEmpty && expanded && (
         <tr
           ref={dropNoderef}
-          className={`border-b text-gray-900 transition-colors bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100 ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
+          className={`border-b text-gray-900 transition-colors ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
         >
-          <td className="px-4 py-2" colSpan={colSpan}>
-            <Translate>Drop to add</Translate>
+          <td className="px-4 py-3 text-sm italic text-gray-600" colSpan={colSpan}>
+            &#91;
+            <Translate>Empty group. Drop here to add</Translate>
+            &#93;
           </td>
         </tr>
       )}
