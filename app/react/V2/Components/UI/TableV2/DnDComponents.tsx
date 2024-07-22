@@ -7,6 +7,20 @@ import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { RowWithId } from './Table';
 
+const getSytles = (expanded: boolean, isOver: boolean, isChildren: boolean) => {
+  const expandedGroupStyles = expanded
+    ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400'
+    : '';
+  const childrenStyles =
+    'bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100';
+  const dndHoverStyles = isOver ? 'border-b-indigo-700' : '';
+
+  if (isChildren) {
+    return `${childrenStyles} ${dndHoverStyles}`;
+  }
+  return `${expandedGroupStyles} ${dndHoverStyles}`;
+};
+
 const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
@@ -41,9 +55,16 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   );
 };
 
-const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
+const DraggableRow = <T extends RowWithId<T>>({
+  row,
+  colSpan,
+}: {
+  row: Row<T>;
+  colSpan: number;
+}) => {
   const expanded = row.getIsExpanded();
   const isEmpty = row.originalSubRows?.length === 0;
+  const isChildren = Boolean(row.getParentRow());
 
   const { transform, setNodeRef, isDragging, isOver } = useSortable({
     id: row.id,
@@ -69,12 +90,14 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
     backgroundColor: 'white',
   };
 
+  const parentChildStyles = getSytles(expanded, isOver, isChildren);
+
   return (
     <>
       <tr
         style={isDragging ? draggingStyles : undefined}
         ref={setNodeRef}
-        className={`border-b hover:bg-gray-50 transition-colors ${expanded ? 'bg-indigo-300 border-indigo-300 hover:bg-indigo-400 hover:border-indigo-400' : ''} ${isOver ? 'border-b-indigo-700' : ''}`}
+        className={`text-indigo-700 border-b transition-colors hover:bg-gray-50 ${parentChildStyles}`}
       >
         {row.getVisibleCells().map(cell => (
           <td key={cell.id} style={{ width: cell.column.getSize() }} className="relative px-4 py-2">
@@ -84,8 +107,13 @@ const DraggableRow = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
       </tr>
 
       {isEmpty && expanded && (
-        <tr ref={dropNoderef} className={`border-b ${isOverDropzone ? 'border-b-indigo-700' : ''}`}>
-          <td className="px-4 py-2">dropzone</td>
+        <tr
+          ref={dropNoderef}
+          className={`border-b text-indigo-700 transition-colors bg-indigo-50 border-indigo-50 hover:bg-indigo-100 hover:border-indigo-100 ${isOverDropzone ? 'border-b-indigo-700' : ''}`}
+        >
+          <td className="px-4 py-2" colSpan={colSpan}>
+            <Translate>Drop to add</Translate>
+          </td>
         </tr>
       )}
     </>

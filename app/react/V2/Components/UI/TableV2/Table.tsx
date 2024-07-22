@@ -207,7 +207,7 @@ const Table = <T extends RowWithId<T>>({
           <tbody>
             <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
               {table.getRowModel().rows.map(row => (
-                <DraggableRow key={row.id} row={row} />
+                <DraggableRow key={row.id} row={row} colSpan={memoizedColumns.length} />
               ))}
             </SortableContext>
           </tbody>
