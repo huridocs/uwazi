@@ -2,8 +2,8 @@
 import React from 'react';
 import 'cypress-axe';
 import { mount } from '@cypress/react18';
-import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
+import { map } from 'lodash';
 import * as stories from 'app/stories/TableV2.stories';
 
 const { Basic, Nested, Custom } = composeStories(stories);

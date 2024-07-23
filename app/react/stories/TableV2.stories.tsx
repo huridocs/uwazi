@@ -9,11 +9,11 @@ import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
-  columnType: 'basic' | 'custom' | 'nested';
+  columnType: string;
   tableData: any[];
   dnd?: { enable?: boolean; disableEditingGroups?: boolean };
-  enableSelections: boolean;
-  defaultSorting: SortingState;
+  enableSelections?: boolean;
+  defaultSorting?: SortingState;
   sortingFn?: () => void;
   actionFn?: () => void;
 };
@@ -24,7 +24,7 @@ const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
 
 const ActionHeader = () => <span className="sr-only">Actions</span>;
 
-const ActionCell = ({ cell }: { cell: Cell<BasicData, number> }) => {
+const ActionCell = ({ cell }: { cell: Cell<BasicData, any> }) => {
   const actionFn = cell.getContext().column.columnDef.meta?.action
     ? cell.getContext().column.columnDef.meta?.action!
     : () => {};
@@ -73,7 +73,7 @@ const getCustomColums = (actionFn?: () => any) => [
   }),
 ];
 
-const getColumns = (type: StoryProps['columnType'], actionFn?: () => any) => {
+const getColumns = (type: string, actionFn?: () => any) => {
   switch (type) {
     case 'nested':
       return nestedColumns;
@@ -247,6 +247,8 @@ const Basic = {
     defaultSorting: undefined,
     tableData: basicData,
     columnType: 'basic',
+    sortingFn: undefined,
+    actionFn: undefined,
   },
 };
 
