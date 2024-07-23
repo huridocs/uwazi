@@ -1,4 +1,4 @@
-import 'cross-fetch/polyfill';
+import 'isomorphic-fetch';
 import request from 'supertest';
 import waitForExpect from 'wait-for-expect';
 

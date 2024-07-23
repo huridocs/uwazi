@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop,camelcase,max-lines */
-
+import 'isomorphic-fetch';
 import {
   IsTopicClassificationReachable,
   RPC_DEADLINE_MS,
@@ -9,7 +9,6 @@ import { search } from 'api/search';
 import templates from 'api/templates';
 import { extractSequence } from 'api/topicclassification/common';
 import { ClassifierModelSchema } from 'app/Thesauri/types/classifierModelType';
-import 'cross-fetch/polyfill';
 import { buildFullModelName, getThesaurusPropertyNames } from 'shared/commonTopicClassification';
 import JSONRequest from 'shared/JSONRequest';
 import { propertyTypes } from 'shared/propertyTypes';
