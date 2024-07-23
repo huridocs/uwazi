@@ -124,7 +124,10 @@ const Table = <T extends RowWithId<T>>({
     onSortingChange: setSortingState,
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
-    ...(setRowSelection && { enableRowSelection: true, onRowSelectionChange: setRowSelection }),
+    ...(enableSelections && {
+      enableRowSelection: enableSelections,
+      onRowSelectionChange: setRowSelection,
+    }),
   });
 
   useEffect(() => {
@@ -133,13 +136,16 @@ const Table = <T extends RowWithId<T>>({
 
   useEffect(() => {
     if (onChange) {
-      let updatedData = dataState;
       if (sortingState.length) {
-        updatedData = table.getSortedRowModel().rows.map(row => row.original);
+        const sortedState = table.getSortedRowModel().rows.map(row => row.original);
+        onChange({ rows: sortedState, selectedRows: rowSelection, sortingState });
+      } else {
+        onChange({ rows: dataState, selectedRows: rowSelection, sortingState });
       }
-      onChange({ rows: updatedData, selectedRows: rowSelection, sortingState });
     }
-  }, [dataState, onChange, rowSelection, sortingState, table]);
+    // 'onChange' and 'table' removed from deps to avoid infinite rerenders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataState, rowSelection, sortingState]);
 
   useEffect(() => {
     if (sortingFn) {
