@@ -12,15 +12,16 @@ import { Translate, t } from 'app/I18N';
 import { notificationAtom } from 'V2/atoms';
 import { IXExtractorInfo } from 'V2/shared/types';
 import { ExtractorModal } from './components/ExtractorModal';
-import { Extractor, extractorsTableColumns } from './components/TableElements';
+import { extractorsTableColumns } from './components/TableElements';
 import { List } from './components/List';
+import { TableExtractor } from './types';
 
 const formatExtractors = (
   extractors: IXExtractorInfo[],
   templates: ClientTemplateSchema[]
-): Extractor[] =>
+): TableExtractor[] =>
   extractors.map(extractor => {
-    let propertyType: Extractor['propertyType'] = 'text';
+    let propertyType: TableExtractor['propertyType'] = 'text';
     let propertyLabel = '';
 
     const namedTemplates = extractor.templates.map(extractorTemplate => {
@@ -39,7 +40,7 @@ const formatExtractors = (
       }
 
       if (property) {
-        propertyType = property.type as Extractor['propertyType'];
+        propertyType = property.type as TableExtractor['propertyType'];
         propertyLabel = t(template._id, property.label, null, false);
       }
     });
@@ -54,7 +55,7 @@ const IXDashboard = () => {
   };
   const [isSaving, setIsSaving] = useState(false);
   const revalidator = useRevalidator();
-  const [selected, setSelected] = useState<Extractor[]>();
+  const [selected, setSelected] = useState<TableExtractor[]>();
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);

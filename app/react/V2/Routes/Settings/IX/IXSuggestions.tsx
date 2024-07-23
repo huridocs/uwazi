@@ -17,7 +17,7 @@ import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { EntitySuggestionType } from 'shared/types/suggestionType';
-import { Button, PaginationState, Paginator, Table_deprecated as Table } from 'V2/Components/UI';
+import { Button, PaginationState, Paginator, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { IXExtractorInfo } from 'app/V2/shared/types';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
@@ -240,16 +240,16 @@ const IXSuggestions = () => {
           title={extractor.name}
         />
         <SettingsContent.Body>
-          <Table<TableSuggestion>
+          <Table
             data={currentSuggestions}
-            highLightGroups={false}
-            subRowsKey="children"
+            // highLightGroups={false}
+            // subRowsKey="children"
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
               openPDFSidepanel
             )}
-            title={
+            header={
               <SuggestionsTitle
                 property={extractor.property}
                 templates={filteredTemplates()}
@@ -259,10 +259,10 @@ const IXSuggestions = () => {
                 activeFilters={activeFilters}
               />
             }
-            enableSelection
-            sorting={sorting}
-            setSorting={setSorting}
-            onSelection={setSelected}
+            enableSelections
+            //sorting={sorting}
+            //setSorting={setSorting}
+            //onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
                 <PaginationState
@@ -398,12 +398,17 @@ const IXSuggestionsLoader =
         headers
       );
 
+    const suggestions = suggestionsList.suggestions.map(suggestion => ({
+      ...suggestion,
+      rowId: suggestion._id,
+    }));
+
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
     return {
-      suggestions: suggestionsList.suggestions,
+      suggestions,
       totalPages: suggestionsList.totalPages,
       extractor: extractors[0],
       templates,

@@ -35,10 +35,15 @@ interface MultiValueSuggestion extends EntitySuggestionType {
   disableRowSelection?: boolean;
 }
 
-type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
+type TableSuggestion =
+  | (SingleValueSuggestion & { rowId: string })
+  | (MultiValueSuggestion & { rowId: string });
+
+type TableExtractor = Extractor & { rowId: string };
 
 export type {
   Extractor,
+  TableExtractor,
   Highlights,
   TableSuggestion,
   SuggestionValue,

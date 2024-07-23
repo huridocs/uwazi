@@ -8,14 +8,18 @@ import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Extractor, MultiValueSuggestion, SingleValueSuggestion, TableSuggestion } from '../types';
+import {
+  TableExtractor,
+  TableSuggestion,
+  MultiValueSuggestion,
+  SingleValueSuggestion,
+} from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { propertyIcons } from './Icons';
 
-const extractorColumnHelper = createColumnHelper<Extractor>();
-// Helper typed as any because of https://github.com/TanStack/table/issues/4224
-const suggestionColumnHelper = createColumnHelper<any>();
+const extractorColumnHelper = createColumnHelper<TableExtractor>();
+const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
 
 const statusColor = (suggestion: TableSuggestion): Color => {
   if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
@@ -50,7 +54,7 @@ const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
-const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
+const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['propertyType']>) => {
   const property = cell.getValue();
   return (
     <div className="flex gap-2 items-center">
@@ -117,7 +121,7 @@ const AcceptButton = ({
   cell,
   action,
 }: {
-  cell: Cell<SingleValueSuggestion, string>;
+  cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
   const color = statusColor(cell.row.original);
@@ -141,7 +145,7 @@ const AcceptButton = ({
   );
 };
 
-const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplates']>) => (
+const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['namedTemplates']>) => (
   <div className="flex flex-wrap gap-2">
     {cell.getValue().map(templateName => (
       <div key={templateName} className="whitespace-nowrap">
@@ -151,7 +155,7 @@ const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplate
   </div>
 );
 
-const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
+const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
       <Translate>Review</Translate>
@@ -163,7 +167,7 @@ const OpenPDFButton = ({
   cell,
   action,
 }: {
-  cell: Cell<SingleValueSuggestion, string>;
+  cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
@@ -248,27 +252,21 @@ const suggestionsTableColumnsBuilder: Function = (
       header: TitleHeader,
       cell: TitleCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'entityTitle'>,
+    }) as ColumnDef<TableSuggestion, 'entityTitle'>,
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'segment'>,
+    }) as ColumnDef<TableSuggestion, 'segment'>,
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
+    }) as ColumnDef<TableSuggestion, 'currentValue'>,
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
-      cell: ({
-        cell,
-        row,
-      }: {
-        row: Row<TableSuggestion>;
-        cell: Cell<SingleValueSuggestion, any>;
-      }) => {
+      cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) => {
         if ('children' in row.original && Array.isArray(row.original.children)) {
           return <GroupButton row={row} />;
         }
@@ -285,13 +283,7 @@ const suggestionsTableColumnsBuilder: Function = (
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
       header: ActionHeader,
-      cell: ({
-        cell,
-        row,
-      }: {
-        row: Row<TableSuggestion>;
-        cell: Cell<SingleValueSuggestion, any>;
-      }) =>
+      cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
         !row.original.isChild ? (
           <OpenPDFButton action={openPdfSidepanel} cell={cell} />
         ) : (
@@ -301,9 +293,8 @@ const suggestionsTableColumnsBuilder: Function = (
         headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
-    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
+    }) as ColumnDef<TableSuggestion, 'currentValue'>,
   ];
 };
 
-export type { Extractor };
 export { extractorsTableColumns, suggestionsTableColumnsBuilder };
