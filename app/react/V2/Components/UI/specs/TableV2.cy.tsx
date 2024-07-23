@@ -6,7 +6,7 @@ import { map } from 'lodash';
 import { composeStories } from '@storybook/react';
 import * as stories from 'app/stories/TableV2.stories';
 
-const { Basic, Nested } = composeStories(stories);
+const { Basic, Nested, Custom } = composeStories(stories);
 
 describe('Table', () => {
   const data = Basic.args.tableData || [];
@@ -44,20 +44,38 @@ describe('Table', () => {
     checkRowContent(5, ['Entity 5', data[4].description, '5']);
   });
 
-  xit('should render the data in a custom component', () => {
-    mount(<Basic />);
-    cy.get('tbody > :nth-child(1) > :nth-child(3) > div').should(
-      'have.class',
-      'text-center text-white bg-gray-400 rounded'
-    );
+  it('should render the data in a custom component and styles', () => {
+    mount(<Custom />);
+    cy.get('table').within(() => {
+      cy.contains('th', 'Description').should(
+        'have.attr',
+        'class',
+        'p-4 text-sm text-gray-500 uppercase border-b bg-blue-700 text-white'
+      );
+      cy.contains('td', 'Entity 2').should(
+        'have.attr',
+        'class',
+        'relative px-4 py-2 bg-gray-100 text-red-700 '
+      );
+      cy.contains('td', 'Entity 1').should(
+        'have.attr',
+        'class',
+        'relative px-4 py-2 bg-gray-100 text-red-700 '
+      );
+      cy.get('div[class="text-white bg-orange-500"]').should('have.length', 5);
+      cy.get('button').should('have.length', 5);
+    });
   });
 
-  xit('should render the header appending custom styles passed in the definition of the columns', () => {
-    mount(<WithActions />);
-    cy.get('table > thead > tr > th:nth-child(3)').should(
-      'have.class',
-      'px-6 py-3 w-1/4 bg-error-100 text-blue-600'
-    );
+  it('should trigger the custom action for the buttons', () => {
+    Custom.args.actionFn = cy.spy().as('actionSpy');
+    mount(<Custom />);
+
+    cy.contains('tr', 'Entity 1').within(() => {
+      cy.contains('button', 'Action').realClick();
+    });
+
+    cy.get('@actionSpy').should('have.been.calledOnceWith', 'A1');
   });
 
   describe('Sorting', () => {

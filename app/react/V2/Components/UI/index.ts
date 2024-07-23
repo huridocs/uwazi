@@ -17,7 +17,7 @@ export { MediaPlayer } from './MediaPlayer';
 export { FileIcon } from './FileIcon';
 
 export type { PillColor } from './Pill';
-export type { TableProps } from './TableV2/Table';
+export type { TableProps, RowWithId } from './TableV2/Table';
 
 //This component will be migrated to the new version of the table
 // eslint-disable-next-line camelcase

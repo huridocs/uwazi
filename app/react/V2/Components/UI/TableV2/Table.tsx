@@ -190,17 +190,18 @@ const Table = <T extends RowWithId<T>>({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(hdr => {
                   const headerSorting = hdr.column.getCanSort();
+                  const customClassName = hdr.column.columnDef.meta?.headerClassName;
 
                   return (
                     <th
                       key={hdr.id}
                       colSpan={hdr.colSpan}
-                      className="p-4 border-b"
+                      className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName}`}
                       style={{ width: hdr.column.getSize() }}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
-                        className={`flex uppercase text-gray-500 text-sm ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+                        className={`flex  ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
                       >
                         {flexRender(hdr.column.columnDef.header, hdr.getContext())}
                         {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}

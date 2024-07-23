@@ -120,7 +120,7 @@ const DraggableRow = <T extends RowWithId<T>>({
           <td
             key={cell.id}
             style={{ width: cell.column.getSize() }}
-            className={`relative px-4 py-2 ${isChild && groupColumnIndex === index ? childIndicatorClass : ''}`}
+            className={`relative px-4 py-2 ${cell.column.columnDef.meta?.contentClassName} ${isChild && groupColumnIndex === index ? childIndicatorClass : ''}`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}
           </td>

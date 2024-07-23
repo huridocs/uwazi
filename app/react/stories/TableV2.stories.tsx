@@ -1,18 +1,39 @@
+/* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { createColumnHelper, SortingState } from '@tanstack/react-table';
+import { action } from '@storybook/addon-actions';
+import { Cell, createColumnHelper, SortingState } from '@tanstack/react-table';
 import { Provider } from 'react-redux';
-import { Button, Table, TableProps } from 'V2/Components/UI';
+import { Button, Table } from 'V2/Components/UI';
 import { LEGACY_createStore as createStore } from 'V2/shared/testingHelpers';
 import { BasicData, DataWithGroups, basicData, dataWithGroups } from './table/fixtures';
 
 type StoryProps = {
-  columns: TableProps<BasicData | DataWithGroups>['columns'];
+  columnType: 'basic' | 'custom' | 'nested';
   tableData: any[];
   dnd?: { enable?: boolean; disableEditingGroups?: boolean };
   enableSelections: boolean;
   defaultSorting: SortingState;
   sortingFn?: () => void;
+  actionFn?: () => void;
+};
+
+const CustomDateCell = ({ cell }: { cell: Cell<BasicData, number> }) => (
+  <div className="text-white bg-orange-500">{cell.renderValue()}</div>
+);
+
+const ActionHeader = () => <span className="sr-only">Actions</span>;
+
+const ActionCell = ({ cell }: { cell: Cell<BasicData, number> }) => {
+  const actionFn = cell.getContext().column.columnDef.meta?.action
+    ? cell.getContext().column.columnDef.meta?.action!
+    : () => {};
+
+  return (
+    <Button type="button" styling="light" onClick={() => actionFn(cell.row.id)}>
+      Action
+    </Button>
+  );
 };
 
 const basicColumnHelper = createColumnHelper<BasicData>();
@@ -21,26 +42,58 @@ const nestedColumnHelper = createColumnHelper<DataWithGroups>();
 const basicColumns = [
   basicColumnHelper.accessor('title', { header: 'Title' }),
   basicColumnHelper.accessor('description', { header: 'Description', enableSorting: false }),
-  basicColumnHelper.accessor('created', {
-    header: 'Date added',
-  }),
+  nestedColumnHelper.accessor('created', { header: 'Date added' }),
 ];
 
 const nestedColumns = [
   nestedColumnHelper.accessor('title', { header: 'Title' }),
   nestedColumnHelper.accessor('description', { header: 'Description', enableSorting: false }),
-  nestedColumnHelper.accessor('created', {
-    header: 'Date added',
+  nestedColumnHelper.accessor('created', { header: 'Date added' }),
+];
+
+const getCustomColums = (actionFn?: () => any) => [
+  basicColumnHelper.accessor('title', {
+    header: 'Title',
+    meta: { contentClassName: 'bg-gray-100 text-red-700' },
+  }),
+  basicColumnHelper.accessor('description', {
+    enableSorting: false,
+    header: 'Description',
+    size: 200,
+    meta: { headerClassName: 'bg-blue-700 text-white' },
+  }),
+  basicColumnHelper.accessor('created', { header: 'Date added', cell: CustomDateCell }),
+  basicColumnHelper.display({
+    id: 'action',
+    header: ActionHeader,
+    cell: ActionCell,
+    minSize: 25,
+    size: 0,
+    meta: { action: actionFn || action('accepted') },
   }),
 ];
 
+const getColumns = (type: StoryProps['columnType'], actionFn?: () => any) => {
+  switch (type) {
+    case 'nested':
+      return nestedColumns;
+
+    case 'custom':
+      return getCustomColums(actionFn);
+
+    default:
+      return basicColumns;
+  }
+};
+
 const StoryComponent = ({
-  columns,
+  columnType,
   tableData,
   dnd,
   enableSelections,
   defaultSorting,
   sortingFn,
+  actionFn,
 }: StoryProps) => {
   const [dataState, setDataState] = useState(tableData);
   const [selected, setSelected] = useState({});
@@ -48,6 +101,8 @@ const StoryComponent = ({
   const currentDataState = useRef(tableData);
   const currentSelections = useRef({});
   const [itemCounter, setItemCounter] = useState(1);
+
+  const columns = getColumns(columnType, actionFn);
 
   return (
     <div className="tw-content">
@@ -173,11 +228,12 @@ const Primary: Story = {
     <Provider store={createStore()}>
       <StoryComponent
         tableData={args.tableData}
-        columns={args.columns}
+        columnType={args.columnType}
         dnd={{ enable: args.dnd?.enable, disableEditingGroups: args.dnd?.disableEditingGroups }}
         enableSelections={args.enableSelections}
         defaultSorting={args.defaultSorting}
         sortingFn={args.sortingFn}
+        actionFn={args.actionFn}
       />
     </Provider>
   ),
@@ -190,7 +246,7 @@ const Basic = {
     enableSelections: true,
     defaultSorting: undefined,
     tableData: basicData,
-    columns: basicColumns,
+    columnType: 'basic',
   },
 };
 
@@ -199,9 +255,19 @@ const Nested = {
   args: {
     ...Basic.args,
     tableData: dataWithGroups,
-    columns: nestedColumns,
+    columnType: 'nested',
   },
 };
 
-export { Basic, Nested };
+const Custom = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    enableSelections: false,
+    dnd: undefined,
+    columnType: 'custom',
+  },
+};
+
+export { Basic, Nested, Custom };
 export default meta;
