@@ -8,6 +8,7 @@ interface IXProperty extends PropertySchema {
 }
 
 type Extractor = IXExtractorInfo & {
+  rowId: string;
   namedTemplates: string[];
   propertyLabel: string;
   propertyType: IXProperty['type'];

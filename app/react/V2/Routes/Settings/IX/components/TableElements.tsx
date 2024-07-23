@@ -53,7 +53,7 @@ const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex gap-2 items-center">
       <span className="w-5">{propertyIcons[property]}</span>
       <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
@@ -96,7 +96,7 @@ const CurrentValueCell = ({
           <>
             <span>|</span>
             <span>
-              <span className="text-orange-500 ">{amountOfMissmatches}</span>{' '}
+              <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
               <Translate>mismatching</Translate>
             </span>
           </>
@@ -124,7 +124,7 @@ const AcceptButton = ({
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   if (color === 'green') {
-    return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
+    return <div className="m-auto w-6 h-6">{getIcon(color)}</div>;
   }
 
   return (
