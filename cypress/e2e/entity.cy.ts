@@ -297,10 +297,27 @@ describe('Entities', () => {
       it('should delete the invalid document', () => {
         clickOnEditEntity();
         cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
-        cy.contains('button', 'Save').click();
+        saveEntity('Entity updated');
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
         cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
+      });
+
+      it('should keep searched text between tabs', () => {
+        cy.clearAndType(
+          'input[aria-label="Type something in the search box to get some results."]',
+          '"4 de julio de 2006"',
+          { delay: 0 }
+        );
+        cy.get('svg[aria-label="Search button"]').click();
+        cy.get('.item-document').should('have.length', 1);
+        cy.contains('.item-document .item-actions a', 'View').click();
+        cy.contains('VISTO');
+        cy.get('.snippet-text').should('have.length', 2);
+        cy.get('#tab-metadata').click();
+        cy.get('.entity-sidepanel-tab-link').then(element => {
+          expect(element.attr('href')).to.contain('searchTerm=%224%20de%20julio%20de%202006%22');
+        });
       });
     });
   });
