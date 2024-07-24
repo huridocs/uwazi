@@ -119,7 +119,6 @@ const DraggableRow = <T extends TableRow<T>>({
         {row.getVisibleCells().map((cell, index) => (
           <td
             key={cell.id}
-            style={{ width: cell.column.getSize() }}
             className={`relative px-4 py-2 ${cell.column.columnDef.meta?.contentClassName} ${isChild && groupColumnIndex === index ? childIndicatorClass : ''}`}
           >
             {flexRender(cell.column.columnDef.cell, cell.getContext())}

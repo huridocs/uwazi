@@ -83,7 +83,7 @@ const Table = <T extends TableRow<T>>({
         id: 'group-button',
         cell: GroupCell,
         header: GroupHeader,
-        size: 80,
+        meta: { headerClassName: 'w-0' },
       });
     }
 
@@ -92,7 +92,7 @@ const Table = <T extends TableRow<T>>({
         id: 'select',
         header: IndeterminateCheckboxHeader,
         cell: IndeterminateCheckboxRow,
-        size: 0,
+        meta: { headerClassName: 'w-0' },
       });
     }
 
@@ -101,7 +101,7 @@ const Table = <T extends TableRow<T>>({
         id: 'drag-handle',
         cell: RowDragHandleCell,
         header: DnDHeader,
-        size: 0,
+        meta: { headerClassName: 'w-0' },
       });
     }
 
@@ -191,8 +191,8 @@ const Table = <T extends TableRow<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="rounded-md shadow">
-        <table className={`w-full table-fixed ${className || ''}`}>
+      <div className="overflow-auto w-full rounded-md shadow">
+        <table className={`w-full ${className || ''}`}>
           {header && <caption className="p-4">{header}</caption>}
 
           <thead className="bg-gray-50">
@@ -206,12 +206,12 @@ const Table = <T extends TableRow<T>>({
                     <th
                       key={hdr.id}
                       colSpan={hdr.colSpan}
+                      scope="col"
                       className={`p-4 text-sm text-gray-500 uppercase border-b ${customClassName}`}
-                      style={{ width: hdr.column.getSize() }}
                       onClick={headerSorting ? hdr.column.getToggleSortingHandler() : undefined}
                     >
                       <span
-                        className={`flex  ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
+                        className={`flex ${headerSorting ? 'gap-2 cursor-pointer select-none' : ''}`}
                       >
                         {flexRender(hdr.column.columnDef.header, hdr.getContext())}
                         {headerSorting && <SortingChevrons sorting={hdr.column.getIsSorted()} />}
