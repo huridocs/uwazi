@@ -326,6 +326,7 @@ describe('Entities', () => {
 
   describe('Languages', () => {
     it('should change the entity in Spanish', () => {
+      cy.contains('a', 'Library').click();
       changeLanguage('Español');
       cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity('Editar');
