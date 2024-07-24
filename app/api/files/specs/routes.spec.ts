@@ -26,6 +26,7 @@ import {
   customFileId,
   externalUrlFileId,
   fixtures,
+  readOnlyUploadId,
   restrictedUploadId2,
   uploadId,
   uploadId2,
@@ -62,43 +63,42 @@ describe('files routes', () => {
     describe('editor user', () => {
       it('should not have permissions to post files that are of type custom', async () => {
         mockCurrentUser(editorUser);
-        await request(app)
+        const response = await request(app)
           .post('/api/files')
-          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
-          .expect(401);
+          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' });
+
+        expect(response.status).toBe(404);
       });
     });
 
     describe('collaborator user', () => {
+      it('should allow modification if and only if user has write permission for the entity', async () => {
+        mockCurrentUser(collabUser);
+        let response = await request(app)
+          .post('/api/files')
+          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed' });
+
+        expect(response.status).toBe(404);
+
+        mockCurrentUser(writerUser);
+        response = await request(app)
+          .post('/api/files')
+          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed2' });
+
+        expect(response.status).toBe(200);
+
+        response = await request(app)
+          .post('/api/files')
+          .send({ _id: readOnlyUploadId.toString(), originalname: 'changed read only' });
+
+        expect(response.status).toBe(404);
+      });
+
       it('should not have permissions to post files that are of type custom', async () => {
         mockCurrentUser(collabUser);
         await request(app)
           .post('/api/files')
           .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
-          .expect(401);
-      });
-
-      it('should not have permissions to post files without permission', async () => {
-        mockCurrentUser(writerUser);
-        await request(app)
-          .post('/api/files')
-          .send({
-            _id: uploadId.toString(),
-            entity: 'restrictedSharedId',
-            originalname: 'custom_file',
-            type: 'document',
-          })
-          .expect(200);
-
-        mockCurrentUser(collabUser);
-        await request(app)
-          .post('/api/files')
-          .send({
-            _id: uploadId.toString(),
-            entity: 'restrictedSharedId',
-            originalname: 'custom_file',
-            type: 'document',
-          })
           .expect(404);
       });
     });
@@ -187,7 +187,7 @@ describe('files routes', () => {
   });
 
   describe('GET/files', () => {
-    it('should return entity related files only if the user has permission for the entity', async () => {
+    it('should return entity related files only if the collaborator user has permission for the entity', async () => {
       testingEnvironment.setPermissions(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
@@ -197,34 +197,13 @@ describe('files routes', () => {
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
         'restrictedUpload',
         'restrictedUpload2',
+        'readOnlyUpload',
         'upload2',
       ]);
     });
 
-    it('should return custom type files only if the user is admin', async () => {
-      mockCurrentUser(writerUser);
-      let response: SuperTestResponse = await request(app)
-        .get('/api/files')
-        .query({ type: 'custom' })
-        .expect(200);
-      expect(response.body.map((file: FileType) => file.originalname)).toEqual([]);
-
-      mockCurrentUser(collabUser);
-      response = await request(app).get('/api/files').query({ type: 'custom' }).expect(200);
-      expect(response.body.map((file: FileType) => file.originalname)).toEqual([]);
-
-      mockCurrentUser(adminUser);
-      response = await request(app).get('/api/files').query({ type: 'custom' }).expect(200);
-      expect(response.body.map((file: FileType) => file.originalname)).toEqual([
-        'customPdf',
-        'customPdf',
-        'fileNotONDisk',
-        'upload3',
-      ]);
-    });
-
-    it('should return all uploads for an admin', async () => {
-      testingEnvironment.setPermissions(adminUser);
+    it.each([adminUser, editorUser])('should return all uploads for an ($role)', async user => {
+      mockCurrentUser(user);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
         .query({ type: 'document' })
@@ -235,6 +214,7 @@ describe('files routes', () => {
         'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
+        'readOnlyUpload',
         'upload2',
       ]);
     });
@@ -313,11 +293,18 @@ describe('files routes', () => {
 
     it('should allow deletion of custom files only if the user is an admin', async () => {
       mockCurrentUser(editorUser);
-      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(404);
+      let response = await request(app)
+        .delete('/api/files')
+        .query({ _id: customFileId.toString() });
+      expect(response.status).toBe(404);
+
       mockCurrentUser(collabUser);
-      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(404);
+      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      expect(response.status).toBe(404);
+
       mockCurrentUser(adminUser);
-      await request(app).delete('/api/files').query({ _id: customFileId.toString() }).expect(200);
+      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      expect(response.status).toBe(200);
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {

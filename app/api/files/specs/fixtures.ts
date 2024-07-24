@@ -7,10 +7,12 @@ const fixturesFactory = getFixturesFactory();
 const entityId = db.id();
 const entityEnId = db.id();
 const restrictedEntityId = db.id();
+const readOnlyEntity = db.id();
 const uploadId = db.id();
 const uploadId2 = db.id();
 const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
+const readOnlyUploadId = db.id();
 const customFileId = db.id();
 const templateId = fixturesFactory.id('template');
 const importTemplate = db.id();
@@ -98,6 +100,15 @@ const fixtures: DBFixture = {
       language: 'eng',
     },
     {
+      _id: readOnlyUploadId,
+      entity: 'readOnlySharedId',
+      generatedToc: true,
+      originalname: 'readOnlyUpload',
+      filename: 'read only file',
+      type: 'document',
+      language: 'eng',
+    },
+    {
       entity: 'sharedId1',
       filename: 'fileWithoutTocFlag',
     },
@@ -145,6 +156,21 @@ const fixtures: DBFixture = {
           refId: writerUserId.toString(),
           type: 'user',
           level: 'write',
+        },
+      ],
+    },
+    {
+      _id: readOnlyEntity,
+      template: templateId,
+      sharedId: 'readOnlySharedId',
+      language: 'en',
+      title: 'Read only shared id',
+      public: false,
+      permissions: [
+        {
+          refId: writerUserId.toString(),
+          type: 'user',
+          level: 'read',
         },
       ],
     },
@@ -230,6 +256,7 @@ export {
   customFileId,
   restrictedUploadId,
   restrictedUploadId2,
+  readOnlyUploadId,
   templateId,
   importTemplate,
   collabUser,

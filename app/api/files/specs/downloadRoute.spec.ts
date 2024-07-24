@@ -38,10 +38,9 @@ describe('files routes download', () => {
 
   describe('GET/', () => {
     it.each([fileName1, customPdfFileName])('should send the file (%s)', async filename => {
-      const response: SuperTestResponse = await request(app)
-        .get(`/api/files/${filename}`)
-        .expect(200);
+      const response = await request(app).get(`/api/files/${filename}`);
 
+      expect(response.status).toBe(200);
       expect(response.body instanceof Buffer).toBe(true);
     });
 

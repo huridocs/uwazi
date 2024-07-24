@@ -13,13 +13,46 @@ import { validateAndCoerceRequest } from 'api/utils/validateRequest';
 import { files } from './files';
 import { createError, handleError, validation } from '../utils';
 import { storage } from './storage';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
-const checkEntityPermission = async (file: FileType): Promise<boolean> => {
-  if (!file.entity) return true;
-  const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
-    withoutDocuments: true,
-  });
-  return !!relatedEntities.length;
+const checkEntityPermission = async (
+  file: FileType,
+  level: 'read' | 'write' = 'read'
+): Promise<boolean> => {
+  const user = permissionsContext.getUserInContext();
+  if (['admin'].includes(user.role)) return true;
+  const [fileToUpdate] = await files.get({ _id: file._id });
+  if (!fileToUpdate) {
+    return false;
+  }
+
+  if (file.type === 'custom' && level === 'write') {
+    return false;
+  }
+
+  const relatedEntities: [] = await entities.get(
+    { sharedId: fileToUpdate.entity },
+    '_id, permissions',
+    {
+      withoutDocuments: true,
+    }
+  );
+
+  if (level === 'read') {
+    return !!relatedEntities.length;
+  }
+
+  if (!relatedEntities.length) {
+    return false;
+  }
+
+  return relatedEntities.every(
+    entity =>
+      !!(entity.permissions || []).find(
+        permission =>
+          permission.refId.toString() === user._id?.toString() && permission.level === 'write'
+      )
+  );
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
@@ -99,11 +132,7 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      if (['editor', 'collaborator'].includes(req.user.role || '') && req.body.type === 'custom') {
-        throw createError('forbidden file type', 401);
-      }
-
-      if (!(await checkEntityPermission(req.body))) {
+      if (!(await checkEntityPermission(req.body, 'write'))) {
         throw createError('file not found', 404);
       }
       const result = await files.save(req.body);
@@ -238,14 +267,7 @@ export default (app: Application) => {
 
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {
-        throw createError('file not found', 404);
-      }
-
-      if (
-        ['editor', 'collaborator'].includes(req.user.role || '') &&
-        fileToDelete.type === 'custom'
-      ) {
+      if (!fileToDelete || !(await checkEntityPermission(fileToDelete, 'write'))) {
         throw createError('file not found', 404);
       }
 
@@ -273,12 +295,7 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      let { query } = req;
-      if (['editor', 'collaborator'].includes(req.user.role || '')) {
-        query = { $and: [query, { type: { $ne: 'custom' } }] };
-      }
-      const result = await files.get(query);
-      res.json(await filterByEntityPermissions(result));
+      res.json(await filterByEntityPermissions(await files.get(req.query)));
     }
   );
 
