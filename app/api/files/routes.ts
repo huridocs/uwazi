@@ -7,51 +7,46 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { legacyLogger } from 'api/log';
-import { FileType } from 'shared/types/fileType';
-import { fileSchema } from 'shared/types/fileSchema';
-import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { files } from './files';
-import { createError, handleError, validation } from '../utils';
-import { storage } from './storage';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { fileSchema } from 'shared/types/fileSchema';
+import { FileType } from 'shared/types/fileType';
+import { createError, handleError, validation } from '../utils';
+import { files } from './files';
+import { storage } from './storage';
+import { EntitySchema } from 'shared/types/entityType';
 
 const checkEntityPermission = async (
   file: FileType,
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
-  const user = permissionsContext.getUserInContext();
-  if (['admin'].includes(user.role)) return true;
-  const [fileToUpdate] = await files.get({ _id: file._id });
-  if (!fileToUpdate) {
+  const user = permissionsContext.getUserInContext() || { _id: '', role: '' };
+  if (['admin'].includes(user?.role || '')) return true;
+  const [fileInDB] = await files.get({ _id: file._id });
+
+  if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
   }
 
-  if (file.type === 'custom' && level === 'write') {
-    return false;
-  }
-
-  const relatedEntities: [] = await entities.get(
-    { sharedId: fileToUpdate.entity },
+  const relatedEntities: EntitySchema[] = await entities.get(
+    { sharedId: fileInDB.entity },
     '_id, permissions',
-    {
-      withoutDocuments: true,
-    }
+    { withoutDocuments: true }
   );
 
   if (level === 'read') {
-    return !!relatedEntities.length;
+    return relatedEntities.length > 0;
   }
 
-  if (!relatedEntities.length) {
-    return false;
-  }
-
-  return relatedEntities.every(
-    entity =>
-      !!(entity.permissions || []).find(
-        permission =>
-          permission.refId.toString() === user._id?.toString() && permission.level === 'write'
-      )
+  return (
+    relatedEntities.length > 0 &&
+    relatedEntities.every(
+      entity =>
+        !!(entity.permissions || []).find(
+          permission =>
+            permission.refId.toString() === user._id?.toString() && permission.level === 'write'
+        )
+    )
   );
 };
 
