@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -16,8 +18,9 @@ import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { advancedSort } from 'app/utils/advancedSort';
 import { ClientTranslationSchema } from 'app/istore';
-import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
+import { ConfirmNavigationModal, InputField } from 'app/V2/Components/Forms';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
+import RenderIfVisible from 'react-render-if-visible';
 import { Button, ToggleButton } from 'V2/Components/UI';
 import * as translationsAPI from 'V2/api/translations';
 import * as settingsAPI from 'V2/api/settings';
@@ -25,7 +28,7 @@ import { notificationAtom } from 'V2/atoms';
 import { availableLanguages } from 'shared/languagesList';
 import { Settings } from 'shared/types/settingsType';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { TranslationsTables } from './components/TableComponents';
+import { LanguagePill } from './components/LanguagePill';
 
 const editTranslationsLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -161,7 +164,12 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
 const filterTableValues = (values: any[]) =>
   values.filter(value => value.translationStatus.status !== 'translated');
 
-const calculateTableData = (terms: string[], formValues: formValuesType, hideTranslated: boolean) =>
+const calculateTableData = (
+  terms: string[],
+  formValues: formValuesType,
+  hideTranslated: boolean,
+  _search: string
+) =>
   terms
     .map((term, index) => {
       let values = composeTableValues(formValues, index);
@@ -188,6 +196,11 @@ const EditTranslations = () => {
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
+  const [search, setSearch] = useState('');
+  const tablesData = useMemo(
+    () => calculateTableData(contextTerms, defaultFormValues, hideTranslated, search),
+    [contextTerms, defaultFormValues, hideTranslated, search]
+  );
 
   const {
     register,
@@ -246,8 +259,6 @@ const EditTranslations = () => {
     }
   }, [fetcher.data, fetcher.formData, setNotifications]);
 
-  const tablesData = calculateTableData(contextTerms, defaultFormValues, hideTranslated);
-
   const formSubmit = async (data: { formValues: formValuesType }) => {
     const formData = new FormData();
     const values = prepareValuesToSave(data.formValues, translations);
@@ -281,39 +292,101 @@ const EditTranslations = () => {
           title={contextLabel}
           contextId={contextId}
         />
-
         <SettingsContent.Body>
-          <div className="px-5 pt-5">
-            <ToggleButton className="px-5 pt-5" onToggle={() => setHideTranslated(!hideTranslated)}>
-              <div className="pl-1 text-sm text-gray-700">
-                <Translate>Untranslated Terms</Translate>
-              </div>
-            </ToggleButton>
+          <div className="flex items-center w-full gap-4 pt-5 mb-4">
+            <div>
+              <ToggleButton
+                className="px-5 pt-5"
+                onToggle={() => setHideTranslated(!hideTranslated)}
+              >
+                <div className="pl-1 text-sm text-gray-700">
+                  <Translate>Untranslated Terms</Translate>
+                </div>
+              </ToggleButton>
+            </div>
+            <InputField
+              id="search"
+              hideLabel
+              placeholder="Search"
+              className="flex-grow ml-4"
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+              clearFieldAction={() => setSearch('')}
+            />
           </div>
           <div className="flex-grow">
-            {tablesData.length ? (
-              <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
-                <TranslationsTables
-                  tablesData={tablesData}
-                  submitting={isSubmitting}
-                  register={register}
-                  setValue={setValue}
-                  getFieldState={getFieldState}
-                />
-              </form>
-            ) : (
-              <div className="flex gap-2 items-center p-4 rounded-md border border-gray-50 bg-primary-50">
-                <InformationCircleIcon className="w-10 text-primary-800" />
-                <span className="text-primary-800">
-                  <Translate>There are no untranslated terms</Translate>
-                </span>
-              </div>
-            )}
+            <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
+              {tablesData?.length ? (
+                tablesData?.map(tableData => {
+                  if (!tableData) return null;
+                  const [title] = Object.keys(tableData);
+                  const values = tableData[title];
+                  return (
+                    <RenderIfVisible>
+                      <div className="relative w-full mb-4 border rounded-md shadow-sm border-gray-50">
+                        <table className="w-full text-sm text-left" data-testid="table">
+                          {title && (
+                            <caption className="p-4 text-base font-semibold text-left text-gray-900 bg-white">
+                              {title}
+                            </caption>
+                          )}
+                          <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr className="border-b">
+                              <th scope="col" className="px-6 py-3">
+                                <div className="inline-flex">
+                                  <Translate>Language</Translate>
+                                </div>
+                              </th>
+                              <th scope="col" className="px-6 py-3">
+                                <div className="inline-flex" />
+                              </th>
+                              <th scope="col" className="w-full px-6 py-3">
+                                <div className="inline-flex">
+                                  <Translate>Value</Translate>
+                                </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {values.map(value => (
+                              <tr>
+                                <td className="px-6 py-2">{value.language}</td>
+                                <td className="px-6 py-2">
+                                  <LanguagePill
+                                    languageKey={value.translationStatus.languageKey}
+                                    status={value.translationStatus.status}
+                                  />
+                                </td>
+                                <td className="px-6 py-2">
+                                  <InputField
+                                    id={value.fieldKey}
+                                    hideLabel
+                                    clearFieldAction={() => setValue(value.fieldKey as any, '')}
+                                    hasErrors={Boolean(getFieldState(value.fieldKey as any)?.error)}
+                                    {...register(value.fieldKey as any, { required: true })}
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </RenderIfVisible>
+                  );
+                })
+              ) : (
+                <div className="flex items-center gap-2 p-4 border rounded-md border-gray-50 bg-primary-50">
+                  <InformationCircleIcon className="w-10 text-primary-800" />
+                  <span className="text-primary-800">
+                    <Translate>There are no untranslated terms</Translate>
+                  </span>
+                </div>
+              )}
+            </form>
           </div>
         </SettingsContent.Body>
-
         <SettingsContent.Footer>
-          <div className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2">
             <div className="flex-1">
               {contextId === 'System' && (
                 <>
