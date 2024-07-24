@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 /* eslint-disable max-lines */
 import fetchMock from 'fetch-mock';
 import { files, storage } from 'api/files';
