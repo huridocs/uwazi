@@ -132,6 +132,7 @@ const Table = <T extends RowWithId<T>>({
 
   useEffect(() => {
     setDataState(data);
+    setRowSelection({});
   }, [data]);
 
   useEffect(() => {

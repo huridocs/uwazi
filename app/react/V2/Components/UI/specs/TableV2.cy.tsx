@@ -254,10 +254,13 @@ describe('Table', () => {
   });
 
   describe('Selections', () => {
-    it('should select and unselect some items selections', () => {
+    beforeEach(() => {
       Basic.args.enableSelections = true;
       Basic.args.dnd = { enable: true };
       mount(<Basic />);
+    });
+
+    it('should select and unselect some items selections', () => {
       cy.contains('Select all').realClick();
       cy.get('tbody').within(() => {
         cy.get('input[type="checkbox"]').eq(0).uncheck();
@@ -272,6 +275,30 @@ describe('Table', () => {
         cy.contains('Entity 4').should('not.exist');
         cy.contains('Entity 5');
       });
+    });
+
+    it('should reset selections when adding a new entry to the table', () => {
+      cy.contains('Select all').realClick();
+      cy.contains('button', 'Save changes').realClick();
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Entity 1');
+        cy.contains('Entity 2');
+        cy.contains('Entity 3');
+        cy.contains('Entity 4');
+        cy.contains('Entity 5');
+      });
+      cy.get('#checkbox-header').should('be.checked');
+
+      cy.contains('button', 'Add new item').realClick();
+      cy.get('#checkbox-header').should('not.be.checked');
+    });
+
+    it('should reset selections when removing an item from the table', () => {
+      cy.contains('Select all').realClick();
+      cy.contains('button', 'Save changes').realClick();
+      cy.get('#checkbox-header').should('be.checked');
+      cy.contains('button', 'Remove last item').realClick();
+      cy.get('#checkbox-header').should('not.be.checked');
     });
   });
 
