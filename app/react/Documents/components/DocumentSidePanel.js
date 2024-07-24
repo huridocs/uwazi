@@ -183,7 +183,7 @@ class DocumentSidePanel extends Component {
     );
 
     const linkTo = entityTab =>
-      `/entity/${doc.get('sharedId')}/${entityTab}${location.search || ''}`;
+      `/entity/${doc.get('sharedId')}/${entityTab}${location?.search || ''}`;
 
     return (
       <>

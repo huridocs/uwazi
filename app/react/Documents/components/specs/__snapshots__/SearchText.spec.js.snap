@@ -41,7 +41,7 @@ exports[`SearchText should render SnippetList and pass down same props to it 1`]
       "type": "document",
     }
   }
-  documentViewUrl="/entity/sharedId"
+  documentViewUrl="/entity/sharedId/text-search"
   searchTerm=""
   selectSnippet={[MockFunction]}
   snippets={
@@ -79,4 +79,4 @@ exports[`SearchText should render SnippetList and pass down same props to it 1`]
 />
 `;
 
-exports[`SearchText should use entity view url if doc type is entity 1`] = `"/entity/sharedId"`;
+exports[`SearchText should use entity view url if doc type is entity 1`] = `"/entity/sharedId/text-search"`;
