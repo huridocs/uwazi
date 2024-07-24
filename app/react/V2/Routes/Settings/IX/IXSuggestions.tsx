@@ -10,7 +10,7 @@ import {
   useRevalidator,
   useSearchParams,
 } from 'react-router-dom';
-import { Row, SortingState } from '@tanstack/react-table';
+import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
@@ -110,7 +110,7 @@ const IXSuggestions = () => {
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
-  const [selected, setSelected] = useState<Row<TableSuggestion>[]>([]);
+  const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
@@ -249,6 +249,9 @@ const IXSuggestions = () => {
               acceptSuggestions,
               openPDFSidepanel
             )}
+            sortingFn={sortingState => {
+              setSorting(sortingState);
+            }}
             header={
               <SuggestionsTitle
                 property={extractor.property}
@@ -260,9 +263,11 @@ const IXSuggestions = () => {
               />
             }
             enableSelections
-            //sorting={sorting}
-            //setSorting={setSorting}
-            //onSelection={setSelected}
+            onChange={({ selectedRows }) => {
+              setSelected(() =>
+                currentSuggestions.filter(current => current.rowId in selectedRows)
+              );
+            }}
             footer={
               <div className="flex justify-between h-6">
                 <PaginationState
@@ -296,9 +301,7 @@ const IXSuggestions = () => {
                 type="button"
                 styling="outline"
                 onClick={async () => {
-                  await acceptSuggestions(
-                    selected.map(selectedSuggestion => selectedSuggestion.original)
-                  );
+                  await acceptSuggestions(selected);
                 }}
               >
                 <Translate>Accept suggestion</Translate>
