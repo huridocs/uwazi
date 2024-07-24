@@ -1,10 +1,10 @@
 /* eslint-disable max-statements */
+import 'isomorphic-fetch';
 import { Server } from 'http';
 // eslint-disable-next-line node/no-restricted-import
 import { rm, writeFile } from 'fs/promises';
 
 import bodyParser from 'body-parser';
-import 'cross-fetch/polyfill';
 import _ from 'lodash';
 
 import authRoutes from 'api/auth/routes';

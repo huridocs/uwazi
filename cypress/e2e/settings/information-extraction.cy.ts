@@ -157,8 +157,9 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Edit Extractor').click();
       cy.getByTestId('modal').within(() => {
         cy.get('input[id="extractor-name"]').type(' edited', { delay: 0 });
+        cy.get('label[for="filter_true"]').click();
         editPropertyForExtractor('ordenesDeLaCorte', 'Ordenes de la corte', 'Title');
-        editPropertyForExtractor('causa', 'Causa', 'Title');
+        editPropertyForExtractor('causa', 'Causa', 'Title', false);
         cy.contains('button', 'Next').click();
         checkTemplatesList(['Ordenes de la corte', 'Ordenes del presidente']);
         cy.contains('button', 'Update').click();

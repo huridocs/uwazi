@@ -765,7 +765,7 @@ const fixtures: DBFixture = {
       }),
     ]),
   ],
-  dictionaries: [factory.thesauri('thesauri1', ['A', 'B', 'C'])],
+  dictionaries: [factory.nestedThesauri('thesauri1', ['A', 'B', 'C', { 1: ['1A', '1B'] }])],
 };
 
 export { fixtures, factory };
