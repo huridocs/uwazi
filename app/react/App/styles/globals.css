@@ -4067,6 +4067,11 @@ input[type="range"]::-ms-fill-lower {
   background-color: rgb(244 114 182 / var(--tw-bg-opacity));
 }
 
+.disabled\:bg-gray-200:disabled {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
+
 .disabled\:bg-gray-50:disabled {
   --tw-bg-opacity: 1;
   background-color: rgb(249 250 251 / var(--tw-bg-opacity));

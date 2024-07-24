@@ -23,7 +23,7 @@ const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: R
       <input
         type="checkbox"
         ref={ref}
-        className="bg-gray-50 rounded border-gray-300 cursor-pointer"
+        className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200"
         disabled={disabled}
         onChange={onChange}
         key={row.id}
@@ -42,8 +42,8 @@ const IndeterminateCheckboxHeader = <T,>({ table }: { table: Table<T> }) => {
   const onChange = table.getToggleAllRowsSelectedHandler();
 
   useEffect(() => {
-    ref.current.checked = Boolean(checked && !indeterminate);
-    ref.current.indeterminate = Boolean(indeterminate);
+    ref.current.checked = Boolean(checked);
+    ref.current.indeterminate = Boolean(indeterminate && !checked);
   }, [ref, indeterminate, checked]);
 
   return (

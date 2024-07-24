@@ -27,8 +27,9 @@ import { dndSortHandler, getRowIds } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
 import { GroupCell, GroupHeader } from './GroupComponents';
 
-type RowWithId<T extends { rowId: string }> = {
+type RowWithId<T extends { rowId: string; disableRowSelection?: boolean }> = {
   rowId: string;
+  disableRowSelection?: boolean;
   subRows?: T[];
 };
 
@@ -125,7 +126,7 @@ const Table = <T extends RowWithId<T>>({
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
-      enableRowSelection: enableSelections,
+      enableRowSelection: row => row.original.disableRowSelection !== true,
       onRowSelectionChange: setRowSelection,
     }),
   });

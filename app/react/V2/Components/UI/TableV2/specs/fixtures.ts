@@ -5,10 +5,17 @@ type BasicData = {
   title: string;
   created: number;
   description: string;
+  disableRowSelection?: boolean;
 };
 
 type DataWithGroups = BasicData & {
-  subRows?: { rowId: string; title: string; description: string; created: number }[];
+  subRows?: {
+    rowId: string;
+    title: string;
+    description: string;
+    created: number;
+    disableRowSelection?: boolean;
+  }[];
 };
 
 const tableData: TableProps<DataWithGroups>['data'] = [
@@ -99,4 +106,47 @@ const tableData: TableProps<DataWithGroups>['data'] = [
   },
 ];
 
-export { tableData };
+const tableWithDisabled: TableProps<DataWithGroups>['data'] = [
+  {
+    rowId: '1',
+    title: 'Group 1',
+    created: 10,
+    description: 'First group',
+    subRows: [
+      {
+        rowId: '1.1',
+        title: 'Sub 1-1',
+        description: 'First child',
+        disableRowSelection: true,
+        created: 5,
+      },
+      {
+        rowId: '1.2',
+        title: 'Sub 1-2',
+        description: 'Second child',
+        created: 7,
+      },
+      {
+        rowId: '1.3',
+        title: 'Sub 1-3',
+        description: 'Last child',
+        created: 9,
+      },
+    ],
+  },
+  {
+    rowId: '5',
+    title: 'Item 1',
+    created: 50,
+    disableRowSelection: true,
+    description: 'Regular item with no groups',
+  },
+  {
+    rowId: '6',
+    title: 'Item 2',
+    created: 60,
+    description: 'Another regular',
+  },
+];
+
+export { tableData, tableWithDisabled };

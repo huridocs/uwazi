@@ -5,6 +5,7 @@ import { mount } from '@cypress/react18';
 import { composeStories } from '@storybook/react';
 import { map } from 'lodash';
 import * as stories from 'app/stories/TableV2.stories';
+import { tableWithDisabled } from '../TableV2/specs/fixtures';
 
 const { Basic, Nested, Custom } = composeStories(stories);
 
@@ -300,12 +301,32 @@ describe('Table', () => {
       cy.contains('button', 'Remove last item').realClick();
       cy.get('#checkbox-header').should('not.be.checked');
     });
+
+    it('should not select items with disabled row selection', () => {
+      Nested.args.enableSelections = true;
+      Nested.args.dnd = { enable: true };
+      Nested.args.tableData = tableWithDisabled;
+      mount(<Nested />);
+      cy.contains('Select all').realClick();
+      cy.contains('button', 'Save changes').realClick();
+      cy.get('[data-testid="selected-items"]').within(() => {
+        cy.contains('Group 1');
+        cy.contains('Item 1').should('not.exist');
+        cy.contains('Item 2');
+      });
+      cy.get('[data-testid="selected-subrows"]').within(() => {
+        cy.contains('Sub 1-1').should('not.exist');
+        cy.contains('Sub 1-2');
+        cy.contains('Sub 1-3');
+      });
+    });
   });
 
   describe('DnD', () => {
     beforeEach(() => {
       Basic.args.dnd = { enable: true };
       Basic.args.enableSelections = true;
+      Nested.args.tableData = dataWithNested;
       mount(<Basic />);
       cy.get('[data-testid="sorted-items"]').within(() => {
         cy.contains('Entity 2 Entity 1 Entity 4 Entity 3 Entity 5');
