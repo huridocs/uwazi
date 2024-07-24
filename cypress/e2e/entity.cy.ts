@@ -312,7 +312,7 @@ describe('Entities', () => {
           { delay: 0 }
         );
         cy.get('svg[aria-label="Search button"]').click();
-        cy.get('.item-document').should('have.length', 1);
+        cy.contains('.item-snippet', '4 de julio de 2006').should('have.length', 1);
         cy.contains('.item-document .item-actions a', 'View').click();
         cy.contains('VISTO');
         cy.get('.snippet-text').should('have.length', 2);
