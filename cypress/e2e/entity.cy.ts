@@ -299,7 +299,7 @@ describe('Entities', () => {
         cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
         cy.contains('button', 'Save').click();
         cy.contains('Entity updated').as('successMessage');
-        cy.get('@successMessage').should('not.exists');
+        cy.get('@successMessage').should('not.exist');
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
         cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
