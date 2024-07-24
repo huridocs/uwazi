@@ -368,7 +368,7 @@
     "mini-css-extract-plugin": "^2.9.0",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^4.0.0",
-    "nodemon": "^3.0.3",
+    "nodemon": "^3.1.4",
     "plop": "^4.0.1",
     "postcss": "^8.4.39",
     "prettier": "3.2.5",
