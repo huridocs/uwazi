@@ -1,8 +1,8 @@
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { cloneDeep } from 'lodash';
-import { RowWithId, TableProps } from './Table';
+import { TableRow, TableProps } from './Table';
 
-const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['data']) => {
+const getRowIds = <T extends TableRow<T>>(data: TableProps<T>['data']) => {
   const identifiers: { id: UniqueIdentifier; parentId?: string }[] = [];
 
   data.forEach(element => {
@@ -23,7 +23,7 @@ const getRowIds = <T extends RowWithId<T>>(data: TableProps<T>['data']) => {
 };
 
 // eslint-disable-next-line max-statements
-const dndSortHandler = <T extends RowWithId<T>>({
+const dndSortHandler = <T extends TableRow<T>>({
   currentState,
   dataIds,
   activeId,

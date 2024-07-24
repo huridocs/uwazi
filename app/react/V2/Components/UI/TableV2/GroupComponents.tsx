@@ -4,11 +4,11 @@ import { Row } from '@tanstack/react-table';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 import { EmbededButton } from '../EmbededButton';
-import { RowWithId } from './Table';
+import { TableRow } from './Table';
 
 const GroupHeader = () => <Translate className="sr-only">Empty</Translate>;
 
-const GroupCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
+const GroupCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
   const canExpand = row.originalSubRows;
   const expanded = row.getIsExpanded();
 

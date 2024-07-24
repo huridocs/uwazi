@@ -27,13 +27,13 @@ import { dndSortHandler, getRowIds } from './helpers';
 import { SortingChevrons } from './SortingChevrons';
 import { GroupCell, GroupHeader } from './GroupComponents';
 
-type RowWithId<T extends { rowId: string; disableRowSelection?: boolean }> = {
+type TableRow<T> = {
   rowId: string;
   disableRowSelection?: boolean;
-  subRows?: T[];
+  subRows?: (T & { rowId: string; disableRowSelection?: boolean })[];
 };
 
-type TableProps<T extends RowWithId<T>> = {
+type TableProps<T extends TableRow<T>> = {
   columns: ColumnDef<T, any>[];
   data: T[];
   onChange?: ({
@@ -54,7 +54,7 @@ type TableProps<T extends RowWithId<T>> = {
   className?: string;
 };
 
-const Table = <T extends RowWithId<T>>({
+const Table = <T extends TableRow<T>>({
   columns,
   data,
   onChange,
@@ -126,7 +126,9 @@ const Table = <T extends RowWithId<T>>({
     getRowId: row => row.rowId,
     getSubRows: row => row.subRows || undefined,
     ...(enableSelections && {
-      enableRowSelection: row => row.original.disableRowSelection !== true,
+      //There seems to be a problem with react table types when using a function, typing as any
+      //fixes the issue
+      enableRowSelection: (row: any) => row.original.disableRowSelection !== true,
       onRowSelectionChange: setRowSelection,
     }),
   });
@@ -240,5 +242,5 @@ const Table = <T extends RowWithId<T>>({
   );
 };
 
-export type { TableProps, RowWithId };
+export type { TableProps, TableRow };
 export { Table };

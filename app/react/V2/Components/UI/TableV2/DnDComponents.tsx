@@ -5,7 +5,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { flexRender, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
-import { RowWithId } from './Table';
+import { TableRow } from './Table';
 
 const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
 const childIndicatorClass = 'shadow-[inset_4px_0_#3949AB]';
@@ -33,7 +33,7 @@ const getSytles = (expanded: boolean, isOver: boolean) => {
   return `${expandedGroupStyles} ${dndHoverStyles}`;
 };
 
-const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => {
+const RowDragHandleCell = <T extends TableRow<T>>({ row }: { row: Row<T> }) => {
   const { attributes, listeners, isDragging } = useSortable({
     id: row.id,
   });
@@ -68,7 +68,7 @@ const RowDragHandleCell = <T extends RowWithId<T>>({ row }: { row: Row<T> }) => 
   );
 };
 
-const DraggableRow = <T extends RowWithId<T>>({
+const DraggableRow = <T extends TableRow<T>>({
   row,
   colSpan,
   groupColumnIndex,
