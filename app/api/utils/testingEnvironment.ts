@@ -7,6 +7,8 @@ import { setupTestUploadedPaths } from 'api/files';
 import { UserSchema } from 'shared/types/userType';
 
 const testingEnvironment = {
+  userInContextMockFactory: new UserInContextMockFactory(),
+
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
     this.setPermissions();
@@ -38,12 +40,15 @@ const testingEnvironment = {
   },
 
   setPermissions(user?: UserSchema) {
-    const userInContextMockFactory = new UserInContextMockFactory();
     if (!user) {
-      userInContextMockFactory.mockEditorUser();
+      this.userInContextMockFactory.mockEditorUser();
     } else {
-      userInContextMockFactory.mock(user);
+      this.userInContextMockFactory.mock(user);
     }
+  },
+
+  resetPermissions() {
+    this.userInContextMockFactory.restore();
   },
 
   setRequestId(requestId: string = '1234') {
