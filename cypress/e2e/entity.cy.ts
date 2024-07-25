@@ -332,11 +332,12 @@ describe('Entities', () => {
       cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity('Editar');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
-      cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Título de prueba', {
+      cy.clearAndType('textarea[name="library.sidepanel.metadata.title"]', 'Título de prueba', {
         delay: 0,
       });
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
-      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
+      cy.clearAndType(
+        'input[name="library.sidepanel.metadata.metadata.resumen"]',
         'Resumen en español',
         { delay: 0 }
       );
