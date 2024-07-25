@@ -7,15 +7,19 @@ const fixturesFactory = getFixturesFactory();
 const entityId = db.id();
 const entityEnId = db.id();
 const restrictedEntityId = db.id();
+const readOnlyEntity = db.id();
 const uploadId = db.id();
 const uploadId2 = db.id();
 const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
+const readOnlyUploadId = db.id();
+const customFileId = db.id();
 const templateId = fixturesFactory.id('template');
 const importTemplate = db.id();
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const fileOnPublicEntity = 'fileOnPublicEntity.pdf';
 const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
 const customPdfFileName = 'customPDF.pdf';
 
@@ -40,6 +44,17 @@ const adminUser = {
 
 const fixtures: DBFixture = {
   files: [
+    {
+      _id: db.id(),
+      creationDate: 1,
+      entity: 'publicEntity',
+      generatedToc: true,
+      originalname: 'publicEntityFile',
+      filename: fileOnPublicEntity,
+      mimetype: 'application/pdf',
+      type: 'document',
+      language: 'eng',
+    },
     {
       _id: uploadId,
       creationDate: 1,
@@ -69,6 +84,15 @@ const fixtures: DBFixture = {
       language: 'eng',
     },
     {
+      _id: customFileId,
+      entity: 'restrictedSharedId',
+      originalname: 'customPdf',
+      filename: 'custom_file.pdf',
+      mimetype: 'application/pdf',
+      type: 'custom',
+      language: 'eng',
+    },
+    {
       _id: restrictedUploadId,
       entity: 'restrictedSharedId',
       generatedToc: true,
@@ -84,6 +108,15 @@ const fixtures: DBFixture = {
       generatedToc: true,
       originalname: 'restrictedUpload2',
       filename: 'restricted file 2 not on disk',
+      type: 'document',
+      language: 'eng',
+    },
+    {
+      _id: readOnlyUploadId,
+      entity: 'readOnlySharedId',
+      generatedToc: true,
+      originalname: 'readOnlyUpload',
+      filename: 'read only file',
       type: 'document',
       language: 'eng',
     },
@@ -108,6 +141,14 @@ const fixtures: DBFixture = {
     { entity: 'sharedId1', file: uploadId.toString() },
   ],
   entities: [
+    {
+      _id: db.id(),
+      sharedId: 'publicEntity',
+      language: 'es',
+      title: 'Public entity',
+      template: templateId,
+      published: true,
+    },
     {
       _id: entityId,
       sharedId: 'sharedId1',
@@ -135,6 +176,21 @@ const fixtures: DBFixture = {
           refId: writerUserId.toString(),
           type: 'user',
           level: 'write',
+        },
+      ],
+    },
+    {
+      _id: readOnlyEntity,
+      template: templateId,
+      sharedId: 'readOnlySharedId',
+      language: 'en',
+      title: 'Read only shared id',
+      public: false,
+      permissions: [
+        {
+          refId: writerUserId.toString(),
+          type: 'user',
+          level: 'read',
         },
       ],
     },
@@ -217,12 +273,15 @@ export {
   customPdfFileName,
   uploadId,
   uploadId2,
+  customFileId,
   restrictedUploadId,
   restrictedUploadId2,
+  readOnlyUploadId,
   templateId,
   importTemplate,
   collabUser,
   adminUser,
   writerUser,
   externalUrlFileId,
+  fileOnPublicEntity,
 };
