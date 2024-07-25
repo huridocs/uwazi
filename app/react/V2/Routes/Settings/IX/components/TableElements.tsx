@@ -184,7 +184,7 @@ const OpenPDFButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      <Translate>Open PDF</Translate>
+      <Translate className="whitespace-nowrap">Open PDF</Translate>
     </Button>
   );
 };
