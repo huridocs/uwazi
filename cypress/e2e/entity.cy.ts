@@ -321,7 +321,7 @@ describe('Entities', () => {
           expect(element.attr('href')).to.contain('searchTerm=%224%20de%20julio%20de%202006%22');
         });
         cy.contains('a', 'Library').click();
-        cy.get('input[aria-label="Type something in the search box to get some results."]').clear();
+        cy.get('svg[aria-label="Reset Search input"]').click();
       });
     });
   });
