@@ -311,6 +311,7 @@ describe('Table', () => {
       cy.contains('button', 'Save changes').realClick();
       cy.get('[data-testid="selected-items"]').within(() => {
         cy.contains('Group 1');
+        cy.contains('Group 2');
         cy.contains('Item 1').should('not.exist');
         cy.contains('Item 2');
       });
@@ -318,6 +319,32 @@ describe('Table', () => {
         cy.contains('Sub 1-1').should('not.exist');
         cy.contains('Sub 1-2');
         cy.contains('Sub 1-3');
+      });
+    });
+
+    it('should change parent status based on selected children', () => {
+      Nested.args.enableSelections = true;
+      Nested.args.dnd = { enable: true };
+      Nested.args.tableData = tableWithDisabled;
+      mount(<Nested />);
+
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.contains('button', 'Open group').realClick();
+        cy.get('input').realClick().should('be.checked');
+      });
+      cy.contains('tr', 'Sub 1-1').within(() => {
+        cy.get('input').should('not.be.checked');
+      });
+      cy.contains('tr', 'Sub 1-2').within(() => {
+        cy.get('input').should('be.checked');
+        cy.get('input').realClick();
+      });
+      cy.contains('tr', 'Sub 1-3').within(() => {
+        cy.get('input').should('be.checked');
+        cy.get('input').realClick();
+      });
+      cy.contains('tr', 'Group 1').within(() => {
+        cy.get('input').should('be.checked');
       });
     });
   });

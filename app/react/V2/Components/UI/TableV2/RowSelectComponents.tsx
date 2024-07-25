@@ -6,16 +6,13 @@ import { Translate } from 'app/I18N';
 
 const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: Row<T> }) => {
   const ref = useRef<HTMLInputElement>(null!);
-  const checked = row.getIsSelected() || row.getIsAllSubRowsSelected();
+  const checked = row.getIsSelected();
   const disabled = !row.getCanSelect();
-  const indeterminate = row.getIsSomeSelected();
   const onChange = row.getToggleSelectedHandler();
 
   useEffect(() => {
-    if (typeof indeterminate === 'boolean') {
-      ref.current.indeterminate = !checked && indeterminate;
-    }
-  }, [ref, indeterminate, checked]);
+    ref.current.checked = Boolean(checked);
+  }, [ref, checked]);
 
   return (
     <label>
@@ -23,7 +20,7 @@ const IndeterminateCheckboxRow = <T extends { rowId: string }>({ row }: { row: R
       <input
         type="checkbox"
         ref={ref}
-        className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-200"
+        className="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         disabled={disabled}
         onChange={onChange}
         key={row.id}

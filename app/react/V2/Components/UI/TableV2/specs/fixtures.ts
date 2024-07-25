@@ -135,6 +135,28 @@ const tableWithDisabled: TableProps<DataWithGroups>['data'] = [
     ],
   },
   {
+    rowId: '2',
+    title: 'Group 2',
+    created: 20,
+    description: 'Second group',
+    subRows: [
+      {
+        rowId: '2.1',
+        title: 'Sub 2-1',
+        description: 'First child',
+        disableRowSelection: true,
+        created: 50,
+      },
+      {
+        rowId: '2.2',
+        title: 'Sub 2-2',
+        description: 'Second child',
+        disableRowSelection: true,
+        created: 7,
+      },
+    ],
+  },
+  {
     rowId: '5',
     title: 'Item 1',
     created: 50,
