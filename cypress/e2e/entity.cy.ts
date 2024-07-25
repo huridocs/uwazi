@@ -320,13 +320,14 @@ describe('Entities', () => {
         cy.get('.entity-sidepanel-tab-link').then(element => {
           expect(element.attr('href')).to.contain('searchTerm=%224%20de%20julio%20de%202006%22');
         });
+        cy.contains('a', 'Library').click();
+        cy.get('input[aria-label="Type something in the search box to get some results."]').clear();
       });
     });
   });
 
   describe('Languages', () => {
     it('should change the entity in Spanish', () => {
-      cy.contains('a', 'Library').click();
       changeLanguage('Español');
       cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity('Editar');
