@@ -5,7 +5,6 @@ import { permissionsContext } from 'api/permissions/permissionsContext';
 import { IndexError } from 'api/search/entitiesIndex';
 import { search } from 'api/search';
 import dictionariesModel from 'api/thesauri/dictionariesModel';
-import request from '../app/shared/JSONRequest';
 import elasticMapping from './elastic_mapping/elastic_mapping';
 
 import templatesModel from '../app/api/templates';
@@ -17,13 +16,22 @@ const getIndexUrl = () => {
   return `${elasticUrl}/${config.defaultTenant.indexName}`;
 };
 
+const headers = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json',
+};
+
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
-  request.put(`${getIndexUrl()}/_settings`, {
-    index: {
-      refresh_interval: refreshInterval,
-      number_of_replicas: numberOfReplicas,
-      translog: {
-        durability: translogDurability,
+  fetch(`${getIndexUrl()}/_settings`, {
+    method: 'PUT',
+    headers,
+    body: {
+      index: {
+        refresh_interval: refreshInterval,
+        number_of_replicas: numberOfReplicas,
+        translog: {
+          durability: translogDurability,
+        },
       },
     },
   });
@@ -68,7 +76,7 @@ const indexEntities = async () => {
 const prepareIndex = async () => {
   process.stdout.write(`Deleting index ${config.defaultTenant.indexName}...`);
   try {
-    await request.delete(getIndexUrl());
+    await fetch(getIndexUrl(), { method: 'delete' });
   } catch (err) {
     // Should not stop on index_not_found_exception
     if (err.json.error.type === 'index_not_found_exception') {
@@ -83,18 +91,21 @@ const prepareIndex = async () => {
   process.stdout.write(`Creating index ${config.defaultTenant.indexName}...\r\n`);
   process.stdout.write(' - Base properties mapping\r\n');
 
-  try {
-    await request.put(getIndexUrl(), elasticMapping);
-  } catch (_e) {
-    setTimeout(async () => {
-      await request.put(getIndexUrl(), elasticMapping);
-    }, 1000);
-  }
+  await fetch(getIndexUrl(), {
+    headers,
+    method: 'PUT',
+    body: JSON.stringify(elasticMapping),
+  });
+
   process.stdout.write(' - Custom templates mapping\r\n');
   const templates = await templatesModel.get();
   const dictionaries = await dictionariesModel.get({ enable_classification: true });
   const templatesMapping = await elasticMapFactory.mapping(templates, !!dictionaries.length);
-  await request.put(`${getIndexUrl()}/_mapping`, templatesMapping);
+  await fetch(`${getIndexUrl()}/_mapping`, {
+    headers,
+    method: 'PUT',
+    body: JSON.stringify(templatesMapping),
+  });
   process.stdout.write(' [done]\n');
 };
 

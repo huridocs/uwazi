@@ -11,9 +11,10 @@ import entities from 'api/entities';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { fixtures, templateId, importTemplate } from './fixtures';
+import { fixtures, templateId, importTemplate, adminUser, collabUser } from './fixtures';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import { UserSchema } from 'shared/types/userType';
 
 jest.mock(
   '../../auth/authMiddleware.ts',
@@ -23,7 +24,20 @@ jest.mock(
 );
 
 describe('upload routes', () => {
-  const app: Application = setUpApp(uploadRoutes);
+  let requestMockedUser: UserSchema = collabUser;
+
+  const app: Application = setUpApp(
+    uploadRoutes,
+    (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = (() => requestMockedUser)();
+      next();
+    }
+  );
+
+  const mockCurrentUser = (user: UserSchema) => {
+    requestMockedUser = user;
+    testingEnvironment.setPermissions(user);
+  };
 
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
@@ -215,6 +229,7 @@ describe('upload routes', () => {
 
   describe('DELETE/files', () => {
     it('should delete thumbnails asociated with documents deleted', async () => {
+      mockCurrentUser(adminUser);
       await uploadDocument('uploads/f2082bf51b6ef839690485d7153e847a.pdf');
 
       const [file]: FileType[] = await files.get({

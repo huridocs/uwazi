@@ -69,8 +69,8 @@ class SearchText extends Component {
   render() {
     const { doc, snippets } = this.props;
     const documentViewUrl = doc.get('file')
-      ? `/document/${doc.get('sharedId')}`
-      : `/entity/${doc.get('sharedId')}`;
+      ? `/document/${doc.get('sharedId')}/text-search`
+      : `/entity/${doc.get('sharedId')}/text-search`;
     return (
       <div>
         <LocalForm
