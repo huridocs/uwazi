@@ -9,13 +9,14 @@ import { ClientTemplateSchema } from 'app/istore';
 import { Translate } from 'app/I18N';
 import { thesauriAtom } from 'V2/atoms';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
+import { SuggestionValue } from '../types';
 
 const SuggestedValue = ({
   value,
   suggestion,
   templateProperties,
 }: {
-  value: string | number | undefined;
+  value: SuggestionValue | SuggestionValue[] | undefined;
   suggestion: EntitySuggestionType;
   templateProperties: ClientTemplateSchema['properties'];
 }) => {
@@ -67,7 +68,7 @@ const SuggestedValue = ({
       return '-';
     }
     if (type === 'date') {
-      return secondsToDate(value, locale);
+      return secondsToDate(value as string | number, locale);
     }
 
     if (type === 'select' || type === 'multiselect' || type === 'relationship') {

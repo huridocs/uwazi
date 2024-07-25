@@ -8,7 +8,12 @@ import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { TableExtractor, TableSuggestion, SingleValueSuggestion } from '../types';
+import {
+  TableExtractor,
+  TableSuggestion,
+  SingleValueSuggestion,
+  MultiValueSuggestion,
+} from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { propertyIcons } from './Icons';
@@ -44,7 +49,9 @@ const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor
 const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Document</Translate>;
-const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
+const CurrentValueHeader = () => (
+  <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
+);
 const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
@@ -63,7 +70,10 @@ const CurrentValueCell = ({
   cell,
   allProperties,
 }: {
-  cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
+  cell: CellContext<
+    TableSuggestion,
+    SingleValueSuggestion['currentValue'] | MultiValueSuggestion['currentValue']
+  >;
   allProperties: ClientPropertySchema[];
 }) => {
   if ('subRows' in cell.row.original) {
