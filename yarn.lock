@@ -1831,12 +1831,12 @@
     react-is "^18.2.0"
     react-shallow-renderer "^16.15.0"
 
-"@chromatic-com/storybook@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@chromatic-com/storybook/-/storybook-1.3.4.tgz#1e8074723e2ae30e01ccf9c03497137cf0f5f224"
-  integrity sha512-ZfQDc5Zg5YSC9cWdBc9QpMF0vgvknwKTB9xBE0NhCJWjGxG9mz9yLzQTzzliYulPtWgcQ+8cE+apDljYK+fWdQ==
+"@chromatic-com/storybook@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@chromatic-com/storybook/-/storybook-1.6.1.tgz#42173679c166ce982903b9e40bb457c037e9dac2"
+  integrity sha512-x1x1NB3j4xpfeSWKr96emc+7ZvfsvH+/WVb3XCjkB24PPbT8VZXb3mJSAQMrSzuQ8+eQE9kDogYHH9Fj3tb/Cw==
   dependencies:
-    chromatic "^11.3.1"
+    chromatic "^11.4.0"
     filesize "^10.0.12"
     jsonfile "^6.1.0"
     react-confetti "^6.1.0"
@@ -7144,10 +7144,10 @@ chownr@^2.0.0:
   resolved "https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^11.3.1:
-  version "11.3.1"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-11.3.1.tgz#e59b1946d073c08bccb2692d89cdef9976e2477a"
-  integrity sha512-ATAfVEn84NARTIxdiGQ8QywWg3BPM/+6stVD1stSKCO7lQLEKFyGcI+PhBBDt+ZgNcgsEsg5fo3E2dQNt01W6g==
+chromatic@^11.4.0:
+  version "11.5.6"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-11.5.6.tgz#9d243235ff079307f5e8b9682ab5315ee48e5cf8"
+  integrity sha512-ycX/hlZLs69BltwwBNsEXr+As6x5/0rlwp6W/CiHMZ3tpm7dmkd+hQCsb8JGHb1h49W3qPOKQ/Lh9evqcJ1yeQ==
 
 chrome-trace-event@^1.0.2:
   version "1.0.2"
