@@ -9,23 +9,28 @@ import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { legacyLogger } from 'api/log';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
+import { EntitySchema } from 'shared/types/entityType';
 import { fileSchema } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
+import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
 import { files } from './files';
 import { storage } from './storage';
-import { EntitySchema } from 'shared/types/entityType';
 
 const checkEntityPermission = async (
   file: FileType,
+  user: UserSchema | undefined,
   level: 'read' | 'write' = 'read'
 ): Promise<boolean> => {
-  const user = permissionsContext.getUserInContext() || { _id: '', role: '' };
   if (['admin'].includes(user?.role || '')) return true;
   const [fileInDB] = await files.get({ _id: file._id });
 
   if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
     return false;
+  }
+
+  if (fileInDB.type === 'custom' && level === 'read') {
+    return true;
   }
 
   const relatedEntities: EntitySchema[] = await entities.get(
@@ -44,7 +49,7 @@ const checkEntityPermission = async (
       entity =>
         !!(entity.permissions || []).find(
           permission =>
-            permission.refId.toString() === user._id?.toString() && permission.level === 'write'
+            permission.refId.toString() === user?._id?.toString() && permission.level === 'write'
         )
     )
   );
@@ -127,7 +132,9 @@ export default (app: Application) => {
       },
     }),
     async (req, res) => {
-      if (!(await checkEntityPermission(req.body, 'write'))) {
+      if (
+        !(await checkEntityPermission(req.body, permissionsContext.getUserInContext(), 'write'))
+      ) {
         throw createError('file not found', 404);
       }
       const result = await files.save(req.body);
@@ -219,7 +226,7 @@ export default (app: Application) => {
         !file?.filename ||
         !file?.type ||
         !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file))
+        !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
       ) {
         throw createError('file not found', 404);
       }
@@ -262,7 +269,10 @@ export default (app: Application) => {
 
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (!fileToDelete || !(await checkEntityPermission(fileToDelete, 'write'))) {
+      if (
+        !fileToDelete ||
+        !(await checkEntityPermission(fileToDelete, permissionsContext.getUserInContext(), 'write'))
+      ) {
         throw createError('file not found', 404);
       }
 

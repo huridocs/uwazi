@@ -188,13 +188,14 @@ describe('files routes', () => {
 
   describe('GET/files', () => {
     it('should return entity related files only if the collaborator user has permission for the entity', async () => {
-      testingEnvironment.setPermissions(writerUser);
+      mockCurrentUser(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
         .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'publicEntityFile',
         'restrictedUpload',
         'restrictedUpload2',
         'readOnlyUpload',
@@ -210,6 +211,7 @@ describe('files routes', () => {
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'publicEntityFile',
         'upload1',
         'fileNotInDisk',
         'restrictedUpload',
@@ -220,7 +222,7 @@ describe('files routes', () => {
     });
 
     it('should only allow properly typed id and type parameters in the query', async () => {
-      testingEnvironment.setPermissions(adminUser);
+      mockCurrentUser(adminUser);
 
       await request(app).get('/api/files').query({ $where: '1===1' }).expect(400);
 
@@ -240,7 +242,7 @@ describe('files routes', () => {
 
   describe('DELETE/api/files', () => {
     beforeEach(() => {
-      testingEnvironment.setPermissions(adminUser);
+      mockCurrentUser(adminUser);
     });
 
     it('should properly delete files that are external urls', async () => {
@@ -278,17 +280,17 @@ describe('files routes', () => {
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
-      testingEnvironment.setPermissions(collabUser);
-      await request(app)
+      mockCurrentUser(collabUser);
+      let response = await request(app)
         .delete('/api/files')
-        .query({ _id: restrictedUploadId2.toString() })
-        .expect(404);
+        .query({ _id: restrictedUploadId2.toString() });
+      expect(response.status).toBe(404);
 
-      testingEnvironment.setPermissions(writerUser);
-      await request(app)
+      mockCurrentUser(writerUser);
+      response = await request(app)
         .delete('/api/files')
-        .query({ _id: restrictedUploadId2.toString() })
-        .expect(200);
+        .query({ _id: restrictedUploadId2.toString() });
+      expect(response.status).toBe(200);
     });
 
     it('should allow deletion of custom files only if the user is an admin', async () => {

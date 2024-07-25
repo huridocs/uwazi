@@ -13,6 +13,7 @@ import {
   writerUser,
   adminUser,
   customPdfFileName,
+  fileOnPublicEntity,
 } from './fixtures';
 
 import uploadRoutes from '../routes';
@@ -100,18 +101,35 @@ describe('files routes download', () => {
       });
     });
 
+    describe('when there is no user logged in', () => {
+      it('should serve custom files', async () => {
+        testingEnvironment.resetPermissions();
+        const response = await request(app).get(`/api/files/${customPdfFileName}`);
+
+        expect(response.status).toBe(200);
+      });
+      it('should serve files that are related to public entities', async () => {
+        testingEnvironment.resetPermissions();
+        const response = await request(app).get(`/api/files/${fileOnPublicEntity}`);
+
+        expect(response.status).toBe(200);
+      });
+    });
+
     describe('when the related entity is restricted by permissions', () => {
       it('should return a 404 if the user does not have permission', async () => {
         app = setAppWithUser(uploadRoutes, collabUser);
-        await request(app).get(`/api/files/${restrictedFileName}`).expect(404);
+        const response = await request(app).get(`/api/files/${restrictedFileName}`);
+        expect(response.status).toBe(404);
       });
 
       it('should return the file if the user has permission', async () => {
         app = setAppWithUser(uploadRoutes, writerUser);
-        const response: SuperTestResponse = await request(app)
-          .get(`/api/files/${restrictedFileName}`)
-          .expect(200);
+        const response: SuperTestResponse = await request(app).get(
+          `/api/files/${restrictedFileName}`
+        );
 
+        expect(response.status).toBe(200);
         expect(response.body instanceof Buffer).toBe(true);
       });
 

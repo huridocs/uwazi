@@ -19,6 +19,7 @@ const importTemplate = db.id();
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
 const fileName1 = 'f2082bf51b6ef839690485d7153e847a.pdf';
+const fileOnPublicEntity = 'fileOnPublicEntity.pdf';
 const restrictedFileName = 'f2082bf51b6ef839690485d7153e847b.pdf';
 const customPdfFileName = 'customPDF.pdf';
 
@@ -43,6 +44,17 @@ const adminUser = {
 
 const fixtures: DBFixture = {
   files: [
+    {
+      _id: db.id(),
+      creationDate: 1,
+      entity: 'publicEntity',
+      generatedToc: true,
+      originalname: 'publicEntityFile',
+      filename: fileOnPublicEntity,
+      mimetype: 'application/pdf',
+      type: 'document',
+      language: 'eng',
+    },
     {
       _id: uploadId,
       creationDate: 1,
@@ -129,6 +141,14 @@ const fixtures: DBFixture = {
     { entity: 'sharedId1', file: uploadId.toString() },
   ],
   entities: [
+    {
+      _id: db.id(),
+      sharedId: 'publicEntity',
+      language: 'es',
+      title: 'Public entity',
+      template: templateId,
+      published: true,
+    },
     {
       _id: entityId,
       sharedId: 'sharedId1',
@@ -263,4 +283,5 @@ export {
   adminUser,
   writerUser,
   externalUrlFileId,
+  fileOnPublicEntity,
 };
