@@ -8,7 +8,7 @@ import { Translate } from 'app/I18N';
 import { TableRow } from './Table';
 
 const dndHoverClass = 'shadow-[inset_0_-4px_#3949AB]';
-const childIndicatorClass = 'shadow-[inset_4px_0_#3949AB]';
+const childIndicatorClass = 'shadow-[inset_5px_0px_0px_-1px_#3949AB]';
 
 const inactiveGradientStyle: CSSProperties = {
   position: 'absolute',

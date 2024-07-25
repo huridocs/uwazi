@@ -74,9 +74,11 @@ const Table = <T extends TableRow<T>>({
   const { memoizedColumns, groupColumnIndex } = useMemo<{
     memoizedColumns: ColumnDef<T, any>[];
     groupColumnIndex: number;
+    // eslint-disable-next-line max-statements
   }>(() => {
     const tableColumns = [...columns];
     const hasGroups = data.find(item => item.subRows);
+    let calculatedIndex = 0;
 
     if (hasGroups) {
       tableColumns.unshift({
@@ -88,6 +90,7 @@ const Table = <T extends TableRow<T>>({
     }
 
     if (enableSelections) {
+      calculatedIndex += 1;
       tableColumns.unshift({
         id: 'select',
         header: IndeterminateCheckboxHeader,
@@ -97,6 +100,7 @@ const Table = <T extends TableRow<T>>({
     }
 
     if (dnd?.enable) {
+      calculatedIndex += 1;
       tableColumns.unshift({
         id: 'drag-handle',
         cell: RowDragHandleCell,
@@ -107,7 +111,7 @@ const Table = <T extends TableRow<T>>({
 
     return {
       memoizedColumns: tableColumns,
-      groupColumnIndex: 0 + Number(enableSelections) + Number(dnd?.enable),
+      groupColumnIndex: calculatedIndex,
     };
   }, [columns, data, enableSelections, dnd]);
 
