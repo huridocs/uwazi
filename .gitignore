@@ -27,6 +27,7 @@ app/api/csv/specs/*.jpg
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847a.pdf
 !app/api/files/specs/uploads/f2082bf51b6ef839690485d7153e847b.pdf
 !app/api/files/specs/customUploads/customPDF.pdf
+!app/api/files/specs/uploads/fileOnPublicEntity.pdf
 !app/api/files/specs/uploads/eng.pdf
 !app/api/files/specs/uploads/spn.pdf
 !app/api/files/specs/uploads/import.zip
@@ -55,4 +56,4 @@ cypress/snapshots/diff/*
 cypress/videos/*
 *.diff.png
 *.actual.png
-
+.trunk/*
