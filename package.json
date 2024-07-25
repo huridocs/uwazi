@@ -241,7 +241,7 @@
     "svg-captcha": "^1.4.0",
     "tiny-cookie": "^2.5.1",
     "typescript": "5.5.4",
-    "underscore": "^1.13.6",
+    "underscore": "^1.13.7",
     "url-join": "^4.0.1",
     "world-countries": "5.0.0",
     "xml-js": "^1.6.11",
