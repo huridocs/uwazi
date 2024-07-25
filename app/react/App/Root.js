@@ -94,9 +94,9 @@ class Root extends Component {
       ? determineHotAssets(query)
       : determineAssets(assets, languageData);
 
-    const reScript = /(<script\b[^>]*>[\s\S]*?<\/script\b[^>]*>)/g;
-    const [scriptContent] = content.match(reScript);
-    const htmlContent = content.replace(scriptContent, '');
+    const reScript = /<script[^>]*>(.*?)<\/script>/i;
+    const matchedExp = content.match(reScript);
+    const htmlContent = content.replace(matchedExp[0], '');
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
         {headTag(head, CSS, reduxData)}
@@ -105,7 +105,7 @@ class Root extends Component {
           <script
             //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
-              __html: scriptContent,
+              __html: matchedExp[1],
             }}
           />
           <script
