@@ -168,6 +168,7 @@ class DocumentSidePanel extends Component {
       isTargetDoc,
       references,
       currentSidepanelView,
+      location,
     } = this.props;
 
     const summary = connectionsGroups.reduce(
@@ -180,6 +181,9 @@ class DocumentSidePanel extends Component {
       },
       { totalConnections: 0 }
     );
+
+    const linkTo = entityTab =>
+      `/entity/${doc.get('sharedId')}/${entityTab}${location?.search || ''}`;
 
     return (
       <>
@@ -209,7 +213,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'semantic-search-results')}
-                            to={`/entity/${doc.get('sharedId')}/semantic-search-results`}
+                            to={linkTo('semantic-search-results')}
                             onClick={() =>
                               store.dispatch(
                                 actions.set('viewer.sidepanel.tab', 'semantic-search-results')
@@ -255,7 +259,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'text-search')}
-                            to={`/entity/${doc.get('sharedId')}/text-search`}
+                            to={linkTo('text-search')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'text-search'))
                             }
@@ -293,7 +297,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'toc')}
-                            to={`/entity/${doc.get('sharedId')}/toc`}
+                            to={linkTo('toc')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'toc'))
                             }
@@ -338,7 +342,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'references')}
-                            to={`/entity/${doc.get('sharedId')}/references`}
+                            to={linkTo('references')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'references'))
                             }
@@ -386,7 +390,7 @@ class DocumentSidePanel extends Component {
                   >
                     <I18NLink
                       className={this.linkClassNames(tab === 'metadata' || tab === '')}
-                      to={`/entity/${doc.get('sharedId')}/metadata`}
+                      to={linkTo('metadata')}
                       onClick={() =>
                         store.dispatch(actions.set('viewer.sidepanel.tab', 'metadata'))
                       }
@@ -424,7 +428,7 @@ class DocumentSidePanel extends Component {
                         >
                           <I18NLink
                             className={this.linkClassNames(tab === 'relationships')}
-                            to={`/entity/${doc.get('sharedId')}/relationships`}
+                            to={linkTo('relationships')}
                             onClick={() =>
                               store.dispatch(actions.set('viewer.sidepanel.tab', 'relationships'))
                             }
@@ -465,7 +469,7 @@ class DocumentSidePanel extends Component {
                   >
                     <I18NLink
                       className={this.linkClassNames(['newrelationships'])}
-                      to={`/entity/${doc.get('sharedId')}/newrelationships`}
+                      to={linkTo('newrelationships')}
                       onClick={() =>
                         store.dispatch(actions.set('viewer.sidepanel.tab', 'newrelationships'))
                       }
