@@ -1,19 +1,14 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Cell, CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
-import { CheckCircleIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import {
-  TableExtractor,
-  TableSuggestion,
-  MultiValueSuggestion,
-  SingleValueSuggestion,
-} from '../types';
+import { TableExtractor, TableSuggestion, SingleValueSuggestion } from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { propertyIcons } from './Icons';
@@ -71,8 +66,8 @@ const CurrentValueCell = ({
   cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
   allProperties: ClientPropertySchema[];
 }) => {
-  if ('children' in cell.row.original) {
-    const suggestions = cell.row.original.children;
+  if ('subRows' in cell.row.original) {
+    const suggestions = cell.row.original.subRows;
     const ammountOfSuggestions = suggestions.length;
     const amountOfValues = suggestions.filter(suggestion => suggestion.currentValue).length;
     const amountOfMatches = suggestions.filter(s => s.currentValue === s.suggestedValue).length;
@@ -223,24 +218,13 @@ const extractorsTableColumns = [
     header: ActionHeader,
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'sr-only invisible bg-gray-50' },
+    meta: { headerClassName: 'sr-only' },
   }),
 ];
 
-const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
-  <EmbededButton
-    icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-    onClick={() => row.toggleExpanded()}
-    color="indigo"
-    disabled={(row.original as MultiValueSuggestion).children.length === 0}
-  >
-    <Translate>Group</Translate>
-  </EmbededButton>
-);
-
 type Color = 'red' | 'green' | 'orange';
 
-const suggestionsTableColumnsBuilder: Function = (
+const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
   acceptSuggestions: (suggestions: TableSuggestion[]) => void,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
@@ -252,25 +236,22 @@ const suggestionsTableColumnsBuilder: Function = (
       header: TitleHeader,
       cell: TitleCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<TableSuggestion, 'entityTitle'>,
+    }),
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<TableSuggestion, 'segment'>,
+    }),
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<TableSuggestion, 'currentValue'>,
+    }),
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
       cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) => {
-        if ('children' in row.original && Array.isArray(row.original.children)) {
-          return <GroupButton row={row} />;
-        }
-        if (!row.original.isChild) {
+        if (row.depth === 0) {
           return <AcceptButton action={acceptSuggestions} cell={cell} />;
         }
         return null;
@@ -284,7 +265,7 @@ const suggestionsTableColumnsBuilder: Function = (
       id: 'open-pdf-actions',
       header: ActionHeader,
       cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
-        !row.original.isChild ? (
+        row.depth === 0 ? (
           <OpenPDFButton action={openPdfSidepanel} cell={cell} />
         ) : (
           <AcceptButton action={acceptSuggestions} cell={cell} />
@@ -293,7 +274,7 @@ const suggestionsTableColumnsBuilder: Function = (
         headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
-    }) as ColumnDef<TableSuggestion, 'currentValue'>,
+    }),
   ];
 };
 

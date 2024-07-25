@@ -118,13 +118,15 @@ const SuggestedValue = ({
             <div>
               <span className="font-bold">
                 <Translate>Current value</Translate>:
-              </span>{' '}
+              </span>
+              &nbsp;
               {getCurrentValue()}
             </div>
             <div>
               <span className="font-bold">
                 <Translate>Suggestion:</Translate>
-              </span>{' '}
+              </span>
+              &nbsp;
               {getSuggestedValue()}
             </div>
           </div>

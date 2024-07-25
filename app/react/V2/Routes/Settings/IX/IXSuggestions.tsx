@@ -242,8 +242,7 @@ const IXSuggestions = () => {
         <SettingsContent.Body>
           <Table
             data={currentSuggestions}
-            // highLightGroups={false}
-            // subRowsKey="children"
+            enableSelections
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
@@ -251,6 +250,11 @@ const IXSuggestions = () => {
             )}
             sortingFn={sortingState => {
               setSorting(sortingState);
+            }}
+            onChange={({ selectedRows }) => {
+              setSelected(() =>
+                currentSuggestions.filter(current => current.rowId in selectedRows)
+              );
             }}
             header={
               <SuggestionsTitle
@@ -262,12 +266,6 @@ const IXSuggestions = () => {
                 activeFilters={activeFilters}
               />
             }
-            enableSelections
-            onChange={({ selectedRows }) => {
-              setSelected(() =>
-                currentSuggestions.filter(current => current.rowId in selectedRows)
-              );
-            }}
             footer={
               <div className="flex justify-between h-6">
                 <PaginationState

@@ -20,24 +20,24 @@ type SuggestionValue = string | number;
 
 interface SingleValueSuggestion extends EntitySuggestionType {
   _id: ObjectIdSchema;
-  isChild?: boolean;
+  rowId: string;
+  disableRowSelection?: boolean;
   suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
-  disableRowSelection?: boolean;
+  isChild?: boolean;
 }
 
 interface MultiValueSuggestion extends EntitySuggestionType {
   _id: ObjectIdSchema;
-  isChild?: boolean;
+  rowId: string;
+  disableRowSelection?: boolean;
   suggestedValue: SuggestionValue[];
   currentValue: SuggestionValue[];
-  children: SingleValueSuggestion[];
-  disableRowSelection?: boolean;
+  subRows: SingleValueSuggestion[];
+  isChild?: boolean;
 }
 
-type TableSuggestion =
-  | (SingleValueSuggestion & { rowId: string })
-  | (MultiValueSuggestion & { rowId: string });
+type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
 
 type TableExtractor = Extractor & { rowId: string };
 
