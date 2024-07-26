@@ -9955,10 +9955,10 @@ filelist@^1.0.4:
   dependencies:
     minimatch "^5.0.1"
 
-filesize@^10.0.12, filesize@^10.1.0:
-  version "10.1.1"
-  resolved "https://registry.yarnpkg.com/filesize/-/filesize-10.1.1.tgz#eb98ce885aa73741199748e70e5b7339cc22c5ff"
-  integrity sha512-L0cdwZrKlwZQkMSFnCflJ6J2Y+5egO/p3vgRSDQGxQt++QbUZe5gMbRO6kg6gzwQDPvq2Fk9AmoxUNfZ5gdqaQ==
+filesize@^10.0.12, filesize@^10.1.4:
+  version "10.1.4"
+  resolved "https://registry.yarnpkg.com/filesize/-/filesize-10.1.4.tgz#184f256063a201f08b6e6b3cc47d21b60f5b8d89"
+  integrity sha512-ryBwPIIeErmxgPnm6cbESAzXjuEFubs+yKYLBZvg3CaiNcmkJChoOGcBSrZ6IwkMwPABwPpVXE6IlNdGJJrvEg==
 
 fill-range@^7.1.1:
   version "7.1.1"
