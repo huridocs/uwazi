@@ -51,11 +51,13 @@ const SuggestionsTitle = ({
 
   return (
     <div className="flex gap-4">
-      <div className="flex flex-wrap content-center gap-2 grow">
-        <span className="flex items-center justify-center font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full w-7 h-7">
+      <div className="flex flex-wrap gap-2 items-center text-gray-900 grow">
+        <span className="flex justify-center items-center w-7 h-7 font-sans text-sm text-center text-gray-700 bg-indigo-200 rounded-full">
           {propGraphics}
         </span>
-        <span>{t(templates[0]?._id, template?.label, null, false)}</span>
+        <span className="text-base font-semibold">
+          {t(templates[0]?._id, template?.label, null, false)}
+        </span>
         <Translate className="italic font-normal">for</Translate>
         {templates.map(templateToDisplay => (
           <Pill

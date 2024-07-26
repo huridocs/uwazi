@@ -269,6 +269,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,Drag and drop file in this window to upload
 Drag items here,Drag items here
 Drag properties here,Drag properties here
+Drag row,Drag row
 Drop your files here to upload or,Drop your files here to upload or
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Duplicated email
@@ -290,6 +291,7 @@ Email,Email
 Email address,Email address
 Email updated,Email updated
 Empty,Empty
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,Enable this page to be used as an entity view page:
@@ -561,6 +563,7 @@ Ok,Ok
 OK,OK
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Open the two-factor Authenticator app on your device
 or,or
@@ -823,6 +826,7 @@ This entity is restricted from public view.,This entity is restricted from publi
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,This option will show a notification about the use of cookies in your instance.
 This property will appear in the library cards as part of the basic info.,This property will appear in the library cards as part of the basic info.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,This property will be inherited from the related entities and shown as metadata of this type of entities.

@@ -34,34 +34,34 @@ describe('updateSuggestions', () => {
   });
 
   it('should work with multi value suggestions', () => {
-    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.children[0]]);
+    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.subRows[0]]);
     expect(accepted).toEqual([
       suggestion3,
       {
         ...suggestion5,
         state: { ...suggestion5.state, match: false },
         currentValue: ['value1', 'value2', 'value3'],
-        children: [
+        subRows: [
           {
-            ...suggestion5.children[0],
+            ...suggestion5.subRows[0],
             currentValue: 'value3',
           },
-          suggestion5.children[1],
-          suggestion5.children[2],
+          suggestion5.subRows[1],
+          suggestion5.subRows[2],
         ],
       },
     ]);
   });
 
   it('should work with multi value suggestions removing values', () => {
-    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.children[2]]);
+    const accepted = updateSuggestions([suggestion3, suggestion5], [suggestion5.subRows[2]]);
     expect(accepted).toEqual([
       suggestion3,
       {
         ...suggestion5,
         state: { ...suggestion5.state, match: true },
         currentValue: ['value2'],
-        children: [suggestion5.children[0], suggestion5.children[1]],
+        subRows: [suggestion5.subRows[0], suggestion5.subRows[1]],
       },
     ]);
   });
@@ -73,12 +73,12 @@ describe('updateSuggestions', () => {
         ...suggestion5,
         state: { ...suggestion5.state, match: true },
         currentValue: ['value3', 'value2'],
-        children: [
+        subRows: [
           {
-            ...suggestion5.children[0],
+            ...suggestion5.subRows[0],
             currentValue: 'value3',
           },
-          suggestion5.children[1],
+          suggestion5.subRows[1],
         ],
       },
     ]);

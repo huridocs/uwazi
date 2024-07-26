@@ -19,16 +19,16 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
     ...(Array.isArray(suggestion.suggestedValue) ? suggestion.suggestedValue : []),
   ];
 
-  suggestion.children = [];
+  suggestion.subRows = [];
 
-  const { children, ...suggestionWithoutChildren } = suggestion;
+  const { subRows, ...suggestionWithoutChildren } = suggestion;
   suggestedValues.forEach(suggestedValue => {
     const valuePresent = currentValues.find(v => v === suggestedValue);
     if (valuePresent) {
       currentValues.splice(currentValues.indexOf(valuePresent), 1);
     }
 
-    suggestion.children?.push({
+    suggestion.subRows?.push({
       ...suggestionWithoutChildren,
       suggestedValue,
       currentValue: valuePresent || '',
@@ -36,17 +36,19 @@ const generateChildrenRows = (_suggestion: MultiValueSuggestion) => {
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
+      rowId: `${suggestion.rowId}-${suggestedValue}`,
     });
   });
 
   currentValues.forEach(currentValue => {
-    suggestion.children?.push({
+    suggestion.subRows?.push({
       ...suggestionWithoutChildren,
       suggestedValue: '',
       currentValue,
       disableRowSelection: true,
       isChild: true,
       entityTitle: '',
+      rowId: `${suggestion.rowId}-${currentValue}`,
     });
   });
 
@@ -176,7 +178,7 @@ const updateSuggestions = (
       suggestion.currentValue = acceptedSuggestion.suggestedValue;
     }
 
-    if ('children' in suggestion && suggestion.children?.length) {
+    if ('subRows' in suggestion && suggestion.subRows?.length) {
       suggestion = generateChildrenRows(suggestion as MultiValueSuggestion);
     }
 
