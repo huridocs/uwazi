@@ -267,6 +267,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,Yüklemek için dosyayı bu pencerede sürükleyip bırakın
 Drag items here,Öğeleri buraya sürükleyin
 Drag properties here,Özellikleri buraya sürükleyin
+Drag row,Drag row
 Drop your files here to upload or,Dosyalarınızı yüklemek için buraya bırakın veya
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Mükerrer e-posta
@@ -288,6 +289,7 @@ Email,E-posta
 Email address,E-posta adresi
 Email updated,E-posta güncellendi
 Empty,Empty
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,Bu sayfayı varlık görünümü sayfası olarak kullanmak için etkinleştirin:
@@ -559,6 +561,7 @@ Ok,Tamam
 OK,TAMAM
 Ooops... please go,Ooops... lütfen şuraya gidin
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! Düzenlemeye çalıştığınız Thesaurus'u bulamadık. Ayarlar aracılığıyla bu sayfaya geri dönmeyi deneyin.
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Cihazınızda iki faktörlü Kimlik Doğrulayıcı uygulamasını açın
 or,ya da
@@ -821,6 +824,7 @@ This entity is restricted from public view.,Bu varlığın genel görünümü k�
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,"Bu seçenek, oluşumunuzda çerez kullanımı hakkında bir bildirim gösterecektir."
 This property will appear in the library cards as part of the basic info.,"Bu özellik, temel bilgilerin bir parçası olarak kütüphane fişlerinde görünecektir."
 This property will be inherited from the related entities and shown as metadata of this type of entities.,"Bu özellik, ilgili varlıklardan devralınacak ve bu tür varlıkların meta verileri olarak gösterilecektir."

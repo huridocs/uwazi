@@ -24,7 +24,7 @@ const EmbededButton = ({
   className = '',
 }: ButtonProps) => {
   let buttonColor = 'green';
-  let childrenBaseStyle = 'text-sm font-medium';
+  let childrenBaseStyle = 'text-sm';
 
   switch (color) {
     case 'orange':
@@ -40,7 +40,7 @@ const EmbededButton = ({
       break;
     case 'indigo':
       buttonColor =
-        'text-indigo-700 bg-indigo-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-indigo-50 disabled:border-indigo-200';
+        'text-indigo-800 bg-indigo-200 border-indigo-300 disabled:text-indigo-200 disabled:bg-indigo-50 disabled:border-indigo-200';
       break;
     case 'white':
       buttonColor = 'bg-white border-gray-200 disabled:text-gray-300 disabled:bg-gray-50';
@@ -58,14 +58,10 @@ const EmbededButton = ({
       type={type === 'submit' ? 'submit' : 'button'}
       onClick={onClick}
       disabled={disabled}
-      className={`${className} ${buttonColor} 
-      ${collapsed || disabled ? '' : 'border'}
-      ${collapsed || disabled ? 'px-[7px] py-[3px]' : 'px-1.5 py-0.5'}
-      text-xs disabled:cursor-not-allowed font-medium rounded-[4px]
-      focus:outline-none`}
+      className={`${className} ${buttonColor} ${collapsed || disabled ? '' : 'border'} px-2 py-[2px] text-xs disabled:cursor-not-allowed font-medium rounded-[4px] focus:outline-none`}
       form={form}
     >
-      <div className="flex flex-row items-center justify-center gap-1">
+      <div className="flex flex-row gap-1 justify-center items-center">
         <div className="w-3 h-3 text-sm">{icon}</div>
         <div className={childrenBaseStyle}>{children}</div>
       </div>
