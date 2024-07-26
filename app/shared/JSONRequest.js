@@ -1,4 +1,4 @@
-import 'cross-fetch/polyfill';
+import 'isomorphic-fetch';
 import superagent from 'superagent';
 
 import rison from 'rison-node';

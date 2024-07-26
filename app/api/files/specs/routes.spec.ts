@@ -3,6 +3,7 @@ import path from 'path';
 import request, { Response as SuperTestResponse } from 'supertest';
 
 import entities from 'api/entities';
+import { editorUser } from 'api/entities/specs/entitySavingManagerFixtures';
 import { spyOnEmit, toEmitEvent, toEmitEventWith } from 'api/eventsbus/eventTesting';
 import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
@@ -12,16 +13,20 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
+import { UserSchema } from 'shared/types/userType';
 import { FileCreatedEvent } from '../events/FileCreatedEvent';
-import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
+import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
 import { storage } from '../storage';
 import {
   adminUser,
+  collabUser,
+  customFileId,
   externalUrlFileId,
   fixtures,
+  readOnlyUploadId,
   restrictedUploadId2,
   uploadId,
   uploadId2,
@@ -31,8 +36,7 @@ import {
 expect.extend({ toEmitEvent, toEmitEventWith });
 
 describe('files routes', () => {
-  const collabUser = fixtures.users!.find(u => u.username === 'collab');
-  let requestMockedUser = collabUser;
+  let requestMockedUser: UserSchema = collabUser;
 
   const app: Application = setUpApp(
     uploadRoutes,
@@ -42,128 +46,183 @@ describe('files routes', () => {
     }
   );
 
+  const mockCurrentUser = (user: UserSchema) => {
+    requestMockedUser = user;
+    testingEnvironment.setPermissions(user);
+  };
+
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
-    requestMockedUser = collabUser;
-    testingEnvironment.setPermissions(collabUser);
+    mockCurrentUser(collabUser);
   });
 
   afterAll(async () => testingEnvironment.tearDown());
 
   describe('POST/files', () => {
-    beforeEach(async () => {
-      await request(app)
-        .post('/api/files')
-        .send({ _id: uploadId.toString(), originalname: 'newName' });
-    });
+    describe('editor user', () => {
+      it('should not have permissions to post files that are of type custom', async () => {
+        mockCurrentUser(editorUser);
+        const response = await request(app)
+          .post('/api/files')
+          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' });
 
-    it('should save file on the body', async () => {
-      const [upload] = await files.get({ _id: uploadId.toString() });
-      expect(upload).toEqual(
-        expect.objectContaining({
-          originalname: 'newName',
-        })
-      );
-    });
-
-    it('should reindex all entities that are related to the saved file', async () => {
-      expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
-    });
-
-    it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
-      const emitSpy = spyOnEmit();
-
-      const [original] = await files.get({ _id: uploadId });
-
-      await request(app)
-        .post('/api/files')
-        .send({
-          ...original,
-          extractedMetadata: [
-            {
-              name: 'propertyName',
-              selection: {
-                text: 'something',
-                selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
-              },
-            },
-          ],
-        });
-
-      const [after] = await files.get({ _id: uploadId });
-      emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
-      emitSpy.restore();
-    });
-
-    it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
-      const fileInfo = {
-        creationDate: 1,
-        entity: 'someid',
-        originalname: 'doc.pdf',
-        type: 'document',
-        language: 'eng',
-      };
-      const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
-      await expect(caller).toEmitEventWith(FileCreatedEvent, {
-        newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
+        expect(response.status).toBe(404);
       });
-      await expect(caller).not.toEmitEvent(FileUpdatedEvent);
     });
 
-    describe('when external url file', () => {
-      it('should guess the mimetype', async () => {
+    describe('collaborator user', () => {
+      it('should allow modification if and only if user has write permission for the entity', async () => {
+        mockCurrentUser(collabUser);
+        let response = await request(app)
+          .post('/api/files')
+          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed' });
+
+        expect(response.status).toBe(404);
+
+        mockCurrentUser(writerUser);
+        response = await request(app)
+          .post('/api/files')
+          .send({ _id: restrictedUploadId2.toString(), originalname: 'changed2' });
+
+        expect(response.status).toBe(200);
+
+        response = await request(app)
+          .post('/api/files')
+          .send({ _id: readOnlyUploadId.toString(), originalname: 'changed read only' });
+
+        expect(response.status).toBe(404);
+      });
+
+      it('should not have permissions to post files that are of type custom', async () => {
+        mockCurrentUser(collabUser);
         await request(app)
           .post('/api/files')
-          .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+          .send({ _id: uploadId.toString(), originalname: 'custom_file', type: 'custom' })
+          .expect(404);
+      });
+    });
 
-        const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
-        expect(file.mimetype).toBe('image/png');
+    describe('Basic save', () => {
+      beforeEach(async () => {
+        mockCurrentUser(adminUser);
+        await request(app)
+          .post('/api/files')
+          .send({ _id: uploadId.toString(), originalname: 'newName', entity: 'sharedId1' })
+          .expect(200);
       });
 
-      it('should return a validation error for a no secured url', async () => {
-        const rest = await request(app)
-          .post('/api/files')
-          .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+      it('should save file on the body', async () => {
+        const uploads = await files.get({ _id: uploadId.toString() });
+        expect(uploads[0]).toEqual(
+          expect.objectContaining({
+            originalname: 'newName',
+          })
+        );
+      });
 
-        expect(rest.status).toBe(400);
+      it('should reindex all entities that are related to the saved file', async () => {
+        expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'sharedId1' }, '+fullText');
+      });
+
+      it(`should emit a ${FileUpdatedEvent.name} an existing file as been saved`, async () => {
+        const emitSpy = spyOnEmit();
+
+        const [original] = await files.get({ _id: uploadId });
+
+        await request(app)
+          .post('/api/files')
+          .send({
+            ...original,
+            extractedMetadata: [
+              {
+                name: 'propertyName',
+                selection: {
+                  text: 'something',
+                  selectionRectangles: [{ top: 0, left: 0, width: 0, height: 0, page: '1' }],
+                },
+              },
+            ],
+          });
+
+        const [after] = await files.get({ _id: uploadId });
+        emitSpy.expectToEmitEventWith(FileUpdatedEvent, { before: original, after });
+        emitSpy.restore();
+      });
+
+      it(`should emit a ${FileCreatedEvent.name} if a new file has been saved`, async () => {
+        const fileInfo = {
+          creationDate: 1,
+          entity: 'sharedId1',
+          originalname: 'doc.pdf',
+          type: 'document',
+          language: 'eng',
+        };
+        const caller = async () => request(app).post('/api/files').send(fileInfo).expect(200);
+        await expect(caller).toEmitEventWith(FileCreatedEvent, {
+          newFile: { ...fileInfo, _id: expect.anything(), __v: 0 },
+        });
+        await expect(caller).not.toEmitEvent(FileUpdatedEvent);
+      });
+
+      describe('when external url file', () => {
+        it('should guess the mimetype', async () => {
+          await request(app)
+            .post('/api/files')
+            .send({ url: 'https://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+          const [file]: FileType[] = await files.get({ originalname: 'A Happy Cat' });
+          expect(file.mimetype).toBe('image/png');
+        });
+
+        it('should return a validation error for a no secured url', async () => {
+          const rest = await request(app)
+            .post('/api/files')
+            .send({ url: 'http://awesomecats.org/ahappycat.png', originalname: 'A Happy Cat' });
+
+          expect(rest.status).toBe(400);
+        });
       });
     });
   });
 
   describe('GET/files', () => {
-    it('should return entity related files only if the user has permission for the entity', async () => {
-      testingEnvironment.setPermissions(writerUser);
+    it('should return entity related files only if the collaborator user has permission for the entity', async () => {
+      mockCurrentUser(writerUser);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
         .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'publicEntityFile',
         'restrictedUpload',
         'restrictedUpload2',
+        'readOnlyUpload',
         'upload2',
       ]);
     });
 
-    it('should return all uploads for an admin', async () => {
-      testingEnvironment.setPermissions(adminUser);
+    it.each([adminUser, editorUser])('should return all uploads for an ($role)', async user => {
+      mockCurrentUser(user);
       const response: SuperTestResponse = await request(app)
         .get('/api/files')
         .query({ type: 'document' })
         .expect(200);
 
       expect(response.body.map((file: FileType) => file.originalname)).toEqual([
+        'publicEntityFile',
         'upload1',
         'fileNotInDisk',
         'restrictedUpload',
         'restrictedUpload2',
+        'readOnlyUpload',
         'upload2',
       ]);
     });
 
     it('should only allow properly typed id and type parameters in the query', async () => {
-      testingEnvironment.setPermissions(adminUser);
+      mockCurrentUser(adminUser);
 
       await request(app).get('/api/files').query({ $where: '1===1' }).expect(400);
 
@@ -183,7 +242,7 @@ describe('files routes', () => {
 
   describe('DELETE/api/files', () => {
     beforeEach(() => {
-      testingEnvironment.setPermissions(adminUser);
+      mockCurrentUser(adminUser);
     });
 
     it('should properly delete files that are external urls', async () => {
@@ -210,7 +269,7 @@ describe('files routes', () => {
 
     it('should delete upload and return the response', async () => {
       await request(app)
-        .post('/api/files/upload/custom')
+        .post('/api/files/upload/document')
         .attach('file', path.join(__dirname, 'test.txt'));
 
       const [file]: FileType[] = await files.get({ originalname: 'test.txt' });
@@ -221,17 +280,33 @@ describe('files routes', () => {
     });
 
     it('should allow deletion if and only if user has permission for the entity', async () => {
-      testingEnvironment.setPermissions(collabUser);
-      await request(app)
+      mockCurrentUser(collabUser);
+      let response = await request(app)
         .delete('/api/files')
-        .query({ _id: restrictedUploadId2.toString() })
-        .expect(404);
+        .query({ _id: restrictedUploadId2.toString() });
+      expect(response.status).toBe(404);
 
-      testingEnvironment.setPermissions(writerUser);
-      await request(app)
+      mockCurrentUser(writerUser);
+      response = await request(app)
         .delete('/api/files')
-        .query({ _id: restrictedUploadId2.toString() })
-        .expect(200);
+        .query({ _id: restrictedUploadId2.toString() });
+      expect(response.status).toBe(200);
+    });
+
+    it('should allow deletion of custom files only if the user is an admin', async () => {
+      mockCurrentUser(editorUser);
+      let response = await request(app)
+        .delete('/api/files')
+        .query({ _id: customFileId.toString() });
+      expect(response.status).toBe(404);
+
+      mockCurrentUser(collabUser);
+      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      expect(response.status).toBe(404);
+
+      mockCurrentUser(adminUser);
+      response = await request(app).delete('/api/files').query({ _id: customFileId.toString() });
+      expect(response.status).toBe(200);
     });
 
     it('should reindex all entities that are related to the files deleted', async () => {

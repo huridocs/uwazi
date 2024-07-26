@@ -298,9 +298,30 @@ describe('Entities', () => {
         clickOnEditEntity();
         cy.get('.attachments-list > .attachment:nth-child(2) > button').click();
         cy.contains('button', 'Save').click();
+        cy.contains('Entity updated').as('successMessage');
+        cy.get('@successMessage').should('not.exist');
         cy.contains('.item-document', 'Entity with main documents').click();
         cy.contains('.file-originalname', 'Renamed file.pdf').should('exist');
         cy.contains('.file-originalname', 'invalid.pdf').should('not.exist');
+      });
+
+      it('should keep searched text between tabs', () => {
+        cy.clearAndType(
+          'input[aria-label="Type something in the search box to get some results."]',
+          '"4 de julio de 2006"',
+          { delay: 0 }
+        );
+        cy.get('svg[aria-label="Search button"]').click();
+        cy.contains('.item-snippet', '4 de julio de 2006').should('have.length', 1);
+        cy.contains('.item-document .item-actions a', 'View').click();
+        cy.contains('VISTO');
+        cy.get('.snippet-text').should('have.length', 2);
+        cy.get('#tab-metadata').click();
+        cy.get('.entity-sidepanel-tab-link').then(element => {
+          expect(element.attr('href')).to.contain('searchTerm=%224%20de%20julio%20de%202006%22');
+        });
+        cy.contains('a', 'Library').click();
+        cy.get('svg[aria-label="Reset Search input"]').click();
       });
     });
   });
@@ -311,11 +332,12 @@ describe('Entities', () => {
       cy.contains('.item-document', 'Test entity').click();
       clickOnEditEntity('Editar');
       cy.get('textarea[name="library.sidepanel.metadata.title"]').click();
-      cy.get('textarea[name="library.sidepanel.metadata.title"]').type('Título de prueba', {
+      cy.clearAndType('textarea[name="library.sidepanel.metadata.title"]', 'Título de prueba', {
         delay: 0,
       });
       cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').click();
-      cy.get('input[name="library.sidepanel.metadata.metadata.resumen"]').type(
+      cy.clearAndType(
+        'input[name="library.sidepanel.metadata.metadata.resumen"]',
         'Resumen en español',
         { delay: 0 }
       );
