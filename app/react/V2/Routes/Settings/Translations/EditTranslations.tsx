@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -335,29 +334,41 @@ const EditTranslations = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {values.map(value => (
-                              <tr>
-                                <td className="px-6 py-2">{value.language}</td>
-                                <td className="px-6 py-2">
-                                  <LanguagePill
-                                    languageKey={value.translationStatus.languageKey}
-                                    status={value.translationStatus.status}
-                                  />
-                                </td>
-                                <td className="px-6 py-2">
-                                  <InputField
-                                    id={value.fieldKey}
-                                    hideLabel
-                                    disabled={isSubmitting}
-                                    clearFieldAction={() =>
-                                      setValue(value.fieldKey as any, '', { shouldDirty: true })
-                                    }
-                                    hasErrors={Boolean(getFieldState(value.fieldKey as any)?.error)}
-                                    {...register(value.fieldKey as any, { required: true })}
-                                  />
-                                </td>
-                              </tr>
-                            ))}
+                            {values.map(value => {
+                              const hasErrors = Boolean(
+                                getFieldState(value.fieldKey as any)?.error
+                              );
+                              return (
+                                <tr>
+                                  <td className="px-6 py-2">{value.language}</td>
+                                  <td className="px-6 py-2">
+                                    <LanguagePill
+                                      languageKey={value.translationStatus.languageKey}
+                                      status={value.translationStatus.status}
+                                    />
+                                  </td>
+                                  <td className="px-6 py-2">
+                                    <InputField
+                                      id={value.fieldKey}
+                                      hideLabel
+                                      disabled={isSubmitting}
+                                      clearFieldAction={() =>
+                                        setValue(value.fieldKey as any, '', { shouldDirty: true })
+                                      }
+                                      hasErrors={hasErrors}
+                                      errorMessage={
+                                        hasErrors ? (
+                                          <Translate>This field is required</Translate>
+                                        ) : (
+                                          ''
+                                        )
+                                      }
+                                      {...register(value.fieldKey as any, { required: true })}
+                                    />
+                                  </td>
+                                </tr>
+                              );
+                            })}
                           </tbody>
                         </table>
                       </div>
