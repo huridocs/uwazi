@@ -10,7 +10,12 @@ import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
 import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
 import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
-import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
+import {
+  Button,
+  Table_deprecated as Table,
+  Sidepanel,
+  ConfirmationModal,
+} from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { columns, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';

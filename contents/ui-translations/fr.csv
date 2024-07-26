@@ -266,6 +266,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,Faites glisser et déposez le fichier dans cette fenêtre pour le télécharger
 Drag items here,Faire glisser les éléments ici
 Drag properties here,Faites glisser les propriétés ici
+Drag row,Drag row
 Drop your files here to upload or,Déposez vos fichiers ici pour les télécharger ou
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,Courriel en double
@@ -287,6 +288,7 @@ Email,E-mail
 Email address,Adresse e-mail
 Email updated,E-mail mis à jour
 Empty,Vide
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,Activez cette page pour qu'elle soit utilisée comme page de visualisation des entités :
@@ -558,6 +560,7 @@ Ok,Ok
 OK,OK
 Ooops... please go,Ooops... please go
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,Ouvrez l'application d'authentification à deux facteurs sur votre appareil
 or,ou
@@ -820,6 +823,7 @@ This entity is restricted from public view.,Cette entité n'est pas accessible a
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,Cette option affichera une notification sur l'utilisation des cookies dans votre instance.
 This property will appear in the library cards as part of the basic info.,Cette propriété apparaîtra dans les cartes de bibliothèque comme faisant partie des informations de base.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,Cette propriété sera héritée des entités liées et affichée comme métadonnées de ce type d'entités.

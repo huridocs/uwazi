@@ -15,7 +15,7 @@ import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
 import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
+import { Button, Table_deprecated as Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import uniqueID from 'shared/uniqueID';
 import { MenuForm } from './components/MenuForm';
@@ -149,7 +149,7 @@ const MenuConfig = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
           {selectedLinks.length > 0 && (
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2 items-center">
               <Button
                 type="button"
                 onClick={deleteSelected}
