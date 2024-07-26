@@ -338,7 +338,9 @@ const EditTranslations = () => {
                                 </div>
                               </th>
                               <th scope="col" className="px-6 py-3">
-                                <div className="inline-flex" />
+                                <div className="inline-flex">
+                                  <Translate className="sr-only">Language Code</Translate>
+                                </div>
                               </th>
                               <th scope="col" className="w-full px-6 py-3">
                                 <div className="inline-flex">
