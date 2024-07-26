@@ -1831,12 +1831,12 @@
     react-is "^18.2.0"
     react-shallow-renderer "^16.15.0"
 
-"@chromatic-com/storybook@^1.3.4":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@chromatic-com/storybook/-/storybook-1.3.4.tgz#1e8074723e2ae30e01ccf9c03497137cf0f5f224"
-  integrity sha512-ZfQDc5Zg5YSC9cWdBc9QpMF0vgvknwKTB9xBE0NhCJWjGxG9mz9yLzQTzzliYulPtWgcQ+8cE+apDljYK+fWdQ==
+"@chromatic-com/storybook@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@chromatic-com/storybook/-/storybook-1.6.1.tgz#42173679c166ce982903b9e40bb457c037e9dac2"
+  integrity sha512-x1x1NB3j4xpfeSWKr96emc+7ZvfsvH+/WVb3XCjkB24PPbT8VZXb3mJSAQMrSzuQ8+eQE9kDogYHH9Fj3tb/Cw==
   dependencies:
-    chromatic "^11.3.1"
+    chromatic "^11.4.0"
     filesize "^10.0.12"
     jsonfile "^6.1.0"
     react-confetti "^6.1.0"
@@ -4628,17 +4628,17 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@tanstack/react-table@^8.17.3":
-  version "8.17.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.17.3.tgz#4e10b4cf5355a40d6d72a83d3f4b3ecd32f56bf4"
-  integrity sha512-5gwg5SvPD3lNAXPuJJz1fOCEZYk9/GeBFH3w/hCgnfyszOIzwkwgp5I7Q4MJtn0WECp84b5STQUDdmvGi8m3nA==
+"@tanstack/react-table@^8.19.3":
+  version "8.19.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.19.3.tgz#be1d9ee991ac06b7d4d17cc5c66469ac157bfd8a"
+  integrity sha512-MtgPZc4y+cCRtU16y1vh1myuyZ2OdkWgMEBzyjYsoMWMicKZGZvcDnub3Zwb6XF2pj9iRMvm1SO1n57lS0vXLw==
   dependencies:
-    "@tanstack/table-core" "8.17.3"
+    "@tanstack/table-core" "8.19.3"
 
-"@tanstack/table-core@8.17.3":
-  version "8.17.3"
-  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.17.3.tgz#d7a9830abb29cd369b52b2a7159dc0360af646fd"
-  integrity sha512-mPBodDGVL+fl6d90wUREepHa/7lhsghg2A3vFpakEhrhtbIlgNAZiMr7ccTgak5qbHqF14Fwy+W1yFWQt+WmYQ==
+"@tanstack/table-core@8.19.3":
+  version "8.19.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.19.3.tgz#669e3eca2179ee3456fc068fed8683df01607c43"
+  integrity sha512-IqREj9ADoml9zCAouIG/5kCGoyIxPFdqdyoxis9FisXFi5vT+iYfEfLosq4xkU/iDbMcEuAj+X8dWRLvKYDNoQ==
 
 "@testing-library/dom@10.1.0", "@testing-library/dom@^10.0.0":
   version "10.1.0"
@@ -7144,10 +7144,10 @@ chownr@^2.0.0:
   resolved "https://registry.npmjs.org/chownr/-/chownr-2.0.0.tgz"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-chromatic@^11.3.1:
-  version "11.3.1"
-  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-11.3.1.tgz#e59b1946d073c08bccb2692d89cdef9976e2477a"
-  integrity sha512-ATAfVEn84NARTIxdiGQ8QywWg3BPM/+6stVD1stSKCO7lQLEKFyGcI+PhBBDt+ZgNcgsEsg5fo3E2dQNt01W6g==
+chromatic@^11.4.0:
+  version "11.5.6"
+  resolved "https://registry.yarnpkg.com/chromatic/-/chromatic-11.5.6.tgz#9d243235ff079307f5e8b9682ab5315ee48e5cf8"
+  integrity sha512-ycX/hlZLs69BltwwBNsEXr+As6x5/0rlwp6W/CiHMZ3tpm7dmkd+hQCsb8JGHb1h49W3qPOKQ/Lh9evqcJ1yeQ==
 
 chrome-trace-event@^1.0.2:
   version "1.0.2"
@@ -14730,10 +14730,10 @@ postcss-value-parser@^4.0.0, postcss-value-parser@^4.1.0, postcss-value-parser@^
   resolved "https://registry.yarnpkg.com/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
-postcss@^8.3.11, postcss@^8.4.21, postcss@^8.4.23, postcss@^8.4.33, postcss@^8.4.38, postcss@^8.4.39:
-  version "8.4.39"
-  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.39.tgz#aa3c94998b61d3a9c259efa51db4b392e1bde0e3"
-  integrity sha512-0vzE+lAiG7hZl1/9I8yzKLx3aR9Xbof3fBHKunvMfOCYAtMhrsnccJY2iTURb9EZd5+pLuiNV9/c/GZJOHsgIw==
+postcss@^8.3.11, postcss@^8.4.21, postcss@^8.4.23, postcss@^8.4.33, postcss@^8.4.38, postcss@^8.4.40:
+  version "8.4.40"
+  resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.40.tgz#eb81f2a4dd7668ed869a6db25999e02e9ad909d8"
+  integrity sha512-YF2kKIUzAofPMpfH6hOi2cGnv/HrUlfucspc7pDyvv7kGdqXrfj8SCl/t8owkEgKEuu8ZcRjSOxFxVLqwChZ2Q==
   dependencies:
     nanoid "^3.3.7"
     picocolors "^1.0.1"
@@ -17545,10 +17545,10 @@ undefsafe@^2.0.5:
   resolved "https://registry.yarnpkg.com/undefsafe/-/undefsafe-2.0.5.tgz#38733b9327bdcd226db889fb723a6efd162e6e2c"
   integrity sha512-WxONCrssBM8TSPRqN5EmsjVrsv4A8X12J4ArBiiayv3DyyG3ZlIg6yysuuSYdZsVz3TKcTg2fd//Ujd4CHV1iA==
 
-underscore@^1.13.6, underscore@~1.4.4:
-  version "1.13.6"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.6.tgz#04786a1f589dc6c09f761fc5f45b89e935136441"
-  integrity sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==
+underscore@^1.13.6, underscore@^1.13.7, underscore@~1.4.4:
+  version "1.13.7"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.7.tgz#970e33963af9a7dda228f17ebe8399e5fbe63a10"
+  integrity sha512-GMXzWtsc57XAtguZgaQViUOzs0KTkk8ojr3/xAxXLITqf/3EMwxC0inyETfDFjH/Krbhuep0HNbbjI9i/q3F3g==
 
 undici-types@~5.26.4:
   version "5.26.5"
