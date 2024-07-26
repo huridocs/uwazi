@@ -61,6 +61,30 @@ const headTag = (head, CSS, reduxData) => (
   </head>
 );
 
+const processHtmlContent = content => {
+  let script = '';
+  const parser = new HTMLParser(
+    {
+      onopentag: (name, _attrib) => {
+        if (name === 'script') script = '_';
+      },
+      ontext: text => {
+        if (script === '_') {
+          script = text;
+        }
+      },
+    },
+    { decodeEntities: true }
+  );
+  parser.write(content);
+  parser.end();
+  const htmlContent = content.replace(
+    content.substring(content.indexOf('<script'), content.indexOf('</script>') + 9),
+    ''
+  );
+  return { script, htmlContent };
+};
+
 class Root extends Component {
   renderInitialData() {
     let innerHtml = '';
@@ -95,25 +119,7 @@ class Root extends Component {
       ? determineHotAssets(query)
       : determineAssets(assets, languageData);
 
-    
-    
-    let script = '';
-    const parser = new HTMLParser(
-      {
-        onopentag: (name, _attrib) => {
-          if (name === 'script') script = '_';
-        },
-        ontext: text => {
-          if (script === '_') {
-            script = text;
-          }
-        },
-      },
-      { decodeEntities: true }
-    );
-    parser.write(content);
-    parser.end();
-    let htmlContent = content.replace(content.substring(content.indexOf('<script'), content.indexOf('</script>') + 9), '');
+    const { script, htmlContent } = processHtmlContent(content);
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
         {headTag(head, CSS, reduxData)}
