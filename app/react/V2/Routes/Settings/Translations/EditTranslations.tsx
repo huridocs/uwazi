@@ -306,7 +306,7 @@ const EditTranslations = () => {
                   const [title] = Object.keys(tableData);
                   const values = tableData[title];
                   return (
-                    <RenderIfVisible>
+                    <RenderIfVisible key={title}>
                       <div className="relative w-full mb-4 border rounded-md shadow-sm border-gray-50">
                         <table className="w-full text-sm text-left" data-testid="table">
                           {title && (
