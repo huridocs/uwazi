@@ -34,7 +34,7 @@ function print(content: any, error?: 'error') {
   process[error ? 'stderr' : 'stdout'].write(`${LINE_PREFIX}${JSON.stringify(content)}\n`);
 }
 
-type FileRecord = { type: string; filename: string };
+type FileRecord = { type: string; filename: string; url?: string };
 
 function filterFilesInStorage(files: string[]) {
   return files.filter(file => !file.endsWith('activity.log'));
@@ -53,7 +53,7 @@ async function handleTenant(tenantName: string) {
         storage.getPath(file.filename, file.type)
       );
 
-      if (!existsInStorage) {
+      if (!existsInStorage && !(file.type === 'attachment' && file.url)) {
         missingInStorage += 1;
         print(
           {
