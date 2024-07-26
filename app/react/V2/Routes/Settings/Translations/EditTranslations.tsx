@@ -164,12 +164,7 @@ const getContextInfo = (translations: ClientTranslationSchema[]) => {
 const filterTableValues = (values: any[]) =>
   values.filter(value => value.translationStatus.status !== 'translated');
 
-const calculateTableData = (
-  terms: string[],
-  formValues: formValuesType,
-  hideTranslated: boolean,
-  _search: string
-) =>
+const calculateTableData = (terms: string[], formValues: formValuesType, hideTranslated: boolean) =>
   terms
     .map((term, index) => {
       let values = composeTableValues(formValues, index);
@@ -196,10 +191,9 @@ const EditTranslations = () => {
   const { contextTerms, contextLabel, contextId } = getContextInfo(translations);
   const defaultLanguage = settings?.languages?.find(language => language.default);
   const defaultFormValues = prepareFormValues(translations, defaultLanguage?.key || 'en');
-  const [search, setSearch] = useState('');
   const tablesData = useMemo(
-    () => calculateTableData(contextTerms, defaultFormValues, hideTranslated, search),
-    [contextTerms, defaultFormValues, hideTranslated, search]
+    () => calculateTableData(contextTerms, defaultFormValues, hideTranslated),
+    [contextTerms, defaultFormValues, hideTranslated]
   );
 
   const {
@@ -304,15 +298,6 @@ const EditTranslations = () => {
                 </div>
               </ToggleButton>
             </div>
-            <InputField
-              id="search"
-              hideLabel
-              placeholder="Search"
-              className="flex-grow ml-4"
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-              clearFieldAction={() => setSearch('')}
-            />
           </div>
           <div className="flex-grow">
             <form onSubmit={handleSubmit(formSubmit)} id="edit-translations">
@@ -363,7 +348,10 @@ const EditTranslations = () => {
                                   <InputField
                                     id={value.fieldKey}
                                     hideLabel
-                                    clearFieldAction={() => setValue(value.fieldKey as any, '')}
+                                    disabled={isSubmitting}
+                                    clearFieldAction={() =>
+                                      setValue(value.fieldKey as any, '', { shouldDirty: true })
+                                    }
                                     hasErrors={Boolean(getFieldState(value.fieldKey as any)?.error)}
                                     {...register(value.fieldKey as any, { required: true })}
                                   />
