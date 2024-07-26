@@ -2,6 +2,7 @@ import { config } from 'api/config';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import serialize from 'serialize-javascript';
+import { Parser as HTMLParser } from 'htmlparser2';
 
 import { availableLanguages as languagesList } from 'shared/languagesList';
 
@@ -94,20 +95,38 @@ class Root extends Component {
       ? determineHotAssets(query)
       : determineAssets(assets, languageData);
 
-    const reScript = /<script[^>]*>(.*?)<\/script>/i;
-    const matchedExp = content.match(reScript);
-    const htmlContent = content.replace(matchedExp[0], '');
+    
+    
+    let script = '';
+    const parser = new HTMLParser(
+      {
+        onopentag: (name, _attrib) => {
+          if (name === 'script') script = '_';
+        },
+        ontext: text => {
+          if (script === '_') {
+            script = text;
+          }
+        },
+      },
+      { decodeEntities: true }
+    );
+    parser.write(content);
+    parser.end();
+    let htmlContent = content.replace(content.substring(content.indexOf('<script'), content.indexOf('</script>') + 9), '');
     return (
       <html lang={language} dir={!languageData.rtl ? 'ltr' : 'rtl'} style={{ fontSize: 'unset' }}>
         {headTag(head, CSS, reduxData)}
         <body>
           <div id="root" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          <script
-            //eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{
-              __html: matchedExp[1],
-            }}
-          />
+          {script && (
+            <script
+              //eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{
+                __html: script,
+              }}
+            />
+          )}
           <script
             //eslint-disable-next-line react/no-danger
             dangerouslySetInnerHTML={{
