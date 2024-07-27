@@ -27,7 +27,7 @@ import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboa
 
 import {
   ThesaurusForm,
-  theasauriListLoader,
+  thesauriLoader,
   ThesauriList,
   editTheasaurusLoader,
 } from 'app/V2/Routes/Settings/Thesauri';
@@ -134,11 +134,7 @@ const getRoutesLayout = (
       </Route>
 
       <Route path="thesauri">
-        <Route
-          index
-          element={adminsOnlyRoute(<ThesauriList />)}
-          loader={theasauriListLoader(headers)}
-        />
+        <Route index element={adminsOnlyRoute(<ThesauriList />)} loader={thesauriLoader(headers)} />
         <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
         <Route
           path="edit/:_id"
