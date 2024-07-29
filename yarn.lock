@@ -9343,10 +9343,10 @@ eslint-plugin-jasmine@4.2.0:
   resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.2.0.tgz#ed0fe988b6e3b123905a7bf68d77239649fd018c"
   integrity sha512-zSCsnP4gMqBSt8jApExP0ja43nAI1fpAD5kY+knrIJylBxC/LEth25PkqcKJqW32GjesjsiA1SSSR3Z5qIranA==
 
-eslint-plugin-jest@v28.5.0:
-  version "28.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-28.5.0.tgz#b497b795de37f671eaccd38bd83030186ff5dc8d"
-  integrity sha512-6np6DGdmNq/eBbA7HOUNV8fkfL86PYwBfwyb8n23FXgJNTR8+ot3smRHjza9LGsBBZRypK3qyF79vMjohIL8eQ==
+eslint-plugin-jest@v28.6.0:
+  version "28.6.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jest/-/eslint-plugin-jest-28.6.0.tgz#8410588d60bcafa68a91b6ec272e4a415502302a"
+  integrity sha512-YG28E1/MIKwnz+e2H7VwYPzHUYU4aMa19w0yGcwXnnmJH6EfgHahTJ2un3IyraUxNfnz/KUhJAFXNNwWPo12tg==
   dependencies:
     "@typescript-eslint/utils" "^6.0.0 || ^7.0.0"
 
