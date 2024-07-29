@@ -267,6 +267,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,이 창에 파일을 드래그 앤 드롭해 업로드합니다.
 Drag items here,여기에 아이템을 드래그합니다.
 Drag properties here,여기에 속성을 드래그합니다.
+Drag row,Drag row
 Drop your files here to upload or,여기에 파일을 드롭해 업로드합니다.
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,이메일 중복
@@ -288,6 +289,7 @@ Email,이메일
 Email address,이메일 주소
 Email updated,이메일 업데이트 완료
 Empty,Empty
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,엔티티 뷰 페이지가 필요할 경우 활성화하십시오.
@@ -559,6 +561,7 @@ Ok,확인
 OK,확인
 Ooops... please go,Ooops...
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,편집하려는 시소러스를 찾을 수 없습니다. 설정으로 돌아가 페이지를 다시 탐색하십시오.
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,기기에서 Authenticator 앱을 여십시오.
 or,or
@@ -821,6 +824,7 @@ This entity is restricted from public view.,이 엔티티는 공개 모드에서
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,인스턴스 내 쿠키 사용 알림이 필요할 경우 이 옵션을 선택하십시오.
 This property will appear in the library cards as part of the basic info.,이 속성은 카드의 기본 정보에 포함되며 라이브러리에서 볼 수 있습니다.
 This property will be inherited from the related entities and shown as metadata of this type of entities.,관련 엔티티에서 속성을 이어받아 현재 엔티티의 메타데이터에 포함시킵니다.

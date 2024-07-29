@@ -269,6 +269,7 @@ describe('helpers', () => {
           ],
           propertyType: 'text',
           propertyLabel: 'Title',
+          rowId: 'exractor1',
         },
         {
           _id: 'exractor2',
@@ -278,6 +279,7 @@ describe('helpers', () => {
           namedTemplates: ['Ordenes de la corte'],
           propertyType: 'date',
           propertyLabel: 'Fecha',
+          rowId: 'exractor2',
         },
       ]);
     });

@@ -239,14 +239,23 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Review').eq(0).click();
     });
 
-    it('should show title initial suggestion should be default', () => {
+    it('should sort by the document column', () => {
       cy.get('tbody tr').eq(5).should('be.visible');
-      cy.contains('thead tr th:nth-child(2) div span', 'Document').click();
+      cy.contains('th', 'Document').click();
       cy.contains('Uwazi Heroes Investigation', { timeout: 100 });
+      cy.get('tbody').within(() => {
+        cy.get('tr').eq(5).contains('Uwazi Heroes Investigation');
+        cy.get('tr')
+          .eq(0)
+          .contains(
+            'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009'
+          );
+      });
     });
 
     it('should display suggestions and be accessible', () => {
-      cy.contains('Batman v Superman: Dawn of Justice');
+      cy.contains('Extractor 1 edited');
+      cy.getByTestId('settings-ix').scrollTo('top', { ensureScrollable: false });
       cy.getByTestId('settings-content').toMatchImageSnapshot({
         disableTimersAndAnimations: true,
         threshold: 0.08,
@@ -265,7 +274,7 @@ describe('Information Extraction', () => {
     });
 
     it('should accept a single suggestion without affecting the order', () => {
-      cy.contains('Lorem Ipsum').parent().siblings().contains('button', 'Accept').click();
+      cy.contains('tr', 'Lorem Ipsum').contains('button', 'Accept').click();
 
       cy.contains('Suggestion accepted.');
       cy.contains('button', 'Dismiss').click();

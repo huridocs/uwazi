@@ -4,7 +4,7 @@ import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import ThesauriAPI from 'app/V2/api/thesauri';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, Table, ConfirmationModal } from 'app/V2/Components/UI';
+import { Button, Table_deprecated as Table, ConfirmationModal } from 'app/V2/Components/UI';
 import { IncomingHttpHeaders } from 'http';
 import { Link, LoaderFunction, useLoaderData, useNavigate, useRevalidator } from 'react-router-dom';
 import { ThesaurusSchema } from 'shared/types/thesaurusType';
