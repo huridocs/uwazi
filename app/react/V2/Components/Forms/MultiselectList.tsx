@@ -2,13 +2,14 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
+import { s } from 'src/data/unitShortcuts';
 
 interface Option {
   label: string | React.ReactNode;
@@ -28,6 +29,7 @@ interface MultiselectListProps {
   singleSelect?: boolean;
   allowSelelectAll?: boolean;
   startOnSelected?: boolean;
+  search?: string;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -48,12 +50,15 @@ const MultiselectList = ({
   singleSelect = false,
   allowSelelectAll = false,
   startOnSelected = false,
+  search = '',
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
   const [searchTerm, setSearchTerm] = useState('');
+  const [externalSearchTerm, setExternalSearchTerm] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const optionsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -64,6 +69,17 @@ const MultiselectList = ({
       setOpenGroups(groupsToExpand);
     }
   }, [items, value, startOnSelected]);
+
+  useEffect(() => {
+    setSearchTerm(search);
+    setExternalSearchTerm(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (externalSearchTerm) {
+      optionsRef.current?.querySelector('input')?.focus();
+    }
+  }, [externalSearchTerm, filteredItems]);
 
   useEffect(() => {
     if (value) {
@@ -117,6 +133,7 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
+    setExternalSearchTerm('');
     let newValues;
     if (singleSelect) {
       newValues = selectedItems.includes(_value) ? [] : [_value];
@@ -287,7 +304,9 @@ const MultiselectList = ({
         </div>
       </div>
 
-      <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
+      <ul className="w-full px-2 pt-2 grow" ref={optionsRef}>
+        {filteredItems.map(renderItem)}
+      </ul>
     </div>
   );
 };
