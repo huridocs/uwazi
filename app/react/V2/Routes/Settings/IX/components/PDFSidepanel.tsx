@@ -373,6 +373,7 @@ const PDFSidepanel = ({
           items={options}
           checkboxes
           singleSelect={type === 'select'}
+          search={selectedText?.text}
         />
       </div>
     );
