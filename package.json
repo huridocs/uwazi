@@ -270,7 +270,7 @@
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@babel/register": "^7.24.6",
-    "@babel/traverse": "^7.24.8",
+    "@babel/traverse": "^7.25.2",
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^1.6.1",
     "@cypress/react18": "^2.0.1",
