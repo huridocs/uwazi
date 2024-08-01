@@ -103,7 +103,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@googlemaps/js-api-loader": "^1.16.6",
     "@headlessui/react": "1.7.17",
-    "@heroicons/react": "^2.1.3",
+    "@heroicons/react": "^2.1.5",
     "@hookform/error-message": "^2.0.1",
     "@huridocs/react-text-selection-handler": "^0.2.11",
     "@loadable/component": "^5.16.4",
