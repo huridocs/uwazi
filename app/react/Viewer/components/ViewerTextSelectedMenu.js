@@ -11,7 +11,7 @@ import { Translate } from 'app/I18N';
 
 import { addToToc } from '../actions/documentActions';
 
-export class ViewerTextSelectedMenu extends Component {
+class ViewerTextSelectedMenu extends Component {
   showPanel(type) {
     this.props.openPanel('viewMetadataPanel');
     this.props.startNewConnection(type, this.props.doc.get('sharedId'));
@@ -37,7 +37,7 @@ export class ViewerTextSelectedMenu extends Component {
             onClick={this.showPanel.bind(this, 'ranged')}
           >
             <span className="ContextMenu-tooltip">
-              <Translate>Connect to a document</Translate>
+              <Translate>Connect to an entity</Translate>
             </span>
             <Icon icon="file" />
           </div>
@@ -87,3 +87,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ViewerTextSelectedMenu);
+export { ViewerTextSelectedMenu };

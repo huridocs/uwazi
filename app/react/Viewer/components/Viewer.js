@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -251,9 +252,11 @@ Viewer.propTypes = {
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
 };
+
 Viewer.contextTypes = {
   store: PropTypes.object,
 };
+
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
@@ -266,13 +269,17 @@ const mapStateToProps = state => {
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
-      !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
+      (!documentViewer.targetDoc.get('_id') &&
+        uiState.reference &&
+        uiState.reference.sourceRange) ||
+        uiState.activeReference
     ),
     user: state.user,
     // relationships v2
     newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
+
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {

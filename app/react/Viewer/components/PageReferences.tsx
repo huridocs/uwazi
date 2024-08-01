@@ -6,14 +6,14 @@ import { createSelector } from 'reselect';
 import { Highlight } from '@huridocs/react-text-selection-handler';
 import { unique } from 'shared/filterUnique';
 
-export interface PageReferencesProps {
+interface PageReferencesProps {
   references: { [key: string]: ConnectionSchema[] | undefined };
   page: string;
   activeReference: string;
   onClick: (c: ConnectionSchema) => {};
 }
 
-export const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
+const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
   props: PageReferencesProps
 ) => (
   <>
@@ -89,4 +89,7 @@ const mapStateToProps = (state: IStore) => ({
   activeReference: state.documentViewer.uiState.get('activeReference'),
 });
 
-export const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
+const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
+
+export { PageReferences, PageReferencesComponent };
+export type { PageReferencesProps };
