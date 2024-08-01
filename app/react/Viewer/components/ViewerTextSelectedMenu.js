@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-
+import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from 'app/Connections';
 import { openPanel } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
@@ -30,8 +30,6 @@ class ViewerTextSelectedMenu extends Component {
             </span>
             <Icon icon="paragraph" />
           </div>
-        </ShowIf>
-        <ShowIf if={this.props.hasRelationTypes}>
           <div
             className="btn btn-primary connect-to-d"
             onClick={this.showPanel.bind(this, 'ranged')}
@@ -40,6 +38,12 @@ class ViewerTextSelectedMenu extends Component {
               <Translate>Connect to an entity</Translate>
             </span>
             <Icon icon="file" />
+          </div>
+          <div className="btn btn-primary disable-click" onClick={() => {}}>
+            <span className="ContextMenu-tooltip">
+              <Translate>Disable highlights</Translate>
+            </span>
+            <CursorArrowRaysIcon />
           </div>
         </ShowIf>
         <div
