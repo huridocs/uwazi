@@ -1,21 +1,25 @@
 /* eslint-disable max-lines */
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Cell, CellContext, ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
-import { CheckCircleIcon, ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
-import { Extractor, MultiValueSuggestion, SingleValueSuggestion, TableSuggestion } from '../types';
+import {
+  TableExtractor,
+  TableSuggestion,
+  SingleValueSuggestion,
+  MultiValueSuggestion,
+} from '../types';
 import { Dot } from './Dot';
 import { SuggestedValue } from './SuggestedValue';
 import { propertyIcons } from './Icons';
 
-const extractorColumnHelper = createColumnHelper<Extractor>();
-// Helper typed as any because of https://github.com/TanStack/table/issues/4224
-const suggestionColumnHelper = createColumnHelper<any>();
+const extractorColumnHelper = createColumnHelper<TableExtractor>();
+const suggestionColumnHelper = createColumnHelper<TableSuggestion>();
 
 const statusColor = (suggestion: TableSuggestion): Color => {
   if (!suggestion.isChild && (!suggestion.suggestedValue || suggestion.suggestedValue === '')) {
@@ -45,15 +49,17 @@ const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor
 const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
 const TitleHeader = () => <Translate>Document</Translate>;
-const CurrentValueHeader = () => <Translate>Current Value/Suggestion</Translate>;
+const CurrentValueHeader = () => (
+  <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
+);
 const AcceptHeader = () => <Translate className="sr-only">Accept</Translate>;
 const SegmentHeader = () => <Translate>Context</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
-const PropertyCell = ({ cell }: CellContext<Extractor, Extractor['propertyType']>) => {
+const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['propertyType']>) => {
   const property = cell.getValue();
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex gap-2 items-center">
       <span className="w-5">{propertyIcons[property]}</span>
       <p className="text-gray-500 whitespace-nowrap">{cell.row.original.propertyLabel}</p>
     </div>
@@ -64,11 +70,14 @@ const CurrentValueCell = ({
   cell,
   allProperties,
 }: {
-  cell: CellContext<TableSuggestion, SingleValueSuggestion['currentValue']>;
+  cell: CellContext<
+    TableSuggestion,
+    SingleValueSuggestion['currentValue'] | MultiValueSuggestion['currentValue']
+  >;
   allProperties: ClientPropertySchema[];
 }) => {
-  if ('children' in cell.row.original) {
-    const suggestions = cell.row.original.children;
+  if ('subRows' in cell.row.original) {
+    const suggestions = cell.row.original.subRows;
     const ammountOfSuggestions = suggestions.length;
     const amountOfValues = suggestions.filter(suggestion => suggestion.currentValue).length;
     const amountOfMatches = suggestions.filter(s => s.currentValue === s.suggestedValue).length;
@@ -96,7 +105,7 @@ const CurrentValueCell = ({
           <>
             <span>|</span>
             <span>
-              <span className="text-orange-500 ">{amountOfMissmatches}</span>{' '}
+              <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
               <Translate>mismatching</Translate>
             </span>
           </>
@@ -117,14 +126,14 @@ const AcceptButton = ({
   cell,
   action,
 }: {
-  cell: Cell<SingleValueSuggestion, string>;
+  cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
   const color = statusColor(cell.row.original);
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
 
   if (color === 'green') {
-    return <div className="w-6 h-6 m-auto">{getIcon(color)}</div>;
+    return <div className="m-auto w-6 h-6">{getIcon(color)}</div>;
   }
 
   return (
@@ -141,7 +150,7 @@ const AcceptButton = ({
   );
 };
 
-const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplates']>) => (
+const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['namedTemplates']>) => (
   <div className="flex flex-wrap gap-2">
     {cell.getValue().map(templateName => (
       <div key={templateName} className="whitespace-nowrap">
@@ -151,7 +160,7 @@ const TemplatesCell = ({ cell }: CellContext<Extractor, Extractor['namedTemplate
   </div>
 );
 
-const LinkButton = ({ cell }: CellContext<Extractor, Extractor['_id']>) => (
+const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
       <Translate>Review</Translate>
@@ -163,7 +172,7 @@ const OpenPDFButton = ({
   cell,
   action,
 }: {
-  cell: Cell<SingleValueSuggestion, string>;
+  cell: Cell<TableSuggestion, string>;
   action: Function;
 }) => {
   const suggestionHasEntity = Boolean(cell.row.original.entityId);
@@ -175,7 +184,7 @@ const OpenPDFButton = ({
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >
-      <Translate>Open PDF</Translate>
+      <Translate className="whitespace-nowrap">Open PDF</Translate>
     </Button>
   );
 };
@@ -219,24 +228,13 @@ const extractorsTableColumns = [
     header: ActionHeader,
     enableSorting: false,
     cell: LinkButton,
-    meta: { headerClassName: 'sr-only invisible bg-gray-50' },
+    meta: { headerClassName: 'sr-only' },
   }),
 ];
 
-const GroupButton = ({ row }: { row: Row<TableSuggestion> }) => (
-  <EmbededButton
-    icon={row.getIsExpanded() ? <ChevronUpIcon /> : <ChevronDownIcon />}
-    onClick={() => row.toggleExpanded()}
-    color="indigo"
-    disabled={(row.original as MultiValueSuggestion).children.length === 0}
-  >
-    <Translate>Group</Translate>
-  </EmbededButton>
-);
-
 type Color = 'red' | 'green' | 'orange';
 
-const suggestionsTableColumnsBuilder: Function = (
+const suggestionsTableColumnsBuilder = (
   templates: ClientTemplateSchema[],
   acceptSuggestions: (suggestions: TableSuggestion[]) => void,
   openPdfSidepanel: (suggestion: TableSuggestion) => void
@@ -248,31 +246,22 @@ const suggestionsTableColumnsBuilder: Function = (
       header: TitleHeader,
       cell: TitleCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'entityTitle'>,
+    }),
     suggestionColumnHelper.accessor('segment', {
       header: SegmentHeader,
       cell: SegmentCell,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'segment'>,
+    }),
     suggestionColumnHelper.accessor('currentValue', {
       header: CurrentValueHeader,
       cell: cell => <CurrentValueCell cell={cell} allProperties={allProperties} />,
       meta: { headerClassName: 'w-1/4' },
-    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
+    }),
     suggestionColumnHelper.display({
       id: 'accept-actions',
       header: AcceptHeader,
-      cell: ({
-        cell,
-        row,
-      }: {
-        row: Row<TableSuggestion>;
-        cell: Cell<SingleValueSuggestion, any>;
-      }) => {
-        if ('children' in row.original && Array.isArray(row.original.children)) {
-          return <GroupButton row={row} />;
-        }
-        if (!row.original.isChild) {
+      cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) => {
+        if (row.depth === 0) {
           return <AcceptButton action={acceptSuggestions} cell={cell} />;
         }
         return null;
@@ -285,14 +274,8 @@ const suggestionsTableColumnsBuilder: Function = (
     suggestionColumnHelper.display({
       id: 'open-pdf-actions',
       header: ActionHeader,
-      cell: ({
-        cell,
-        row,
-      }: {
-        row: Row<TableSuggestion>;
-        cell: Cell<SingleValueSuggestion, any>;
-      }) =>
-        !row.original.isChild ? (
+      cell: ({ cell, row }: { row: Row<TableSuggestion>; cell: Cell<TableSuggestion, any> }) =>
+        row.depth === 0 ? (
           <OpenPDFButton action={openPdfSidepanel} cell={cell} />
         ) : (
           <AcceptButton action={acceptSuggestions} cell={cell} />
@@ -301,9 +284,8 @@ const suggestionsTableColumnsBuilder: Function = (
         headerClassName: 'w-2/12',
         contentClassName: 'text-center',
       },
-    }) as ColumnDef<SingleValueSuggestion, 'currentValue'>,
+    }),
   ];
 };
 
-export type { Extractor };
 export { extractorsTableColumns, suggestionsTableColumnsBuilder };

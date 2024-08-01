@@ -267,6 +267,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
 Drag items here,นำรายการมาวางที่นี่
 Drag properties here,นำคุณสมบัติมาวางที่นี่
+Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,อีเมลที่ซ้ำกัน
@@ -288,6 +289,7 @@ Email,อีเมล
 Email address,ที่อยู่อีเมล
 Email updated,อัปเดตอีเมล
 Empty,Empty
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,เปิดหน้านี้เพื่อใช้เป็นหน้ามุมมองรายการ
@@ -559,6 +561,7 @@ Ok,ตกลง
 OK,ตกลง
 Ooops... please go,กรุณาดำเนินการต่อ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,เราไม่พบคำอธิบายกลุ่มคำที่คุณต้องการแก้ไข กรุณากลับมาที่หน้านี้ใหม่โดยเลือกการตั้งค่า
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,กรุณาเปิดแอป Authenticator สำหรับยืนยันรหัสสองทาง บนอุปกรณ์ของคุณ
 or,หรือ
@@ -821,6 +824,7 @@ This entity is restricted from public view.,รายการนี้ถูก
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,ตัวเลือกนี้จะแสดงการแจ้งเตือนเกี่ยวกับการใช้คุ้กกี้ในระบบของคุณ
 This property will appear in the library cards as part of the basic info.,คุณสมบัตินี้จะถูกแสดงในการ์ดไลบรารีและเป็นส่วนหนึ่งของข้อมูลพื้นฐาน
 This property will be inherited from the related entities and shown as metadata of this type of entities.,คุณสมบัตินี้จะถูกโอนย้ายมาจากรายการที่เกี่ยวข้องและจะถูกแสดงเป็นเมตาดาต้าสำหรับประเภทรายการนี้

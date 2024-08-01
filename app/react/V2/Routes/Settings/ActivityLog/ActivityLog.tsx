@@ -7,7 +7,13 @@ import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
+import {
+  Button,
+  PaginationState,
+  Paginator,
+  Pill,
+  Table_deprecated as Table,
+} from 'app/V2/Components/UI';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { settingsAtom } from 'app/V2/atoms';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
@@ -79,7 +85,7 @@ const ActivityLog = () => {
               type="button"
               styling="light"
               size="small"
-              className="flex flex-row items-center gap-4 mr-0 align-middle"
+              className="flex flex-row gap-4 items-center mr-0 align-middle"
               onClick={() => setShowFilters(true)}
             >
               <FunnelIcon

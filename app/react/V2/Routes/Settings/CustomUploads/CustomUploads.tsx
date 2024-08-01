@@ -10,7 +10,7 @@ import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 import { getByType, remove, UploadService } from 'V2/api/files';
-import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table_deprecated as Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';

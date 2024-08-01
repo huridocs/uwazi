@@ -267,6 +267,7 @@ Download a third-party authenticator app from your mobile store.,Download a thir
 Drag and drop file in this window to upload,အပ်လုဒ်လုပ်ရန် ဖိုင်ကို ဤဝင်းဒိုးထဲသို့ ဆွဲချပါ
 Drag items here,ဖိုင်များကို ဒီဘက် ဆွဲရွှေ့ပါ
 Drag properties here,ထူးခြားချက်များကို ဒီဘက် ဆွဲရွှေ့ပါ
+Drag row,Drag row
 Drop your files here to upload or,သင့်ဖိုင်များကို အပ်လုဒ်လုပ်ရန် ဒီနေရာတွင် ချပါ သို့မဟုတ်
 Duplicate values not allowed.,Duplicate values not allowed.
 Duplicated email,ပွားထားသော အီးမေးလ်
@@ -288,6 +289,7 @@ Email,အီးမေးလ်
 Email address,အီးမေးလ် လိပ်စာ
 Email updated,အီးမေးလ် အပ်ဒိတ်လုပ်ပြီး
 Empty,Empty
+Empty group. Drop here to add,Empty group. Drop here to add
 empty property tip,You won't be able to save an entity if this property is empty.
 Enable,Enable
 Enable this page to be used as an entity view page:,ဖြည့်သွင်းချက် ကြည့်ရန်အတွက် စာမျက်နှာအဖြစ် သုံးရန် ဤစာမျက်နှာကို ဖွင့်ထားပါ-
@@ -559,6 +561,7 @@ Ok,အိုကေ
 OK,အိုကေ
 Ooops... please go,အို... အဆင်ပြေပါစေ
 Oops! We couldn't find the thesaurus you're trying to edit. Try navigating back to this page through Settings.,အို။ သင်တည်းဖြတ်ရန် ကြိုးစားနေသော ဝေါဟာရပဒေသာကျမ်းကို ကျွန်ုပ်တို့ ရှာမတွေ့ပါ။ ဆက်တင်များမှတစ်ဆင့် ဤစာမျက်နှာသို့ ပြန်သွားကြည့်ပါ။
+Open group,Open group
 Open PDF,Open PDF
 Open the two-factor Authenticator app on your device,သင့်စက်ပေါ်ရှိ နှစ်ဆင့်ခံ Authenticator အက်ပ်ကို ဖွင့်ပါ
 or,သို့မဟုတ်
@@ -821,6 +824,7 @@ This entity is restricted from public view.,ဤဖြည့်သွင်းခ
 This field is required,This field is required
 This file type is not supported on image fields,This file type is not supported on image fields
 This file type is not supported on media fields,This file type is not supported on media fields
+This group is empty,This group is empty
 This option will show a notification about the use of cookies in your instance.,ဤရွေးချယ်မှုသည် သင့်အခြေအနေတွင် ကွတ်ကီးများ အသုံးပြုမှုအကြောင်း အသိပေးချက် ပြသပါမည်။
 This property will appear in the library cards as part of the basic info.,ဤထူးခြားချက်သည် အခြေခံအချက်အလက်၏ တစ်စိတ်တစ်ပိုင်းအဖြစ် စာကြည့်တိုက်ကတ်များတွင် ပေါ်လာပါမည်။
 This property will be inherited from the related entities and shown as metadata of this type of entities.,ဤထူးခြားချက်ကို သက်ဆိုင်ရာ ဖြည့်သွင်းချက်များမှ လက်ခံရယူပြီး ဤဖြည့်သွင်းချက် အမျိုးအစား၏ မီတာဒေတာအဖြစ် ပြသပါမည်။

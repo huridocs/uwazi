@@ -8,7 +8,7 @@ import { useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, Table_deprecated as Table } from 'V2/Components/UI';
 import { ConfirmNavigationModal, InputField } from 'V2/Components/Forms';
 import { ClientThesaurusValue, ClientThesaurus } from 'app/apiResponseTypes';
 import { notificationAtom } from 'V2/atoms/notificationAtom';

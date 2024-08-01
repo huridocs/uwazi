@@ -1,6 +1,6 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Table } from 'V2/Components/UI';
+import { Table_deprecated as Table } from 'V2/Components/UI';
 import {
   StoryComponent,
   type SampleSchema,

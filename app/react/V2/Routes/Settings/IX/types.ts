@@ -8,6 +8,7 @@ interface IXProperty extends PropertySchema {
 }
 
 type Extractor = IXExtractorInfo & {
+  rowId: string;
   namedTemplates: string[];
   propertyLabel: string;
   propertyType: IXProperty['type'];
@@ -19,25 +20,30 @@ type SuggestionValue = string | number;
 
 interface SingleValueSuggestion extends EntitySuggestionType {
   _id: ObjectIdSchema;
-  isChild?: boolean;
+  rowId: string;
+  disableRowSelection?: boolean;
   suggestedValue: SuggestionValue;
   currentValue?: SuggestionValue;
-  disableRowSelection?: boolean;
+  isChild?: boolean;
 }
 
 interface MultiValueSuggestion extends EntitySuggestionType {
   _id: ObjectIdSchema;
-  isChild?: boolean;
+  rowId: string;
+  disableRowSelection?: boolean;
   suggestedValue: SuggestionValue[];
   currentValue: SuggestionValue[];
-  children: SingleValueSuggestion[];
-  disableRowSelection?: boolean;
+  subRows: SingleValueSuggestion[];
+  isChild?: boolean;
 }
 
 type TableSuggestion = SingleValueSuggestion | MultiValueSuggestion;
 
+type TableExtractor = Extractor & { rowId: string };
+
 export type {
   Extractor,
+  TableExtractor,
   Highlights,
   TableSuggestion,
   SuggestionValue,

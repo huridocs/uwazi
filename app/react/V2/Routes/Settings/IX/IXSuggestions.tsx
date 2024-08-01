@@ -10,7 +10,7 @@ import {
   useRevalidator,
   useSearchParams,
 } from 'react-router-dom';
-import { Row, SortingState } from '@tanstack/react-table';
+import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
 import * as suggestionsAPI from 'app/V2/api/ix/suggestions';
@@ -110,7 +110,7 @@ const IXSuggestions = () => {
   const [searchParams] = useSearchParams();
   const [sidepanel, setSidepanel] = useState<'filters' | 'pdf' | 'none'>('none');
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
-  const [selected, setSelected] = useState<Row<TableSuggestion>[]>([]);
+  const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
@@ -240,16 +240,23 @@ const IXSuggestions = () => {
           title={extractor.name}
         />
         <SettingsContent.Body>
-          <Table<TableSuggestion>
+          <Table
             data={currentSuggestions}
-            highLightGroups={false}
-            subRowsKey="children"
+            enableSelections
             columns={suggestionsTableColumnsBuilder(
               filteredTemplates(),
               acceptSuggestions,
               openPDFSidepanel
             )}
-            title={
+            sortingFn={sortingState => {
+              setSorting(sortingState);
+            }}
+            onChange={({ selectedRows }) => {
+              setSelected(() =>
+                currentSuggestions.filter(current => current.rowId in selectedRows)
+              );
+            }}
+            header={
               <SuggestionsTitle
                 property={extractor.property}
                 templates={filteredTemplates()}
@@ -259,10 +266,6 @@ const IXSuggestions = () => {
                 activeFilters={activeFilters}
               />
             }
-            enableSelection
-            sorting={sorting}
-            setSorting={setSorting}
-            onSelection={setSelected}
             footer={
               <div className="flex justify-between h-6">
                 <PaginationState
@@ -290,15 +293,13 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
                 styling="outline"
                 onClick={async () => {
-                  await acceptSuggestions(
-                    selected.map(selectedSuggestion => selectedSuggestion.original)
-                  );
+                  await acceptSuggestions(selected);
                 }}
               >
                 <Translate>Accept suggestion</Translate>
@@ -318,7 +319,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex justify-center items-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -398,12 +399,17 @@ const IXSuggestionsLoader =
         headers
       );
 
+    const suggestions = suggestionsList.suggestions.map(suggestion => ({
+      ...suggestion,
+      rowId: suggestion._id,
+    }));
+
     const extractors = await extractorsAPI.getById(extractorId, headers);
     const aggregation = await suggestionsAPI.aggregation(extractorId, headers);
     const currentStatus = await suggestionsAPI.status(extractorId, headers);
     const templates = await templatesAPI.get(headers);
     return {
-      suggestions: suggestionsList.suggestions,
+      suggestions,
       totalPages: suggestionsList.totalPages,
       extractor: extractors[0],
       templates,
