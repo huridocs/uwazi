@@ -42,7 +42,7 @@ class Tenants {
     const tenants = await model.get();
 
     tenants.forEach((tenant: TenantDocument) => {
-      this.add(tenant.toObject());
+      this.add(tenant);
     });
   }
 
