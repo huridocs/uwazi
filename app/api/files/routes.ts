@@ -7,19 +7,52 @@ import entities from 'api/entities';
 import { processDocument } from 'api/files/processDocument';
 import { uploadMiddleware } from 'api/files/uploadMiddleware';
 import { legacyLogger } from 'api/log';
-import { FileType } from 'shared/types/fileType';
-import { fileSchema } from 'shared/types/fileSchema';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { validateAndCoerceRequest } from 'api/utils/validateRequest';
-import { files } from './files';
+import { EntitySchema } from 'shared/types/entityType';
+import { fileSchema } from 'shared/types/fileSchema';
+import { FileType } from 'shared/types/fileType';
+import { UserSchema } from 'shared/types/userType';
 import { createError, handleError, validation } from '../utils';
+import { files } from './files';
 import { storage } from './storage';
 
-const checkEntityPermission = async (file: FileType): Promise<boolean> => {
-  if (!file.entity) return true;
-  const relatedEntities = await entities.get({ sharedId: file.entity }, '_id', {
-    withoutDocuments: true,
-  });
-  return !!relatedEntities.length;
+const checkEntityPermission = async (
+  file: FileType,
+  user: UserSchema | undefined,
+  level: 'read' | 'write' = 'read'
+): Promise<boolean> => {
+  if (['admin'].includes(user?.role || '')) return true;
+  const [fileInDB] = await files.get({ _id: file._id });
+
+  if (!fileInDB || (fileInDB.type === 'custom' && level === 'write')) {
+    return false;
+  }
+
+  if (fileInDB.type === 'custom' && level === 'read') {
+    return true;
+  }
+
+  const relatedEntities: EntitySchema[] = await entities.get(
+    { sharedId: fileInDB.entity },
+    '_id, permissions',
+    { withoutDocuments: true }
+  );
+
+  if (level === 'read') {
+    return relatedEntities.length > 0;
+  }
+
+  return (
+    relatedEntities.length > 0 &&
+    relatedEntities.every(
+      entity =>
+        !!(entity.permissions || []).find(
+          permission =>
+            permission.refId.toString() === user?._id?.toString() && permission.level === 'write'
+        )
+    )
+  );
 };
 
 const filterByEntityPermissions = async (fileList: FileType[]): Promise<FileType[]> => {
@@ -57,7 +90,7 @@ export default (app: Application) => {
 
   app.post(
     '/api/files/upload/custom',
-    needsAuthorization(['admin', 'editor', 'collaborator']),
+    needsAuthorization(['admin']),
     uploadMiddleware('custom'),
     activitylogMiddleware,
     (req, res, next) => {
@@ -98,13 +131,14 @@ export default (app: Application) => {
         body: fileSchema,
       },
     }),
-    (req, res, next) => {
-      files
-        .save(req.body)
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req, res) => {
+      if (
+        !(await checkEntityPermission(req.body, permissionsContext.getUserInContext(), 'write'))
+      ) {
+        throw createError('file not found', 404);
+      }
+      const result = await files.save(req.body);
+      res.json(result);
     }
   );
 
@@ -192,7 +226,7 @@ export default (app: Application) => {
         !file?.filename ||
         !file?.type ||
         !(await storage.fileExists(file.filename, file.type)) ||
-        !(await checkEntityPermission(file))
+        !(await checkEntityPermission(file, permissionsContext.getUserInContext()))
       ) {
         throw createError('file not found', 404);
       }
@@ -235,7 +269,10 @@ export default (app: Application) => {
 
     async (req: Request<{}, {}, {}, { _id: string }>, res) => {
       const [fileToDelete] = await files.get({ _id: req.query._id });
-      if (!fileToDelete || !(await checkEntityPermission(fileToDelete))) {
+      if (
+        !fileToDelete ||
+        !(await checkEntityPermission(fileToDelete, permissionsContext.getUserInContext(), 'write'))
+      ) {
         throw createError('file not found', 404);
       }
 
@@ -262,14 +299,8 @@ export default (app: Application) => {
         },
       },
     }),
-    (req, res, next) => {
-      files
-        .get(req.query)
-        .then(async result => filterByEntityPermissions(result))
-        .then(result => {
-          res.json(result);
-        })
-        .catch(next);
+    async (req, res) => {
+      res.json(await filterByEntityPermissions(await files.get(req.query)));
     }
   );
 

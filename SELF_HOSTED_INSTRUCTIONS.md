@@ -64,7 +64,7 @@ mv prod latest && rm uwazi.tgz
 
 You should now be able to run an Uwazi instance in production mode:
 
-`DATABASE_NAME=my_db_name INDEX_NAME=my_db_name NODE_ENV=production FILES_ROOT_PATH=/xxxx/yyyy/uwazi/ node server.js`
+`DATABASE_NAME=my_db_name INDEX_NAME=my_db_name NODE_ENV=production FILES_ROOT_PATH=/xxxx/yyyy/uwazi/ node server.js --no-experimental-fetch`
 
 By default, Uwazi runs on `localhost` port 3000, so point your browser to http://localhost:3000 and authenticate yourself with the default username "admin" and password "change this password now".
 

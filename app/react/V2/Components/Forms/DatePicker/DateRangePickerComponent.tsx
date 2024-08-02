@@ -39,7 +39,6 @@ const DateRangePickerComponent = React.forwardRef(
       className = '',
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
-      onBlur = () => {},
       from,
       to,
       onClear = () => {},
@@ -139,7 +138,8 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 type="text"
                 onSelect={onFromDateSelected}
-                onBlur={onBlur}
+                onChange={onFromDateSelected}
+                onBlur={onFromDateSelected}
                 disabled={disabled}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
@@ -172,7 +172,8 @@ const DateRangePickerComponent = React.forwardRef(
                 datepicker-autoselect-today={true}
                 type="text"
                 onSelect={onToDateSelected}
-                onBlur={onBlur}
+                onChange={onToDateSelected}
+                onBlur={onToDateSelected}
                 disabled={disabled}
                 // eslint-disable-next-line max-len
                 className={`[&>div>*:nth-child(odd)]:bg-transparent [&>div>*:nth-child(odd)]:border-0 [&>div>*:nth-child(odd)]:pl-8 ${fieldStyles} bg-gray-50 border border-gray-300 rounded-lg`}
