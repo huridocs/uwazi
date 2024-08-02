@@ -25,16 +25,21 @@ type Story = StoryObj<typeof DateRangePicker>;
 const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
-      <DateRangePicker
-        language={args.language}
-        dateFormat={args.dateFormat}
-        labelToday={args.labelToday}
-        labelClear={args.labelClear}
-        placeholderStart={args.placeholderStart}
-        placeholderEnd={args.placeholderEnd}
-        onFromDateSelected={args.onFromDateSelected}
-        onToDateSelected={args.onToDateSelected}
-      />
+      <div className="tw-container">
+        <div className="mx-6">
+          <DateRangePicker
+            className="mx-6"
+            language={args.language}
+            dateFormat={args.dateFormat}
+            labelToday={args.labelToday}
+            labelClear={args.labelClear}
+            placeholderStart={args.placeholderStart}
+            placeholderEnd={args.placeholderEnd}
+            onFromDateSelected={args.onFromDateSelected}
+            onToDateSelected={args.onToDateSelected}
+          />
+        </div>
+      </div>
     </Provider>
   ),
 };
