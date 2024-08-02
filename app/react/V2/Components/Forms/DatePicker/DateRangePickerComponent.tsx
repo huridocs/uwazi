@@ -39,7 +39,6 @@ const DateRangePickerComponent = React.forwardRef(
       className = '',
       onFromDateSelected = () => {},
       onToDateSelected = () => {},
-      onBlur = () => {},
       from,
       to,
       onClear = () => {},
