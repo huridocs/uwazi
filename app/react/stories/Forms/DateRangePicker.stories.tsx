@@ -26,9 +26,9 @@ const Primary: Story = {
   render: args => (
     <Provider store={createStore()}>
       <div className="tw-container">
-        <div className="mx-6">
+        <div className="mx-2">
           <DateRangePicker
-            className="mx-6"
+            className="mx-2"
             language={args.language}
             dateFormat={args.dateFormat}
             labelToday={args.labelToday}
