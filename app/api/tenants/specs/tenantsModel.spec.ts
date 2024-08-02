@@ -43,6 +43,13 @@ describe('tenantsModel', () => {
       {
         name: 'tenant one',
         dbName: 'tenant_one',
+        indexName: 'index name',
+        uploadedDocuments: 'path',
+        attachments: 'path',
+        customUploads: 'path',
+        activityLogs: 'path',
+        stats: 'un-needed data',
+        healthChecks: 'un-needed data',
       },
       {
         name: 'tenant two',
@@ -56,21 +63,27 @@ describe('tenantsModel', () => {
   });
 
   describe('get()', () => {
-    it('should return a list of current tenants', async () => {
+    it('should return a list of current tenants (only properties required for tenant operation)', async () => {
       const tenants = await model.get();
 
-      expect(tenants).toEqual([
-        expect.objectContaining({
-          _id: expect.any(ObjectId),
-          name: 'tenant one',
-          dbName: 'tenant_one',
-        }),
-        expect.objectContaining({
-          _id: expect.any(ObjectId),
-          name: 'tenant two',
-          dbName: 'tenant_two',
-        }),
-      ]);
+      const tenantOne = tenants.find(t => t.name === 'tenant one');
+      const tenantTwo = tenants.find(t => t.name === 'tenant two');
+
+      expect(tenantOne).toEqual({
+        _id: expect.any(ObjectId),
+        name: 'tenant one',
+        dbName: 'tenant_one',
+        indexName: 'index name',
+        uploadedDocuments: 'path',
+        attachments: 'path',
+        customUploads: 'path',
+        activityLogs: 'path',
+      });
+      expect(tenantTwo).toEqual({
+        _id: expect.any(ObjectId),
+        name: 'tenant two',
+        dbName: 'tenant_two',
+      });
     });
   });
 
