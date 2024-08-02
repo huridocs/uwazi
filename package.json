@@ -341,7 +341,7 @@
     "copy-webpack-plugin": "12.0.2",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",
-    "cypress": "13.13.1",
+    "cypress": "13.13.2",
     "cypress-axe": "^1.5.0",
     "cypress-plugin-snapshots": "^1.4.4",
     "cypress-real-events": "^1.13.0",
