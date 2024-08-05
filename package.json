@@ -1,10 +1,6 @@
 {
   "name": "uwazi",
-<<<<<<< HEAD
-  "version": "1.178.0-rc5",
-=======
   "version": "1.179.0-rc2",
->>>>>>> staging
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
