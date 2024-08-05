@@ -6,6 +6,7 @@ import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { TenantsModel, tenantsModel } from '../tenantsModel';
+import { S3Storage } from 'api/files/S3Storage';
 
 describe('tenantsModel', () => {
   let db: Db;
@@ -50,6 +51,9 @@ describe('tenantsModel', () => {
         activityLogs: 'path',
         stats: 'un-needed data',
         healthChecks: 'un-needed data',
+        featureFlags: {
+          s3Storage: false,
+        },
       },
       {
         name: 'tenant two',
@@ -78,6 +82,9 @@ describe('tenantsModel', () => {
         attachments: 'path',
         customUploads: 'path',
         activityLogs: 'path',
+        featureFlags: {
+          s3Storage: false,
+        },
       });
       expect(tenantTwo).toEqual({
         _id: expect.any(ObjectId),
