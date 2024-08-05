@@ -6,7 +6,6 @@ import waitForExpect from 'wait-for-expect';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
 import { TenantsModel, tenantsModel } from '../tenantsModel';
-import { S3Storage } from 'api/files/S3Storage';
 
 describe('tenantsModel', () => {
   let db: Db;
