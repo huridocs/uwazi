@@ -14,6 +14,7 @@ const state = {
 
 const suggestion1 = {
   _id: '1',
+  rowId: '1',
   language: 'es',
   propertyName: 'title',
   error: '',
@@ -50,6 +51,7 @@ const suggestion1 = {
 
 const suggestion2 = {
   _id: '2',
+  rowId: '2',
   language: 'es',
   propertyName: 'title',
   error: '',
@@ -86,6 +88,7 @@ const suggestion2 = {
 
 const suggestion3 = {
   _id: '3',
+  rowId: '3',
   language: 'es',
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
@@ -121,6 +124,7 @@ const suggestion3 = {
 
 const suggestion4 = {
   _id: '4',
+  rowId: '4',
   language: 'es',
   propertyName: 'document_date',
   segment: 'Some value that contains a date',
@@ -156,6 +160,7 @@ const suggestion4 = {
 
 const suggestion5 = {
   _id: '5',
+  rowId: '5',
   language: 'es',
   propertyName: 'multiselect',
   segment: 'value1',
@@ -170,9 +175,10 @@ const suggestion5 = {
   fileId: '3',
   date: 1,
   isChild: false,
-  children: [
+  subRows: [
     {
       _id: '5',
+      rowId: '5-value3',
       language: 'es',
       segment: 'value1',
       extractorId: '3',
@@ -191,6 +197,7 @@ const suggestion5 = {
     },
     {
       language: 'es',
+      rowId: '5-value2',
       segment: 'value1',
       extractorId: '3',
       entityTemplateId: '3',
@@ -209,6 +216,7 @@ const suggestion5 = {
     },
     {
       language: 'es',
+      rowId: '5-value1',
       segment: 'value1',
       extractorId: '3',
       entityTemplateId: '3',

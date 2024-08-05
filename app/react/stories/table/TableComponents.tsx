@@ -2,7 +2,11 @@
 import React, { useState } from 'react';
 import { CellContext, createColumnHelper, Row } from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
-import { EmbededButton, Table, TableProps } from 'V2/Components/UI';
+import {
+  EmbededButton,
+  Table_deprecated as Table,
+  TableProps_deprecated as TableProps,
+} from 'V2/Components/UI';
 import { Button } from 'V2/Components/UI/Button';
 import { get } from 'lodash';
 
@@ -119,7 +123,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
       <div className="flex gap-1">
         <button
           type="button"
-          className="p-2 text-white border rounded bg-primary-600"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(updatedData)}
         >
           Update table data
@@ -127,7 +131,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 
         <button
           type="button"
-          className="p-2 text-white border rounded bg-primary-600"
+          className="p-2 text-white rounded border bg-primary-600"
           onClick={() => setTable2Data(args.data)}
         >
           Reset table data
@@ -138,7 +142,7 @@ const CheckboxesTableComponent = (args: TableProps<SampleSchema>) => {
 };
 
 const TitleCell = ({ row, getValue }: CellContext<SampleSchema, string>) => (
-  <div className="flex items-center gap-2">
+  <div className="flex gap-2 items-center">
     <span className={row.getIsExpanded() ? 'text-indigo-900' : 'text-indigo-800'}>
       {getValue()}
     </span>

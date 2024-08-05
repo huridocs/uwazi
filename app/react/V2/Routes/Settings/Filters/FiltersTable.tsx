@@ -12,7 +12,7 @@ import { notificationAtom, settingsAtom } from 'V2/atoms';
 import * as settingsAPI from 'V2/api/settings';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, Table_deprecated as Table } from 'V2/Components/UI';
 import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import {
   createColumns,

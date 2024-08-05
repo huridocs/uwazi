@@ -87,6 +87,7 @@ describe('Translations', () => {
     });
 
     it('Should filter translations that have no untranslated terms', () => {
+      cy.get('[data-testid=settings-translations-edit]').scrollTo('top');
       cy.contains('caption', 'Fecha');
       cy.get('input[type=text]').eq(0).should('have.value', 'Date');
       cy.contains('label', 'Untranslated Terms').click();

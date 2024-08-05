@@ -31,7 +31,8 @@ const processQuery = (params, globalResources, key) => {
 
   query = Object.assign(query, {
     order: query.order || defaultSearch.order,
-    sort: query.sort || defaultSearch.sort,
+    sort:
+      query.sort && (query.sort !== '_score' || query.searchTerm) ? query.sort : defaultSearch.sort,
     view: params.view,
   });
 

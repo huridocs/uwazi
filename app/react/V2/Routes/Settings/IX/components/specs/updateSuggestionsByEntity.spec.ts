@@ -105,14 +105,15 @@ describe('updateSuggestionsByEntity', () => {
         propertyMultiselect
       ) as MultiValueSuggestion[];
 
-      expect(result![0].children?.length).toBe(2);
+      expect(result![0].subRows?.length).toBe(2);
       expect(result).toEqual([
         {
           ...suggestion5,
           currentValue: ['value3', 'value2'],
-          children: [
+          subRows: [
             {
               ...suggestion5,
+              rowId: '5-value3',
               suggestedValue: 'value3',
               currentValue: 'value3',
               propertyName: 'multiselect',
@@ -122,10 +123,11 @@ describe('updateSuggestionsByEntity', () => {
               _id: '5',
               isChild: true,
               disableRowSelection: true,
-              children: undefined,
+              subRows: undefined,
             },
             {
               ...suggestion5,
+              rowId: '5-value2',
               suggestedValue: 'value2',
               currentValue: 'value2',
               propertyName: 'multiselect',
@@ -135,7 +137,7 @@ describe('updateSuggestionsByEntity', () => {
               _id: '5',
               isChild: true,
               disableRowSelection: true,
-              children: undefined,
+              subRows: undefined,
             },
           ],
         },
