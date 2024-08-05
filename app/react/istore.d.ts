@@ -169,6 +169,7 @@ export interface IStore {
     uiState: IImmutable<{
       reference: DocumentViewerUiStateReference;
       activeReference: string;
+      enableClickAction?: boolean;
     }>;
     metadataExtraction: IImmutable<{
       selections: ExtractedMetadataSchema[];

@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = { reference: {}, snippet: {} };
+const initialState = { reference: {}, snippet: {}, enableClickAction: true };
 
 const unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
@@ -85,6 +85,11 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === types.RESET_DOCUMENT_VIEWER) {
     return Immutable.fromJS(initialState);
+  }
+
+  if (action.type === types.TOGGLE_REFERENCES) {
+    const status = state.get('enableClickAction');
+    return state.set('enableClickAction', !status);
   }
 
   return Immutable.fromJS(state);

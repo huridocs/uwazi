@@ -190,7 +190,7 @@ export function activateReference(
       dispatch(goToActive());
     }
     if (showContextMenu) {
-      dispatch({ type: types.SHOW_CONTEXT_MENU });
+      dispatch({ type: types.SHOW_TEXT_SELECTION_MENU });
     } else {
       dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
     }

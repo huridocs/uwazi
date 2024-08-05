@@ -38,7 +38,7 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', panels[action.panel]);
   }
 
-  if (action.type === ViewerActions.SHOW_CONTEXT_MENU) {
+  if (action.type === ViewerActions.SHOW_TEXT_SELECTION_MENU) {
     return state.set('type', 'ViewerTextSelectedMenu');
   }
 

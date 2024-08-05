@@ -8,6 +8,7 @@ import { openPanel } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
+import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 
 import { addToToc } from '../actions/documentActions';
 
@@ -15,6 +16,10 @@ class ViewerTextSelectedMenu extends Component {
   showPanel(type) {
     this.props.openPanel('viewMetadataPanel');
     this.props.startNewConnection(type, this.props.doc.get('sharedId'));
+  }
+
+  handleDisable() {
+    this.props.toggleReferences();
   }
 
   render() {
@@ -39,7 +44,7 @@ class ViewerTextSelectedMenu extends Component {
             </span>
             <Icon icon="file" />
           </div>
-          <div className="btn btn-primary disable-click" onClick={() => {}}>
+          <div className="btn btn-primary disable-click" onClick={this.handleDisable.bind(this)}>
             <span className="ContextMenu-tooltip">
               <Translate>Disable highlights</Translate>
             </span>
@@ -64,6 +69,7 @@ ViewerTextSelectedMenu.propTypes = {
   doc: PropTypes.object,
   file: PropTypes.object.isRequired,
   reference: PropTypes.object,
+  referenceState: PropTypes.bool,
   startNewConnection: PropTypes.func,
   openPanel: PropTypes.func,
   addToToc: PropTypes.func,
@@ -75,16 +81,18 @@ function mapStateToProps({ documentViewer, relationTypes }) {
   return {
     doc: documentViewer.doc,
     reference: documentViewer.uiState.get('reference'),
+    referenceState: documentViewer.uiState.get('enableClickAction'),
     hasRelationTypes: !!relationTypes.size,
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, props) {
   return bindActionCreators(
     {
       startNewConnection: connectionsActions.startNewConnection,
       openPanel,
       addToToc,
+      toggleReferences: () => dispatch({ type: ViewerActions.TOGGLE_REFERENCES }),
     },
     dispatch
   );

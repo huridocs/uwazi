@@ -11,6 +11,7 @@ interface PageReferencesProps {
   page: string;
   activeReference: string;
   onClick: (c: ConnectionSchema) => {};
+  enableClickAction?: boolean;
 }
 
 const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
@@ -33,9 +34,10 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
           data-id={r._id}
           key={r._id?.toString()}
           className="reference"
+          style={{ cursor: props.enableClickAction ? 'pointer' : 'auto' }}
           onClick={props.onClick.bind(null, r)}
         >
-          <Highlight textSelection={highlight} color={color} />
+          <Highlight textSelection={highlight} color={props.enableClickAction ? color : 'red'} />
         </div>
       );
     })}
@@ -87,6 +89,7 @@ const indexdReferencesByPage = createSelector(
 const mapStateToProps = (state: IStore) => ({
   references: indexdReferencesByPage(state),
   activeReference: state.documentViewer.uiState.get('activeReference'),
+  enableClickAction: state.documentViewer.uiState.get('enableClickAction'),
 });
 
 const PageReferences = connect(mapStateToProps)(PageReferencesComponent);
