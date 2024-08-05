@@ -75,6 +75,11 @@ const routes = app => {
       const { allowedPublicTemplates } = await settings.get();
       const { entity, email } = req.body;
 
+      if (entity._id) {
+        next(createError('Unauthorized _id property', 403));
+        return;
+      }
+
       if (!allowedPublicTemplates || !allowedPublicTemplates.includes(entity.template)) {
         next(createError('Unauthorized public template', 403));
         return;
