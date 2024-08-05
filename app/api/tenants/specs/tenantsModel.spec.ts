@@ -50,9 +50,6 @@ describe('tenantsModel', () => {
         activityLogs: 'path',
         stats: 'un-needed data',
         healthChecks: 'un-needed data',
-        featureFlags: {
-          s3Storage: false,
-        },
       },
       {
         name: 'tenant two',
@@ -81,9 +78,6 @@ describe('tenantsModel', () => {
         attachments: 'path',
         customUploads: 'path',
         activityLogs: 'path',
-        featureFlags: {
-          s3Storage: false,
-        },
       });
       expect(tenantTwo).toEqual({
         _id: expect.any(ObjectId),
