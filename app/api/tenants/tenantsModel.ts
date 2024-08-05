@@ -28,6 +28,11 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   activityLogs: String,
+  featureFlags: {
+    s3Storage: Boolean,
+  },
+  globalMatomo: { id: String, url: String },
+  ciMatomoActive: Boolean,
 });
 
 type DBTenant = Partial<Tenant> & { name: string };
