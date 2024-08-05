@@ -175,7 +175,12 @@ export function selectSnippet(page, snippet) {
   };
 }
 
-export function activateReference(connection, tab, delayActivation = false) {
+export function activateReference(
+  connection,
+  tab,
+  delayActivation = false,
+  showContextMenu = false
+) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
@@ -184,7 +189,11 @@ export function activateReference(connection, tab, delayActivation = false) {
     if (delayActivation) {
       dispatch(goToActive());
     }
-    dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
+    if (showContextMenu) {
+      dispatch({ type: types.SHOW_CONTEXT_MENU });
+    } else {
+      dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
+    }
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {

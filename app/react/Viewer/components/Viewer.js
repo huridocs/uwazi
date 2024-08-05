@@ -260,6 +260,7 @@ Viewer.contextTypes = {
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
+
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
@@ -269,10 +270,8 @@ const mapStateToProps = state => {
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
-      (!documentViewer.targetDoc.get('_id') &&
-        uiState.reference &&
-        uiState.reference.sourceRange) ||
-        uiState.activeReference
+      !documentViewer.targetDoc.get('_id') &&
+        state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
     ),
     user: state.user,
     // relationships v2
