@@ -437,96 +437,94 @@ const PDFSidepanel = ({
   };
 
   return (
-    <div className="h-full">
-      <Sidepanel
-        isOpen={showSidepanel}
-        withOverlay
-        size="large"
-        title={entity?.title}
-        closeSidepanelFunction={() => setShowSidepanel(false)}
-      >
-        <div className="flex-grow overflow-y-scroll">
-          <form
-            id="ixpdfform"
-            className="flex flex-col h-full gap-4 p-0"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <div className="w-full md:m-auto grow">
-              {pdf && (
-                <PDF
-                  fileUrl={`/api/files/${pdf.filename}`}
-                  highlights={highlights}
-                  onSelect={selection => {
-                    if (!selection.selectionRectangles.length) {
-                      setSelectionError('Could not detect the area for the selected text');
-                      setSelectedText(undefined);
-                    } else {
-                      setSelectionError(undefined);
-                      setSelectedText(selection);
-                    }
-                  }}
-                  onDeselect={() => {
-                    setSelectionError(undefined);
-                    setSelectedText(undefined);
-                  }}
-                  size={{
-                    width: '100%',
-                  }}
-                  scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
-                />
-              )}
-            </div>
-          </form>{' '}
-        </div>
-        <Sidepanel.Footer
-          className={`max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+    <Sidepanel
+      isOpen={showSidepanel}
+      withOverlay
+      size="large"
+      title={entity?.title}
+      closeSidepanelFunction={() => setShowSidepanel(false)}
+    >
+      <div className="flex-grow overflow-y-scroll">
+        <form
+          id="ixpdfform"
+          className="flex flex-col h-full gap-4 p-0"
+          onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-            <div className="sticky top-0 flex px-4 py-2 bg-gray-50">
-              <p className={selectionError ? 'text-pink-600 grow  flex gap-4' : 'grow flex gap-4'}>
-                <Translate
-                  className="font-semibold leading-6 text-gray-500 uppercase "
-                  context={templateId}
-                >
-                  {property?.label}
-                </Translate>{' '}
-                {SELECT_TYPES.includes(property?.type || '') && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectAndSearch(old => !old)}
-                    className={`${selectAndSearch ? 'bg-primary-50 border-primary-800' : 'bg-white border-gray-200'} border flex items-center gap-1 px-2 py-0 text-xs font-medium text-gray-900 rounded-md hover:border-primary-800 hover:bg-primary-50`}
-                  >
-                    <PlusCircleIcon className="w-3" />
-                    <Translate>Select & Search</Translate>
-                  </button>
-                )}
-                {selectionError && <span>{selectionError}</span>}
-              </p>
-              <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
-                {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
-              </span>
-            </div>
-            {renderForm()}
-            <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
-              <Button
-                type="button"
-                styling="outline"
-                disabled={isSubmitting}
-                onClick={() => {
-                  setShowSidepanel(false);
-                  reset();
+          <div className="w-full md:m-auto grow">
+            {pdf && (
+              <PDF
+                fileUrl={`/api/files/${pdf.filename}`}
+                highlights={highlights}
+                onSelect={selection => {
+                  if (!selection.selectionRectangles.length) {
+                    setSelectionError('Could not detect the area for the selected text');
+                    setSelectedText(undefined);
+                  } else {
+                    setSelectionError(undefined);
+                    setSelectedText(selection);
+                  }
                 }}
-              >
-                <Translate>Cancel</Translate>
-              </Button>
-              <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
-                <Translate>Accept</Translate>
-              </Button>
-            </div>
+                onDeselect={() => {
+                  setSelectionError(undefined);
+                  setSelectedText(undefined);
+                }}
+                size={{
+                  width: '100%',
+                }}
+                scrollToPage={!selectedText ? Object.keys(highlights || {})[0] : undefined}
+              />
+            )}
           </div>
-        </Sidepanel.Footer>
-      </Sidepanel>
-    </div>
+        </form>{' '}
+      </div>
+      <Sidepanel.Footer
+        className={`max-h-[40%] ${labelInputIsOpen && ['select', 'multiselect', 'relationship'].includes(property?.type || '') ? 'h-[40%]' : ''}`}
+      >
+        <div className="relative flex flex-col h-full py-0 border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+          <div className="sticky top-0 flex px-4 py-2 bg-gray-50">
+            <p className={selectionError ? 'text-pink-600 grow  flex gap-4' : 'grow flex gap-4'}>
+              <Translate
+                className="font-semibold leading-6 text-gray-500 uppercase "
+                context={templateId}
+              >
+                {property?.label}
+              </Translate>{' '}
+              {SELECT_TYPES.includes(property?.type || '') && (
+                <button
+                  type="button"
+                  onClick={() => setSelectAndSearch(old => !old)}
+                  className={`${selectAndSearch ? 'bg-primary-50 border-primary-800' : 'bg-white border-gray-200'} border flex items-center gap-1 px-2 py-0 text-xs font-medium text-gray-900 rounded-md hover:border-primary-800 hover:bg-primary-50`}
+                >
+                  <PlusCircleIcon className="w-3" />
+                  <Translate>Select & Search</Translate>
+                </button>
+              )}
+              {selectionError && <span>{selectionError}</span>}
+            </p>
+            <span onClick={() => setLabelInputIsOpen(old => !old)} className="cursor-pointer">
+              {labelInputIsOpen ? <ChevronDownIcon width={20} /> : <ChevronUpIcon width={20} />}
+            </span>
+          </div>
+          {renderForm()}
+          <div className="sticky bottom-0 flex justify-end gap-2 px-4 py-2 bg-white border border-b-0 border-l-0 border-r-0 border-gray-200 border-t-1">
+            <Button
+              type="button"
+              styling="outline"
+              disabled={isSubmitting}
+              onClick={() => {
+                setShowSidepanel(false);
+                reset();
+              }}
+            >
+              <Translate>Cancel</Translate>
+            </Button>
+            <Button type="submit" form="ixpdfform" disabled={isSubmitting} color="success">
+              <Translate>Accept</Translate>
+            </Button>
+          </div>
+        </div>
+      </Sidepanel.Footer>
+    </Sidepanel>
   );
 };
 
