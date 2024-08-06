@@ -54,7 +54,6 @@ const MultiselectList = ({
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
   const [searchTerm, setSearchTerm] = useState('');
-  const [externalSearchTerm, setExternalSearchTerm] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
   const optionsRef = useRef<HTMLUListElement>(null);
@@ -71,14 +70,13 @@ const MultiselectList = ({
 
   useEffect(() => {
     setSearchTerm(search);
-    setExternalSearchTerm(search);
   }, [search]);
 
   useEffect(() => {
-    if (externalSearchTerm) {
+    if (search) {
       optionsRef.current?.querySelector('input')?.focus();
     }
-  }, [externalSearchTerm, filteredItems]);
+  }, [search, filteredItems]);
 
   useEffect(() => {
     if (value) {
@@ -132,7 +130,6 @@ const MultiselectList = ({
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
-    setExternalSearchTerm('');
     let newValues;
     if (singleSelect) {
       newValues = selectedItems.includes(_value) ? [] : [_value];
@@ -240,7 +237,7 @@ const MultiselectList = ({
               <div className="w-3 h-3 text-sm">
                 {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               </div>
-              <Translate>Properties</Translate>
+              <Translate>Values</Translate>
             </button>
           </div>
           {isOpen && <ul className="pl-4">{group.items?.map(renderItem)}</ul>}
