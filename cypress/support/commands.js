@@ -85,8 +85,7 @@ function setBaseAndExtent(...args) {
 
 Cypress.Commands.add('selection', { prevSubject: true }, (subject, fn) => {
   // eslint-disable-next-line cypress/unsafe-to-chain-command
-  cy.wrap(subject).trigger('mousedown').then(fn).trigger('mouseup');
-
+  cy.wrap(subject).trigger('mousedown', { button: 0 }).then(fn).trigger('mouseup', { button: 0 });
   cy.document().trigger('selectionchange');
   return cy.wrap(subject);
 });
