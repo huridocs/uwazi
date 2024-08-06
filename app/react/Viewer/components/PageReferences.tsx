@@ -35,9 +35,9 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
           key={r._id?.toString()}
           className="reference"
           style={{ cursor: props.enableClickAction ? 'pointer' : 'auto' }}
-          onClick={props.onClick.bind(null, r)}
+          onClick={props.enableClickAction ? props.onClick.bind(null, r) : undefined}
         >
-          <Highlight textSelection={highlight} color={props.enableClickAction ? color : 'red'} />
+          <Highlight textSelection={highlight} color={color} />
         </div>
       );
     })}

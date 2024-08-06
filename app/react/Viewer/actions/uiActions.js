@@ -18,6 +18,8 @@ export function openPanel(panel) {
   };
 }
 
+export const toggleReferences = () => ({ type: types.TOGGLE_REFERENCES });
+
 export function resetReferenceCreation() {
   return function (dispatch) {
     dispatch({ type: types.RESET_REFERENCE_CREATION });

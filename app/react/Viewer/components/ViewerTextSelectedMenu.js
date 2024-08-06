@@ -4,22 +4,21 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { CursorArrowRaysIcon } from '@heroicons/react/24/solid';
 import { actions as connectionsActions } from 'app/Connections';
-import { openPanel } from 'app/Viewer/actions/uiActions';
+import { openPanel, toggleReferences } from 'app/Viewer/actions/uiActions';
 import ShowIf from 'app/App/ShowIf';
 import { Icon } from 'UI';
 import { Translate } from 'app/I18N';
-import * as ViewerActions from 'app/Viewer/actions/actionTypes';
 
 import { addToToc } from '../actions/documentActions';
 
 class ViewerTextSelectedMenu extends Component {
+  handleDisable() {
+    return this.props.toggleReferences();
+  }
+
   showPanel(type) {
     this.props.openPanel('viewMetadataPanel');
     this.props.startNewConnection(type, this.props.doc.get('sharedId'));
-  }
-
-  handleDisable() {
-    this.props.toggleReferences();
   }
 
   render() {
@@ -75,6 +74,7 @@ ViewerTextSelectedMenu.propTypes = {
   addToToc: PropTypes.func,
   active: PropTypes.bool,
   hasRelationTypes: PropTypes.bool,
+  toggleReferences: PropTypes.func,
 };
 
 function mapStateToProps({ documentViewer, relationTypes }) {
@@ -86,13 +86,13 @@ function mapStateToProps({ documentViewer, relationTypes }) {
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
+function mapDispatchToProps(dispatch) {
   return bindActionCreators(
     {
       startNewConnection: connectionsActions.startNewConnection,
       openPanel,
       addToToc,
-      toggleReferences: () => dispatch({ type: ViewerActions.TOGGLE_REFERENCES }),
+      toggleReferences,
     },
     dispatch
   );
