@@ -28,12 +28,17 @@ const mongoSchema = new mongoose.Schema({
   attachments: String,
   customUploads: String,
   activityLogs: String,
+  featureFlags: {
+    s3Storage: Boolean,
+  },
+  globalMatomo: { id: String, url: String },
+  ciMatomoActive: Boolean,
 });
 
-export type DBTenant = Partial<Tenant> & { name: string };
-export type TenantDocument = Document & DBTenant;
+type DBTenant = Partial<Tenant> & { name: string };
+type TenantDocument = Document & DBTenant;
 
-export class TenantsModel extends EventEmitter {
+class TenantsModel extends EventEmitter {
   model?: Model<TenantDocument>;
 
   tenantsDB: mongoose.Connection;
@@ -96,7 +101,7 @@ export class TenantsModel extends EventEmitter {
         'tenants model has not been initialized, make sure you called initialize() method'
       );
     }
-    return this.model.find({});
+    return this.model.find({}, Object.keys(mongoSchema.paths)).lean();
   }
 }
 
@@ -106,4 +111,5 @@ const tenantsModel = async () => {
   return model;
 };
 
-export { tenantsModel };
+export { TenantsModel, tenantsModel };
+export type { DBTenant, TenantDocument };

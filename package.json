@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.178.0-rc2",
+  "version": "1.179.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -90,7 +90,7 @@
     "@types/react-dom": "^18.0.9 || ^18.3.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.617.0",
+    "@aws-sdk/client-s3": "3.624.0",
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
@@ -105,7 +105,7 @@
     "@headlessui/react": "1.7.17",
     "@heroicons/react": "^2.1.5",
     "@hookform/error-message": "^2.0.1",
-    "@huridocs/react-text-selection-handler": "^0.2.11",
+    "@huridocs/react-text-selection-handler": "^0.3.0",
     "@loadable/component": "^5.16.4",
     "@popperjs/core": "^2.11.8",
     "@remix-run/router": "^1.16.1",
@@ -194,7 +194,7 @@
     "prom-client": "^15.1.3",
     "prop-types": "^15.8.1",
     "qrcode.react": "^3.1.0",
-    "qs": "^6.12.3",
+    "qs": "^6.13.0",
     "react": "^18.3.1",
     "react-color": "^2.19.3",
     "react-datepicker": "7.3.0",
@@ -257,7 +257,7 @@
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-get-function-arity": "^7.16.7",
     "@babel/helper-string-parser": "^7.24.8",
-    "@babel/parser": "^7.24.8",
+    "@babel/parser": "^7.25.3",
     "@babel/plugin-proposal-class-properties": "^7.18.6",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
     "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
@@ -270,7 +270,7 @@
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
     "@babel/register": "^7.24.6",
-    "@babel/traverse": "^7.25.2",
+    "@babel/traverse": "^7.25.3",
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^1.6.1",
     "@cypress/react18": "^2.0.1",
@@ -341,7 +341,7 @@
     "copy-webpack-plugin": "12.0.2",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.0",
-    "cypress": "13.13.1",
+    "cypress": "13.13.2",
     "cypress-axe": "^1.5.0",
     "cypress-plugin-snapshots": "^1.4.4",
     "cypress-real-events": "^1.13.0",

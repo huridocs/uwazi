@@ -9,7 +9,7 @@ import express from 'express';
 import mailer from 'api/utils/mailer';
 // eslint-disable-next-line node/no-restricted-import
 import fs from 'fs/promises';
-import { fixtures, templateId } from './fixtures';
+import { allowedPublicTemplate, fixtures, templateId } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
 import uploadRoutes from '../jsRoutes.js';
 import { legacyLogger } from '../../log';
@@ -120,10 +120,10 @@ describe('upload routes', () => {
     });
 
     it('should not create entity if template is not whitelisted in allowedPublicTemplates setting', async () => {
-      req.body.entity = JSON.stringify({
+      req.body.entity = {
         title: 'public submit',
         template: 'unauthorized_template_id',
-      });
+      };
       try {
         await routes.post('/api/public', req);
         fail('should return error');
@@ -133,6 +133,21 @@ describe('upload routes', () => {
       }
       const res = await entities.get({ title: 'public submit' });
       expect(res.length).toBe(0);
+    });
+
+    it('should not allow entity updates (sending entities with _id)', async () => {
+      req.body.entity = {
+        _id: 'an id',
+        title: 'public submit',
+        template: allowedPublicTemplate.toString(),
+      };
+      try {
+        await routes.post('/api/public', req);
+        fail('should return error');
+      } catch (e) {
+        expect(e.message).toMatch(/unauthorized _id property/i);
+        expect(e.code).toBe(403);
+      }
     });
   });
 
