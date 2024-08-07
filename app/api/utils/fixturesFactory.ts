@@ -35,6 +35,7 @@ function getIdMapper() {
 
 const commonProperties: TemplateSchema['commonProperties'] = [
   {
+    _id: db.id(),
     label: 'Title',
     name: 'title',
     isCommonProperty: true,
@@ -121,8 +122,8 @@ function getFixturesFactory() {
       defaultProps: EntitySchema = {},
       propsPerLanguage:
         | {
-            [key: string]: EntitySchema;
-          }
+          [key: string]: EntitySchema;
+        }
         | undefined = undefined
     ): EntitySchema[] {
       return languages.map(language => {
@@ -196,7 +197,15 @@ function getFixturesFactory() {
       ...props,
     }),
 
-    commonProperties: () => _.cloneDeep(commonProperties),
+    commonProperties: () => _.cloneDeep(commonProperties) as TemplateSchema['commonProperties'],
+
+    commonPropertiesTitleId: () => {
+      const titleProp = commonProperties?.find(p => p.name === 'title');
+      if (titleProp?._id) {
+        return titleProp._id.toString();
+      }
+      throw new Error('Fixtures Factory common properties title prop not found');
+    },
 
     metadataValue: (value: PropertyValueSchema, label?: string): MetadataObjectSchema => {
       const mo: MetadataObjectSchema = { value };
@@ -223,8 +232,8 @@ function getFixturesFactory() {
             typeof item === 'string'
               ? [{ _id: idMapper(item), id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                  thesaurusNestedValues(rootValue, children, idMapper)
-                );
+                thesaurusNestedValues(rootValue, children, idMapper)
+              );
           return [...accumulator, ...nestedItems];
         },
         []

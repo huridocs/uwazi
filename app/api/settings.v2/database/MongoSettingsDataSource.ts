@@ -1,5 +1,5 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { Settings as SettingsType } from 'shared/types/settingsType';
+import { AutomaticTranslationConfig, Settings as SettingsType } from 'shared/types/settingsType';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 
@@ -51,5 +51,10 @@ export class MongoSettingsDataSource
     }
 
     return {};
+  }
+
+  async getAutomaticTranslationConfig() {
+    const settings = await this.readSettings();
+    return settings?.features?.automaticTranslation || { active: false };
   }
 }

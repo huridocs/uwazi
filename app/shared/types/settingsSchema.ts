@@ -4,7 +4,6 @@ import { objectIdSchema, languagesListSchema, geolocationSchema } from 'shared/t
 import { OnlineRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/OnlineRelationshipPropertyUpdateStrategy';
 import { QueuedRelationshipPropertyUpdateStrategy } from 'api/relationships.v2/services/propertyUpdateStrategies/QueuedRelationshipPropertyUpdateStrategy';
 import { Settings } from './settingsType';
-
 const emitSchemaTypes = true;
 
 const ajv = new Ajv({ allErrors: true });
@@ -159,6 +158,39 @@ ajv.addKeyword({
   },
 });
 
+const automaticTranslationSchema = {
+  title: 'AutomaticTranslationConfig',
+  type: 'object',
+  additionalProperties: false,
+  required: ['active'],
+  properties: {
+    active: { type: 'boolean' },
+    templates: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          template: { type: 'string' },
+          commonProperties: { type: 'array', items: { type: 'string' } },
+          properties: { type: 'array', items: { type: 'string' } },
+        },
+      },
+    },
+    // templates: {
+    //   type: 'object',
+    //   additionalProperties: {
+    //     type: 'object',
+    //     additionalProperties: false,
+    //     properties: {
+    //       commonProperties: { type: 'array', items: { type: 'string' } },
+    //       properties: { type: 'array', items: { type: 'string' } },
+    //     },
+    //   },
+    // },
+  },
+};
+
 const itemSchema = {
   type: 'object',
   additionalProperties: false,
@@ -283,6 +315,7 @@ const settingsSchema = {
     settingsLinkSchema,
     settingsSyncSchema,
     settingsPreserveConfigSchema,
+    automaticTranslationSchema,
   },
   additionalProperties: false,
   hasDefaultLanguage: true,
@@ -432,25 +465,7 @@ const settingsSchema = {
             },
           ],
         },
-        automaticTranslation: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['active'],
-          properties: {
-            active: { type: 'boolean' },
-            templates: {
-              type: 'object',
-              additionalProperties: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  commonProperties: { type: 'array', items: { type: 'string' } },
-                  properties: { type: 'array', items: { type: 'string' } },
-                },
-              },
-            },
-          },
-        },
+        automaticTranslation: automaticTranslationSchema,
       },
     },
     mapStartingPoint: geolocationSchema,
@@ -472,4 +487,5 @@ export {
   settingsLinkSchema,
   settingsSchema,
   settingsPreserveConfigSchema,
+  automaticTranslationSchema,
 };
