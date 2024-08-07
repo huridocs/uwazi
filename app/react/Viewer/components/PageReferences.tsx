@@ -37,7 +37,9 @@ const PageReferencesComponent: FunctionComponent<PageReferencesProps> = (
           style={{ cursor: props.enableClickAction ? 'pointer' : 'auto' }}
           onClick={props.enableClickAction ? props.onClick.bind(null, r) : undefined}
         >
-          <Highlight textSelection={highlight} color={color} />
+          <div style={{ pointerEvents: props.enableClickAction ? 'auto' : 'none' }}>
+            <Highlight textSelection={highlight} color={color} />
+          </div>
         </div>
       );
     })}
