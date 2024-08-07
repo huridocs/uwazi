@@ -53,6 +53,27 @@ export class MongoTemplatesDataSource
     );
   }
 
+  getAllTextProperties() {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties.type': { $in: ['text', 'markdown'] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+
+    return new MongoResultSet(cursor, template =>
+      TemplateMappers.propertyToApp(template.properties, template._id)
+    );
+  }
+
   async getPropertyByName(name: string) {
     if (!this._nameToPropertyMap) {
       const templates = await this.getCollection().find({}).toArray();
