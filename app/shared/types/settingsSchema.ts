@@ -432,6 +432,25 @@ const settingsSchema = {
             },
           ],
         },
+        automaticTranslation: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['active'],
+          properties: {
+            active: { type: 'boolean' },
+            templates: {
+              type: 'object',
+              additionalProperties: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                  commonProperties: { type: 'array', items: { type: 'string' } },
+                  properties: { type: 'array', items: { type: 'string' } },
+                },
+              },
+            },
+          },
+        },
       },
     },
     mapStartingPoint: geolocationSchema,

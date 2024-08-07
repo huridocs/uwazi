@@ -112,6 +112,17 @@ export interface Settings {
       | {
           updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
+    automaticTranslation?: {
+      active: boolean;
+      templates?: {
+        [k: string]:
+          | {
+              commonProperties?: string[];
+              properties?: string[];
+            }
+          | undefined;
+      };
+    };
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {
