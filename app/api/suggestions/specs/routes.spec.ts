@@ -11,7 +11,6 @@ import {
   shared2esId,
   shared6enId,
   stateFilterFixtures,
-  suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
 import { suggestionsRoutes } from 'api/suggestions/routes';

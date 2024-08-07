@@ -25,8 +25,6 @@ import { InputField, MultiselectList } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { Highlights } from '../types';
-import { is } from 'immutable';
-import { render } from 'enzyme';
 
 const SELECT_TYPES = ['select', 'multiselect', 'relationship'];
 
