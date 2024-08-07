@@ -237,7 +237,7 @@ const MultiselectList = ({
               <div className="w-3 h-3 text-sm">
                 {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               </div>
-              <Translate>Values</Translate>
+              <Translate>Group</Translate>
             </button>
           </div>
           {isOpen && <ul className="pl-4">{group.items?.map(renderItem)}</ul>}
