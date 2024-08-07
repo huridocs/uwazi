@@ -56,7 +56,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     parseQuery,
     validateAndCoerceRequest({
       type: 'object',
@@ -101,7 +101,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.get(
     '/api/suggestions/aggregation',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     parseQuery,
     validateAndCoerceRequest({
       type: 'object',
@@ -132,7 +132,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.post(
     '/api/suggestions/stop',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.stopModel, req, res);
@@ -142,7 +142,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.post(
     '/api/suggestions/train',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.trainModel, req, res);
@@ -152,7 +152,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.post(
     '/api/suggestions/status',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     extractorIdRequestValidation('body'),
     async (req, res, _next) => {
       await processTrainFunction(IX.status, req, res);
@@ -162,7 +162,7 @@ export const suggestionsRoutes = (app: Application) => {
   app.post(
     '/api/suggestions/accept',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     validateAndCoerceRequest({
       type: 'object',
       properties: {

@@ -11,7 +11,7 @@ export const extractorsRoutes = (app: Application) => {
   app.post(
     '/api/ixextractors',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     validateAndCoerceRequest({
       type: 'object',
       properties: {
@@ -36,7 +36,7 @@ export const extractorsRoutes = (app: Application) => {
   app.put(
     '/api/ixextractors',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     validateAndCoerceRequest({
       type: 'object',
       properties: {
@@ -67,7 +67,7 @@ export const extractorsRoutes = (app: Application) => {
   app.delete(
     '/api/ixextractors',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     parseQuery,
     validateAndCoerceRequest({
       type: 'object',
@@ -90,7 +90,7 @@ export const extractorsRoutes = (app: Application) => {
   app.get(
     '/api/ixextractors',
     serviceMiddleware,
-    needsAuthorization(['admin']),
+    needsAuthorization(['admin', 'editor']),
     validateAndCoerceRequest({
       type: 'object',
       properties: {
