@@ -14,6 +14,7 @@ import {
   highlightReference,
   activateReference,
   selectReference,
+  toggleReferences,
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import helpers from 'app/Documents/helpers';
@@ -27,7 +28,7 @@ const selectDoc = createSelector(
       : helpers.performantDocToJSWithoutRelations(doc)
 );
 
-export class Connection extends Component {
+class Connection extends Component {
   clickReference(reference) {
     if (this.props.readOnly) {
       return;
@@ -39,6 +40,8 @@ export class Connection extends Component {
     if (this.props.targetDoc && typeof reference.reference !== 'undefined') {
       this.props.selectReference(reference);
     }
+
+    this.props.toggleReferences(true);
   }
 
   deleteReference(reference) {
@@ -145,6 +148,7 @@ Connection.propTypes = {
   deleteReference: PropTypes.func,
   activateReference: PropTypes.func,
   selectReference: PropTypes.func,
+  toggleReferences: PropTypes.func,
   referencesSection: PropTypes.string,
   mainContext: PropTypes.shape({
     confirm: PropTypes.func,
@@ -170,9 +174,11 @@ function mapDispatchToProps(dispatch) {
       activateReference,
       selectReference,
       deleteReference,
+      toggleReferences,
     },
     dispatch
   );
 }
 
+export { Connection };
 export default connect(mapStateToProps, mapDispatchToProps)(withContext(Connection));

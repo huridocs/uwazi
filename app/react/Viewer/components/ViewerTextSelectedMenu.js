@@ -43,7 +43,10 @@ class ViewerTextSelectedMenu extends Component {
             </span>
             <Icon icon="file" />
           </div>
-          <div className="btn btn-primary disable-click" onClick={this.handleDisable.bind(this)}>
+          <div
+            className={`btn disable-click ${this.props.referenceState ? 'btn-primary' : 'btn-success'}`}
+            onClick={this.handleDisable.bind(this)}
+          >
             <span className="ContextMenu-tooltip">
               <Translate>Disable highlights</Translate>
             </span>
