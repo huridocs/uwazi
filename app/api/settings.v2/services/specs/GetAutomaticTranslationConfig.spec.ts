@@ -48,6 +48,7 @@ beforeEach(async () => {
                   fixtures.id('select property').toString(),
                   fixtures.id('rich text').toString(),
                   fixtures.id('multiselect_property').toString(),
+                  fixtures.id('this property does not exist on the template').toString(),
                 ],
               },
               {
@@ -56,6 +57,10 @@ beforeEach(async () => {
                   fixtures.id('text property').toString(),
                   fixtures.id('text property 2').toString(),
                 ],
+              },
+              {
+                template: fixtures.id('non existent template').toString(),
+                properties: [fixtures.id('text property non existent template').toString()],
               },
             ],
           },
@@ -77,6 +82,19 @@ describe('GetATConfig', () => {
       commonProperties: [fixtures.commonPropertiesTitleId()],
       properties: [fixtures.id('text property').toString(), fixtures.id('rich text').toString()],
     });
+  });
+
+  it('should not include properties that no longer exist', async () => {
+    const config = await createService().execute();
+    expect(config.templates[0].properties).toEqual([
+      fixtures.id('text property').toString(),
+      fixtures.id('rich text').toString(),
+    ]);
+  });
+
+  it('should not include properties configurations belonging to an unexistent template', async () => {
+    const config = await createService().execute();
+    expect(config.templates[2]).toBeUndefined();
   });
 
   it('should not include properties belonging to other templates', async () => {

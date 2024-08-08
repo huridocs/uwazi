@@ -1,5 +1,6 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
+import { Property } from 'api/templates.v2/model/Property';
 
 export class GetAutomaticTranslationConfig {
   private settingsDS: SettingsDataSource;
@@ -14,18 +15,29 @@ export class GetAutomaticTranslationConfig {
   async execute() {
     const config = await this.settingsDS.getAutomaticTranslationConfig();
 
-    const validProperties = (await this.templatesDS.getAllTextProperties().all()).map(p => p.id);
+    const validProperties = (await this.templatesDS.getAllTextProperties().all()).reduce(
+      (memo, property) => {
+        // eslint-disable-next-line no-param-reassign
+        memo[property.id] = property;
+        return memo;
+      },
+      {} as { [k: string]: Property }
+    );
+
+    const validPropertiesIds = Object.keys(validProperties);
 
     return {
       ...config,
-      templates: await Promise.all(
-        (config.templates || []).map(async templateConfig => ({
+      templates: (config.templates || [])
+        .map(templateConfig => ({
           ...templateConfig,
-          properties: (templateConfig.properties || []).filter(propertyId =>
-            validProperties.includes(propertyId)
+          properties: (templateConfig.properties || []).filter(
+            propertyId =>
+              validPropertiesIds.includes(propertyId) &&
+              validProperties[propertyId].template === templateConfig.template
           ),
         }))
-      ),
+        .filter(c => c.properties.length),
     };
   }
 }
