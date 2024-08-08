@@ -3,15 +3,15 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { AutomaticTranslationService } from 'api/services.v2/automaticTranslation/infrastructure/AutomaticTranslationService';
 import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
+import { ExternalAPIAutomaticTranslation } from '../../infrastructure/AutomaticTranslationService';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
   return new GetAutomaticTranslationConfig(
     DefaultSettingsDataSource(transactionManager),
     DefaultTemplatesDataSource(transactionManager),
-    new AutomaticTranslationService()
+    new ExternalAPIAutomaticTranslation()
   );
 };
 

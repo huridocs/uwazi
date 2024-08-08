@@ -1,7 +1,7 @@
+import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { Property } from 'api/templates.v2/model/Property';
-import { SettingsDataSource } from '../contracts/SettingsDataSource';
-import { AutomaticTranslationGateway } from 'api/services.v2/automaticTranslation/contracts/AutomaticTranslationGateway';
+import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
 
 export class GetAutomaticTranslationConfig {
   private settings: SettingsDataSource;
