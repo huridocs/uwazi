@@ -31,6 +31,7 @@ beforeEach(async () => {
         fixtures.property('text property 3', 'markdown'),
         fixtures.property('multiselect_property', 'multiselect'),
       ]),
+      fixtures.template('template 3', []),
     ],
     settings: [
       {
@@ -46,7 +47,7 @@ beforeEach(async () => {
             templates: [
               {
                 template: fixtures.id('template 1').toString(),
-                commonProperties: [fixtures.commonPropertiesTitleId()],
+                commonProperties: [fixtures.commonPropertiesTitleId('template 1')],
                 properties: [
                   fixtures.id('text property').toString(),
                   fixtures.id('select property').toString(),
@@ -61,6 +62,11 @@ beforeEach(async () => {
                   fixtures.id('text property').toString(),
                   fixtures.id('text property 2').toString(),
                 ],
+              },
+              {
+                template: fixtures.id('template 3').toString(),
+                commonProperties: [fixtures.commonPropertiesTitleId('template 3')],
+                properties: [],
               },
               {
                 template: fixtures.id('non existent template').toString(),
@@ -83,7 +89,7 @@ describe('GetAutomaticTranslationConfig', () => {
     const config = await createService().execute();
     expect(config.templates[0]).toEqual({
       template: fixtures.id('template 1').toString(),
-      commonProperties: [fixtures.commonPropertiesTitleId()],
+      commonProperties: [fixtures.commonPropertiesTitleId('template 1')],
       properties: [fixtures.id('text property').toString(), fixtures.id('rich text').toString()],
     });
   });
@@ -96,15 +102,11 @@ describe('GetAutomaticTranslationConfig', () => {
     ]);
   });
 
-  it('should not include properties configurations belonging to an unexistent template', async () => {
-    const config = await createService().execute();
-    expect(config.templates[2]).toBeUndefined();
-  });
-
   it('should not include properties belonging to other templates', async () => {
     const config = await createService().execute();
     expect(config.templates[1]).toEqual({
       template: fixtures.id('template 2').toString(),
+      commonProperties: [],
       properties: [fixtures.id('text property 2').toString()],
     });
   });
@@ -112,5 +114,19 @@ describe('GetAutomaticTranslationConfig', () => {
   it('should return languages available filtered by the supported languages of automatic translation', async () => {
     const config = await createService().execute();
     expect(config.languages).toEqual(['en', 'es']);
+  });
+
+  it('should allow configuring only title without any properties', async () => {
+    const config = await createService().execute();
+    expect(config.templates[2]).toEqual({
+      template: fixtures.id('template 3').toString(),
+      commonProperties: [fixtures.commonPropertiesTitleId('template 3')],
+      properties: [],
+    });
+  });
+
+  it('should not include properties configurations belonging to an unexistent template', async () => {
+    const config = await createService().execute();
+    expect(config.templates[3]).toBeUndefined();
   });
 });
