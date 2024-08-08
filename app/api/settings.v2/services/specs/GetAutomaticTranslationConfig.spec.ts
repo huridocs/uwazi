@@ -4,12 +4,14 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { AutomaticTranslationService } from 'api/services.v2/automaticTranslation/infrastructure/AutomaticTranslationService';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
   return new GetAutomaticTranslationConfig(
     DefaultSettingsDataSource(transactionManager),
-    DefaultTemplatesDataSource(transactionManager)
+    DefaultTemplatesDataSource(transactionManager),
+    new AutomaticTranslationService()
   );
 };
 
@@ -35,6 +37,8 @@ beforeEach(async () => {
         languages: [
           { default: true, label: 'English', key: 'en' },
           { label: 'Spanish', key: 'es' },
+          { label: 'Norwegian', key: 'nb' },
+          { label: 'Lithuanian', key: 'lt' },
         ],
         features: {
           automaticTranslation: {
@@ -103,5 +107,10 @@ describe('GetATConfig', () => {
       template: fixtures.id('template 2').toString(),
       properties: [fixtures.id('text property 2').toString()],
     });
+  });
+
+  it('should return languages available filtered by the supported languages of automatic translations', async () => {
+    const config = await createService().execute();
+    expect(config.languages).toEqual(['en', 'es']);
   });
 });
