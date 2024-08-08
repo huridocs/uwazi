@@ -3,7 +3,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { Property } from 'api/templates.v2/model/Property';
 import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
 import { AutomaticTranslationConfig } from '../model/AutomaticTranslationConfig';
-import { AutomatciTranslationTemplateConfig } from '../model/AutomaticTranslationTemplateConfig';
+import { AutomaticTranslationTemplateConfig } from '../model/AutomaticTranslationTemplateConfig';
 
 export class GetAutomaticTranslationConfig {
   private settings: SettingsDataSource;
@@ -38,20 +38,18 @@ export class GetAutomaticTranslationConfig {
     const configuredLanguages = await this.settings.getLanguageKeys();
     const supportedLanguages = await this.automaticTranslation.supportedLanguages();
 
-    const templates = (config.templates || [])
-      .map(
-        templateConfig =>
-          new AutomatciTranslationTemplateConfig(
-            templateConfig.template ?? '',
-            templateConfig.commonProperties ?? [],
-            (templateConfig.properties || []).filter(
-              propertyId =>
-                validPropertiesIds.includes(propertyId) &&
-                validProperties[propertyId].template === templateConfig.template
-            )
-          )
-      )
-      .filter(c => c.properties.length || c.commonProperties.length);
+    const templates = (config.templates || []).map(
+      templateConfig =>
+        new AutomaticTranslationTemplateConfig(
+          (templateConfig.properties || []).filter(
+            propertyId =>
+              validPropertiesIds.includes(propertyId) &&
+              validProperties[propertyId].template === templateConfig.template
+          ),
+          templateConfig.template,
+          templateConfig.commonProperties
+        )
+    );
 
     return new AutomaticTranslationConfig(
       config.active,

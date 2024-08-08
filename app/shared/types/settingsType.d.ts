@@ -6,7 +6,7 @@ import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/t
 export interface AutomaticTranslationConfig {
   active: boolean;
   templates?: {
-    template?: string;
+    template: string;
     commonProperties?: string[];
     properties?: string[];
   }[];

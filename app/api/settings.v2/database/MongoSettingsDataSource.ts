@@ -1,5 +1,5 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
-import { AutomaticTranslationConfig, Settings as SettingsType } from 'shared/types/settingsType';
+import { Settings as SettingsType } from 'shared/types/settingsType';
 import { SettingsDataSource } from '../contracts/SettingsDataSource';
 import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 
