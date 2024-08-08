@@ -4,7 +4,7 @@ import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGa
 export class AutomaticTranslationService implements AutomaticTranslationGateway {
   // eslint-disable-next-line class-methods-use-this
   async supportedLanguages() {
-    const result: LanguageISO6391[] = ['ru', 'en', 'fr', 'ru', 'es'];
+    const result: LanguageISO6391[] = ['ru', 'en', 'fr', 'es'];
     return result;
   }
 }

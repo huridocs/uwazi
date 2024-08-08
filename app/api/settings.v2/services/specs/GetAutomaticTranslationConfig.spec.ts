@@ -2,9 +2,9 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { AutomaticTranslationService } from 'api/services.v2/automaticTranslation/infrastructure/AutomaticTranslationService';
+import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
@@ -78,8 +78,8 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('GetATConfig', () => {
-  it('should return only text and markdown properties', async () => {
+describe('GetAutomaticTranslationConfig', () => {
+  it('should return only title, text and markdown properties', async () => {
     const config = await createService().execute();
     expect(config.templates[0]).toEqual({
       template: fixtures.id('template 1').toString(),
@@ -109,7 +109,7 @@ describe('GetATConfig', () => {
     });
   });
 
-  it('should return languages available filtered by the supported languages of automatic translations', async () => {
+  it('should return languages available filtered by the supported languages of automatic translation', async () => {
     const config = await createService().execute();
     expect(config.languages).toEqual(['en', 'es']);
   });
