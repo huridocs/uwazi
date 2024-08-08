@@ -306,7 +306,7 @@ export default {
         });
       }
 
-      return Promise.reject(createError('User not found', 403));
+      return undefined;
     });
   },
 
