@@ -129,6 +129,14 @@ export class MongoTemplatesDataSource
     return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
   }
 
+  getByNames(names: Template['name'][]) {
+    const templatesCursor = this.getCollection().find({
+      name: { $in: names },
+    });
+
+    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+  }
+
   async getById(id: Template['id']): Promise<Template | undefined> {
     return (await this.getByIds([id]).first()) || undefined;
   }
