@@ -4,9 +4,12 @@ import { Property } from 'api/templates.v2/model/Property';
 import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
 import { AutomaticTranslationConfig } from '../model/AutomaticTranslationConfig';
 import { AutomaticTranslationTemplateConfig } from '../model/AutomaticTranslationTemplateConfig';
+import { AutomaticTranslationConfigDataSource } from '../contracts/AutomaticTranslationConfigDataSource';
 
 export class GetAutomaticTranslationConfig {
   private settings: SettingsDataSource;
+
+  private config: AutomaticTranslationConfigDataSource;
 
   private templates: TemplatesDataSource;
 
@@ -14,16 +17,18 @@ export class GetAutomaticTranslationConfig {
 
   constructor(
     settings: SettingsDataSource,
+    config: AutomaticTranslationConfigDataSource,
     templates: TemplatesDataSource,
     automaticTranslation: AutomaticTranslationGateway
   ) {
     this.settings = settings;
+    this.config = config;
     this.templates = templates;
     this.automaticTranslation = automaticTranslation;
   }
 
   async execute() {
-    const config = await this.settings.getAutomaticTranslationConfig();
+    const config = await this.config.get();
 
     const validProperties = (await this.templates.getAllTextProperties().all()).reduce(
       (memo, property) => {

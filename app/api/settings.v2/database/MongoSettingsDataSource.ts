@@ -52,9 +52,4 @@ export class MongoSettingsDataSource
 
     return {};
   }
-
-  async getAutomaticTranslationConfig() {
-    const settings = await this.readSettings();
-    return settings?.features?.automaticTranslation || { active: false };
-  }
 }

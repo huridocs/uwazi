@@ -1,15 +1,18 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
-import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
+import { MongoAutomaticTranslationConfigDataSource } from '../../database/MongoAutomaticTranslationConfigDataSource';
 import { ExternalAPIAutomaticTranslation } from '../../infrastructure/AutomaticTranslationService';
+import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
   return new GetAutomaticTranslationConfig(
     DefaultSettingsDataSource(transactionManager),
+    new MongoAutomaticTranslationConfigDataSource(getConnection(), transactionManager),
     DefaultTemplatesDataSource(transactionManager),
     new ExternalAPIAutomaticTranslation()
   );
