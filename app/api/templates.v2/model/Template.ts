@@ -8,10 +8,18 @@ class Template {
 
   readonly properties: Property[] = [];
 
-  constructor(id: string, name: string, properties: Property[] = []) {
+  readonly commonProperties: Property[] = [];
+
+  constructor(
+    id: string,
+    name: string,
+    properties: Property[] = [],
+    commonProperties: Property[] = []
+  ) {
     this.id = id;
     this.name = name;
     this.properties = properties;
+    this.commonProperties = commonProperties;
   }
 
   selectNewProperties(newTemplate: Template): Property[] {
