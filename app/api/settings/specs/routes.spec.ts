@@ -1,10 +1,10 @@
+import { NextFunction, Request, Response } from 'express';
 import entities from 'api/entities';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { search } from 'api/search';
 import settings from 'api/settings';
 import templates from 'api/templates';
 import { setUpApp } from 'api/utils/testingRoutes';
-import { Application, NextFunction } from 'express';
 import request from 'supertest';
 
 import translations from 'api/i18n';
@@ -21,7 +21,11 @@ jest.mock(
 );
 
 describe('Settings routes', () => {
-  const app: Application = setUpApp(settingsRoutes);
+  const getApp = (userRole?: string) =>
+    setUpApp(settingsRoutes, (req: Request, _res: Response, next: NextFunction) => {
+      (req as any).user = { role: userRole };
+      next();
+    });
 
   beforeAll(async () => {
     jest.spyOn(search, 'indexEntities').mockResolvedValue();
@@ -34,12 +38,30 @@ describe('Settings routes', () => {
 
   describe('GET', () => {
     it('should respond with settings', async () => {
-      const response = await request(app).get('/api/settings').expect(200);
+      const response = await request(getApp()).get('/api/settings').expect(200);
       expect(response.body).toEqual(expect.objectContaining({ site_name: 'Uwazi' }));
+      expect(response.body.features).toBe(undefined);
+    });
+
+    it('should return the collection features for logged in users', async () => {
+      const response = await request(getApp('admin')).get('/api/settings').expect(200);
+      expect(response.body.features).toEqual(
+        expect.objectContaining({
+          'metadata-extraction': true,
+          metadataExtraction: {
+            url: 'http:someurl',
+          },
+          segmentation: {
+            url: 'http://otherurl',
+          },
+        })
+      );
     });
   });
 
   describe('POST', () => {
+    const app = getApp();
+
     it('should save settings', async () => {
       const response = await request(app)
         .post('/api/settings')
