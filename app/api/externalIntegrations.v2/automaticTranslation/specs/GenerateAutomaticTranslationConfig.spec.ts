@@ -110,4 +110,8 @@ describe('GenerateAutomaticTranslationConfig', () => {
       },
     ]);
   });
+
+  it('should INVALID CONFIG', async () => {
+    expect(true).toBe(false);
+  });
 });
