@@ -14,8 +14,8 @@ const factory = getFixturesFactory();
 const validPassedConfig: SemanticConfig = {
   active: true,
   templates: [
-    { template: 'Template 1 name', properties: ['Prop 1', 'Prop 2'], commonProperties: ['title'] },
-    { template: 'Template 2 name', commonProperties: ['title'] },
+    { template: 'Template 1 name', properties: ['Prop 1', 'Prop 2'], commonProperties: ['Title'] },
+    { template: 'Template 2 name', commonProperties: ['Title'] },
     { template: 'Template 3 name', properties: ['Prop 5'] },
   ],
 };
@@ -94,18 +94,18 @@ describe('GenerateAutomaticTranslationConfig', () => {
     expect(settingsData.active).toBe(true);
     expect(settingsData.templates).toEqual([
       {
-        template: factory.id('Template 1 name'),
-        properties: [factory.id('t1p1'), factory.id('t1p2')],
+        template: factory.idString('Template 1 name'),
+        properties: [factory.idString('t1p1').toString(), factory.idString('t1p2').toString()],
         commonProperties: [factory.commonPropertiesTitleId('Template 1 name')],
       },
       {
-        template: factory.id('Template 2 name'),
+        template: factory.idString('Template 2 name'),
         properties: [],
         commonProperties: [factory.commonPropertiesTitleId('Template 2 name')],
       },
       {
-        template: factory.id('Template 3 name'),
-        properties: [factory.id('t3p5')],
+        template: factory.idString('Template 3 name'),
+        properties: [factory.idString('t3p5')],
         commonProperties: [],
       },
     ]);
