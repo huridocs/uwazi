@@ -2,7 +2,6 @@
 /* eslint-disable max-statements */
 
 import { createError } from 'api/utils';
-import crypto from 'crypto';
 import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import * as random from 'shared/uniqueID';
@@ -26,11 +25,9 @@ import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
 import * as unlockCode from '../generateUnlockCode';
 
-jest.mock('api/users/generateUnlockCode.ts', () => {
-  return {
-    generateUnlockCode: () => 'hash',
-  };
-});
+jest.mock('api/users/generateUnlockCode.ts', () => ({
+  generateUnlockCode: () => 'hash',
+}));
 
 describe('Users', () => {
   beforeEach(async () => {
@@ -272,7 +269,6 @@ describe('Users', () => {
 
   describe('login', () => {
     let testUser;
-    const codeBuffer = Buffer.from('code');
 
     beforeEach(async () => {
       testUser = {
