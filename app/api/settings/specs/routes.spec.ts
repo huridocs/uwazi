@@ -43,19 +43,25 @@ describe('Settings routes', () => {
       expect(response.body.features).toBe(undefined);
     });
 
-    it('should return the collection features for logged in users', async () => {
-      const response = await request(getApp('admin')).get('/api/settings').expect(200);
-      expect(response.body.features).toEqual(
-        expect.objectContaining({
-          'metadata-extraction': true,
-          metadataExtraction: {
-            url: 'http:someurl',
-          },
-          segmentation: {
-            url: 'http://otherurl',
-          },
-        })
-      );
+    it('should return the collection features for admins and editors', async () => {
+      const [adminResponse, editorResponse] = await Promise.all([
+        await request(getApp('admin')).get('/api/settings').expect(200),
+        await request(getApp('editor')).get('/api/settings').expect(200),
+      ]);
+
+      const expectedResponse = {
+        'metadata-extraction': true,
+        metadataExtraction: {
+          url: 'http:someurl',
+        },
+        segmentation: {
+          url: 'http://otherurl',
+        },
+      };
+
+      expect(adminResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
+
+      expect(editorResponse.body.features).toEqual(expect.objectContaining(expectedResponse));
     });
   });
 
