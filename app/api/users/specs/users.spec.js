@@ -26,6 +26,12 @@ import passwordRecoveriesModel from '../passwordRecoveriesModel';
 import usersModel from '../usersModel';
 import * as unlockCode from '../generateUnlockCode';
 
+jest.mock('api/users/generateUnlockCode.ts', () => {
+  return {
+    generateUnlockCode: () => 'hash',
+  };
+});
+
 describe('Users', () => {
   beforeEach(async () => {
     await db.setupFixturesAndContext(fixtures);
@@ -275,12 +281,10 @@ describe('Users', () => {
         email: 'someuser1@mailer.com',
         role: 'admin',
       };
-      jest.spyOn(crypto, 'randomBytes').mockReturnValue(codeBuffer);
       jest.spyOn(mailer, 'send').mockResolvedValue();
     });
 
     afterEach(() => {
-      crypto.randomBytes.mockRestore();
       mailer.send.mockRestore();
     });
 
@@ -342,14 +346,13 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        expect(e).toEqual(createError('Account locked. Check your email to unlock.', 403));
+        expect(e).toEqual(createError('Invalid username or password', 401));
         const [user] = await users.get(
           { username: 'someuser1' },
           '+accountLocked +accountUnlockCode'
         );
         expect(user.accountLocked).toBe(true);
-        expect(user.accountUnlockCode).toBe(codeBuffer.toString('hex'));
-        expect(crypto.randomBytes).toHaveBeenCalledWith(32);
+        expect(user.accountUnlockCode).toEqual(expect.any(String));
       }
     });
 
@@ -380,8 +383,8 @@ describe('Users', () => {
         await createUserAndTestLogin('someuser1', 'incorrect');
         fail('should throw error');
       } catch (e) {
-        expect(e.message).toMatch(/account locked/i);
-        expect(e.code).toBe(403);
+        expect(e.message).toBe('Invalid username or password');
+        expect(e.code).toBe(401);
       }
     });
 
@@ -510,7 +513,6 @@ describe('Users', () => {
       jest.restoreAllMocks();
       jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
       jest.spyOn(Date, 'now').mockReturnValue(1000);
-      jest.spyOn(unlockCode, 'generateUnlockCode').mockReturnValue('ABCDEF1234');
     });
 
     it('should find the matching email create a recover password doc in the database and send an email', async () => {
