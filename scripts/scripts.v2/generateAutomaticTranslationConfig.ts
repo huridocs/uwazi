@@ -35,6 +35,6 @@ const semanticConfig = require(config);
   await tenants.run(async () => {
     await AutomaticTranslationFactory.defaultGenerateATConfig().execute(semanticConfig);
   }, tenant);
-  process.exit();
-  // await DB.disconnect();
+  await tenants.tearDownTenants();
+  await DB.disconnect();
 })();
