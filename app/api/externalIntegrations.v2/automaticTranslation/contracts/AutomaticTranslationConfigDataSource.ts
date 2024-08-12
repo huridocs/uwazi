@@ -1,6 +1,6 @@
-import { AutomaticTranslationConfig } from 'shared/types/settingsType';
+import { RawAutomaticTranslationConfig } from '../model/RawAutomaticTranslationConfig';
 
 export interface AutomaticTranslationConfigDataSource {
-  get(): Promise<AutomaticTranslationConfig>;
-  update(config: AutomaticTranslationConfig): Promise<AutomaticTranslationConfig>;
+  get(): Promise<RawAutomaticTranslationConfig>;
+  update(config: RawAutomaticTranslationConfig): Promise<RawAutomaticTranslationConfig>;
 }

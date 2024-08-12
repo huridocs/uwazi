@@ -5,7 +5,7 @@ class AutomaticTranslationTemplateConfig {
 
   readonly properties: string[];
 
-  constructor(properties: string[], template: string, commonProperties: string[] = []) {
+  constructor(template: string, properties: string[], commonProperties: string[] = []) {
     this.template = template;
     this.commonProperties = commonProperties;
     this.properties = properties;

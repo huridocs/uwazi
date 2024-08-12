@@ -1,9 +1,6 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Property } from 'api/templates.v2/model/Property';
 import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
-import { AutomaticTranslationConfig } from '../model/AutomaticTranslationConfig';
-import { AutomaticTranslationTemplateConfig } from '../model/AutomaticTranslationTemplateConfig';
 import { AutomaticTranslationConfigDataSource } from '../contracts/AutomaticTranslationConfigDataSource';
 
 export class GetAutomaticTranslationConfig {
@@ -30,36 +27,13 @@ export class GetAutomaticTranslationConfig {
   async execute() {
     const config = await this.config.get();
 
-    const validProperties = (await this.templates.getAllTextProperties().all()).reduce(
-      (memo, property) => {
-        // eslint-disable-next-line no-param-reassign
-        memo[property.id] = property;
-        return memo;
-      },
-      {} as { [k: string]: Property }
-    );
-
-    const validPropertiesIds = Object.keys(validProperties);
+    const validProperties = await this.templates.getAllTextProperties().all();
     const configuredLanguages = await this.settings.getLanguageKeys();
     const supportedLanguages = await this.automaticTranslation.supportedLanguages();
 
-    const templates = (config.templates || []).map(
-      templateConfig =>
-        new AutomaticTranslationTemplateConfig(
-          (templateConfig.properties || []).filter(
-            propertyId =>
-              validPropertiesIds.includes(propertyId) &&
-              validProperties[propertyId].template === templateConfig.template
-          ),
-          templateConfig.template,
-          templateConfig.commonProperties
-        )
-    );
-
-    return new AutomaticTranslationConfig(
-      config.active,
+    return config.getCompleteConfig(
       configuredLanguages.filter(languageKey => supportedLanguages.includes(languageKey)),
-      templates
+      validProperties
     );
   }
 }

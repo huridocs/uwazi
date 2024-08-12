@@ -1,6 +1,8 @@
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
 import { Settings as SettingsType, AutomaticTranslationConfig } from 'shared/types/settingsType';
 import { AutomaticTranslationConfigDataSource } from '../contracts/AutomaticTranslationConfigDataSource';
+import { RawAutomaticTranslationConfig } from '../model/RawAutomaticTranslationConfig';
+import { AutomaticTranslationTemplateConfig } from '../model/AutomaticTranslationTemplateConfig';
 
 export class MongoAutomaticTranslationConfigDataSource
   extends MongoDataSource<SettingsType>
@@ -8,12 +10,20 @@ export class MongoAutomaticTranslationConfigDataSource
   implements AutomaticTranslationConfigDataSource {
   protected collectionName = 'settings';
 
-  async get(): Promise<AutomaticTranslationConfig> {
+  async get() {
     const settings = await this.getCollection().findOne();
-    return settings?.features?.automaticTranslation ?? { active: false };
+    const config = settings?.features?.automaticTranslation ?? { active: false };
+
+    return new RawAutomaticTranslationConfig(
+      config.active,
+      (config.templates || []).map(
+        t =>
+          new AutomaticTranslationTemplateConfig(t.template, t.properties || [], t.commonProperties)
+      )
+    );
   }
 
-  async update(config: AutomaticTranslationConfig): Promise<AutomaticTranslationConfig> {
+  async update(config: RawAutomaticTranslationConfig) {
     await this.getCollection().findOneAndUpdate(
       {},
       { $set: { 'features.automaticTranslation': config } }

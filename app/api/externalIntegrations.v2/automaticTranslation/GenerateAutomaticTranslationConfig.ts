@@ -1,7 +1,7 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { AutomaticTranslationConfigDataSource } from './contracts/AutomaticTranslationConfigDataSource';
-import { AutomaticTranslationConfig } from './model/AutomaticTranslationConfig';
 import { AutomaticTranslationTemplateConfig } from './model/AutomaticTranslationTemplateConfig';
+import { RawAutomaticTranslationConfig } from './model/RawAutomaticTranslationConfig';
 
 interface SemanticConfig {
   active: boolean;
@@ -33,19 +33,19 @@ export class GenerateAutomaticTranslationsCofig {
     const templates = semanticConfig.templates.map(configData => {
       const templateData = templatesData.find(t => t.name === configData.template);
       return new AutomaticTranslationTemplateConfig(
+        templateData?.id ?? '',
         (configData.properties || []).map(
           label => templateData?.properties.find(p => p.label === label)?.id ?? ''
         ),
-        templateData?.id ?? '',
         (configData.commonProperties || []).map(
           label => templateData?.commonProperties.find(p => p.label === label)?.id ?? ''
         )
       );
     });
 
-    const config = new AutomaticTranslationConfig(semanticConfig.active, [], templates);
-
-    return this.atuomaticTranslationConfigDS.update(config);
+    return this.atuomaticTranslationConfigDS.update(
+      new RawAutomaticTranslationConfig(semanticConfig.active, templates)
+    );
   }
 }
 
