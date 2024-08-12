@@ -159,8 +159,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Confirm publish multiple items,အရာများစွာကို တင်ရန် အတည်ပြုပါ
-Connect to a document,စာရွက်စာတမ်းနှင့် ချိတ်ဆက်ရန်
 Connect to a paragraph,စာပိုဒ်နှင့် ချိတ်ဆက်ရန်
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,ချိတ်ဆက်မှု အမျိုးအစား
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -243,6 +243,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,Discard changes?
