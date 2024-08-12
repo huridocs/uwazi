@@ -1,5 +1,5 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-export interface AutomaticTranslationGateway {
+export interface ATGateway {
   supportedLanguages(): Promise<LanguageISO6391[]>;
 }

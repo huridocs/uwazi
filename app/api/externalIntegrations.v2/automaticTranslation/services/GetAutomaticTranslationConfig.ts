@@ -1,22 +1,22 @@
 import { SettingsDataSource } from 'api/settings.v2/contracts/SettingsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
-import { AutomaticTranslationConfigDataSource } from '../contracts/AutomaticTranslationConfigDataSource';
+import { ATGateway } from '../contracts/ATGateway';
+import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
 
 export class GetAutomaticTranslationConfig {
   private settings: SettingsDataSource;
 
-  private config: AutomaticTranslationConfigDataSource;
+  private config: ATConfigDataSource;
 
   private templates: TemplatesDataSource;
 
-  private automaticTranslation: AutomaticTranslationGateway;
+  private automaticTranslation: ATGateway;
 
   constructor(
     settings: SettingsDataSource,
-    config: AutomaticTranslationConfigDataSource,
+    config: ATConfigDataSource,
     templates: TemplatesDataSource,
-    automaticTranslation: AutomaticTranslationGateway
+    automaticTranslation: ATGateway
   ) {
     this.settings = settings;
     this.config = config;

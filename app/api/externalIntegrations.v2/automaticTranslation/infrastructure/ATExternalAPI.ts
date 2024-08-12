@@ -1,7 +1,7 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { AutomaticTranslationGateway } from '../contracts/AutomaticTranslationGateway';
+import { ATGateway } from '../contracts/ATGateway';
 
-export class ExternalAPIAutomaticTranslation implements AutomaticTranslationGateway {
+export class ATExternalAPI implements ATGateway {
   // eslint-disable-next-line class-methods-use-this
   async supportedLanguages() {
     const result: LanguageISO6391[] = ['ru', 'en', 'fr', 'es'];

@@ -7,8 +7,8 @@ import {
   GenerateAutomaticTranslationsCofig,
   SemanticConfig,
 } from '../GenerateAutomaticTranslationConfig';
-import { MongoAutomaticTranslationConfigDataSource } from '../infrastructure/MongoAutomaticTranslationConfigDataSource';
-import { GenerateAutomaticTranslationConfigError, InvalidInputDataFormat } from '../errors/generateAutomaticTranslationErrors';
+import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
+import { GenerateATConfigError, InvalidInputDataFormat } from '../errors/generateATErrors';
 
 const factory = getFixturesFactory();
 
@@ -74,10 +74,10 @@ afterAll(async () => {
 
 describe('GenerateAutomaticTranslationConfig', () => {
   let generateAutomaticTranslationConfig: GenerateAutomaticTranslationsCofig;
-  let automaticTranslationConfigDS: MongoAutomaticTranslationConfigDataSource;
+  let automaticTranslationConfigDS: MongoATConfigDataSource;
 
   beforeEach(() => {
-    automaticTranslationConfigDS = new MongoAutomaticTranslationConfigDataSource(
+    automaticTranslationConfigDS = new MongoATConfigDataSource(
       getConnection(),
       DefaultTransactionManager()
     );
@@ -125,7 +125,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
         templates: [{ template: 'template name does not exist' }],
       };
       await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-        new GenerateAutomaticTranslationConfigError(
+        new GenerateATConfigError(
           'Template not found: template name does not exist'
         )
       );
@@ -141,7 +141,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
         ],
       };
       await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-        new GenerateAutomaticTranslationConfigError('Property not found: prop 1 does not exist')
+        new GenerateATConfigError('Property not found: prop 1 does not exist')
       );
     });
   });
@@ -155,7 +155,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
         ],
       };
       await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-        new GenerateAutomaticTranslationConfigError(
+        new GenerateATConfigError(
           'Common property not found: common property does not exist'
         )
       );

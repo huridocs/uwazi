@@ -4,17 +4,17 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoAutomaticTranslationConfigDataSource } from '../../infrastructure/MongoAutomaticTranslationConfigDataSource';
-import { ExternalAPIAutomaticTranslation } from '../../infrastructure/AutomaticTranslationService';
+import { MongoATConfigDataSource } from '../../infrastructure/MongoATConfigDataSource';
+import { ATExternalAPI } from '../../infrastructure/ATExternalAPI';
 import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
   return new GetAutomaticTranslationConfig(
     DefaultSettingsDataSource(transactionManager),
-    new MongoAutomaticTranslationConfigDataSource(getConnection(), transactionManager),
+    new MongoATConfigDataSource(getConnection(), transactionManager),
     DefaultTemplatesDataSource(transactionManager),
-    new ExternalAPIAutomaticTranslation()
+    new ATExternalAPI()
   );
 };
 

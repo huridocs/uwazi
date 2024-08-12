@@ -1,22 +1,18 @@
 import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { AutomaticTranslationTemplateConfig } from './AutomaticTranslationTemplateConfig';
 import { Property } from 'api/templates.v2/model/Property';
-import { AutomaticTranslationConfig } from './AutomaticTranslationConfig';
+import { ATConfig, ATTemplateConfig } from './ATConfig';
 
-class RawAutomaticTranslationConfig {
+class RawATConfig {
   readonly active: boolean;
 
-  readonly templates: AutomaticTranslationTemplateConfig[];
+  readonly templates: ATTemplateConfig[];
 
-  constructor(active: boolean, templates: AutomaticTranslationTemplateConfig[]) {
+  constructor(active: boolean, templates: ATTemplateConfig[]) {
     this.active = active;
     this.templates = templates;
   }
 
-  getCompleteConfig(
-    languages: LanguageISO6391[],
-    validProperties: Property[]
-  ): AutomaticTranslationConfig {
+  getCompleteConfig(languages: LanguageISO6391[], validProperties: Property[]): ATConfig {
     const validPropertiesMap = validProperties.reduce(
       (memo, property) => {
         // eslint-disable-next-line no-param-reassign
@@ -30,7 +26,7 @@ class RawAutomaticTranslationConfig {
 
     const templates = (this.templates || []).map(
       templateConfig =>
-        new AutomaticTranslationTemplateConfig(
+        new ATTemplateConfig(
           templateConfig.template,
           (templateConfig.properties || []).filter(
             propertyId =>
@@ -41,8 +37,8 @@ class RawAutomaticTranslationConfig {
         )
     );
 
-    return new AutomaticTranslationConfig(this.active, languages, templates);
+    return new ATConfig(this.active, languages, templates);
   }
 }
 
-export { RawAutomaticTranslationConfig };
+export { RawATConfig };

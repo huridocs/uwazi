@@ -1,14 +1,11 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { AutomaticTranslationConfigDataSource } from './contracts/AutomaticTranslationConfigDataSource';
-import { AutomaticTranslationTemplateConfig } from './model/AutomaticTranslationTemplateConfig';
-import { RawAutomaticTranslationConfig } from './model/RawAutomaticTranslationConfig';
-import {
-  GenerateAutomaticTranslationConfigError,
-  InvalidInputDataFormat,
-} from './errors/generateAutomaticTranslationErrors';
 import { JTDSchemaType } from 'ajv/dist/core';
 import { Ajv } from 'ajv';
-import { AutomaticTranslationConfigValidator } from './contracts/AutomaticTranslationConfigValidator';
+import { ATConfigDataSource } from './contracts/ATConfigDataSource';
+import { ATTemplateConfig } from './model/ATConfig';
+import { RawATConfig } from './model/RawATConfig';
+import { GenerateATConfigError, InvalidInputDataFormat } from './errors/generateATErrors';
+import { ATConfigValidator } from './contracts/ATConfigValidator';
 
 interface SemanticConfig {
   active: boolean;
@@ -38,16 +35,16 @@ const schema: JTDSchemaType<SemanticConfig> = {
 };
 
 export class GenerateAutomaticTranslationsCofig {
-  private atuomaticTranslationConfigDS: AutomaticTranslationConfigDataSource;
+  private atuomaticTranslationConfigDS: ATConfigDataSource;
 
   private templatsDS: TemplatesDataSource;
 
-  private validator: AutomaticTranslationConfigValidator;
+  private validator: ATConfigValidator;
 
   constructor(
-    atuomaticTranslationConfigDS: AutomaticTranslationConfigDataSource,
+    atuomaticTranslationConfigDS: ATConfigDataSource,
     templatesDS: TemplatesDataSource,
-    validator: AutomaticTranslationConfigValidator
+    validator: ATConfigValidator
   ) {
     this.atuomaticTranslationConfigDS = atuomaticTranslationConfigDS;
     this.templatsDS = templatesDS;
@@ -68,25 +65,21 @@ export class GenerateAutomaticTranslationsCofig {
     const templates = semanticConfig.templates.map(configData => {
       const templateData = templatesData.find(t => t.name === configData.template);
       if (!templateData) {
-        throw new GenerateAutomaticTranslationConfigError(
-          `Template not found: ${configData.template}`
-        );
+        throw new GenerateATConfigError(`Template not found: ${configData.template}`);
       }
-      return new AutomaticTranslationTemplateConfig(
+      return new ATTemplateConfig(
         templateData?.id,
         (configData.properties || []).map(label => {
           const foundProperty = templateData.properties.find(p => p.label === label);
           if (!foundProperty) {
-            throw new GenerateAutomaticTranslationConfigError(`Property not found: ${label}`);
+            throw new GenerateATConfigError(`Property not found: ${label}`);
           }
           return foundProperty.id;
         }),
         (configData.commonProperties || []).map(label => {
           const foundProperty = templateData?.commonProperties.find(p => p.label === label);
           if (!foundProperty) {
-            throw new GenerateAutomaticTranslationConfigError(
-              `Common property not found: ${label}`
-            );
+            throw new GenerateATConfigError(`Common property not found: ${label}`);
           }
           return foundProperty.id;
         })
@@ -94,7 +87,7 @@ export class GenerateAutomaticTranslationsCofig {
     });
 
     return this.atuomaticTranslationConfigDS.update(
-      new RawAutomaticTranslationConfig(semanticConfig.active, templates)
+      new RawATConfig(semanticConfig.active, templates)
     );
   }
 }
