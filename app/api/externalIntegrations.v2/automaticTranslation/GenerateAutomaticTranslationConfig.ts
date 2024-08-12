@@ -1,38 +1,10 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { JTDSchemaType } from 'ajv/dist/core';
-import { Ajv } from 'ajv';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { ATTemplateConfig } from './model/ATConfig';
 import { RawATConfig } from './model/RawATConfig';
 import { GenerateATConfigError, InvalidInputDataFormat } from './errors/generateATErrors';
 import { ATConfigValidator } from './contracts/ATConfigValidator';
-
-interface SemanticConfig {
-  active: boolean;
-  templates: {
-    template: string;
-    commonProperties?: string[];
-    properties?: string[];
-  }[];
-}
-
-const schema: JTDSchemaType<SemanticConfig> = {
-  additionalProperties: false,
-  properties: {
-    active: { type: 'boolean' },
-    templates: {
-      elements: {
-        properties: {
-          template: { type: 'string' },
-        },
-        optionalProperties: {
-          properties: { elements: { type: 'string' } },
-          commonProperties: { elements: { type: 'string' } },
-        },
-      },
-    },
-  },
-};
+import { SemanticConfig } from './types/SemanticConfig';
 
 export class GenerateAutomaticTranslationsCofig {
   private atuomaticTranslationConfigDS: ATConfigDataSource;
@@ -52,10 +24,9 @@ export class GenerateAutomaticTranslationsCofig {
   }
 
   async execute(semanticConfig: SemanticConfig) {
-    // const ajv = new Ajv({ strict: false });
-    // const validate = ajv.compile<SemanticConfig>(schema);
-    if (!this.validator.validate(semanticConfig)) {
-      throw new InvalidInputDataFormat();
+    const validate = this.validator.validate(semanticConfig);
+    if (!validate.isValid) {
+      throw new InvalidInputDataFormat(JSON.stringify(validate.errors?.[0].params));
     }
 
     const templatesData = await this.templatsDS
@@ -91,5 +62,3 @@ export class GenerateAutomaticTranslationsCofig {
     );
   }
 }
-
-export type { SemanticConfig };

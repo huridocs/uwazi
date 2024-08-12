@@ -3,12 +3,11 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
-import {
-  GenerateAutomaticTranslationsCofig,
-  SemanticConfig,
-} from '../GenerateAutomaticTranslationConfig';
+import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
 import { GenerateATConfigError, InvalidInputDataFormat } from '../errors/generateATErrors';
+import { SemanticConfig } from '../types/SemanticConfig';
+import { AJVATConfigValidator } from '../infrastructure/AJVATConfigValidator';
 
 const factory = getFixturesFactory();
 
@@ -83,7 +82,8 @@ describe('GenerateAutomaticTranslationConfig', () => {
     );
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
       automaticTranslationConfigDS,
-      new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager())
+      new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager()),
+      new AJVATConfigValidator()
     );
   });
 
@@ -125,9 +125,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
         templates: [{ template: 'template name does not exist' }],
       };
       await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-        new GenerateATConfigError(
-          'Template not found: template name does not exist'
-        )
+        new GenerateATConfigError('Template not found: template name does not exist')
       );
     });
   });
@@ -155,9 +153,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
         ],
       };
       await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-        new GenerateATConfigError(
-          'Common property not found: common property does not exist'
-        )
+        new GenerateATConfigError('Common property not found: common property does not exist')
       );
     });
   });
@@ -165,7 +161,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = JSON.parse('{ "invalid_prop": true }') as SemanticConfig;
     await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-      new InvalidInputDataFormat()
+      new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
     );
   });
 });

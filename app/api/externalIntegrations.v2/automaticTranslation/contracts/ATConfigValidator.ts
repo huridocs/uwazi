@@ -1,3 +1,5 @@
+import { Validate } from '../types/Validate';
+
 export interface ATConfigValidator {
-  validate(data: unknown): boolean;
+  validate(data: unknown): Validate;
 }
