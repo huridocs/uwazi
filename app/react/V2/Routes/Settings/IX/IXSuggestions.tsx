@@ -225,6 +225,7 @@ const IXSuggestions = () => {
   };
 
   const closeSidepanel = () => {
+    setSidepanelSuggestion(undefined);
     setSidepanel('none');
   };
 
@@ -293,7 +294,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -319,7 +320,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
