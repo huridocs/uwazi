@@ -8,7 +8,7 @@ import {
   SemanticConfig,
 } from '../GenerateAutomaticTranslationConfig';
 import { MongoAutomaticTranslationConfigDataSource } from '../infrastructure/MongoAutomaticTranslationConfigDataSource';
-import { GenerateAutomaticTranslationConfigError } from '../errors/generateAutomaticTranslationErrors';
+import { GenerateAutomaticTranslationConfigError, InvalidInputDataFormat } from '../errors/generateAutomaticTranslationErrors';
 
 const factory = getFixturesFactory();
 
@@ -160,5 +160,12 @@ describe('GenerateAutomaticTranslationConfig', () => {
         )
       );
     });
+  });
+
+  it('should validate input has proper shape at runtime', async () => {
+    const invalidConfig = JSON.parse('{ "invalid_prop": true }') as SemanticConfig;
+    await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
+      new InvalidInputDataFormat()
+    );
   });
 });

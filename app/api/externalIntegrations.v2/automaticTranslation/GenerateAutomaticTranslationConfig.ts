@@ -2,7 +2,13 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { AutomaticTranslationConfigDataSource } from './contracts/AutomaticTranslationConfigDataSource';
 import { AutomaticTranslationTemplateConfig } from './model/AutomaticTranslationTemplateConfig';
 import { RawAutomaticTranslationConfig } from './model/RawAutomaticTranslationConfig';
-import { GenerateAutomaticTranslationConfigError } from './errors/generateAutomaticTranslationErrors';
+import {
+  GenerateAutomaticTranslationConfigError,
+  InvalidInputDataFormat,
+} from './errors/generateAutomaticTranslationErrors';
+import { JTDSchemaType } from 'ajv/dist/core';
+import { Ajv } from 'ajv';
+import { AutomaticTranslationConfigValidator } from './contracts/AutomaticTranslationConfigValidator';
 
 interface SemanticConfig {
   active: boolean;
@@ -13,20 +19,48 @@ interface SemanticConfig {
   }[];
 }
 
+const schema: JTDSchemaType<SemanticConfig> = {
+  additionalProperties: false,
+  properties: {
+    active: { type: 'boolean' },
+    templates: {
+      elements: {
+        properties: {
+          template: { type: 'string' },
+        },
+        optionalProperties: {
+          properties: { elements: { type: 'string' } },
+          commonProperties: { elements: { type: 'string' } },
+        },
+      },
+    },
+  },
+};
+
 export class GenerateAutomaticTranslationsCofig {
   private atuomaticTranslationConfigDS: AutomaticTranslationConfigDataSource;
 
   private templatsDS: TemplatesDataSource;
 
+  private validator: AutomaticTranslationConfigValidator;
+
   constructor(
     atuomaticTranslationConfigDS: AutomaticTranslationConfigDataSource,
-    templatesDS: TemplatesDataSource
+    templatesDS: TemplatesDataSource,
+    validator: AutomaticTranslationConfigValidator
   ) {
     this.atuomaticTranslationConfigDS = atuomaticTranslationConfigDS;
     this.templatsDS = templatesDS;
+    this.validator = validator;
   }
 
   async execute(semanticConfig: SemanticConfig) {
+    // const ajv = new Ajv({ strict: false });
+    // const validate = ajv.compile<SemanticConfig>(schema);
+    if (!this.validator.validate(semanticConfig)) {
+      throw new InvalidInputDataFormat();
+    }
+
     const templatesData = await this.templatsDS
       .getByNames(semanticConfig.templates.map(t => t.template))
       .all();
