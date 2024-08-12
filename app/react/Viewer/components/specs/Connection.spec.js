@@ -27,6 +27,7 @@ describe('Connection', () => {
       selectReference: jasmine.createSpy('selectReference'),
       deactivateReference: jasmine.createSpy('deactivateReference'),
       deleteReference: jasmine.createSpy('deleteReference'),
+      toggleReferences: jasmine.createSpy('toggleReferences'),
       active: true,
       highlighted: false,
     };
@@ -76,10 +77,11 @@ describe('Connection', () => {
     });
 
     describe('when document is source document', () => {
-      it('should activate it', () => {
+      it('should activate it and set refences click action active', () => {
         render();
         component.find(Item).simulate('click');
         expect(props.activateReference).toHaveBeenCalledWith(props.reference, 'tabName');
+        expect(props.toggleReferences).toHaveBeenCalledWith(true);
         expect(component.find(Item).props().className).toContain('relationship-active');
       });
 
@@ -89,6 +91,7 @@ describe('Connection', () => {
           render();
           component.find(Item).last().simulate('click');
           expect(props.activateReference).not.toHaveBeenCalled();
+          expect(props.toggleReferences).not.toHaveBeenCalled();
           expect(component.find(Item).props().className).not.toContain('relationship-active');
         });
       });

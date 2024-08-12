@@ -33,6 +33,7 @@ class Connection extends Component {
     if (this.props.readOnly) {
       return;
     }
+
     if (!this.props.targetDoc) {
       this.props.activateReference(reference, this.props.referencesSection);
     }

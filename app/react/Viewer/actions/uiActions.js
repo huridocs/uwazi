@@ -188,9 +188,9 @@ export function activateReference(
 
   const activeRefenreceSelection = {
     ...connection.reference,
-    selectionRectangles: connection.reference.selectionRectangles.map(rectangle => {
-      const { _id, ...rest } = rectangle;
-      return rest;
+    selectionRectangles: connection.reference.selectionRectangles?.map(rectangle => {
+      const { _id, ...selectionRectangle } = rectangle;
+      return selectionRectangle;
     }),
   };
 
