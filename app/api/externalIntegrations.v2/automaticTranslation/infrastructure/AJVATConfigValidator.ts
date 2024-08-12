@@ -27,6 +27,9 @@ export class AJVATConfigValidator implements ATConfigValidator {
   validate(data: unknown): Validate {
     const ajv = new Ajv({ strict: false });
     const validate = ajv.compile<SemanticConfig>(schema);
-    return { isValid: validate(data), errors: validate.errors };
+    return {
+      isValid: validate(data),
+      errors: validate.errors ? [JSON.stringify(validate.errors?.[0].params)] : null,
+    };
   }
 }
