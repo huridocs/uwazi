@@ -89,10 +89,9 @@ export default function (state = initialState, action = {}) {
 
   if (action.type === types.TOGGLE_REFERENCES) {
     const status = action.status || !state.get('enableClickAction');
-    if (action.status === state.get('enableClickAction')) {
-      return undefined;
+    if (action.status !== state.get('enableClickAction')) {
+      return state.set('enableClickAction', status).remove('activeReference');
     }
-    return state.set('enableClickAction', status).remove('activeReference');
   }
 
   return Immutable.fromJS(state);

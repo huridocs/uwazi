@@ -26,7 +26,7 @@ import {
   loadDefaultViewerMenu,
   loadTargetDocument as loadTargetDocumentAction,
 } from '../actions/documentActions';
-import { openPanel } from '../actions/uiActions';
+import { openPanel, toggleReferences } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ViewMetadataPanel from './ViewMetadataPanel';
@@ -54,6 +54,10 @@ class Viewer extends Component {
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
+  }
+
+  componentWillUnmount() {
+    this.props.toggleReferences(true);
   }
 
   handlePlainTextClick() {
@@ -251,6 +255,7 @@ Viewer.propTypes = {
   user: PropTypes.instanceOf(Map),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
+  toggleReferences: PropTypes.func,
 };
 
 Viewer.contextTypes = {
@@ -285,6 +290,7 @@ const mapDispatchToProps = dispatch =>
       addReference: addReferenceAction,
       loadTargetDocument: loadTargetDocumentAction,
       showTab: tab => actions.set('viewer.sidepanel.tab', tab),
+      toggleReferences,
     },
     dispatch
   );
