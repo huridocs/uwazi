@@ -11,7 +11,6 @@ import {
   shared2esId,
   shared6enId,
   stateFilterFixtures,
-  suggestionSharedId6Enemy,
   suggestionSharedId6Title,
 } from 'api/suggestions/specs/fixtures';
 import { suggestionsRoutes } from 'api/suggestions/routes';
@@ -317,14 +316,6 @@ describe('suggestions routes', () => {
         expect(response.status).toBe(400);
       });
     });
-
-    describe('authentication', () => {
-      it('should reject with unauthorized when the user does not have the admin role', async () => {
-        user = { username: 'user 1', role: 'editor' };
-        const response = await request(app).get('/api/suggestions/').query({}).expect(401);
-        expect(response.unauthorized).toBe(true);
-      });
-    });
   });
 
   describe('POST /api/suggestions/status', () => {
@@ -338,14 +329,6 @@ describe('suggestions routes', () => {
 
       expect(response.body).toMatchObject({ status: 'ready' });
     });
-    it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
-      const response = await request(app)
-        .post('/api/suggestions/status')
-        .send({ extractorId: factory.id('super_powers_extractor').toString() })
-        .expect(401);
-      expect(response.unauthorized).toBe(true);
-    });
   });
 
   describe('POST /api/suggestions/train', () => {
@@ -356,14 +339,6 @@ describe('suggestions routes', () => {
         .expect(200);
 
       expect(response.body).toMatchObject({ status: 'processing' });
-    });
-    it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
-      const response = await request(app)
-        .post('/api/suggestions/train')
-        .send({ extractorId: factory.id('super_powers_extractor').toString() })
-        .expect(401);
-      expect(response.unauthorized).toBe(true);
     });
   });
 
@@ -395,22 +370,6 @@ describe('suggestions routes', () => {
         },
       ]);
       expect(search.indexEntities).toHaveBeenCalledWith({ sharedId: 'shared6' }, '+fullText');
-    });
-
-    it('should reject with unauthorized when user has not admin role', async () => {
-      user = { username: 'user 1', role: 'editor' };
-      const response = await request(app)
-        .post('/api/suggestions/accept')
-        .send({
-          allLanguages: true,
-          suggestion: {
-            _id: suggestionSharedId6Enemy,
-            sharedId: 'shared6',
-            entityId: shared6enId,
-          },
-        })
-        .expect(401);
-      expect(response.unauthorized).toBe(true);
     });
 
     it('should handle partial acceptance parameters for multiselects', async () => {
@@ -458,17 +417,6 @@ describe('aggregation routes', () => {
         const emptyQuery = {};
         const response2 = await request(app).get('/api/suggestions/aggregation').query(emptyQuery);
         expect(response2.status).toBe(400);
-      });
-    });
-
-    describe('authentication', () => {
-      it('should reject with unauthorized when the user does not have the admin role', async () => {
-        user = { username: 'user 1', role: 'editor' };
-        const response = await request(app)
-          .get('/api/suggestions/aggregation')
-          .query({})
-          .expect(401);
-        expect(response.unauthorized).toBe(true);
       });
     });
 

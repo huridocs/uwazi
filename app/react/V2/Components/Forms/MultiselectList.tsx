@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { InputField, RadioSelect } from '.';
@@ -28,6 +28,7 @@ interface MultiselectListProps {
   singleSelect?: boolean;
   allowSelelectAll?: boolean;
   startOnSelected?: boolean;
+  search?: string;
 }
 
 const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
@@ -48,12 +49,14 @@ const MultiselectList = ({
   singleSelect = false,
   allowSelelectAll = false,
   startOnSelected = false,
+  search = '',
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const optionsRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -64,6 +67,16 @@ const MultiselectList = ({
       setOpenGroups(groupsToExpand);
     }
   }, [items, value, startOnSelected]);
+
+  useEffect(() => {
+    setSearchTerm(search);
+  }, [search]);
+
+  useEffect(() => {
+    if (search) {
+      optionsRef.current?.querySelector('input')?.focus();
+    }
+  }, [search, filteredItems]);
 
   useEffect(() => {
     if (value) {
@@ -224,7 +237,7 @@ const MultiselectList = ({
               <div className="w-3 h-3 text-sm">
                 {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               </div>
-              <Translate>Properties</Translate>
+              <Translate>Group</Translate>
             </button>
           </div>
           {isOpen && <ul className="pl-4">{group.items?.map(renderItem)}</ul>}
@@ -287,7 +300,9 @@ const MultiselectList = ({
         </div>
       </div>
 
-      <ul className="w-full px-2 pt-2 grow">{filteredItems.map(renderItem)}</ul>
+      <ul className="w-full px-2 pt-2 grow" ref={optionsRef}>
+        {filteredItems.map(renderItem)}
+      </ul>
     </div>
   );
 };
