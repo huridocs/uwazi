@@ -186,8 +186,21 @@ export function activateReference(
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
+  const activeRefenreceSelection = {
+    ...connection.reference,
+    selectionRectangles: connection.reference.selectionRectangles.map(rectangle => {
+      const { _id, ...rest } = rectangle;
+      return rest;
+    }),
+  };
+
   return dispatch => {
     dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
+    dispatch({
+      type: types.SET_SELECTION,
+      sourceRange: activeRefenreceSelection,
+      sourceFile: connection.file,
+    });
     if (delayActivation) {
       dispatch(goToActive());
     }
