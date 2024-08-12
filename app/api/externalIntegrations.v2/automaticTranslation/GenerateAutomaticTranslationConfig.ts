@@ -2,6 +2,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { AutomaticTranslationConfigDataSource } from './contracts/AutomaticTranslationConfigDataSource';
 import { AutomaticTranslationTemplateConfig } from './model/AutomaticTranslationTemplateConfig';
 import { RawAutomaticTranslationConfig } from './model/RawAutomaticTranslationConfig';
+import { GenerateAutomaticTranslationConfigError } from './errors/generateAutomaticTranslationErrors';
 
 interface SemanticConfig {
   active: boolean;
@@ -32,14 +33,29 @@ export class GenerateAutomaticTranslationsCofig {
 
     const templates = semanticConfig.templates.map(configData => {
       const templateData = templatesData.find(t => t.name === configData.template);
+      if (!templateData) {
+        throw new GenerateAutomaticTranslationConfigError(
+          `Template not found: ${configData.template}`
+        );
+      }
       return new AutomaticTranslationTemplateConfig(
-        templateData?.id ?? '',
-        (configData.properties || []).map(
-          label => templateData?.properties.find(p => p.label === label)?.id ?? ''
-        ),
-        (configData.commonProperties || []).map(
-          label => templateData?.commonProperties.find(p => p.label === label)?.id ?? ''
-        )
+        templateData?.id,
+        (configData.properties || []).map(label => {
+          const foundProperty = templateData.properties.find(p => p.label === label);
+          if (!foundProperty) {
+            throw new GenerateAutomaticTranslationConfigError(`Property not found: ${label}`);
+          }
+          return foundProperty.id;
+        }),
+        (configData.commonProperties || []).map(label => {
+          const foundProperty = templateData?.commonProperties.find(p => p.label === label);
+          if (!foundProperty) {
+            throw new GenerateAutomaticTranslationConfigError(
+              `Common property not found: ${label}`
+            );
+          }
+          return foundProperty.id;
+        })
       );
     });
 

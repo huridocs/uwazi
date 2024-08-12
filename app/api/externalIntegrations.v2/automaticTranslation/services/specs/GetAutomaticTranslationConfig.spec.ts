@@ -4,7 +4,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoAutomaticTranslationConfigDataSource } from '../../database/MongoAutomaticTranslationConfigDataSource';
+import { MongoAutomaticTranslationConfigDataSource } from '../../infrastructure/MongoAutomaticTranslationConfigDataSource';
 import { ExternalAPIAutomaticTranslation } from '../../infrastructure/AutomaticTranslationService';
 import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
 

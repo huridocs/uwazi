@@ -7,7 +7,8 @@ import {
   GenerateAutomaticTranslationsCofig,
   SemanticConfig,
 } from '../GenerateAutomaticTranslationConfig';
-import { MongoAutomaticTranslationConfigDataSource } from '../database/MongoAutomaticTranslationConfigDataSource';
+import { MongoAutomaticTranslationConfigDataSource } from '../infrastructure/MongoAutomaticTranslationConfigDataSource';
+import { GenerateAutomaticTranslationConfigError } from '../errors/generateAutomaticTranslationErrors';
 
 const factory = getFixturesFactory();
 
@@ -86,6 +87,12 @@ describe('GenerateAutomaticTranslationConfig', () => {
     );
   });
 
+  it('should deactivate the service properly', async () => {
+    await generateAutomaticTranslationConfig.execute({ active: false, templates: [] });
+    const settingsData = await automaticTranslationConfigDS.get();
+    expect(settingsData.active).toBe(false);
+  });
+
   it('should generate and persist the passed config', async () => {
     await generateAutomaticTranslationConfig.execute(validPassedConfig);
 
@@ -111,7 +118,47 @@ describe('GenerateAutomaticTranslationConfig', () => {
     ]);
   });
 
-  it('should INVALID CONFIG', async () => {
-    expect(true).toBe(false);
+  describe('when template does not match', () => {
+    it('should throw a template not found error error', async () => {
+      const invalidConfig: SemanticConfig = {
+        active: true,
+        templates: [{ template: 'template name does not exist' }],
+      };
+      await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
+        new GenerateAutomaticTranslationConfigError(
+          'Template not found: template name does not exist'
+        )
+      );
+    });
+  });
+
+  describe('when a property does not match', () => {
+    it('should throw a property not found error', async () => {
+      const invalidConfig: SemanticConfig = {
+        active: true,
+        templates: [
+          { template: 'Template 1 name', properties: ['prop 1 does not exist', 'Prop 2'] },
+        ],
+      };
+      await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
+        new GenerateAutomaticTranslationConfigError('Property not found: prop 1 does not exist')
+      );
+    });
+  });
+
+  describe('when a common property does not match', () => {
+    it('should throw a common property not found error', async () => {
+      const invalidConfig: SemanticConfig = {
+        active: true,
+        templates: [
+          { template: 'Template 1 name', commonProperties: ['common property does not exist'] },
+        ],
+      };
+      await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
+        new GenerateAutomaticTranslationConfigError(
+          'Common property not found: common property does not exist'
+        )
+      );
+    });
   });
 });
