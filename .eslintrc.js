@@ -19,7 +19,6 @@ module.exports = {
       'error',
       {
         requirePragma: false,
-        endOfLine: 'auto',
       },
     ],
     'node/no-restricted-import': [
