@@ -62,7 +62,12 @@ class Document extends Component {
   }
 
   highlightReference(connection) {
-    return this.props.activateReference(connection, undefined, undefined, true);
+    return this.props.activateReference(
+      connection,
+      undefined,
+      undefined,
+      !this.props.disableTextSelection
+    );
   }
 
   pdfLoaded() {
