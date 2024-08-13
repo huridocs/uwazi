@@ -12,8 +12,8 @@ import { TemplateMappers } from './TemplateMappers';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
-  // eslint-disable-next-line prettier/prettier
-  implements TemplatesDataSource {
+  implements TemplatesDataSource
+{
   protected collectionName = 'templates';
 
   private _nameToPropertyMap?: Record<string, Property>;

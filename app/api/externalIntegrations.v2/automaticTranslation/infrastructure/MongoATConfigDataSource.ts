@@ -6,8 +6,8 @@ import { ATTemplateConfig } from '../model/ATConfig';
 
 export class MongoATConfigDataSource
   extends MongoDataSource<SettingsType>
-  // eslint-disable-next-line prettier/prettier
-  implements ATConfigDataSource {
+  implements ATConfigDataSource
+{
   protected collectionName = 'settings';
 
   async get() {
