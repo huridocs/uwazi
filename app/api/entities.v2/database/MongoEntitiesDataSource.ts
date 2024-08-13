@@ -13,8 +13,8 @@ import { Entity, MetadataValue } from '../model/Entity';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  // eslint-disable-next-line prettier/prettier
-  implements EntitiesDataSource {
+  implements EntitiesDataSource
+{
   protected collectionName = 'entities';
 
   private settingsDS: MongoSettingsDataSource;
