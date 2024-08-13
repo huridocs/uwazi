@@ -12,8 +12,8 @@ import { TemplateMappers } from './TemplateMappers';
 
 export class MongoTemplatesDataSource
   extends MongoDataSource<TemplateDBO>
-  // eslint-disable-next-line prettier/prettier
-  implements TemplatesDataSource {
+  implements TemplatesDataSource
+{
   protected collectionName = 'templates';
 
   private _nameToPropertyMap?: Record<string, Property>;
@@ -50,6 +50,27 @@ export class MongoTemplatesDataSource
           MongoIdHandler.mapToApp(template._id),
           template.properties.denormalizedProperty
         )
+    );
+  }
+
+  getAllTextProperties() {
+    const cursor = this.getCollection().aggregate([
+      { $unwind: '$properties' },
+      {
+        $match: {
+          'properties.type': { $in: ['text', 'markdown'] },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          properties: 1,
+        },
+      },
+    ]);
+
+    return new MongoResultSet(cursor, template =>
+      TemplateMappers.propertyToApp(template.properties, template._id)
     );
   }
 
@@ -103,6 +124,14 @@ export class MongoTemplatesDataSource
   getByIds(ids: Template['id'][]) {
     const templatesCursor = this.getCollection().find({
       _id: { $in: ids.map(MongoIdHandler.mapToDb) },
+    });
+
+    return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
+  }
+
+  getByNames(names: Template['name'][]) {
+    const templatesCursor = this.getCollection().find({
+      name: { $in: names },
     });
 
     return new MongoResultSet(templatesCursor, TemplateMappers.toApp);
