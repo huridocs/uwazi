@@ -159,7 +159,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
   });
 
   it('should validate input has proper shape at runtime', async () => {
-    const invalidConfig = JSON.parse('{ "invalid_prop": true }') as SemanticConfig;
+    const invalidConfig = { invalid_prop: true };
     await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
       new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
     );

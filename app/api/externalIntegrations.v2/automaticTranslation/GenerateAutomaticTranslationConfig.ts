@@ -23,10 +23,9 @@ export class GenerateAutomaticTranslationsCofig {
     this.validator = validator;
   }
 
-  async execute(semanticConfig: SemanticConfig) {
-    const validate = this.validator.validate(semanticConfig);
-    if (!validate.isValid) {
-      throw new InvalidInputDataFormat(validate.errors?.[0]);
+  async execute(semanticConfig: SemanticConfig | unknown) {
+    if (!this.validator.validate(semanticConfig)) {
+      throw new InvalidInputDataFormat(this.validator.getErrors()[0]);
     }
 
     const templatesData = await this.templatsDS

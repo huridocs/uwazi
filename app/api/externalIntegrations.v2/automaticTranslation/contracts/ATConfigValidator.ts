@@ -1,5 +1,6 @@
-import { Validate } from '../types/Validate';
+import { SemanticConfig } from '../types/SemanticConfig';
 
 export interface ATConfigValidator {
-  validate(data: unknown): Validate;
+  getErrors(): string[];
+  validate(data: unknown): data is SemanticConfig;
 }

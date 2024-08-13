@@ -2,7 +2,6 @@ import { Ajv } from 'ajv';
 import { JTDSchemaType } from 'ajv/dist/core';
 import { ATConfigValidator } from '../contracts/ATConfigValidator';
 import { SemanticConfig } from '../types/SemanticConfig';
-import { Validate } from '../types/Validate';
 
 const schema: JTDSchemaType<SemanticConfig> = {
   additionalProperties: false,
@@ -23,13 +22,17 @@ const schema: JTDSchemaType<SemanticConfig> = {
 };
 
 export class AJVATConfigValidator implements ATConfigValidator {
-  // eslint-disable-next-line class-methods-use-this
-  validate(data: unknown): Validate {
+  private errors: string[] = [];
+
+  getErrors() {
+    return this.errors;
+  }
+
+  validate(data: unknown) {
     const ajv = new Ajv({ strict: false });
     const validate = ajv.compile<SemanticConfig>(schema);
-    return {
-      isValid: validate(data),
-      errors: validate.errors?.length ? validate.errors.map(e => JSON.stringify(e.params)) : null,
-    };
+    const result = validate(data);
+    this.errors = validate.errors ? validate.errors?.map(e => JSON.stringify(e.params)) : [];
+    return result;
   }
 }
