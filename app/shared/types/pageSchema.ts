@@ -73,4 +73,3 @@ export const PageSchema = {
 const validatePage = wrapValidator(ajv.compile(PageSchema));
 export { validatePage };
 export const emitSchemaTypes = true;
-
