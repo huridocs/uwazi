@@ -3,6 +3,15 @@
 
 import { ObjectIdSchema, LanguagesListSchema, GeolocationSchema } from 'shared/types/commonTypes';
 
+export interface AutomaticTranslationConfig {
+  active: boolean;
+  templates?: {
+    template: string;
+    commonProperties?: string[];
+    properties?: string[];
+  }[];
+}
+
 export interface ItemSchema {
   id?: string;
   name?: string;
@@ -112,6 +121,7 @@ export interface Settings {
       | {
           updateStrategy: 'OnlineRelationshipPropertyUpdateStrategy' | 'QueuedRelationshipPropertyUpdateStrategy';
         };
+    automaticTranslation?: AutomaticTranslationConfig;
     [k: string]: unknown | undefined;
   };
   mapStartingPoint?: {

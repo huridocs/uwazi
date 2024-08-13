@@ -184,6 +184,24 @@ describe('getByIds()', () => {
   });
 });
 
+describe('getByNames()', () => {
+  it('should return the templates', async () => {
+    const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
+    const result = await dataSource.getByNames(['template1', 'template3']).all();
+
+    expect(result).toMatchObject([
+      {
+        id: factory.id('template1').toString(),
+        name: 'template1',
+      },
+      {
+        id: factory.id('template3').toString(),
+        name: 'template3',
+      },
+    ]);
+  });
+});
+
 describe('getById()', () => {
   it('should return the template', async () => {
     const dataSource = new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager());
