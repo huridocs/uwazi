@@ -17,12 +17,12 @@ Array [
     "html": "<p>Hello,
 
 Your account has been locked because of too many failed login attempts. To unlock your account open the following link:
-<a href=\\"http://host.domain/unlockaccount/someuser1/636f6465\\">http://host.domain/unlockaccount/someuser1/636f6465</a></p>",
+<a href=\\"http://host.domain/unlockaccount/someuser1/hash\\">http://host.domain/unlockaccount/someuser1/hash</a></p>",
     "subject": "Account locked",
     "text": "Hello,
 
 Your account has been locked because of too many failed login attempts. To unlock your account open the following link:
-http://host.domain/unlockaccount/someuser1/636f6465",
+http://host.domain/unlockaccount/someuser1/hash",
     "to": "someuser1@mailer.com",
   },
 ]

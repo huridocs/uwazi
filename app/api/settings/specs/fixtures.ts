@@ -16,6 +16,15 @@ const fixtures: DBFixture = {
         { key: 'es', label: 'Spanish', default: true },
         { key: 'en', label: 'English' },
       ],
+      features: {
+        'metadata-extraction': true,
+        metadataExtraction: {
+          url: 'http:someurl',
+        },
+        segmentation: {
+          url: 'http://otherurl',
+        },
+      },
     },
   ],
   templates: [
