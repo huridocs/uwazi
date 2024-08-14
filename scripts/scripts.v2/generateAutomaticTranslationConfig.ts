@@ -28,7 +28,7 @@ import yargs from 'yargs';
       pass: process.env.DBPASS,
     };
   }
-  const semanticConfig = await import(configPath);
+  const semanticConfig = (await import(configPath)).default;
   await DB.connect(config.DBHOST, dbAuth);
   await tenants.setupTenants();
   await tenants.run(async () => {
