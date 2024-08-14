@@ -1,11 +1,12 @@
-import testingDB from 'api/utils/testing_db';
-import migration from '../index.js';
-import { fixtures } from './fixtures.js';
+import { Db } from 'mongodb';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
+import migration from '../index';
+import { fixtures } from './fixtures';
 
 describe('migration remove_obsolete_mongo_index', () => {
-  let suggestionsIndexInfo;
+  let suggestionsIndexInfo: { [x: string]: any };
 
-  const createIndexes = async db => {
+  const createIndexes = async (db: Db) => {
     await db
       .collection('ixsuggestions')
       .createIndex({ extractorId: 1, 'state.labeled': 1, 'state.match': 1 });
@@ -23,14 +24,14 @@ describe('migration remove_obsolete_mongo_index', () => {
       .createIndex({ extractorId: 1, 'state.labeled': 1, 'state.error': 1 });
   };
 
-  const getIndexInfo = async db => {
+  const getIndexInfo = async (db: Db) => {
     suggestionsIndexInfo = await db.collection('ixsuggestions').indexInformation();
   };
 
   beforeAll(async () => {
-    jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
-    await testingDB.setupFixturesAndContext(fixtures);
-    const db = testingDB.mongodb;
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => false);
+    await testingDB.setupFixturesAndContext(fixtures as DBFixture);
+    const db = testingDB.mongodb!;
     await createIndexes(db);
     await migration.up(db);
     await getIndexInfo(db);

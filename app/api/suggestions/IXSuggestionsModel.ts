@@ -11,7 +11,6 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-// @ts-ignore
 mongoSchema.index({ entityId: 1 });
 mongoSchema.index({ fileId: 1 });
 mongoSchema.index({ extractorId: 1, entityId: 1, fileId: 1 });

@@ -1,12 +1,15 @@
+import { Collection, Db, Document } from 'mongodb';
+
 const INDICES_TO_REMOVE = {
   ixsuggestions: ['extractorId_1_tate.labeled_1_state.withSuggestion_1'],
 };
 
-const handleCollection = async (collection, indexNames) => {
+const handleCollection = async (collection: Collection<Document>, indexNames: string[]) => {
   await indexNames.reduce(async (prev, indexName) => {
     await prev;
     if (await collection.indexExists(indexName)) {
-      return collection.dropIndex(indexName);
+      await collection.dropIndex(indexName);
+      return Promise.resolve();
     }
     return Promise.resolve();
   }, Promise.resolve());
@@ -22,7 +25,7 @@ export default {
 
   reindex: false,
 
-  async up(db) {
+  async up(db: Db) {
     process.stdout.write(`${this.name}...\r\n`);
 
     const existingCollections = new Set(
