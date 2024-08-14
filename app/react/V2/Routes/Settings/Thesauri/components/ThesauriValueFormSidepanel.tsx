@@ -1,63 +1,57 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect } from 'react';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
+import { isEmpty, last } from 'lodash';
 import { Translate } from 'app/I18N';
 import { InputField, Select } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
-import { TableThesaurusValue } from './TableComponents';
 import uniqueID from 'shared/uniqueID';
-
-interface FormThesauriValue extends TableThesaurusValue {
-  groupId?: string;
-}
+import { ThesaurusRow } from './TableComponents';
 
 interface ThesauriValueFormSidepanelProps {
   closePanel: () => void;
-  value: FormThesauriValue[];
-  groups?: FormThesauriValue[];
+  value: ThesaurusRow[];
+  thesaurusValues?: ThesaurusRow[];
   showSidepanel: boolean;
-  submit: SubmitHandler<FormThesauriValue[]>;
+  submit: SubmitHandler<ThesaurusRow[]>;
 }
+
+const emptyRow = () => ({ label: '', rowId: uniqueID() });
 
 const ThesauriValueFormSidepanel = ({
   submit,
   closePanel,
-  groups,
+  thesaurusValues,
   value,
   showSidepanel,
 }: ThesauriValueFormSidepanelProps) => {
+  const editMode = value.length === 1;
+  const groups = (thesaurusValues || []).filter(item => item.subRows !== undefined);
   const { reset, control, register, handleSubmit, watch } = useForm<{
-    newValues: FormThesauriValue[];
+    newValues: ThesaurusRow[];
   }>({
     mode: 'onSubmit',
-    defaultValues: { newValues: value.length ? value : [{ label: '', _id: `temp_${uniqueID()}` }] },
+    defaultValues: { newValues: value.length ? value : [emptyRow()] },
   });
 
   useEffect(() => {
-    reset({ newValues: value.length ? value : [{ label: '' }] });
+    reset({ newValues: value.length ? value : [emptyRow()] });
   }, [reset, value]);
 
-  const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'tempId' });
+  const { append, fields } = useFieldArray({ control, name: 'newValues', keyName: 'rowId' });
 
   useEffect(() => {
-    // if editing, don't append new fields
-    if (!value.length) {
-      const subscription = watch(formData => {
-        const values = (formData as { newValues: FormThesauriValue[] }).newValues
-          ? (formData as { newValues: FormThesauriValue[] }).newValues
-          : [formData];
-        // @ts-ignore
-        if (values[values.length - 1].label !== '') {
-          // @ts-ignore
-          append({ label: '' }, { shouldFocus: false });
-        }
-      });
-      return () => subscription.unsubscribe();
-    }
+    const subscription = watch(formData => {
+      const values = formData.newValues;
+      if (!isEmpty(last(values)?.label)) {
+        append(emptyRow(), { shouldFocus: false });
+      }
+    });
+    return () => subscription.unsubscribe();
   }, [watch, append, value]);
 
-  const submitHandler = (data: { newValues: FormThesauriValue[] }) => {
+  const submitHandler = (data: { newValues: ThesaurusRow[] }) => {
     submit(data.newValues.filter(thesaurus => thesaurus.label !== ''));
     closePanel();
   };
@@ -67,7 +61,7 @@ const ThesauriValueFormSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       closeSidepanelFunction={closePanel}
-      title={value.length > 0 ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
+      title={editMode ? <Translate>Edit item</Translate> : <Translate>Add item</Translate>}
     >
       <form
         onSubmit={handleSubmit(submitHandler)}
@@ -94,30 +88,27 @@ const ThesauriValueFormSidepanel = ({
             </div>
           )}
           {fields.map((localValue, index) => (
-            <Card title={<Translate>Item</Translate>} key={localValue.tempId}>
+            <Card title={<Translate>Item</Translate>} key={localValue.rowId}>
               <div className="flex flex-col gap-4">
                 <InputField
                   id="item-name"
                   data-testid="thesauri-form-item-name"
                   label={<Translate>Title</Translate>}
-                  // eslint-disable-next-line react/jsx-props-no-spreading
                   {...register(`newValues.${index}.label`)}
-                  // onBlur={e => setTyping(e.target.value)}
                 />
                 {groups && (
                   <Select
                     id="item-group"
                     data-testid="thesauri-form-item-group"
                     label={<Translate>Group</Translate>}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...register(`newValues.${index}.groupId`)}
                     disabled={value.length > 0}
                     options={[
                       { value: '', label: 'No Group', key: '0' },
                       ...groups.map(group => ({
-                        value: group._id as string,
-                        label: group.label as string,
-                        key: group._id as string,
+                        value: group.rowId,
+                        label: group.label,
+                        key: group.rowId,
                       })),
                     ]}
                   />
@@ -137,7 +128,8 @@ const ThesauriValueFormSidepanel = ({
               <Translate>Cancel</Translate>
             </Button>
             <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
-              <Translate>Add</Translate>
+              {!editMode && <Translate>Add</Translate>}
+              {editMode && <Translate>Edit</Translate>}
             </Button>
           </div>
         </Sidepanel.Footer>
@@ -147,4 +139,3 @@ const ThesauriValueFormSidepanel = ({
 };
 
 export { ThesauriValueFormSidepanel };
-export type { ClientThesaurusValue, FormThesauriValue };

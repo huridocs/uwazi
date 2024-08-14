@@ -26,10 +26,10 @@ import {
 import { Dashboard, dashboardLoader } from 'V2/Routes/Settings/Dashboard/Dashboard';
 
 import {
-  ThesaurusForm,
+  EditThesaurus,
   thesauriLoader,
   ThesauriList,
-  editTheasaurusLoader,
+  editThesaurusLoader,
 } from 'app/V2/Routes/Settings/Thesauri';
 
 import { MenuConfig, menuConfigloader } from 'V2/Routes/Settings/MenuConfig/MenuConfig';
@@ -135,11 +135,11 @@ const getRoutesLayout = (
 
       <Route path="thesauri">
         <Route index element={adminsOnlyRoute(<ThesauriList />)} loader={thesauriLoader(headers)} />
-        <Route path="new" element={adminsOnlyRoute(<ThesaurusForm />)} />
+        <Route path="new" element={adminsOnlyRoute(<EditThesaurus />)} />
         <Route
           path="edit/:_id"
-          element={adminsOnlyRoute(<ThesaurusForm />)}
-          loader={editTheasaurusLoader(headers)}
+          element={adminsOnlyRoute(<EditThesaurus />)}
+          loader={editThesaurusLoader(headers)}
         />
       </Route>
       <Route

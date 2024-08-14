@@ -1,32 +1,42 @@
+import { LoaderFunction } from 'react-router-dom';
+import { Row, RowSelectionState } from '@tanstack/react-table';
+import { IncomingHttpHeaders } from 'http';
+import { assign } from 'lodash';
+import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import ThesauriAPI from 'V2/api/thesauri';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { httpRequest } from 'shared/superagent';
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import uniqueID from 'shared/uniqueID';
+import { ThesaurusRow } from './components/TableComponents';
 
-const sanitizeThesaurusValues = (
-  thesaurus: ThesaurusSchema,
-  values: ClientThesaurusValue[]
-): ThesaurusSchema => {
-  const sanitizedThesaurus = { ...thesaurus, values };
-  sanitizedThesaurus.values =
-    values?.map(sValue => {
-      // @ts-ignore
-      delete sValue.groupId;
-      // @ts-ignore
-      delete sValue._id;
-      if (sValue.values) {
-        sValue.values = sValue.values.map((ssValue: any) => {
-          delete ssValue._id;
-          // @ts-ignore
-          delete ssValue.groupId;
-          return ssValue;
-        });
-      }
-      return sValue;
-    }) || ([] as ThesaurusValueSchema[]);
-  return sanitizedThesaurus;
-};
+const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => ThesaurusRow | undefined = (
+  items,
+  searchedItem
+) =>
+  items.find(item => {
+    const match = item.rowId === searchedItem.rowId;
+    return !match && item.subRows?.length && item.subRows?.length > 0
+      ? findItem(item.subRows, searchedItem)
+      : match;
+  });
 
-function sanitizeThesauri(thesaurus: ThesaurusSchema) {
+const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =>
+  (rows || []).map(({ rowId: _rowId, groupId: _groupId, subRows: subItems, ...item }) => {
+    const values = subItems?.map(subItem => {
+      const { rowId, groupId, ...rest } = subItem;
+      return rest;
+    });
+    return values && values.length ? assign(item, { values }) : item;
+  });
+
+const addSelection =
+  (selectedRows: RowSelectionState, selection: ThesaurusRow[]) => (item: any) => {
+    if (item.rowId in selectedRows) {
+      selection.push(item);
+    }
+  };
+
+const sanitizeThesauri = (thesaurus: ThesaurusSchema) => {
   const sanitizedThesauri = { ...thesaurus };
   sanitizedThesauri.values = sanitizedThesauri
     .values!.filter((value: ThesaurusValueSchema) => value.label)
@@ -39,7 +49,7 @@ function sanitizeThesauri(thesaurus: ThesaurusSchema) {
       return _value;
     });
   return sanitizedThesauri;
-}
+};
 
 const importThesaurus = async (
   thesaurus: ThesaurusSchema,
@@ -56,4 +66,42 @@ const importThesaurus = async (
   return (await httpRequest('thesauris', fields, headers, file)) as ThesaurusSchema;
 };
 
-export { sanitizeThesaurusValues, sanitizeThesauri, importThesaurus };
+const editThesaurusLoader =
+  (headers?: IncomingHttpHeaders): LoaderFunction =>
+  async ({ params: { _id } }) =>
+    (await ThesauriAPI.getThesauri({ _id }, headers))[0];
+
+const emptyThesaurus = {
+  rowId: uniqueID(),
+  label: '',
+  subRows: [{ label: '', rowId: uniqueID() }],
+};
+
+const thesaurusAsRow = ({ values, ...item }: ClientThesaurusValue) =>
+  ({
+    ...item,
+    rowId: item.id || uniqueID(),
+    subRows: values?.map(val => ({
+      ...val,
+      rowId: val.id || uniqueID(),
+      groupId: item.id,
+    })),
+  }) as ThesaurusRow;
+
+interface ConfirmationCallback {
+  callback: Function;
+  arg?: Row<ThesaurusRow>;
+}
+
+export {
+  sanitizeThesaurusValues,
+  sanitizeThesauri,
+  importThesaurus,
+  addSelection,
+  findItem,
+  editThesaurusLoader,
+  emptyThesaurus,
+  thesaurusAsRow,
+};
+
+export type { ConfirmationCallback };

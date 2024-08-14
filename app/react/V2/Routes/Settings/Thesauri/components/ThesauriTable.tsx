@@ -49,7 +49,7 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
-      meta: { action: edit, headerClassName: 'w-0 text-center sr-only' },
+      meta: { action: edit },
     }) as ColumnDef<ThesauriRow, '_id'>,
   ];
 
@@ -59,11 +59,7 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
       columns={columns({ edit: navigateToEditThesaurus })}
       defaultSorting={[{ id: 'name', desc: false }]}
       onChange={({ selectedRows }) => {
-        const selectedIds = Object.keys(selectedRows);
-        const selection = currentThesauri.filter(thesaurus =>
-          selectedIds.includes(thesaurus.rowId)
-        );
-        setSelectedThesauri(selection);
+        setSelectedThesauri(currentThesauri.filter(thesaurus => thesaurus.rowId in selectedRows));
       }}
       enableSelections
       header={

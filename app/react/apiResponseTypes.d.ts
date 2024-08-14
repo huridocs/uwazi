@@ -80,10 +80,7 @@ export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, 
   values: ClientThesaurusValue[];
 }
 
-export interface ClientThesaurusValue
-  extends ThesaurusValueSchema,
-    Omit<ThesaurusValueSchema, '_id'> {
-  _id: ObjectIdSchema;
+export interface ClientThesaurusValue extends Omit<ThesaurusValueSchema, '_id'> {
   id?: string;
   label: string;
   values?: {

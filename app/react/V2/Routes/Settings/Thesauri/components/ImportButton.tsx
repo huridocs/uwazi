@@ -1,24 +1,23 @@
 import React, { ChangeEventHandler } from 'react';
 import { Translate } from 'app/I18N';
+import { ClientThesaurus } from 'app/apiResponseTypes';
 import { Button } from 'app/V2/Components/UI';
 import ThesauriAPI from 'app/V2/api/thesauri';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { sanitizeThesaurusValues } from '../helpers';
 
 const ImportButton = ({
   onSuccess,
   onFailure,
-  thesaurus,
+  getThesaurus,
 }: {
   onSuccess: Function;
   onFailure: Function;
-  thesaurus: ClientThesaurus;
+  getThesaurus: () => ClientThesaurus;
 }) => {
   const importThesauri: ChangeEventHandler<HTMLInputElement> = async e => {
     if (e.target.files && e.target.files[0]) {
       try {
-        const sanitizedThesaurus = sanitizeThesaurusValues(thesaurus, thesaurus.values);
-        const data = await ThesauriAPI.importThesaurus(sanitizedThesaurus, e.target.files[0]);
+        const thesaurus = getThesaurus();
+        const data = await ThesauriAPI.importThesaurus(thesaurus, e.target.files[0]);
         onSuccess(data);
       } catch (ex) {
         onFailure(ex);

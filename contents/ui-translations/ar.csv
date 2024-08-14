@@ -117,6 +117,7 @@ Change password,تغيير كلمة المرور
 Change Password,Change Password
 Change will take effect after saving the template,سينفذ التغيير بعد حفظ القالب
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
 Selecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.
