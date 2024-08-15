@@ -51,7 +51,8 @@ const TemplateMappers = {
     new Template(
       MongoIdHandler.mapToApp(tdbo._id),
       tdbo.name,
-      tdbo.properties.map(p => propertyToApp(p, tdbo._id))
+      tdbo.properties.map(p => propertyToApp(p, tdbo._id)),
+      tdbo.commonProperties.map(p => propertyToApp(p, tdbo._id))
     ),
 };
 
