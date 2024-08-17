@@ -94,6 +94,7 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
           { type: 'reloadRelationships', entityId: 'docId' },
+          { type: types.DEACTIVATE_REFERENCE },
           { type: types.ACTIVE_REFERENCE, reference: 'addedReference1' },
           {
             type: types.SET_SELECTION,
@@ -117,6 +118,7 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
           { type: 'reloadRelationships', entityId: 'docId' },
+          { type: types.DEACTIVATE_REFERENCE },
           { type: types.ACTIVE_REFERENCE, reference: 'addedReference1' },
           {
             type: types.SET_SELECTION,

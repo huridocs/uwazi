@@ -10,7 +10,12 @@ describe('Viewer uiReducer', () => {
       const newState = uiReducer();
 
       expect(newState instanceof Immutable.Map).toBe(true);
-      expect(newState.toJS()).toEqual({ reference: {}, snippet: {}, enableClickAction: true });
+      expect(newState.toJS()).toEqual({
+        reference: {},
+        snippet: {},
+        enableClickAction: true,
+        activeReferences: [],
+      });
     });
   });
 
@@ -268,7 +273,12 @@ describe('Viewer uiReducer', () => {
       const newState = uiReducer(Immutable.fromJS({ targetDocument: 1, panel: true }), {
         type: types.RESET_DOCUMENT_VIEWER,
       });
-      const expected = Immutable.fromJS({ reference: {}, snippet: {}, enableClickAction: true });
+      const expected = Immutable.fromJS({
+        reference: {},
+        snippet: {},
+        enableClickAction: true,
+        activeReferences: [],
+      });
 
       expect(newState.toJS()).toEqual(expected.toJS());
     });

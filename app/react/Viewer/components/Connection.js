@@ -158,9 +158,13 @@ Connection.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { documentViewer } = state;
+  const isActive = documentViewer.uiState.get('activeReference')
+    ? documentViewer.uiState.get('activeReference') === ownProps.reference._id
+    : documentViewer.uiState.get('activeReferences')?.includes(ownProps.reference._id);
+
   return {
     highlighted: documentViewer.uiState.get('highlightedReference') === ownProps.reference._id,
-    active: documentViewer.uiState.get('activeReference') === ownProps.reference._id,
+    active: isActive || false,
     targetRange: documentViewer.uiState.get('reference').get('targetRange'),
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     relationTypes: documentViewer.relationTypes,

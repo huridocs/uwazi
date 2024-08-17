@@ -86,6 +86,7 @@ describe('Viewer uiActions', () => {
         },
         file: 'fileId',
       })(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({ type: types.DEACTIVATE_REFERENCE });
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
       expect(dispatch).toHaveBeenCalledWith({
@@ -107,6 +108,26 @@ describe('Viewer uiActions', () => {
       });
     });
 
+    it('should activate multiple references', () => {
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: {
+            selectionRectangles: [{ top: 40, page: '1', _id: 'selectionId' }],
+            text: 'something',
+          },
+          file: 'fileId',
+        },
+        ['id', 'id2']
+      )(dispatch);
+
+      expect(dispatch).not.toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.ACTIVATE_MULTIPLE_REFERENCES,
+        references: ['id', 'id2'],
+      });
+    });
+
     it('should dispatch a SHOW_TAB references by default', () => {
       actions.activateReference({
         _id: 'id',
@@ -124,6 +145,7 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
+        [],
         'another tab'
       )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
@@ -152,6 +174,7 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
+        undefined,
         [],
         true
       )(dispatch);

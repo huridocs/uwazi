@@ -177,8 +177,10 @@ export function selectSnippet(page, snippet) {
   };
 }
 
+// eslint-disable-next-line max-params
 export function activateReference(
   connection,
+  referenceGroup,
   tab,
   delayActivation = false,
   showContextMenu = false
@@ -194,8 +196,14 @@ export function activateReference(
     }),
   };
 
+  // eslint-disable-next-line max-statements
   return dispatch => {
-    dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
+    dispatch({ type: types.DEACTIVATE_REFERENCE });
+    if (referenceGroup?.length) {
+      dispatch({ type: types.ACTIVATE_MULTIPLE_REFERENCES, references: referenceGroup });
+    } else {
+      dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
+    }
     dispatch({
       type: types.SET_SELECTION,
       sourceRange: activeRefenreceSelection,

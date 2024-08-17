@@ -61,9 +61,10 @@ class Document extends Component {
     }
   }
 
-  highlightReference(connection) {
+  highlightReference(connection, referenceGroup) {
     return this.props.activateReference(
       connection,
+      referenceGroup,
       undefined,
       undefined,
       !this.props.disableTextSelection

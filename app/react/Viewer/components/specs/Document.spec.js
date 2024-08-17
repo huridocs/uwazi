@@ -95,7 +95,13 @@ describe('Document', () => {
 
       component.instance().highlightReference(reference);
 
-      expect(props.activateReference).toHaveBeenCalledWith(reference, undefined, undefined, true);
+      expect(props.activateReference).toHaveBeenCalledWith(
+        reference,
+        undefined,
+        undefined,
+        undefined,
+        true
+      );
       expect(props.onClick).not.toHaveBeenCalled();
     });
   });

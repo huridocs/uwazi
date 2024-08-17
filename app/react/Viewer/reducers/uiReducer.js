@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import * as types from 'app/Viewer/actions/actionTypes';
 
-const initialState = { reference: {}, snippet: {}, enableClickAction: true };
+const initialState = { reference: {}, snippet: {}, enableClickAction: true, activeReferences: [] };
 
 const unsetPanelsWhenUnsetSelections = ['targetReferencePanel', 'referencePanel'];
 
@@ -19,11 +19,15 @@ export default function (state = initialState, action = {}) {
   }
 
   if (action.type === types.DEACTIVATE_REFERENCE) {
-    return state.remove('activeReference');
+    return state.remove('activeReference').remove('activeReferences', action.references);
   }
 
   if (action.type === types.ACTIVE_REFERENCE) {
     return state.set('activeReference', action.reference);
+  }
+
+  if (action.type === types.ACTIVATE_MULTIPLE_REFERENCES) {
+    return state.set('activeReferences', action.references);
   }
 
   if (action.type === types.OPEN_PANEL) {
