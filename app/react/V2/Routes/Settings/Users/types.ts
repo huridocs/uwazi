@@ -1,3 +1,5 @@
+import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
+
 type FormIntent =
   | 'new-user'
   | 'edit-user'
@@ -11,4 +13,7 @@ type FormIntent =
   | 'bulk-reset-2fa'
   | 'bulk-reset-password';
 
-export type { FormIntent };
+type User = ClientUserSchema & { rowId: string };
+type Group = ClientUserGroupSchema & { rowId: string };
+
+export type { FormIntent, User, Group };
