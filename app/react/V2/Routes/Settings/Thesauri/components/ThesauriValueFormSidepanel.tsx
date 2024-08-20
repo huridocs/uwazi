@@ -44,12 +44,12 @@ const ThesauriValueFormSidepanel = ({
   useEffect(() => {
     const subscription = watch(formData => {
       const values = formData.newValues;
-      if (!isEmpty(last(values)?.label)) {
+      if (!editMode && !isEmpty(last(values)?.label)) {
         append(emptyRow(), { shouldFocus: false });
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch, append, value]);
+  }, [editMode, watch, append, value]);
 
   const submitHandler = (data: { newValues: ThesaurusRow[] }) => {
     submit(data.newValues.filter(thesaurus => thesaurus.label !== ''));
@@ -67,6 +67,7 @@ const ThesauriValueFormSidepanel = ({
         onSubmit={handleSubmit(submitHandler)}
         className="flex flex-col h-full"
         id="value-thesauri-form"
+        data-testid="value-thesauri-form"
       >
         <Sidepanel.Body>
           {value.length === 0 && (
@@ -123,7 +124,7 @@ const ThesauriValueFormSidepanel = ({
               styling="light"
               onClick={closePanel}
               className="grow"
-              data-testid="menu-form-cancel"
+              data-testid="thesaurus-form-cancel"
             >
               <Translate>Cancel</Translate>
             </Button>

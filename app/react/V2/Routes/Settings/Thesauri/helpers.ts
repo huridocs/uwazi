@@ -1,8 +1,9 @@
+import { SetStateAction } from 'react';
 import { LoaderFunction } from 'react-router-dom';
-import { Row, RowSelectionState } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
-import { assign } from 'lodash';
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { Row, RowSelectionState } from '@tanstack/react-table';
+import { assign, isEqual, orderBy, remove } from 'lodash';
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 import ThesauriAPI from 'V2/api/thesauri';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
 import { httpRequest } from 'shared/superagent';
@@ -93,15 +94,100 @@ interface ConfirmationCallback {
   arg?: Row<ThesaurusRow>;
 }
 
+const updateValues = (items: ThesaurusRow[], prev: ThesaurusRow[]) => {
+  items.forEach(({ groupId, ...newItem }) => {
+    if (!groupId) {
+      prev.push(newItem);
+    } else {
+      const prevGroup = prev.find(item => item.rowId === groupId)!;
+      const rest = prevGroup.subRows?.filter(item => item.rowId !== newItem.rowId) || [];
+      const prevItem = prevGroup.subRows?.find(item => item.rowId === newItem.rowId) || {};
+      prevGroup.subRows = [...rest, { ...prevItem, ...newItem }];
+    }
+  });
+};
+
+const removeItem = (prev: ThesaurusRow[], deletedItem: ThesaurusRow) => {
+  const removed = remove(prev, item => item.rowId === deletedItem.rowId);
+  if (!removed.length) {
+    prev
+      .filter(prevItem => prevItem.subRows?.length)
+      .forEach(prevItem =>
+        remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId)
+      );
+  }
+};
+
+const sortValues =
+  (
+    thesaurusValues: ThesaurusRow[],
+    setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
+  ) =>
+  () => {
+    setThesaurusValues([...orderBy(thesaurusValues, 'label')]);
+  };
+
+const addItemSubmit =
+  (
+    thesaurusValues: ThesaurusRow[],
+    setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
+  ) =>
+  (items: ThesaurusRow[]) => {
+    const prevItem = items.length && findItem(thesaurusValues, items[0]);
+    if (!prevItem) {
+      setThesaurusValues((prev: ThesaurusRow[]) => {
+        updateValues(items, prev);
+        return [...prev];
+      });
+    } else {
+      prevItem.label = items[0].label;
+      setThesaurusValues([...thesaurusValues]);
+    }
+  };
+const addGroupSubmit =
+  (
+    thesaurusValues: ThesaurusRow[],
+    setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
+  ) =>
+  (group: ThesaurusRow) => {
+    const prevItem = findItem(thesaurusValues, group);
+    if (!prevItem) {
+      setThesaurusValues((prev: ThesaurusRow[]) => {
+        prev.push(group);
+        return [...prev];
+      });
+    } else {
+      setThesaurusValues((prev: ThesaurusRow[]) => {
+        updateValues(group.subRows || [], prev);
+        const prevGroup = findItem(prev, group)!;
+        prevGroup.label = group.label;
+        return [...prev];
+      });
+    }
+  };
+
+const compareThesaurus = (
+  thesaurus: ClientThesaurus,
+  currentStatus: { name: string; values: ThesaurusValueSchema[] }
+) => {
+  const changedName = thesaurus?.name !== currentStatus?.name;
+  const changedValues = !isEqual(thesaurus?.values, currentStatus?.values);
+  return changedName || changedValues;
+};
+
 export {
   sanitizeThesaurusValues,
   sanitizeThesauri,
   importThesaurus,
   addSelection,
-  findItem,
   editThesaurusLoader,
   emptyThesaurus,
   thesaurusAsRow,
+  removeItem,
+  sortValues,
+  addItemSubmit,
+  addGroupSubmit,
+  compareThesaurus,
 };
 
 export type { ConfirmationCallback };

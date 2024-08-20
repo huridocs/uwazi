@@ -90,7 +90,7 @@ const ThesauriList = () => {
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
                 color="error"
-                data-testid="menu-delete-link"
+                data-testid="thesaurus-delete-link"
               >
                 <Translate>Delete</Translate>
               </Button>

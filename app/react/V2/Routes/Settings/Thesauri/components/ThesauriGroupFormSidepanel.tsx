@@ -66,7 +66,9 @@ const ThesauriGroupFormSidepanel = ({
   }, [watch, append]);
 
   const curateBeforeSubmit = (tValue: ThesaurusRow) => {
-    const filteredValues = (tValue.subRows || []).filter(fValue => !isEmpty(fValue.label));
+    const filteredValues = (tValue.subRows || [])
+      .filter(fValue => !isEmpty(fValue.label))
+      .map(item => ({ ...item, groupId: tValue.rowId }));
 
     submit({
       ...tValue,
@@ -149,7 +151,7 @@ const ThesauriGroupFormSidepanel = ({
               styling="light"
               onClick={closePanel}
               className="grow"
-              data-testid="menu-form-cancel"
+              data-testid="thesaurus-form-cancel"
             >
               <Translate>Cancel</Translate>
             </Button>
