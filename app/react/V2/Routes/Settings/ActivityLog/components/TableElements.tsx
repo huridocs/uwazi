@@ -6,14 +6,15 @@ import { Tooltip } from 'flowbite-react';
 import { Pill, Button } from 'app/V2/Components/UI';
 import type { PillColor } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { ActivityLogEntryType, ActivityLogSemanticType } from 'shared/types/activityLogEntryType';
+import { ActivityLogSemanticType } from 'shared/types/activityLogEntryType';
+import { LogEntry } from '../ActivityLogLoader';
 
 const ActionHeader = () => <Translate>Action</Translate>;
 const UserHeader = () => <Translate>User</Translate>;
 const DescriptionHeader = () => <Translate>Description</Translate>;
 const TimeHeader = () => <Translate>Timestamp</Translate>;
 
-const columnHelper = createColumnHelper<ActivityLogEntryType>();
+const columnHelper = createColumnHelper<LogEntry>();
 type Methods = 'CREATE' | 'UPDATE' | 'DELETE' | 'RAW' | 'MIGRATE' | 'WARNING';
 
 const methodColors: Map<Methods, PillColor> = new Map([
@@ -33,15 +34,15 @@ const ActionPill = ({ action, className = '' }: { action: string; className?: st
     </Pill>
   );
 };
-const ActionCell = ({ cell }: CellContext<ActivityLogEntryType, string>) => (
+const ActionCell = ({ cell }: CellContext<LogEntry, string>) => (
   <ActionPill action={cell.row.original.semantic.action} />
 );
 
-const UserCell = ({ cell }: CellContext<ActivityLogEntryType, string>) => (
+const UserCell = ({ cell }: CellContext<LogEntry, string>) => (
   <span className="text-primary-700">{cell.getValue()}</span>
 );
 
-const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLogSemanticType>) => {
+const DescriptionCell = ({ cell }: CellContext<LogEntry, ActivityLogSemanticType>) => {
   const semanticData = cell.getValue();
 
   return (
@@ -49,16 +50,16 @@ const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLog
       <Tooltip
         // eslint-disable-next-line react/style-prop-object
         style="light"
-        className="max-w-lg min-w-20 max-h-64"
+        className="max-w-lg max-h-64 min-w-20"
         content={
           <div className="flex-col">
-            <div className="w-full gap-4 max-h-16">
+            <div className="gap-4 w-full max-h-16">
               <Translate>Query</Translate>
               <span className="block overflow-hidden text-ellipsis">{cell.row.original.query}</span>
             </div>
-            <div className="w-full gap-4 max-h-48">
+            <div className="gap-4 w-full max-h-48">
               <Translate>Body</Translate>
-              <span className="block overflow-hidden text-ellipsis max-h-40">
+              <span className="block overflow-hidden max-h-40 text-ellipsis">
                 {cell.row.original.body}
               </span>
             </div>
@@ -89,7 +90,7 @@ const DescriptionCell = ({ cell }: CellContext<ActivityLogEntryType, ActivityLog
 
 const TimeCell =
   (dateFormat: string) =>
-  ({ cell }: CellContext<ActivityLogEntryType, number>) => {
+  ({ cell }: CellContext<LogEntry, number>) => {
     const date = moment(cell.getValue());
     return (
       <>
@@ -99,7 +100,7 @@ const TimeCell =
     );
   };
 
-const ViewCell = ({ cell, column }: CellContext<ActivityLogEntryType, string>) => (
+const ViewCell = ({ cell, column }: CellContext<LogEntry, string>) => (
   <Button
     styling="outline"
     className="leading-4"
