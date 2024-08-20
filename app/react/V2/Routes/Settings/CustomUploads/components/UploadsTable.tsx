@@ -1,20 +1,20 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { FileType } from 'shared/types/fileType';
 import { Translate } from 'app/I18N';
 import { Button, FileIcon } from 'V2/Components/UI';
+import { CustomUpload } from '../CustomUploads';
 
-const columnHelper = createColumnHelper<FileType>();
+const columnHelper = createColumnHelper<CustomUpload>();
 
 const TitleHeader = () => <Translate>Name</Translate>;
 const PreviewHeader = () => <Translate>Preview</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
-const TitleCell = ({ getValue }: CellContext<FileType, string>) => getValue();
-const URLCell = ({ getValue }: CellContext<FileType, string>) => `/assets/${getValue()}`;
-const PreviewCell = ({ cell }: CellContext<FileType, any>) => {
+const TitleCell = ({ getValue }: CellContext<CustomUpload, string>) => getValue();
+const URLCell = ({ getValue }: CellContext<CustomUpload, string>) => `/assets/${getValue()}`;
+const PreviewCell = ({ cell }: CellContext<CustomUpload, any>) => {
   const { mimetype = '', originalname, filename } = cell.row.original;
   return (
     <div className="flex justify-center items-center">
@@ -27,7 +27,8 @@ const PreviewCell = ({ cell }: CellContext<FileType, any>) => {
     </div>
   );
 };
-const ActionCell = ({ cell }: CellContext<FileType, any>) => {
+
+const ActionCell = ({ cell }: CellContext<CustomUpload, any>) => {
   const actions = cell.column.columnDef.meta?.action
     ? cell.column.columnDef.meta?.action()
     : undefined;
@@ -55,8 +56,8 @@ const ActionCell = ({ cell }: CellContext<FileType, any>) => {
 };
 
 const createColumns = (
-  handleDelete: (file: FileType) => void,
-  editFile: (file: FileType) => void
+  handleDelete: (file: CustomUpload) => void,
+  editFile: (file: CustomUpload) => void
 ) => [
   columnHelper.display({
     id: 'preview',

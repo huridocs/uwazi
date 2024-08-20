@@ -4,13 +4,12 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
-import { Row } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { FileType } from 'shared/types/fileType';
 import { getByType, remove, UploadService } from 'V2/api/files';
-import { Button, ConfirmationModal, Table_deprecated as Table } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table } from 'V2/Components/UI';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import { notificationAtom } from 'V2/atoms';
@@ -22,28 +21,30 @@ import {
   EditFileSidepanel,
 } from './components';
 
+type CustomUpload = FileType & { rowId: string };
+
 const customUploadsLoader =
-  (headers?: IncomingHttpHeaders): LoaderFunction<FileType[]> =>
+  (headers?: IncomingHttpHeaders): LoaderFunction<CustomUpload[]> =>
   async () => {
-    const files = await getByType('custom', headers);
+    const files = (await getByType('custom', headers)).map(file => ({ ...file, rowId: file._id }));
     return files;
   };
 
 const uploadService = new UploadService('custom');
 
 const CustomUploads = () => {
-  const files = useLoaderData() as FileType[];
+  const files = useLoaderData() as CustomUpload[];
   const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
-  const [selectedRows, setSelectedRows] = useState<Row<FileType>[]>([]);
-  const [fileToEdit, setFileToEdit] = useState<FileType>();
+  const [selectedRows, setSelectedRows] = useState<CustomUpload[]>([]);
+  const [fileToEdit, setFileToEdit] = useState<CustomUpload>();
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [showUploadsModal, setShowUploadsModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [showSidepanel, setShowSipanel] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
-    items: Row<FileType>[] | FileType[];
+    items: CustomUpload[];
   }>({
     action: () => {},
     items: [],
@@ -84,7 +85,7 @@ const CustomUploads = () => {
     }
   };
 
-  const handleDelete = async (file: FileType) => {
+  const handleDelete = async (file: CustomUpload) => {
     setConfirmationModal(true);
     setModalProps({
       items: [file],
@@ -98,7 +99,7 @@ const CustomUploads = () => {
   };
 
   const deleteMultiple = async () => {
-    const filesToDelete = selectedRows.map(row => row.original._id);
+    const filesToDelete = selectedRows.map(row => row._id);
     setConfirmationModal(false);
     setSelectedRows([]);
     const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
@@ -112,17 +113,21 @@ const CustomUploads = () => {
         <SettingsContent.Header title="Custom Uploads" />
 
         <SettingsContent.Body>
-          <Table<FileType>
-            enableSelection
-            onSelection={selected => {
-              setSelectedRows(selected);
-            }}
+          <Table
+            data={files}
             columns={createColumns(handleDelete, file => {
               setShowSipanel(true);
               setFileToEdit(file);
             })}
-            data={files}
-            title={<Translate>Custom Uploads</Translate>}
+            onChange={({ selectedRows: selected }) => {
+              setSelectedRows(files.filter(file => file.rowId in selected));
+            }}
+            enableSelections
+            header={
+              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                Custom Uploads
+              </Translate>
+            }
           />
         </SettingsContent.Body>
 
@@ -184,4 +189,5 @@ const CustomUploads = () => {
   );
 };
 
+export type { CustomUpload };
 export { CustomUploads, customUploadsLoader };
