@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { Provider } from 'react-redux';
 import { MultiselectList } from 'V2/Components/Forms';
@@ -11,26 +11,41 @@ const meta: Meta<typeof MultiselectList> = {
 
 type Story = StoryObj<typeof MultiselectList>;
 
-const Primary: Story = {
-  render: args => (
+const StoryComponent = ({ args }: any) => {
+  const [searchAndFocus, setSearchAndFocus] = useState('');
+
+  return (
     <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="w-full p-4 m-auto md:w-1/2">
-          <MultiselectList
-            label={args.label}
-            items={args.items}
-            onChange={args.onChange}
-            hasErrors={args.hasErrors}
-            checkboxes={args.checkboxes}
-            foldableGroups={args.foldableGroups}
-            allowSelelectAll={args.allowSelelectAll}
-            startOnSelected={args.startOnSelected}
-            value={args.value}
-          />
+      <>
+        <div className="tw-content">
+          <div className="w-full p-4 m-auto md:w-1/2">
+            <MultiselectList
+              label={args.label}
+              items={args.items}
+              onChange={args.onChange}
+              hasErrors={args.hasErrors}
+              checkboxes={args.checkboxes}
+              foldableGroups={args.foldableGroups}
+              allowSelelectAll={args.allowSelelectAll}
+              startOnSelected={args.startOnSelected}
+              value={args.value}
+              search={searchAndFocus}
+            />
+          </div>
         </div>
-      </div>
+        <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('another')}>
+          Search & Focus
+        </button>
+        <button type="button" className="tw-hidden" onClick={() => setSearchAndFocus('')}>
+          Clear
+        </button>
+      </>
     </Provider>
-  ),
+  );
+};
+
+const Primary: Story = {
+  render: args => <StoryComponent args={args} />,
 };
 
 const Basic: Story = {

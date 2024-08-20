@@ -1,34 +1,11 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { UseFormGetFieldState, UseFormRegister, UseFormSetValue } from 'react-hook-form';
-import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import RenderIfVisible from 'react-render-if-visible';
+import { CellContext } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema } from 'app/istore';
-import { Button, Pill, Table_deprecated as Table } from 'V2/Components/UI';
-import { FormInput } from './FormInput';
+import { Button, Pill } from 'V2/Components/UI';
 
-type TableData = {
-  language: string | undefined;
-  translationStatus: {
-    languageKey: string | undefined;
-    status: string;
-  };
-  fieldKey: string;
-};
-
-type TranslationsTableType = {
-  tablesData: ({ [contextTerm: string]: TableData[] } | undefined)[];
-  register: UseFormRegister<any>;
-  setValue: UseFormSetValue<any>;
-  getFieldState: UseFormGetFieldState<any>;
-  submitting: boolean;
-};
-
-const LanguageHeader = () => <Translate>Language</Translate>;
-const StatusHeader = () => <Translate>Language Code</Translate>;
-const FieldKeyHeader = () => <Translate>Value</Translate>;
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
@@ -49,66 +26,4 @@ const ContextPill = ({ cell }: CellContext<ClientTranslationContextSchema, any>)
   </div>
 );
 
-const LanguagePill = ({ cell }: CellContext<TableData, TableData['translationStatus']>) => {
-  let color: 'gray' | 'primary' | 'yellow' = 'gray';
-  if (cell.getValue().status === 'defaultLanguage') color = 'primary';
-  if (cell.getValue().status === 'untranslated') color = 'yellow';
-
-  return <Pill color={color}>{cell.getValue().languageKey?.toUpperCase()}</Pill>;
-};
-
-const TranslationsTables = ({
-  tablesData,
-  register,
-  setValue,
-  submitting,
-  getFieldState,
-}: TranslationsTableType) => {
-  const memoizedInput = useMemo(
-    () => (data: any) => FormInput(data, { register, setValue, submitting, getFieldState }),
-    [getFieldState, register, setValue, submitting]
-  );
-
-  const columnHelper = createColumnHelper<TableData>();
-
-  const columns = [
-    columnHelper.accessor('language', {
-      header: LanguageHeader,
-      enableSorting: false,
-    }),
-
-    columnHelper.accessor('translationStatus', {
-      header: StatusHeader,
-      cell: LanguagePill,
-      enableSorting: false,
-      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
-    }),
-    columnHelper.accessor('fieldKey', {
-      header: FieldKeyHeader,
-      cell: memoizedInput,
-      enableSorting: false,
-      meta: { headerClassName: 'w-full' },
-    }),
-  ];
-
-  return (
-    <>
-      {tablesData.map(data => {
-        if (data) {
-          const [contextTerm] = Object.keys(data);
-          return (
-            <div key={contextTerm} className="mt-4">
-              <RenderIfVisible stayRendered>
-                <Table<TableData> columns={columns} data={data[contextTerm]} title={contextTerm} />
-              </RenderIfVisible>
-            </div>
-          );
-        }
-
-        return undefined;
-      })}
-    </>
-  );
-};
-
-export { RenderButton, ContextPill, TranslationsTables, LabelHeader, TypeHeader, ActionHeader };
+export { RenderButton, ContextPill, LabelHeader, TypeHeader, ActionHeader };
