@@ -1,12 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
 import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from 'react-router-dom';
-import { createColumnHelper, Row } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as pagesAPI from 'V2/api/pages';
-import { Button, ConfirmationModal, Table_deprecated as Table } from 'app/V2/Components/UI';
+import { Button, ConfirmationModal, Table } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { Page } from 'app/V2/shared/types';
 import { notificationAtom, notificationAtomType } from 'app/V2/atoms';
@@ -22,10 +22,12 @@ import {
   List,
 } from './components/PageListTable';
 
+type TablePage = Page & { rowId: string };
+
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) =>
-    pagesAPI.get(params.lang || 'en', headers);
+    (await pagesAPI.get(params.lang || 'en', headers)).map(page => ({ ...page, rowId: page._id }));
 
 const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
   type: !hasErrors ? 'success' : 'error',
@@ -35,20 +37,20 @@ const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasEr
     <Translate>An error occurred</Translate>
   ),
 });
-// eslint-disable-next-line max-statements
+
+const columnHelper = createColumnHelper<TablePage>();
+
 const PagesList = () => {
-  const [selectedPages, setSelectedPages] = useState<Row<Page>[]>([]);
+  const [selectedPages, setSelectedPages] = useState<TablePage[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const pages = useLoaderData() as Page[];
+  const pages = useLoaderData() as TablePage[];
   const revalidator = useRevalidator();
   const params = useParams();
   const setNotifications = useSetAtom(notificationAtom);
 
-  const columnHelper = createColumnHelper<Page>();
-
   const deleteSelected = async () => {
     setShowModal(false);
-    const sharedIds = selectedPages.map(row => row.original.sharedId);
+    const sharedIds = selectedPages.map(row => row.sharedId);
     const result = await Promise.all(
       sharedIds.map(async sharedId => pagesAPI.deleteBySharedId(sharedId!))
     );
@@ -94,13 +96,19 @@ const PagesList = () => {
       <SettingsContent>
         <SettingsContent.Header title="Pages" />
         <SettingsContent.Body>
-          <Table<Page>
+          <Table
             columns={columns}
             data={pages}
-            enableSelection
-            title={<Translate>Pages</Translate>}
-            onSelection={setSelectedPages}
-            initialState={{ sorting: [{ id: 'title', desc: false }] }}
+            enableSelections
+            header={
+              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                Pages
+              </Translate>
+            }
+            onChange={({ selectedRows }) => {
+              setSelectedPages(pages.filter(page => page.rowId in selectedRows));
+            }}
+            defaultSorting={[{ id: 'title', desc: false }]}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
@@ -146,4 +154,6 @@ const PagesList = () => {
     </div>
   );
 };
+
+export type { TablePage };
 export { PagesList, pagesListLoader };
