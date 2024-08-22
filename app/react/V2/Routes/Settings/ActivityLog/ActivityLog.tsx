@@ -95,6 +95,7 @@ const ActivityLog = () => {
             <Table
               data={activityLogData}
               columns={columns}
+              defaultSorting={sorting}
               sortingFn={sortingState => {
                 setSorting(sortingState);
               }}
