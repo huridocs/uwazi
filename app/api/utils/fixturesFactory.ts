@@ -129,8 +129,8 @@ function getFixturesFactory() {
       defaultProps: EntitySchema = {},
       propsPerLanguage:
         | {
-            [key: string]: EntitySchema;
-          }
+          [key: string]: EntitySchema;
+        }
         | undefined = undefined
     ): EntitySchema[] {
       return languages.map(language => {
@@ -161,6 +161,16 @@ function getFixturesFactory() {
       },
     }),
 
+    document: (entity: string, props: Partial<WithId<FileType>> = {}): WithId<FileType> => ({
+      _id: idMapper(`document_for_${entity}`),
+      entity,
+      language: 'en',
+      type: 'document',
+      filename: `${entity}_document.pdf`,
+      originalname: `${entity}_document.pdf`,
+      ...props,
+    }),
+
     file: (
       id: string,
       entity: string | undefined,
@@ -170,7 +180,7 @@ function getFixturesFactory() {
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
     ): WithId<FileType> => ({
-      _id: idMapper(`${id}`),
+      _id: idMapper(id),
       entity,
       language,
       type,
@@ -235,8 +245,8 @@ function getFixturesFactory() {
             typeof item === 'string'
               ? [{ _id: idMapper(item), id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                  thesaurusNestedValues(rootValue, children, idMapper)
-                );
+                thesaurusNestedValues(rootValue, children, idMapper)
+              );
           return [...accumulator, ...nestedItems];
         },
         []
