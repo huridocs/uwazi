@@ -4,7 +4,10 @@ import { Translate } from 'app/I18N';
 import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
-interface TableRelationshipType extends ClientRelationshipType {
+
+type Relationships = ClientRelationshipType & { rowId: string };
+
+interface TableRelationshipType extends Relationships {
   templates: Template[];
   disableRowSelection: boolean;
 }
@@ -20,7 +23,7 @@ const EditButton = ({ cell, column }: CellContext<TableRelationshipType, string>
 );
 
 const TitleCell = ({ cell, getValue }: CellContext<TableRelationshipType, string>) => (
-  <div className="flex items-center gap-2">
+  <div className="flex gap-2 items-center">
     <Translate className="text-indigo-800" context={cell.row.original._id}>
       {getValue()}
     </Translate>
@@ -46,7 +49,7 @@ const TitleHeader = () => <Translate>Label</Translate>;
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
-const columnHelper = createColumnHelper<any>();
+const columnHelper = createColumnHelper<TableRelationshipType>();
 const columns = (actions: { edit: Function }) => [
   columnHelper.accessor('name', {
     id: 'name',
@@ -54,19 +57,19 @@ const columns = (actions: { edit: Function }) => [
     cell: TitleCell,
     enableSorting: true,
     meta: { headerClassName: 'w-1/2' },
-  }) as ColumnDef<TableRelationshipType, 'name'>,
+  }),
   columnHelper.accessor('templates', {
     header: TemplateHeader,
     cell: templatesCells,
     enableSorting: false,
     meta: { headerClassName: 'w-1/2' },
-  }) as ColumnDef<TableRelationshipType, 'templates'>,
+  }),
   columnHelper.accessor('key', {
     header: ActionHeader,
     cell: EditButton,
     enableSorting: false,
     meta: { action: actions.edit, headerClassName: 'w-0 text-center' },
-  }) as ColumnDef<TableRelationshipType, 'key'>,
+  }),
 ];
 export { EditButton, TitleHeader, TitleCell, columns };
-export type { TableRelationshipType };
+export type { TableRelationshipType, Relationships };
