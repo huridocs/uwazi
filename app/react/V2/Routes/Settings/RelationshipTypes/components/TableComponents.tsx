@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
 
@@ -64,7 +64,7 @@ const columns = (actions: { edit: Function }) => [
     enableSorting: false,
     meta: { headerClassName: 'w-1/2' },
   }),
-  columnHelper.accessor('key', {
+  columnHelper.accessor('_id', {
     header: ActionHeader,
     cell: EditButton,
     enableSorting: false,
