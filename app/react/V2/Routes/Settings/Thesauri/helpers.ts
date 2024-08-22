@@ -112,9 +112,12 @@ const removeItem = (prev: ThesaurusRow[], deletedItem: ThesaurusRow) => {
   if (!removed.length) {
     prev
       .filter(prevItem => prevItem.subRows?.length)
-      .forEach(prevItem =>
-        remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId)
-      );
+      .forEach(prevItem => {
+        remove(prevItem.subRows!, subItem => subItem.rowId === deletedItem.rowId);
+        if (prevItem.subRows?.length === 0) {
+          remove(prev, item => item.rowId === prevItem.rowId);
+        }
+      });
   }
 };
 
