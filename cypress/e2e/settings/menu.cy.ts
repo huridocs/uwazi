@@ -11,10 +11,6 @@ describe('Menu configuration', () => {
     cy.contains('span', 'Menu').click();
   });
 
-  it('should have no detectable accessibility violations on load', () => {
-    cy.checkA11y();
-  });
-
   beforeEach(() => {
     cy.intercept('GET', 'api/settings/links').as('fetchLinks');
   });
@@ -76,7 +72,6 @@ describe('Menu configuration', () => {
   });
 
   it('tests edit groups', () => {
-    //open groups
     cy.get('tbody tr:nth-of-type(3)').contains('button', 'Group').click();
     cy.get('tbody tr:nth-of-type(2)').contains('button', 'Group').click();
 
@@ -84,7 +79,7 @@ describe('Menu configuration', () => {
     cy.get('#link-group').select('Group 2');
     cy.getByTestId('menu-form-submit').click();
 
-    cy.get('tbody tr:nth-of-type(4)').contains('Edit').click();
+    cy.get('tbody tr:nth-of-type(5)').contains('Edit').click();
     cy.get('#link-group').select('Group 1');
     cy.getByTestId('menu-form-submit').click();
 
@@ -112,5 +107,20 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-save').click();
     cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');
+  });
+
+  it('should have no detectable accessibility violations on load', () => {
+    cy.checkA11y();
+  });
+
+  it('should verify the changes impacted on the navigation bar', () => {
+    cy.get('.menuItems > .menuNav-list').within(() => {
+      cy.contains('Group 1').click();
+      cy.get('.dropdown-menu.expanded').should('be.empty');
+      cy.contains('Group 2').click();
+      cy.get('.dropdown-menu.expanded').within(() => {
+        cy.contains('Link 1 edited');
+      });
+    });
   });
 });
