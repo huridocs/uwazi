@@ -3,7 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
-import { isEqual } from 'lodash';
+import { isEqual, remove } from 'lodash';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
@@ -45,10 +45,10 @@ const ThesaurusForm = ({
   const saveThesaurus = async (data: ClientThesaurus) => {
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
     const savedThesaurus = await ThesauriAPI.save(thesaurusToUpdate);
-    const prevThesaurus = thesauri.find(item => item._id === savedThesaurus._id);
-    if (!prevThesaurus) {
-      thesauri.push(savedThesaurus);
+    if (thesauri.find(item => item._id === savedThesaurus._id)) {
+      remove(thesauri, item => item._id === savedThesaurus._id);
     }
+    thesauri.push(savedThesaurus);
     setThesauri([...thesauri]);
     setValue('_id', savedThesaurus._id);
     setNotifications({
