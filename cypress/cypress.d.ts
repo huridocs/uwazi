@@ -26,6 +26,7 @@ declare global {
       ): Chainable<Element>;
       checkAccessibility(components: React.ReactNode[]);
       realDragAndDrop(subject: Chainable, target: Chainable): void;
+      checkRowContent(rowNumber: number, cellsContent: string[]);
       // setCursor(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorBefore(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;
       // setCursorAfter(subject: string, options?: Partial<TypeOptions>): Chainable<Element>;

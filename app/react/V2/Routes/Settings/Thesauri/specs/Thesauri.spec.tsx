@@ -51,11 +51,6 @@ jest.mock('app/V2/api/thesauri', () => ({
 }));
 
 describe('Settings Thesauri', () => {
-  beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(jest.fn());
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
-  });
-
   describe('ThesauriList', () => {
     let renderResult: RenderResult;
     const store = atomsGlobalState();

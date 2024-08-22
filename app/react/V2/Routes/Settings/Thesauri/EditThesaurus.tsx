@@ -4,6 +4,7 @@ import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router-d
 import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
+import { isEmpty } from 'lodash';
 import { Translate } from 'app/I18N';
 import { ClientThesaurus } from 'app/apiResponseTypes';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
@@ -134,7 +135,7 @@ const EditThesaurus = () => {
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className="bottom-0 bg-indigo-50">
-          {selectedThesaurusValue.length > 1 && (
+          {!isEmpty(selectedThesaurusValue) && (
             <div className="flex items-center gap-2">
               <Button
                 type="button"

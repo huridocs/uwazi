@@ -33,7 +33,7 @@ HTMLCollection [
           >
             Animals
           </span>
-            (
+           (
           <span
             class="translation"
           >
@@ -95,7 +95,7 @@ HTMLCollection [
           >
             Colors
           </span>
-            (
+           (
           <span
             class="translation"
           >
@@ -158,7 +158,7 @@ HTMLCollection [
           >
             Names
           </span>
-            (
+           (
           <span
             class="translation"
           >
@@ -351,7 +351,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                   class="flex flex-col items-start gap-1"
                 >
                   <h2
-                    class="text-lg"
+                    class="text-base font-semibold text-left text-gray-900 bg-white"
                   >
                     <span
                       class="translation active"
@@ -479,7 +479,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                       >
                         Animals
                       </span>
-                        (
+                       (
                       <span
                         class="translation"
                       >
@@ -541,7 +541,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                       >
                         Colors
                       </span>
-                        (
+                       (
                       <span
                         class="translation"
                       >
@@ -604,7 +604,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                       >
                         Names
                       </span>
-                        (
+                       (
                       <span
                         class="translation"
                       >

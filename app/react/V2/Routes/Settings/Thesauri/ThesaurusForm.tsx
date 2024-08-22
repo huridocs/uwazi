@@ -88,7 +88,7 @@ const ThesaurusForm = ({
         </div>
         <Table
           data={thesaurusValues}
-          columns={columns({ edit })}
+          columns={columns({ edit }, thesaurus)}
           dnd={{ enable: true }}
           enableSelections
           onChange={({ selectedRows, rows }) => {
@@ -98,7 +98,7 @@ const ThesaurusForm = ({
                 addSelection(selectedRows, selection)(item);
                 item.subRows?.forEach(addSelection(selectedRows, selection));
               });
-              return selection;
+              return [...selection];
             });
             if (!isEqual(rows, thesaurusValues)) {
               setThesaurusValues(rows);

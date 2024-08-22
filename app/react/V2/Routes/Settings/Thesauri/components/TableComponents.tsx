@@ -4,29 +4,36 @@ import { CellContext, ColumnDef, createColumnHelper } from '@tanstack/react-tabl
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ThesaurusSchema, ThesaurusValueSchema } from 'shared/types/thesaurusType';
-import { ClientThesaurusValue } from 'app/apiResponseTypes';
+import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
 const ThesaurusLabel = ({ cell }: any) => (
   <div className="flex items-center ">
     <span className="text-indigo-700">{cell.row.original.name}</span>
-    &nbsp; (<Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>)
+    &nbsp;(<Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>)
   </div>
 );
 
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
-const ThesaurusValueLabel = ({ row, getValue }: CellContext<ThesaurusValueSchema, string>) => (
-  <div className="flex items-center gap-2">
-    <Translate
-      context="Menu"
-      className={row.getIsExpanded() ? 'text-indigo-700' : 'text-indigo-700'}
-    >
-      {getValue()}
-    </Translate>
-  </div>
-);
+const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusValueSchema, string>) => {
+  const { thesaurus } = cell.getContext().column.columnDef.meta!.data;
+  return (
+    <div className="flex items-center gap-2">
+      <span className="text-indigo-700">{getValue()}</span>
+      {thesaurus !== undefined && (
+        <>
+          &nbsp;(
+          <Translate context={thesaurus._id} className="text-gray-700 ">
+            {getValue()}
+          </Translate>
+          )
+        </>
+      )}
+    </div>
+  );
+};
 
 const templatesCells = ({ cell }: CellContext<any, any>) => (
   <div className="flex flex-wrap gap-2">
@@ -70,12 +77,12 @@ interface ThesaurusRow extends Omit<ClientThesaurusValue, 'values'> {
 }
 
 const columnHelper = createColumnHelper<any>();
-const columns = (actions: { edit?: Function }) => [
+const columns = (actions: { edit?: Function }, thesaurus: ClientThesaurus) => [
   columnHelper.accessor('label', {
     id: 'label',
     header: LabelHeader,
     cell: ThesaurusValueLabel,
-    meta: { headerClassName: 'w-11/12' },
+    meta: { headerClassName: 'w-11/12', data: { thesaurus } },
   }) as ColumnDef<ThesaurusRow, 'label'>,
   columnHelper.accessor('_id', {
     header: ActionHeader,
