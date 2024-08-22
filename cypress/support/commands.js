@@ -194,12 +194,4 @@ Cypress.Commands.add('realDragAndDrop', (subject, target) => {
   target.realMouseMove(0, 0, { position: 'center' }).realMouseUp().wait(100);
 });
 
-Cypress.Commands.add('checkRowContent', (rowNumber, cellsContent) => {
-  cellsContent.forEach(
-    (content, index) =>
-      content &&
-      cy.get(`tbody > :nth-child(${rowNumber}) > :nth-child(${index + 1})`).contains(content)
-  );
-});
-
 export {};
