@@ -202,6 +202,7 @@ describe('Thesauri configuration', () => {
     cy.contains('.item-document', 'País select').click();
     cy.contains('.metadata-name-select', 'Imported Colors: Imported Blue');
     changeLanguage('Español');
+    cy.contains('.documentTypes-selector li', 'País').click();
     cy.contains('.item-document', 'País select').click();
     cy.contains('.metadata-name-select', 'Colores Importados: Azul Importado');
   });
