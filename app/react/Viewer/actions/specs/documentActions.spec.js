@@ -70,6 +70,7 @@ describe('documentActions', () => {
       };
 
       const expectedActions = [
+        { type: 'CLOSE_CONNECTION_PANEL' },
         { type: 'documentViewer/tocBeingEdited/SET', value: true },
         { type: 'loadAction' },
         { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
@@ -111,6 +112,7 @@ describe('documentActions', () => {
         };
 
         const expectedActions = [
+          { type: 'CLOSE_CONNECTION_PANEL' },
           { type: 'documentViewer/tocBeingEdited/SET', value: true },
           { type: 'loadAction' },
           { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
