@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
@@ -137,23 +138,27 @@ const buildListQuery = (
 };
 
 async function getLabeledCounts(extractorId: ObjectId) {
-  const labeledAggregationQuery = [
+  const labeledQuery = { extractorId, 'state.labeled': true };
+  const labeledCount = await IXSuggestionsModel.count(labeledQuery);
+  return { labeled: labeledCount };
+}
+
+async function getAggregationCounts(extractorId: ObjectId) {
+  const aggregationQuery = [
     {
       $match: {
         ...baseQueryFragment(extractorId),
-        ...filterFragments.labeled._fragment,
       },
     },
     ...groupByAndCount('$state.match'),
   ];
-  const labeledAggregation: { _id: boolean; count: number }[] =
-    await IXSuggestionsModel.db.aggregate(labeledAggregationQuery);
-  const matchCount =
-    labeledAggregation.find((aggregation: any) => aggregation._id === true)?.count || 0;
-  const mismatchCount =
-    labeledAggregation.find((aggregation: any) => aggregation._id === false)?.count || 0;
-  const labeledCount = matchCount + mismatchCount;
-  return { labeledCount, matchCount, mismatchCount };
+  const matchedMismatchedAggregation: { _id: boolean; count: number }[] =
+    await IXSuggestionsModel.db.aggregate(aggregationQuery);
+  const match =
+    matchedMismatchedAggregation.find((aggregation: any) => aggregation._id === true)?.count || 0;
+  const mismatch =
+    matchedMismatchedAggregation.find((aggregation: any) => aggregation._id === false)?.count || 0;
+  return { match, mismatch };
 }
 
 const getNonLabeledCounts = async (_extractorId: ObjectId) => {
@@ -268,33 +273,17 @@ const Suggestions = {
     };
   },
 
-  aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
+  aggregate: async (_extractorId: ObjectIdSchema) => {
     const extractorId = new ObjectId(_extractorId);
-    const { labeledCount, matchCount, mismatchCount } = await getLabeledCounts(extractorId);
-    const {
-      nonLabeledCount,
-      noContextCount,
-      withSuggestionCount,
-      noSuggestionCount,
-      obsoleteCount,
-      othersCount,
-    } = await getNonLabeledCounts(extractorId);
-    const totalCount = labeledCount + nonLabeledCount;
+    const aggregations = await getAggregationCounts(extractorId);
+    const { labeled } = await getLabeledCounts(extractorId);
+    const { nonLabeledCount } = await getNonLabeledCounts(extractorId);
+    const totalCount = labeled + nonLabeledCount;
     return {
       total: totalCount,
-      labeled: {
-        _count: labeledCount,
-        match: matchCount,
-        mismatch: mismatchCount,
-      },
-      nonLabeled: {
-        _count: nonLabeledCount,
-        noContext: noContextCount,
-        withSuggestion: withSuggestionCount,
-        noSuggestion: noSuggestionCount,
-        obsolete: obsoleteCount,
-        others: othersCount,
-      },
+      ...aggregations,
+      labeled,
+      nonLabeled: nonLabeledCount,
     };
   },
 
