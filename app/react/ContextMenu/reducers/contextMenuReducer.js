@@ -38,6 +38,10 @@ export default function contextMenuReducer(state = initialState, action = {}) {
     return state.set('type', panels[action.panel]);
   }
 
+  if (action.type === ViewerActions.SHOW_TEXT_SELECTION_MENU) {
+    return state.set('type', 'ViewerTextSelectedMenu');
+  }
+
   if (
     action.type === ViewerActions.UNSET_SELECTION ||
     action.type === ViewerActions.LOAD_DEFAULT_VIEWER_MENU ||
