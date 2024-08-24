@@ -7,11 +7,22 @@ import { Translate } from 'app/I18N';
 import { Icon } from 'UI';
 import { addReference, saveTargetRangedReference } from '../actions/referencesActions';
 import { cancelTargetDocument } from '../actions/documentActions';
+import { toggleReferences } from '../actions/uiActions';
 
-export class TargetDocumentHeader extends Component {
+class TargetDocumentHeader extends Component {
   constructor(props) {
     super(props);
     this.save = this.save.bind(this);
+  }
+
+  componentDidUpdate(prevProps) {
+    const shouldToggle =
+      prevProps.uiState.get('connecting') !== this.props.uiState.get('connecting');
+
+    if (shouldToggle) {
+      const toggleState = !this.props.uiState.get('connecting');
+      this.props.toggleReferences(toggleState);
+    }
   }
 
   save() {
@@ -26,7 +37,7 @@ export class TargetDocumentHeader extends Component {
     const { targetDocument, reference } = this.props;
     const { targetRange } = reference;
 
-    let className = 'btn btn-default hidden';
+    let className = 'hidden btn btn-default';
 
     if (targetDocument && targetRange) {
       className = 'btn btn-success';
@@ -68,11 +79,14 @@ TargetDocumentHeader.propTypes = {
   saveTargetRangedReference: PropTypes.func,
   cancelTargetDocument: PropTypes.func,
   addReference: PropTypes.func,
+  toggleReferences: PropTypes.func,
+  uiState: PropTypes.object,
 };
 
 function mapStateToProps({ documentViewer, connections }) {
   return {
     connection: connections.connection,
+    uiState: connections.uiState,
     reference: documentViewer.uiState.toJS().reference,
     targetDocument: documentViewer.targetDoc.get('_id'),
   };
@@ -84,9 +98,11 @@ function mapDispatchToProps(dispatch) {
       saveTargetRangedReference,
       cancelTargetDocument,
       addReference,
+      toggleReferences,
     },
     dispatch
   );
 }
 
+export { TargetDocumentHeader };
 export default connect(mapStateToProps, mapDispatchToProps)(TargetDocumentHeader);

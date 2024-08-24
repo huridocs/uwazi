@@ -160,8 +160,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,새 비밀번호 확인
 Confirm publish multiple items,여러 항목 게시 확인
-Connect to a document,문서와 연결
 Connect to a paragraph,단락과 연결
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,커넥션 유형
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -243,6 +243,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,설명
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,변경 취소
 Discard changes?,Discard changes?

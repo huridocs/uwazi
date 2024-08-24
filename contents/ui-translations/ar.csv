@@ -159,8 +159,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,تأكيد كلمة المرور الجديدة
 Confirm publish multiple items,تأكيد نشر عناصر متعددة
-Connect to a document,الاتصال بمستند
 Connect to a paragraph,الاتصال بفقرة
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,نوع الاتصال
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -242,6 +242,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
