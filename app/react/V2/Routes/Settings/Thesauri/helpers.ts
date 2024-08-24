@@ -95,7 +95,7 @@ interface ConfirmationCallback {
   arg?: Row<ThesaurusRow>;
 }
 
-const updateValues = (items: ThesaurusRow[], prev: ThesaurusRow[]) => {
+const pushItemsIntoValues = (items: ThesaurusRow[], prev: ThesaurusRow[]) => {
   items.forEach(({ groupId, ...newItem }) => {
     if (!groupId) {
       prev.push(newItem);
@@ -128,7 +128,15 @@ const sortValues =
     setThesaurusValues: React.Dispatch<SetStateAction<ThesaurusRow[]>>
   ) =>
   () => {
-    setThesaurusValues([...orderBy(thesaurusValues, 'label')]);
+    const sortedSubRows = thesaurusValues.map(({ subRows, ...item }) =>
+      !subRows?.length
+        ? item
+        : {
+            ...item,
+            subRows: [...orderBy(subRows, 'label')],
+          }
+    );
+    setThesaurusValues([...orderBy(sortedSubRows, 'label')]);
   };
 
 const addItemSubmit =
@@ -140,7 +148,7 @@ const addItemSubmit =
     const prevItem = items.length && findItem(thesaurusValues, items[0]);
     if (!prevItem) {
       setThesaurusValues((prev: ThesaurusRow[]) => {
-        updateValues(items, prev);
+        pushItemsIntoValues(items, prev);
         return [...prev];
       });
     } else {
@@ -157,12 +165,13 @@ const addGroupSubmit =
     const prevItem = findItem(thesaurusValues, group);
     if (!prevItem) {
       setThesaurusValues((prev: ThesaurusRow[]) => {
-        prev.push(group);
+        const subRows = group.subRows?.map(({ groupId: _groupId, ...item }) => item);
+        prev.push({ ...group, subRows });
         return [...prev];
       });
     } else {
       setThesaurusValues((prev: ThesaurusRow[]) => {
-        updateValues(group.subRows || [], prev);
+        pushItemsIntoValues(group.subRows || [], prev);
         const prevGroup = findItem(prev, group)!;
         prevGroup.label = group.label;
         return [...prev];

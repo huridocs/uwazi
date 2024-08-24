@@ -41,6 +41,7 @@ const EditThesaurus = () => {
   const [selectedThesaurusValue, setSelectedThesaurusValue] = useState<ThesaurusRow[]>([]);
   const [thesaurusValues, setThesaurusValues] = useState<ThesaurusRow[]>([]);
   const [warnAboutUse, setWarnAboutUse] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const [confirmCallback, setConfirmCallback] = useState<ConfirmationCallback>();
   const setNotifications = useSetAtom(notificationAtom);
 
@@ -162,6 +163,10 @@ const EditThesaurus = () => {
                   <Translate>Sort</Translate>
                 </Button>
                 <ImportButton
+                  onClick={() => {
+                    setIsImporting(true);
+                  }}
+                  disabled={isEmpty(getValues().name)}
                   getThesaurus={getCurrentStatus}
                   onSuccess={(savedThesaurus: ThesaurusSchema) => {
                     setValue('_id', savedThesaurus._id);
@@ -170,8 +175,10 @@ const EditThesaurus = () => {
                       text: <Translate>Thesauri updated.</Translate>,
                     });
                     navigate(`../edit/${savedThesaurus._id}`);
+                    setIsImporting(false);
                   }}
                   onFailure={() => {
+                    setIsImporting(false);
                     setNotifications({
                       type: 'error',
                       text: <Translate>Error adding thesauri.</Translate>,
@@ -179,7 +186,7 @@ const EditThesaurus = () => {
                   }}
                 />
               </div>
-              <ThesaurusActions />
+              <ThesaurusActions disabled={isImporting} />
             </div>
           )}
         </SettingsContent.Footer>

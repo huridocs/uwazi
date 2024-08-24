@@ -30,14 +30,14 @@ const DeletionModal = ({ confirmCallback, setConfirmCallback }: DeletionModalPro
   />
 );
 
-const ThesaurusActions = () => (
+const ThesaurusActions = ({ disabled }: { disabled: boolean }) => (
   <div className="flex gap-2">
     <Link to="/settings/thesauri">
-      <Button styling="light" type="button">
+      <Button styling="light" type="button" disabled={disabled}>
         <Translate>Cancel</Translate>
       </Button>
     </Link>
-    <Button styling="solid" color="success" type="submit" form="edit-thesaurus">
+    <Button styling="solid" color="success" type="submit" form="edit-thesaurus" disabled={disabled}>
       <Translate>Save</Translate>
     </Button>
   </div>

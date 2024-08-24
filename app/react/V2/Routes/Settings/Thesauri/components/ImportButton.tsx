@@ -8,10 +8,14 @@ const ImportButton = ({
   onSuccess,
   onFailure,
   getThesaurus,
+  onClick,
+  disabled,
 }: {
   onSuccess: Function;
   onFailure: Function;
   getThesaurus: () => ClientThesaurus;
+  onClick: Function;
+  disabled: Boolean;
 }) => {
   const importThesauri: ChangeEventHandler<HTMLInputElement> = async e => {
     if (e.target.files && e.target.files[0]) {
@@ -26,9 +30,13 @@ const ImportButton = ({
   };
   return (
     <Button
+      disabled={disabled === true}
       styling="outline"
       data-testid="thesaurus-import-items"
-      onClick={() => (document.querySelector('input#import') as HTMLElement).click()}
+      onClick={e => {
+        onClick(e);
+        (document.querySelector('input#import') as HTMLElement).click();
+      }}
     >
       <Translate>Import</Translate>
       <input type="file" id="import" hidden onChange={importThesauri} />
