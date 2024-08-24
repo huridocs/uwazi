@@ -74,6 +74,7 @@ const ThesauriGroupFormSidepanel = ({
       ...tValue,
       subRows: filteredValues,
     });
+    reset(emptyGroup());
     closePanel();
   };
 

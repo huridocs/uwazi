@@ -51,6 +51,11 @@ jest.mock('app/V2/api/thesauri', () => ({
 }));
 
 describe('Settings Thesauri', () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'error').mockImplementation(jest.fn());
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   describe('ThesauriList', () => {
     let renderResult: RenderResult;
     const store = atomsGlobalState();
@@ -442,11 +447,11 @@ describe('Settings Thesauri', () => {
                 id: 'item3',
                 label: 'CHANGED GROUP',
                 values: [
+                  { label: 'ADDED CHILD' },
                   {
                     id: 'item3-1',
                     label: 'Child 1',
                   },
-                  { label: 'ADDED CHILD' },
                   { label: 'X item' },
                 ],
               },
