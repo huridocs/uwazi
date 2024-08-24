@@ -26,7 +26,10 @@ const ImportButton = ({
       } catch (ex) {
         onFailure(ex);
       }
+    } else {
+      onFailure();
     }
+    document.querySelector('input#import')!.setAttribute('value', '');
   };
   return (
     <Button
