@@ -14,12 +14,13 @@ const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => Thesaurus
   items,
   searchedItem
 ) =>
-  items.find(item => {
-    const match = item.rowId === searchedItem.rowId;
-    return !match && item.subRows?.length && item.subRows?.length > 0
-      ? findItem(item.subRows, searchedItem)
-      : match;
-  });
+  items
+    .map(item => {
+      let match = item.rowId === searchedItem.rowId ? item : undefined;
+      match = match || (item.subRows?.length ? findItem(item.subRows, searchedItem) : undefined);
+      return match;
+    })
+    .filter(v => v)[0];
 
 const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =>
   (rows || []).map(({ rowId: _rowId, groupId: _groupId, subRows: subItems, ...item }) => {
