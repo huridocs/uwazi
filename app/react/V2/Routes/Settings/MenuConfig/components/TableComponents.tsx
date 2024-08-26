@@ -3,7 +3,7 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Button } from 'app/V2/Components/UI';
-import { Link } from '../MenuConfig';
+import { Link } from '../shared';
 
 const EditButton = ({ cell, column }: CellContext<Link, string>) => (
   <Button

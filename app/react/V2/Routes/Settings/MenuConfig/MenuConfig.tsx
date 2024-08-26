@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 import { Row, RowSelectionState } from '@tanstack/react-table';
@@ -9,40 +9,13 @@ import { isEqual } from 'lodash';
 import { Translate } from 'app/I18N';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
-import { ClientSettingsLinkSchema, ClientSublink } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
 import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import uniqueID from 'shared/uniqueID';
 import { MenuForm } from './components/MenuForm';
-
 import { columns } from './components/TableComponents';
-
-type Link = Omit<ClientSettingsLinkSchema, 'sublinks'> & {
-  rowId?: string;
-  subRows?: (ClientSublink & { rowId?: string })[];
-};
-
-const createRowId = () => `tmp_${uniqueID()}`;
-
-const sanitizeIds = (_link: Link): ClientSettingsLinkSchema => {
-  const { rowId: _deletedRowId, ...link } = { ..._link };
-  const sanitizedLink: ClientSettingsLinkSchema = link;
-  if (link._id?.startsWith('tmp_')) {
-    delete sanitizedLink._id;
-  }
-  if (link.subRows) {
-    const sublinks =
-      link.subRows.map(sublink => {
-        const { _id, rowId: _deletedSubrowId, ...rest } = sublink;
-        return rest;
-      }) || [];
-    sanitizedLink.sublinks = sublinks;
-  }
-  delete link.subRows;
-  return sanitizedLink;
-};
+import { Link, sanitizeIds } from './shared';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
@@ -128,11 +101,18 @@ const MenuConfig = () => {
     setIsSidepanelOpen(false);
   };
 
-  useMemo(() => {
+  useEffect(() => {
     if (blocker.state === 'blocked') {
       setShowModal(true);
     }
   }, [blocker, setShowModal]);
+
+  useEffect(() => {
+    nextRowIds.current = rowIds;
+    setLinkState(links);
+    //rowIds is derived from links, no need to add links to the deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowIds]);
 
   useEffect(() => {
     const updatedRowsIds: string[] = [];
@@ -143,7 +123,7 @@ const MenuConfig = () => {
       }
     });
     nextRowIds.current = updatedRowsIds;
-  }, [linkState]);
+  }, [rowIds, linkState]);
 
   return (
     <div
@@ -244,4 +224,4 @@ const MenuConfig = () => {
 };
 
 export type { Link };
-export { MenuConfig, menuConfigloader, createRowId };
+export { MenuConfig, menuConfigloader };

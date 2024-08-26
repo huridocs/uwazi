@@ -5,7 +5,7 @@ import { InputField, Select, OptionSchema } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
 import { Button, Card } from 'app/V2/Components/UI';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { createRowId, Link } from '../MenuConfig';
+import { createRowId, Link } from '../shared';
 
 interface MenuFormProps {
   closePanel: () => void;
