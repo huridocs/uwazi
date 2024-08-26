@@ -225,6 +225,7 @@ const IXSuggestions = () => {
   };
 
   const closeSidepanel = () => {
+    setSidepanelSuggestion(undefined);
     setSidepanel('none');
   };
 
