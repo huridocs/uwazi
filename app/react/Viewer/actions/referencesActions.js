@@ -34,7 +34,7 @@ export function addReference(references, delayActivation) {
     dispatch(actions.unset('viewer/targetDocReferences'));
     dispatch(reloadRelationships(getState().relationships.list.sharedId));
 
-    dispatch(uiActions.activateReference(references.saves[0], tab, delayActivation));
+    dispatch(uiActions.activateReference(references.saves[0], undefined, tab, delayActivation));
   };
 }
 

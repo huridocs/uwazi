@@ -11,7 +11,7 @@ import { sortTextSelections } from '../utils/sortTextSelections';
 
 import 'app/Viewer/scss/viewReferencesPanel.scss';
 
-export class ConnectionsList extends Component {
+class ConnectionsList extends Component {
   static blankStateMessage(title, message) {
     return (
       <div className="blank-state">
@@ -78,4 +78,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ closePanel, deactivateReference }, dispatch);
 }
 
+export { ConnectionsList };
 export default connect(null, mapDispatchToProps)(ConnectionsList);

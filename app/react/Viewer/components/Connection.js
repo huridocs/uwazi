@@ -14,6 +14,7 @@ import {
   highlightReference,
   activateReference,
   selectReference,
+  toggleReferences,
 } from 'app/Viewer/actions/uiActions';
 import { Item } from 'app/Layout';
 import helpers from 'app/Documents/helpers';
@@ -27,11 +28,12 @@ const selectDoc = createSelector(
       : helpers.performantDocToJSWithoutRelations(doc)
 );
 
-export class Connection extends Component {
+class Connection extends Component {
   clickReference(reference) {
     if (this.props.readOnly) {
       return;
     }
+
     if (!this.props.targetDoc) {
       this.props.activateReference(reference, this.props.referencesSection);
     }
@@ -39,6 +41,8 @@ export class Connection extends Component {
     if (this.props.targetDoc && typeof reference.reference !== 'undefined') {
       this.props.selectReference(reference);
     }
+
+    this.props.toggleReferences(true);
   }
 
   deleteReference(reference) {
@@ -145,6 +149,7 @@ Connection.propTypes = {
   deleteReference: PropTypes.func,
   activateReference: PropTypes.func,
   selectReference: PropTypes.func,
+  toggleReferences: PropTypes.func,
   referencesSection: PropTypes.string,
   mainContext: PropTypes.shape({
     confirm: PropTypes.func,
@@ -153,9 +158,13 @@ Connection.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   const { documentViewer } = state;
+  const isActive = documentViewer.uiState.get('activeReference')
+    ? documentViewer.uiState.get('activeReference') === ownProps.reference._id
+    : documentViewer.uiState.get('activeReferences')?.includes(ownProps.reference._id);
+
   return {
     highlighted: documentViewer.uiState.get('highlightedReference') === ownProps.reference._id,
-    active: documentViewer.uiState.get('activeReference') === ownProps.reference._id,
+    active: isActive || false,
     targetRange: documentViewer.uiState.get('reference').get('targetRange'),
     targetDoc: !!documentViewer.targetDoc.get('_id'),
     relationTypes: documentViewer.relationTypes,
@@ -170,9 +179,11 @@ function mapDispatchToProps(dispatch) {
       activateReference,
       selectReference,
       deleteReference,
+      toggleReferences,
     },
     dispatch
   );
 }
 
+export { Connection };
 export default connect(mapStateToProps, mapDispatchToProps)(withContext(Connection));
