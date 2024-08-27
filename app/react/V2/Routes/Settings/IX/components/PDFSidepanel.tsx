@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import { TextSelection } from '@huridocs/react-text-selection-handler/dist/TextSelection';
@@ -21,7 +21,7 @@ import * as filesAPI from 'V2/api/files';
 import * as entitiesAPI from 'V2/api/entities';
 import { secondsToISODate } from 'V2/shared/dateHelpers';
 import { Button, Sidepanel } from 'V2/Components/UI';
-import { InputField, MultiselectList } from 'V2/Components/Forms';
+import { InputField, MultiselectList, MultiselectListOption } from 'V2/Components/Forms';
 import { PDF, selectionHandlers } from 'V2/Components/PDFViewer';
 import { notificationAtom, thesauriAtom } from 'V2/atoms';
 import { Highlights } from '../types';
@@ -152,6 +152,7 @@ const PDFSidepanel = ({
   const [initialValue, setInitialValue] = useState<PropertyValueSchema | PropertyValueSchema[]>();
   const [selectAndSearch, setSelectAndSearch] = useState(false);
   const [selectAndSearchValue, setSelectAndSearchValue] = useState<string | undefined>();
+  const [options, setOptions] = useState<MultiselectListOption[]>([]);
 
   useEffect(() => {
     if (suggestion) {
@@ -173,12 +174,59 @@ const PDFSidepanel = ({
     setValue,
     getValues,
     reset,
+    control,
+    watch,
     formState: { errors, isDirty, isSubmitting },
   } = useForm({
     values: {
       field: initialValue,
     },
   });
+
+  const watchField = watch('field');
+
+  useEffect(() => {
+    const renderLabel = (value: any) => {
+      const matchingStyles = 'bg-success-50 text-success-800';
+      const nonMatchingStyles = 'bg-orange-50 text-orange-800';
+      const currentValues = (getValues('field') as string[]) || [];
+      const suggestions = (suggestion?.suggestedValue as string[]) || [];
+      const isSelected = currentValues.includes(value.id);
+      const isSuggested = suggestions.includes(value.id);
+      let styles = '';
+
+      if (isSelected && isSuggested) {
+        styles = matchingStyles;
+      }
+
+      if (!isSelected && isSuggested) {
+        styles = nonMatchingStyles;
+      }
+      return (
+        <Translate className={styles} context={property?.content}>
+          {value.label}
+        </Translate>
+      );
+    };
+
+    const _options: MultiselectListOption[] = [];
+
+    thesaurus?.values.forEach((value: any) => {
+      _options.push({
+        label: renderLabel(value),
+        searchLabel: value.label.toLowerCase(),
+        value: value.id,
+        suggested: (suggestion?.suggestedValue as string[])?.includes(value.id),
+        items: value.values?.map((subValue: any) => ({
+          label: renderLabel(subValue),
+          searchLabel: subValue.label.toLowerCase(),
+          value: subValue.id,
+          suggested: (suggestion?.suggestedValue as string[])?.includes(subValue.id),
+        })),
+      });
+    });
+    setOptions(_options);
+  }, [getValues, property, suggestion, thesaurus, watchField]);
 
   useEffect(() => {
     if (property?.content) {
@@ -359,65 +407,26 @@ const PDFSidepanel = ({
     );
   };
 
-  interface Option {
-    label: string | React.ReactNode;
-    searchLabel: string;
-    value: string;
-    items?: Option[];
-  }
-
-  const renderLabel = (value: any) => {
-    const matchingStyles = 'bg-success-50 text-success-800';
-    const nonMatchingStyles = 'bg-orange-50 text-orange-800';
-    const currentValues = (getValues('field') as string[]) || [];
-    const suggestions = (suggestion?.suggestedValue as string[]) || [];
-    const isSelected = currentValues.includes(value.id);
-    const isSuggested = suggestions.includes(value.id);
-    let styles = '';
-    if (isSelected && isSuggested) {
-      styles = matchingStyles;
-    }
-    if (!isSelected && isSuggested) {
-      styles = nonMatchingStyles;
-    }
-    return (
-      <Translate className={styles} context={property?.content}>
-        {value.label}
-      </Translate>
-    );
-  };
-
-  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => {
-    const options: Option[] = [];
-
-    thesaurus?.values.forEach((value: any) => {
-      options.push({
-        label: renderLabel(value),
-        searchLabel: value.label.toLowerCase(),
-        value: value.id,
-        items: value.values?.map((subValue: any) => ({
-          label: renderLabel(subValue),
-          searchLabel: subValue.label.toLowerCase(),
-          value: subValue.id,
-        })),
-      });
-    });
-
-    return (
-      <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
-        <MultiselectList
-          onChange={values => {
-            setValue('field', values, { shouldDirty: true });
-          }}
-          value={getValues('field') as string[]}
-          items={options}
-          checkboxes
-          singleSelect={type === 'select'}
-          search={selectAndSearchValue}
-        />
-      </div>
-    );
-  };
+  const renderSelect = (type: 'select' | 'multiselect' | 'relationship') => (
+    <div className={`px-4 pb-4 overflow-y-scroll grow ${labelInputIsOpen ? '' : 'hidden'}`}>
+      <Controller
+        control={control}
+        name="field"
+        rules={{ required: true }}
+        render={({ field: { onChange, value } }) => (
+          <MultiselectList
+            onChange={onChange}
+            value={value as string[]}
+            items={options}
+            checkboxes
+            singleSelect={type === 'select'}
+            search={selectAndSearchValue}
+            suggestions
+          />
+        )}
+      />
+    </div>
+  );
 
   const renderForm = () => {
     switch (property?.type) {
