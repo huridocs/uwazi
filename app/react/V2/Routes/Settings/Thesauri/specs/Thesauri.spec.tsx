@@ -16,12 +16,9 @@ import {
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { Provider as JotaiProvider } from 'jotai';
 import { Provider } from 'react-redux';
-import createMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import Immutable from 'immutable';
 import { has } from 'lodash';
-import { atomsGlobalState } from 'V2/shared/testingHelpers';
 import { templatesAtom } from 'app/V2/atoms';
+import { atomsGlobalState, reduxStore } from 'V2/shared/testingHelpers';
 import { ThesauriList, thesauriLoader } from '../ThesauriList';
 import { EditThesaurus } from '../EditThesaurus';
 import { editThesaurusLoader } from '../helpers';
@@ -35,7 +32,7 @@ const mockUseLoaderData = jest
 const mockDeleteThesauri = deleteFn.mockImplementation((_params, _headers) => ({
   ok: true,
 }));
-const mockSaveThesauri = saveFn.mockImplementation((_params, _headers) => savedThesaurus);
+const mockSaveThesauri = saveFn.mockImplementation(_params => savedThesaurus);
 
 jest.mock('app/V2/api/thesauri', () => ({
   __esModule: true,
@@ -43,10 +40,8 @@ jest.mock('app/V2/api/thesauri', () => ({
     ...jest.requireActual('app/V2/api/thesauri').default,
     getThesauri: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
       mockUseLoaderData(params, headers),
-    delete: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
-      mockDeleteThesauri(params, headers),
-    save: (params: { _id: string }, headers?: IncomingHttpHeaders) =>
-      mockSaveThesauri(params, headers),
+    delete: (params: { _id: string }) => mockDeleteThesauri(params),
+    save: (params: { _id: string }) => mockSaveThesauri(params),
   },
 }));
 
@@ -83,7 +78,12 @@ describe('Settings Thesauri', () => {
     ]);
     const router = createMemoryRouter(
       [
-        { index: true, path: '/', element: <ThesauriList />, loader: thesauriLoader({}) },
+        {
+          index: true,
+          path: '/',
+          element: <ThesauriList />,
+          loader: thesauriLoader({}),
+        },
         { path: '/settings/thesauri/new', element: <EditThesaurus /> },
         {
           path: '/settings/thesauri/edit/newThesaurus1',
@@ -101,25 +101,14 @@ describe('Settings Thesauri', () => {
       }
     );
 
-    const renderComponent = () => {
-      const reduxStore = createMockStore([thunk])(() => ({
-        locale: 'en',
-        inlineEdit: Immutable.fromJS({ inlineEdit: true }),
-        translations: Immutable.fromJS([
-          {
-            locale: 'en',
-            contexts: [],
-          },
-        ]),
-      }));
-      return render(
+    const renderComponent = () =>
+      render(
         <Provider store={reduxStore}>
           <JotaiProvider store={store}>
             <RouterProvider router={router} />
           </JotaiProvider>
         </Provider>
       );
-    };
 
     let rows: HTMLElement[];
 
@@ -137,6 +126,16 @@ describe('Settings Thesauri', () => {
     afterAll(() => {
       cleanup();
     });
+
+    const checkRightSaving = async (expectedParams: any) => {
+      await act(async () => {
+        fireEvent.click(
+          within(screen.getByTestId('settings-content-footer')).getByText('Save').parentNode!
+        );
+      });
+      expect(saveFn).toHaveBeenLastCalledWith(expectedParams);
+    };
+
     describe('render existing thesauri', () => {
       it('should show a list of existing thesauri', async () => {
         expect(renderResult.container).toMatchSnapshot();
@@ -184,7 +183,7 @@ describe('Settings Thesauri', () => {
         });
         await act(async () => {
           expect(deleteFn).toHaveBeenCalledTimes(2);
-          expect(deleteFn).toHaveBeenLastCalledWith({ _id: 'thesaurus3' }, undefined);
+          expect(deleteFn).toHaveBeenLastCalledWith({ _id: 'thesaurus3' });
         });
         await clickOnAction(0, 0, 'checkbox');
       });
@@ -284,7 +283,6 @@ describe('Settings Thesauri', () => {
           fireEvent.click(within(newItemForm).getByTestId('thesaurus-form-cancel'));
         });
       });
-
       it('should add items into an existing group', async () => {
         await act(async () => {
           fireEvent.click(screen.getByText('Add item').parentNode!);
@@ -319,35 +317,27 @@ describe('Settings Thesauri', () => {
       });
 
       it('should save the new thesaurus', async () => {
-        await act(async () => {
-          fireEvent.click(screen.getByText('Save').parentNode!);
-        });
-        await act(async () => {
-          expect(saveFn).toHaveBeenCalledWith(
+        await checkRightSaving({
+          name: 'new thesaurus',
+          values: [
             {
-              name: 'new thesaurus',
+              label: 'single value 1',
+            },
+            {
+              label: 'single value 2',
+            },
+            {
+              label: 'Group 1',
               values: [
                 {
-                  label: 'single value 1',
+                  label: 'Child 1',
                 },
                 {
-                  label: 'single value 2',
-                },
-                {
-                  label: 'Group 1',
-                  values: [
-                    {
-                      label: 'Child 1',
-                    },
-                    {
-                      label: 'new child 2',
-                    },
-                  ],
+                  label: 'new child 2',
                 },
               ],
             },
-            undefined
-          );
+          ],
         });
       });
     });
@@ -363,6 +353,28 @@ describe('Settings Thesauri', () => {
           });
           fireEvent.click(within(newItemForm).getByTestId('thesaurus-form-submit'));
         });
+        expect(within(screen.getByRole('table')).getAllByText('MODIFIED SINGLE VALUE').length).toBe(
+          2
+        );
+        await checkRightSaving({
+          _id: 'newThesaurus1',
+          name: 'new thesaurus',
+          values: [
+            { id: 'item1', label: 'MODIFIED SINGLE VALUE' },
+            { id: 'item2', label: 'single value 2' },
+            {
+              id: 'item3',
+              label: 'Group 1',
+              values: [
+                {
+                  id: 'item3-1',
+                  label: 'Child 1',
+                },
+                { id: 'item3-2', label: 'new child 2' },
+              ],
+            },
+          ],
+        });
       });
 
       it('should edit a root group', async () => {
@@ -377,6 +389,26 @@ describe('Settings Thesauri', () => {
             target: { value: 'ADDED CHILD' },
           });
           fireEvent.click(within(newItemForm).getByTestId('thesaurus-form-submit'));
+        });
+        await checkRightSaving({
+          _id: 'newThesaurus1',
+          name: 'new thesaurus',
+          values: [
+            { id: 'item1', label: 'MODIFIED SINGLE VALUE' },
+            { id: 'item2', label: 'single value 2' },
+            {
+              id: 'item3',
+              label: 'CHANGED GROUP',
+              values: [
+                {
+                  id: 'item3-1',
+                  label: 'Child 1',
+                },
+                { id: 'item3-2', label: 'new child 2' },
+                { label: 'ADDED CHILD' },
+              ],
+            },
+          ],
         });
       });
       it('should add additional items', async () => {
@@ -403,6 +435,34 @@ describe('Settings Thesauri', () => {
           });
           fireEvent.click(screen.getByTestId('thesaurus-form-submit'));
         });
+        expect(within(screen.getByRole('table')).getAllByText('Additional item').length).toBe(2);
+        await checkRightSaving({
+          _id: 'newThesaurus1',
+          name: 'new thesaurus',
+          values: [
+            { id: 'item1', label: 'MODIFIED SINGLE VALUE' },
+            { id: 'item2', label: 'single value 2' },
+            {
+              id: 'item3',
+              label: 'CHANGED GROUP',
+              values: [
+                {
+                  id: 'item3-1',
+                  label: 'Child 1',
+                },
+                {
+                  id: 'item3-2',
+                  label: 'new child 2',
+                },
+                { label: 'ADDED CHILD' },
+                { label: 'X item' },
+              ],
+            },
+            {
+              label: 'Additional item',
+            },
+          ],
+        });
       });
       it('should remove an existent item', async () => {
         rows = await waitFor(() => screen.getAllByRole('row'));
@@ -423,6 +483,29 @@ describe('Settings Thesauri', () => {
           ).toBeInTheDocument();
           fireEvent.click(within(screen.getByTestId('modal')).getByTestId('accept-button'));
         });
+        expect(within(screen.getByRole('table')).queryAllByText('single value 2').length).toBe(0);
+        await checkRightSaving({
+          _id: 'newThesaurus1',
+          name: 'new thesaurus',
+          values: [
+            { id: 'item1', label: 'MODIFIED SINGLE VALUE' },
+            {
+              id: 'item3',
+              label: 'CHANGED GROUP',
+              values: [
+                {
+                  id: 'item3-1',
+                  label: 'Child 1',
+                },
+                { label: 'ADDED CHILD' },
+                { label: 'X item' },
+              ],
+            },
+            {
+              label: 'Additional item',
+            },
+          ],
+        });
       });
       it('should sort the items', async () => {
         await act(async () => {
@@ -430,39 +513,29 @@ describe('Settings Thesauri', () => {
             within(screen.getByTestId('settings-content-footer')).getByText('Sort').parentNode!
           );
         });
-      });
-      it('should save the changes', async () => {
-        await act(async () => {
-          fireEvent.click(
-            within(screen.getByTestId('settings-content-footer')).getByText('Save').parentNode!
-          );
+        await checkRightSaving({
+          _id: 'newThesaurus1',
+          name: 'new thesaurus',
+          values: [
+            { label: 'Additional item' },
+            {
+              id: 'item3',
+              label: 'CHANGED GROUP',
+              values: [
+                { label: 'ADDED CHILD' },
+                {
+                  id: 'item3-1',
+                  label: 'Child 1',
+                },
+                { label: 'X item' },
+              ],
+            },
+            {
+              id: 'item1',
+              label: 'MODIFIED SINGLE VALUE',
+            },
+          ],
         });
-        expect(saveFn).toHaveBeenLastCalledWith(
-          {
-            _id: 'newThesaurus1',
-            name: 'new thesaurus',
-            values: [
-              { label: 'Additional item' },
-              {
-                id: 'item3',
-                label: 'CHANGED GROUP',
-                values: [
-                  { label: 'ADDED CHILD' },
-                  {
-                    id: 'item3-1',
-                    label: 'Child 1',
-                  },
-                  { label: 'X item' },
-                ],
-              },
-              {
-                id: 'item1',
-                label: 'MODIFIED SINGLE VALUE',
-              },
-            ],
-          },
-          undefined
-        );
       });
     });
   });

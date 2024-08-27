@@ -28,7 +28,7 @@ const sanitizeThesaurusValues = (rows: ThesaurusRow[]): ThesaurusValueSchema[] =
       const { rowId, groupId, ...rest } = subItem;
       return rest;
     });
-    return values && values.length ? assign(item, { values }) : item;
+    return values ? assign(item, { values }) : item;
   });
 
 const addSelection =
@@ -73,11 +73,11 @@ const editThesaurusLoader =
   async ({ params: { _id } }) =>
     (await ThesauriAPI.getThesauri({ _id }, headers))[0];
 
-const emptyThesaurus = {
-  rowId: uniqueID(),
+const emptyThesaurus = () => ({
   label: '',
   subRows: [{ label: '', rowId: uniqueID() }],
-};
+  rowId: uniqueID(),
+});
 
 const thesaurusAsRow = ({ values, ...item }: ClientThesaurusValue) =>
   ({

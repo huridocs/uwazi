@@ -84,7 +84,7 @@ const EditThesaurus = () => {
     setShowThesauriValueFormSidepanel(true);
   };
   const addGroup = () => {
-    setGroupFormValues(emptyThesaurus);
+    setGroupFormValues(emptyThesaurus());
     setShowThesauriGroupFormSidepanel(true);
   };
   const editGroup = (row: Row<ThesaurusRow>) => {

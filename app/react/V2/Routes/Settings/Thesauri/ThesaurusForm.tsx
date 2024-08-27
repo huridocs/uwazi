@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useRevalidator } from 'react-router-dom';
 import { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { useAtom, useSetAtom } from 'jotai';
 import { isEqual, remove } from 'lodash';
@@ -39,8 +39,17 @@ const ThesaurusForm = ({
   } = form;
 
   const navigate = useNavigate();
+  const revalidator = useRevalidator();
   const [thesauri, setThesauri] = useAtom(thesauriAtom);
   const setNotifications = useSetAtom(notificationAtom);
+
+  const handleRevalidate = (savedThesaurus: ClientThesaurus) => {
+    if (!thesaurus?._id) {
+      navigate(`../edit/${savedThesaurus._id}`);
+    } else {
+      revalidator.revalidate();
+    }
+  };
 
   const saveThesaurus = async (data: ClientThesaurus) => {
     const thesaurusToUpdate = { ...data, values: sanitizeThesaurusValues(thesaurusValues) };
@@ -59,7 +68,7 @@ const ThesaurusForm = ({
         <Translate>Thesauri added.</Translate>
       ),
     });
-    navigate(`../edit/${savedThesaurus._id}`);
+    handleRevalidate(savedThesaurus);
   };
 
   const formSubmit: SubmitHandler<ClientThesaurus> = async data => {
@@ -89,7 +98,7 @@ const ThesaurusForm = ({
         <Table
           data={thesaurusValues}
           columns={columns({ edit }, thesaurus)}
-          dnd={{ enable: true }}
+          dnd={{ enable: true, disableEditingGroups: true }}
           enableSelections
           onChange={({ selectedRows, rows }) => {
             setSelectedThesaurusValue(() => {

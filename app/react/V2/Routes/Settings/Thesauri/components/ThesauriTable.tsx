@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ColumnDef, createColumnHelper, Row } from '@tanstack/react-table';
+import { createColumnHelper, Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/V2/Components/UI';
 import { ClientThesaurus, Template } from 'app/apiResponseTypes';
@@ -31,26 +31,26 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
   const navigateToEditThesaurus = (thesaurus: Row<ThesauriRow>) => {
     navigate(`./edit/${thesaurus.original._id}`);
   };
-  const columnHelper = createColumnHelper<any>();
+  const columnHelper = createColumnHelper<ThesauriRow>();
   const columns = ({ edit }: { edit: Function }) => [
     columnHelper.accessor('name', {
       id: 'name',
       header: LabelHeader,
       cell: ThesaurusLabel,
       meta: { headerClassName: 'w-6/12 font-medium' },
-    }) as ColumnDef<ThesauriRow, 'name'>,
+    }),
     columnHelper.accessor('templates', {
       header: TemplateHeader,
       cell: templatesCells,
       enableSorting: false,
       meta: { headerClassName: 'w-6/12' },
-    }) as ColumnDef<ThesauriRow, 'templates'>,
+    }),
     columnHelper.accessor('_id', {
       header: ActionHeader,
       cell: EditButton,
       enableSorting: false,
       meta: { action: edit },
-    }) as ColumnDef<ThesauriRow, '_id'>,
+    }),
   ];
 
   return (

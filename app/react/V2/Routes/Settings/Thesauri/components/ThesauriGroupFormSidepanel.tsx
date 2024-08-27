@@ -8,6 +8,7 @@ import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusRow } from './TableComponents';
+import { emptyThesaurus } from '../helpers';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
@@ -22,11 +23,6 @@ const ThesauriGroupFormSidepanel = ({
   value,
   showSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
-  const emptyGroup = () => ({
-    label: '',
-    subRows: [{ label: '', rowId: uniqueID() }],
-    rowId: uniqueID(),
-  });
   const {
     watch,
     reset,
@@ -51,7 +47,7 @@ const ThesauriGroupFormSidepanel = ({
     if (value) {
       reset(value);
     } else {
-      reset(emptyGroup());
+      reset(emptyThesaurus());
     }
   }, [reset, value]);
 
@@ -74,7 +70,6 @@ const ThesauriGroupFormSidepanel = ({
       ...tValue,
       subRows: filteredValues,
     });
-    reset(emptyGroup());
     closePanel();
   };
 

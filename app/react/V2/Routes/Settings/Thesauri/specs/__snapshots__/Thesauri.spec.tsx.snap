@@ -26,20 +26,22 @@ HTMLCollection [
         class="relative px-4 py-2 undefined "
       >
         <div
-          class="flex items-center "
+          class="flex items-center"
         >
           <span
             class="text-indigo-700"
           >
             Animals
           </span>
-           (
-          <span
-            class="translation"
+          <div
+            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
-            Animals
-          </span>
-          )
+            <span
+              class="translation"
+            >
+              Animals
+            </span>
+          </div>
         </div>
       </td>
       <td
@@ -88,20 +90,22 @@ HTMLCollection [
         class="relative px-4 py-2 undefined "
       >
         <div
-          class="flex items-center "
+          class="flex items-center"
         >
           <span
             class="text-indigo-700"
           >
             Colors
           </span>
-           (
-          <span
-            class="translation"
+          <div
+            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
-            Colors
-          </span>
-          )
+            <span
+              class="translation"
+            >
+              Colors
+            </span>
+          </div>
         </div>
       </td>
       <td
@@ -151,20 +155,22 @@ HTMLCollection [
         class="relative px-4 py-2 undefined "
       >
         <div
-          class="flex items-center "
+          class="flex items-center"
         >
           <span
             class="text-indigo-700"
           >
             Names
           </span>
-           (
-          <span
-            class="translation"
+          <div
+            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
-            Names
-          </span>
-          )
+            <span
+              class="translation"
+            >
+              Names
+            </span>
+          </div>
         </div>
       </td>
       <td
@@ -472,20 +478,22 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                     class="relative px-4 py-2 undefined "
                   >
                     <div
-                      class="flex items-center "
+                      class="flex items-center"
                     >
                       <span
                         class="text-indigo-700"
                       >
                         Animals
                       </span>
-                       (
-                      <span
-                        class="translation"
+                      <div
+                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
-                        Animals
-                      </span>
-                      )
+                        <span
+                          class="translation"
+                        >
+                          Animals
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td
@@ -534,20 +542,22 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                     class="relative px-4 py-2 undefined "
                   >
                     <div
-                      class="flex items-center "
+                      class="flex items-center"
                     >
                       <span
                         class="text-indigo-700"
                       >
                         Colors
                       </span>
-                       (
-                      <span
-                        class="translation"
+                      <div
+                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
-                        Colors
-                      </span>
-                      )
+                        <span
+                          class="translation"
+                        >
+                          Colors
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td
@@ -597,20 +607,22 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                     class="relative px-4 py-2 undefined "
                   >
                     <div
-                      class="flex items-center "
+                      class="flex items-center"
                     >
                       <span
                         class="text-indigo-700"
                       >
                         Names
                       </span>
-                       (
-                      <span
-                        class="translation"
+                      <div
+                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
-                        Names
-                      </span>
-                      )
+                        <span
+                          class="translation"
+                        >
+                          Names
+                        </span>
+                      </div>
                     </div>
                   </td>
                   <td

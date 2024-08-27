@@ -2619,6 +2619,11 @@ input[type="range"]::-ms-fill-lower {
   border-bottom-width: 1px;
 }
 
+.border-y-0 {
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -2724,6 +2729,11 @@ input[type="range"]::-ms-fill-lower {
 .border-gray-300 {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.border-gray-400 {
+  --tw-border-opacity: 1;
+  border-color: rgb(156 163 175 / var(--tw-border-opacity));
 }
 
 .border-gray-50 {
