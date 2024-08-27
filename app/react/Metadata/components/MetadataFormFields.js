@@ -6,7 +6,6 @@ import { preloadOptionsLimit } from 'shared/config';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import ID from 'shared/uniqueID';
 import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
 import { propertyTypes } from 'shared/propertyTypes';
