@@ -88,8 +88,7 @@
     "socket.io-parser": "4.2.4",
     "json-schema": "^0.4.0",
     "@types/react": "^18.0.25 || ^18.3.1",
-    "@types/react-dom": "^18.0.9 || ^18.3.0",
-    "ws": "8.17.1"
+    "@types/react-dom": "^18.0.9 || ^18.3.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.624.0",
