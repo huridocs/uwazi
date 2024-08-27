@@ -1,20 +1,27 @@
 import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { ClientTemplateSchema } from 'app/istore';
 
+type Filter = ClientSettingsFilterSchema & {
+  rowId: string;
+  subRows?: {
+    rowId: string;
+    _id?: string;
+    id?: string;
+    name?: string;
+  }[];
+};
+
 type LoaderData = {
-  filters: ClientSettingsFilterSchema[] | undefined;
+  filters: Filter[] | undefined;
   templates: ClientTemplateSchema[];
 };
 
-const filterAvailableTemplates = (
-  templates: ClientTemplateSchema[],
-  filters?: ClientSettingsFilterSchema[]
-) => {
+const filterAvailableTemplates = (templates: ClientTemplateSchema[], filters?: Filter[]) => {
   const usedTemplatesIds: string[] = [];
 
   filters?.forEach(filter => {
-    if (filter.items) {
-      filter.items.forEach(item => {
+    if (filter.subRows) {
+      filter.subRows.forEach(item => {
         usedTemplatesIds.push(item.id!);
       });
     }
@@ -30,19 +37,16 @@ const filterAvailableTemplates = (
 const createNewFilters = (
   selectedTemplatesIds: string[],
   templates?: ClientTemplateSchema[]
-): ClientSettingsFilterSchema[] => {
+): Filter[] => {
   const newFilters = selectedTemplatesIds.map(templateId => {
     const template = templates?.find(templ => templ._id === templateId);
-    return { id: templateId, name: template?.name };
+    return { id: templateId, name: template?.name, rowId: templateId };
   });
 
   return newFilters;
 };
 
-const updateFilters = (
-  newFilter: ClientSettingsFilterSchema,
-  filters?: ClientSettingsFilterSchema[]
-) => {
+const updateFilters = (newFilter: Filter, filters?: Filter[]) => {
   let isNewFilter = true;
 
   const updatedFilters = filters?.map(filter => {
@@ -60,65 +64,69 @@ const updateFilters = (
   return updatedFilters;
 };
 
-const deleteFilters = (
-  originalFilters?: ClientSettingsFilterSchema[],
-  filtersToRemove?: (string | undefined)[]
-) => {
+const deleteFilters = (originalFilters?: Filter[], filtersToRemove?: (string | undefined)[]) => {
   if (!filtersToRemove) {
     return originalFilters;
   }
 
-  return originalFilters
-    ?.map(filter => {
-      if (filtersToRemove.includes(filter.id!)) {
-        return {};
-      }
+  const updatedFilters: Filter[] = [];
 
-      if (filter.items) {
-        const nestedFilters = filter.items.filter(item => !filtersToRemove.includes(item.id!));
-        return { ...filter, items: nestedFilters };
+  originalFilters?.forEach(filter => {
+    const updatedFilter = { ...filter };
+    if (!filtersToRemove.includes(filter.rowId)) {
+      if (filter.subRows) {
+        const subRows = filter.subRows.filter(item => !filtersToRemove.includes(item.rowId));
+        updatedFilter.subRows = subRows;
       }
+      updatedFilters.push(updatedFilter);
+    }
+  });
 
-      return { ...filter };
-    })
-    .filter(filter => {
-      if (!filter.id) {
-        return false;
-      }
-      if (filter.items && filter.items.length === 0) {
-        return false;
-      }
-      return true;
-    });
+  return updatedFilters;
 };
 
-const sanitizeFilters = (filters?: ClientSettingsFilterSchema[]) => {
-  const sanitizedFilters = filters?.map(filter => {
-    const sanitizedFilter = { ...filter };
+const sanitizeFilters = (filters?: Filter[]) => {
+  const sanitizedFilters: ClientSettingsFilterSchema[] = [];
 
-    if (filter.items) {
-      sanitizedFilter.items = filter.items.map(
-        (item: { id?: string; label?: string; _id?: string }) => {
-          const sanitizedItem = { ...item };
-          if (sanitizedItem._id) {
-            delete sanitizedItem._id;
-          }
-          return sanitizedItem;
-        }
-      );
+  filters?.forEach(filter => {
+    const { rowId, subRows, ...sanitizedFilter } = { ...filter };
+
+    if (subRows && subRows.length === 0) {
+      return;
     }
 
-    return sanitizedFilter;
+    if (subRows) {
+      sanitizedFilter.items = subRows.map(item => {
+        const { rowId: itemRowId, _id, ...sanitizedItem } = { ...item };
+        return sanitizedItem;
+      });
+    }
+
+    sanitizedFilters.push(sanitizedFilter);
   });
 
   return sanitizedFilters;
 };
 
-export type { LoaderData };
+const formatFilters = (filters: ClientSettingsFilterSchema[]): Filter[] =>
+  filters?.map(filter => {
+    const tableFilter: Filter = {
+      ...filter,
+      rowId: filter._id!,
+    };
+    if (filter.items) {
+      const subRows = filter.items.map(item => ({ ...item, rowId: item.id! }));
+      tableFilter.subRows = subRows;
+    }
+    return tableFilter;
+  });
+
+export type { LoaderData, Filter };
 export {
   filterAvailableTemplates,
   createNewFilters,
   updateFilters,
   deleteFilters,
   sanitizeFilters,
+  formatFilters,
 };
