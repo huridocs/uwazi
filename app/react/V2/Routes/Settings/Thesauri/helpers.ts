@@ -10,13 +10,16 @@ import { httpRequest } from 'shared/superagent';
 import uniqueID from 'shared/uniqueID';
 import { ThesaurusRow } from './components/TableComponents';
 
+const rootItemMatch = (item: ThesaurusRow, searchedItem: ThesaurusRow) =>
+  item.rowId === searchedItem.rowId ? item : undefined;
+
 const findItem: (items: ThesaurusRow[], searchedItem: ThesaurusRow) => ThesaurusRow | undefined = (
   items,
   searchedItem
 ) =>
   items
     .map(item => {
-      let match = item.rowId === searchedItem.rowId ? item : undefined;
+      let match = rootItemMatch(item, searchedItem);
       match = match || (item.subRows?.length ? findItem(item.subRows, searchedItem) : undefined);
       return match;
     })
