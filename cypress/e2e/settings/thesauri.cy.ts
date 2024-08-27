@@ -183,15 +183,20 @@ describe('Thesauri configuration', () => {
   it('should sort the items alphabetically', () => {
     cy.contains('button', 'Sort').click();
     cy.get('tbody').toMatchImageSnapshot();
+    changeLanguage('Español');
+    cy.contains('Colores');
+    cy.contains('button', 'Ordenar').click();
+    cy.get('tbody').toMatchImageSnapshot();
   });
 
   it('should cancel the changes', () => {
-    cy.contains('button', 'Cancel').click();
-    cy.contains('button', 'Discard changes').click();
+    cy.contains('button', 'Cancelar').click();
+    cy.contains('button', 'Descartar cambios').click();
   });
 
   it('should use a value when creating an entity', () => {
-    cy.contains('a', 'Library').click();
+    cy.contains('a', 'Colección').click();
+    changeLanguage('English');
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
     cy.get('[name="library.sidepanel.metadata.title"]').type('País select', { delay: 0 });

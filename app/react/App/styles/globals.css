@@ -1866,6 +1866,10 @@ input[type="range"]::-ms-fill-lower {
   display: contents;
 }
 
+.\!hidden {
+  display: none !important;
+}
+
 .hidden {
   display: none;
 }
@@ -4186,6 +4190,10 @@ input[type="range"]::-ms-fill-lower {
   content: var(--tw-content);
   --tw-border-opacity: 1;
   border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
+
+.has-\[span\:not\(\.active\)\]\:hidden:has(span:not(.active)) {
+  display: none;
 }
 
 :is(.dark .dark\:border-gray-600) {

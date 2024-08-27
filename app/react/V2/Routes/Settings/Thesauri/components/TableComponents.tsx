@@ -1,33 +1,59 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
 import { ThesauriRow } from './ThesauriTable';
 
 const TemplateHeader = () => <Translate>Templates</Translate>;
 
-const ThesaurusLabel = ({ cell }: any) => (
-  <div className="flex items-center">
-    <span className="text-indigo-700">{cell.row.original.name}</span>
-    <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
-      <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
+const ThesaurusLabel = ({ cell }: any) => {
+  const translated = t(
+    cell.row.original._id,
+    cell.row.original.name,
+    cell.row.original.name,
+    false
+  );
+  const hidden = translated === cell.row.original.name;
+  return (
+    <div className="flex items-center">
+      <span className="text-indigo-700">{cell.row.original.name}</span>
+      {hidden && (
+        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
+          <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
+        </div>
+      )}
+      {!hidden && (
+        <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0 ">
+          <Translate context={cell.row.original._id}>{cell.row.original.name}</Translate>
+        </div>
+      )}
     </div>
-  </div>
-);
+  );
+};
 
 const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ThesaurusValueLabel = ({ getValue, cell }: CellContext<ThesaurusRow, string>) => {
   const { thesaurus } = cell.getContext().column.columnDef.meta!.data;
+  const label = getValue();
+  const translated = thesaurus?._id && t(thesaurus._id, label, label, false);
+  const hidden = translated === label;
   return (
     <div className="flex items-center gap-2">
-      <span className="text-indigo-700">{getValue()}</span>
-      {thesaurus !== undefined && (
+      <span className="text-indigo-700">{label}</span>
+      {thesaurus !== undefined && hidden && (
+        <div className="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
+          <Translate context={thesaurus._id} className="text-gray-700 ">
+            {label}
+          </Translate>
+        </div>
+      )}
+      {thesaurus !== undefined && !hidden && (
         <div className="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0">
           <Translate context={thesaurus._id} className="text-gray-700 ">
-            {getValue()}
+            {label}
           </Translate>
         </div>
       )}

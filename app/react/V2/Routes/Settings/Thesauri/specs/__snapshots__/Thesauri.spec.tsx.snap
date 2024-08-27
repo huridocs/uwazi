@@ -34,7 +34,7 @@ HTMLCollection [
             Animals
           </span>
           <div
-            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
             <span
               class="translation"
@@ -98,7 +98,7 @@ HTMLCollection [
             Colors
           </span>
           <div
-            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
             <span
               class="translation"
@@ -163,7 +163,7 @@ HTMLCollection [
             Names
           </span>
           <div
-            class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
           >
             <span
               class="translation"
@@ -486,7 +486,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                         Animals
                       </span>
                       <div
-                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
                         <span
                           class="translation"
@@ -550,7 +550,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                         Colors
                       </span>
                       <div
-                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
                         <span
                           class="translation"
@@ -615,7 +615,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
                         Names
                       </span>
                       <div
-                        class="h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
                       >
                         <span
                           class="translation"
