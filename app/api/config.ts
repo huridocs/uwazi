@@ -56,8 +56,12 @@ export const config = {
   clusterMode: CLUSTER_MODE,
   defaultTenant: <Tenant>{
     name: 'default',
-    dbName: process.env.DATABASE_NAME || 'uwazi_development',
-    indexName: process.env.INDEX_NAME || 'uwazi_development',
+    dbName:
+      process.env.DATABASE_NAME ||
+      (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
+    indexName:
+      process.env.INDEX_NAME ||
+      (process.env.NODE_ENV === 'test' ? 'uwazi_testing' : 'uwazi_development'),
     uploadedDocuments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
     attachments: UPLOADS_FOLDER || `${filesRootPath}/uploaded_documents/`,
     customUploads: CUSTOM_UPLOADS_FOLDER || `${filesRootPath}/custom_uploads/`,

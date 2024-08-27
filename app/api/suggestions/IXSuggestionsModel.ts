@@ -11,12 +11,11 @@ const mongoSchema = new mongoose.Schema(props, {
   strict: false,
 });
 
-// @ts-ignore
 mongoSchema.index({ entityId: 1 });
 mongoSchema.index({ fileId: 1 });
 mongoSchema.index({ extractorId: 1, entityId: 1, fileId: 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.match': 1 });
-mongoSchema.index({ extractorId: 1, 'tate.labeled': 1, 'state.withSuggestion': 1 });
+mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.withSuggestion': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.hasContext': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.obsolete': 1 });
 mongoSchema.index({ extractorId: 1, 'state.labeled': 1, 'state.error': 1 });
