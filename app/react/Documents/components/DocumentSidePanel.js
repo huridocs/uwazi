@@ -22,6 +22,7 @@ import { TocGeneratedLabel, ReviewTocButton } from 'app/ToggledFeatures/tocGener
 import { actions } from 'app/BasicReducer';
 import { Item } from 'app/Layout';
 import * as viewerModule from 'app/Viewer';
+import * as viewerActions from 'app/Viewer/actions/actionTypes';
 import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import ViewDocButton from 'app/Library/components/ViewDocButton';
 import { getDocumentReferences } from 'app/Library/actions/libraryActions';
@@ -429,9 +430,10 @@ class DocumentSidePanel extends Component {
                           <I18NLink
                             className={this.linkClassNames(tab === 'relationships')}
                             to={linkTo('relationships')}
-                            onClick={() =>
-                              store.dispatch(actions.set('viewer.sidepanel.tab', 'relationships'))
-                            }
+                            onClick={() => {
+                              store.dispatch(actions.set('viewer.sidepanel.tab', 'relationships'));
+                              store.dispatch({ type: viewerActions.UNSET_SELECTION });
+                            }}
                           >
                             <Icon icon="exchange-alt" />
                             <span className="connectionsNumber">{summary.totalConnections}</span>
