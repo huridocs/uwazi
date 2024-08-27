@@ -85,7 +85,7 @@ class MetadataFormFields extends Component {
   async onAddThesauriValueSaved(thesauri, newValue, _model, isMultiSelect) {
     const { model, push, change } = this.props;
     const newThesauri = thesauri.toJS();
-    const newValueItem = { label: newValue.value, id: ID() };
+    const newValueItem = { label: newValue.value };
     if (newValue.group === 'root') {
       newThesauri.values.push(newValueItem);
     } else {
