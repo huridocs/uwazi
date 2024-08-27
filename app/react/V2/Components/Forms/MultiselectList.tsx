@@ -277,7 +277,7 @@ const MultiselectList = ({
       });
       return (
         <>
-          <Translate data-testid="multiselectlist-show-selected">Selected or suggested</Translate>{' '}
+          <Translate>Selected or suggested</Translate>{' '}
           {selectedOrSuggestedItems.size ? `(${selectedOrSuggestedItems.size})` : ''}
         </>
       );
@@ -285,8 +285,7 @@ const MultiselectList = ({
 
     return (
       <>
-        <Translate data-testid="multiselectlist-show-selected">Selected</Translate>{' '}
-        {selectedItems.length ? `(${selectedItems.length})` : ''}
+        <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
       </>
     );
   };

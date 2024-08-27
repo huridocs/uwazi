@@ -219,7 +219,7 @@ describe('MultiselectList.cy.tsx', () => {
       );
 
       cy.get('input[type=text]').type('pepperoni');
-      cy.getByTestId('multiselectlist-show-selected').click();
+      cy.get('input[type="radio"]').eq(1).click();
       cy.contains('Pepperoni').should('be.visible');
     });
   });
