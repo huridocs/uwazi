@@ -12,6 +12,7 @@ import { notificationActions } from 'app/Notifications';
 import { removeDocument, unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { actions as relationshipActions } from 'app/Relationships';
 import { RequestParams } from 'app/utils/RequestParams';
+import { closePanel as closeConnectionPanel } from 'app/Connections/actions/uiActions.js';
 import { saveEntityWithFiles } from '../../Library/actions/saveEntityWithFiles';
 import * as selectionActions from './selectionActions';
 import * as uiActions from './uiActions';
@@ -145,6 +146,7 @@ export function cancelTargetDocument() {
 
 export function editToc(toc) {
   return dispatch => {
+    dispatch(closeConnectionPanel());
     dispatch(actions.set('documentViewer/tocBeingEdited', true));
     dispatch(formActions.load('documentViewer.tocForm', toc));
     dispatch(uiActions.openPanel('viewMetadataPanel'));
