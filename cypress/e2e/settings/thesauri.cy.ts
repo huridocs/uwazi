@@ -76,7 +76,7 @@ describe('Thesauri configuration', () => {
   });
 
   it('should edit an item', () => {
-    cy.contains('Second Item').parentsUntil('tr').parent().contains('button', 'Edit').click();
+    cy.contains('tr', 'Second Item').contains('button', 'Edit').click();
     cy.clearAndType('input[name="newValues.0.label"]', 'Edited Second Item', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 5);
@@ -84,7 +84,7 @@ describe('Thesauri configuration', () => {
   });
 
   it('should edit a group', () => {
-    cy.contains('Group B').parentsUntil('tr').parent().contains('button', 'Edit').click();
+    cy.contains('tr', 'Group B').contains('button', 'Edit').click();
     cy.clearAndType('input#group-name', 'Edited Group B', { delay: 0 });
     cy.clearAndType('input[name="subRows.0.label"]', 'Edited First Child B', { delay: 0 });
     cy.get('input[name="subRows.1.label"]').type('Added Second Child B', { delay: 0 });
@@ -103,17 +103,11 @@ describe('Thesauri configuration', () => {
   });
 
   it('should delete items', () => {
-    cy.contains('Edited Second Item')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .within(() => cy.get('input[type="checkbox"]').check());
-    cy.contains('Edited Group B').parentsUntil('tr').parent().contains('button', 'Group').click();
-    cy.contains('Added Second Child B')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .within(() => cy.get('input[type="checkbox"]').check());
+    cy.contains('tr', 'Edited Second Item').within(() => cy.get('input[type="checkbox"]').check());
+    cy.contains('tr', 'Edited Group B').contains('button', 'Group').click();
+    cy.contains('tr', 'Added Second Child B').within(() =>
+      cy.get('input[type="checkbox"]').check()
+    );
     cy.contains('button', 'Remove').click();
     saveThesaurus();
   });
@@ -133,37 +127,24 @@ describe('Thesauri configuration', () => {
 
   it('should list the thesauri', () => {
     cy.contains('span', 'Thesauri').click();
-    cy.contains('New Thesaurus').parentsUntil('tr').parent().contains('País');
+    cy.contains('tr', 'New Thesaurus').contains('País');
     cy.get('tbody').toMatchImageSnapshot();
   });
 
   it('should do not allow to delete a used thesaurus', () => {
-    cy.contains('New Thesaurus')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .within(() => {
-        cy.get('input[type=checkbox]').should('have.attr', 'disabled');
-      });
+    cy.contains('tr', 'New Thesaurus').within(() => {
+      cy.get('input[type=checkbox]').should('have.attr', 'disabled');
+    });
   });
 
   it('should keep sorting', () => {
-    cy.contains('New Thesaurus')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .contains('button', 'Edit')
-      .click();
+    cy.contains('tr', 'New Thesaurus').contains('button', 'Edit').click();
     cy.contains('tbody', 'Edited Group B');
     cy.get('tbody').toMatchImageSnapshot();
   });
 
   it('should do ask for confirmation when delete an item of a used thesaurus', () => {
-    cy.contains('First Item')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .within(() => cy.get('input[type="checkbox"]').check());
+    cy.contains('tr', 'First Item').within(() => cy.get('input[type="checkbox"]').check());
     cy.contains('button', 'Remove').click();
     cy.contains('Are you sure you want to delete this item');
     cy.contains('button', 'Accept').click();
@@ -216,14 +197,9 @@ describe('Thesauri configuration', () => {
     changeLanguage('English');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Thesauri').click();
-    cy.contains('New Thesaurus')
-      .parentsUntil('tr')
-      .parent()
-      .eq(0)
-      .contains('button', 'Edit')
-      .click();
+    cy.contains('tr', 'New Thesaurus').contains('button', 'Edit').click();
     cy.contains('tbody', 'Imported Colors');
-    cy.contains('Imported Colors').parentsUntil('tr').parent().contains('button', 'Edit').click();
+    cy.contains('tr', 'Imported Colors').contains('button', 'Edit').click();
     cy.clearAndType('input#group-name', 'Colors', { delay: 0 });
     cy.clearAndType('input[name="subRows.0.label"]', 'Blue', { delay: 0 });
     cy.contains('button', 'Edit group').click();
