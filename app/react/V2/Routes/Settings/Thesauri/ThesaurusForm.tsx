@@ -12,7 +12,7 @@ import { thesauriAtom, notificationAtom } from 'app/V2/atoms';
 import { Table } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { addSelection, sanitizeThesaurusValues } from './helpers';
-import { columns, ThesaurusRow } from './components/TableComponents';
+import { columnsThesaurus, ThesaurusRow } from './components/TableComponents';
 
 interface ThesaurusFormProps {
   thesaurus: ClientThesaurus;
@@ -97,7 +97,7 @@ const ThesaurusForm = ({
         </div>
         <Table
           data={thesaurusValues}
-          columns={columns({ edit }, thesaurus)}
+          columns={columnsThesaurus({ edit }, thesaurus)}
           dnd={{ enable: true, disableEditingGroups: true }}
           enableSelections
           onChange={({ selectedRows, rows }) => {

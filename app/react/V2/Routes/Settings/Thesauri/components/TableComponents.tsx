@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { CellContext, createColumnHelper, SortingState } from '@tanstack/react-table';
+import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { t, Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
