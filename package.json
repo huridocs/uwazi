@@ -230,7 +230,7 @@
     "reselect": "^4.1.8",
     "rison-node": "^2.1.1",
     "rsmq": "^0.12.4",
-    "rtlcss": "^4.1.1",
+    "rtlcss": "^4.3.0",
     "sanitize-filename": "^1.6.3",
     "serialize-javascript": "^6.0.1",
     "sift": "^17.1.3",
