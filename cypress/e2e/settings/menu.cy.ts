@@ -54,7 +54,7 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-save').should('be.disabled');
   });
 
-  it('should not should the unsaved changes alert', () => {
+  it('should not show the unsaved changes alert', () => {
     cy.contains('a', 'Account').click();
     cy.contains('a', 'Menu').click();
     cy.contains('caption', 'Menu');
