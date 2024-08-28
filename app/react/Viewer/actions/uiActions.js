@@ -18,6 +18,8 @@ export function openPanel(panel) {
   };
 }
 
+export const toggleReferences = status => ({ type: types.TOGGLE_REFERENCES, status });
+
 export function resetReferenceCreation() {
   return function (dispatch) {
     dispatch({ type: types.RESET_REFERENCE_CREATION });
@@ -175,16 +177,46 @@ export function selectSnippet(page, snippet) {
   };
 }
 
-export function activateReference(connection, tab, delayActivation = false) {
+// eslint-disable-next-line max-params
+export function activateReference(
+  connection,
+  referenceGroup,
+  tab,
+  delayActivation = false,
+  showContextMenu = false
+) {
   const tabName = tab && !Array.isArray(tab) ? tab : 'references';
   events.removeAllListeners('referenceRendered');
 
+  const activeRefenreceSelection = {
+    ...connection.reference,
+    selectionRectangles: connection.reference.selectionRectangles?.map(rectangle => {
+      const { _id, ...selectionRectangle } = rectangle;
+      return selectionRectangle;
+    }),
+  };
+
+  // eslint-disable-next-line max-statements
   return dispatch => {
-    dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
+    dispatch({ type: types.DEACTIVATE_REFERENCE });
+    if (referenceGroup?.length) {
+      dispatch({ type: types.ACTIVATE_MULTIPLE_REFERENCES, references: referenceGroup });
+    } else {
+      dispatch({ type: types.ACTIVE_REFERENCE, reference: connection._id });
+    }
+    dispatch({
+      type: types.SET_SELECTION,
+      sourceRange: activeRefenreceSelection,
+      sourceFile: connection.file,
+    });
     if (delayActivation) {
       dispatch(goToActive());
     }
-    dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
+    if (showContextMenu) {
+      dispatch({ type: types.SHOW_TEXT_SELECTION_MENU });
+    } else {
+      dispatch({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
+    }
     dispatch(actions.set('viewer.sidepanel.tab', tabName));
     if (!delayActivation) {
       setTimeout(() => {

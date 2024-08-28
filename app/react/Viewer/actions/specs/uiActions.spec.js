@@ -80,13 +80,51 @@ describe('Viewer uiActions', () => {
     it('should dispatch a ACTIVATE_REFERENCE with id', () => {
       actions.activateReference({
         _id: 'id',
-        reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
+        reference: {
+          selectionRectangles: [{ top: 40, page: '1', _id: 'selectionId' }],
+          text: 'something',
+        },
+        file: 'fileId',
       })(dispatch);
+      expect(dispatch).toHaveBeenCalledWith({ type: types.DEACTIVATE_REFERENCE });
       expect(dispatch).toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE, reference: 'id' });
       expect(dispatch).toHaveBeenCalledWith({ type: types.OPEN_PANEL, panel: 'viewMetadataPanel' });
       expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_SELECTION,
+        sourceFile: 'fileId',
+        sourceRange: {
+          selectionRectangles: [
+            {
+              page: '1',
+              top: 40,
+            },
+          ],
+          text: 'something',
+        },
+      });
+      expect(dispatch).toHaveBeenCalledWith({
         type: 'viewer.sidepanel.tab/SET',
         value: 'references',
+      });
+    });
+
+    it('should activate multiple references', () => {
+      actions.activateReference(
+        {
+          _id: 'id',
+          reference: {
+            selectionRectangles: [{ top: 40, page: '1', _id: 'selectionId' }],
+            text: 'something',
+          },
+          file: 'fileId',
+        },
+        ['id', 'id2']
+      )(dispatch);
+
+      expect(dispatch).not.toHaveBeenCalledWith({ type: types.ACTIVE_REFERENCE });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.ACTIVATE_MULTIPLE_REFERENCES,
+        references: ['id', 'id2'],
       });
     });
 
@@ -107,6 +145,7 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
+        [],
         'another tab'
       )(dispatch);
       expect(dispatch).toHaveBeenCalledWith({
@@ -135,6 +174,7 @@ describe('Viewer uiActions', () => {
           _id: 'id',
           reference: { selectionRectangles: [{ top: 40, page: '1' }], text: 'something' },
         },
+        undefined,
         [],
         true
       )(dispatch);

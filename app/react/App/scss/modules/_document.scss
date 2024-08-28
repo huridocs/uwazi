@@ -19,7 +19,6 @@
   overflow-y: auto;
 
   @media (min-width: 1024px) {
-
     &.with-panel:not(.unpinned-mode),
     &.is-active:not(.unpinned-mode) {
       width: calc(100% - 400px);
@@ -35,7 +34,7 @@
     pointer-events: none;
   }
 
-  div.c>* {
+  div.c > * {
     pointer-events: auto;
     padding-right: 100px;
   }
@@ -84,10 +83,6 @@
 }
 
 .document-viewer {
-  .highlight-rectangle {
-    cursor: pointer;
-  }
-
   a.reference {
     text-decoration: none !important;
     color: inherit;
@@ -95,13 +90,11 @@
 
   &.connections a.reference {
     background-color: #feeeb4;
-    cursor: pointer;
   }
 
   a.highlighted,
   &.connections a.highlighted {
     background-color: #feeeb4;
-    cursor: pointer;
   }
 
   &.connections a.reference a.reference {
@@ -110,7 +103,6 @@
 
   &.connections a.reference.is-active {
     background-color: #ffd84b;
-    cursor: pointer;
   }
 
   .selection {
