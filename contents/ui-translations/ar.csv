@@ -158,8 +158,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,تأكيد كلمة المرور الجديدة
 Confirm publish multiple items,تأكيد نشر عناصر متعددة
-Connect to a document,الاتصال بمستند
 Connect to a paragraph,الاتصال بفقرة
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,نوع الاتصال
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -242,6 +242,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
@@ -397,7 +398,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset password,If the email address supplied is correct
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -704,6 +705,7 @@ Search Tips: wildcard,نصائح البحث: Wildcard
 Secret keys,Secret keys
 Security,Security
 Select,Select
+Select & Search,Select & Search
 Select all,اختار الكل
 Select files on your device,اختر الملفات في جهازك
 Select from computer,Select from computer
@@ -713,6 +715,7 @@ Select...,اختار...
 Selected,Selected
 selected,المحدد
 selected of,مختار من
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,البحث الدلالي
 Semantic Search,البحث الدلالي

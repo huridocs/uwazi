@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
@@ -33,26 +34,33 @@ function getIdMapper() {
   };
 }
 
-const commonProperties: TemplateSchema['commonProperties'] = [
-  {
-    label: 'Title',
-    name: 'title',
-    isCommonProperty: true,
-    type: 'text',
-  },
-  {
-    label: 'Date added',
-    name: 'creationDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-  {
-    label: 'Date modified',
-    name: 'editDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-];
+const commonProperties = (
+  key: string,
+  idMapper: (key: string) => ObjectId
+): TemplateSchema['commonProperties'] => {
+  const titleId = idMapper(`${key}Title`).toString();
+  return [
+    {
+      _id: titleId,
+      label: 'Title',
+      name: 'title',
+      isCommonProperty: true,
+      type: 'text',
+    },
+    {
+      label: 'Date added',
+      name: 'creationDate',
+      isCommonProperty: true,
+      type: 'date',
+    },
+    {
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+    },
+  ];
+};
 
 const thesaurusNestedValues = (
   rootValue: string,
@@ -82,7 +90,7 @@ function getFixturesFactory() {
       _id: idMapper(name),
       name,
       properties,
-      commonProperties,
+      commonProperties: commonProperties(`commonProperties${name}`, idMapper),
     }),
 
     entityPermission: (
@@ -196,7 +204,11 @@ function getFixturesFactory() {
       ...props,
     }),
 
-    commonProperties: () => _.cloneDeep(commonProperties),
+    commonProperties: () =>
+      _.cloneDeep(commonProperties('default', idMapper)) as TemplateSchema['commonProperties'],
+
+    commonPropertiesTitleId: (templateName: string) =>
+      idMapper(`commonProperties${templateName}Title`).toString(),
 
     metadataValue: (value: PropertyValueSchema, label?: string): MetadataObjectSchema => {
       const mo: MetadataObjectSchema = { value };

@@ -7,8 +7,10 @@ export interface TemplatesDataSource {
   getAllTemplatesIds(): ResultSet<string>;
   getAllRelationshipProperties(): ResultSet<RelationshipProperty>;
   getAllProperties(): ResultSet<Property>;
+  getAllTextProperties(): ResultSet<Property>;
   getPropertyByName(name: string): Promise<Property>;
   getTemplatesIdsHavingProperty(propertyName: string): ResultSet<string>;
   getByIds(ids: Template['id'][]): ResultSet<Template>;
+  getByNames(names: Template['name'][]): ResultSet<Template>;
   getById(id: Template['id']): Promise<Template | undefined>;
 }

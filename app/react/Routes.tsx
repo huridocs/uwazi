@@ -47,7 +47,12 @@ import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
-import { loggedInUsersRoute, adminsOnlyRoute, privateRoute } from './ProtectedRoute';
+import {
+  loggedInUsersRoute,
+  adminsOnlyRoute,
+  privateRoute,
+  ProtectedRoute,
+} from './ProtectedRoute';
 import { getIndexElement } from './getIndexElement';
 import { PageView } from './Pages/PageView';
 import ResetPassword from './Users/ResetPassword';
@@ -116,13 +121,21 @@ const getRoutesLayout = (
       <Route path="metadata_extraction">
         <Route
           index
-          element={adminsOnlyRoute(<IXDashboard />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <IXDashboard />
+            </ProtectedRoute>
+          }
           loader={IXdashboardLoader(headers)}
         />
         <Route
           path="suggestions/:extractorId"
           loader={IXSuggestionsLoader(headers)}
-          element={adminsOnlyRoute(<IXSuggestions />)}
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'editor']}>
+              <IXSuggestions />
+            </ProtectedRoute>
+          }
         />
       </Route>
       <Route path="relationship-types">

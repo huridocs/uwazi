@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import { openMenu, closeMenu } from 'app/ContextMenu/actions/contextMenuActions';
 
-export class ContextMenu extends Component {
+class ContextMenu extends Component {
   render() {
     const children = React.Children.map(this.props.children, child => child) || [];
     let SubMenu = children.filter(child => {
@@ -55,4 +55,5 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ openMenu, closeMenu }, dispatch);
 }
 
+export { ContextMenu };
 export default connect(mapStateToProps, mapDispatchToProps)(ContextMenu);

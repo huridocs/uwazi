@@ -14,7 +14,7 @@ const restrictedUploadId = db.id();
 const restrictedUploadId2 = db.id();
 const readOnlyUploadId = db.id();
 const customFileId = db.id();
-const templateId = fixturesFactory.id('template');
+const allowedPublicTemplate = fixturesFactory.id('template');
 const importTemplate = db.id();
 const writerUserId = db.id();
 const externalUrlFileId = db.id();
@@ -146,7 +146,7 @@ const fixtures: DBFixture = {
       sharedId: 'publicEntity',
       language: 'es',
       title: 'Public entity',
-      template: templateId,
+      template: allowedPublicTemplate,
       published: true,
     },
     {
@@ -155,18 +155,18 @@ const fixtures: DBFixture = {
       language: 'es',
       title: 'Gadgets 01 ES',
       generatedToc: true,
-      template: templateId,
+      template: allowedPublicTemplate,
     },
     {
       _id: entityEnId,
-      template: templateId,
+      template: allowedPublicTemplate,
       sharedId: 'sharedId1',
       language: 'en',
       title: 'Gadgets 01 EN',
     },
     {
       _id: restrictedEntityId,
-      template: templateId,
+      template: allowedPublicTemplate,
       sharedId: 'restrictedSharedId',
       language: 'en',
       title: 'Restricted Entity',
@@ -181,7 +181,7 @@ const fixtures: DBFixture = {
     },
     {
       _id: readOnlyEntity,
-      template: templateId,
+      template: allowedPublicTemplate,
       sharedId: 'readOnlySharedId',
       language: 'en',
       title: 'Read only shared id',
@@ -196,7 +196,7 @@ const fixtures: DBFixture = {
     },
   ],
   templates: [
-    { _id: templateId, default: true, name: 'mydoc', properties: [] },
+    { _id: allowedPublicTemplate, default: true, name: 'mydoc', properties: [] },
     { _id: importTemplate, default: true, name: 'import', properties: [] },
   ],
   settings: [
@@ -204,7 +204,7 @@ const fixtures: DBFixture = {
       _id: db.id(),
       languages: [{ key: 'es', label: 'ES', default: true }],
       publicFormDestination: 'http://localhost:54321',
-      allowedPublicTemplates: [templateId.toString()],
+      allowedPublicTemplates: [allowedPublicTemplate.toString()],
     },
   ],
   users: [collabUser, writerUser, adminUser],
@@ -216,7 +216,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'sharedId1',
-      entityTemplate: templateId.toString(),
+      entityTemplate: allowedPublicTemplate.toString(),
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 1',
@@ -228,7 +228,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'sharedId1',
-      entityTemplate: templateId.toString(),
+      entityTemplate: allowedPublicTemplate.toString(),
       fileId: uploadId,
       language: 'en',
       propertyName: 'property 2',
@@ -240,7 +240,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'restrictedSharedId',
-      entityTemplate: templateId.toString(),
+      entityTemplate: allowedPublicTemplate.toString(),
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 1',
@@ -252,7 +252,7 @@ const fixtures: DBFixture = {
     {
       status: 'ready',
       entityId: 'restrictedSharedId',
-      entityTemplate: templateId.toString(),
+      entityTemplate: allowedPublicTemplate.toString(),
       fileId: restrictedUploadId,
       language: 'en',
       propertyName: 'property 2',
@@ -265,6 +265,7 @@ const fixtures: DBFixture = {
 };
 
 export {
+  allowedPublicTemplate,
   fixtures,
   entityId,
   entityEnId,
@@ -277,7 +278,7 @@ export {
   restrictedUploadId,
   restrictedUploadId2,
   readOnlyUploadId,
-  templateId,
+  allowedPublicTemplate as templateId,
   importTemplate,
   collabUser,
   adminUser,

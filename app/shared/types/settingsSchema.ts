@@ -159,6 +159,29 @@ ajv.addKeyword({
   },
 });
 
+const automaticTranslationSchema = {
+  title: 'AutomaticTranslationConfig',
+  type: 'object',
+  additionalProperties: false,
+  required: ['active'],
+  properties: {
+    active: { type: 'boolean' },
+    templates: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        properties: {
+          template: { type: 'string' },
+          commonProperties: { type: 'array', items: { type: 'string' } },
+          properties: { type: 'array', items: { type: 'string' } },
+        },
+        required: ['template'],
+      },
+    },
+  },
+};
+
 const itemSchema = {
   type: 'object',
   additionalProperties: false,
@@ -283,6 +306,7 @@ const settingsSchema = {
     settingsLinkSchema,
     settingsSyncSchema,
     settingsPreserveConfigSchema,
+    automaticTranslationSchema,
   },
   additionalProperties: false,
   hasDefaultLanguage: true,
@@ -432,6 +456,7 @@ const settingsSchema = {
             },
           ],
         },
+        automaticTranslation: automaticTranslationSchema,
       },
     },
     mapStartingPoint: geolocationSchema,
@@ -453,4 +478,5 @@ export {
   settingsLinkSchema,
   settingsSchema,
   settingsPreserveConfigSchema,
+  automaticTranslationSchema,
 };

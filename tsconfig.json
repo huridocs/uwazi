@@ -29,6 +29,6 @@
     //TODO: solve conflict between @types from react dependencies
     "skipLibCheck": true
   },
-  "include": ["app", "external_modules", "database", "e2e"],
+  "include": ["app", "external_modules", "database", "e2e", "scripts/scripts.v2/*"],
   "exclude": ["fixtures", "dist", "prod", "**/*.cy.tsx"]
 }

@@ -157,8 +157,8 @@ Confirm deletion of template:,Confirmar eliminación de plantilla:
 Confirm discard changes,Confirmar descartar cambios
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
+Connect to an entity,Connect to an entity
 Connected to server,Conectado al servidor
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
@@ -241,6 +241,7 @@ Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
@@ -703,6 +704,7 @@ Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: "
 Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
+Select & Search,Select & Search
 Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
@@ -712,6 +714,7 @@ Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,Búsqueda semántica
 Semantic Search,Búsqueda semántica

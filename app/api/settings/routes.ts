@@ -7,7 +7,14 @@ export default (app: Application) => {
     const select = req.user && req.user.role === 'admin' ? '+publicFormDestination' : {};
     settings
       .get({}, select)
-      .then(response => res.json(response))
+      .then(response => {
+        const { features, ...partialSettings } = response;
+        if (req.user?.role === 'admin' || req.user?.role === 'editor') {
+          res.json(response);
+        } else {
+          res.json(partialSettings);
+        }
+      })
       .catch(next);
   });
 

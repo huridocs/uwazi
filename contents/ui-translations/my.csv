@@ -159,8 +159,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,စကားဝှက်အသစ်ကို အတည်ပြုပါ
 Confirm publish multiple items,အရာများစွာကို တင်ရန် အတည်ပြုပါ
-Connect to a document,စာရွက်စာတမ်းနှင့် ချိတ်ဆက်ရန်
 Connect to a paragraph,စာပိုဒ်နှင့် ချိတ်ဆက်ရန်
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,ချိတ်ဆက်မှု အမျိုးအစား
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -243,6 +243,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,ဖော်ပြချက်
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,အပြောင်းအလဲများကို ပယ်ရန်
 Discard changes?,Discard changes?
@@ -398,7 +399,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset password,If the email address supplied is correct
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,ကက်ပ်ချာ မှားနေသည်
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -705,6 +706,7 @@ Search Tips: wildcard,ရှာဖွေမှု အကြံပြုချက
 Secret keys,Secret keys
 Security,Security
 Select,Select
+Select & Search,Select & Search
 Select all,အားလုံးကို ရွေးရန်
 Select files on your device,သင့်စက်ပေါ်ရှိ ဖိုင်များကို ရွေးချယ်ရန်
 Select from computer,Select from computer
@@ -714,6 +716,7 @@ Select...,ရွေးချယ်ရန်...
 Selected,Selected
 selected,ရွေးချယ်ပြီး
 selected of,ရွေးချယ်ထားသည်
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,အဓိပ္ပာယ်ရင်းမြစ် ရှာဖွေမှု
 Semantic Search,အဓိပ္ပာယ်ရင်းမြစ် ရှာဖွေမှု
