@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { CellContext, createColumnHelper } from '@tanstack/react-table';
+import { CellContext, createColumnHelper, SortingState } from '@tanstack/react-table';
 import { t, Translate } from 'app/I18N';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientThesaurus, ClientThesaurusValue } from 'app/apiResponseTypes';
@@ -105,21 +105,43 @@ interface ThesaurusRow extends Omit<ClientThesaurusValue, 'values'> {
   groupId?: string;
 }
 
-const columnHelper = createColumnHelper<ThesaurusRow>();
-const columns = (actions: { edit?: Function }, thesaurus: ClientThesaurus) => [
-  columnHelper.accessor('label', {
+const columnHelperThesaurus = createColumnHelper<ThesaurusRow>();
+const columnsThesaurus = (actions: { edit?: Function }, thesaurus: ClientThesaurus) => [
+  columnHelperThesaurus.accessor('label', {
     id: 'label',
     header: LabelHeader,
     cell: ThesaurusValueLabel,
     meta: { headerClassName: 'w-11/12', data: { thesaurus } },
   }),
-  columnHelper.accessor('id', {
+  columnHelperThesaurus.accessor('id', {
     header: ActionHeader,
     cell: EditButton,
     enableSorting: false,
     meta: {
       action: actions.edit,
     },
+  }),
+];
+
+const columnHelperThesauri = createColumnHelper<ThesauriRow>();
+const columnsThesauri = ({ edit }: { edit: Function }) => [
+  columnHelperThesauri.accessor('name', {
+    id: 'name',
+    header: LabelHeader,
+    cell: ThesaurusLabel,
+    meta: { headerClassName: 'w-6/12 font-medium' },
+  }),
+  columnHelperThesauri.accessor('templates', {
+    header: TemplateHeader,
+    cell: templatesCells,
+    enableSorting: false,
+    meta: { headerClassName: 'w-6/12' },
+  }),
+  columnHelperThesauri.accessor('_id', {
+    header: ActionHeader,
+    cell: EditButton,
+    enableSorting: false,
+    meta: { action: edit },
   }),
 ];
 
@@ -131,7 +153,8 @@ export {
   ActionHeader,
   templatesCells,
   TemplateHeader,
-  columns,
+  columnsThesaurus,
+  columnsThesauri,
 };
 
 export type { TableThesaurusValue, ThesaurusRow };

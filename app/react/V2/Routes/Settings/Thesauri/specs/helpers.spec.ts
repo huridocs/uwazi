@@ -11,7 +11,7 @@ import {
   thesaurusAsRow,
 } from '../helpers';
 
-const thesaurusValues: {}[] = [
+const thesaurusValues: ThesaurusRow[] = [
   {
     _id: 'originalId1',
     rowId: 'item1',
@@ -20,6 +20,7 @@ const thesaurusValues: {}[] = [
         rowId: 'subItem1-1',
         label: 'SubItem1-1',
         groupId: 'item1',
+        //@ts-ignore Keeping _id to ensure legacy compatibility. See #4053
         _id: 'temporalId1',
       },
       {
@@ -46,6 +47,7 @@ const thesaurusValues: {}[] = [
       },
     ],
     label: 'Item2',
+    //@ts-ignore, reusing type, it is expected that the original object to contain values
     values: [],
   },
 ];

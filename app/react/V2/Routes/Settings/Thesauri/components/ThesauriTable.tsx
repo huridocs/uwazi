@@ -1,18 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createColumnHelper, Row } from '@tanstack/react-table';
+import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { Table } from 'app/V2/Components/UI';
 import { ClientThesaurus, Template } from 'app/apiResponseTypes';
 import { ObjectIdSchema } from 'shared/types/commonTypes';
-import {
-  EditButton,
-  LabelHeader,
-  ActionHeader,
-  TemplateHeader,
-  ThesaurusLabel,
-  templatesCells,
-} from './TableComponents';
+import { columnsThesauri } from './TableComponents';
 
 interface ThesauriRow extends ClientThesaurus {
   _id: ObjectIdSchema;
@@ -31,32 +24,11 @@ const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTablePr
   const navigateToEditThesaurus = (thesaurus: Row<ThesauriRow>) => {
     navigate(`./edit/${thesaurus.original._id}`);
   };
-  const columnHelper = createColumnHelper<ThesauriRow>();
-  const columns = ({ edit }: { edit: Function }) => [
-    columnHelper.accessor('name', {
-      id: 'name',
-      header: LabelHeader,
-      cell: ThesaurusLabel,
-      meta: { headerClassName: 'w-6/12 font-medium' },
-    }),
-    columnHelper.accessor('templates', {
-      header: TemplateHeader,
-      cell: templatesCells,
-      enableSorting: false,
-      meta: { headerClassName: 'w-6/12' },
-    }),
-    columnHelper.accessor('_id', {
-      header: ActionHeader,
-      cell: EditButton,
-      enableSorting: false,
-      meta: { action: edit },
-    }),
-  ];
 
   return (
     <Table
       data={currentThesauri}
-      columns={columns({ edit: navigateToEditThesaurus })}
+      columns={columnsThesauri({ edit: navigateToEditThesaurus })}
       defaultSorting={[{ id: 'name', desc: false }]}
       onChange={({ selectedRows }) => {
         setSelectedThesauri(currentThesauri.filter(thesaurus => thesaurus.rowId in selectedRows));
