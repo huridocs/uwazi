@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Translate } from 'app/I18N';
+import { t, Translate } from 'app/I18N';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
@@ -24,10 +24,8 @@ const EditButton = ({ cell, column }: CellContext<TableRelationshipType, string>
 
 const TitleCell = ({ cell, getValue }: CellContext<TableRelationshipType, string>) => (
   <div className="flex gap-2 items-center">
-    <Translate className="text-indigo-800" context={cell.row.original._id}>
-      {getValue()}
-    </Translate>
-    ({getValue()})
+    <span className="text-indigo-800">{t(cell.row.original._id, getValue(), null, false)}</span>(
+    {getValue()})
   </div>
 );
 
