@@ -52,6 +52,7 @@ const RelationshipTypes = () => {
 
         return {
           ...relationshipType,
+          rowId: relationshipType._id,
           templates: templatesUsingIt,
           disableRowSelection: Boolean(templatesUsingIt.length),
         };
