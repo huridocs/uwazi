@@ -25,6 +25,7 @@ import {
   LoaderData,
   sanitizeFilters,
   formatFilters,
+  Filter,
 } from './components';
 
 const filtersLoader =
@@ -64,22 +65,15 @@ const FiltersTable = () => {
   }, [loadedFilters]);
 
   useEffect(() => {
-    currentFilters.current = filters;
-    if (JSON.stringify(currentFilters.current) !== JSON.stringify(loadedFilters)) {
-      setHasChanges(true);
-    } else {
-      setHasChanges(false);
-    }
-  }, [filters, loadedFilters]);
-
-  useEffect(() => {
     if (blocker.state === 'blocked') {
       setConfirmNavigationModal(true);
     }
   }, [blocker, setConfirmNavigationModal]);
 
   const cancel = () => {
+    currentFilters.current = loadedFilters;
     setFilters(loadedFilters);
+    setHasChanges(false);
   };
 
   const addNewFilters = (templatedIds: string[]) => {
@@ -124,6 +118,22 @@ const FiltersTable = () => {
     return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
   };
 
+  const handleChange = ({
+    rows,
+    selectedRows,
+  }: {
+    rows: Filter[];
+    selectedRows: RowSelectionState;
+  }) => {
+    currentFilters.current = rows;
+    setSelectedFilters(selectedRows);
+    if (JSON.stringify(currentFilters.current) !== JSON.stringify(loadedFilters)) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
+  };
+
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
       <SettingsContent>
@@ -160,10 +170,7 @@ const FiltersTable = () => {
           <Table
             dnd={{ enable: true }}
             enableSelections
-            onChange={({ rows, selectedRows }) => {
-              currentFilters.current = rows;
-              setSelectedFilters(selectedRows);
-            }}
+            onChange={handleChange}
             columns={createColumns(setShowSidepanel)}
             data={filters}
             header={
