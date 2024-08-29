@@ -13,9 +13,7 @@ const TitleHeader = () => <Translate>Label</Translate>;
 const ActionHeader = () => <Translate>Action</Translate>;
 
 const Filters = ({ getValue }: CellContext<Filter, string>) => (
-  <div className="flex gap-2 items-center">
-    <Translate context="Filters">{getValue()}</Translate>
-  </div>
+  <div className="flex gap-2 items-center">{getValue()}</div>
 );
 
 const ActionCell = ({ cell, row }: CellContext<Filter, any>) => {
