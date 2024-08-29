@@ -1,6 +1,6 @@
 /* eslint-disable max-statements */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { IncomingHttpHeaders } from 'http';
 import { RowSelectionState } from '@tanstack/react-table';
@@ -38,7 +38,7 @@ const filtersLoader =
 
 const FiltersTable = () => {
   const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;
-  const prevFilters = useRef(loadedFilters);
+  const currentFilters = useRef(loadedFilters);
   const [hasChanges, setHasChanges] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -50,6 +50,7 @@ const FiltersTable = () => {
   const setAtom = useSetAtom(sidepanelAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSettings = useSetAtom(settingsAtom);
+  const revalidator = useRevalidator();
 
   const templates = useMemo(
     () => filterAvailableTemplates(loadedTemplates, filters),
@@ -57,12 +58,19 @@ const FiltersTable = () => {
   );
 
   useEffect(() => {
-    if (JSON.stringify(filters) !== JSON.stringify(prevFilters.current)) {
+    const formattedFilters = formatFilters(loadedFilters || []);
+    currentFilters.current = formattedFilters;
+    setFilters(formattedFilters);
+  }, [loadedFilters]);
+
+  useEffect(() => {
+    currentFilters.current = filters;
+    if (JSON.stringify(currentFilters.current) !== JSON.stringify(loadedFilters)) {
       setHasChanges(true);
     } else {
       setHasChanges(false);
     }
-  }, [filters]);
+  }, [filters, loadedFilters]);
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -76,12 +84,12 @@ const FiltersTable = () => {
 
   const addNewFilters = (templatedIds: string[]) => {
     const newFilters = createNewFilters(templatedIds, templates);
-    setFilters([...filters, ...newFilters]);
+    setFilters([...currentFilters.current, ...newFilters]);
   };
 
   const handleDelete = () => {
     const idsToRemove: string[] = [];
-    filters?.forEach(filter => {
+    currentFilters.current?.forEach(filter => {
       if (filter.rowId in selectedFilters) {
         idsToRemove.push(filter.rowId);
       }
@@ -94,14 +102,14 @@ const FiltersTable = () => {
       }
     });
 
-    const updatedFilters = deleteFilters(filters, idsToRemove);
+    const updatedFilters = deleteFilters(currentFilters.current, idsToRemove);
     setFilters(updatedFilters || []);
   };
 
   const handleSave = async () => {
     setDisabled(true);
-    const savedFilters = sanitizeFilters(filters);
-    const response = await settingsAPI.save({ filters: savedFilters });
+    const filtersToSave = sanitizeFilters(currentFilters.current);
+    const response = await settingsAPI.save({ filters: filtersToSave });
     if (response instanceof FetchResponseError) {
       return setNotifications({
         type: 'error',
@@ -112,9 +120,7 @@ const FiltersTable = () => {
     setSettings(response);
     setDisabled(false);
     setHasChanges(false);
-    const formattedFilters = formatFilters(savedFilters || []);
-    prevFilters.current = formattedFilters;
-    setFilters(formattedFilters);
+    revalidator.revalidate();
     return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
   };
 
@@ -155,7 +161,7 @@ const FiltersTable = () => {
             dnd={{ enable: true }}
             enableSelections
             onChange={({ rows, selectedRows }) => {
-              setFilters(rows);
+              currentFilters.current = rows;
               setSelectedFilters(selectedRows);
             }}
             columns={createColumns(setShowSidepanel)}
