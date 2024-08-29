@@ -197,20 +197,20 @@ const FiltersTable = () => {
               </div>
               <div className="flex gap-2 md:flex-wrap">
                 <Button
-                  styling="solid"
-                  color="success"
-                  onClick={async () => handleSave()}
-                  disabled={!hasChanges || disabled}
-                >
-                  <Translate>Save</Translate>
-                </Button>
-                <Button
                   styling="outline"
                   color="primary"
                   onClick={() => cancel()}
                   disabled={!hasChanges || disabled}
                 >
                   <Translate>Cancel</Translate>
+                </Button>
+                <Button
+                  styling="solid"
+                  color="success"
+                  onClick={async () => handleSave()}
+                  disabled={!hasChanges || disabled}
+                >
+                  <Translate>Save</Translate>
                 </Button>
               </div>
             </>
