@@ -96,10 +96,9 @@ const sanitizeFilters = (filters?: Filter[]) => {
     }
 
     if (subRows) {
-      sanitizedFilter.items = subRows.map(item => {
-        const { rowId: itemRowId, _id, ...sanitizedItem } = { ...item };
-        return sanitizedItem;
-      });
+      sanitizedFilter.items = subRows.map(
+        ({ rowId: itemRowId, _id, ...sanitizedItem }) => sanitizedItem
+      );
     }
 
     sanitizedFilters.push(sanitizedFilter);
