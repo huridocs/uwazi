@@ -10,7 +10,7 @@ import { Filter } from './helpers';
 const columnHelper = createColumnHelper<Filter>();
 
 const TitleHeader = () => <Translate>Label</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const Filters = ({ getValue }: CellContext<Filter, string>) => (
   <div className="flex gap-2 items-center">{getValue()}</div>
@@ -53,10 +53,7 @@ const createColumns = (setSidepanel: React.Dispatch<React.SetStateAction<boolean
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: {
-      action: setSidepanel,
-      headerClassName: 'w-0 sr-only',
-    },
+    meta: { action: setSidepanel },
   }),
 ];
 

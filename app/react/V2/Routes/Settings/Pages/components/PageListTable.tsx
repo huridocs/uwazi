@@ -12,7 +12,7 @@ const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${keba
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
 const UrlHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
   const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title);

@@ -63,7 +63,6 @@ const TranslationsList = () => {
       header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }),
   ];
 

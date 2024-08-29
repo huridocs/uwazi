@@ -16,7 +16,7 @@ const ProtectionHeader = () => <Translate>Protection</Translate>;
 const RoleHeader = () => <Translate>Role</Translate>;
 const GroupsHeader = () => <Translate>Group</Translate>;
 const MembersHeader = () => <Translate>Members</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const ProtectionPill = ({ cell }: CellContext<User, User['using2fa']>) => {
   if (cell.getValue()) {
@@ -125,7 +125,7 @@ const getUsersColumns = (editButtonAction: (user: User) => void) => [
     id: '1',
     header: ActionHeader,
     cell: EditUserButton,
-    meta: { action: editButtonAction, headerClassName: 'sr-only' },
+    meta: { action: editButtonAction },
     enableSorting: false,
   }),
 ];
@@ -145,7 +145,7 @@ const getGroupsColumns = (editButtonAction: (group: Group) => void) => [
     id: '1',
     header: ActionHeader,
     cell: EditUserGroupButton,
-    meta: { action: editButtonAction, headerClassName: 'sr-only' },
+    meta: { action: editButtonAction },
     enableSorting: false,
   }),
 ];

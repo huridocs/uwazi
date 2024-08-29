@@ -10,7 +10,7 @@ const columnHelper = createColumnHelper<CustomUpload>();
 const TitleHeader = () => <Translate>Name</Translate>;
 const PreviewHeader = () => <Translate>Preview</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const TitleCell = ({ getValue }: CellContext<CustomUpload, string>) => getValue();
 const URLCell = ({ getValue }: CellContext<CustomUpload, string>) => `/assets/${getValue()}`;
@@ -83,10 +83,7 @@ const createColumns = (
     header: ActionHeader,
     cell: ActionCell,
     enableSorting: false,
-    meta: {
-      action: () => ({ delete: handleDelete, edit: editFile }),
-      headerClassName: 'w-0 sr-only',
-    },
+    meta: { action: () => ({ delete: handleDelete, edit: editFile }) },
   }),
 ];
 

@@ -8,7 +8,7 @@ import { TranslationContext } from '../TranslationsList';
 
 const LabelHeader = () => <Translate>Name</Translate>;
 const TypeHeader = () => <Translate>Type</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const RenderButton = ({ cell }: CellContext<TranslationContext, any>) => (
   <Link to={`edit/${cell.row.original.id}`}>

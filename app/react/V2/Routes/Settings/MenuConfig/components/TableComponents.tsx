@@ -23,7 +23,7 @@ const TitleCell = ({ getValue }: CellContext<Link, string>) => (
 
 const TitleHeader = () => <Translate>Label</Translate>;
 const URLHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const columnHelper = createColumnHelper<any>();
 const columns = (actions: { edit: Function }) => [
@@ -43,7 +43,7 @@ const columns = (actions: { edit: Function }) => [
     header: ActionHeader,
     cell: EditButton,
     enableSorting: false,
-    meta: { action: actions.edit, headerClassName: 'sr-only invisible bg-gray-50' },
+    meta: { action: actions.edit },
   }),
 ];
 export { EditButton, TitleHeader, URLHeader, TitleCell, columns };

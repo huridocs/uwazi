@@ -79,7 +79,6 @@ const PagesList = () => {
       header: ActionHeader,
       cell: ActionCell,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
     }),
   ];
 
