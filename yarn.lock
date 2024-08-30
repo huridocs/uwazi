@@ -16554,10 +16554,10 @@ stdin-discarder@^0.2.1:
   resolved "https://registry.yarnpkg.com/stdin-discarder/-/stdin-discarder-0.2.2.tgz#390037f44c4ae1a1ae535c5fe38dc3aba8d997be"
   integrity sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==
 
-stopword@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/stopword/-/stopword-3.0.1.tgz#258e812334d3287c1647bce2ec73426d46a6747b"
-  integrity sha512-pz2XNVtoApA7eSX1viol5ybGGG2Re2bI7/+8TfeaMb09C9NEWgabr7HHf4DbqgrmEuI62sH2BcAEHVAlreCmrQ==
+stopword@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/stopword/-/stopword-3.1.1.tgz#ce3cf748cafd962904902dd050f6f16ca42d3ec0"
+  integrity sha512-TzJdIuzqJNo6IaFvrF3fYqu08uJ/0VMsdABl6d6+dt6daD7QeHJnMt9sPqhVIxEmNaaeE8+eandVPJv9RhAL5Q==
 
 store2@^2.14.2:
   version "2.14.2"
