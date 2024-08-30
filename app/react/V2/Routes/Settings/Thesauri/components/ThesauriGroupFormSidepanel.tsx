@@ -1,16 +1,19 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect } from 'react';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { isEmpty, last } from 'lodash';
 import CheckCircleIcon from '@heroicons/react/20/solid/CheckCircleIcon';
 import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
 import { Button, Card, Sidepanel } from 'app/V2/Components/UI';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import uniqueID from 'shared/uniqueID';
-import { FormThesauriValue } from './ThesauriValueFormSidepanel';
+import { ThesaurusRow } from './TableComponents';
+import { emptyThesaurus } from '../helpers';
 
 interface ThesauriGroupFormSidepanelProps {
   closePanel: () => void;
-  value?: FormThesauriValue;
-  submit: SubmitHandler<FormThesauriValue>;
+  value?: ThesaurusRow;
+  submit: SubmitHandler<ThesaurusRow>;
   showSidepanel: boolean;
 }
 
@@ -20,71 +23,71 @@ const ThesauriGroupFormSidepanel = ({
   value,
   showSidepanel,
 }: ThesauriGroupFormSidepanelProps) => {
-  const defaultValues: FormThesauriValue = {
-    label: '',
-    values: [{ label: '', _id: `temp_${uniqueID()}` }],
-    _id: `temp_${uniqueID()}`,
-  };
   const {
     watch,
     reset,
     control,
-    setValue,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormThesauriValue>({
+  } = useForm<ThesaurusRow>({
     mode: 'onSubmit',
     defaultValues: value,
   });
 
-  const { append, fields } = useFieldArray({ control, name: 'values', keyName: 'tempId' });
+  const editMode = value !== undefined && value.label !== '';
+  const { append, fields } = useFieldArray({
+    control,
+    name: 'subRows',
+    keyName: 'rowId',
+    rules: { minLength: 2 },
+  });
 
   useEffect(() => {
     if (value) {
       reset(value);
     } else {
-      reset(defaultValues);
+      reset(emptyThesaurus());
     }
-  }, [value]);
+  }, [reset, value]);
 
   useEffect(() => {
     const subscription: any = watch((formData): void => {
-      const values = formData.values;
-      // @ts-ignore
-      if (Boolean(values.length) && values[values.length - 1].label !== '') {
-        // @ts-ignore
-        append({ label: '', _id: `temp_${uniqueID()}` }, { shouldFocus: false });
+      const { subRows } = formData;
+      if (!isEmpty(last(subRows)?.label)) {
+        append({ label: '', rowId: uniqueID() }, { shouldFocus: false });
       }
     });
     return () => subscription.unsubscribe();
   }, [watch, append]);
 
-  const curateBeforeSubmit = (tValue: FormThesauriValue) => {
-    const filteredValues = tValue.values?.filter(fValue => fValue.label && fValue.label !== '');
+  const curateBeforeSubmit = (tValue: ThesaurusRow) => {
+    const filteredValues = (tValue.subRows || [])
+      .filter(fValue => !isEmpty(fValue.label))
+      .map(item => ({ ...item, groupId: tValue.rowId }));
 
     submit({
-      _id: tValue._id,
-      ...(tValue?.id && { id: tValue.id }),
-      label: tValue.label,
-      values: filteredValues,
+      ...tValue,
+      subRows: filteredValues,
     });
-    reset(defaultValues);
     closePanel();
   };
 
   const renderItem = () =>
     fields.map((localValue, index) => (
-      <div className="mt-2" key={localValue.tempId}>
+      <div className="mt-2" key={localValue.rowId}>
         <Card title={<Translate>Item</Translate>}>
           <div className="flex flex-col gap-4">
             <InputField
               id="item-name"
               data-testid="thesauri-form-item-name"
               label={<Translate>Title</Translate>}
-              {...register(`values.${index}.label`)}
+              {...register(`subRows.${index}.label`, { required: index < fields.length - 1 })}
             />
           </div>
+          {errors.subRows?.root?.type === 'minLength' && index === 0 && (
+            <Translate className="text-error-700">This field is required</Translate>
+          )}
         </Card>
       </div>
     ));
@@ -94,13 +97,7 @@ const ThesauriGroupFormSidepanel = ({
       isOpen={showSidepanel}
       withOverlay
       closeSidepanelFunction={closePanel}
-      title={
-        value && value.label !== '' ? (
-          <Translate>Edit group</Translate>
-        ) : (
-          <Translate>Add group</Translate>
-        )
-      }
+      title={editMode ? <Translate>Edit group</Translate> : <Translate>Add group</Translate>}
     >
       <form
         onSubmit={handleSubmit(curateBeforeSubmit)}
@@ -109,8 +106,8 @@ const ThesauriGroupFormSidepanel = ({
       >
         <Sidepanel.Body>
           {value && value.label === '' && (
-            <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
-              <div className="flex gap-1 items-center w-full text-base font-semibold">
+            <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
+              <div className="flex items-center w-full gap-1 text-base font-semibold">
                 <div className="w-5 h-5 text-sm">
                   <CheckCircleIcon />
                 </div>
@@ -135,9 +132,11 @@ const ThesauriGroupFormSidepanel = ({
                 label={<Translate>Name</Translate>}
                 {...register('label', { required: true })}
                 hasErrors={!!errors.label}
-                clearFieldAction={() => setValue('label', '')}
               />
             </div>
+            {errors.label?.type === 'required' && (
+              <Translate className="text-error-700">This field is required</Translate>
+            )}
           </Card>
           {renderItem()}
         </Sidepanel.Body>
@@ -147,12 +146,12 @@ const ThesauriGroupFormSidepanel = ({
               styling="light"
               onClick={closePanel}
               className="grow"
-              data-testid="menu-form-cancel"
+              data-testid="thesaurus-form-cancel"
             >
               <Translate>Cancel</Translate>
             </Button>
             <Button className="grow" type="submit" data-testid="thesaurus-form-submit">
-              <Translate>Add</Translate>
+              {!editMode ? <Translate>Add group</Translate> : <Translate>Edit group</Translate>}
             </Button>
           </div>
         </Sidepanel.Footer>

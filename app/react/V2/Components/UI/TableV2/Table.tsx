@@ -195,7 +195,7 @@ const Table = <T extends TableRow<T>>({
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
-      <div className="overflow-auto w-full rounded-md shadow">
+      <div className="w-full overflow-auto rounded-md shadow">
         <table className={`w-full ${className || ''}`}>
           {header && <caption className="p-4">{header}</caption>}
 

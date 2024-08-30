@@ -120,6 +120,7 @@ Change password,Change password
 Change Password,Change Password
 Change will take effect after saving the template,Change will take effect after saving the template
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
 Selecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.
@@ -211,7 +212,6 @@ Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Custom Uploads
 Dashboard,Dashboard
-Data imported,Data imported
 Date added,Date added
 Date format,Date format
 Date modified,Date modified
