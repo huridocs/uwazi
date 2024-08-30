@@ -85,7 +85,7 @@ describe('Filters', () => {
       cy.contains('td', 'Ordenes');
     });
 
-    it('should show the available and currentyl selected templates', () => {
+    it('should show the available and currently selected templates', () => {
       cy.contains('tr', 'Ordenes').contains('button', 'Edit').click();
       cy.get('aside').within(() => {
         cy.getByTestId('multiselect').within(() => {

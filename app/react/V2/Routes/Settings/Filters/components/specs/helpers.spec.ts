@@ -116,7 +116,7 @@ describe('Filters helpers', () => {
             {
               id: 'template_id2',
               name: 'Template 2',
-              //this _id comes when users drang and drop a root filter inside a group
+              //this _id comes when users drag and drop a root filter inside a group
               //@ts-ignore
               _id: 'rootItemId',
               rowId: 'rootItemId',

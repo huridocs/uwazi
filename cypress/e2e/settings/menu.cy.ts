@@ -93,7 +93,7 @@ describe('Menu configuration', () => {
     });
   });
 
-  it('should save the editied links', () => {
+  it('should save the edited links', () => {
     cy.getByTestId('menu-save').click();
     cy.contains('Dismiss').click();
     cy.wait('@fetchLinks');

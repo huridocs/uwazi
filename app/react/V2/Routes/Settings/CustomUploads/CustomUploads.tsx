@@ -41,7 +41,7 @@ const CustomUploads = () => {
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [showUploadsModal, setShowUploadsModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
-  const [showSidepanel, setShowSipanel] = useState(false);
+  const [showSidepanel, setShowSidepanel] = useState(false);
   const [modalProps, setModalProps] = useState<{
     action: () => void;
     items: CustomUpload[];
@@ -116,7 +116,7 @@ const CustomUploads = () => {
           <Table
             data={files}
             columns={createColumns(handleDelete, file => {
-              setShowSipanel(true);
+              setShowSidepanel(true);
               setFileToEdit(file);
             })}
             onChange={({ selectedRows: selected }) => {
@@ -182,7 +182,7 @@ const CustomUploads = () => {
 
       <EditFileSidepanel
         showSidepanel={showSidepanel}
-        closeSidepanel={() => setShowSipanel(false)}
+        closeSidepanel={() => setShowSidepanel(false)}
         file={fileToEdit}
       />
     </div>
