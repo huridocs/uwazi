@@ -1,19 +1,19 @@
 /* eslint-disable max-statements */
 /* eslint-disable max-lines */
-import { FormGroup } from 'app/Forms';
-import { t, Translate } from 'app/I18N';
-import { preloadOptionsLimit } from 'shared/config';
+import React, { Component } from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import ID from 'shared/uniqueID';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Field, actions as formActions } from 'react-redux-form';
-import { propertyTypes } from 'shared/propertyTypes';
+import uuid from 'node-uuid';
+import { FormGroup } from 'app/Forms';
+import { t, Translate } from 'app/I18N';
 import { getSuggestions } from 'app/Metadata/actions/actions';
-import { generateID } from 'shared/IDGenerator';
-import { bindActionCreators } from 'redux';
 import Tip from 'app/Layout/Tip';
+import { propertyTypes } from 'shared/propertyTypes';
+import { preloadOptionsLimit } from 'shared/config';
+import { generateID } from 'shared/IDGenerator';
 
 import { saveThesaurus } from 'app/Thesauri/actions/thesauriActions';
 import { sanitizeThesauri } from 'app/V2/Routes/Settings/Thesauri/helpers';
@@ -85,7 +85,7 @@ class MetadataFormFields extends Component {
   async onAddThesauriValueSaved(thesauri, newValue, _model, isMultiSelect) {
     const { model, push, change } = this.props;
     const newThesauri = thesauri.toJS();
-    const newValueItem = { label: newValue.value, id: ID() };
+    const newValueItem = { label: newValue.value, id: uuid.v4() };
     if (newValue.group === 'root') {
       newThesauri.values.push(newValueItem);
     } else {

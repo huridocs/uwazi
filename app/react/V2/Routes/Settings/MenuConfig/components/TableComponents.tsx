@@ -8,7 +8,7 @@ import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 
 const EditButton = ({ cell, column }: CellContext<ClientSettingsLinkSchema, string>) => (
   <Button
-    styling="outline"
+    styling="light"
     onClick={() => column.columnDef.meta?.action?.(cell.row)}
     className="leading-4"
   >
