@@ -85,7 +85,7 @@ const UsernameCell = ({ cell }: CellContext<User, User['username']>) => {
 };
 
 const EditButton = ({ onClick }: { onClick: MouseEventHandler }) => (
-  <Button styling="outline" onClick={onClick} className="leading-4">
+  <Button styling="light" onClick={onClick} className="leading-4">
     <Translate>Edit</Translate>
   </Button>
 );

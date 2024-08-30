@@ -191,7 +191,7 @@ const OpenPDFButton = ({
   return (
     <Button
       className="leading-4"
-      styling="outline"
+      styling="light"
       disabled={!suggestionHasEntity}
       onClick={() => action && action(cell.row.original)}
     >

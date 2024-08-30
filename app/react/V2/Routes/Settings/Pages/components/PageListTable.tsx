@@ -25,12 +25,12 @@ const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
         target="_blank"
         aria-disabled={isEntityView}
       >
-        <Button styling="outline" disabled={isEntityView}>
+        <Button styling="light" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
       </Link>
       <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
-        <Button styling="outline">
+        <Button styling="light">
           <Translate>Edit</Translate>
         </Button>
       </Link>

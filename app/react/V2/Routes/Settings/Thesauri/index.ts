@@ -1,2 +1,3 @@
-export { ThesaurusForm, editTheasaurusLoader } from './ThesaurusForm';
-export { ThesauriList, theasauriListLoader } from './ThesauriList';
+export { EditThesaurus } from './EditThesaurus';
+export { ThesauriList, thesauriLoader } from './ThesauriList';
+export { editThesaurusLoader } from './helpers';

@@ -70,7 +70,7 @@ const Button = ({
       borderHover = 'enabled:hover:border-primary-800';
       borderDisabled = 'disabled:border-primary-300';
       text = 'text-primary-700';
-      textDisabled = 'disabled:text-primary-300';
+      bgDisabled = 'disabled:text-primary-300';
       textHover = 'enabled:hover:text-primary-700';
       break;
   }
@@ -80,11 +80,7 @@ const Button = ({
       classNames = `bg-white enabled:hover:text-white ${text} ${border} ${textDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
       break;
     case 'light':
-      classNames = `bg-white text-gray-700 disabled:text-gray-300 bg-white border-gray-200 ${textHover}`;
-      break;
-    case 'action':
-      classNames =
-        'bg-white text-xs font-medium text-indigo-800 disabled:text-indigo-300 bg-white ring-indigo-100';
+      classNames = `bg-white text-gray-700 disabled:text-gray-300 border-gray-200 ${textHover} enabled:hover:bg-primary-50 ${borderHover}`;
       break;
     default:
       classNames = `text-white ${bgColor} ${border} ${bgDisabled} ${borderDisabled} ${bgHover} ${borderHover}`;
@@ -100,7 +96,6 @@ const Button = ({
       border focus:outline-none focus:ring-4 focus:ring-indigo-200 `}
       form={form}
       data-testid={dataTestid}
-      style={styling === 'action' ? { borderColor: '#E5EDFF' } : {}}
     >
       {children}
     </button>

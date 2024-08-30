@@ -12,7 +12,7 @@ const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
 const RenderButton = ({ cell }: CellContext<TranslationContext, any>) => (
   <Link to={`edit/${cell.row.original.id}`}>
-    <Button styling="outline" className="leading-4">
+    <Button styling="light" className="leading-4">
       <Translate>Translate</Translate>
     </Button>
   </Link>
