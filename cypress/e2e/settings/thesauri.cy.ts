@@ -206,6 +206,7 @@ describe('Thesauri configuration', () => {
     saveThesaurus();
     cy.contains('a', 'Library').click();
     cy.contains('.multiselectItem-name', 'País');
+    cy.contains('.item-document', 'Bolivia').click();
     cy.contains('.item-document', 'País select').click();
     cy.contains('.metadata-name-select', 'Colors: Blue');
   });
