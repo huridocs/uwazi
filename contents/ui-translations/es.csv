@@ -118,6 +118,7 @@ Change password,Cambiar la contraseña
 Change Password,Change Password
 Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Los cambios no pueden deshacerse después de guardar. Cambiar campos de texto pueden invalidar las sugerencias.
+Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
 Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
@@ -157,8 +158,8 @@ Confirm deletion of template:,Confirmar eliminación de plantilla:
 Confirm discard changes,Confirmar descartar cambios
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
+Connect to an entity,Connect to an entity
 Connected to server,Conectado al servidor
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
@@ -207,7 +208,6 @@ Custom JS,JS Personalizado
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom Uploads,Subidas personalizadas
 Dashboard,Tablero
-Data imported,Datos importados
 Date added,Fecha de creación
 Date format,Formato de fecha
 Date modified,Fecha de la modificación
@@ -241,6 +241,7 @@ Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
@@ -713,6 +714,7 @@ Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,Búsqueda semántica
 Semantic Search,Búsqueda semántica

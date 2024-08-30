@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -25,7 +26,7 @@ import {
   loadDefaultViewerMenu,
   loadTargetDocument as loadTargetDocumentAction,
 } from '../actions/documentActions';
-import { openPanel } from '../actions/uiActions';
+import { openPanel, toggleReferences } from '../actions/uiActions';
 import { selectDoc } from '../selectors';
 import ConfirmCloseForm from './ConfirmCloseForm';
 import ViewMetadataPanel from './ViewMetadataPanel';
@@ -53,6 +54,10 @@ class Viewer extends Component {
     store.dispatch(loadDefaultViewerMenu());
     Marker.init('div.main-wrapper');
     this.setState({ firstRender: false }); // eslint-disable-line react/no-did-mount-set-state
+  }
+
+  componentWillUnmount() {
+    this.props.toggleReferences(true);
   }
 
   handlePlainTextClick() {
@@ -250,13 +255,17 @@ Viewer.propTypes = {
   user: PropTypes.instanceOf(Map),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
+  toggleReferences: PropTypes.func,
 };
+
 Viewer.contextTypes = {
   store: PropTypes.object,
 };
+
 const mapStateToProps = state => {
   const { documentViewer } = state;
   const uiState = documentViewer.uiState.toJS();
+
   return {
     pageText: documentViewer.rawText,
     doc: selectDoc(state),
@@ -266,19 +275,22 @@ const mapStateToProps = state => {
     sidepanelTab: documentViewer.sidepanel.tab,
     showConnections: documentViewer.sidepanel.tab === 'references',
     showTextSelectMenu: Boolean(
-      !documentViewer.targetDoc.get('_id') && uiState.reference && uiState.reference.sourceRange
+      !documentViewer.targetDoc.get('_id') &&
+        state.contextMenu.get('type') === 'ViewerTextSelectedMenu'
     ),
     user: state.user,
     // relationships v2
     newRelationshipsEnabled: state.settings?.collection?.get('features')?.get('newRelationships'),
   };
 };
+
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
       addReference: addReferenceAction,
       loadTargetDocument: loadTargetDocumentAction,
       showTab: tab => actions.set('viewer.sidepanel.tab', tab),
+      toggleReferences,
     },
     dispatch
   );

@@ -11,11 +11,13 @@ describe('TargetDocumentHeader', () => {
   beforeEach(() => {
     props = {
       connection: Immutable({ _id: 'connection' }),
+      uiState: Immutable({ connecting: false }),
       reference: { targetRange: { text: 'text' }, targetDocument: 'abc2', targetFile: 'fileId' },
       targetDocument: 'abc2',
       saveTargetRangedReference: jasmine.createSpy('saveTargetRangedReference'),
       cancelTargetDocument: jasmine.createSpy('cancelTargetDocument'),
       addReference: () => {},
+      toggleReferences: jasmine.createSpy('toggleReferences'),
     };
   });
 
@@ -41,6 +43,18 @@ describe('TargetDocumentHeader', () => {
         'fileId',
         jasmine.any(Function)
       );
+    });
+  });
+
+  describe('reference status', () => {
+    it('should toggle references when connecting', () => {
+      render();
+      component.setProps({ uiState: Immutable({ connecting: true }) }, () => {
+        expect(props.toggleReferences).toHaveBeenCalledWith(false);
+      });
+      component.setProps({ uiState: Immutable({ connecting: false }) }, () => {
+        expect(props.toggleReferences).toHaveBeenCalledWith(true);
+      });
     });
   });
 });

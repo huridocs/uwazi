@@ -117,6 +117,7 @@ Change password,تغيير كلمة المرور
 Change Password,Change Password
 Change will take effect after saving the template,سينفذ التغيير بعد حفظ القالب
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,"This option enhances support for non-Latin languages as the default languages of your collection.
 Selecting this option will update all template properties automatically. The process could take several minutes. Selecting this option will likely change the URLs of library filters. As a consequence, if you have menus or links using such URLs, they will probably stop working.
@@ -158,8 +159,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,تأكيد كلمة المرور الجديدة
 Confirm publish multiple items,تأكيد نشر عناصر متعددة
-Connect to a document,الاتصال بمستند
 Connect to a paragraph,الاتصال بفقرة
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,نوع الاتصال
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -208,7 +209,6 @@ Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,تحميل مخصص
 Dashboard,Dashboard
-Data imported,البيانات المستوردة
 Date added,تم إضافة التاريخ
 Date format,صيغة التاريخ
 Date modified,تاريخ التعديل
@@ -242,6 +242,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,وصف
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,تجاهل التغييرات
 Discard changes?,Discard changes?
@@ -397,7 +398,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,If the email address supplied is correct, we will send instructions to reset the password.
+Instructions to reset password,If the email address supplied is correct
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -714,6 +715,7 @@ Select...,اختار...
 Selected,Selected
 selected,المحدد
 selected of,مختار من
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,البحث الدلالي
 Semantic Search,البحث الدلالي
