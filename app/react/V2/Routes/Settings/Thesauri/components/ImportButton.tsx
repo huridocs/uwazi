@@ -1,35 +1,45 @@
 import React, { ChangeEventHandler } from 'react';
 import { Translate } from 'app/I18N';
+import { ClientThesaurus } from 'app/apiResponseTypes';
 import { Button } from 'app/V2/Components/UI';
 import ThesauriAPI from 'app/V2/api/thesauri';
-import { ClientThesaurus } from 'app/apiResponseTypes';
-import { sanitizeThesaurusValues } from '../helpers';
 
 const ImportButton = ({
   onSuccess,
   onFailure,
-  thesaurus,
+  getThesaurus,
+  onClick,
+  disabled,
 }: {
   onSuccess: Function;
   onFailure: Function;
-  thesaurus: ClientThesaurus;
+  getThesaurus: () => ClientThesaurus;
+  onClick: Function;
+  disabled: Boolean;
 }) => {
   const importThesauri: ChangeEventHandler<HTMLInputElement> = async e => {
     if (e.target.files && e.target.files[0]) {
       try {
-        const sanitizedThesaurus = sanitizeThesaurusValues(thesaurus, thesaurus.values);
-        const data = await ThesauriAPI.importThesaurus(sanitizedThesaurus, e.target.files[0]);
+        const thesaurus = getThesaurus();
+        const data = await ThesauriAPI.importThesaurus(thesaurus, e.target.files[0]);
         onSuccess(data);
       } catch (ex) {
         onFailure(ex);
       }
+    } else {
+      onFailure();
     }
+    document.querySelector('input#import')!.setAttribute('value', '');
   };
   return (
     <Button
+      disabled={disabled === true}
       styling="outline"
       data-testid="thesaurus-import-items"
-      onClick={() => (document.querySelector('input#import') as HTMLElement).click()}
+      onClick={e => {
+        onClick(e);
+        (document.querySelector('input#import') as HTMLElement).click();
+      }}
     >
       <Translate>Import</Translate>
       <input type="file" id="import" hidden onChange={importThesauri} />

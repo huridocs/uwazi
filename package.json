@@ -88,7 +88,8 @@
     "socket.io-parser": "4.2.4",
     "json-schema": "^0.4.0",
     "@types/react": "^18.0.25 || ^18.3.1",
-    "@types/react-dom": "^18.0.9 || ^18.3.0"
+    "@types/react-dom": "^18.0.9 || ^18.3.0",
+    "ws": "8.17.1"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.624.0",
@@ -178,7 +179,7 @@
     "mime-types": "^2.1.35",
     "moment": "^2.30.1",
     "moment-timezone": "0.5.45",
-    "monaco-editor": "^0.50.0",
+    "monaco-editor": "^0.51.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "mongodb": "6.3.0",
     "mongoose": "8.1.2",
@@ -322,7 +323,6 @@
     "@types/react-tabs-redux": "^4.0.0",
     "@types/recharts": "^1.8.24",
     "@types/redux-mock-store": "^1.0.3",
-    "@types/sharp": "^0.29.2",
     "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^1.4.33",
     "@types/superagent": "^8.1.6",
@@ -370,7 +370,7 @@
     "jest-image-snapshot": "^6.4.0",
     "jest-jasmine2": "^29.7.0",
     "jest-puppeteer": "6.1.0",
-    "mini-css-extract-plugin": "^2.9.0",
+    "mini-css-extract-plugin": "^2.9.1",
     "mutationobserver-shim": "^0.3.7",
     "node-polyfill-webpack-plugin": "^4.0.0",
     "nodemon": "^3.1.4",
@@ -383,7 +383,6 @@
     "rtlcss-webpack-plugin": "4.0.7",
     "sass": "^1.77.8",
     "sass-loader": "16.0.1",
-    "sharp": "^0.33.2",
     "storybook": "^8.1.11",
     "stream-mock": "^2.0.5",
     "supertest": "7.0.0",

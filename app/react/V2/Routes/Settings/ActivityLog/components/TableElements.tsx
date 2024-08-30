@@ -101,7 +101,7 @@ const TimeCell =
 
 const ViewCell = ({ cell, column }: CellContext<ActivityLogEntryType, string>) => (
   <Button
-    styling="outline"
+    styling="light"
     className="leading-4"
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
   >
