@@ -9157,10 +9157,10 @@ eslint-plugin-import@v2.29.1:
     semver "^6.3.1"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jasmine@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.2.0.tgz#ed0fe988b6e3b123905a7bf68d77239649fd018c"
-  integrity sha512-zSCsnP4gMqBSt8jApExP0ja43nAI1fpAD5kY+knrIJylBxC/LEth25PkqcKJqW32GjesjsiA1SSSR3Z5qIranA==
+eslint-plugin-jasmine@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.2.1.tgz#80925dc6b24ee263eb834bedb09ff4abf3740b3d"
+  integrity sha512-Vwecc66rjMgz2e9UtGScsUdo6D+SbfgPA4Kf0zdAl4+5IQMRL0mXd8973MaZuYYF89XpRjQEGl5TNmg2Bv+KcQ==
 
 eslint-plugin-jest@v28.8.0:
   version "28.8.0"
