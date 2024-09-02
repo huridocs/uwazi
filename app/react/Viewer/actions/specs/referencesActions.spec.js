@@ -74,8 +74,13 @@ describe('Viewer referencesActions', () => {
         });
         references = {
           saves: [
-            { _id: 'addedReference1', reference: 'reference', sourceRange: { text: 'Text' } },
-            { _id: 'addedReference2', reference: 'reference' },
+            {
+              _id: 'addedReference1',
+              file: 'entityfileId',
+              reference: { text: 'reference' },
+              sourceRange: { text: 'Text' },
+            },
+            { _id: 'addedReference2', reference: { text: 'reference' } },
           ],
           deletions: [],
         };
@@ -89,7 +94,13 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
           { type: 'reloadRelationships', entityId: 'docId' },
+          { type: types.DEACTIVATE_REFERENCE },
           { type: types.ACTIVE_REFERENCE, reference: 'addedReference1' },
+          {
+            type: types.SET_SELECTION,
+            sourceFile: 'entityfileId',
+            sourceRange: { selectionRectangles: undefined, text: 'reference' },
+          },
           { type: 'GO_TO_ACTIVE', value: true },
           { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
           { type: 'viewer.sidepanel.tab/SET', value: 'references' },
@@ -107,7 +118,13 @@ describe('Viewer referencesActions', () => {
           { type: 'viewer/targetDocHTML/UNSET' },
           { type: 'viewer/targetDocReferences/UNSET' },
           { type: 'reloadRelationships', entityId: 'docId' },
+          { type: types.DEACTIVATE_REFERENCE },
           { type: types.ACTIVE_REFERENCE, reference: 'addedReference1' },
+          {
+            type: types.SET_SELECTION,
+            sourceFile: 'entityfileId',
+            sourceRange: { selectionRectangles: undefined, text: 'reference' },
+          },
           { type: types.OPEN_PANEL, panel: 'viewMetadataPanel' },
           { type: 'viewer.sidepanel.tab/SET', value: 'references' },
         ];

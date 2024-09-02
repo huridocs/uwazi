@@ -44,7 +44,7 @@ class Document extends Component {
       ({ regionId, ...otherProps }) => ({ ...otherProps, page: regionId })
     );
     this.props.setSelection({ ...textSelection, selectionRectangles }, this.props.file._id);
-    return this.props.deactivateReference();
+    this.props.deactivateReference();
   }
 
   onTextDeselection() {
@@ -61,8 +61,14 @@ class Document extends Component {
     }
   }
 
-  highlightReference(connection) {
-    return this.props.activateReference(connection);
+  highlightReference(connection, referenceGroup) {
+    return this.props.activateReference(
+      connection,
+      referenceGroup,
+      undefined,
+      undefined,
+      !this.props.disableTextSelection
+    );
   }
 
   pdfLoaded() {
