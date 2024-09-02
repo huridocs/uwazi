@@ -11,13 +11,13 @@ export default {
     return api.get(url, requestParams).then((response: any) => response.json.rows);
   },
 
-  save(thesaurus: ThesaurusSchema, headers?: IncomingHttpHeaders) {
-    const requestParams = new RequestParams(thesaurus, headers);
+  save(thesaurus: ThesaurusSchema) {
+    const requestParams = new RequestParams(thesaurus);
     return api.post('thesauris', requestParams).then((response: any) => response.json);
   },
 
-  delete(params: { _id: string }, headers?: IncomingHttpHeaders) {
-    const requestParams = new RequestParams(params, headers);
+  delete(params: { _id: string }) {
+    const requestParams = new RequestParams(params);
     return api.delete('thesauris', requestParams).then((response: any) => response.json);
   },
 

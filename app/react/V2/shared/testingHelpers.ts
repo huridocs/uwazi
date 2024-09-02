@@ -3,8 +3,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { createStore } from 'jotai';
 import { fromJS } from 'immutable';
-import { IStore } from 'app/istore';
 import { merge } from 'lodash';
+import createMockStore from 'redux-mock-store';
+import { IStore } from 'app/istore';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { settingsAtom } from '../atoms';
 
@@ -37,4 +38,15 @@ const atomsGlobalState = (initialState: { settings?: ClientSettings } = {}) => {
   return myStore;
 };
 
-export { LEGACY_createStore, atomsGlobalState };
+const reduxStore = createMockStore([thunk])(() => ({
+  locale: 'en',
+  inlineEdit: fromJS({ inlineEdit: true }),
+  translations: fromJS([
+    {
+      locale: 'en',
+      contexts: [],
+    },
+  ]),
+}));
+
+export { LEGACY_createStore, atomsGlobalState, reduxStore };

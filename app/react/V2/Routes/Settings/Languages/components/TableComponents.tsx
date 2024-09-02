@@ -26,7 +26,7 @@ const DefaultButton = ({ cell, column }: CellContext<LanguageSchema, boolean>) =
 const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
   !cell.row.original.default ? (
     <Button
-      styling="outline"
+      styling="light"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
@@ -39,7 +39,7 @@ const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) 
 const ResetButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
   cell.row.original.translationAvailable ? (
     <Button
-      styling="outline"
+      styling="light"
       onClick={() => column.columnDef.meta?.action?.(cell.row)}
       className="leading-4"
     >
