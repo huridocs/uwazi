@@ -7,26 +7,21 @@ import { Row } from '@tanstack/react-table';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
-import { ClientRelationshipType, Template } from 'app/apiResponseTypes';
+import { Template } from 'app/apiResponseTypes';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
 import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
-import {
-  Button,
-  Table_deprecated as Table,
-  Sidepanel,
-  ConfirmationModal,
-} from 'app/V2/Components/UI';
+import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import { columns, TableRelationshipType } from './components/TableComponents';
+import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
 import { Form } from './components/Form';
 
 const relationshipTypesLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
-    relationshipTypesAPI.get(headers);
+    (await relationshipTypesAPI.get(headers)).map(rel => ({ ...rel, rowId: rel._id }));
 
 const RelationshipTypes = () => {
-  const relationshipTypes = useLoaderData() as ClientRelationshipType[];
+  const relationshipTypes = useLoaderData() as Relationships[];
   const revalidator = useRevalidator();
 
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
@@ -35,12 +30,12 @@ const RelationshipTypes = () => {
   const setRelationshipTypes = useSetAtom(relationshipTypesAtom);
   const templates = useAtomValue(templatesAtom);
 
-  interface formType extends Omit<ClientRelationshipType, '_id'> {
+  interface formType extends Omit<Relationships, '_id'> {
     _id?: string;
   }
-  const [formValues, setFormValues] = useState<formType>({} as ClientRelationshipType);
+  const [formValues, setFormValues] = useState<formType>({} as Relationships);
 
-  const [selectedItems, setSelectedItems] = useState<Row<TableRelationshipType>[]>([]);
+  const [selectedItems, setSelectedItems] = useState<TableRelationshipType[]>([]);
   const [tableRelationshipTypes, setTableRelationshipTypes] = useState<TableRelationshipType[]>([]);
 
   useEffect(() => {
@@ -57,6 +52,7 @@ const RelationshipTypes = () => {
 
         return {
           ...relationshipType,
+          rowId: relationshipType._id,
           templates: templatesUsingIt,
           disableRowSelection: Boolean(templatesUsingIt.length),
         };
@@ -64,19 +60,20 @@ const RelationshipTypes = () => {
     );
   }, [relationshipTypes, templates]);
 
-  const edit = (row: Row<ClientRelationshipType>) => {
+  const edit = (row: Row<Relationships>) => {
     setFormValues(row.original);
     setIsSidepanelOpen(true);
   };
 
   const add = () => {
-    setFormValues({ name: '' });
+    setFormValues({ name: '', rowId: 'NEW_REL' });
     setIsSidepanelOpen(true);
   };
 
-  const submit = async (submitedData: ClientRelationshipType) => {
+  const submit = async (submitedData: Relationships) => {
+    const { rowId, ...data } = submitedData;
     try {
-      await relationshipTypesAPI.save(submitedData);
+      await relationshipTypesAPI.save(data);
       setNotifications({
         type: 'success',
         text: <Translate>Updated</Translate>,
@@ -96,7 +93,7 @@ const RelationshipTypes = () => {
 
   const deleteSelected = async () => {
     try {
-      await relationshipTypesAPI.deleteRelationtypes(selectedItems.map(item => item.original._id));
+      await relationshipTypesAPI.deleteRelationtypes(selectedItems.map(item => item._id));
       setNotifications({
         type: 'success',
         text: <Translate>Updated</Translate>,
@@ -119,12 +116,20 @@ const RelationshipTypes = () => {
       <SettingsContent>
         <SettingsContent.Header title="Relationship types" />
         <SettingsContent.Body>
-          <Table<TableRelationshipType>
-            enableSelection
+          <Table
+            enableSelections
             columns={columns({ edit })}
             data={tableRelationshipTypes}
-            title={<Translate>Relationship types</Translate>}
-            onSelection={setSelectedItems}
+            header={
+              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                Relationship types
+              </Translate>
+            }
+            onChange={({ selectedRows }) => {
+              setSelectedItems(
+                tableRelationshipTypes.filter(relationship => relationship.rowId in selectedRows)
+              );
+            }}
           />
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedItems.length ? 'bg-primary-50' : ''}>
@@ -165,7 +170,7 @@ const RelationshipTypes = () => {
         withOverlay
       >
         <Form
-          relationtype={formValues as ClientRelationshipType}
+          relationtype={formValues as Relationships}
           closePanel={() => setIsSidepanelOpen(false)}
           currentTypes={relationshipTypes}
           submit={submit}
@@ -179,7 +184,7 @@ const RelationshipTypes = () => {
           body={
             <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
               {selectedItems.map(item => (
-                <li key={item.original.name}>{item.original.name}</li>
+                <li key={item.name}>{item.name}</li>
               ))}
             </ul>
           }

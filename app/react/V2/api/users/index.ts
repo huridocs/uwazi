@@ -4,8 +4,9 @@ import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 
-const prepareUser = (user: ClientUserSchema) => {
+const prepareUser = (user: ClientUserSchema & { rowId?: string }) => {
   const preparedUser = { ...user };
+  delete preparedUser.rowId;
 
   if (!preparedUser.password) {
     delete preparedUser.password;
@@ -74,9 +75,13 @@ const deleteUser = async (
   }
 };
 
-const saveGroup = async (group: ClientUserGroupSchema, headers?: IncomingHttpHeaders) => {
+const saveGroup = async (
+  group: ClientUserGroupSchema & { rowId?: string },
+  headers?: IncomingHttpHeaders
+) => {
   try {
-    const requestParams = new RequestParams(group, headers);
+    const { rowId, ...groupToSave } = group;
+    const requestParams = new RequestParams(groupToSave, headers);
     const response = await api.post('usergroups', requestParams);
     return response.json;
   } catch (e) {
@@ -169,7 +174,7 @@ const reset2FA = async (
   }
 };
 
-const get = async (headers?: IncomingHttpHeaders) => {
+const get = async (headers?: IncomingHttpHeaders): Promise<ClientUserSchema[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
     const response = await UsersAPI.get(requestParams);
@@ -189,7 +194,7 @@ const getCurrentUser = async (headers?: IncomingHttpHeaders) => {
   }
 };
 
-const getUserGroups = async (headers?: IncomingHttpHeaders) => {
+const getUserGroups = async (headers?: IncomingHttpHeaders): Promise<ClientUserGroupSchema[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
     const response = await api.get('usergroups', requestParams);
