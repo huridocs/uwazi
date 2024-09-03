@@ -1,10 +1,10 @@
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { ClientTranslationContextSchema, ClientTranslationSchema } from 'app/istore';
-import { Table_deprecated as Table } from 'V2/Components/UI';
+import { Table } from 'V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import * as translationsAPI from 'V2/api/translations/index';
 import {
@@ -15,6 +15,10 @@ import {
   ActionHeader,
 } from './components/TableComponents';
 
+type TranslationContext = ClientTranslationContextSchema & { rowId: string };
+
+const columnHelper = createColumnHelper<TranslationContext>();
+
 const translationsListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
@@ -24,12 +28,15 @@ const TranslationsList = () => {
   const translations = useLoaderData() as ClientTranslationSchema[];
 
   const contexts: {
-    systemContexts: ClientTranslationContextSchema[];
-    contentContexts: ClientTranslationContextSchema[];
+    systemContexts: TranslationContext[];
+    contentContexts: TranslationContext[];
   } = { systemContexts: [], contentContexts: [] };
 
   translations[0]?.contexts?.forEach(context => {
-    const contextTranslations = { ...context };
+    const contextTranslations: TranslationContext = {
+      ...context,
+      rowId: context.id!,
+    };
 
     if (!contextTranslations.values || Object.keys(contextTranslations.values).length === 0) {
       return undefined;
@@ -42,24 +49,21 @@ const TranslationsList = () => {
     return contexts.contentContexts.push({ ...contextTranslations });
   });
 
-  // Helper typed as any because of https://github.com/TanStack/table/issues/4224
-  const columnHelper = createColumnHelper<any>();
   const columns = [
     columnHelper.accessor('label', {
       header: LabelHeader,
       meta: { headerClassName: 'w-1/3' },
-    }) as ColumnDef<ClientTranslationContextSchema, 'label'>,
+    }),
     columnHelper.accessor('type', {
       header: TypeHeader,
       cell: ContextPill,
       meta: { headerClassName: 'w-2/3' },
-    }) as ColumnDef<ClientTranslationContextSchema, 'type'>,
+    }),
     columnHelper.accessor('id', {
       header: ActionHeader,
       cell: RenderButton,
       enableSorting: false,
-      meta: { headerClassName: 'sr-only invisible bg-gray-50' },
-    }) as ColumnDef<ClientTranslationContextSchema, 'id'>,
+    }),
   ];
 
   return (
@@ -72,19 +76,27 @@ const TranslationsList = () => {
         <SettingsContent.Header title="Translations" />
         <SettingsContent.Body>
           <div data-testid="translations">
-            <Table<ClientTranslationContextSchema>
+            <Table
               columns={columns}
               data={contexts.systemContexts}
-              title={<Translate>System translations</Translate>}
-              initialState={{ sorting: [{ id: 'label', desc: false }] }}
+              header={
+                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  System translations
+                </Translate>
+              }
+              defaultSorting={[{ id: 'label', desc: false }]}
             />
           </div>
           <div className="mt-4" data-testid="content">
-            <Table<ClientTranslationContextSchema>
+            <Table
               columns={columns}
               data={contexts.contentContexts}
-              title={<Translate>Content translations</Translate>}
-              initialState={{ sorting: [{ id: 'label', desc: false }] }}
+              header={
+                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  Content translations
+                </Translate>
+              }
+              defaultSorting={[{ id: 'label', desc: false }]}
             />
           </div>
         </SettingsContent.Body>
@@ -93,4 +105,5 @@ const TranslationsList = () => {
   );
 };
 
+export type { TranslationContext };
 export { TranslationsList, translationsListLoader };

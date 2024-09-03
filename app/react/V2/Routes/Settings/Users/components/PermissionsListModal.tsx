@@ -5,7 +5,7 @@ import { Tooltip } from 'flowbite-react';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/20/solid';
 import { UserPlusIcon } from '@heroicons/react/24/outline';
 import { Translate, t } from 'app/I18N';
-import { Button, Modal, Table_deprecated as Table } from 'app/V2/Components/UI';
+import { Button, Modal, Table } from 'app/V2/Components/UI';
 
 type Level = 'none' | 'partial' | 'full';
 
@@ -14,6 +14,7 @@ interface PermissionByRole {
   admin: Level;
   editor: Level;
   collaborator: Level;
+  rowId: string;
 }
 
 interface PermissionsListModalProps {
@@ -27,90 +28,105 @@ const permissionsByRole: PermissionByRole[] = [
     admin: 'full',
     editor: 'full',
     collaborator: 'full',
+    rowId: '1',
   },
   {
     action: 'Create table of contents',
     admin: 'full',
     editor: 'full',
     collaborator: 'full',
+    rowId: '2',
   },
   {
     action: 'View entities',
     admin: 'full',
     editor: 'full',
     collaborator: 'partial',
+    rowId: '3',
   },
   {
     action: 'Edit metadata of entities',
     admin: 'full',
     editor: 'full',
     collaborator: 'partial',
+    rowId: '4',
   },
   {
     action: 'Delete entities and documents',
     admin: 'full',
     editor: 'full',
     collaborator: 'partial',
+    rowId: '5',
   },
   {
     action: 'Share edit access with other users',
     admin: 'full',
     editor: 'full',
     collaborator: 'partial',
+    rowId: '6',
   },
   {
     action: 'Create relationships and references',
     admin: 'full',
     editor: 'full',
     collaborator: 'partial',
+    rowId: '7',
   },
   {
     action: 'Share entities with the public',
     admin: 'full',
     editor: 'full',
     collaborator: 'none',
+    rowId: '8',
   },
   {
     action: 'Manage site settings and configuration',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '9',
   },
   {
     action: 'Add/delete users and assign roles',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '10',
   },
   {
     action: 'Configure filters',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '11',
   },
   {
     action: 'Add/edit translations',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '12',
   },
   {
     action: 'Configure templates ',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '13',
   },
   {
     action: 'Create and edit thesauri',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '14',
   },
   {
     action: 'Create relationship types',
     admin: 'full',
     editor: 'none',
     collaborator: 'none',
+    rowId: '15',
   },
 ];
 
@@ -185,7 +201,7 @@ const PermissionsListModal = ({ showModal, closeModal }: PermissionsListModalPro
         <Modal.CloseButton onClick={closeModal} />
       </Modal.Header>
       <Modal.Body className="max-w-[100vw]">
-        <Table<PermissionByRole> data={permissionsByRole} columns={tableColumns} />
+        <Table data={permissionsByRole} columns={tableColumns} />
       </Modal.Body>
       <Modal.Footer>
         <Button className="grow" styling="light" onClick={closeModal}>
