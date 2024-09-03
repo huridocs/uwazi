@@ -9157,10 +9157,10 @@ eslint-plugin-import@v2.29.1:
     semver "^6.3.1"
     tsconfig-paths "^3.15.0"
 
-eslint-plugin-jasmine@4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.2.0.tgz#ed0fe988b6e3b123905a7bf68d77239649fd018c"
-  integrity sha512-zSCsnP4gMqBSt8jApExP0ja43nAI1fpAD5kY+knrIJylBxC/LEth25PkqcKJqW32GjesjsiA1SSSR3Z5qIranA==
+eslint-plugin-jasmine@4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-jasmine/-/eslint-plugin-jasmine-4.2.1.tgz#80925dc6b24ee263eb834bedb09ff4abf3740b3d"
+  integrity sha512-Vwecc66rjMgz2e9UtGScsUdo6D+SbfgPA4Kf0zdAl4+5IQMRL0mXd8973MaZuYYF89XpRjQEGl5TNmg2Bv+KcQ==
 
 eslint-plugin-jest@v28.8.0:
   version "28.8.0"
@@ -14596,10 +14596,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier@3.2.5, prettier@^3.1.1:
-  version "3.2.5"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.2.5.tgz#e52bc3090586e824964a8813b09aba6233b28368"
-  integrity sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==
+prettier@3.3.3, prettier@^3.1.1:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.3.3.tgz#30c54fe0be0d8d12e6ae61dbb10109ea00d53105"
+  integrity sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==
 
 prettier@^1.16.4:
   version "1.19.1"
@@ -16370,10 +16370,10 @@ stdin-discarder@^0.2.1:
   resolved "https://registry.yarnpkg.com/stdin-discarder/-/stdin-discarder-0.2.2.tgz#390037f44c4ae1a1ae535c5fe38dc3aba8d997be"
   integrity sha512-UhDfHmA92YAlNnCfhmq0VeNL5bDbiZGg7sZ2IvPsXubGkiNa9EC+tUTsjBRsYUAz87btI6/1wf4XoVvQ3uRnmQ==
 
-stopword@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/stopword/-/stopword-3.0.1.tgz#258e812334d3287c1647bce2ec73426d46a6747b"
-  integrity sha512-pz2XNVtoApA7eSX1viol5ybGGG2Re2bI7/+8TfeaMb09C9NEWgabr7HHf4DbqgrmEuI62sH2BcAEHVAlreCmrQ==
+stopword@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/stopword/-/stopword-3.1.1.tgz#ce3cf748cafd962904902dd050f6f16ca42d3ec0"
+  integrity sha512-TzJdIuzqJNo6IaFvrF3fYqu08uJ/0VMsdABl6d6+dt6daD7QeHJnMt9sPqhVIxEmNaaeE8+eandVPJv9RhAL5Q==
 
 store2@^2.14.2:
   version "2.14.2"
@@ -17748,10 +17748,10 @@ webpack-cli@5.1.4:
     rechoir "^0.8.0"
     webpack-merge "^5.7.3"
 
-webpack-dev-middleware@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-7.3.0.tgz#5975ea41271083dc5678886b99d4c058382fb311"
-  integrity sha512-xD2qnNew+F6KwOGZR7kWdbIou/ud7cVqLEXeK1q0nHcNsX/u7ul/fSdlOTX4ntSL5FNFy7ZJJXbf0piF591JYw==
+webpack-dev-middleware@7.4.2:
+  version "7.4.2"
+  resolved "https://registry.yarnpkg.com/webpack-dev-middleware/-/webpack-dev-middleware-7.4.2.tgz#40e265a3d3d26795585cff8207630d3a8ff05877"
+  integrity sha512-xOO8n6eggxnwYpy1NlzUKpvrjfJTvae5/D6WOK0S2LSo7vjmo5gCM1DbLUmFqrMTJP+W/0YZNctm7jasWvLuBA==
   dependencies:
     colorette "^2.0.10"
     memfs "^4.6.0"
