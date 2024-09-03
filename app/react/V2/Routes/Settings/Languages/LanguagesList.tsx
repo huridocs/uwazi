@@ -4,11 +4,11 @@ import { IncomingHttpHeaders } from 'http';
 import { useLoaderData, LoaderFunction } from 'react-router-dom';
 import { useAtomValue } from 'jotai';
 import { intersectionBy, keyBy, merge, values } from 'lodash';
-import { ColumnDef, Row, createColumnHelper } from '@tanstack/react-table';
+import { Row, createColumnHelper } from '@tanstack/react-table';
 import { Translate, I18NApi, t } from 'app/I18N';
 import { RequestParams } from 'app/utils/RequestParams';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { Button, Table_deprecated as Table, ConfirmationModal } from 'V2/Components/UI';
+import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { useApiCaller } from 'V2/CustomHooks/useApiCaller';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { LanguageSchema } from 'shared/types/commonTypes';
@@ -24,10 +24,14 @@ import {
   LanguageLabel,
 } from './components/TableComponents';
 
+type TableLanguages = LanguageSchema & { rowId: string };
+const columnHelper = createColumnHelper<TableLanguages>();
+
 const languagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () =>
     I18NApi.getLanguages(new RequestParams({}, headers));
+
 // eslint-disable-next-line max-statements
 const LanguagesList = () => {
   const { languages: collectionLanguages = [] } = useAtomValue(settingsAtom);
@@ -41,9 +45,10 @@ const LanguagesList = () => {
   const notInstalledLanguages = availableLanguages.filter(
     l => !collectionLanguages.find(cl => cl.key === l.key)
   );
-  const languages = values(
+
+  const languages: TableLanguages[] = values(
     merge(keyBy(installedLanguages, 'key'), keyBy(collectionLanguages, 'key'))
-  );
+  ).map(lang => ({ ...lang, rowId: lang._id! }));
 
   const handleAction =
     (
@@ -121,33 +126,31 @@ const LanguagesList = () => {
     );
   };
 
-  // Helper typed as any because of https://github.com/TanStack/table/issues/4224
-  const columnHelper = createColumnHelper<any>();
   const columns = [
     columnHelper.accessor('label', {
       id: 'label',
       header: LabelHeader,
       cell: LanguageLabel,
       meta: { headerClassName: 'w-9/12' },
-    }) as ColumnDef<LanguageSchema, 'label'>,
+    }),
     columnHelper.accessor('default', {
       header: DefaultHeader,
       cell: DefaultButton,
       enableSorting: false,
       meta: { action: setDefaultLanguage, headerClassName: 'text-center w-1/12' },
-    }) as ColumnDef<LanguageSchema, 'default'>,
+    }),
     columnHelper.accessor('key', {
       header: ResetHeader,
       cell: ResetButton,
       enableSorting: false,
       meta: { action: resetModal, headerClassName: 'text-center w-1/12' },
-    }) as ColumnDef<LanguageSchema, 'key'>,
+    }),
     columnHelper.accessor('_id', {
       header: UninstallHeader,
       cell: UninstallButton,
       enableSorting: false,
       meta: { action: uninstallModal, headerClassName: 'text-center w-1/12' },
-    }) as ColumnDef<LanguageSchema, '_id'>,
+    }),
   ];
 
   return (
@@ -160,11 +163,15 @@ const LanguagesList = () => {
         <SettingsContent.Header title="Languages" />
         <SettingsContent.Body>
           <div data-testid="languages">
-            <Table<LanguageSchema>
+            <Table
               columns={columns}
               data={languages}
-              title={<Translate>Active languages</Translate>}
-              initialState={{ sorting: [{ id: 'label', desc: false }] }}
+              header={
+                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  Active languages
+                </Translate>
+              }
+              defaultSorting={[{ id: 'label', desc: false }]}
             />
           </div>
         </SettingsContent.Body>
@@ -195,4 +202,5 @@ const LanguagesList = () => {
   );
 };
 
+export type { TableLanguages };
 export { LanguagesList, languagesListLoader };
