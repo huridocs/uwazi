@@ -6,16 +6,15 @@ import { useLoaderData } from 'react-router-dom';
 import uniqueID from 'shared/uniqueID';
 import { Translate } from 'app/I18N';
 import { ClientTemplateSchema } from 'app/istore';
-import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { sidepanelAtom } from './sidepanelAtom';
-import { LoaderData } from './helpers';
+import { Filter, LoaderData } from './helpers';
 
 type FiltersSidepanelProps = {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  onSave: (newFilter: ClientSettingsFilterSchema | undefined) => void;
+  onSave: (newFilter: Filter | undefined) => void;
   availableTemplates?: ClientTemplateSchema[];
 };
 
@@ -27,7 +26,7 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const { templates: allTemplates } = useLoaderData() as LoaderData;
   const filter = useAtomValue(sidepanelAtom);
-  const multiselectValues = filter?.items?.map(item => item.id).filter(v => v) as
+  const multiselectValues = filter?.subRows?.map(item => item.id).filter(v => v) as
     | string[]
     | undefined;
 
@@ -47,11 +46,12 @@ const FiltersSidepanel = ({
     value: availableTemplate._id!,
   }));
 
-  const defaultValues = { ...filter, items: selectedValues };
+  const defaultValues = { ...filter, subRows: selectedValues, rowId: filter?.rowId || 'NEW' };
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues,
@@ -60,19 +60,21 @@ const FiltersSidepanel = ({
 
   const closeSidepanel = () => {
     setShowSidepanel(false);
+    reset();
   };
 
   const formatSelected = (selected: string[] | undefined) =>
     selected?.map(selection => {
       const templateName = allTemplates?.find(template => template._id === selection)?.name;
-      return { id: selection, name: templateName };
+      return { id: selection, name: templateName, rowId: selection };
     });
 
-  const handleSave = (values: Omit<ClientSettingsFilterSchema, 'items'> & { items: string[] }) => {
-    const result = { ...values, items: formatSelected(values.items) };
+  const handleSave = (values: Omit<Filter, 'subRows'> & { subRows: string[] }) => {
+    const result = { ...values, subRows: formatSelected(values.subRows) };
 
     if (!filter?._id) delete result._id;
     if (!filter?.id) result.id = uniqueID();
+    if (result.rowId === defaultValues.rowId) result.rowId = uniqueID();
 
     onSave(result);
     closeSidepanel();
@@ -89,6 +91,7 @@ const FiltersSidepanel = ({
         <form onSubmit={handleSubmit(handleSave)} id="group-edit-form">
           <input className="hidden" {...register('_id')} />
           <input className="hidden" {...register('id')} />
+          <input className="hidden" {...register('rowId')} />
 
           <Card title={<Translate>General Information</Translate>} className="mb-4">
             <InputField
@@ -107,8 +110,7 @@ const FiltersSidepanel = ({
             <div className="flex flex-col gap-4">
               <Controller
                 control={control}
-                name="items"
-                rules={{ required: true }}
+                name="subRows"
                 render={({ field: { onChange, value } }) => (
                   <MultiSelect
                     label={<Translate>Entity types</Translate>}
@@ -118,9 +120,6 @@ const FiltersSidepanel = ({
                   />
                 )}
               />
-              {errors.items?.type === 'required' && (
-                <Translate className="text-error-700">This field is required</Translate>
-              )}
             </div>
           </Card>
         </form>

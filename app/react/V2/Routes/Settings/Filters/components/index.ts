@@ -7,6 +7,7 @@ export {
   createNewFilters,
   deleteFilters,
   sanitizeFilters,
+  formatFilters,
 } from './helpers';
 export { sidepanelAtom } from './sidepanelAtom';
-export type { LoaderData } from './helpers';
+export type { LoaderData, Filter } from './helpers';
