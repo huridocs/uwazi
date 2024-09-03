@@ -6,25 +6,23 @@ import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { t, Translate } from 'app/I18N';
-import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
 import { Button, Card, ConfirmationModal, Sidepanel } from 'V2/Components/UI';
 import { validEmailFormat } from 'V2/shared/formatHelpers';
 import { UserRole } from 'shared/types/userSchema';
 import { QuestionMarkCircleIcon } from '@heroicons/react/20/solid';
 import { PermissionsListModal } from './PermissionsListModal';
+import { User, Group } from '../types';
 
 type SubmitType = 'formSubmit' | 'reset-2fa' | 'unlock-user' | 'reset-password' | undefined;
 
 interface UserFormSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelected: React.Dispatch<
-    React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
-  >;
-  selectedUser?: ClientUserSchema;
-  users?: ClientUserSchema[];
-  groups?: ClientUserGroupSchema[];
+  setSelected: React.Dispatch<React.SetStateAction<User | Group | undefined>>;
+  selectedUser?: User;
+  users?: User[];
+  groups?: Group[];
 }
 
 const userRoles = [
@@ -36,7 +34,7 @@ const userRoles = [
   },
 ];
 
-const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: ClientUserSchema[]) =>
+const isUnique = (nameVal: string, selectedUser?: User, users?: User[]) =>
   !users?.find(
     existingUser =>
       existingUser._id !== selectedUser?._id &&
@@ -44,7 +42,7 @@ const isUnique = (nameVal: string, selectedUser?: ClientUserSchema, users?: Clie
         existingUser.email?.trim().toLowerCase() === nameVal.trim().toLowerCase())
   );
 
-const calculateSelectedGroups = (selectedGroups: string[], groups?: ClientUserGroupSchema[]) =>
+const calculateSelectedGroups = (selectedGroups: string[], groups?: Group[]) =>
   selectedGroups.map(selectedGroup => {
     const group = groups?.find(originalGroup => originalGroup.name === selectedGroup);
     return { _id: group?._id as string, name: group?.name as string };
@@ -110,7 +108,8 @@ const UserFormSidepanel = ({
       password: '',
       role: 'collaborator',
       groups: [],
-    } as ClientUserSchema);
+      rowId: 'NEW',
+    } as User);
 
   const {
     register,
@@ -140,7 +139,7 @@ const UserFormSidepanel = ({
     }
   }, [fetcher]);
 
-  const formSubmit = async (data: ClientUserSchema) => {
+  const formSubmit = async (data: User) => {
     const formData = new FormData();
     if (data._id) {
       formData.set('intent', 'edit-user');
