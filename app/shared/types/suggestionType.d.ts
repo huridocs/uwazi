@@ -47,19 +47,12 @@ export interface IXAggregationQuery {
 
 export interface IXSuggestionAggregation {
   total: number;
-  labeled: {
-    _count: number;
-    match: number;
-    mismatch: number;
-  };
-  nonLabeled: {
-    _count: number;
-    withSuggestion: number;
-    noSuggestion: number;
-    noContext: number;
-    obsolete: number;
-    others: number;
-  };
+  labeled: number;
+  nonLabeled: number;
+  match: number;
+  mismatch: number;
+  obsolete: number;
+  error: number;
 }
 
 export interface IXSuggestionType {

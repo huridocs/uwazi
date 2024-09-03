@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import {
   objectIdSchema,
   propertyValueSchema,
@@ -5,13 +6,13 @@ import {
 } from 'shared/types/commonSchemas';
 import { propertyTypes } from 'shared/propertyTypes';
 
-export const emitSchemaTypes = true;
-
 const commonSuggestionMessageProperties = {
   tenant: { type: 'string', minLength: 1 },
   id: { type: 'string', minLength: 1 },
   xml_file_name: { type: 'string', minLength: 1 },
 };
+
+export const emitSchemaTypes = true;
 
 export const CommonSuggestionSchema = {
   type: 'object',
@@ -285,31 +286,14 @@ export const IXSuggestionAggregationSchema = {
   type: 'object',
   title: 'IXSuggestionAggregation',
   additionalProperties: false,
-  required: ['labeled', 'nonLabeled', 'total'],
+  required: ['total', 'labeled', 'nonLabeled', 'match', 'mismatch', 'obsolete', 'error'],
   properties: {
     total: { type: 'number' },
-    labeled: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['_count', 'match', 'mismatch'],
-      properties: {
-        _count: { type: 'number' },
-        match: { type: 'number' },
-        mismatch: { type: 'number' },
-      },
-    },
-    nonLabeled: {
-      type: 'object',
-      additionalProperties: false,
-      required: ['_count', 'withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
-      properties: {
-        _count: { type: 'number' },
-        withSuggestion: { type: 'number' },
-        noSuggestion: { type: 'number' },
-        noContext: { type: 'number' },
-        obsolete: { type: 'number' },
-        others: { type: 'number' },
-      },
-    },
+    labeled: { type: 'number' },
+    nonLabeled: { type: 'number' },
+    match: { type: 'number' },
+    mismatch: { type: 'number' },
+    obsolete: { type: 'number' },
+    error: { type: 'number' },
   },
 };
