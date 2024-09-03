@@ -243,18 +243,19 @@ describe('suggestions with CustomFilters', () => {
 
   describe('aggreagate()', () => {
     const suggestion = (fileId: string, suggestedValue: string) => {
-      const file = stateFilterFixtures.files.find(
+      const file = stateFilterFixtures.files?.find(
         f => f._id?.toString() === factory.idString(fileId)
       );
-      const entity = stateFilterFixtures.entities.find(e => e.sharedId === file?.entity);
+      const entity = stateFilterFixtures.entities?.find(e => e.sharedId === file?.entity);
+
       return {
         _id: factory.id(`suggestion_for_${fileId}`),
-        entityId: file.entity,
+        entityId: file?.entity,
         status: 'ready' as const,
         entityTemplate: entity?.template,
         language: file?.language,
         fileId: factory.id(fileId),
-        propertyName: Object.keys(entity.metadata)[0],
+        propertyName: Object.keys(entity?.metadata || {})[0],
         extractorId: factory.id('test_extractor'),
         error: '',
         segment: '',
@@ -310,9 +311,9 @@ describe('suggestions with CustomFilters', () => {
       },
     });
 
-    fit('should return count of match and missmatch', async () => {
+    it('should return count of match and missmatch', async () => {
       const f = nFactory();
-      //in this scenario only match should matter for the aggregation, nothing else
+
       await db.setupFixturesAndContext({
         ixsuggestions: [
           f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
@@ -329,9 +330,9 @@ describe('suggestions with CustomFilters', () => {
       });
     });
 
-    fit('should return count of labeled and non labeled suggestions', async () => {
+    it('should return count of labeled and non labeled suggestions', async () => {
       const f = nFactory();
-      //in this scenario match should not be necessary to pass the test
+
       await db.setupFixturesAndContext({
         ixsuggestions: [
           f.suggestion({ extractorId: factory.id('test_extractor'), state: { labeled: true } }),
@@ -349,88 +350,38 @@ describe('suggestions with CustomFilters', () => {
     });
 
     it('should return count of obsolete suggestions', async () => {
-      //in this scenatio we need to only filter by obsolete and not by labeled
+      const f = nFactory();
+
       await db.setupFixturesAndContext({
         ixsuggestions: [
-          { extractorId: factory.id('test_extractor'), state: { labeled: false, obsolete: true } },
-          { extractorId: factory.id('test_extractor'), state: { labeled: false } },
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: true } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: true } }),
+          f.suggestion({ extractorId: factory.id('another_extractor'), state: { obsolete: true } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: false } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: {} }),
         ],
       });
 
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
       expect(result).toMatchObject({
-        nonLabeled: {
-          obsolete: 1,
-        },
+        obsolete: 2,
       });
     });
 
-    it('should return correct aggregation', async () => {
-      // const newFactory = {};
-      // newFactory.suggestion(
-      //   newFactory.file(newFactory.entity('entity_id', { prop: { value: 'test_value' } })),
-      //   'suggested_value'
-      // );
-      //
+    it('should return count of errors in suggestions', async () => {
+      const f = nFactory();
+
       await db.setupFixturesAndContext({
-        ...stateFilterFixtures,
         ixsuggestions: [
-          suggestion('label-match-file-en', 'test-labeled-match'),
-          suggestion({ file: 'label-match-file-en', suggestionValue: 'test-labeled-match' }),
-          suggestion('label-match-file-es', 'test-labeled-match'),
-          suggestion('label-mismatch-file-en', 'test-labeled-mismatch-mismatch'),
-          suggestion('label-mismatch-file-es', 'test-labeled-mismatch-mismatch'),
-          suggestion('unlabeled-no-suggestion-file-en', ''),
-          suggestion('unlabeled-no-suggestion-file-es', ''),
-          suggestion('unlabeled-no-context-file-en', 'test-unlabeled-no-context'),
-          suggestion('unlabeled-no-context-file-es', 'test-unlabeled-no-context'),
-          {
-            ...suggestion('unlabeled-obsolete-file-en', 'test-unlabeled-obsolete'),
-            segment: 'test-unlabeled-obsolete', // no context aggregation
-            date: 0, // obsolete aggregation
-          },
-          {
-            ...suggestion('unlabeled-obsolete-file-es', 'test-unlabeled-obsolete'),
-            segment: 'test-unlabeled-obsolete', // no context aggregation
-            date: 0, // obsolete aggregation
-          },
-          {
-            ...suggestion('unlabeled-processing-file-en', 'test-unlabeled-processing'),
-            status: 'processing', // withSuggestion aggregation should not have processing ones
-          },
-          {
-            ...suggestion('unlabeled-processing-file-es', 'test-unlabeled-processing'),
-            status: 'processing', // withSuggestion aggregation should not have processing ones
-          },
-          {
-            ...suggestion('unlabeled-error-file-en', 'test-unlabeled-error'),
-            segment: 'test-unlabeled-error', // no context aggregation
-            status: 'failed',
-          },
-          {
-            ...suggestion('unlabeled-error-file-es', 'test-unlabeled-error'),
-            segment: 'test-unlabeled-error', // no context aggregation
-            status: 'failed',
-          },
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { error: true } }),
+          f.suggestion({ extractorId: factory.id('another_extractor'), state: { error: true } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: {} }),
         ],
       });
-      await Suggestions.updateStates({});
+
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
-      expect(result).toEqual({
-        total: 12,
-        labeled: {
-          _count: 4,
-          match: 2,
-          mismatch: 2,
-        },
-        nonLabeled: {
-          _count: 8,
-          withSuggestion: 6,
-          noSuggestion: 2,
-          noContext: 4,
-          obsolete: 2,
-          others: 2,
-        },
+      expect(result).toMatchObject({
+        error: 1,
       });
     });
   });
