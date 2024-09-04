@@ -136,44 +136,6 @@ const buildListQuery = (
   return pipeline;
 };
 
-type CountAggregation = { _id: boolean; count: number }[];
-
-const getStatePropertyCount = async (
-  extractorId: ObjectId,
-  property: string,
-  value: boolean = true
-) => {
-  const query = { extractorId, [`state.${property}`]: value };
-  return IXSuggestionsModel.count(query);
-};
-
-const getLabeledCount = async (extractorId: ObjectId) => ({
-  labeled: await getStatePropertyCount(extractorId, 'labeled'),
-});
-
-const getNonLabeledCount = async (extractorId: ObjectId) => ({
-  nonLabeled: await getStatePropertyCount(extractorId, 'labeled', false),
-});
-
-const getMatchedCount = async (extractorId: ObjectId) => {
-  const query = [
-    { $match: { ...baseQueryFragment(extractorId) } },
-    ...groupByAndCount('$state.match'),
-  ];
-  const aggregation: CountAggregation = await IXSuggestionsModel.db.aggregate(query);
-  const matchCount = aggregation.find((a: any) => a._id === true)?.count || 0;
-  const mismatchCount = aggregation.find((a: any) => a._id === false)?.count || 0;
-  return { match: matchCount, mismatch: mismatchCount };
-};
-
-const getObsoleteCount = async (extractorId: ObjectId) => ({
-  obsolete: await getStatePropertyCount(extractorId, 'obsolete'),
-});
-
-const getErrorCount = async (extractorId: ObjectId) => ({
-  error: await getStatePropertyCount(extractorId, 'error'),
-});
-
 const readFilter = (filter: IXSuggestionsFilter) => {
   const { customFilter, extractorId: _extractorId } = filter;
   const extractorId = new ObjectId(_extractorId);
@@ -251,23 +213,38 @@ const Suggestions = {
 
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);
-    const { labeled } = await getLabeledCount(extractorId);
-    const { nonLabeled } = await getNonLabeledCount(extractorId);
-    const { match, mismatch } = await getMatchedCount(extractorId);
-    const { obsolete } = await getObsoleteCount(extractorId);
-    const { error } = await getErrorCount(extractorId);
 
-    const totalCount = labeled + nonLabeled;
+    const aggregations: (IXSuggestionAggregation & { _id: ObjectId })[] =
+      await IXSuggestionsModel.db.aggregate([
+        {
+          $match: { extractorId },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            labeled: { $sum: { $cond: ['$state.labeled', 1, 0] } },
+            nonLabeled: { $sum: { $cond: [{ $not: '$state.labeled' }, 1, 0] } },
+            match: { $sum: { $cond: ['$state.match', 1, 0] } },
+            mismatch: { $sum: { $cond: [{ $not: '$state.match' }, 1, 0] } },
+            obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
+            error: { $sum: { $cond: ['$state.error', 1, 0] } },
+          },
+        },
+      ]);
 
-    return {
-      total: totalCount,
-      labeled,
-      nonLabeled,
-      match,
-      mismatch,
-      obsolete,
-      error,
+    const { _id, ...results } = aggregations[0] || {
+      _id: null,
+      total: 0,
+      labeled: 0,
+      nonLabeled: 0,
+      match: 0,
+      mismatch: 0,
+      obsolete: 0,
+      error: 0,
     };
+
+    return results;
   },
 
   updateStates,
