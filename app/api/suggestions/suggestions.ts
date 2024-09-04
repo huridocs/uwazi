@@ -42,6 +42,8 @@ import {
   updateEntitiesWithSuggestion,
 } from './updateEntities';
 
+const DEFAULT_LIMIT = 30;
+
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
   property: PropertySchema
@@ -88,10 +90,12 @@ const buildListQuery = (
   extractorId: ObjectId,
   customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
-  offset: number,
-  limit: number,
-  sort?: IXSuggestionsQuery['sort']
+  options: { page?: IXSuggestionsQuery['page']; sort?: IXSuggestionsQuery['sort'] }
 ) => {
+  const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
+  const limit = options.page?.size || DEFAULT_LIMIT;
+  const { sort } = options;
+
   const sortOrder = sort?.order === 'desc' ? -1 : 1;
   const sorting = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
 
@@ -188,9 +192,6 @@ const Suggestions = {
       sort?: IXSuggestionsQuery['sort'];
     }
   ) => {
-    const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
-    const DEFAULT_LIMIT = 30;
-    const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
     const { customFilter, extractorId } = readFilter(filter);
 
@@ -199,13 +200,13 @@ const Suggestions = {
       .then(result => (result?.length ? result[0].count : 0));
 
     let suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
+      buildListQuery(extractorId, customFilter, setLanguages, options)
     );
     suggestions = await postProcessSuggestions(suggestions, extractorId);
 
     return {
       suggestions,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / (options.page?.size || DEFAULT_LIMIT)),
     };
   },
 

@@ -205,29 +205,14 @@ export const SuggestionCustomFilterSchema = {
   title: 'SuggestionCustomFilter',
   additionalProperties: false,
   properties: {
-    labeled: {
-      type: 'object',
-      properties: {
-        match: { type: 'boolean' },
-        mismatch: { type: 'boolean' },
-      },
-      additionalProperties: false,
-      required: ['match', 'mismatch'],
-    },
-    nonLabeled: {
-      type: 'object',
-      properties: {
-        withSuggestion: { type: 'boolean' },
-        noSuggestion: { type: 'boolean' },
-        noContext: { type: 'boolean' },
-        obsolete: { type: 'boolean' },
-        others: { type: 'boolean' },
-      },
-      additionalProperties: false,
-      required: ['withSuggestion', 'noSuggestion', 'noContext', 'obsolete', 'others'],
-    },
+    labeled: { type: 'boolean' },
+    match: { type: 'boolean' },
+    mismatch: { type: 'boolean' },
+    nonLabeled: { type: 'boolean' },
+    obsolete: { type: 'boolean' },
+    error: { type: 'boolean' },
   },
-  required: ['labeled', 'nonLabeled'],
+  required: ['labeled', 'nonLabeled', 'match', 'mismatch', 'obsolete', 'error'],
 };
 
 export const SuggestionsQueryFilterSchema = {

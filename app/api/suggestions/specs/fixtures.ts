@@ -1308,6 +1308,15 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unused',
       }
     ),
+    factory.ixSuggestion({
+      extractorId: factory.id('unused_extractor'),
+      state: {
+        labeled: true,
+        match: true,
+        obsolete: true,
+        error: true,
+      },
+    }),
   ],
 };
 
