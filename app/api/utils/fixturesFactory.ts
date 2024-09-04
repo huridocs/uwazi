@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import db from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
@@ -24,11 +24,15 @@ import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFact
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 
+type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
+  state?: Partial<IXSuggestionType['state']>;
+};
+
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
 
   return function setAndGet(key: string) {
-    if (!map.has(key)) map.set(key, db.id() as ObjectId);
+    if (!map.has(key)) map.set(key, testingDB.id() as ObjectId);
 
     return map.get(key)!;
   };
@@ -297,6 +301,37 @@ function getFixturesFactory() {
       creationDate,
       extractorId: idMapper(extractor),
     }),
+
+    ixSuggestion(props: PartialSuggestion): IXSuggestionType {
+      const { state, ...otherProps } = props;
+
+      return {
+        _id: testingDB.id(),
+        entityId: testingDB.id().toString(),
+        status: 'ready' as const,
+        entityTemplate: testingDB.id().toString(),
+        language: 'en',
+        fileId: testingDB.id().toString(),
+        propertyName: 'propertyName',
+        extractorId: testingDB.id(),
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: 1001,
+        state: {
+          labeled: false,
+          withValue: true,
+          withSuggestion: false,
+          match: false,
+          hasContext: false,
+          obsolete: false,
+          processing: false,
+          error: false,
+          ...state,
+        },
+        ...otherProps,
+      };
+    },
 
     // eslint-disable-next-line max-params
     ixSuggestion_deprecated: (
