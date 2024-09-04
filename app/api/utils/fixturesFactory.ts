@@ -129,8 +129,8 @@ function getFixturesFactory() {
       defaultProps: EntitySchema = {},
       propsPerLanguage:
         | {
-          [key: string]: EntitySchema;
-        }
+            [key: string]: EntitySchema;
+          }
         | undefined = undefined
     ): EntitySchema[] {
       return languages.map(language => {
@@ -245,8 +245,8 @@ function getFixturesFactory() {
             typeof item === 'string'
               ? [{ _id: idMapper(item), id: item, label: item }]
               : Object.entries(item).map(([rootValue, children]) =>
-                thesaurusNestedValues(rootValue, children, idMapper)
-              );
+                  thesaurusNestedValues(rootValue, children, idMapper)
+                );
           return [...accumulator, ...nestedItems];
         },
         []
@@ -298,7 +298,8 @@ function getFixturesFactory() {
       extractorId: idMapper(extractor),
     }),
 
-    ixSuggestion: (
+    // eslint-disable-next-line max-params
+    ixSuggestion_deprecated: (
       suggestionId: string,
       extractor: string,
       entity: string,
