@@ -311,25 +311,6 @@ describe('suggestions with CustomFilters', () => {
       },
     });
 
-    it('should return count of match and missmatch', async () => {
-      const f = nFactory();
-
-      await db.setupFixturesAndContext({
-        ixsuggestions: [
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('another_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: false } }),
-        ],
-      });
-
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
-      expect(result).toMatchObject({
-        match: 2,
-        mismatch: 1,
-      });
-    });
-
     it('should return count of labeled and non labeled suggestions', async () => {
       const f = nFactory();
 
@@ -344,8 +325,29 @@ describe('suggestions with CustomFilters', () => {
 
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
       expect(result).toMatchObject({
+        total: 3,
         labeled: 1,
         nonLabeled: 2,
+      });
+    });
+
+    it('should return count of match and missmatch', async () => {
+      const f = nFactory();
+
+      await db.setupFixturesAndContext({
+        ixsuggestions: [
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
+          f.suggestion({ extractorId: factory.id('another_extractor'), state: { match: true } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
+          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: false } }),
+        ],
+      });
+
+      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 3,
+        match: 2,
+        mismatch: 1,
       });
     });
 
@@ -364,6 +366,7 @@ describe('suggestions with CustomFilters', () => {
 
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
       expect(result).toMatchObject({
+        total: 4,
         obsolete: 2,
       });
     });
@@ -381,7 +384,25 @@ describe('suggestions with CustomFilters', () => {
 
       const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
       expect(result).toMatchObject({
+        total: 2,
         error: 1,
+      });
+    });
+
+    it('should correctly return all zeroes if no suggestions found', async () => {
+      await db.setupFixturesAndContext({
+        ixsuggestions: [],
+      });
+
+      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      expect(result).toMatchObject({
+        total: 0,
+        labeled: 0,
+        nonLabeled: 0,
+        match: 0,
+        mismatch: 0,
+        obsolete: 0,
+        error: 0,
       });
     });
   });
