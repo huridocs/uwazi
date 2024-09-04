@@ -114,7 +114,7 @@ jobs:
     needs: [api_unit_tests, app_unit_tests]
     steps:
       - name: Download tests results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
       - name: Download codeclimate binay
         run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
