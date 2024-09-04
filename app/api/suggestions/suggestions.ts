@@ -29,13 +29,11 @@ import {
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {
-  baseQueryFragment,
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
   getMatchStage,
-  groupByAndCount,
 } from './pipelineStages';
 import { postProcessCurrentValues, updateStates } from './updateState';
 import {
