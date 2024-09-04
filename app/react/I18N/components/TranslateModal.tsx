@@ -1,14 +1,14 @@
-import React from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useEffect } from 'react';
+import { useAtom, useAtomValue } from 'jotai';
 import { useForm } from 'react-hook-form';
 import { Modal } from 'V2/Components/UI';
 import { settingsAtom, translationsAtom, inlineEditAtom } from 'V2/atoms';
 import { InputField } from 'app/V2/Components/Forms';
 
 const TranslateModal = () => {
-  const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
-  const [translations, setTranslations] = useRecoilState(translationsAtom);
-  const { languages } = useRecoilValue(settingsAtom);
+  const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
+  const [translations, setTranslations] = useAtom(translationsAtom);
+  const { languages } = useAtomValue(settingsAtom);
 
   const defaultValues = {
     formValues: [
@@ -17,10 +17,23 @@ const TranslateModal = () => {
     ],
   };
 
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues,
     mode: 'onSubmit',
   });
+
+  useEffect(() => {
+    if (inlineEditState.context) {
+      const formValues = translations.map(translation => {
+        const language = languages.find(lang => lang.key === translation.locale);
+        const value = translation.contexts.find(ctx => ctx.id === inlineEditState.context)?.values[
+          inlineEditState.translationKey
+        ];
+        return { language: language.key, value, key: inlineEditState.translationKey };
+      });
+      setValue('formValues', formValues);
+    }
+  }, [inlineEditState]);
 
   const submit = values => {
     console.log(values);

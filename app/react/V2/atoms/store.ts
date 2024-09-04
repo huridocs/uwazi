@@ -2,13 +2,13 @@ import { createStore } from 'jotai';
 import { isClient } from 'app/utils';
 import { store } from 'app/store';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
-import { ClientTemplateSchema } from 'app/istore';
+import { ClientTemplateSchema, ClientTranslationSchema } from 'app/istore';
 import { globalMatomoAtom } from './globalMatomoAtom';
 import { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 import { relationshipTypesAtom } from './relationshipTypes';
 import { settingsAtom } from './settingsAtom';
 import { templatesAtom } from './templatesAtom';
-import { translationsAtom } from './translationsAtom';
+import { translationsAtom, localeAtom } from './translationsAtoms';
 import { userAtom } from './userAtom';
 import { thesauriAtom } from './thesauriAtom';
 
@@ -20,6 +20,7 @@ type AtomStoreData = {
   templates?: ClientTemplateSchema[];
   user?: ClientUserSchema;
   ciMatomoActive?: boolean;
+  translations: ClientTranslationSchema[];
 };
 
 declare global {
@@ -31,8 +32,16 @@ declare global {
 const atomStore = createStore();
 
 if (isClient && window.__atomStoreData__) {
-  const { globalMatomo, locale, settings, thesauri, templates, user, ciMatomoActive } =
-    window.__atomStoreData__;
+  const {
+    globalMatomo,
+    locale,
+    settings,
+    thesauri,
+    templates,
+    user,
+    ciMatomoActive,
+    translations,
+  } = window.__atomStoreData__;
 
   if (ciMatomoActive) atomStore.set(ciMatomoActiveAtom, ciMatomoActive);
   if (globalMatomo) atomStore.set(globalMatomoAtom, { ...globalMatomo });
@@ -40,7 +49,8 @@ if (isClient && window.__atomStoreData__) {
   if (thesauri) atomStore.set(thesauriAtom, thesauri);
   if (templates) atomStore.set(templatesAtom, templates);
   atomStore.set(userAtom, user);
-  atomStore.set(translationsAtom, { locale: locale || 'en' });
+  atomStore.set(translationsAtom, translations);
+  atomStore.set(localeAtom, locale || 'en');
 
   //sync deprecated redux store
   atomStore.sub(settingsAtom, () => {

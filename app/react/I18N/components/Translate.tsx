@@ -1,7 +1,7 @@
 /* eslint-disable max-statements */
 import React, { Fragment, ReactNode } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { translationsAtom, inlineEditAtom } from 'V2/atoms';
+import { useAtom, useAtomValue } from 'jotai';
+import { translationsAtom, inlineEditAtom, localeAtom } from 'V2/atoms';
 
 const parseMarkdownMarker = (
   line: string,
@@ -28,9 +28,17 @@ const parseMarkdownBoldMarker = (line: string) =>
 const parseMarkdownItalicMarker = (line: string) =>
   parseMarkdownMarker(line, /\*(.*)\*/, text => <i>{text}</i>);
 
-const Translate = ({ className, children, context = 'System', translationKey }) => {
-  const { locale, translations } = useRecoilValue(translationsAtom);
-  const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
+type TranslateProps = {
+  className?: string;
+  children: string;
+  context?: string;
+  translationKey?: string;
+};
+
+const Translate = ({ className, children, context = 'System', translationKey }: TranslateProps) => {
+  const translations = useAtomValue(translationsAtom);
+  const locale = useAtomValue(localeAtom);
+  const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
 
   const language = translations.find(translation => translation.locale === locale);
   const activeClassName = inlineEditState.inlineEdit ? 'translation active' : 'translation';

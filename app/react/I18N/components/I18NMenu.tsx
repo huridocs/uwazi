@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Location, useLocation } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useAtom } from 'jotai';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { IImmutable } from 'shared/types/Immutable';
@@ -54,7 +54,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type mappedProps = ConnectedProps<typeof connector>;
 
 const i18NMenuComponent = ({ languages: languageMap, i18nmode, user, locale }: mappedProps) => {
-  const [inlineEditState, setInlineEditState] = useRecoilState(inlineEditAtom);
+  const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
 
   if (!languageMap || languageMap.size < 1 || (languageMap!.size <= 1 && !user.get('_id'))) {
     return <div className="no-i18nmenu" />;

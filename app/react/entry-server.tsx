@@ -142,7 +142,6 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const reduxData = {
     user: userApiResponse.json,
-    translations: translationsApiResponse.json.rows,
     templates: templatesApiResponse.json.rows,
     thesauris: thesaurisApiResponse.json.rows,
     relationTypes: relationTypesApiResponse.json.rows,
@@ -164,6 +163,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       thesauri: thesaurisApiResponse.json.rows,
       templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
+      translations: translationsApiResponse.json.rows,
     },
   };
 };
