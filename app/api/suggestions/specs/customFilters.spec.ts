@@ -1,6 +1,5 @@
-import db, { DBFixture, testingDB } from 'api/utils/testing_db';
+import db, { testingDB } from 'api/utils/testing_db';
 import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
-import { getIdMapper } from 'api/utils/fixturesFactory';
 import { factory, stateFilterFixtures } from './fixtures';
 import { Suggestions } from '../suggestions';
 
@@ -242,38 +241,6 @@ describe('suggestions with CustomFilters', () => {
   });
 
   describe('aggreagate()', () => {
-    const suggestion = (fileId: string, suggestedValue: string) => {
-      const file = stateFilterFixtures.files?.find(
-        f => f._id?.toString() === factory.idString(fileId)
-      );
-      const entity = stateFilterFixtures.entities?.find(e => e.sharedId === file?.entity);
-
-      return {
-        _id: factory.id(`suggestion_for_${fileId}`),
-        entityId: file?.entity,
-        status: 'ready' as const,
-        entityTemplate: entity?.template,
-        language: file?.language,
-        fileId: factory.id(fileId),
-        propertyName: Object.keys(entity?.metadata || {})[0],
-        extractorId: factory.id('test_extractor'),
-        error: '',
-        segment: '',
-        suggestedValue,
-        date: 1001,
-        state: {
-          labeled: false,
-          withValue: true,
-          withSuggestion: false,
-          match: false,
-          hasContext: false,
-          obsolete: false,
-          processing: false,
-          error: false,
-        },
-      } as IXSuggestionType;
-    };
-
     type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
       state?: Partial<IXSuggestionType['state']>;
     };
