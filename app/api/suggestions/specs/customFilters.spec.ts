@@ -1,6 +1,6 @@
-import db, { testingDB } from 'api/utils/testing_db';
-import { IXSuggestionType, SuggestionCustomFilter } from 'shared/types/suggestionType';
-import { factory, stateFilterFixtures } from './fixtures';
+import { testingDB } from 'api/utils/testing_db';
+import { SuggestionCustomFilter } from 'shared/types/suggestionType';
+import { factory as f, stateFilterFixtures } from './fixtures';
 import { Suggestions } from '../suggestions';
 
 const blankCustomFilter: SuggestionCustomFilter = {
@@ -18,18 +18,18 @@ const blankCustomFilter: SuggestionCustomFilter = {
 };
 
 beforeAll(async () => {
-  await db.setupFixturesAndContext(stateFilterFixtures);
+  await testingDB.setupFixturesAndContext(stateFilterFixtures);
   await Suggestions.updateStates({});
 });
 
-afterAll(async () => db.disconnect());
+afterAll(async () => testingDB.disconnect());
 
 describe('suggestions with CustomFilters', () => {
   describe('get()', () => {
     it('should return all suggestions (except processing) when no custom filter is provided', async () => {
       const result = await Suggestions.get(
         {
-          extractorId: factory.id('test_extractor').toString(),
+          extractorId: f.id('test_extractor').toString(),
         },
         {}
       );
@@ -52,7 +52,7 @@ describe('suggestions with CustomFilters', () => {
     it('should be able to paginate', async () => {
       const result = await Suggestions.get(
         {
-          extractorId: factory.id('test_extractor').toString(),
+          extractorId: f.id('test_extractor').toString(),
         },
         { page: { number: 3, size: 2 } }
       );
@@ -230,7 +230,7 @@ describe('suggestions with CustomFilters', () => {
       async ({ customFilter, expectedSuggestions }) => {
         const result = await Suggestions.get(
           {
-            extractorId: factory.id('test_extractor').toString(),
+            extractorId: f.id('test_extractor').toString(),
             customFilter,
           },
           {}
@@ -241,56 +241,20 @@ describe('suggestions with CustomFilters', () => {
   });
 
   describe('aggreagate()', () => {
-    type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
-      state?: Partial<IXSuggestionType['state']>;
-    };
-
-    const nFactory = () => ({
-      suggestion(props: PartialSuggestion): IXSuggestionType {
-        const { state, ...otherProps } = props;
-
-        return {
-          _id: testingDB.id(),
-          entityId: testingDB.id().toString(),
-          status: 'ready' as const,
-          entityTemplate: testingDB.id().toString(),
-          language: 'en',
-          fileId: testingDB.id().toString(),
-          propertyName: 'propertyName',
-          extractorId: testingDB.id(),
-          error: '',
-          segment: '',
-          suggestedValue: '',
-          date: 1001,
-          state: {
-            labeled: false,
-            withValue: true,
-            withSuggestion: false,
-            match: false,
-            hasContext: false,
-            obsolete: false,
-            processing: false,
-            error: false,
-            ...state,
-          },
-          ...otherProps,
-        };
-      },
-    });
-
     it('should return count of labeled and non labeled suggestions', async () => {
-      const f = nFactory();
-
-      await db.setupFixturesAndContext({
+      await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { labeled: true } }),
-          f.suggestion({ extractorId: factory.id('another_extractor'), state: { labeled: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { labeled: false } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { labeled: false } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { labeled: true } }),
+          f.ixSuggestion({
+            extractorId: f.id('another_extractor'),
+            state: { labeled: true },
+          }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { labeled: false } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { labeled: false } }),
         ],
       });
 
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 3,
         labeled: 1,
@@ -299,18 +263,16 @@ describe('suggestions with CustomFilters', () => {
     });
 
     it('should return count of match and missmatch', async () => {
-      const f = nFactory();
-
-      await db.setupFixturesAndContext({
+      await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('another_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { match: false } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { match: true } }),
+          f.ixSuggestion({ extractorId: f.id('another_extractor'), state: { match: true } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { match: true } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { match: false } }),
         ],
       });
 
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 3,
         match: 2,
@@ -319,19 +281,20 @@ describe('suggestions with CustomFilters', () => {
     });
 
     it('should return count of obsolete suggestions', async () => {
-      const f = nFactory();
-
-      await db.setupFixturesAndContext({
+      await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: true } }),
-          f.suggestion({ extractorId: factory.id('another_extractor'), state: { obsolete: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { obsolete: false } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: {} }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: true } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: true } }),
+          f.ixSuggestion({
+            extractorId: f.id('another_extractor'),
+            state: { obsolete: true },
+          }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { obsolete: false } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: {} }),
         ],
       });
 
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 4,
         obsolete: 2,
@@ -339,17 +302,15 @@ describe('suggestions with CustomFilters', () => {
     });
 
     it('should return count of errors in suggestions', async () => {
-      const f = nFactory();
-
-      await db.setupFixturesAndContext({
+      await testingDB.setupFixturesAndContext({
         ixsuggestions: [
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: { error: true } }),
-          f.suggestion({ extractorId: factory.id('another_extractor'), state: { error: true } }),
-          f.suggestion({ extractorId: factory.id('test_extractor'), state: {} }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: { error: true } }),
+          f.ixSuggestion({ extractorId: f.id('another_extractor'), state: { error: true } }),
+          f.ixSuggestion({ extractorId: f.id('test_extractor'), state: {} }),
         ],
       });
 
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 2,
         error: 1,
@@ -357,11 +318,11 @@ describe('suggestions with CustomFilters', () => {
     });
 
     it('should correctly return all zeroes if no suggestions found', async () => {
-      await db.setupFixturesAndContext({
+      await testingDB.setupFixturesAndContext({
         ixsuggestions: [],
       });
 
-      const result = await Suggestions.aggregate(factory.id('test_extractor').toString());
+      const result = await Suggestions.aggregate(f.id('test_extractor').toString());
       expect(result).toMatchObject({
         total: 0,
         labeled: 0,
