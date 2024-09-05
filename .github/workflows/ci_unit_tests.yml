@@ -102,7 +102,7 @@ jobs:
         run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: react-coverage-report
           path: tmp/codeclimate.react.json
