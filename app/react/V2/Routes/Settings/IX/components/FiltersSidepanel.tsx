@@ -15,16 +15,6 @@ interface FiltersSidepanelProps {
   aggregation: any;
 }
 
-const getPercentage = (match: number, total: number): string => {
-  const percentage = (match / total) * 100;
-
-  if (Number.isNaN(percentage)) {
-    return '-';
-  }
-
-  return `${Math.round(percentage)}%`;
-};
-
 const FiltersSidepanel = ({
   showSidepanel,
   setShowSidepanel,
@@ -75,17 +65,6 @@ const FiltersSidepanel = ({
     });
     setShowSidepanel(false);
     reset();
-  };
-
-  //Remove
-  aggregation = {
-    accuracy: 30,
-    labeled: 23,
-    nonLabeled: 5,
-    match: 8,
-    mismatch: 14,
-    obsolete: 0,
-    error: 1,
   };
 
   return (

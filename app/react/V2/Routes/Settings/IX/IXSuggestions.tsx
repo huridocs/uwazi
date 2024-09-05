@@ -24,7 +24,7 @@ import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
-import { FiltersSidepanel } from './components/FiltersSidepanel';
+import { FiltersSidepanel } from './components/FiltersSidepanel.old';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import {
