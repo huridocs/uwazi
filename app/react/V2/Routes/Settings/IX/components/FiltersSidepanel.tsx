@@ -7,12 +7,20 @@ import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
-import { SuggestionCustomFilter } from 'shared/types/suggestionType';
 
 interface FiltersSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
   aggregation: any;
+}
+
+interface IXFilters {
+  labeled: boolean;
+  nonLabeled: boolean;
+  match: boolean;
+  mismatch: boolean;
+  obsolete: boolean;
+  error: boolean;
 }
 
 const FiltersSidepanel = ({
@@ -22,7 +30,7 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const defaultFilter: SuggestionCustomFilter = {
+  const defaultFilter: IXFilters = {
     labeled: false,
     nonLabeled: false,
     match: false,
@@ -31,7 +39,7 @@ const FiltersSidepanel = ({
     error: false,
   };
 
-  let initialFilters: SuggestionCustomFilter = defaultFilter;
+  let initialFilters = defaultFilter;
 
   try {
     if (searchParams.has('filter')) {
@@ -44,7 +52,7 @@ const FiltersSidepanel = ({
     defaultValues: defaultFilter,
   });
 
-  const submitFilters = async (filters: SuggestionCustomFilter) => {
+  const submitFilters = async (filters: IXFilters) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('page', '1');
       prev.set('filter', JSON.stringify(filters));
