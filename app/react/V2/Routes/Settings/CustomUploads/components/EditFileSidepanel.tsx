@@ -3,19 +3,20 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useRevalidator } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
-import { Translate } from 'app/I18N';
 import { FileType } from 'shared/types/fileType';
+import { Translate } from 'app/I18N';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField } from 'V2/Components/Forms';
 import { getFileNameAndExtension } from 'V2/shared/formatHelpers';
 import { notificationAtom } from 'V2/atoms';
 import { update } from 'V2/api/files';
+import { CustomUpload } from '../CustomUploads';
 
 type EditFileSidepanelProps = {
   showSidepanel: boolean;
   closeSidepanel: () => any;
-  file?: FileType;
+  file?: CustomUpload;
 };
 
 const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSidepanelProps) => {
@@ -52,7 +53,8 @@ const EditFileSidepanel = ({ showSidepanel, closeSidepanel, file }: EditFileSide
   });
 
   const save = async (data: { filename: string } | { filename: undefined }) => {
-    const updatedFile: FileType = { ...file, originalname: `${data.filename}.${extension}` };
+    const updatedFile = { ...file, originalname: `${data.filename}.${extension}` };
+    delete updatedFile.rowId;
     const response = await update(updatedFile);
     closeSidepanel();
     notify(response);

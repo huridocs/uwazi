@@ -4,14 +4,14 @@ import React from 'react';
 import { Translate } from 'app/I18N';
 import { InputField } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
-import { ClientRelationshipType } from 'app/apiResponseTypes';
 import { Button, Card } from 'app/V2/Components/UI';
+import { Relationships } from './TableComponents';
 
 interface FormProps {
   closePanel: () => void;
-  relationtype?: ClientRelationshipType;
-  submit: (formValues: ClientRelationshipType) => void;
-  currentTypes: ClientRelationshipType[];
+  relationtype?: Relationships;
+  submit: (formValues: Relationships) => void;
+  currentTypes: Relationships[];
 }
 
 const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => {
@@ -19,7 +19,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ClientRelationshipType>({
+  } = useForm<Relationships>({
     values: relationtype,
     mode: 'onSubmit',
   });
@@ -47,7 +47,7 @@ const Form = ({ closePanel, submit, relationtype, currentTypes }: FormProps) => 
           </div>
         </Card>
       </form>
-      <div className="absolute bottom-0 flex w-full gap-2 px-4 py-3">
+      <div className="flex absolute bottom-0 gap-2 px-4 py-3 w-full">
         <Button
           styling="light"
           onClick={closePanel}

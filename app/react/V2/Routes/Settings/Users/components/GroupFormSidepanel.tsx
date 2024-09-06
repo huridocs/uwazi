@@ -3,27 +3,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetcher } from 'react-router-dom';
 import { Translate } from 'app/I18N';
-import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { InputField, MultiSelect } from 'V2/Components/Forms';
 import { UserGroupSchema } from 'shared/types/userGroupType';
+import { User, Group } from '../types';
 
 interface GroupFormSidepanelProps {
   showSidepanel: boolean;
   setShowSidepanel: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelected: React.Dispatch<
-    React.SetStateAction<ClientUserSchema | ClientUserGroupSchema | undefined>
-  >;
-  selectedGroup?: ClientUserGroupSchema;
-  users?: ClientUserSchema[];
-  groups?: ClientUserGroupSchema[];
+  setSelected: React.Dispatch<React.SetStateAction<User | Group | undefined>>;
+  selectedGroup?: Group;
+  users?: User[];
+  groups?: Group[];
 }
 
-const isUnique = (
-  name: string,
-  selectedGroup?: ClientUserGroupSchema,
-  userGroups?: ClientUserGroupSchema[]
-) =>
+const isUnique = (name: string, selectedGroup?: Group, userGroups?: Group[]) =>
   !userGroups?.find(
     userGroup =>
       userGroup._id !== selectedGroup?._id &&

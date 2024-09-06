@@ -1,111 +1,169 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect, useRef } from 'react';
 import { Translate, t } from 'app/I18N';
 import { InputField, Select, OptionSchema } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
-import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { Button, Card } from 'app/V2/Components/UI';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import uniqueID from 'shared/uniqueID';
-
-type SettingsLinkForm = ClientSettingsLinkSchema & { groupId?: string; type: 'link' | 'group' };
+import { createRowId, Link } from '../shared';
 
 interface MenuFormProps {
   closePanel: () => void;
-  link?: ClientSettingsLinkSchema & { groupId?: string };
-  links?: ClientSettingsLinkSchema[];
-  submit: (formValues: ClientSettingsLinkSchema[]) => void;
+  linkToEdit?: Link & { parentId?: string };
+  links?: Link[];
+  submit: (formValues: Link[]) => void;
 }
 
-const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
-  const [groups, setGroups] = useState<OptionSchema[]>([]);
-  useEffect(() => {
-    if (links) {
-      const _groups = links
-        .filter(_link => _link.type === 'group' && _link.title)
-        .map(_link => ({
-          label: t('Menu', _link.title, _link.title, false),
-          value: _link._id?.toString(),
-          key: _link._id?.toString(),
-        })) as OptionSchema[];
-      const emptyGroup = { label: t('System', 'No Group', 'No Group', false), value: '', key: '-' };
-      setGroups([emptyGroup, ..._groups]);
+const updateLinks = (
+  formData: Link & { select?: string },
+  currentLinks?: Link[],
+  parentId?: string
+) => {
+  const { select: selectedGroup, ...newData } = formData;
+
+  if (newData.rowId === 'NEW_ITEM') {
+    const updatedLinks = [...(currentLinks || [])];
+
+    newData.rowId = createRowId();
+
+    if (selectedGroup) {
+      updatedLinks[updatedLinks.findIndex(link => link.rowId === selectedGroup)].subRows?.push(
+        newData
+      );
+    } else {
+      updatedLinks.push(newData);
     }
-  }, [links]);
+
+    return updatedLinks;
+  }
+
+  switch (true) {
+    case parentId && selectedGroup && parentId !== selectedGroup:
+      return currentLinks?.map(link => {
+        if (link.rowId === parentId) {
+          return {
+            ...link,
+            subRows: link.subRows?.filter(subrow => subrow.rowId !== newData.rowId),
+          };
+        }
+        if (link.rowId === selectedGroup) {
+          return { ...link, subRows: [...(link.subRows || []), newData] };
+        }
+        return link;
+      });
+
+    case parentId && selectedGroup && parentId === selectedGroup:
+      return currentLinks?.map(link => {
+        if (link.rowId === selectedGroup) {
+          return {
+            ...link,
+            subRows: link.subRows?.map(subrow => {
+              if (subrow.rowId === newData.rowId) {
+                return newData;
+              }
+              return subrow;
+            }),
+          };
+        }
+        return link;
+      });
+
+    case parentId && !selectedGroup:
+      return [
+        ...(currentLinks?.map(link => {
+          if (link.rowId === parentId) {
+            return {
+              ...link,
+              subRows: link.subRows?.filter(subrow => subrow.rowId !== newData.rowId),
+            };
+          }
+          return link;
+        }) || []),
+        newData,
+      ];
+
+    case Boolean(!parentId && selectedGroup):
+      return currentLinks?.reduce((acc, link) => {
+        if (link.rowId !== newData.rowId && link.rowId !== selectedGroup) {
+          acc.push(link);
+        }
+        if (link.rowId === selectedGroup) {
+          acc.push({ ...link, subRows: [...(link.subRows || []), newData] });
+        }
+        return acc;
+      }, [] as Link[]);
+
+    case !parentId && !selectedGroup:
+      return currentLinks?.map(link => {
+        if (link.rowId === newData.rowId) {
+          return newData;
+        }
+        return link;
+      });
+
+    default:
+      return currentLinks;
+  }
+};
+
+const MenuForm = ({ closePanel, submit, linkToEdit, links = [] }: MenuFormProps) => {
+  const groups = useRef<OptionSchema[]>([
+    { label: t('System', 'No Group', 'No Group', false), value: '', key: '-' },
+  ]);
+
+  useEffect(() => {
+    links.forEach(link => {
+      if (link.subRows) {
+        groups.current.push({
+          label: t('Menu', link.title, link.title, false),
+          value: link.rowId!,
+          key: link.rowId,
+        });
+      }
+    });
+    // it's only important to get groups on first render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SettingsLinkForm>({
+  } = useForm<Link & { select: string | undefined }>({
     values: {
-      title: link?.title || '',
-      type: link?.type || 'link',
-      url: link?.url || '',
-      sublinks: link?.sublinks,
-      _id: link?._id?.toString(),
-      groupId: link?.groupId?.toString(),
+      rowId: linkToEdit?.rowId || '',
+      title: linkToEdit?.title || '',
+      type: linkToEdit?.type || 'link',
+      url: linkToEdit?.url || '',
+      subRows: linkToEdit?.subRows || [],
+      _id: linkToEdit?._id?.toString(),
+      select: linkToEdit?.parentId,
     },
     mode: 'onSubmit',
   });
 
-  const updateInGroups = (groupId: string | undefined, linkData: SettingsLinkForm) => {
-    let currentLinks = [...links] || [];
-    if (!groupId) {
-      let linkIndex = currentLinks.findIndex(_link => _link._id === linkData._id);
-      linkIndex = linkIndex === -1 ? currentLinks.length : linkIndex;
-      currentLinks[linkIndex] = linkData;
+  const onSubmit = (formValues: Link & { select?: string }) => {
+    const formData = formValues;
+
+    if (!formData.rowId) {
+      formData.rowId = 'NEW_ITEM';
     }
 
-    if (groupId) {
-      currentLinks = currentLinks.filter(_link => _link._id !== linkData._id);
-
-      currentLinks = currentLinks.map(_link => {
-        if (!_link.sublinks) {
-          return _link;
-        }
-
-        if (_link._id !== groupId) {
-          const toBeReturned = {
-            ..._link,
-            sublinks: _link.sublinks.filter(sublink => sublink._id !== linkData._id),
-          };
-          return toBeReturned;
-        }
-        let sublinkIndex = _link.sublinks.findIndex(sublink => sublink._id === linkData._id);
-        sublinkIndex = sublinkIndex === -1 ? _link.sublinks.length : sublinkIndex;
-        const sublinks = [..._link.sublinks];
-        sublinks[sublinkIndex] = linkData;
-        return { ..._link, sublinks };
-      });
+    if (formData.type === 'link') {
+      delete formData.subRows;
     }
 
-    return currentLinks;
-  };
+    const updatedLinks = updateLinks(formData, links, linkToEdit?.parentId);
 
-  const onSubmit = (formValues: SettingsLinkForm) => {
-    const { groupId, ...linkData } = formValues;
-
-    if (!linkData._id) {
-      linkData._id = `tmp_${uniqueID()}`;
-    }
-
-    if (linkData.type === 'link') {
-      delete linkData.sublinks;
-    }
-
-    const updatedLinks = updateInGroups(groupId, linkData);
-
-    submit(updatedLinks);
+    submit(updatedLinks || []);
   };
 
   const hostname = window?.location?.origin || '';
 
   return (
     <div className="relative h-full">
-      <div className="p-4 mb-4 border rounded-md shadow-sm border-gray-50 bg-primary-100 text-primary-700">
-        <div className="flex items-center w-full gap-1 text-base font-semibold">
+      <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
+        <div className="flex gap-1 items-center w-full text-base font-semibold">
           <div className="w-5 h-5 text-sm">
             <CheckCircleIcon />
           </div>
@@ -128,7 +186,11 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
       <form onSubmit={handleSubmit(onSubmit)} id="menu-form">
         <Card
           title={
-            link?.type === 'group' ? <Translate>Group</Translate> : <Translate>Link</Translate>
+            linkToEdit?.type === 'group' ? (
+              <Translate>Group</Translate>
+            ) : (
+              <Translate>Link</Translate>
+            )
           }
         >
           <div className="flex flex-col gap-4">
@@ -139,7 +201,7 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
               {...register('title', { required: true })}
               hasErrors={!!errors.title}
             />
-            {link?.type === 'link' && (
+            {linkToEdit?.type === 'link' && (
               <>
                 <InputField
                   id="link-url"
@@ -152,15 +214,15 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
                   id="link-group"
                   data-testid="menu-form-link-group"
                   label={<Translate>Group</Translate>}
-                  {...register('groupId')}
-                  options={groups}
+                  {...register('select')}
+                  options={groups.current}
                 />
               </>
             )}
           </div>
         </Card>
       </form>
-      <div className="absolute bottom-0 flex w-full gap-2 px-4 py-3">
+      <div className="flex absolute bottom-0 gap-2 px-4 py-3 w-full">
         <Button
           styling="light"
           onClick={closePanel}
@@ -170,11 +232,11 @@ const MenuForm = ({ closePanel, submit, link, links = [] }: MenuFormProps) => {
           <Translate>Cancel</Translate>
         </Button>
         <Button className="grow" type="submit" form="menu-form" data-testid="menu-form-submit">
-          {link?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
+          {linkToEdit?.title ? <Translate>Update</Translate> : <Translate>Add</Translate>}
         </Button>
       </div>
     </div>
   );
 };
 
-export { MenuForm };
+export { MenuForm, updateLinks };

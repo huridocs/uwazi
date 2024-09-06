@@ -58,6 +58,7 @@ describe('Thesauri configuration', () => {
     cy.getByTestId('thesaurus-form-submit').click();
     cy.get('tbody tr').should('have.length', 3);
     cy.contains('button', 'Add group').click();
+    cy.contains('Adding a group and its items.');
     cy.get('input#group-name').type('Group B', { delay: 0 });
     cy.get('input[name="subRows.0.label"]').type('First Child B', { delay: 0 });
     cy.getByTestId('thesaurus-form-submit').click();
@@ -193,7 +194,8 @@ describe('Thesauri configuration', () => {
     cy.contains('.metadata-name-select', 'Colores Importados: Azul Importado');
   });
 
-  it('should update the values in the entities', () => {
+  it('should update the values used in Entities', () => {
+    cy.go('back');
     changeLanguage('English');
     cy.get('.only-desktop a[aria-label="Settings"]').click();
     cy.contains('span', 'Thesauri').click();
@@ -203,9 +205,14 @@ describe('Thesauri configuration', () => {
     cy.clearAndType('input#group-name', 'Colors', { delay: 0 });
     cy.clearAndType('input[name="subRows.0.label"]', 'Blue', { delay: 0 });
     cy.contains('button', 'Edit group').click();
-    saveThesaurus();
-    cy.contains('a', 'Library').click();
-    cy.contains('.multiselectItem-name', 'País');
+    cy.contains('button', 'Save').click();
+    cy.contains('Thesauri updated.');
+    cy.contains('Dismiss').click();
+  });
+
+  it('should reflect the changes in the Entities', () => {
+    cy.contains('a', 'Library', { timeout: 3000 }).click();
+    cy.contains('.multiselectItem-name', 'País').click();
     //for the library sidepanel to reload by selecting another entity first so that 'País select'
     //loads correctly.
     cy.contains('.item-document', 'Bolivia').click();
