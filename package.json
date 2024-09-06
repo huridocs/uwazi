@@ -172,7 +172,7 @@
     "leaflet.gridlayer.googlemutant": "^0.14.1",
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
-    "luxon": "^3.4.4",
+    "luxon": "^3.5.0",
     "mark.js": "^8.11.1",
     "markdown-it": "14.1.0",
     "markdown-it-container": "4.0.0",
