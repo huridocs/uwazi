@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo e
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Account updated,Account updated
 Accuracy,Precisión
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Acción
 Activate,Activate
 Activated,Activated
@@ -467,6 +468,7 @@ Mapping conflict error,"Es necesaria una reindexación de su colección. El moti
 Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
+Match,Match
 Matching,Coincidencia
 matching,matching
 Matomo,Matomo
@@ -479,6 +481,7 @@ Metadata creator,Creador de metadatos
 Metadata Extraction,Extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
+Mismatch,Mismatch
 mismatched passwords,Las contraseñas no coinciden
 mismatching,mismatching
 Mixed access,Acceso mixto
