@@ -112,12 +112,17 @@ export interface IXSuggestionsQuery {
 }
 
 export interface SuggestionCustomFilter {
-  labeled: false;
-  nonLabeled: false;
-  match: boolean;
-  mismatch: boolean;
-  obsolete: boolean;
-  error: boolean;
+  labeled: {
+    match: boolean;
+    mismatch: boolean;
+  };
+  nonLabeled: {
+    withSuggestion: boolean;
+    noSuggestion: boolean;
+    noContext: boolean;
+    obsolete: boolean;
+    others: boolean;
+  };
 }
 
 export interface IXSuggestionsFilter {

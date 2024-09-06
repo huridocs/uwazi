@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Eylem
 Activate,Activate
 Activated,Activated
@@ -470,6 +471,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,Haritalar
 Mark as Reviewed,İncelendi olarak işaretle
 Markdown,Not et
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -482,6 +484,7 @@ Metadata creator,Meta veri oluşturucu
 Metadata Extraction,Meta veri özütleme
 MIGRATE,MIGRATE
 Minimum,Minimum
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,Karma erişim
