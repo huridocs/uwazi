@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Действие
 Activate,Activate
 Activated,Activated
@@ -466,6 +467,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
 Markdown,Markdown
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -478,6 +480,7 @@ Metadata creator,Создатель метаданных
 Metadata Extraction,Извлечение метаданных
 MIGRATE,MIGRATE
 Minimum,Минимум
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,Доступ смешанного типа
