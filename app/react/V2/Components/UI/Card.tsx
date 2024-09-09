@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface CardProps {
-  title: string | React.ReactNode;
+  title?: string | React.ReactNode;
   children: React.ReactNode;
   className?: string;
   color?: 'default' | 'yellow';
@@ -20,7 +20,9 @@ const Card = ({ title, children, className, color = 'default' }: CardProps) => {
 
   return (
     <div className={`border rounded-md border-gray-50 shadow-sm ${className}`}>
-      <div className={`block w-full font-semibold text-base p-4 ${headerColor}`}>{title}</div>
+      {title && (
+        <div className={`block w-full font-semibold text-base p-4 ${headerColor}`}>{title}</div>
+      )}
       <div className="p-4">{children}</div>
     </div>
   );
