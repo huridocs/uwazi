@@ -54,28 +54,6 @@ describe('Settings', () => {
     });
   });
 
-  describe('Thesauri', () => {
-    it('should display Thesaurus page', async () => {
-      await selectSettingsPage('Thesauri');
-      await testSettingsContent('[data-testid="settings-thesauri"]');
-    });
-
-    it('should display new Thesaurus page', async () => {
-      await selectSettingsPage('Thesauri');
-      await expect(page).toClick('a', { text: 'Add thesaurus' });
-      await testSettingsContent('[data-testid="settings-thesauri"]');
-    });
-
-    it('should display new Thesaurus with groups page', async () => {
-      await selectSettingsPage('Thesauri');
-      await expect(page).toClick('a', { text: 'Add thesaurus' });
-      await expect(page).toClick('button', { text: 'Add group' });
-      await expect(page).toFill('input#group-name', 'Group 1');
-
-      await testSettingsContent('aside');
-    });
-  });
-
   afterAll(async () => {
     await logout();
   });

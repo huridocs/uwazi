@@ -76,14 +76,11 @@ export interface ClientSettings
 }
 
 export interface ClientThesaurus extends ThesaurusSchema, Omit<ThesaurusSchema, '_id | values'> {
-  _id: string;
+  _id: ObjectIdSchema;
   values: ClientThesaurusValue[];
 }
 
-export interface ClientThesaurusValue
-  extends ThesaurusValueSchema,
-    Omit<ThesaurusValueSchema, '_id'> {
-  _id: string;
+export interface ClientThesaurusValue extends Omit<ThesaurusValueSchema, '_id'> {
   id?: string;
   label: string;
   values?: {

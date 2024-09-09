@@ -55,6 +55,10 @@ if (isClient && window.__atomStoreData__) {
     const value = atomStore.get(relationshipTypesAtom);
     store?.dispatch({ type: 'relationTypes/SET', value });
   });
+  atomStore.sub(thesauriAtom, () => {
+    const value = atomStore.get(thesauriAtom);
+    store?.dispatch({ type: 'dictionaries/SET', value });
+  });
 }
 
 export type { AtomStoreData };
