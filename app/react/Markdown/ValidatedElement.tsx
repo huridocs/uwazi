@@ -1,14 +1,16 @@
 import React from 'react';
-import { validHtmlTags } from './utils';
+import { extendedHtmlTags, visualizationHtmlTags } from './utils';
 
-const isValidTagName = (tagName: string): boolean => validHtmlTags.has(tagName);
+const isValidTagName = (tagName: string, extended: boolean): boolean =>
+  extended ? extendedHtmlTags.includes(tagName) : visualizationHtmlTags.includes(tagName);
 
 const ValidatedElement = (
   type: string | React.JSXElementConstructor<any>,
   props: (React.Attributes & { children?: React.ReactNode }) | null,
-  ...children: React.ReactNode[]
+  children: React.ReactNode[],
+  extended = false
 ): React.ReactElement | null => {
-  if (typeof type === 'string' && !isValidTagName(type)) {
+  if (typeof type === 'string' && !isValidTagName(type, extended)) {
     return React.createElement('div', { className: 'error' }, `Invalid tag: ${type}`);
   }
 
@@ -17,7 +19,12 @@ const ValidatedElement = (
       return child.map(c => {
         const childProps = c.props as React.Attributes & { children?: React.ReactNode };
         return React.isValidElement(c)
-          ? ValidatedElement(c.type, childProps, ...React.Children.toArray(childProps.children))
+          ? ValidatedElement(
+              c.type,
+              childProps,
+              React.Children.toArray(childProps.children),
+              extended
+            )
           : c;
       });
     }
@@ -25,7 +32,8 @@ const ValidatedElement = (
       return ValidatedElement(
         child.type,
         child.props as React.Attributes & { children?: React.ReactNode },
-        ...React.Children.toArray(child.props.children)
+        React.Children.toArray(child.props.children),
+        extended
       );
     }
     return child;
