@@ -13,6 +13,7 @@ describe('MarkdownViewer', () => {
   beforeEach(() => {
     props = {
       markdown: '## MarkdownContent',
+      extended: true,
     };
   });
 
