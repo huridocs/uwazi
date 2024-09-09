@@ -54,7 +54,29 @@ const MultiselectList = ({
   const [externalSearch, setExternalSearch] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
+    new Set(selectedItems)
+  );
   const optionsRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const newSet = new Set<string>(selectedItems);
+    items.forEach(item => {
+      if (item.suggested) {
+        newSet.add(item.value);
+      }
+
+      if (item.items) {
+        item.items.forEach(subItem => {
+          if (subItem.suggested) {
+            newSet.add(subItem.value);
+          }
+        });
+      }
+    });
+
+    setSelectedOrSuggestedItems(newSet);
+  }, [items, selectedItems]);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -261,20 +283,6 @@ const MultiselectList = ({
 
   const renderSelectedLabel = () => {
     if (suggestions) {
-      const selectedOrSuggestedItems = new Set<string>(selectedItems);
-      items.forEach(item => {
-        if (item.suggested) {
-          selectedOrSuggestedItems.add(item.value);
-        }
-
-        if (item.items) {
-          item.items.forEach(subItem => {
-            if (subItem.suggested) {
-              selectedOrSuggestedItems.add(subItem.value);
-            }
-          });
-        }
-      });
       return (
         <>
           <Translate>Selected or suggested</Translate>{' '}
@@ -318,7 +326,7 @@ const MultiselectList = ({
               {
                 label: renderSelectedLabel(),
                 value: 'false',
-                disabled: selectedItems.length === 0,
+                disabled: selectedOrSuggestedItems.size === 0,
                 defaultChecked: startOnSelected,
               },
             ]}
