@@ -7,13 +7,7 @@ import { useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import { ClientSettings } from 'app/apiResponseTypes';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import {
-  Button,
-  PaginationState,
-  Paginator,
-  Pill,
-  Table_deprecated as Table,
-} from 'app/V2/Components/UI';
+import { Button, PaginationState, Paginator, Pill, Table } from 'app/V2/Components/UI';
 import { useIsFirstRender } from 'app/V2/CustomHooks/useIsFirstRender';
 import { settingsAtom } from 'app/V2/atoms';
 import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
@@ -98,12 +92,18 @@ const ActivityLog = () => {
             </Button>
           </div>
           {error === undefined && (
-            <Table<ActivityLogEntryType>
-              title={<Translate>Activity Log</Translate>}
-              columns={columns}
+            <Table
               data={activityLogData}
-              sorting={sorting}
-              setSorting={setSorting}
+              columns={columns}
+              defaultSorting={sorting}
+              sortingFn={sortingState => {
+                setSorting(sortingState);
+              }}
+              header={
+                <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                  Activity Log
+                </Translate>
+              }
               footer={
                 <div className="flex justify-between h-6">
                   <PaginationState

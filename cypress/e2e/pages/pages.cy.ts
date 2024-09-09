@@ -211,7 +211,7 @@ describe('Pages', () => {
       cy.contains('a', 'Settings').click();
       cy.contains('a', 'Pages').click();
       cy.contains('Country page');
-      cy.get('[data-testid="settings-content"] [data-testid="table"]').toMatchImageSnapshot({
+      cy.get('table').toMatchImageSnapshot({
         disableTimersAndAnimations: true,
         threshold: 0.08,
       });
@@ -232,6 +232,7 @@ describe('Pages', () => {
       cy.contains('Deleted successfully');
       cy.contains('Country page');
       cy.contains('Page with error').should('not.exist');
+      cy.contains('button', 'Dismiss').click();
     });
 
     it('should not delete a page used as entity view', () => {
