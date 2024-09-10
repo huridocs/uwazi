@@ -14,6 +14,50 @@ const logError = (err, propValueOf, propLabelOf) => {
   /* eslint-enable no-console */
 };
 
+const customVisualizationTags = [
+  'vimeo',
+  'youtube',
+  'media',
+  'markdownlink',
+  'markdownmedia',
+  'counter',
+  'entitylink',
+  'itemlist',
+  'repeat',
+  'context',
+  'map',
+  'value',
+  'cejilchart',
+  'cejilchart001',
+  'cejilchart002',
+  'cejilhero',
+  'placeholder',
+];
+const customExtendedTags = [
+  'searchbox',
+  'contactform',
+  'paypaldonatelink',
+  'publicform',
+  'searchbox',
+  'entityinfo',
+  'query',
+  'dataset',
+  'entitydata',
+  'entitysection',
+  'piechart',
+  'pie',
+  'piechart',
+  'pie',
+  'barchart',
+  'bar',
+  'tooltip',
+  'stackeddualbarchart',
+  'librarychart',
+  'librarycharts',
+  'coloredbar',
+  'extendedtooltip',
+];
+
 const extendedValidHtmlTags = [
   'blink',
   'body',
@@ -42,7 +86,7 @@ const extendedValidHtmlTags = [
   'var',
   'view',
   'wbr',
-];
+].concat(customExtendedTags);
 
 const visualizationHtmlTags = [
   'a',
@@ -188,8 +232,10 @@ const visualizationHtmlTags = [
   'ul',
   'video',
   'wbr',
-];
+].concat(customVisualizationTags);
 
-const extendedHtmlTags = visualizationHtmlTags.concat(extendedValidHtmlTags);
+const extendedHtmlTags = visualizationHtmlTags
+  .concat(extendedValidHtmlTags)
+  .concat(customExtendedTags);
 
 export { objectPath, logError, extendedHtmlTags, visualizationHtmlTags };
