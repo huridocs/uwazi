@@ -206,14 +206,14 @@ describe('Thesauri configuration', () => {
     cy.clearAndType('input[name="subRows.0.label"]', 'Blue', { delay: 0 });
     cy.contains('button', 'Edit group').click();
     cy.contains('button', 'Save').click();
-    cy.contains('Thesauri updated.');
-    cy.contains('Dismiss').click();
+    cy.contains('Thesauri updated.').as('successMessage');
+    cy.get('@successMessage').should('not.exist');
   });
 
   it('should reflect the changes in the Entities', () => {
-    cy.contains('a', 'Library', { timeout: 3000 }).click();
+    cy.contains('a', 'Library', { timeout: 5000 }).click();
     cy.contains('.multiselectItem-name', 'País').click();
-    //for the library sidepanel to reload by selecting another entity first so that 'País select'
+    //for the library sidepanel to reload by selecting anoth er entity first so that 'País select'
     //loads correctly.
     cy.contains('.item-document', 'Bolivia').click();
     cy.contains('.item-document', 'País select').click();

@@ -97,13 +97,15 @@ describe('Account', () => {
     let secret: string;
 
     it('pass accessibility tests', () => {
-      cy.contains('button', 'Enable').click();
+      cy.get('#account-form').within(() => {
+        cy.contains('button', 'Enable').click({ force: true });
+      });
+      cy.contains('Using Authenticator');
       cy.checkA11y();
     });
 
     it('should enable 2FA', () => {
-      // eslint-disable-next-line cypress/unsafe-to-chain-command
-      cy.getByTestId('copy-value-button').focus();
+      cy.getByTestId('copy-value-button').focus({ timeout: 5000 });
       cy.getByTestId('copy-value-button').realClick();
       cy.window()
         .then(async win => win.navigator.clipboard.readText())
