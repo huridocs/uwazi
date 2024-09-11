@@ -36,7 +36,7 @@ const menuConfigloader =
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
   const [linkState, setLinkState] = useState(links);
-  const netxLinks = useRef(links);
+  const prevLinks = useRef(links);
   const [selectedLinks, setSelectedLinks] = useState<RowSelectionState>({});
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -45,7 +45,7 @@ const MenuConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetAtom(settingsAtom);
 
-  const areEqual = isEqual(linkState, netxLinks.current);
+  const areEqual = isEqual(linkState, prevLinks.current);
 
   const blocker = useBlocker(!areEqual);
 
@@ -103,7 +103,7 @@ const MenuConfig = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    netxLinks.current = links;
+    prevLinks.current = links;
     setLinkState(links);
   }, [links]);
 
