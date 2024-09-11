@@ -73,7 +73,7 @@ jobs:
         run: node --expose-gc -no-compilation-cache ./node_modules/.bin/jest app/api app/shared --coverage --coverageDirectory  coverage/api --maxWorkers=2 --logHeapUsage
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.api.json coverage/api/lcov.info
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: api-coverage-report
           path: tmp/codeclimate.api.json
@@ -102,7 +102,7 @@ jobs:
         run: node --max-http-header-size 20000 ./node_modules/.bin/jest app/react --coverage --coverageDirectory  coverage/react --maxWorkers=2
       - run: ./cc-test-reporter format-coverage -t lcov -o tmp/codeclimate.react.json coverage/react/lcov.info
       - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: react-coverage-report
           path: tmp/codeclimate.react.json
@@ -115,6 +115,8 @@ jobs:
     steps:
       - name: Download tests results
         uses: actions/download-artifact@v4.1.7
+        with:
+          pattern: '*-coverage-report'
       - name: Download codeclimate binay
         run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
       - run: chmod +x ./cc-test-reporter
