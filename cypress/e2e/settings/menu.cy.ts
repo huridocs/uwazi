@@ -60,7 +60,7 @@ describe('Menu configuration', () => {
     cy.contains('caption', 'Menu');
   });
 
-  it('tests Add groups', () => {
+  it('it should add groups', () => {
     cy.getByTestId('menu-add-group').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Group 1', { delay: 0 });
@@ -74,7 +74,7 @@ describe('Menu configuration', () => {
     cy.wait('@fetchLinks');
   });
 
-  it('tests Edit', () => {
+  it('should edit items and put them into groups', () => {
     cy.get('tbody tr:nth-of-type(1)').contains('Edit').click();
     cy.get('#link-title').type(' edited', { delay: 0 });
     cy.get('#link-group').select('Group 1');
@@ -100,7 +100,7 @@ describe('Menu configuration', () => {
     cy.getByTestId('menu-save').should('be.disabled');
   });
 
-  it('tests edit groups', () => {
+  it('should swich items from groups', () => {
     cy.get('tbody tr:nth-of-type(3)').contains('button', 'Group').click();
     cy.get('tbody tr:nth-of-type(2)').contains('button', 'Group').click();
 
@@ -117,6 +117,18 @@ describe('Menu configuration', () => {
     cy.wait('@fetchLinks');
   });
 
+  it('should edit a child item', () => {
+    cy.contains('tr', 'Link 1 edited').contains('button', 'Edit').click();
+    cy.get('aside').within(() => {
+      cy.get('#link-title').clear();
+      cy.get('#link-title').type('Link A', { delay: 0 });
+      cy.contains('button', 'Update').click();
+    });
+    cy.getByTestId('menu-save').click();
+    cy.contains('Dismiss').click();
+    cy.wait('@fetchLinks');
+  });
+
   it('should update the navigation bar with the changes', () => {
     cy.get('.menuItems > .menuNav-list > .menuNav-item')
       .should('have.length', 3)
@@ -124,7 +136,7 @@ describe('Menu configuration', () => {
       .should('deep.equal', ['Link 3', 'Group 1  ', 'Group 2  ']);
 
     cy.get('.menuItems > .menuNav-list > .menuNav-item').eq(2).click();
-    cy.get('.dropdown-menu.expanded').contains('Link 1 edited');
+    cy.get('.dropdown-menu.expanded').contains('Link A');
   });
 
   it('tests delete', () => {
@@ -148,7 +160,7 @@ describe('Menu configuration', () => {
       cy.get('.dropdown-menu.expanded').should('be.empty');
       cy.contains('Group 2').click();
       cy.get('.dropdown-menu.expanded').within(() => {
-        cy.contains('Link 1 edited');
+        cy.contains('Link A');
       });
     });
   });
