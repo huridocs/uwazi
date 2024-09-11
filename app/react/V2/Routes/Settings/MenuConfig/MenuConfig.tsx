@@ -20,28 +20,23 @@ import { Link, sanitizeIds } from './shared';
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const rowIds: string[] = [];
     const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
       const linkWithRowId: Link = { ...link, rowId: link._id! };
-      rowIds.push(link._id!);
       if (link.sublinks) {
-        linkWithRowId.subRows = link.sublinks.map((sublink, index) => {
-          rowIds.push(`${link._id}-${index}`);
-          return {
-            ...sublink,
-            rowId: `${link._id}-${index}`,
-          };
-        });
+        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+          ...sublink,
+          rowId: `${link._id}-${index}`,
+        }));
       }
       return linkWithRowId;
     });
-    return { links: tableRows, rowIds };
+    return tableRows;
   };
 
 const MenuConfig = () => {
-  const { links, rowIds } = useLoaderData() as { links: Link[]; rowIds: string[] };
+  const links = useLoaderData() as Link[];
   const [linkState, setLinkState] = useState(links);
-  const nextRowIds = useRef(rowIds);
+  const netxLinks = useRef(links);
   const [selectedLinks, setSelectedLinks] = useState<RowSelectionState>({});
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -50,7 +45,7 @@ const MenuConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetAtom(settingsAtom);
 
-  const areEqual = isEqual(rowIds, nextRowIds.current);
+  const areEqual = isEqual(linkState, netxLinks.current);
 
   const blocker = useBlocker(!areEqual);
 
@@ -108,22 +103,9 @@ const MenuConfig = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    nextRowIds.current = rowIds;
+    netxLinks.current = links;
     setLinkState(links);
-    //rowIds is derived from links, no need to add links to the deps
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowIds]);
-
-  useEffect(() => {
-    const updatedRowsIds: string[] = [];
-    linkState.forEach(link => {
-      updatedRowsIds.push(link.rowId!);
-      if (link.subRows) {
-        link.subRows.forEach(subRow => updatedRowsIds.push(subRow.rowId!));
-      }
-    });
-    nextRowIds.current = updatedRowsIds;
-  }, [rowIds, linkState]);
+  }, [links]);
 
   return (
     <div
