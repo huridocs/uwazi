@@ -13,8 +13,7 @@ import { Entity, MetadataValue } from '../model/Entity';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource
-{
+  implements EntitiesDataSource {
   protected collectionName = 'entities';
 
   private settingsDS: MongoSettingsDataSource;
@@ -121,6 +120,20 @@ export class MongoEntitiesDataSource
     });
 
     return new MongoResultSet(result, entity => entity.sharedId);
+  }
+
+  async updateMetadataValues(id: Entity['_id'], values: Record<string, MetadataValue[]>) {
+    await this.getCollection().updateOne(
+      { _id: MongoIdHandler.mapToDb(id) },
+      {
+        $set: Object.fromEntries(
+          Object.entries(values).map(([propertyName, metadataValues]) => [
+            `metadata.${propertyName}`,
+            metadataValues,
+          ])
+        ),
+      }
+    );
   }
 
   async updateObsoleteMetadataValues(

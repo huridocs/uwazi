@@ -1,7 +1,7 @@
 import { Ajv } from 'ajv';
 import { JTDSchemaType } from 'ajv/dist/core';
-import { ATConfigValidator } from '../contracts/ATConfigValidator';
 import { TranslationResult } from '../types/TranslationResult';
+import { ATTranslationResultValidator } from '../contracts/ATTranslationResultValidator';
 
 const schema: JTDSchemaType<TranslationResult> = {
   additionalProperties: false,
@@ -23,7 +23,7 @@ const schema: JTDSchemaType<TranslationResult> = {
   },
 };
 
-export class AJVTranslationResultValidator implements ATConfigValidator {
+export class AJVTranslationResultValidator implements ATTranslationResultValidator {
   private errors: string[] = [];
 
   getErrors() {
