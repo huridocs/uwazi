@@ -1090,7 +1090,7 @@ const stateFilterFixtures: DBFixture = {
     factory.ixExtractor('unused_extractor', 'unused_prop', ['template1']),
   ],
   ixsuggestions: [
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'label-match-suggestion-en',
       'test_extractor',
       'labeled-match',
@@ -1104,7 +1104,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-labeled-match',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'label-match-suggestion-es',
       'test_extractor',
       'labeled-match',
@@ -1118,7 +1118,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-labeled-match',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'label-mismatch-suggestion-en',
       'test_extractor',
       'labeled-mismatch',
@@ -1132,7 +1132,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-labeled-mismatch-mismatch',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'label-mismatch-suggestion-es',
       'test_extractor',
       'labeled-mismatch',
@@ -1146,7 +1146,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-labeled-mismatch-mismatch',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-no-suggestion-suggestion-en',
       'test_extractor',
       'unlabeled-no-suggestion',
@@ -1160,7 +1160,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: '',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-no-suggestion-suggestion-es',
       'test_extractor',
       'unlabeled-no-suggestion',
@@ -1174,7 +1174,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: '',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-no-context-suggestion-en',
       'test_extractor',
       'unlabeled-no-context',
@@ -1188,7 +1188,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unlabeled-no-context',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-no-context-suggestion-es',
       'test_extractor',
       'unlabeled-no-context',
@@ -1202,7 +1202,7 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unlabeled-no-context',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-obsolete-suggestion-en',
       'test_extractor',
       'unlabeled-obsolete',
@@ -1217,7 +1217,7 @@ const stateFilterFixtures: DBFixture = {
         segment: 'test-unlabeled-obsolete',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-obsolete-suggestion-es',
       'test_extractor',
       'unlabeled-obsolete',
@@ -1232,7 +1232,7 @@ const stateFilterFixtures: DBFixture = {
         segment: 'test-unlabeled-obsolete',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-processing-suggestion-en',
       'test_extractor',
       'unlabeled-processing',
@@ -1247,7 +1247,7 @@ const stateFilterFixtures: DBFixture = {
         segment: 'test-unlabeled-processing',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-processing-suggestion-es',
       'test_extractor',
       'unlabeled-processing',
@@ -1262,7 +1262,7 @@ const stateFilterFixtures: DBFixture = {
         segment: 'test-unlabeled-processing',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-error-suggestion-en',
       'test_extractor',
       'unlabeled-error',
@@ -1278,7 +1278,7 @@ const stateFilterFixtures: DBFixture = {
         error: 'some error happened',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unlabeled-error-suggestion-es',
       'test_extractor',
       'unlabeled-error',
@@ -1294,7 +1294,7 @@ const stateFilterFixtures: DBFixture = {
         error: 'some error happened',
       }
     ),
-    factory.ixSuggestion(
+    factory.ixSuggestion_deprecated(
       'unusedsuggestion',
       'unused_extractor',
       'unused',
@@ -1308,6 +1308,15 @@ const stateFilterFixtures: DBFixture = {
         suggestedValue: 'test-unused',
       }
     ),
+    factory.ixSuggestion({
+      extractorId: factory.id('unused_extractor'),
+      state: {
+        labeled: true,
+        match: true,
+        obsolete: true,
+        error: true,
+      },
+    }),
   ],
 };
 

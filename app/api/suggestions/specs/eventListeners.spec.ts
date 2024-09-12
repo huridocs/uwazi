@@ -99,7 +99,7 @@ const fixtures: DBFixture = {
     fixturesFactory.ixExtractor('extractor8', 'relationship_property', [extractedTemplateName]),
   ],
   ixsuggestions: [
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_prop_1_suggestion',
       'extractor1',
       'entity for new file',
@@ -107,7 +107,7 @@ const fixtures: DBFixture = {
       'entfile',
       'extracted_property_1'
     ),
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_prop_2_suggestion',
       'extractor2',
       'entity for new file',
@@ -115,7 +115,7 @@ const fixtures: DBFixture = {
       'entfile',
       'extracted_property_2'
     ),
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_title_suggestion',
       'title_extractor',
       'entity for new file',
@@ -123,7 +123,7 @@ const fixtures: DBFixture = {
       'entfile',
       'title'
     ),
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_select_suggestion',
       'extractor6',
       'entity for new file',
@@ -131,7 +131,7 @@ const fixtures: DBFixture = {
       'entfile',
       'select_property'
     ),
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_multiselect_suggestion',
       'extractor7',
       'entity for new file',
@@ -139,7 +139,7 @@ const fixtures: DBFixture = {
       'entfile',
       'multiselect_property'
     ),
-    fixturesFactory.ixSuggestion(
+    fixturesFactory.ixSuggestion_deprecated(
       'new_relationship_suggestion',
       'extractor8',
       'entity for new file',

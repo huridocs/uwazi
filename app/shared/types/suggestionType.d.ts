@@ -47,19 +47,12 @@ export interface IXAggregationQuery {
 
 export interface IXSuggestionAggregation {
   total: number;
-  labeled: {
-    _count: number;
-    match: number;
-    mismatch: number;
-  };
-  nonLabeled: {
-    _count: number;
-    withSuggestion: number;
-    noSuggestion: number;
-    noContext: number;
-    obsolete: number;
-    others: number;
-  };
+  labeled: number;
+  nonLabeled: number;
+  match: number;
+  mismatch: number;
+  obsolete: number;
+  error: number;
 }
 
 export interface IXSuggestionType {
@@ -112,17 +105,12 @@ export interface IXSuggestionsQuery {
 }
 
 export interface SuggestionCustomFilter {
-  labeled: {
-    match: boolean;
-    mismatch: boolean;
-  };
-  nonLabeled: {
-    withSuggestion: boolean;
-    noSuggestion: boolean;
-    noContext: boolean;
-    obsolete: boolean;
-    others: boolean;
-  };
+  labeled: boolean;
+  match: boolean;
+  mismatch: boolean;
+  nonLabeled: boolean;
+  obsolete: boolean;
+  error: boolean;
 }
 
 export interface IXSuggestionsFilter {
