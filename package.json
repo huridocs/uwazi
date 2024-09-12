@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.181.0-rc2",
+  "version": "1.184.0-rc2",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -110,7 +110,7 @@
     "@huridocs/react-text-selection-handler": "^0.3.0",
     "@loadable/component": "^5.16.4",
     "@popperjs/core": "^2.11.8",
-    "@remix-run/router": "^1.16.1",
+    "@remix-run/router": "^1.19.2",
     "@sentry/node": "^7.114.0",
     "@sentry/react": "7.114.0",
     "@sentry/tracing": "^7.114.0",
@@ -118,7 +118,7 @@
     "@socket.io/redis-adapter": "7.2.0",
     "@socket.io/redis-emitter": "5.1.0",
     "@supercharge/promise-pool": "^3.2.0",
-    "@tanstack/react-table": "^8.19.3",
+    "@tanstack/react-table": "^8.20.5",
     "@types/franc": "^5.0.1",
     "@types/lodash": "^4.14.170",
     "@types/mime-types": "^2.1.1",
@@ -379,7 +379,7 @@
     "react-dnd-test-backend": "15.1.1",
     "redux-mock-store": "^1.5.4",
     "rtlcss-webpack-plugin": "4.0.7",
-    "sass": "^1.77.8",
+    "sass": "^1.78.0",
     "sass-loader": "16.0.1",
     "storybook": "^8.1.11",
     "stream-mock": "^2.0.5",
