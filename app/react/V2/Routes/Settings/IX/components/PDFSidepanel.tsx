@@ -443,8 +443,6 @@ const PDFSidepanel = ({
     }
   };
 
-  console.log(errors);
-
   return (
     <Sidepanel
       isOpen={showSidepanel}
