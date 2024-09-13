@@ -17,8 +17,19 @@ export const FileMappers = {
 
   toModel(fileDBO: FileDBOType): UwaziFile {
     if (fileDBO.type === 'attachment' && fileDBO.url) {
-      return new URLAttachment(fileDBO.filename, fileDBO.entity, fileDBO.totalPages, fileDBO.url);
+      return new URLAttachment(
+        fileDBO._id.toString(),
+        fileDBO.filename,
+        fileDBO.entity,
+        fileDBO.totalPages,
+        fileDBO.url
+      );
     }
-    return new Document(fileDBO.filename, fileDBO.entity, fileDBO.totalPages);
+    return new Document(
+      fileDBO._id.toString(),
+      fileDBO.filename,
+      fileDBO.entity,
+      fileDBO.totalPages
+    );
   },
 };

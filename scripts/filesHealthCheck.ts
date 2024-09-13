@@ -54,6 +54,7 @@ async function handleTenant(tenantName: string) {
       );
 
       if (!existsInStorage && !(file.type === 'attachment' && file.url)) {
+        console.log(file);
         missingInStorage += 1;
         print(
           {

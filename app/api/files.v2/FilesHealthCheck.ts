@@ -8,10 +8,10 @@ function filterFilesInStorage(files: string[]) {
 
 export class FilesHealthCheck {
   // eslint-disable-next-line class-methods-use-this
-  private onMissingInDBCB: () => void = () => {};
+  private onMissingInDBCB: (filename: string) => void = () => {};
 
   // eslint-disable-next-line class-methods-use-this
-  private onMissingInStorageCB: () => void = () => {};
+  private onMissingInStorageCB: (fileDTO: { _id: string; filename: string }) => void = () => {};
 
   private fileStorage: FileStorage;
 
@@ -36,13 +36,13 @@ export class FilesHealthCheck {
       if (!existsInStorage && !(file instanceof URLAttachment)) {
         missingInStorage += 1;
         missingInStorageList.push(this.fileStorage.getPath(file));
-        this.onMissingInStorageCB();
+        this.onMissingInStorageCB({ _id: file.id, filename: file.filename });
       }
     });
 
     filteredFilesInStorage.forEach(file => {
       missingInDbList.push(file);
-      this.onMissingInDBCB();
+      this.onMissingInDBCB(file);
     });
 
     return {
@@ -53,11 +53,11 @@ export class FilesHealthCheck {
     };
   }
 
-  onMissingInDB(cb: () => void) {
+  onMissingInDB(cb: (filename: string) => void) {
     this.onMissingInDBCB = cb;
   }
 
-  onMissingInStorage(cb: () => void) {
+  onMissingInStorage(cb: (fileDTO: { _id: string; filename: string }) => void) {
     this.onMissingInStorageCB = cb;
   }
 }

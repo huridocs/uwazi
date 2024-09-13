@@ -100,12 +100,13 @@ describe('FilesHealthCheck', () => {
     testStorageFiles = ['document/file1', 'document/file2'];
     await testingEnvironment.setUp({ files: [] });
 
-    let events = 0;
-    filesHealthCheck.onMissingInDB(() => {
-      events += 1;
+    const events: string[] = [];
+    filesHealthCheck.onMissingInDB(file => {
+      events.push(file);
     });
+
     await filesHealthCheck.execute();
-    expect(events).toBe(2);
+    expect(events).toEqual(['document/file1', 'document/file2']);
   });
 
   it('should be able to subscribe to an "event" for each file missing in storage', async () => {
@@ -114,11 +115,15 @@ describe('FilesHealthCheck', () => {
       files: [factory.document('file1'), factory.document('file2')],
     });
 
-    let events = 0;
-    filesHealthCheck.onMissingInStorage(() => {
-      events += 1;
+    const events: { _id: string; filename: string }[] = [];
+    filesHealthCheck.onMissingInStorage(file => {
+      events.push(file);
     });
     await filesHealthCheck.execute();
-    expect(events).toBe(2);
+
+    expect(events).toEqual([
+      { _id: factory.idString('file1'), filename: 'file1' },
+      { _id: factory.idString('file2'), filename: 'file2' },
+    ]);
   });
 });
