@@ -3,10 +3,12 @@ import { ObjectId } from 'mongodb';
 interface BaseFileDBOType {
   _id: ObjectId;
   entity: string;
+  filename: string;
+  url: string;
 }
 
 interface DocumentFileDBOType extends BaseFileDBOType {
-  type: 'document';
+  type: 'document' | 'attachment';
   totalPages: number;
 }
 

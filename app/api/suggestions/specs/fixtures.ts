@@ -716,7 +716,7 @@ const fixtures: DBFixture = {
     },
   ],
   files: [
-    factory.file('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
+    factory.fileDeprecated('F1', 'shared1', 'document', 'documentRedRobin.pdf', 'eng', '', [
       {
         name: 'age',
         selection: {
@@ -725,7 +725,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F2', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
+    factory.fileDeprecated('F2', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
       {
         name: 'super_powers',
         selection: {
@@ -741,7 +741,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F3', 'shared2', 'document', 'documentC.pdf', 'spa', '', [
+    factory.fileDeprecated('F3', 'shared2', 'document', 'documentC.pdf', 'spa', '', [
       {
         name: 'super_powers',
         selection: {
@@ -750,7 +750,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('Fshared5', 'shared5', 'document', 'documentPoisonIvy.pdf', 'eng', '', [
+    factory.fileDeprecated('Fshared5', 'shared5', 'document', 'documentPoisonIvy.pdf', 'eng', '', [
       {
         name: 'enemy',
         selection: {
@@ -759,7 +759,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'shared6', 'document', 'documentD.pdf', 'eng', '', [
+    factory.fileDeprecated('F4', 'shared6', 'document', 'documentD.pdf', 'eng', '', [
       {
         name: 'enemy',
         selection: {
@@ -768,7 +768,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F5', 'shared7', 'document', 'documentRiddler.pdf', 'eng', '', [
+    factory.fileDeprecated('F5', 'shared7', 'document', 'documentRiddler.pdf', 'eng', '', [
       {
         name: 'first_encountered',
         selection: {
@@ -785,8 +785,8 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F6', 'shared8', 'document', 'documentRiddler.pdf', 'eng', '', []),
-    factory.file('F7', 'shared3', 'document', 'documentAlfred.pdf', 'eng', '', [
+    factory.fileDeprecated('F6', 'shared8', 'document', 'documentRiddler.pdf', 'eng', '', []),
+    factory.fileDeprecated('F7', 'shared3', 'document', 'documentAlfred.pdf', 'eng', '', [
       {
         name: 'super_powers',
         selection: {
@@ -803,7 +803,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file(
+    factory.fileDeprecated(
       'fileForentityWithSelects',
       'entityWithSelects',
       'document',
@@ -811,7 +811,7 @@ const fixtures: DBFixture = {
       'eng',
       'documentWithSelects.pdf'
     ),
-    factory.file(
+    factory.fileDeprecated(
       'fileForentityWithSelects2',
       'entityWithSelects2',
       'document',
@@ -819,7 +819,7 @@ const fixtures: DBFixture = {
       'eng',
       'documentWithSelects2.pdf'
     ),
-    factory.file(
+    factory.fileDeprecated(
       'fileForentityWithSelects3',
       'entityWithSelects3',
       'document',
@@ -963,13 +963,13 @@ const stateFilterFixtures: DBFixture = {
     }),
   ],
   files: [
-    factory.file('label-match-file-en', 'labeled-match', 'document', 'lmfen.pdf', 'en', undefined, [
+    factory.fileDeprecated('label-match-file-en', 'labeled-match', 'document', 'lmfen.pdf', 'en', undefined, [
       factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
     ]),
-    factory.file('label-match-file-es', 'labeled-match', 'document', 'lmfes.pdf', 'es', undefined, [
+    factory.fileDeprecated('label-match-file-es', 'labeled-match', 'document', 'lmfes.pdf', 'es', undefined, [
       factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
     ]),
-    factory.file(
+    factory.fileDeprecated(
       'label-mismatch-file-en',
       'labeled-mismatch',
       'document',
@@ -978,7 +978,7 @@ const stateFilterFixtures: DBFixture = {
       undefined,
       [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
     ),
-    factory.file(
+    factory.fileDeprecated(
       'label-mismatch-file-es',
       'labeled-mismatch',
       'document',
@@ -987,7 +987,7 @@ const stateFilterFixtures: DBFixture = {
       undefined,
       [factory.fileExtractedMetadata('testprop', 'test-labeled-mismatch')]
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-no-suggestion-file-en',
       'unlabeled-no-suggestion',
       'document',
@@ -995,7 +995,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-no-suggestion-file-es',
       'unlabeled-no-suggestion',
       'document',
@@ -1003,7 +1003,7 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-no-context-file-en',
       'unlabeled-no-context',
       'document',
@@ -1011,7 +1011,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-no-context-file-es',
       'unlabeled-no-context',
       'document',
@@ -1019,7 +1019,7 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-obsolete-file-en',
       'unlabeled-obsolete',
       'document',
@@ -1027,7 +1027,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-obsolete-file-es',
       'unlabeled-obsolete',
       'document',
@@ -1035,7 +1035,7 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-others-file-en',
       'unlabeled-others',
       'document',
@@ -1043,7 +1043,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-others-file-es',
       'unlabeled-others',
       'document',
@@ -1051,7 +1051,7 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-processing-file-en',
       'unlabeled-processing',
       'document',
@@ -1059,7 +1059,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-processing-file-es',
       'unlabeled-processing',
       'document',
@@ -1067,7 +1067,7 @@ const stateFilterFixtures: DBFixture = {
       'es',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-error-file-en',
       'unlabeled-error',
       'document',
@@ -1075,7 +1075,7 @@ const stateFilterFixtures: DBFixture = {
       'en',
       undefined
     ),
-    factory.file(
+    factory.fileDeprecated(
       'unlabeled-error-file-es',
       'unlabeled-error',
       'document',
@@ -1363,7 +1363,7 @@ const selectAcceptanceFixtureBase: DBFixture = {
     },
   ],
   files: [
-    factory.file(
+    factory.fileDeprecated(
       'fileForentityWithSelects',
       'entityWithSelects',
       'document',
@@ -1712,7 +1712,7 @@ const relationshipAcceptanceFixtureBase: DBFixture = {
     },
   ],
   files: [
-    factory.file(
+    factory.fileDeprecated(
       'fileForEntityWithRelationships',
       'entityWithRelationships_sId',
       'document',

@@ -8,9 +8,9 @@ const factory = getFixturesFactory();
 
 const fixtures = {
   files: [
-    factory.file('file1', 'entity1', 'document', 'file1.pdf'),
-    factory.file('file2', 'entity2', 'document', 'file2.pdf'),
-    factory.file('file3', 'entity3', 'document', 'file3.pdf'),
+    factory.fileDeprecated('file1', 'entity1', 'document', 'file1.pdf'),
+    factory.fileDeprecated('file2', 'entity2', 'document', 'file2.pdf'),
+    factory.fileDeprecated('file3', 'entity3', 'document', 'file3.pdf'),
   ],
 };
 
