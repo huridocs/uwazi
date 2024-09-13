@@ -9,7 +9,7 @@ import { UwaziFile } from '../model/UwaziFile';
 export class MongoFilesDataSource extends MongoDataSource<FileDBOType> implements FilesDataSource {
   getAll() {
     return new MongoResultSet<FileDBOType, UwaziFile>(
-      this.getCollection().find({}),
+      this.getCollection().find({}, { projection: { fullText: 0 } }),
       FileMappers.toModel
     );
   }

@@ -1,10 +1,22 @@
-import { CreateBucketCommand, DeleteBucketCommand, DeleteObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  DeleteObjectCommand,
+  ListObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { config } from 'api/config';
+import { Tenant } from 'api/tenants/tenantContext';
 import { S3FileStorage } from '../S3FileStorage';
+import { Document } from 'api/files.v2/model/Document';
+import { URLAttachment } from 'api/files.v2/model/URLAttachment';
+import { Attachment } from 'api/files.v2/model/Attachment';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;
   let s3fileStorage: S3FileStorage;
+  let tenant: Tenant;
 
   beforeEach(async () => {
     config.s3 = {
@@ -24,10 +36,21 @@ describe('S3FileStorage', () => {
       ...config.s3,
     });
     await s3Client.send(new CreateBucketCommand({ Bucket: 'uwazi-development' }));
-    s3fileStorage = new S3FileStorage(s3Client);
+
+    tenant = {
+      name: 'test-tenant',
+      dbName: 'test-tenant',
+      indexName: 'test-tenant',
+      uploadedDocuments: 'test-tenant/documents',
+      attachments: 'test-tenant/attachments',
+      customUploads: 'test-tenant/customUploads',
+      activityLogs: 'test-tenant/log',
+    };
+
+    s3fileStorage = new S3FileStorage(s3Client, tenant);
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     const allBucketKeys = (
       (
         await s3Client.send(
@@ -52,23 +75,52 @@ describe('S3FileStorage', () => {
     s3Client.destroy();
   });
 
-  describe('listFiles', () => {
-    it('should list all files on s3', async () => {
+  describe('list', () => {
+    it('should list all s3 keys', async () => {
       await s3Client.send(
-        new PutObjectCommand({ Bucket: 'uwazi-development', Key: 'test', Body: 'body' })
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/document1',
+          Body: 'body',
+        })
+      );
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/document2',
+          Body: 'body',
+        })
       );
 
       const listedFiles = await s3fileStorage.list();
 
       expect(listedFiles.sort()).toEqual(
-        [
-          'test',
-          // 'tenant1/customUploads/file_created1.txt',
-          // 'tenant1/uploads/already_uploaded.txt',
-          // 'tenant1/uploads/file_to_be_deleted.txt',
-          // 'tenant1/uploads/segmentation/file_created.txt',
-        ].sort()
+        ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
       );
     });
+  });
+
+  describe('getPath', () => {
+    it.each([
+      {
+        file: new Document('id', 'entity', 1, 'document'),
+        expected: 'test-tenant/documents/document',
+      },
+      {
+        file: new Attachment('id', 'entity', 1, 'attachment'),
+        expected: 'test-tenant/attachments/attachment',
+      },
+      // {
+      //   file: new URLAttachment('id', 'filename', 'entity', 1, 'url'),
+      //   expected: 'test-tenant/?????/filename',
+      // },
+    ])(
+      'should use dinamic paths based on tenant ($file.filename -> $expected)',
+      async ({ file, expected }) => {
+        const key = s3fileStorage.getPath(file);
+        expect(key).toBe(expected);
+      }
+    );
   });
 });

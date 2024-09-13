@@ -5,6 +5,7 @@ import { FilesHealthCheck } from '../FilesHealthCheck';
 import { FileStorage } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
 import { UwaziFile } from '../model/UwaziFile';
+import { URLAttachment } from '../model/URLAttachment';
 
 const factory = getFixturesFactory();
 
@@ -20,6 +21,9 @@ let testStorageFiles: string[] = [];
 class TestFileStorage implements FileStorage {
   // eslint-disable-next-line class-methods-use-this
   getPath(file: UwaziFile): string {
+    if (file instanceof URLAttachment) {
+      return '';
+    }
     return `document/${file.filename}`;
   }
 
@@ -37,6 +41,20 @@ describe('FilesHealthCheck', () => {
       new TestFileStorage(),
       DefaultFilesDataSource(DefaultTransactionManager())
     );
+  });
+
+  it('should report full count in storage and in db', async () => {
+    testStorageFiles = ['document/file1', 'document/file3'];
+    await testingEnvironment.setUp({
+      files: [factory.document('file1'), factory.document('file2'), factory.document('file4')],
+    });
+
+    const summary = await filesHealthCheck.execute();
+
+    expect(summary).toMatchObject({
+      countInDb: 3,
+      countInStorage: 2,
+    });
   });
 
   it('should report missing in storage files', async () => {

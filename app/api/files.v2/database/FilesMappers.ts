@@ -4,6 +4,7 @@ import { FileDBOType } from './schemas/filesTypes';
 import { UwaziFile } from '../model/UwaziFile';
 import { Document } from '../model/Document';
 import { URLAttachment } from '../model/URLAttachment';
+import { Attachment } from '../model/Attachment';
 
 export const FileMappers = {
   // toDBO(file: UwaziFile): OptionalId<FileDBOType> {
@@ -19,17 +20,24 @@ export const FileMappers = {
     if (fileDBO.type === 'attachment' && fileDBO.url) {
       return new URLAttachment(
         fileDBO._id.toString(),
-        fileDBO.filename,
         fileDBO.entity,
         fileDBO.totalPages,
         fileDBO.url
       );
     }
+    if (fileDBO.type === 'attachment') {
+      return new Attachment(
+        fileDBO._id.toString(),
+        fileDBO.entity,
+        fileDBO.totalPages,
+        fileDBO.filename
+      );
+    }
     return new Document(
       fileDBO._id.toString(),
-      fileDBO.filename,
       fileDBO.entity,
-      fileDBO.totalPages
+      fileDBO.totalPages,
+      fileDBO.filename
     );
   },
 };

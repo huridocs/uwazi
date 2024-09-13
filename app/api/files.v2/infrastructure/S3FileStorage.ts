@@ -1,30 +1,39 @@
 import { _Object, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
-import { FileStorage } from '../contracts/FileStorage';
-import { UwaziFile } from '../model/UwaziFile';
-import { prefix } from '@fortawesome/free-solid-svg-icons';
-import { S3Storage } from 'api/files/S3Storage';
 import { config } from 'api/config';
+import { Tenant } from 'api/tenants/tenantContext';
+import path from 'path';
+import { FileStorage } from '../contracts/FileStorage';
+import { Attachment } from '../model/Attachment';
+import { UwaziFile } from '../model/UwaziFile';
+import { URLAttachment } from '../model/URLAttachment';
 
 export class S3FileStorage implements FileStorage {
   private s3Client: S3Client;
 
-  constructor(s3Client: S3Client) {
+  private tenant: Tenant;
+
+  constructor(s3Client: S3Client, tenant: Tenant) {
     this.s3Client = s3Client;
+    this.tenant = tenant;
   }
 
-  // eslint-disable-next-line class-methods-use-this
   getPath(file: UwaziFile): string {
-    return `document/${file.filename}`;
+    if (file instanceof Attachment) {
+      return path.join(this.tenant.attachments, file.filename);
+    }
+    if (file instanceof URLAttachment) {
+      return 'not implemented';
+    }
+    return path.join(this.tenant.uploadedDocuments, file.filename);
   }
 
-  // eslint-disable-next-line class-methods-use-this
   async list(): Promise<string[]> {
     const objects: _Object[] = [];
     const requestNext = async (token?: string) => {
       const response = await this.s3Client.send(
         new ListObjectsV2Command({
-          Bucket: 'uwazi-development',
-          // Prefix: prefix,
+          Bucket: config.s3.bucket,
+          Prefix: this.tenant.name,
           ContinuationToken: token,
           MaxKeys: config.s3.batchSize,
         })
@@ -39,8 +48,6 @@ export class S3FileStorage implements FileStorage {
       continuationToken = await requestNext(continuationToken);
     }
 
-    return objects;
-      // const results = await s3().list(tenants.current().name);
-      // return results.map(c => c.Key!);
+    return objects.map(c => c.Key!);
   }
 }

@@ -23,14 +23,17 @@ export class FilesHealthCheck {
   }
 
   async execute() {
-    const allFilesInDb = this.filesDS.getAll();
+    const allFilesInDb = await this.filesDS.getAll().all();
     const allFilesInStorage = await this.fileStorage.list();
     const filteredFilesInStorage = new Set(filterFilesInStorage(allFilesInStorage));
     let missingInStorage = 0;
     const missingInStorageList: string[] = [];
     const missingInDbList: string[] = [];
+    const countInStorage = filteredFilesInStorage.size;
+    let countInDb = 0;
 
-    await allFilesInDb.forEach(file => {
+    allFilesInDb.forEach(file => {
+      countInDb += 1;
       const existsInStorage = filteredFilesInStorage.delete(this.fileStorage.getPath(file));
 
       if (!existsInStorage && !(file instanceof URLAttachment)) {
@@ -50,6 +53,8 @@ export class FilesHealthCheck {
       missingInStorage,
       missingInDbList,
       missingInDb: filteredFilesInStorage.size,
+      countInDb,
+      countInStorage,
     };
   }
 
