@@ -1,8 +1,11 @@
-import { tenants } from '../app/api/tenants';
-import { DB } from '../app/api/odm';
-import { config } from '../app/api/config';
-import { files } from '../app/api/files';
-import { storage } from '../app/api/files/storage';
+import { S3Client } from '@aws-sdk/client-s3';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { config } from 'api/config';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
+import { FilesHealthCheck } from 'api/files.v2/FilesHealthCheck';
+import { S3FileStorage } from 'api/files.v2/infrastructure/S3FileStorage';
+import { DB } from 'api/odm';
+import { tenants } from 'api/tenants';
 
 const { tenant, allTenants } = require('yargs')
   .option('tenant', {
@@ -42,51 +45,50 @@ function filterFilesInStorage(files: string[]) {
 
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {
-    const allFilesInDb: FileRecord[] = await files.get({});
-    const allFilesInStorage = await storage.listFiles();
-    const filteredFilesInStorage = new Set(filterFilesInStorage(allFilesInStorage));
-    let missingInStorage = 0;
-    const countInStorage = filteredFilesInStorage.size;
-    let count = 0;
-
-    allFilesInDb.forEach(file => {
-      count += 1;
-      const existsInStorage = filteredFilesInStorage.delete(
-        storage.getPath(file.filename, file.type)
-      );
-
-      if (!existsInStorage && !(file.type === 'attachment' && file.url)) {
-        missingInStorage += 1;
-        print(
-          {
-            logType: 'missingInStorage',
-            tenant: tenants.current().name,
-            file,
-          },
-          'error'
-        );
-      }
+    const s3Client = new S3Client({
+      apiVersion: 'latest',
+      region: 'region',
+      ...config.s3,
     });
 
-    filteredFilesInStorage.forEach(file => {
+    const transactionManager = DefaultTransactionManager();
+    const filesHealthCheck = new FilesHealthCheck(
+      new S3FileStorage(s3Client, tenants.current()),
+      DefaultFilesDataSource(transactionManager)
+    );
+
+    filesHealthCheck.onMissingInDB(file => {
       print(
         {
           logType: 'missingInDb',
-          tenant: tenants.current().name,
+          tenant: tenantName,
           file,
         },
         'error'
       );
     });
 
+    filesHealthCheck.onMissingInStorage(file => {
+      print(
+        {
+          logType: 'missingInStorage',
+          tenant: tenantName,
+          file,
+        },
+        'error'
+      );
+    });
+
+    const result = await filesHealthCheck.execute();
+
     print({
       logType: 'summary',
-      tenant: tenants.current().name,
+      tenant: tenantName,
       storage: tenants.current().featureFlags?.s3Storage ? 's3' : 'local',
-      missingInStorage,
-      missingInDb: filteredFilesInStorage.size,
-      countInDb: allFilesInDb.length,
-      countInStorage,
+      missingInStorage: result.missingInStorage,
+      missingInDb: result.missingInDb,
+      countInDb: result.countInDb,
+      countInStorage: result.countInStorage,
     });
   }, tenantName);
 }
