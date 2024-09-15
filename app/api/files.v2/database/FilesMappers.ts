@@ -5,6 +5,7 @@ import { UwaziFile } from '../model/UwaziFile';
 import { Document } from '../model/Document';
 import { URLAttachment } from '../model/URLAttachment';
 import { Attachment } from '../model/Attachment';
+import { CustomUpload } from '../model/CustomUpload';
 
 export const FileMappers = {
   // toDBO(file: UwaziFile): OptionalId<FileDBOType> {
@@ -27,6 +28,15 @@ export const FileMappers = {
     }
     if (fileDBO.type === 'attachment') {
       return new Attachment(
+        fileDBO._id.toString(),
+        fileDBO.entity,
+        fileDBO.totalPages,
+        fileDBO.filename
+      );
+    }
+
+    if (fileDBO.type === 'custom') {
+      return new CustomUpload(
         fileDBO._id.toString(),
         fileDBO.entity,
         fileDBO.totalPages,

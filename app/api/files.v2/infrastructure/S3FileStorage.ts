@@ -6,6 +6,7 @@ import { FileStorage } from '../contracts/FileStorage';
 import { Attachment } from '../model/Attachment';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
+import { CustomUpload } from '../model/CustomUpload';
 
 export class S3FileStorage implements FileStorage {
   private s3Client: S3Client;
@@ -20,6 +21,9 @@ export class S3FileStorage implements FileStorage {
   getPath(file: UwaziFile): string {
     if (file instanceof Attachment) {
       return path.join(this.tenant.attachments, file.filename);
+    }
+    if (file instanceof CustomUpload) {
+      return path.join(this.tenant.customUploads, file.filename);
     }
     if (file instanceof URLAttachment) {
       return 'not implemented';

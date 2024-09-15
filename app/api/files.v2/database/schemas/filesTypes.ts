@@ -8,7 +8,7 @@ interface BaseFileDBOType {
 }
 
 interface DocumentFileDBOType extends BaseFileDBOType {
-  type: 'document' | 'attachment';
+  type: 'document' | 'attachment' | 'custom';
   totalPages: number;
 }
 

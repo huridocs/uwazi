@@ -6,6 +6,7 @@ import { FileStorage } from '../contracts/FileStorage';
 import { DefaultFilesDataSource } from '../database/data_source_defaults';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
+import { CustomUpload } from '../model/CustomUpload';
 
 const factory = getFixturesFactory();
 
@@ -23,6 +24,9 @@ class TestFileStorage implements FileStorage {
   getPath(file: UwaziFile): string {
     if (file instanceof URLAttachment) {
       return '';
+    }
+    if (file instanceof CustomUpload) {
+      return `custom_uploads/${file.filename}`;
     }
     return `document/${file.filename}`;
   }
@@ -58,13 +62,14 @@ describe('FilesHealthCheck', () => {
   });
 
   it('should report missing in storage files', async () => {
-    testStorageFiles = ['document/file1', 'document/file3'];
+    testStorageFiles = ['document/file1', 'document/file3', 'custom_uploads/custom1'];
     await testingEnvironment.setUp({
       files: [
         factory.document('file1'),
         factory.document('file2'),
         factory.document('file3'),
         factory.document('file4'),
+        factory.custom_upload('custom1'),
       ],
     });
 
