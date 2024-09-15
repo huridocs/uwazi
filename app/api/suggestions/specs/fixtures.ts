@@ -970,7 +970,7 @@ const stateFilterFixtures: DBFixture = {
       'lmfen.pdf',
       'en',
       undefined,
-      [[factory.fileExtractedMetadata('testprop', 'test-labeled-match')]]
+      [factory.fileExtractedMetadata('testprop', 'test-labeled-match')]
     ),
     factory.fileDeprecated(
       'label-match-file-es',
