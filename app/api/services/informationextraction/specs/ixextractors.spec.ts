@@ -63,7 +63,7 @@ const fixtures: DBFixture = {
     fixtureFactory.entity('shared4', 'fungusTemplate', {}, { language: 'en' }),
   ],
   files: [
-    fixtureFactory.file('F1', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
+    fixtureFactory.fileDeprecated('F1', 'shared2', 'document', 'documentB.pdf', 'eng', '', [
       {
         name: 'age',
         selection: {
@@ -72,7 +72,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    fixtureFactory.file('F2', 'shared2', 'document', 'documentC.pdf', 'spa', '', [
+    fixtureFactory.fileDeprecated('F2', 'shared2', 'document', 'documentC.pdf', 'spa', '', [
       {
         name: 'age',
         selection: {
@@ -81,12 +81,12 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    fixtureFactory.file('F3', 'shared1', 'document', 'documentA.pdf', 'eng'),
-    fixtureFactory.file('F4', 'shared1', 'document', 'documentD.pdf', 'spa'),
-    fixtureFactory.file('F5', 'shared3', 'document', 'documentE.pdf', 'eng'),
-    fixtureFactory.file('F6', 'shared3', 'document', 'documentF.pdf', 'spa'),
-    fixtureFactory.file('F7', 'shared4', 'document', 'documentG.pdf', 'eng'),
-    fixtureFactory.file('F8', 'shared4', 'document', 'documentH.pdf', 'spa'),
+    fixtureFactory.fileDeprecated('F3', 'shared1', 'document', 'documentA.pdf', 'eng'),
+    fixtureFactory.fileDeprecated('F4', 'shared1', 'document', 'documentD.pdf', 'spa'),
+    fixtureFactory.fileDeprecated('F5', 'shared3', 'document', 'documentE.pdf', 'eng'),
+    fixtureFactory.fileDeprecated('F6', 'shared3', 'document', 'documentF.pdf', 'spa'),
+    fixtureFactory.fileDeprecated('F7', 'shared4', 'document', 'documentG.pdf', 'eng'),
+    fixtureFactory.fileDeprecated('F8', 'shared4', 'document', 'documentH.pdf', 'spa'),
   ],
   ixextractors: [
     fixtureFactory.ixExtractor('existingExtractor', 'kind', ['animalTemplate', 'plantTemplate']),
