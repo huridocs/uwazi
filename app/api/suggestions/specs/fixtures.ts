@@ -963,12 +963,24 @@ const stateFilterFixtures: DBFixture = {
     }),
   ],
   files: [
-    factory.fileDeprecated('label-match-file-en', 'labeled-match', 'document', 'lmfen.pdf', 'en', undefined, [
-      factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
-    ]),
-    factory.fileDeprecated('label-match-file-es', 'labeled-match', 'document', 'lmfes.pdf', 'es', undefined, [
-      factory.fileExtractedMetadata('testprop', 'test-labeled-match'),
-    ]),
+    factory.fileDeprecated(
+      'label-match-file-en',
+      'labeled-match',
+      'document',
+      'lmfen.pdf',
+      'en',
+      undefined,
+      [[factory.fileExtractedMetadata('testprop', 'test-labeled-match')]]
+    ),
+    factory.fileDeprecated(
+      'label-match-file-es',
+      'labeled-match',
+      'document',
+      'lmfes.pdf',
+      'es',
+      undefined,
+      [factory.fileExtractedMetadata('testprop', 'test-labeled-match')]
+    ),
     factory.fileDeprecated(
       'label-mismatch-file-en',
       'labeled-mismatch',

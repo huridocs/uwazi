@@ -7,11 +7,10 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
+import { Attachment } from 'api/files.v2/model/Attachment';
+import { Document } from 'api/files.v2/model/Document';
 import { Tenant } from 'api/tenants/tenantContext';
 import { S3FileStorage } from '../S3FileStorage';
-import { Document } from 'api/files.v2/model/Document';
-import { URLAttachment } from 'api/files.v2/model/URLAttachment';
-import { Attachment } from 'api/files.v2/model/Attachment';
 
 describe('S3FileStorage', () => {
   let s3Client: S3Client;

@@ -41,7 +41,12 @@ const FIXTURES: DBFixture = {
       'eng',
       'fileNameToProcess.pdf'
     ),
-    fixturesFactory.fileDeprecated('unrelatedAttachment', 'parentEntity', 'attachment', attachmentFile),
+    fixturesFactory.fileDeprecated(
+      'unrelatedAttachment',
+      'parentEntity',
+      'attachment',
+      attachmentFile
+    ),
   ],
   users: [fixturesFactory.user('collab'), fixturesFactory.user('admin', UserRole.ADMIN)],
   connections: [{ entity: 'parentEntity', file: fixturesFactory.id('fileToProcess').toString() }],
