@@ -165,21 +165,36 @@ function getFixturesFactory() {
       },
     }),
 
-    document: (entity: string, props: Partial<WithId<FileType>> = {}): WithId<FileType> => ({
-      _id: idMapper(`document_for_${entity}`),
-      entity,
-      language: 'en',
-      type: 'document',
-      filename: `${entity}_document.pdf`,
-      originalname: `${entity}_document.pdf`,
-      ...props,
+    attachment(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'attachment' });
+    },
+
+    document(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'document' });
+    },
+
+    custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'custom' });
+    },
+
+    file: (id: string, extra: Partial<FileType> = {}): WithId<FileType> => ({
+      filename: id,
+      originalname: id,
+      ...extra,
+      _id: idMapper(`${id}`),
     }),
 
-    file: (
+    /**
+     * @deprecated too many parameters and dificult to read/use
+     * convention should be id and then a partial object with the
+     * desired extra params or id, something else important, extra params
+     * no more than 3 params
+     */
+    fileDeprecated: (
       id: string,
-      entity: string | undefined,
-      type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
-      filename: string,
+      entity?: string | undefined,
+      type?: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
+      filename?: string | undefined,
       language: string = 'en',
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
@@ -188,7 +203,7 @@ function getFixturesFactory() {
       entity,
       language,
       type,
-      filename,
+      filename: filename || id,
       originalname: originalname || filename,
       extractedMetadata,
     }),

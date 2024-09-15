@@ -33,7 +33,7 @@ const attachmentFile = 'spn.pdf';
 const FIXTURES: DBFixture = {
   entities: [fixturesFactory.entity('parentEntity')],
   files: [
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'fileToProcess',
       'parentEntity',
       'document',
@@ -41,7 +41,12 @@ const FIXTURES: DBFixture = {
       'eng',
       'fileNameToProcess.pdf'
     ),
-    fixturesFactory.file('unrelatedAttachment', 'parentEntity', 'attachment', attachmentFile),
+    fixturesFactory.fileDeprecated(
+      'unrelatedAttachment',
+      'parentEntity',
+      'attachment',
+      attachmentFile
+    ),
   ],
   users: [fixturesFactory.user('collab'), fixturesFactory.user('admin', UserRole.ADMIN)],
   connections: [{ entity: 'parentEntity', file: fixturesFactory.id('fileToProcess').toString() }],
