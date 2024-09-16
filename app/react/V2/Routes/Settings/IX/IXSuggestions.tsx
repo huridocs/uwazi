@@ -187,7 +187,7 @@ const IXSuggestions = () => {
       });
 
       await suggestionsAPI.accept(preparedSuggestions);
-      setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
+      setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
       setNotifications({
         type: 'success',
         text: <Translate>Suggestion accepted.</Translate>,
