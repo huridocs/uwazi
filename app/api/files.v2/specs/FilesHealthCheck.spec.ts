@@ -129,6 +129,23 @@ describe('FilesHealthCheck', () => {
     });
   });
 
+  it('should ignore all index.html files', async () => {
+    testStorageFiles = [
+      '/documents/index.html',
+      '/index.html',
+      '/segmentation/index.html',
+      '/document/file1',
+    ];
+    await testingEnvironment.setUp({ files: [] });
+
+    const summary = await filesHealthCheck.execute();
+
+    expect(summary).toMatchObject({
+      missingInDbList: ['/document/file1'],
+      missingInDb: 1,
+    });
+  });
+
   it('should ignore external attachemnts (have url)', async () => {
     testStorageFiles = ['document/file1'];
     await testingEnvironment.setUp({ files: [factory.attachment('url_file', { url: 'url' })] });
