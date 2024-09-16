@@ -95,14 +95,36 @@ describe('FilesHealthCheck', () => {
     });
   });
 
-  it('should ignore activity.log files', async () => {
-    testStorageFiles = ['log/1-activity.log', 'log/2-activity.log', 'document/file1'];
+  it('should ignore all /log files', async () => {
+    testStorageFiles = [
+      '/log/1-activity.log',
+      '/log/log.log',
+      '/log/error.log',
+      '/log/debug.log',
+      '/document/file1',
+    ];
     await testingEnvironment.setUp({ files: [] });
 
     const summary = await filesHealthCheck.execute();
 
     expect(summary).toMatchObject({
-      missingInDbList: ['document/file1'],
+      missingInDbList: ['/document/file1'],
+      missingInDb: 1,
+    });
+  });
+
+  it('should ignore all /segmentation files', async () => {
+    testStorageFiles = [
+      '/segmentation/1-activity.log',
+      '/documents/segmentation/1-activity.log',
+      '/document/file1',
+    ];
+    await testingEnvironment.setUp({ files: [] });
+
+    const summary = await filesHealthCheck.execute();
+
+    expect(summary).toMatchObject({
+      missingInDbList: ['/document/file1'],
       missingInDb: 1,
     });
   });

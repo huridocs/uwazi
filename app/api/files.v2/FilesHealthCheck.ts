@@ -3,7 +3,7 @@ import { FileStorage } from './contracts/FileStorage';
 import { URLAttachment } from './model/URLAttachment';
 
 function filterFilesInStorage(files: string[]) {
-  return files.filter(file => !file.endsWith('activity.log'));
+  return files.filter(file => !file.includes('/log/') && !file.includes('/segmentation/'));
 }
 
 export class FilesHealthCheck {
