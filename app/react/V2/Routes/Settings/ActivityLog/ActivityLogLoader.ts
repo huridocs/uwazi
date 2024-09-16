@@ -11,8 +11,10 @@ import { ActivityLogEntryType } from 'shared/types/activityLogEntryType';
 
 const ITEMS_PER_PAGE = 100;
 
+type LogEntry = ActivityLogEntryType & { rowId: string };
+
 interface LoaderData {
-  activityLogData: ActivityLogEntryType[];
+  activityLogData: LogEntry[];
   totalPages: number;
   total: number;
   page: number;
@@ -104,7 +106,7 @@ const activityLogLoader =
     const totalPages = Math.ceil(activityLogList.totalRows / params.limit);
 
     return {
-      activityLogData: activityLogList.rows,
+      activityLogData: activityLogList.rows.map(row => ({ ...row, rowId: row._id })),
       totalPages,
       page: params.page,
       total: activityLogList.totalRows,
@@ -153,6 +155,7 @@ const filterPairs = (filters: ActivityLogSearch) => {
   });
   return _(plainFilters).sortBy(0).value();
 };
+
 const updateSearch = (
   filters: ActivityLogSearch,
   searchParams: URLSearchParams,
@@ -197,7 +200,7 @@ const buildPageURL = (appliedFilters: any, pageTo: string | number, location: Lo
   return `${location.pathname}?${createSearchParams(newParams)}`;
 };
 
-export type { LoaderData, ActivityLogSearch };
+export type { LoaderData, ActivityLogSearch, LogEntry };
 export {
   activityLogLoader,
   getAppliedFilters,

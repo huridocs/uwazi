@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
-import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
+import { Filter } from './helpers';
 
-const sidepanelAtom = atom({} as ClientSettingsFilterSchema | undefined);
+const sidepanelAtom = atom({} as Filter | undefined);
 
 export { sidepanelAtom };

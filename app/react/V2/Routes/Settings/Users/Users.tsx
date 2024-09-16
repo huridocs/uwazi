@@ -2,10 +2,8 @@
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
-import { Row } from '@tanstack/react-table';
-import { ClientUserGroupSchema, ClientUserSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
-import { Button, ConfirmationModal, Table_deprecated as Table, Tabs } from 'V2/Components/UI';
+import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import {
@@ -16,21 +14,22 @@ import {
   ListOfItems,
 } from './components';
 import { useHandleNotifications } from './useHandleNotifications';
-import { FormIntent } from './types';
+import { FormIntent, User, Group } from './types';
 
 type ActiveTab = 'Groups' | 'Users';
 
 // eslint-disable-next-line max-statements
 const Users = () => {
   const { users, groups } =
-    (useLoaderData() as { users: ClientUserSchema[]; groups: ClientUserGroupSchema[] }) || [];
+    (useLoaderData() as {
+      users: User[];
+      groups: Group[];
+    }) || [];
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('Users');
-  const [selectedUsers, setSelectedUsers] = useState<Row<ClientUserSchema>[]>([]);
-  const [selectedGroups, setSelectedGroups] = useState<Row<ClientUserGroupSchema>[]>([]);
-  const [sidepanelData, setSidepanelData] = useState<
-    ClientUserSchema | ClientUserGroupSchema | undefined
-  >();
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [selectedGroups, setSelectedGroups] = useState<Group[]>([]);
+  const [sidepanelData, setSidepanelData] = useState<User | Group | undefined>();
   const [showSidepanel, setShowSidepanel] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [confirmationModalProps, setConfirmationModalProps] = useState({
@@ -43,12 +42,12 @@ const Users = () => {
   const fetcher = useFetcher();
   useHandleNotifications();
 
-  const usersTableColumns = getUsersColumns((user: ClientUserSchema) => {
+  const usersTableColumns = getUsersColumns((user: User) => {
     setShowSidepanel(true);
     setSidepanelData(user);
   });
 
-  const groupsTableColumns = getGroupsColumns((group: ClientUserGroupSchema) => {
+  const groupsTableColumns = getGroupsColumns((group: Group) => {
     setShowSidepanel(true);
     setSidepanelData(group);
   });
@@ -58,9 +57,9 @@ const Users = () => {
     formData.set('intent', bulkActionIntent.current || '');
 
     if (activeTab === 'Users') {
-      formData.set('data', JSON.stringify(selectedUsers.map(user => user.original)));
+      formData.set('data', JSON.stringify(selectedUsers));
     } else {
-      formData.set('data', JSON.stringify(selectedGroups.map(group => group.original)));
+      formData.set('data', JSON.stringify(selectedGroups));
     }
 
     formData.set('confirmation', password.current || '');
@@ -83,24 +82,36 @@ const Users = () => {
             }}
           >
             <Tabs.Tab id="Users" label={<Translate>Users</Translate>}>
-              <Table<ClientUserSchema>
-                columns={usersTableColumns}
+              <Table
                 data={users}
-                title={<Translate>Users</Translate>}
-                enableSelection
-                onSelection={setSelectedUsers}
-                initialState={{ sorting: [{ id: 'username', desc: false }] }}
+                columns={usersTableColumns}
+                header={
+                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                    Users
+                  </Translate>
+                }
+                enableSelections
+                onChange={({ selectedRows }) => {
+                  setSelectedUsers(() => users.filter(user => user.rowId in selectedRows));
+                }}
+                defaultSorting={[{ id: 'username', desc: false }]}
               />
             </Tabs.Tab>
 
             <Tabs.Tab id="Groups" label={<Translate>Groups</Translate>}>
-              <Table<ClientUserGroupSchema>
-                columns={groupsTableColumns}
+              <Table
                 data={groups}
-                title={<Translate>Groups</Translate>}
-                enableSelection
-                onSelection={setSelectedGroups}
-                initialState={{ sorting: [{ id: 'name', desc: false }] }}
+                columns={groupsTableColumns}
+                header={
+                  <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                    Groups
+                  </Translate>
+                }
+                enableSelections
+                onChange={({ selectedRows }) => {
+                  setSelectedGroups(() => groups.filter(group => group.rowId in selectedRows));
+                }}
+                defaultSorting={[{ id: 'name', desc: false }]}
               />
             </Tabs.Tab>
           </Tabs>
@@ -177,7 +188,7 @@ const Users = () => {
 
       {activeTab === 'Users' ? (
         <UserFormSidepanel
-          selectedUser={sidepanelData as ClientUserSchema}
+          selectedUser={sidepanelData as User}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
@@ -186,7 +197,7 @@ const Users = () => {
         />
       ) : (
         <GroupFormSidepanel
-          selectedGroup={sidepanelData as ClientUserGroupSchema}
+          selectedGroup={sidepanelData as Group}
           showSidepanel={showSidepanel}
           setShowSidepanel={setShowSidepanel}
           setSelected={setSidepanelData}
@@ -223,8 +234,11 @@ const Users = () => {
 const usersLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const users = await usersAPI.get(headers);
-    const groups = await usersAPI.getUserGroups(headers);
+    const users = (await usersAPI.get(headers)).map(user => ({ ...user, rowId: user._id! }));
+    const groups = (await usersAPI.getUserGroups(headers)).map(group => ({
+      ...group,
+      rowId: group._id!,
+    }));
     return { users, groups };
   };
 
