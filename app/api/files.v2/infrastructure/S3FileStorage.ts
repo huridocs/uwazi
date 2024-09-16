@@ -37,7 +37,7 @@ export class S3FileStorage implements FileStorage {
       const response = await this.s3Client.send(
         new ListObjectsV2Command({
           Bucket: config.s3.bucket,
-          Prefix: this.tenant.name,
+          Prefix: `${this.tenant.name}/`,
           ContinuationToken: token,
           MaxKeys: config.s3.batchSize,
         })
