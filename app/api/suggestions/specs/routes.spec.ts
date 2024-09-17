@@ -415,11 +415,12 @@ describe('aggregation routes', () => {
           extractorId: factory.id('test_extractor').toString(),
         })
         .expect(200);
+
       expect(response.body).toEqual({
         total: 14,
         labeled: 4,
-        nonLabeled: 10,
-        match: 10,
+        nonLabeled: 6,
+        match: 6,
         mismatch: 4,
         obsolete: 2,
         error: 2,

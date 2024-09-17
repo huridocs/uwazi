@@ -222,12 +222,40 @@ const Suggestions = {
           $group: {
             _id: null,
             total: { $sum: 1 },
-            labeled: { $sum: { $cond: ['$state.labeled', 1, 0] } },
-            nonLabeled: { $sum: { $cond: [{ $not: '$state.labeled' }, 1, 0] } },
-            match: { $sum: { $cond: ['$state.match', 1, 0] } },
-            mismatch: { $sum: { $cond: [{ $not: '$state.match' }, 1, 0] } },
-            obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
-            error: { $sum: { $cond: ['$state.error', 1, 0] } },
+            labeled: {
+              $sum: {
+                $cond: [{ $and: [{ $ne: ['$state.labeled', undefined] }, '$state.labeled'] }, 1, 0],
+              },
+            },
+            nonLabeled: {
+              $sum: {
+                $cond: [
+                  { $and: [{ $ne: ['$state.labeled', undefined] }, { $not: '$state.labeled' }] },
+                  1,
+                  0,
+                ],
+              },
+            },
+            match: {
+              $sum: {
+                $cond: [{ $and: [{ $ne: ['$state.match', undefined] }, '$state.match'] }, 1, 0],
+              },
+            },
+            mismatch: {
+              $sum: {
+                $cond: [
+                  { $and: [{ $ne: ['$state.match', undefined] }, { $not: '$state.match' }] },
+                  1,
+                  0,
+                ],
+              },
+            },
+            obsolete: {
+              $sum: { $cond: ['$state.obsolete', 1, 0] },
+            },
+            error: {
+              $sum: { $cond: ['$state.error', 1, 0] },
+            },
           },
         },
       ]);
