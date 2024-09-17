@@ -15,7 +15,7 @@ describe('Menu configuration', () => {
     cy.intercept('GET', 'api/settings/links').as('fetchLinks');
   });
 
-  it('shoud add links', () => {
+  it('should add links', () => {
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Link 1', { delay: 0 });
