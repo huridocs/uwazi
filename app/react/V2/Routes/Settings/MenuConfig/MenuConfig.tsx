@@ -5,7 +5,6 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-import { isEqual } from 'lodash';
 import { Translate } from 'app/I18N';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
@@ -45,7 +44,7 @@ const MenuConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetAtom(settingsAtom);
 
-  const areEqual = isEqual(linkState, prevLinks.current);
+  const areEqual = linkState === prevLinks.current;
 
   const blocker = useBlocker(!areEqual);
 
