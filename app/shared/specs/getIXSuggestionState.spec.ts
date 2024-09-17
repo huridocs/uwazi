@@ -83,10 +83,8 @@ describe('getIXSuggestionState', () => {
       const state = getSuggestionState(values, 'text');
 
       expect(state).toEqual({
-        labeled: false,
         withValue: true,
         withSuggestion: false,
-        match: false,
         hasContext: false,
         obsolete: false,
         processing: false,
@@ -140,7 +138,7 @@ describe('getIXSuggestionState', () => {
       });
     });
 
-    it('should mark when currentValue != suggestedValue, labeledValue are empty', () => {
+    it('should mark when currentValue != suggestedValue, labeledValue is empty', () => {
       const values = <SuggestionValues>{
         currentValue: 'some other value',
         date: 1234,
@@ -221,10 +219,8 @@ describe('getIXSuggestionState', () => {
       const state = getSuggestionState(values, 'text');
 
       expect(state).toEqual({
-        labeled: false,
         withValue: false,
         withSuggestion: true,
-        match: false,
         hasContext: false,
         obsolete: true,
         processing: false,

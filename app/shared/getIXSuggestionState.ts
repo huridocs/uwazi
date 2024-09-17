@@ -40,13 +40,13 @@ const equalsForType = (type: PropertySchema['type']) => (first: any, second: any
   EQUALITIES[type] ? EQUALITIES[type](first, second) : first === second;
 
 class IXSuggestionState implements IXSuggestionStateType {
-  labeled = false;
+  labeled: boolean | undefined;
 
   withValue = false;
 
   withSuggestion = false;
 
-  match = false;
+  match: boolean | undefined;
 
   hasContext = false;
 
@@ -71,6 +71,7 @@ class IXSuggestionState implements IXSuggestionStateType {
     { labeledValue, currentValue }: SuggestionValues,
     propertyType: PropertySchema['type']
   ) {
+    this.labeled = false;
     if (
       labeledValue ||
       (propertyIsSelect(propertyType) && currentValue) ||
@@ -104,9 +105,13 @@ class IXSuggestionState implements IXSuggestionStateType {
   ) {
     const equals = equalsForType(propertyType);
 
-    if (suggestedValue === '' || (Array.isArray(suggestedValue) && suggestedValue.length === 0)) {
-      this.match = false;
-    } else if (equals(suggestedValue, currentValue)) {
+    this.match = false;
+
+    if (
+      suggestedValue !== '' &&
+      (!Array.isArray(suggestedValue) || suggestedValue.length !== 0) &&
+      equals(suggestedValue, currentValue)
+    ) {
       this.match = true;
     }
   }
@@ -124,6 +129,8 @@ class IXSuggestionState implements IXSuggestionStateType {
   setObsolete({ modelCreationDate, date }: SuggestionValues) {
     if (date < modelCreationDate) {
       this.obsolete = true;
+      this.labeled = undefined;
+      this.match = undefined;
     }
   }
 
@@ -136,6 +143,8 @@ class IXSuggestionState implements IXSuggestionStateType {
   setError({ error, status }: SuggestionValues) {
     if ((error && error !== '') || (status && status === 'failed')) {
       this.error = true;
+      this.labeled = undefined;
+      this.match = undefined;
     }
   }
 }
