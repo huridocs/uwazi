@@ -280,17 +280,17 @@ describe('Information Extraction', () => {
       cy.contains('button', 'Dismiss').click();
 
       const titles = [
-        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
-        'Batman v Superman: Dawn of Justice',
-        '2023',
-        'Spider-Man: Shattered Dimensions',
-        'The Spectacular Spider-Man',
-        'Uwazi Heroes Investigation',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
+        'Batman v Superman: Dawn of Justice (en)',
+        '2023 (en)',
+        'Spider-Man: Shattered Dimensions (en)',
+        'The Spectacular Spider-Man (en)',
+        'Uwazi Heroes Investigation (other)',
       ];
 
       cy.get('tr > td:nth-child(2) > div').each((element, index) => {
         const text = element.get(0).innerText;
-        expect(text).to.be.equal(titles[index]);
+        expect(text).to.be.equal(`${titles[index]}`);
       });
 
       cy.checkA11y();
@@ -366,17 +366,17 @@ describe('Information Extraction', () => {
 
     it('should check that the table updated and the ordering is not affected', () => {
       const titles = [
-        '2023',
-        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009',
-        'Batman v Superman: Dawn of Justice',
-        'Spider-Man: Shattered Dimensions',
-        'A title',
-        'Uwazi Heroes Investigation',
+        '2023 (en)',
+        'Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009 (en)',
+        'Batman v Superman: Dawn of Justice (en)',
+        'Spider-Man: Shattered Dimensions (en)',
+        'A title (en)',
+        'Uwazi Heroes Investigation (other)',
       ];
 
       cy.get('tr > td:nth-child(2) > div').each((element, index) => {
         const text = element.get(0).innerText;
-        expect(text).to.be.equal(titles[index]);
+        expect(text).to.be.equal(`${titles[index]}`);
       });
     });
 
