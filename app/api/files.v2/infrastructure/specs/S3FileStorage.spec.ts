@@ -92,6 +92,37 @@ describe('S3FileStorage', () => {
         })
       );
 
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant-2/documents/document3',
+          Body: 'body',
+        })
+      );
+
+      const listedFiles = await s3fileStorage.list();
+
+      expect(listedFiles.sort()).toEqual(
+        ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
+      );
+    });
+    it('should list all s3 keys', async () => {
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/document1',
+          Body: 'body',
+        })
+      );
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: 'uwazi-development',
+          Key: 'test-tenant/documents/document2',
+          Body: 'body',
+        })
+      );
+
       const listedFiles = await s3fileStorage.list();
 
       expect(listedFiles.sort()).toEqual(
