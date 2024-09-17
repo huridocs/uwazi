@@ -5,6 +5,7 @@ import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
 import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
+import { cloneDeep, isEqual } from 'lodash';
 import { Translate } from 'app/I18N';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
@@ -35,7 +36,7 @@ const menuConfigloader =
 const MenuConfig = () => {
   const links = useLoaderData() as Link[];
   const [linkState, setLinkState] = useState(links);
-  const prevLinks = useRef(links);
+  const prevLinks = useRef(cloneDeep(links));
   const [selectedLinks, setSelectedLinks] = useState<RowSelectionState>({});
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -44,7 +45,7 @@ const MenuConfig = () => {
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetAtom(settingsAtom);
 
-  const areEqual = linkState === prevLinks.current;
+  const areEqual = isEqual(linkState, prevLinks.current);
 
   const blocker = useBlocker(!areEqual);
 
@@ -102,7 +103,7 @@ const MenuConfig = () => {
   }, [blocker, setShowModal]);
 
   useEffect(() => {
-    prevLinks.current = links;
+    prevLinks.current = cloneDeep(links);
     setLinkState(links);
   }, [links]);
 
