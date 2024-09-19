@@ -109,12 +109,12 @@ class MarkdownViewer extends Component {
       return false;
     }
 
-    const sanitizedMarkdown = !this.props.extended
-      ? sanitizeHtml(this.props.markdown, {
+    const sanitizedMarkdown = !this.props.sanitized
+      ? this.props.markdown
+      : sanitizeHtml(this.props.markdown, {
           allowedTags: visualizationHtmlTags,
           allowedAttributes: false,
-        })
-      : this.props.markdown;
+        });
 
     const ReactFromMarkdown = markdownToReact(
       sanitizedMarkdown,
@@ -140,7 +140,7 @@ MarkdownViewer.defaultProps = {
   markdown: '',
   html: false,
   compact: false,
-  extended: false,
+  sanitized: true,
 };
 
 MarkdownViewer.propTypes = {
@@ -148,7 +148,7 @@ MarkdownViewer.propTypes = {
   lists: PropTypes.arrayOf(PropTypes.object),
   html: PropTypes.bool,
   compact: PropTypes.bool,
-  extended: PropTypes.bool,
+  sanitized: PropTypes.bool,
 };
 
 export default MarkdownViewer;
