@@ -3,9 +3,7 @@ name: e2e cypress BASE
 on:
   push:
     branches:
-      - production
       - development
-      - staging
   pull_request:
 
 concurrency:
