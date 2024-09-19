@@ -21,7 +21,7 @@ import languages from 'shared/languages';
 import { ensure } from 'shared/tsUtils';
 
 const BATCH_SIZE = 50;
-const MAX_TRAINING_FILES_NUMBER = 500;
+const MAX_TRAINING_FILES_NUMBER = 2000;
 
 type PropertyValue = string | Array<{ value: string; label: string }>;
 

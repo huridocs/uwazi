@@ -20,12 +20,12 @@ const fixtures = {
     fixtureFactory.entity('entity2', 'template1'),
   ],
   files: [
-    fixtureFactory.file('document1', 'entity1', 'document', 'document1_filename'),
-    fixtureFactory.file('attachment1', 'entity1', 'attachment', 'attachment1_filename'),
-    fixtureFactory.file('thumbnail1', 'entity1', 'thumbnail', 'thumbnail1_filename'),
-    fixtureFactory.file('custom1', undefined, 'custom', 'custom1_filename'),
-    fixtureFactory.file('document2', 'entity2', 'document', 'document2_filename'),
-    fixtureFactory.file('attachment2', 'entity2', 'attachment', 'attachment2_filename'),
+    fixtureFactory.fileDeprecated('document1', 'entity1', 'document', 'document1_filename'),
+    fixtureFactory.fileDeprecated('attachment1', 'entity1', 'attachment', 'attachment1_filename'),
+    fixtureFactory.fileDeprecated('thumbnail1', 'entity1', 'thumbnail', 'thumbnail1_filename'),
+    fixtureFactory.fileDeprecated('custom1', undefined, 'custom', 'custom1_filename'),
+    fixtureFactory.fileDeprecated('document2', 'entity2', 'document', 'document2_filename'),
+    fixtureFactory.fileDeprecated('attachment2', 'entity2', 'attachment', 'attachment2_filename'),
   ],
 };
 

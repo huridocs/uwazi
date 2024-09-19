@@ -152,7 +152,7 @@ const fixtures: DBFixture = {
     ...entityInLanguages(['hu', 'es'], 'entity9', 'template7'),
     ...entityInLanguages(['hu', 'es'], 'entity10', 'template1'),
   ],
-  files: [factory.file('file4', 'entity4', 'document', 'file4.pdf', 'hu')],
+  files: [factory.fileDeprecated('file4', 'entity4', 'document', 'file4.pdf', 'hu')],
   templates: [
     factory.template('formerHubsTemplate', [
       {

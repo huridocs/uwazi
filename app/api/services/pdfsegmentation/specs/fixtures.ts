@@ -31,19 +31,19 @@ const fixturesPdfNameB = 'documentB.pdf';
 const fixturesOneFile: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentA')],
   settings,
-  files: [factory.file('F1', 'A1', 'document', fixturesPdfNameA)],
+  files: [factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA)],
 };
 
 const fixturesOtherFile: DBFixture = {
   entities: [factory.entity('A2', 'templateToSegmentB')],
   settings: otherSettings,
-  files: [factory.file('F2', 'A2', 'document', fixturesPdfNameB)],
+  files: [factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameB)],
 };
 
 const fixturesMissingPdf: DBFixture = {
   entities: [factory.entity('A1', 'templateToSegmentA')],
   settings,
-  files: [factory.file('F1', 'A1', 'document', 'missing.pdf')],
+  files: [factory.fileDeprecated('F1', 'A1', 'document', 'missing.pdf')],
 };
 
 const fixturesFiveFiles: DBFixture = {
@@ -56,11 +56,11 @@ const fixturesFiveFiles: DBFixture = {
     factory.entity('A5', 'templateToSegmentA'),
   ],
   files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA),
-    factory.file('F2', 'A2', 'document', fixturesPdfNameA),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameA),
-    factory.file('F4', 'A4', 'document', fixturesPdfNameA),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameA),
+    factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA),
+    factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameA),
+    factory.fileDeprecated('F3', 'A3', 'document', fixturesPdfNameA),
+    factory.fileDeprecated('F4', 'A4', 'document', fixturesPdfNameA),
+    factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameA),
   ],
 };
 
@@ -70,7 +70,7 @@ const fixturesOneHundredFiles: DBFixture = {
     factory.entity(`A${x.toString()}`, 'templateToSegmentA')
   ),
   files: [...Array(100).keys()].map(x =>
-    factory.file(`F${x.toString()}`, `A${x.toString()}`, 'document', fixturesPdfNameA)
+    factory.fileDeprecated(`F${x.toString()}`, `A${x.toString()}`, 'document', fixturesPdfNameA)
   ),
 };
 
