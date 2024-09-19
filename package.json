@@ -351,7 +351,7 @@
     "cypress-real-events": "^1.13.0",
     "enzyme": "3.11.0",
     "enzyme-to-json": "^3.6.2",
-    "eslint": "v8.57.0",
+    "eslint": "v8.57.1",
     "eslint-config-airbnb": "19.0.4",
     "eslint-plugin-cypress": "^3.5.0",
     "eslint-plugin-import": "v2.29.1",
