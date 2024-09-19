@@ -3,9 +3,7 @@ name: eslint
 on:
   push:
     branches:
-      - production
       - development
-      - staging
   pull_request:
 
 concurrency:
