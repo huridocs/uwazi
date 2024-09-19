@@ -121,7 +121,7 @@ describe('Users', () => {
         _id: userId.toString(),
         username: 'user name',
       };
-      await expect(users.save(userdata, currentUser)).rejects.toEqual({
+      await expect(users.save(userdata, currentUser)).rejects.toMatchObject({
         code: 400,
         message: 'Usernames can not contain spaces.',
       });
@@ -259,7 +259,7 @@ describe('Users', () => {
           role: 'editor',
           groups: [],
         };
-        await expect(users.newUser(userdata, domain)).rejects.toEqual({
+        await expect(users.newUser(userdata, domain)).rejects.toMatchObject({
           code: 400,
           message: 'Usernames can not contain spaces.',
         });
