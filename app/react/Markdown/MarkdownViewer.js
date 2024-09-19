@@ -130,7 +130,7 @@ class MarkdownViewer extends Component {
       'div',
       { className: 'markdown-viewer' },
       React.Children.toArray(ReactFromMarkdown),
-      this.props.extended
+      this.props.sanitized
     );
   }
 }

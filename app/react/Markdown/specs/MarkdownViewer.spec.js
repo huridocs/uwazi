@@ -14,7 +14,7 @@ describe('MarkdownViewer', () => {
   beforeEach(() => {
     props = {
       markdown: '## MarkdownContent',
-      extended: true,
+      sanitized: false,
     };
   });
 
@@ -226,7 +226,7 @@ describe('MarkdownViewer', () => {
       props = {
         markdown,
         html: true,
-        extended: false,
+        sanitized: true,
       };
       render();
 
@@ -245,7 +245,7 @@ describe('MarkdownViewer', () => {
       props = {
         markdown,
         html: true,
-        extended: false,
+        sanitized: true,
       };
       render();
 

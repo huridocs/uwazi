@@ -1,16 +1,16 @@
 import React from 'react';
 import { extendedHtmlTags, visualizationHtmlTags } from './utils';
 
-const isValidTagName = (tagName: string, extended: boolean): boolean =>
-  extended ? extendedHtmlTags.includes(tagName) : visualizationHtmlTags.includes(tagName);
+const isValidTagName = (tagName: string, sanitized: boolean): boolean =>
+  !sanitized ? extendedHtmlTags.includes(tagName) : visualizationHtmlTags.includes(tagName);
 
 const ValidatedElement = (
   type: string | React.JSXElementConstructor<any>,
   props: (React.Attributes & { children?: React.ReactNode }) | null,
   children: React.ReactNode[],
-  extended = false
+  sanitized = true
 ): React.ReactElement | null => {
-  if (typeof type === 'string' && !isValidTagName(type, extended)) {
+  if (typeof type === 'string' && !isValidTagName(type, sanitized)) {
     return React.createElement('div', { className: 'error' }, `Invalid tag: ${type}`);
   }
 
@@ -23,7 +23,7 @@ const ValidatedElement = (
               c.type,
               childProps,
               React.Children.toArray(childProps.children),
-              extended
+              sanitized
             )
           : c;
       });
@@ -33,7 +33,7 @@ const ValidatedElement = (
         child.type,
         child.props as React.Attributes & { children?: React.ReactNode },
         React.Children.toArray(child.props.children),
-        extended
+        sanitized
       );
     }
     return child;
