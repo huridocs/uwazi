@@ -5,6 +5,7 @@ import { appContext } from 'api/utils/AppContext';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { FileNotFound } from 'api/files/FileNotFound';
+import { S3TimeoutError } from 'api/files/S3Storage';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -60,6 +61,10 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
 
   if (error instanceof Error) {
     result = { code: 500, message: error.stack, logLevel: 'error' };
+  }
+
+  if (error instanceof S3TimeoutError) {
+    result = { code: 408, message: `${error.message}\n${error.stack}`, logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {
