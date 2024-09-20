@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 /* eslint-disable max-statements */
 import React, { Component } from 'react';
 
@@ -13,6 +14,7 @@ describe('MarkdownViewer', () => {
   beforeEach(() => {
     props = {
       markdown: '## MarkdownContent',
+      sanitized: false,
     };
   });
 
@@ -210,6 +212,43 @@ describe('MarkdownViewer', () => {
         '<div>test</div>';
 
       render();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('limited markdown', () => {
+    it.each`
+      type                | markdown
+      ${'forbidden tag'}  | ${'<div>This <input type="text" /> was cleaned</div>'}
+      ${'forbidden tag'}  | ${'<div>This <script language="javascript">console.log(\'dangerous\')</script> was cleaned</div>'}
+      ${'malicious code'} | ${'<img src="javascript:alert(\'forbidden\');" />'}
+    `('should replace banned tags $type', ({ markdown }) => {
+      props = {
+        markdown,
+        html: true,
+        sanitized: true,
+      };
+      render();
+
+      expect(component).toMatchSnapshot();
+    });
+
+    it.each`
+      type               | markdown
+      ${'custom tags'}   | ${'<MarkdownLink url="the_url">label</MarkDownLink> and <SearchBox/>\n<div>test</div>'}
+      ${'custom hook'}   | ${'<CejilChart002 />'}
+      ${'placeholder'}   | ${'<placeholder>$content</placeholder>'}
+      ${'standard tags'} | ${'<Table><tr><th>Title</th></tr><tr><td>value</td></tr> </Table>'}
+      ${'interpolation'} | ${'${template.color}'}
+      ${'media'}         | ${'{vimeo}(1234, options)'}
+    `('should keep allowed tags $type', ({ markdown }) => {
+      props = {
+        markdown,
+        html: true,
+        sanitized: true,
+      };
+      render();
+
       expect(component).toMatchSnapshot();
     });
   });
