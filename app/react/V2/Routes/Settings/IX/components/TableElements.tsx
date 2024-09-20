@@ -4,7 +4,7 @@ import React from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { Translate } from 'app/I18N';
+import { I18NLink, Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
@@ -201,8 +201,10 @@ const OpenPDFButton = ({
 };
 
 const TitleCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
-  <div className="text-xs font-normal text-gray-900">
-    {cell.getValue()} ({row.original.language})
+  <div className="text-sm font-normal text-primary-700">
+    <a href={`/entity/${row.original.sharedId}`} target="_blank" rel="noreferrer">
+      {cell.getValue()} ({row.original.language})
+    </a>
   </div>
 );
 
