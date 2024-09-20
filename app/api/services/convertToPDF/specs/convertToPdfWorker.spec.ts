@@ -22,13 +22,13 @@ describe('convertToPdfWorker', () => {
 
   const recreateRedisQueue = async () => {
     try {
-      await redisSMQ.deleteQueueAsync({ qname: 'convert-to-pdf_results' });
+      await redisSMQ.deleteQueueAsync({ qname: 'development_convert-to-pdf_results' });
     } catch (err) {
       if (err instanceof Error && err.name !== 'queueNotFound') {
         throw err;
       }
     }
-    await redisSMQ.createQueueAsync({ qname: 'convert-to-pdf_results' });
+    await redisSMQ.createQueueAsync({ qname: 'development_convert-to-pdf_results' });
   };
 
   beforeAll(async () => {
@@ -88,7 +88,7 @@ describe('convertToPdfWorker', () => {
       };
 
       await redisSMQ.sendMessageAsync({
-        qname: 'convert-to-pdf_results',
+        qname: 'development_convert-to-pdf_results',
         message: JSON.stringify(message),
       });
     });
@@ -162,7 +162,7 @@ describe('convertToPdfWorker', () => {
       jest.spyOn(handleError, 'handleError').mockImplementationOnce(() => {});
 
       await redisSMQ.sendMessageAsync({
-        qname: 'convert-to-pdf_results',
+        qname: 'development_convert-to-pdf_results',
         message: JSON.stringify(message),
       });
 

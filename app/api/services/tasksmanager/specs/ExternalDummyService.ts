@@ -122,16 +122,16 @@ export class ExternalDummyService {
   }
 
   async resetQueue() {
-    await this.deleteQueue(`${this.serviceName}_tasks`);
-    await this.deleteQueue(`${this.serviceName}_results`);
+    await this.deleteQueue(`development_${this.serviceName}_tasks`);
+    await this.deleteQueue(`development_${this.serviceName}_results`);
 
-    await this.createQueue(`${this.serviceName}_tasks`);
-    await this.createQueue(`${this.serviceName}_results`);
+    await this.createQueue(`development_${this.serviceName}_tasks`);
+    await this.createQueue(`development_${this.serviceName}_results`);
   }
 
   async readFirstTaskMessage() {
     const message: RedisSMQ.QueueMessage | {} = await this.rsmq.receiveMessageAsync({
-      qname: `${this.serviceName}_tasks`,
+      qname: `development_${this.serviceName}_tasks`,
     });
     const queueMessage = message as QueueMessage;
 
@@ -140,7 +140,7 @@ export class ExternalDummyService {
     }
 
     await this.rsmq.deleteMessageAsync({
-      qname: `${this.serviceName}_tasks`,
+      qname: `development_${this.serviceName}_tasks`,
       id: queueMessage.id,
     });
 
@@ -186,7 +186,7 @@ export class ExternalDummyService {
   async sendFinishedMessage(task: ResultsMessage) {
     try {
       await this.rsmq.sendMessageAsync({
-        qname: `${this.serviceName}_results`,
+        qname: `development_${this.serviceName}_results`,
         message: JSON.stringify(task),
       });
     } catch (err) {
