@@ -4,6 +4,7 @@ import { legacyLogger } from 'api/log';
 import { errors as elasticErrors } from '@elastic/elasticsearch';
 import { appContext } from 'api/utils/AppContext';
 import { handleError, prettifyError } from '../handleError';
+import { S3TimeoutError } from 'api/files/S3Storage';
 
 const contextRequestId = '1234';
 
@@ -18,6 +19,17 @@ describe('handleError', () => {
   });
 
   describe('errors by type', () => {
+    describe('and is instance of S3TimeoutError', () => {
+      it('should be a debug logLevel and a 408 http code', () => {
+        const errorInstance = new S3TimeoutError(new Error('timeout'));
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({
+          code: 408,
+          logLevel: 'debug',
+        });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('timeout');
+      });
+    });
     describe('when error is instance of Error', () => {
       it('should return the error with 500 code without the original error and error stack', () => {
         const errorInstance = new Error('error');
