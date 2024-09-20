@@ -1,5 +1,126 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`MarkdownViewer limited markdown should keep allowed tags custom hook 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p>
+    <cejilchart002 />
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should keep allowed tags custom tags 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p>
+    <MarkdownLink
+      classname=""
+      url="the_url"
+    >
+      label
+    </MarkdownLink>
+     and
+  </p>
+  
+
+  <div>
+    test
+  </div>
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should keep allowed tags interpolation 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p>
+    \${template.color}
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should keep allowed tags media 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div>
+    <MarkdownMedia
+      compact={false}
+      config="(1234, options)"
+    />
+  </div>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should keep allowed tags placeholder 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <p>
+    <placeholder>
+      $content
+    </placeholder>
+  </p>
+  
+
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should keep allowed tags standard tags 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <table>
+    <tr>
+      <th>
+        Title
+      </th>
+    </tr>
+    <tr>
+      <td>
+        value
+      </td>
+    </tr>
+  </table>
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should replace banned tags forbidden tag 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <div>
+    This  was cleaned
+  </div>
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should replace banned tags forbidden tag 2`] = `
+<div
+  className="markdown-viewer"
+>
+  <div>
+    This  was cleaned
+  </div>
+</div>
+`;
+
+exports[`MarkdownViewer limited markdown should replace banned tags malicious code 1`] = `
+<div
+  className="markdown-viewer"
+>
+  <img />
+</div>
+`;
+
 exports[`MarkdownViewer render should be able to render properly custom components not separated by \\n\\n 1`] = `
 <div
   className="markdown-viewer"
