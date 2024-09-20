@@ -212,7 +212,7 @@ function getFixturesFactory() {
     relationshipProp(name: string, content: string, props = {}): PropertySchema {
       return this.property(name, 'relationship', {
         relationType: idMapper('rel1').toString(),
-        content: idMapper(content).toString(),
+        content: content ? idMapper(content).toString() : content,
         ...props,
       });
     },

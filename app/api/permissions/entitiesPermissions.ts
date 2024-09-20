@@ -1,6 +1,7 @@
 import { WithId } from 'mongodb';
 
 import { model as entityModel } from 'api/entities';
+import { denormalizePublishedStateInRelated } from 'api/entities/denormalize';
 import entities from 'api/entities/entities';
 import { search } from 'api/search';
 import users from 'api/users/users';
@@ -137,7 +138,8 @@ export const entitiesPermissions = {
       ...getPublishingQuery(publicPermission),
     }));
 
-    await saveEntities(toSave);
+    const saved = await saveEntities(toSave);
+    await denormalizePublishedStateInRelated(saved, permissionsData.permissions);
   },
 
   get: async (sharedIds: string[]) => {

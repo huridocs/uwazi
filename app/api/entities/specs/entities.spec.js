@@ -2,6 +2,7 @@
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
+import { ObjectId } from 'mongodb';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
@@ -32,6 +33,7 @@ import fixtures, {
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
+import _ from 'lodash';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -85,11 +87,11 @@ describe('entities', () => {
 
       const createdEntity = await entities.save(entity, { user, language: 'es' });
 
-      expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toEqual([
+      expect(createdEntity.metadata.multiselect.sort((a, b) => b.value < a.value)).toMatchObject([
         { value: 'country_one', label: 'Pais1' },
         { value: 'country_two', label: 'Pais2' },
       ]);
-      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toEqual([
+      expect(createdEntity.metadata.friends.sort((a, b) => b.value < a.value)).toMatchObject([
         { value: 'id1', label: 'entity one', type: 'entity' },
         { value: 'id2', label: 'entity two', type: 'entity' },
         { value: 'id3', label: 'entity three', type: 'entity' },
@@ -447,9 +449,9 @@ describe('entities', () => {
       });
     });
 
-    it('should not circle back to updateMetdataFromRelationships', async () => {
+    it('should not circle back to updateMetadataFromRelationships', async () => {
       jest.spyOn(date, 'currentUTC').mockReturnValue(1);
-      jest.spyOn(entities, 'updateMetdataFromRelationships');
+      jest.spyOn(entities, 'updateMetadataFromRelationships');
       const doc = {
         _id: batmanFinishesId,
         sharedId: 'shared',
@@ -474,7 +476,7 @@ describe('entities', () => {
       const user = { _id: db.id() };
 
       await entities.save(doc, { user, language: 'es' }, false);
-      expect(entities.updateMetdataFromRelationships).not.toHaveBeenCalled();
+      expect(entities.updateMetadataFromRelationships).not.toHaveBeenCalled();
     });
 
     describe('when document have _id', () => {
@@ -529,11 +531,11 @@ describe('entities', () => {
     });
   });
 
-  describe('updateMetdataFromRelationships', () => {
-    it('should update the metdata based on the entity relationships', async () => {
-      await entities.updateMetdataFromRelationships(['shared', 'missingEntity'], 'en');
+  describe('updateMetadataFromRelationships', () => {
+    it('should update the metadata based on the entity relationships', async () => {
+      await entities.updateMetadataFromRelationships(['shared', 'missingEntity'], 'en');
       const updatedEntity = await entities.getById('shared', 'en');
-      expect(updatedEntity.metadata.friends).toEqual([
+      expect(updatedEntity.metadata.friends).toMatchObject([
         { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
       ]);
     });
@@ -543,7 +545,7 @@ describe('entities', () => {
       const user = { _id: db.id() };
       const newEntity = await entities.save(doc, { user, language: 'es' });
 
-      await entities.updateMetdataFromRelationships([newEntity.sharedId], 'es');
+      await entities.updateMetadataFromRelationships([newEntity.sharedId], 'es');
       const updatedEntity = await entities.getById(newEntity.sharedId, 'en');
       expect(updatedEntity.metadata).toEqual({
         date: [],
@@ -565,7 +567,7 @@ describe('entities', () => {
 
     it('should sanitize the entities', async () => {
       const sanitizationSpy = jest.spyOn(entities, 'sanitize');
-      await entities.updateMetdataFromRelationships(['shared'], 'en');
+      await entities.updateMetadataFromRelationships(['shared'], 'en');
 
       expect(sanitizationSpy.mock.calls).toMatchObject([
         [
@@ -591,9 +593,9 @@ describe('entities', () => {
           email: 'col@test.com',
         });
 
-        await entities.updateMetdataFromRelationships(['shared'], 'en');
+        await entities.updateMetadataFromRelationships(['shared'], 'en');
         const updatedEntity = await entities.getById('shared', 'en');
-        expect(updatedEntity.metadata.friends).toEqual([
+        expect(updatedEntity.metadata.friends).toMatchObject([
           { icon: null, type: 'entity', label: 'shared2title', value: 'shared2' },
         ]);
         userFactory.mockEditorUser();
@@ -783,6 +785,59 @@ describe('entities', () => {
         });
       });
     });
+
+    it('should remove the renderLink flags from the metadata', async () => {
+      const doc1 = {
+        _id: batmanFinishesId,
+        sharedId: 'shared',
+        metadata: {
+          friends: [
+            { value: 'id1', label: 'label1', type: 'entity', renderLink: true },
+            { value: 'id2', label: 'label2', type: 'entity', renderLink: false },
+          ],
+          enemies: [
+            { value: 'shared1', renderLink: true },
+            { value: 'shared2', renderLink: false },
+          ],
+        },
+        template: templateId,
+      };
+
+      await entities.save(doc1, { language: 'en' });
+      const doc = await entities.getById('shared', 'en');
+      expect(doc.metadata.friends).toEqual([
+        { value: 'id1', label: 'entity one', type: 'entity', published: false, icon: null },
+        { value: 'id2', label: 'entity two', type: 'entity', published: false, icon: null },
+      ]);
+      expect(doc.metadata.enemies).toEqual([
+        {
+          icon: null,
+          value: 'shared1',
+          label: 'EN',
+          type: 'entity',
+          published: true,
+          inheritedType: 'text',
+          inheritedValue: [
+            {
+              value: 'text',
+            },
+          ],
+        },
+        {
+          icon: null,
+          value: 'shared2',
+          label: 'shared2title',
+          type: 'entity',
+          published: false,
+          inheritedType: 'text',
+          inheritedValue: [
+            {
+              value: 'something to be inherited',
+            },
+          ],
+        },
+      ]);
+    });
   });
 
   describe('get', () => {
@@ -838,6 +893,26 @@ describe('entities', () => {
       checkEntityGetResult(result[0], 'TitleA', null, null);
       checkEntityGetResult(result[1], 'TitleB', null, null);
       checkEntityGetResult(result[2], 'TitleC', null, null);
+    });
+
+    it('should post process metadata', async () => {
+      const postProcessSpy = jest.spyOn(entities, 'postProcessMetadata');
+      await entities.get({ sharedId: 'other' });
+      expect(postProcessSpy.mock.calls[0][0]).toMatchObject([
+        {
+          _id: unpublishedDocId,
+          sharedId: 'other',
+          language: 'en',
+          title: 'Unpublished entity',
+        },
+        {
+          _id: expect.any(ObjectId),
+          sharedId: 'other',
+          title: 'Unpublished entity ES',
+          language: 'es',
+        },
+      ]);
+      postProcessSpy.mockRestore();
     });
 
     it.each([
@@ -985,8 +1060,13 @@ describe('entities', () => {
       const metadata = {
         property1: [{ value: 'new text' }],
         description: [{ value: 'yeah!' }],
-        friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+        friends: [
+          { icon: null, label: 'shared2title', type: 'entity', value: 'shared2', published: false },
+        ],
       };
+
+      const expectedMetadata = _.cloneDeep(metadata);
+      expectedMetadata.friends[0].renderLink = true;
 
       const updatedEntities = await entities.multipleUpdate(
         ['shared', 'shared1', 'non_existent'],
@@ -1003,7 +1083,7 @@ describe('entities', () => {
           language: 'en',
           icon: { label: 'test' },
           published: true,
-          metadata: expect.objectContaining(metadata),
+          metadata: expect.objectContaining(expectedMetadata),
         })
       );
 
@@ -1014,7 +1094,7 @@ describe('entities', () => {
           language: 'en',
           icon: { label: 'test' },
           published: true,
-          metadata: expect.objectContaining(metadata),
+          metadata: expect.objectContaining(expectedMetadata),
         })
       );
     });

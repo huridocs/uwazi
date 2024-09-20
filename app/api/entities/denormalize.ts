@@ -17,6 +17,8 @@ import {
 import { isString } from 'util';
 
 import model from './entitiesModel';
+import { PermissionsDataSchema } from 'shared/types/permissionType';
+import { PermissionType } from 'shared/types/permissionSchema';
 
 interface DenormalizationUpdate {
   propertyName: string;
@@ -103,7 +105,7 @@ const oneJumpRelatedProps = async (contentId: string) => {
 const oneJumpUpdates = async (
   contentId: string,
   metadataPropsThatChanged: string[],
-  titleOrIconChanged: boolean
+  entityPropChanged: boolean
 ) => {
   let updates = (await oneJumpRelatedProps(contentId)).map<DenormalizationUpdate>(p => ({
     propertyName: p.name,
@@ -113,7 +115,7 @@ const oneJumpUpdates = async (
     valuePath: `metadata.${p.name}`,
   }));
 
-  if (metadataPropsThatChanged?.length && !titleOrIconChanged) {
+  if (metadataPropsThatChanged?.length && !entityPropChanged) {
     updates = updates.filter(u => metadataPropsThatChanged.includes(u.inheritProperty || ''));
   }
   return updates;
@@ -148,7 +150,7 @@ const twoJumpUpdates = async (contentId: string) =>
   }));
 
 async function denormalizationUpdates(contentId: string, templatePropertiesThatChanged: string[]) {
-  const titleOrIconChanged =
+  const entityPropChanged =
     templatePropertiesThatChanged.includes('label') ||
     templatePropertiesThatChanged.includes('icon');
 
@@ -157,8 +159,8 @@ async function denormalizationUpdates(contentId: string, templatePropertiesThatC
   );
 
   return uniqueByNameAndInheritProperty([
-    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, titleOrIconChanged)),
-    ...(titleOrIconChanged ? await twoJumpUpdates(contentId) : []),
+    ...(await oneJumpUpdates(contentId, metadataPropsThatChanged, entityPropChanged)),
+    ...(entityPropChanged ? await twoJumpUpdates(contentId) : []),
   ]);
 }
 
@@ -210,6 +212,7 @@ const denormalizeRelated = async (
           $set: {
             [`${update.valuePath}.$[valueIndex].label`]: newEntity.title,
             [`${update.valuePath}.$[valueIndex].icon`]: newEntity.icon,
+            [`${update.valuePath}.$[valueIndex].published`]: newEntity.published || false,
             ...(inheritProperty
               ? {
                   [`${update.valuePath}.$[valueIndex].inheritedValue`]:
@@ -224,6 +227,48 @@ const denormalizeRelated = async (
   );
 
   return reindexUpdates(newEntity.sharedId, newEntity.language, updates);
+};
+
+const denormalizePublishedStateInRelated = async (
+  entities: EntitySchema[],
+  permissions: PermissionsDataSchema['permissions']
+) => {
+  const publishedState = permissions.some(p => p.type === PermissionType.PUBLIC);
+  const sharedIds = Array.from(new Set(entities.map(e => e.sharedId)));
+  const templateIdsOfUpdatedEntities = new Set(
+    entities.map(e => e.template?.toString()).filter(e => e) as string[]
+  );
+  const allTemplates = (await templates.get({})) as WithId<TemplateSchema>[];
+  const relationshipProperties = allTemplates
+    .map(t => t.properties || [])
+    .flat()
+    .filter(p => p.type === 'relationship')
+    .filter(p => p.content || p.content === '');
+  const relatedRelationshipProperites = relationshipProperties.filter(
+    p => (p.content && templateIdsOfUpdatedEntities.has(p.content)) || p.content === ''
+  );
+  await Promise.all(
+    relatedRelationshipProperites.map(async p =>
+      model.updateMany(
+        {
+          [`metadata.${p.name}.value`]: { $in: sharedIds },
+        },
+        {
+          $set: {
+            [`metadata.${p.name}.$[valueIndex].published`]: publishedState,
+          },
+        },
+        { arrayFilters: [{ 'valueIndex.value': { $in: sharedIds } }] }
+      )
+    )
+  );
+  if (relatedRelationshipProperites.length) {
+    await search.indexEntities({
+      $or: relatedRelationshipProperites.map(p => ({
+        [`metadata.${p.name}.value`]: { $in: sharedIds },
+      })),
+    });
+  }
 };
 
 const denormalizeThesauriLabelInMetadata = async (
@@ -348,6 +393,7 @@ const denormalizeRelationshipProperty = async (
       denormalizedValue.label = partner.title;
       denormalizedValue.icon = partner.icon;
       denormalizedValue.type = partner.file ? 'document' : 'entity';
+      denormalizedValue.published = partner.published || false;
     }
 
     if (property.inherit && property.inherit.property && partner) {
@@ -445,4 +491,9 @@ async function denormalizeMetadata(
   return denormalizedMetadata;
 }
 
-export { denormalizeMetadata, denormalizeRelated, denormalizeThesauriLabelInMetadata };
+export {
+  denormalizeMetadata,
+  denormalizeRelated,
+  denormalizeThesauriLabelInMetadata,
+  denormalizePublishedStateInRelated,
+};

@@ -343,11 +343,11 @@ export default {
   async updateEntitiesMetadataByHub(hubId, language) {
     const hub = await this.getHub(hubId);
     const entitiesIds = hub.map(r => r.entity);
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+    return entities.updateMetadataFromRelationships(entitiesIds, language);
   },
 
   updateEntitiesMetadata(entitiesIds, language) {
-    return entities.updateMetdataFromRelationships(entitiesIds, language);
+    return entities.updateMetadataFromRelationships(entitiesIds, language);
   },
 
   async generateCreatedReferences(property, newValues, entity, existingReferences) {

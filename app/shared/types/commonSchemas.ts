@@ -330,6 +330,8 @@ export const metadataObjectSchema = {
     inheritedType: { type: 'string' },
     timeLinks: { type: 'string' },
     parent: selectParentSchema,
+    published: { type: 'boolean' },
+    renderLink: { type: 'boolean' },
   },
 };
 

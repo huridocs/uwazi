@@ -155,11 +155,8 @@ export class ModelWithPermissions<T> extends OdmModel<WithPermissions<T>> {
     options: UwaziQueryOptions = {}
   ) {
     const user = permissionsContext.getUserInContext();
-    const results = await super.get(
-      appendPermissionQuery<WithPermissions<T>>(query, AccessLevels.READ, user),
-      select,
-      options
-    );
+    const extendedQuery = appendPermissionQuery<WithPermissions<T>>(query, AccessLevels.READ, user);
+    const results = await super.get(extendedQuery, select, options);
     const returnResult = requestingPermissions(select)
       ? filterPermissionsData<T>(results, user)
       : results;

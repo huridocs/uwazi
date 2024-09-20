@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
-import { testingDB } from 'api/utils/testing_db';
+import db, { DBFixture, testingDB } from 'api/utils/testing_db';
 import entities from 'api/entities/entities';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { entitiesPermissions } from 'api/permissions/entitiesPermissions';
 import { AccessLevels, PermissionType, MixedAccess } from 'shared/types/permissionSchema';
 import { search } from 'api/search';
@@ -9,11 +10,14 @@ import { EntitySchema, EntityWithFilesSchema } from 'shared/types/entityType';
 import { PermissionsDataSchema } from 'shared/types/permissionType';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { PUBLIC_PERMISSION } from '../publicPermission';
+import { elasticTesting } from 'api/utils/elastic_testing';
 
 const publicPermission = {
   ...PUBLIC_PERMISSION,
   level: AccessLevels.READ,
 };
+
+const factory = getFixturesFactory();
 
 const mockCollab = () =>
   new UserInContextMockFactory().mock({
@@ -142,6 +146,443 @@ describe('permissions', () => {
       expect(storedEntities[2].published).toBe(false);
     });
 
+    it.each<{
+      case: string;
+      permissionInput: PermissionsDataSchema;
+      expectedMetadata: Record<string, { value: string; published: boolean }[]>[];
+    }>([
+      {
+        case: 'set to public',
+        permissionInput: {
+          ids: ['source11', 'source12', 'source23'],
+          permissions: [
+            { refId: 'some_user_refId', type: 'user', level: 'write' },
+            { refId: 'public', type: 'public', level: 'read' },
+          ],
+        },
+        expectedMetadata: [
+          {
+            relationship_11: [
+              {
+                value: 'source11',
+                published: true,
+              },
+              {
+                value: 'source12',
+                published: true,
+              },
+            ],
+            relationship_12: [
+              {
+                value: 'source21',
+                published: true,
+              },
+              {
+                value: 'source22',
+                published: false,
+              },
+            ],
+            unrelated_relationship: [
+              {
+                value: 'unrelated_entity',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_11: [
+              {
+                value: 'source12',
+                published: true,
+              },
+              {
+                value: 'source13',
+                published: true,
+              },
+            ],
+            relationship_12: [
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: true,
+              },
+            ],
+            unrelated_relationship: [],
+          },
+          {
+            relationship_21: [
+              {
+                value: 'source11',
+                published: true,
+              },
+              {
+                value: 'source12',
+                published: true,
+              },
+            ],
+            relationship_22: [
+              {
+                value: 'source21',
+                published: false,
+              },
+              {
+                value: 'source22',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_21: [
+              {
+                value: 'source12',
+                published: true,
+              },
+              {
+                value: 'source13',
+                published: true,
+              },
+            ],
+            relationship_22: [
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_to_any: [
+              {
+                value: 'source11',
+                published: true,
+              },
+              {
+                value: 'source12',
+                published: true,
+              },
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: true,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        case: 'set to private',
+        permissionInput: {
+          ids: ['source11', 'source12', 'source23'],
+          permissions: [{ refId: 'some_user_refId', type: 'user', level: 'write' }],
+        },
+        expectedMetadata: [
+          {
+            relationship_11: [
+              {
+                value: 'source11',
+                published: false,
+              },
+              {
+                value: 'source12',
+                published: false,
+              },
+            ],
+            relationship_12: [
+              {
+                value: 'source21',
+                published: true,
+              },
+              {
+                value: 'source22',
+                published: false,
+              },
+            ],
+            unrelated_relationship: [
+              {
+                value: 'unrelated_entity',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_11: [
+              {
+                value: 'source12',
+                published: false,
+              },
+              {
+                value: 'source13',
+                published: true,
+              },
+            ],
+            relationship_12: [
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: false,
+              },
+            ],
+            unrelated_relationship: [],
+          },
+          {
+            relationship_21: [
+              {
+                value: 'source11',
+                published: false,
+              },
+              {
+                value: 'source12',
+                published: false,
+              },
+            ],
+            relationship_22: [
+              {
+                value: 'source21',
+                published: false,
+              },
+              {
+                value: 'source22',
+                published: true,
+              },
+            ],
+          },
+          {
+            relationship_21: [
+              {
+                value: 'source12',
+                published: false,
+              },
+              {
+                value: 'source13',
+                published: true,
+              },
+            ],
+            relationship_22: [
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: false,
+              },
+            ],
+          },
+          {
+            relationship_to_any: [
+              {
+                value: 'source11',
+                published: false,
+              },
+              {
+                value: 'source12',
+                published: false,
+              },
+              {
+                value: 'source22',
+                published: true,
+              },
+              {
+                value: 'source23',
+                published: false,
+              },
+            ],
+          },
+        ],
+      },
+    ])(
+      'should denormalize published state when $case, and reindex touched entities',
+      async ({ permissionInput, expectedMetadata }) => {
+        const publishedStateTestFixtures: DBFixture = {
+          settings: [
+            {
+              _id: db.id(),
+              languages: [
+                { key: 'en', label: 'EN', default: true },
+                { key: 'es', label: 'ES' },
+              ],
+            },
+          ],
+          templates: [
+            factory.template('sourceTemplate1', [factory.property('text1')]),
+            factory.template('sourceTemplate2', [factory.property('text2')]),
+            factory.template('unrelatedTemplate', [factory.property('unrelated_text_prop')]),
+            factory.template('relationshipTemplate1', [
+              factory.relationshipProp('relationship_11', 'sourceTemplate1'),
+              factory.inherit('relationship_12', 'sourceTemplate2', 'text2'),
+              factory.relationshipProp('unrelated_relationship', 'unrelatedTemplate'),
+            ]),
+            factory.template('relationshipTemplate2', [
+              factory.inherit('relationship_21', 'sourceTemplate1', 'text1'),
+              factory.relationshipProp('relationship_22', 'sourceTemplate2'),
+            ]),
+            factory.template('relationshipToAnyTemplate', [
+              factory.relationshipProp('relationship_to_any', ''),
+            ]),
+          ],
+          entities: [
+            factory.entity(
+              'source11',
+              'sourceTemplate1',
+              { text1: [factory.metadataValue('A')] },
+              { published: true }
+            ),
+            factory.entity(
+              'source12',
+              'sourceTemplate1',
+              { text1: [factory.metadataValue('B')] },
+              { published: false }
+            ),
+            factory.entity(
+              'source13',
+              'sourceTemplate1',
+              { text1: [factory.metadataValue('C')] },
+              { published: true }
+            ),
+            factory.entity(
+              'source21',
+              'sourceTemplate2',
+              { text2: [factory.metadataValue('D')] },
+              { published: false }
+            ),
+            factory.entity(
+              'source22',
+              'sourceTemplate2',
+              { text2: [factory.metadataValue('E')] },
+              { published: true }
+            ),
+            factory.entity(
+              'source23',
+              'sourceTemplate2',
+              { text2: [factory.metadataValue('F')] },
+              { published: false }
+            ),
+            factory.entity('unrelated_entity', 'unrelatedTemplate', {}, { published: true }),
+            factory.entity('entityWithRel11', 'relationshipTemplate1', {
+              relationship_11: [
+                { value: 'source11', label: 'source11', published: true },
+                { value: 'source12', label: 'source12', published: false },
+              ],
+              relationship_12: [
+                {
+                  value: 'source21',
+                  label: 'source21',
+                  published: true,
+                  inheritedValue: [{ value: 'C' }],
+                },
+                {
+                  value: 'source22',
+                  label: 'source22',
+                  published: false,
+                  inheritedValue: [{ value: 'D' }],
+                },
+              ],
+              unrelated_relationship: [
+                { value: 'unrelated_entity', label: 'unrelated_entity', published: true },
+              ],
+            }),
+            factory.entity('entityWithRel12', 'relationshipTemplate1', {
+              relationship_11: [
+                { value: 'source12', label: 'source12', published: false },
+                { value: 'source13', label: 'source13', published: true },
+              ],
+              relationship_12: [
+                {
+                  value: 'source22',
+                  label: 'source22',
+                  published: true,
+                  inheritedValue: [{ value: 'E' }],
+                },
+                {
+                  value: 'source23',
+                  label: 'source23',
+                  published: false,
+                  inheritedValue: [{ value: 'F' }],
+                },
+              ],
+              unrelated_relationship: [],
+            }),
+            factory.entity('entityWithRel21', 'relationshipTemplate2', {
+              relationship_21: [
+                {
+                  value: 'source11',
+                  label: 'source11',
+                  published: true,
+                  inheritedValue: [{ value: 'A' }],
+                },
+                {
+                  value: 'source12',
+                  label: 'source12',
+                  published: false,
+                  inheritedValue: [{ value: 'B' }],
+                },
+              ],
+              relationship_22: [
+                { value: 'source21', label: 'source21', published: false },
+                { value: 'source22', label: 'source22', published: true },
+              ],
+            }),
+            factory.entity('entityWithRel22', 'relationshipTemplate2', {
+              relationship_21: [
+                { value: 'source12', label: 'source12', published: false },
+                { value: 'source13', label: 'source13', published: true },
+              ],
+              relationship_22: [
+                { value: 'source22', label: 'source22', published: true },
+                { value: 'source23', label: 'source23', published: false },
+              ],
+            }),
+            factory.entity('entityWithRelToAny', 'relationshipToAnyTemplate', {
+              relationship_to_any: [
+                { value: 'source11', label: 'source11', published: true },
+                { value: 'source12', label: 'source12', published: false },
+                { value: 'source22', label: 'source22', published: true },
+                { value: 'source23', label: 'source23', published: false },
+              ],
+            }),
+          ],
+        };
+        await db.setupFixturesAndContext(
+          publishedStateTestFixtures,
+          'published_denormalization_index'
+        );
+        await entitiesPermissions.set(permissionInput);
+
+        const templateIds = [
+          factory.id('relationshipTemplate1'),
+          factory.id('relationshipTemplate2'),
+          factory.id('relationshipToAnyTemplate'),
+        ];
+        const templateIdSet = new Set(templateIds.map(id => id.toString()));
+
+        const entites = await entities.get(
+          { template: { $in: templateIds } },
+          {},
+          { sort: 'title' }
+        );
+        const metadata = entites.map((e: EntitySchema) => e.metadata);
+        expect(metadata).toMatchObject(expectedMetadata);
+
+        await elasticTesting.refresh();
+        const indexed = (await elasticTesting.getIndexedEntities()).filter(e =>
+          templateIdSet.has(e.template!.toString())
+        );
+        const metadataInIndex = indexed.map((e: EntitySchema) => e.metadata);
+        expect(metadataInIndex).toMatchObject(expectedMetadata);
+      }
+    );
     it('should reindex the entities after updating the permissions', async () => {
       const indexEntitiesSpy = jest.spyOn(search, 'indexEntities');
 

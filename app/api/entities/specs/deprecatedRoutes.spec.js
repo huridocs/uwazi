@@ -190,6 +190,8 @@ describe('entities', () => {
     it('should return document by id', async () => {
       const expectedEntity = fixtures.entities[0];
       delete expectedEntity.fullText;
+      expectedEntity.metadata.enemies[0].renderLink = true;
+      expectedEntity.metadata.friends[0].renderLink = true;
 
       const response = await routes.get('/api/entities', {
         query: { _id: batmanFinishesId, omitRelationships: true },
