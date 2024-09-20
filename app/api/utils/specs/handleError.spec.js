@@ -1,10 +1,11 @@
-import { createError } from 'api/utils';
 import { legacyLogger } from 'api/log';
+import { createError } from 'api/utils';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
-import { appContext } from 'api/utils/AppContext';
-import { handleError, prettifyError } from '../handleError';
 import { S3TimeoutError } from 'api/files/S3Storage';
+import { appContext } from 'api/utils/AppContext';
+import util from 'node:util';
+import { handleError, prettifyError } from '../handleError';
 
 const contextRequestId = '1234';
 
@@ -48,7 +49,7 @@ describe('handleError', () => {
         handleError(error);
 
         expect(legacyLogger.error).toHaveBeenCalledWith(
-          `requestId: ${contextRequestId} \n${error.stack}
+          `requestId: ${contextRequestId} \n${util.inspect(error)}
 original error: {
  "name": "ConnectionError",
  "meta": {
