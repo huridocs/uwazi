@@ -42,7 +42,7 @@ export default (app: Application) => {
       try {
         const query = req.body;
 
-        const results = await search.search(query, req.language, req.user);
+        const iterator = await search.scroll(query, req.language, req.user);
         // eslint-disable-next-line camelcase
         const { dateFormat = '', site_name } = await settings.get();
 
@@ -51,7 +51,7 @@ export default (app: Application) => {
         const fileStream = createWriteStream(temporalFilePath);
         const exporterOptions = { dateFormat, language: req.language };
 
-        await exporter.export(results, fileStream, req.hostname, query.types, exporterOptions);
+        await exporter.export(iterator, fileStream, req.hostname, query.types, exporterOptions);
 
         res.download(temporalFilePath, generateExportFileName(site_name), err => {
           if (err) next(err);

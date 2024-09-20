@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import { Writable } from 'stream';
 import { EventEmitter } from 'events';
 import * as csv from '@fast-csv/format';
@@ -187,8 +188,19 @@ export const processEntity = (
 };
 
 export default class CSVExporter extends EventEmitter {
+  private async write(stream: csv.CsvFormatterStream<csv.Row, csv.Row>, chunk: any) {
+    return new Promise<void>((resolve, reject) => {
+      stream.write(chunk, err => {
+        if (err) reject(err);
+
+        resolve();
+      });
+    });
+  }
+
+  // eslint-disable-next-line max-params, max-statements
   async export(
-    searchResults: SearchResults,
+    resultsIterator: { hasNext: () => boolean; next: () => Promise<SearchResults> },
     writeStream: Writable,
     hostname: string,
     types: string[] = [],
@@ -198,19 +210,35 @@ export default class CSVExporter extends EventEmitter {
 
     csvStream.pipe<any>(writeStream).on('finish', writeStream.end);
 
-    const templatesCache = await getTemplatesModels(getTypes(searchResults, types));
+    const firstPage = await resultsIterator.next();
+
+    const templatesCache = await getTemplatesModels(getTypes(firstPage, types));
     let headers = prependCommonHeaders(concatCommonHeaders(processHeaders(templatesCache)));
     headers = await translateCommonHeaders(headers, options.language);
 
-    return new Promise(resolve => {
-      csvStream.write(headers.map((h: any) => h.label));
+    await this.write(
+      csvStream,
+      headers.map((h: any) => h.label)
+    );
 
-      searchResults.rows.forEach(row => {
-        csvStream.write(processEntity(row, headers, templatesCache, hostname, options));
+    await firstPage.rows.reduce(async (prev, row) => {
+      await prev;
+      await this.write(csvStream, processEntity(row, headers, templatesCache, hostname, options));
+      this.emit('entityProcessed');
+    }, Promise.resolve());
+
+    while (resultsIterator.hasNext()) {
+      const resultsPage = await resultsIterator.next();
+
+      await resultsPage.rows.reduce(async (prev, row) => {
+        await prev;
+        await this.write(csvStream, processEntity(row, headers, templatesCache, hostname, options));
         this.emit('entityProcessed');
-      });
+      }, Promise.resolve());
+    }
 
-      csvStream.end();
+    csvStream.end();
+    return new Promise(resolve => {
       writeStream.on('finish', resolve);
     });
   }
