@@ -111,6 +111,8 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.nonLabeled}</div>
             </div>
+          </Card>
+          <Card>
             <div className="flex items-center space-x-0.5">
               <Checkbox
                 label={<Translate className="font-normal">Match</Translate>}
@@ -133,6 +135,8 @@ const FiltersSidepanel = ({
               <div className="flex-1 border-t border-dashed border-t-gray-200" />
               <div className="flex-none font-mono font-bold">{aggregation.mismatch}</div>
             </div>
+          </Card>
+          <Card>
             <div className="flex items-center space-x-0.5">
               <Checkbox
                 label={<Translate className="font-normal">Obsolete</Translate>}
