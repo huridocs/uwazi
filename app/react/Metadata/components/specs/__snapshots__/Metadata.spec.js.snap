@@ -63,10 +63,10 @@ exports[`Metadata should render a Markdown when the metadata is type mardown 1`]
   >
     <MarkdownViewer
       compact={false}
-      extended={false}
       html={true}
       lists={Array []}
       markdown="some markdown text"
+      sanitized={true}
     />
   </dd>
 </dl>
@@ -111,10 +111,10 @@ exports[`Metadata should render a media field 1`] = `
   >
     <MarkdownViewer
       compact={true}
-      extended={false}
       html={false}
       lists={Array []}
       markdown="{media}(http://youtube.com/videoid)"
+      sanitized={true}
     />
   </dd>
 </dl>
