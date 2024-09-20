@@ -15,7 +15,7 @@ describe('Menu configuration', () => {
     cy.intercept('GET', 'api/settings/links').as('fetchLinks');
   });
 
-  it('tests add links', () => {
+  it('should add links', () => {
     cy.getByTestId('menu-add-link').click();
     cy.get('#link-title').click();
     cy.get('#link-title').type('Link 1', { delay: 0 });
@@ -163,5 +163,15 @@ describe('Menu configuration', () => {
         cy.contains('Link A');
       });
     });
+  });
+
+  it('should add a single child', () => {
+    cy.contains('button', 'Add link').click();
+    cy.get('#link-title').click();
+    cy.get('#link-title').type('Child 1', { delay: 0 });
+    cy.get('#link-url').type('www.subrow.com', { delay: 0 });
+    cy.get('#link-group').select('Group 1');
+    cy.getByTestId('menu-form-submit').click();
+    cy.contains('button', 'Save').click();
   });
 });

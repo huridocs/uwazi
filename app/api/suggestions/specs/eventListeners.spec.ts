@@ -58,8 +58,8 @@ const fixtures: DBFixture = {
     ),
   ],
   files: [
-    fixturesFactory.file('entfile', 'entity for new file', 'document', 'entfile.pdf'),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated('entfile', 'entity for new file', 'document', 'entfile.pdf'),
+    fixturesFactory.fileDeprecated(
       'entfile2',
       'entity with template not in config',
       'document',
@@ -514,7 +514,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
 
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
-    const fileInfo = fixturesFactory.file(
+    const fileInfo = fixturesFactory.fileDeprecated(
       'new file',
       'entity for new file',
       'document',
@@ -533,7 +533,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
   it('should create blank suggestions, if the new file is an entity document', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
-    const fileInfo = fixturesFactory.file(
+    const fileInfo = fixturesFactory.fileDeprecated(
       'new file',
       'entity for new file',
       'document',
@@ -633,7 +633,7 @@ describe(`On ${FileCreatedEvent.name}`, () => {
   it('should not fail on not configured templates', async () => {
     const saveSpy = jest.spyOn(Suggestions, 'saveMultiple');
 
-    const fileInfo = fixturesFactory.file(
+    const fileInfo = fixturesFactory.fileDeprecated(
       'new file',
       'entity with template not in config',
       'document',

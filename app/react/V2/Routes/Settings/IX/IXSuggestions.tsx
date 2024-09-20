@@ -192,9 +192,9 @@ const IXSuggestions = () => {
       });
 
       await suggestionsAPI.accept(preparedSuggestions);
-      setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
       const newAggregations = await suggestionsAPI.aggregation(extractor._id);
       setAggregations(newAggregations);
+      setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
       setNotifications({
         type: 'success',
         text: <Translate>Suggestion accepted.</Translate>,
