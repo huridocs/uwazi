@@ -21,15 +21,12 @@ import { LabelInfoBase } from './typeParsers/select';
 import { headerWithLanguage } from './csvDefinitions';
 
 class ArrangeThesauriError extends Error {
-  source: Error;
-
   row: CSVRow;
 
   index: number;
 
   constructor(source: Error, row: CSVRow, index: number) {
-    super(source.message);
-    this.source = source;
+    super(source.message, { cause: source });
     this.row = row;
     this.index = index;
   }
@@ -163,9 +160,7 @@ const tryAddingLabel = (
   const map = thesauriValueData[id];
   if (isStandaloneGroup(map, labelInfo)) {
     throw new Error(
-      `The label "${
-        labelInfo.label
-      }" at property "${name}" is a group label in line:\n${JSON.stringify(row)}`
+      `The label "${labelInfo.label}" at property "${name}" is a group label in line:\n${JSON.stringify(row)}`
     );
   }
   const { childInfo, parentInfo } = pickParentChild(labelInfo);
