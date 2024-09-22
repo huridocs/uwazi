@@ -9,11 +9,8 @@ import {
 import { config } from 'api/config';
 
 class S3TimeoutError extends Error {
-  readonly s3TimeoutError: Error;
-
-  constructor(s3TimeoutError: Error) {
-    super(s3TimeoutError.message);
-    this.s3TimeoutError = s3TimeoutError;
+  constructor(cause: Error) {
+    super(cause.message, { cause });
   }
 }
 
