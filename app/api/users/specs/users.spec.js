@@ -587,16 +587,13 @@ describe('Users', () => {
     });
 
     describe('when the user does not exist with that email', () => {
-      it('should not create the entry in the database, should not send a mail, and return an error.', async () => {
+      it('should not create the entry in the database, should not send a mail, and return nothing', async () => {
         jest.spyOn(Date, 'now').mockReturnValue(1000);
         const key = unlockCode.generateUnlockCode();
         let response;
-        try {
-          response = await users.recoverPassword('false@email.com');
-        } catch (error) {
-          expect(error.code).toBe(403);
-          response = await passwordRecoveriesModel.get({ key });
-        }
+        response = await users.recoverPassword('false@email.com');
+        expect(response).toBe(undefined);
+        response = await passwordRecoveriesModel.get({ key });
         expect(response.length).toBe(0);
       });
     });
