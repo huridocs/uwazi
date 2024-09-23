@@ -14,7 +14,8 @@ import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource {
+  implements EntitiesDataSource
+{
   protected collectionName = 'entities';
 
   private settingsDS: MongoSettingsDataSource;
