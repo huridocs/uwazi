@@ -58,8 +58,5 @@ export class SaveEntityTranslations {
     });
 
     // entities.save() esto que vaya en un wrapper (interfaz)
-    // Parsear el result [key] para saber tenant/entity/property
-    // para cada idioma modificar el texto con un prepend [AI Translated]
-    // Guardar este texto en la entidad correspondiente
   }
 }

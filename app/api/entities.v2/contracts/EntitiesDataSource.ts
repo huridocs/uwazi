@@ -10,7 +10,10 @@ export interface EntitiesDataSource {
     id: Entity['_id'],
     values: Record<string, MetadataValue[]>
   ): Promise<void>;
-  updateMetadataValues(id: Entity['_id'], values: Record<string, MetadataValue[]>): Promise<void>;
+  updateMetadataValues(
+    id: Entity['_id'],
+    values: Record<string, Pick<MetadataValue, 'value'>[]>
+  ): Promise<void>;
   entitiesExist(sharedIds: string[]): Promise<boolean>;
   getByIds(sharedIds: string[], language?: string): ResultSet<Entity>;
   getIdsByTemplate(templateId: string): ResultSet<string>;

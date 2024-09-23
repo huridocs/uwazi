@@ -122,7 +122,10 @@ export class MongoEntitiesDataSource
     return new MongoResultSet(result, entity => entity.sharedId);
   }
 
-  async updateMetadataValues(id: Entity['_id'], values: Record<string, MetadataValue[]>) {
+  async updateMetadataValues(
+    id: Entity['_id'],
+    values: Record<string, Pick<MetadataValue, 'value'>[]>
+  ) {
     await this.getCollection().updateOne(
       { _id: MongoIdHandler.mapToDb(id) },
       {

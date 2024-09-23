@@ -1,6 +1,6 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { MongoEntitiesDataSource } from 'api/entities.v2/database/MongoEntitiesDataSource';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB from 'api/utils/testing_db';
@@ -9,7 +9,6 @@ import { SaveEntityTranslations } from '../SaveEntityTranslations';
 import { InvalidInputDataFormat } from '../errors/generateATErrors';
 import { AJVTranslationResultValidator } from '../infrastructure/AJVTranslationResultValidator';
 import { TranslationResult } from '../types/TranslationResult';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 
 const factory = getFixturesFactory();
 
@@ -81,10 +80,9 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
     await saveEntityTranslations.execute(translationResult);
 
-    const entities = await testingDB.mongodb
-      ?.collection('entities')
-      .find({ sharedId: 'entity' })
-      .toArray();
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
+      [];
 
     expect(entities.find(e => e.language === 'es')).toMatchObject({
       metadata: { propertyName: [{ value: '(AI translated) texto original' }] },
