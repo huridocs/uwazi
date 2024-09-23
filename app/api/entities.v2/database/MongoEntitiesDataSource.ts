@@ -9,7 +9,7 @@ import { Db } from 'mongodb';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-import { Entity, MetadataValue } from '../model/Entity';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -122,10 +122,7 @@ export class MongoEntitiesDataSource
     return new MongoResultSet(result, entity => entity.sharedId);
   }
 
-  async updateMetadataValues(
-    id: Entity['_id'],
-    values: Record<string, Pick<MetadataValue, 'value'>[]>
-  ) {
+  async updateMetadataValues(id: Entity['_id'], values: Record<string, MetadataValue[]>) {
     await this.getCollection().updateOne(
       { _id: MongoIdHandler.mapToDb(id) },
       {
@@ -141,7 +138,7 @@ export class MongoEntitiesDataSource
 
   async updateObsoleteMetadataValues(
     id: Entity['_id'],
-    values: Record<string, MetadataValue[]>
+    values: Record<string, EntityMetadata[]>
   ): Promise<void> {
     const stream = this.createBulkStream();
 

@@ -1,5 +1,5 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
-import { Entity, MetadataValue } from '../model/Entity';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 
 type MarkAsChangedCriteria = { template: string } | { sharedId: string };
 type MarkAsChangedData = { property: string } | { properties: string[] };
@@ -8,12 +8,9 @@ export type MarkAsChangedItems = MarkAsChangedCriteria & MarkAsChangedData;
 export interface EntitiesDataSource {
   updateObsoleteMetadataValues(
     id: Entity['_id'],
-    values: Record<string, MetadataValue[]>
+    values: Record<string, EntityMetadata[]>
   ): Promise<void>;
-  updateMetadataValues(
-    id: Entity['_id'],
-    values: Record<string, Pick<MetadataValue, 'value'>[]>
-  ): Promise<void>;
+  updateMetadataValues(id: Entity['_id'], values: Record<string, MetadataValue[]>): Promise<void>;
   entitiesExist(sharedIds: string[]): Promise<boolean>;
   getByIds(sharedIds: string[], language?: string): ResultSet<Entity>;
   getIdsByTemplate(templateId: string): ResultSet<string>;
