@@ -116,7 +116,6 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                 size={180}
                 bgColor="white"
                 fgColor="black"
-                title="qr code"
               />
             </div>
           </Card>
