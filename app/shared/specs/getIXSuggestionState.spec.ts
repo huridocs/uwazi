@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { getSuggestionState, SuggestionValues } from '../getIXSuggestionState';
 
 describe('getIXSuggestionState', () => {
@@ -83,8 +84,10 @@ describe('getIXSuggestionState', () => {
       const state = getSuggestionState(values, 'text');
 
       expect(state).toEqual({
+        labeled: false,
         withValue: true,
         withSuggestion: false,
+        match: undefined,
         hasContext: false,
         obsolete: false,
         processing: false,
@@ -219,11 +222,37 @@ describe('getIXSuggestionState', () => {
       const state = getSuggestionState(values, 'text');
 
       expect(state).toEqual({
+        labeled: false,
         withValue: false,
         withSuggestion: true,
+        match: undefined,
         hasContext: false,
         obsolete: true,
         processing: false,
+        error: false,
+      });
+    });
+
+    it('should mark processing when status is processing and set obsolete as true', () => {
+      const values = <SuggestionValues>{
+        currentValue: '',
+        date: 1234,
+        labeledValue: '',
+        suggestedValue: 'some value',
+        modelCreationDate: 1,
+        status: 'processing',
+      };
+
+      const state = getSuggestionState(values, 'text');
+
+      expect(state).toEqual({
+        labeled: false,
+        withValue: false,
+        withSuggestion: true,
+        match: undefined,
+        hasContext: false,
+        obsolete: true,
+        processing: true,
         error: false,
       });
     });

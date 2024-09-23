@@ -81,7 +81,7 @@ export interface IXSuggestionType {
 }
 
 export interface IXSuggestionStateType {
-  labeled?: boolean;
+  labeled: boolean;
   withValue: boolean;
   withSuggestion: boolean;
   match?: boolean;

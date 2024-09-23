@@ -85,7 +85,15 @@ export const IXSuggestionStateSchema = {
     processing: { type: 'boolean' },
     error: { type: 'boolean' },
   },
-  required: ['withValue', 'withSuggestion', 'hasContext', 'processing', 'obsolete', 'error'],
+  required: [
+    'labeled',
+    'withValue',
+    'withSuggestion',
+    'hasContext',
+    'processing',
+    'obsolete',
+    'error',
+  ],
 };
 
 export const IXSuggestionSchema = {
