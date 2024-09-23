@@ -412,7 +412,7 @@ const PDFSidepanel = ({
       <Controller
         control={control}
         name="field"
-        rules={{ required: true }}
+        rules={{ required: property?.required }}
         render={({ field: { onChange, value } }) => (
           <MultiselectList
             onChange={onChange}
