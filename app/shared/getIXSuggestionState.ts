@@ -40,7 +40,7 @@ const equalsForType = (type: PropertySchema['type']) => (first: any, second: any
   EQUALITIES[type] ? EQUALITIES[type](first, second) : first === second;
 
 class IXSuggestionState implements IXSuggestionStateType {
-  labeled: boolean | undefined;
+  labeled = false;
 
   withValue = false;
 
@@ -71,7 +71,6 @@ class IXSuggestionState implements IXSuggestionStateType {
     { labeledValue, currentValue }: SuggestionValues,
     propertyType: PropertySchema['type']
   ) {
-    this.labeled = false;
     if (
       labeledValue ||
       (propertyIsSelect(propertyType) && currentValue) ||
@@ -129,7 +128,6 @@ class IXSuggestionState implements IXSuggestionStateType {
   setObsolete({ modelCreationDate, date }: SuggestionValues) {
     if (date < modelCreationDate) {
       this.obsolete = true;
-      this.labeled = undefined;
       this.match = undefined;
     }
   }
@@ -137,13 +135,14 @@ class IXSuggestionState implements IXSuggestionStateType {
   setProcessing({ status }: SuggestionValues) {
     if (status === 'processing') {
       this.processing = true;
+      this.obsolete = true;
+      this.match = undefined;
     }
   }
 
   setError({ error, status }: SuggestionValues) {
     if ((error && error !== '') || (status && status === 'failed')) {
       this.error = true;
-      this.labeled = undefined;
       this.match = undefined;
     }
   }
