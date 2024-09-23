@@ -5,6 +5,8 @@ import { InvalidInputDataFormat } from './errors/generateATErrors';
 import { TranslationResult } from './types/TranslationResult';
 
 export class SaveEntityTranslations {
+  static AITranslatedText = '(AI translated)';
+
   private entitiesDS: EntitiesDataSource;
 
   private templatesDS: TemplatesDataSource;
@@ -26,23 +28,9 @@ export class SaveEntityTranslations {
       throw new InvalidInputDataFormat(this.validator.getErrors()[0]);
     }
 
-    const [tenant, entitySharedId, propertyId] = translationResult.key;
+    const [, entitySharedId, propertyId] = translationResult.key;
 
-    const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
-    if (!entity) {
-      throw new Error('entity does not exists');
-    }
-
-    const template = await this.templatesDS.getById(entity.template);
-    if (!template) {
-      throw new Error('template does not exists');
-    }
-
-    const property = template.properties.find(p => p.id === propertyId);
-
-    if (!property) {
-      throw new Error('property does not exists');
-    }
+    const property = await this.getProperty(entitySharedId, propertyId);
 
     const entities = this.entitiesDS.getByIds([entitySharedId]);
 
@@ -52,11 +40,30 @@ export class SaveEntityTranslations {
       );
       if (translation) {
         await this.entitiesDS.updateMetadataValues(oneEntity._id, {
-          [property.name]: [{ value: `(AI translated) ${translation.text}` }],
+          [property.name]: [
+            { value: `${SaveEntityTranslations.AITranslatedText} ${translation.text}` },
+          ],
         });
       }
     });
+  }
 
-    // entities.save() esto que vaya en un wrapper (interfaz)
+  private async getProperty(entitySharedId: string, propertyId: string) {
+    const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
+    if (!entity) {
+      throw new Error('Entity does not exists');
+    }
+
+    const template = await this.templatesDS.getById(entity.template);
+    if (!template) {
+      throw new Error('Template does not exists');
+    }
+
+    const property = template.properties.find(p => p.id === propertyId);
+
+    if (!property) {
+      throw new Error('Property does not exists');
+    }
+    return property;
   }
 }
