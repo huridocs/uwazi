@@ -1,5 +1,7 @@
+type MetadataValue = unknown;
+
 type BaseMetadataValue = {
-  value: unknown;
+  value: MetadataValue;
   label: string;
 };
 
@@ -8,9 +10,9 @@ type InheritedResultValue = BaseMetadataValue & {
   inheritedType: string;
 };
 
-type MetadataValue = BaseMetadataValue | InheritedResultValue;
+type EntityMetadata = BaseMetadataValue | InheritedResultValue;
 
-type Metadata = Record<string, MetadataValue[]>;
+type Metadata = Record<string, EntityMetadata[]>;
 
 export class Entity {
   readonly _id: string;
@@ -45,4 +47,5 @@ export class Entity {
     this.obsoleteMetadata = obsoleteMetadata ?? [];
   }
 }
-export type { Metadata, MetadataValue };
+
+export type { Metadata, EntityMetadata, MetadataValue };
