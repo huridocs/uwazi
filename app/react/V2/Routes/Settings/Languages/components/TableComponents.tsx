@@ -4,9 +4,9 @@ import { StarIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 import { Button } from 'V2/Components/UI/Button';
 import { CellContext } from '@tanstack/react-table';
-import { LanguageSchema } from 'shared/types/commonTypes';
+import { TableLanguages } from '../LanguagesList';
 
-const DefaultButton = ({ cell, column }: CellContext<LanguageSchema, boolean>) => (
+const DefaultButton = ({ cell, column }: CellContext<TableLanguages, boolean>) => (
   <Button
     styling={cell.row.original.default ? 'solid' : 'light'}
     onClick={async () => column.columnDef.meta?.action?.(cell.row)}
@@ -23,7 +23,7 @@ const DefaultButton = ({ cell, column }: CellContext<LanguageSchema, boolean>) =
   </Button>
 );
 
-const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
+const UninstallButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   !cell.row.original.default ? (
     <Button
       styling="light"
@@ -36,7 +36,7 @@ const UninstallButton = ({ cell, column }: CellContext<LanguageSchema, string>) 
     <> </>
   );
 
-const ResetButton = ({ cell, column }: CellContext<LanguageSchema, string>) =>
+const ResetButton = ({ cell, column }: CellContext<TableLanguages, string>) =>
   cell.row.original.translationAvailable ? (
     <Button
       styling="light"

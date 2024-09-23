@@ -4,7 +4,7 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { Page } from 'V2/shared/types';
 import { FetchResponseError } from 'shared/JSONRequest';
 
-const get = async (language: string, headers?: IncomingHttpHeaders): Promise<Page> => {
+const get = async (language: string, headers?: IncomingHttpHeaders): Promise<Page[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
     api.locale(language);

@@ -3,9 +3,7 @@ name: check-types
 on:
   push:
     branches:
-      - production
       - development
-      - staging
   pull_request:
 
 concurrency:

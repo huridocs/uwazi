@@ -1,18 +1,17 @@
 /* eslint-disable max-statements */
-import React, { useEffect, useMemo, useState } from 'react';
-import { LoaderFunction, useBlocker, useLoaderData } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
-import { Row } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
+import { RowSelectionState } from '@tanstack/react-table';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { FetchResponseError } from 'shared/JSONRequest';
-import { ClientSettingsFilterSchema } from 'app/apiResponseTypes';
 import { Translate } from 'app/I18N';
 import { notificationAtom, settingsAtom } from 'V2/atoms';
 import * as settingsAPI from 'V2/api/settings';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { Button, Table_deprecated as Table } from 'V2/Components/UI';
+import { Button, Table } from 'V2/Components/UI';
 import { ConfirmNavigationModal } from 'V2/Components/Forms';
 import {
   createColumns,
@@ -25,6 +24,8 @@ import {
   sidepanelAtom,
   LoaderData,
   sanitizeFilters,
+  formatFilters,
+  Filter,
 } from './components';
 
 const filtersLoader =
@@ -32,36 +33,36 @@ const filtersLoader =
   async () => {
     const { filters } = await settingsAPI.get(headers);
     const templates = await templatesAPI.get(headers);
-
-    return { filters, templates };
+    const tableFilters: LoaderData['filters'] = formatFilters(filters || []);
+    return { filters: tableFilters, templates };
   };
 
 const FiltersTable = () => {
-  const loaderData = useLoaderData() as LoaderData;
+  const { filters: loadedFilters = [], templates: loadedTemplates } = useLoaderData() as LoaderData;
+  const currentFilters = useRef(loadedFilters);
   const [hasChanges, setHasChanges] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [confirmNavigationModal, setConfirmNavigationModal] = useState(false);
   const [showSidepanel, setShowSidepanel] = useState(false);
-  const [filters, setFilters] = useState(loaderData.filters);
-  const [selectedFilters, setSelectedFilters] = useState<Row<ClientSettingsFilterSchema>[]>([]);
+  const [filters, setFilters] = useState(loadedFilters);
+  const [selectedFilters, setSelectedFilters] = useState<RowSelectionState>({});
   const blocker = useBlocker(hasChanges);
   const setAtom = useSetAtom(sidepanelAtom);
   const setNotifications = useSetAtom(notificationAtom);
   const setSettings = useSetAtom(settingsAtom);
+  const revalidator = useRevalidator();
 
   const templates = useMemo(
-    () => filterAvailableTemplates(loaderData.templates, filters),
-    [filters, loaderData.templates]
+    () => filterAvailableTemplates(loadedTemplates, filters),
+    [filters, loadedTemplates]
   );
 
   useEffect(() => {
-    if (JSON.stringify(filters) !== JSON.stringify(loaderData.filters)) {
-      setHasChanges(true);
-    } else {
-      setHasChanges(false);
-    }
-  }, [filters, loaderData.filters]);
+    const formattedFilters = formatFilters(loadedFilters || []);
+    currentFilters.current = formattedFilters;
+    setFilters(formattedFilters);
+  }, [loadedFilters]);
 
   useEffect(() => {
     if (blocker.state === 'blocked') {
@@ -70,24 +71,39 @@ const FiltersTable = () => {
   }, [blocker, setConfirmNavigationModal]);
 
   const cancel = () => {
-    setFilters(loaderData.filters);
+    currentFilters.current = loadedFilters;
+    setFilters(loadedFilters);
+    setHasChanges(false);
   };
 
   const addNewFilters = (templatedIds: string[]) => {
     const newFilters = createNewFilters(templatedIds, templates);
-    setFilters([...(filters || []), ...newFilters]);
+    setFilters([...currentFilters.current, ...newFilters]);
   };
 
   const handleDelete = () => {
-    const idsToRemove = selectedFilters.map(selected => selected.original.id);
-    const updatedFilters = deleteFilters(filters, idsToRemove);
-    setFilters(updatedFilters);
+    const idsToRemove: string[] = [];
+    currentFilters.current?.forEach(filter => {
+      if (filter.rowId in selectedFilters) {
+        idsToRemove.push(filter.rowId);
+      }
+      if (filter.subRows) {
+        filter.subRows.forEach(subRow => {
+          if (subRow.rowId in selectedFilters) {
+            idsToRemove.push(subRow.rowId);
+          }
+        });
+      }
+    });
+
+    const updatedFilters = deleteFilters(currentFilters.current, idsToRemove);
+    setFilters(updatedFilters || []);
   };
 
   const handleSave = async () => {
     setDisabled(true);
-    const response = await settingsAPI.save({ filters: sanitizeFilters(filters) });
-
+    const filtersToSave = sanitizeFilters(currentFilters.current);
+    const response = await settingsAPI.save({ filters: filtersToSave });
     if (response instanceof FetchResponseError) {
       return setNotifications({
         type: 'error',
@@ -95,18 +111,33 @@ const FiltersTable = () => {
         ...(response.message && { details: response.message }),
       });
     }
-
     setSettings(response);
     setDisabled(false);
     setHasChanges(false);
+    revalidator.revalidate();
     return setNotifications({ type: 'success', text: <Translate>Filters saved</Translate> });
+  };
+
+  const handleChange = ({
+    rows,
+    selectedRows,
+  }: {
+    rows: Filter[];
+    selectedRows: RowSelectionState;
+  }) => {
+    currentFilters.current = rows;
+    setSelectedFilters(selectedRows);
+    if (JSON.stringify(currentFilters.current) !== JSON.stringify(loadedFilters)) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
+    }
   };
 
   return (
     <div className="tw-content" style={{ width: '100%', height: '100%', overflowY: 'auto' }}>
       <SettingsContent>
         <SettingsContent.Header title="Filters" />
-
         <SettingsContent.Body>
           <div className="p-4 mb-4 rounded-md border border-gray-50 shadow-sm bg-primary-100 text-primary-700">
             <div className="flex gap-2 items-center w-full text-base font-semibold">
@@ -136,25 +167,21 @@ const FiltersTable = () => {
               </ul>
             </div>
           </div>
-
-          <Table<ClientSettingsFilterSchema>
-            draggableRows
-            enableSelection
-            subRowsKey="items"
-            onChange={updatedFilters => {
-              setFilters(updatedFilters);
-            }}
-            onSelection={selected => {
-              setSelectedFilters(selected);
-            }}
+          <Table
+            dnd={{ enable: true }}
+            enableSelections
+            onChange={handleChange}
             columns={createColumns(setShowSidepanel)}
-            data={filters || []}
-            title={<Translate>Filters</Translate>}
+            data={filters}
+            header={
+              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                Filters
+              </Translate>
+            }
           />
         </SettingsContent.Body>
-
         <SettingsContent.Footer className="flex flex-wrap gap-2 w-full md:justify-between md:gap-0">
-          {selectedFilters.length ? (
+          {Object.keys(selectedFilters).length ? (
             <Button styling="solid" color="error" onClick={() => handleDelete()}>
               <Translate>Delete</Translate>
             </Button>
@@ -175,16 +202,7 @@ const FiltersTable = () => {
                   <Translate className="text-nowrap">Add group</Translate>
                 </Button>
               </div>
-
               <div className="flex gap-2 md:flex-wrap">
-                <Button
-                  styling="solid"
-                  color="success"
-                  onClick={async () => handleSave()}
-                  disabled={!hasChanges || disabled}
-                >
-                  <Translate>Save</Translate>
-                </Button>
                 <Button
                   styling="outline"
                   color="primary"
@@ -193,12 +211,19 @@ const FiltersTable = () => {
                 >
                   <Translate>Cancel</Translate>
                 </Button>
+                <Button
+                  styling="solid"
+                  color="success"
+                  onClick={async () => handleSave()}
+                  disabled={!hasChanges || disabled}
+                >
+                  <Translate>Save</Translate>
+                </Button>
               </div>
             </>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-
       {showModal && (
         <AddTemplatesModal
           templates={templates}
@@ -206,7 +231,6 @@ const FiltersTable = () => {
           onAdd={templateIds => addNewFilters(templateIds)}
         />
       )}
-
       {confirmNavigationModal && (
         <ConfirmNavigationModal
           setShowModal={setConfirmNavigationModal}
@@ -217,13 +241,12 @@ const FiltersTable = () => {
           }}
         />
       )}
-
       <FiltersSidepanel
         showSidepanel={showSidepanel}
         setShowSidepanel={setShowSidepanel}
         onSave={newFilter => {
           if (newFilter) {
-            setFilters(updateFilters(newFilter, filters));
+            setFilters(updateFilters(newFilter, filters) || []);
           }
         }}
         availableTemplates={templates}

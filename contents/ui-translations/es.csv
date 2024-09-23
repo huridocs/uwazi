@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo e
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Account updated,Account updated
 Accuracy,Precisión
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Acción
 Activate,Activate
 Activated,Activated
@@ -253,6 +254,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Documento
 Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
+Document FOR,Document FOR
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
 Documentation,Documentación
@@ -264,7 +266,6 @@ documents.,documentos.
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
-Drag items here,Arrastra aquí
 Drag properties here,Arrastra las propiedades aquí
 Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
@@ -468,6 +469,7 @@ Mapping conflict error,"Es necesaria una reindexación de su colección. El moti
 Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
+Match,Match
 Matching,Coincidencia
 matching,matching
 Matomo,Matomo
@@ -480,6 +482,7 @@ Metadata creator,Creador de metadatos
 Metadata Extraction,Extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
+Mismatch,Mismatch
 mismatched passwords,Las contraseñas no coinciden
 mismatching,mismatching
 Mixed access,Acceso mixto

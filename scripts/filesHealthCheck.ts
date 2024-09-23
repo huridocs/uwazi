@@ -47,8 +47,10 @@ async function handleTenant(tenantName: string) {
     const filteredFilesInStorage = new Set(filterFilesInStorage(allFilesInStorage));
     let missingInStorage = 0;
     const countInStorage = filteredFilesInStorage.size;
+    let count = 0;
 
     allFilesInDb.forEach(file => {
+      count += 1;
       const existsInStorage = filteredFilesInStorage.delete(
         storage.getPath(file.filename, file.type)
       );

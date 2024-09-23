@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.183.0",
+  "version": "1.185.0",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -31,6 +31,7 @@
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
     "files-healthcheck": "USE_CWD=true node --no-experimental-fetch ./scripts/run.js ../scripts/filesHealthCheck.ts",
+    "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "generateAutomaticTranslationConfig": "node --no-experimental-fetch ./scripts/run.js ../scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
     "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
     "update-translations-db": "node --no-experimental-fetch scripts/run.js ../scripts/updateTranslationsDB.js",
@@ -391,6 +392,7 @@
     "terser-webpack-plugin": "^5.3.10",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.1",
     "wait-for-expect": "^3.0.2",
     "webpack": "^5.94.0",
     "webpack-bundle-analyzer": "^4.10.2",
