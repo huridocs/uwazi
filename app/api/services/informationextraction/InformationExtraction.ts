@@ -57,15 +57,33 @@ interface TaskParameters {
   options?: { label: string; id: string }[];
 }
 
+interface TaskMessage {
+  tenant: string;
+  task: TaskTypes;
+  params?: TaskParameters;
+}
+
 type ResultParameters = TaskParameters;
+
+/* eslint-disable camelcase */
+interface ResultMessage<P = ResultParameters> {
+  tenant: string;
+  task: TaskTypes;
+  params?: P;
+  data_url?: string;
+  file_url?: string;
+  success?: boolean;
+  error_message?: string;
+}
+/* eslint-enable camelcase */
 
 interface InternalResultParameters {
   id: ObjectId;
 }
 
-type IXResultsMessage = ResultsMessage<TaskTypes, ResultParameters>;
+type IXResultsMessage = ResultMessage;
 
-type InternalIXResultsMessage = ResultsMessage<TaskTypes, InternalResultParameters>;
+type InternalIXResultsMessage = ResultMessage<InternalResultParameters>;
 
 interface CommonMaterialsData {
   xml_file_name: string;
@@ -109,7 +127,7 @@ async function fetchCandidates(property: PropertySchema) {
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: TaskManager<TaskTypes, TaskParameters, ResultParameters>;
+  public taskManager: TaskManager<TaskMessage, ResultMessage>;
 
   static mock: any;
 
