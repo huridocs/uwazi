@@ -133,7 +133,7 @@
     "any-date-parser": "^1.5.4",
     "bcryptjs": "^2.4.3",
     "big.js": "^6.2.1",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.20.3",
     "bootstrap": "3.4.1",
     "child-process-promise": "^2.2.1",
     "clean-insights-sdk": "^2.6.2",
