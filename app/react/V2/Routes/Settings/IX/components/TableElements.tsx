@@ -4,7 +4,7 @@ import React from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import { I18NLink, Translate } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
 import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { EmbededButton } from 'V2/Components/UI/EmbededButton';
