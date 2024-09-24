@@ -78,19 +78,13 @@
     ]
   },
   "resolutions": {
-    "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
     "bl": "^4.0.3",
     "trim": "0.0.3",
     "normalize-url": "6.0.1",
     "node-fetch": "2.6.7",
     "@types/istanbul-lib-report": "^3.0.0",
     "underscore": "^1.13.6",
-    "socket.io-parser": "4.2.4",
-    "json-schema": "^0.4.0",
-    "@types/react": "^18.0.25 || ^18.3.1",
-    "@types/react-dom": "^18.0.9 || ^18.3.0",
-    "ws": "8.17.1"
+    "socket.io-parser": "4.2.4"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.624.0",
