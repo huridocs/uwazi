@@ -1,9 +1,10 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import {
   ATConfig,
   ATTemplateConfig,
 } from 'api/externalIntegrations.v2/automaticTranslation/model/ATConfig';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -11,21 +12,23 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 
-export interface TranslationRequest {
-  key: string[];
-  text: string;
-  language_from: string;
-  languages_to: string[];
-}
+type TaskMessage = {
+  params: {
+    key: string[];
+    text: string;
+    language_from: string;
+    languages_to: string[];
+  };
+};
 
 class AutomaticTranslationTaskManager {
   static SERVICE_NAME = 'AutomaticTranslation';
 
-  private taskManager: TaskManager;
+  private taskManager: TaskManager<TaskMessage>;
 
   private templatesDS: TemplatesDataSource;
 
-  constructor(taskManager: TaskManager, templatesDS: TemplatesDataSource) {
+  constructor(taskManager: TaskManager<TaskMessage>, templatesDS: TemplatesDataSource) {
     this.taskManager = taskManager;
     this.templatesDS = templatesDS;
   }
@@ -42,16 +45,17 @@ class AutomaticTranslationTaskManager {
     const template = await this.templatesDS.getById(atTemplateConfig?.template);
 
     const languageFrom = entity.language;
+    if (!atConfig.languages.includes(languageFrom)) {
+      return;
+    }
     const languagesTo = atConfig.languages.filter(language => language !== languageFrom);
     atTemplateConfig?.commonProperties.forEach(async commonPropId => {
       const commonPropName = template?.commonProperties.find(
         prop => prop.id === commonPropId
       )?.name;
       await this.taskManager.startTask({
-        task: 'translate',
-        tenant: 'tenant',
         params: {
-          key: ['tenant', entity.sharedId, commonPropName],
+          key: [getTenant().name, entity.sharedId, commonPropName],
           text: entity[commonPropName],
           language_from: languageFrom,
           languages_to: languagesTo,
@@ -62,10 +66,8 @@ class AutomaticTranslationTaskManager {
       const propName = template?.properties.find(prop => prop.id === propId)?.name;
       if (entity.metadata[propName][0].value) {
         await this.taskManager.startTask({
-          tenant: 'tenant',
-          task: 'translate',
           params: {
-            key: ['tenant', entity.sharedId, propName],
+            key: [getTenant().name, entity.sharedId, propName],
             text: entity.metadata[propName][0].value,
             language_from: languageFrom,
             languages_to: languagesTo,
@@ -99,6 +101,7 @@ const fixtures = {
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
+  await testingEnvironment.setTenant('tenant');
 });
 
 afterAll(async () => {
@@ -108,9 +111,9 @@ afterAll(async () => {
 describe('AutomaticTranslationTaskManager', () => {
   it('should send a task in the automatic translation service queue', async () => {
     const languageFromEntity = fixtures.entities.find(e => e.language === 'en');
-    const taskManager = new TaskManager({
+    const taskManager = new TaskManager<TaskMessage>({
       serviceName: AutomaticTranslationTaskManager.SERVICE_NAME,
-      processResults: () => { },
+      processResults: async (_results: ResultsMessage) => { },
     });
 
     jest.spyOn(taskManager, 'startTask').mockImplementation(() => { });
@@ -156,10 +159,37 @@ describe('AutomaticTranslationTaskManager', () => {
   });
 
   it('should do nothing if entity.language is not supported', async () => {
-    expect(true).toBe(false);
-  });
+    const entityWithNotSupportedLanguage = factory.entity(
+      'entity2',
+      'template1',
+      {},
+      { language: 'pt' }
+    );
+    const taskManager = new TaskManager<TaskMessage>({
+      serviceName: AutomaticTranslationTaskManager.SERVICE_NAME,
+      processResults: async (_results: ResultsMessage) => { },
+    });
 
-  it('should pass current tenant', async () => {
-    expect(true).toBe(false);
+    jest.spyOn(taskManager, 'startTask').mockImplementation(() => { });
+
+    const automaticTranslationTaskManager = new AutomaticTranslationTaskManager(
+      taskManager,
+      DefaultTemplatesDataSource(DefaultTransactionManager())
+    );
+
+    const config = new ATConfig(
+      true,
+      ['es', 'en'],
+      [
+        new ATTemplateConfig(
+          factory.idString('template1'),
+          [factory.idString('text1'), factory.idString('empty_text')],
+          [factory.commonPropertiesTitleId('template1')]
+        ),
+      ]
+    );
+
+    await automaticTranslationTaskManager.translateEntity(entityWithNotSupportedLanguage, config);
+    expect(taskManager.startTask).not.toHaveBeenCalled();
   });
 });

@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
 import { storage } from 'api/files';
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { EnforcedWithId } from 'api/odm';
@@ -167,9 +167,9 @@ class InformationExtraction {
     file: FileWithAggregation,
     _data: CommonMaterialsData
   ): MaterialsData => {
-    const language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
+    const languageIso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
 
-    let data: MaterialsData = { ..._data, language_iso };
+    let data: MaterialsData = { ..._data, language_iso: languageIso };
 
     const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 
