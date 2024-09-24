@@ -78,13 +78,9 @@
     ]
   },
   "resolutions": {
-    "bl": "^4.0.3",
-    "trim": "0.0.3",
-    "normalize-url": "6.0.1",
+    "trim": "1.0.1",
     "node-fetch": "2.6.7",
-    "@types/istanbul-lib-report": "^3.0.0",
-    "underscore": "^1.13.6",
-    "socket.io-parser": "4.2.4"
+    "ws": "8.18.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.624.0",
