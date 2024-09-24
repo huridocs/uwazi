@@ -1,8 +1,15 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import {
   ATConfig,
   ATTemplateConfig,
 } from 'api/externalIntegrations.v2/automaticTranslation/model/ATConfig';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 
 export interface TranslationRequest {
   key: string[];
@@ -16,50 +23,143 @@ class AutomaticTranslationTaskManager {
 
   private taskManager: TaskManager;
 
-  constructor(taskManager: TaskManager) {
+  private templatesDS: TemplatesDataSource;
+
+  constructor(taskManager: TaskManager, templatesDS: TemplatesDataSource) {
     this.taskManager = taskManager;
+    this.templatesDS = templatesDS;
   }
 
-  translateEntity(entity) { }
+  async translateEntity(entity: EntitySchema, atConfig: ATConfig) {
+    const atTemplateConfig = atConfig.templates.find(
+      t => t.template === entity.template?.toString()
+    );
+
+    if (!atTemplateConfig) {
+      return;
+    }
+
+    const template = await this.templatesDS.getById(atTemplateConfig?.template);
+
+    const languageFrom = entity.language;
+    const languagesTo = atConfig.languages.filter(language => language !== languageFrom);
+    atTemplateConfig?.commonProperties.forEach(async commonPropId => {
+      const commonPropName = template?.commonProperties.find(
+        prop => prop.id === commonPropId
+      )?.name;
+      await this.taskManager.startTask({
+        task: 'translate',
+        tenant: 'tenant',
+        params: {
+          key: ['tenant', entity.sharedId, commonPropName],
+          text: entity[commonPropName],
+          language_from: languageFrom,
+          languages_to: languagesTo,
+        },
+      });
+    });
+    atTemplateConfig?.properties.forEach(async propId => {
+      const propName = template?.properties.find(prop => prop.id === propId)?.name;
+      if (entity.metadata[propName][0].value) {
+        await this.taskManager.startTask({
+          tenant: 'tenant',
+          task: 'translate',
+          params: {
+            key: ['tenant', entity.sharedId, propName],
+            text: entity.metadata[propName][0].value,
+            language_from: languageFrom,
+            languages_to: languagesTo,
+          },
+        });
+      }
+    });
+  }
 }
+
+const factory = getFixturesFactory();
+const fixtures = {
+  templates: [
+    factory.template('template1', [factory.property('text1'), factory.property('empty_text')]),
+  ],
+  entities: [
+    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity1', 'template1', {
+      text1: [{ value: 'original text1' }],
+      empty_text: [{ value: '' }],
+    }),
+  ],
+  settings: [
+    {
+      languages: [
+        { label: 'en', key: 'en' as LanguageISO6391, default: true },
+        { label: 'es', key: 'es' as LanguageISO6391 },
+      ],
+    },
+  ],
+};
+
+beforeEach(async () => {
+  await testingEnvironment.setUp(fixtures);
+});
+
+afterAll(async () => {
+  await testingEnvironment.tearDown();
+});
 
 describe('AutomaticTranslationTaskManager', () => {
   it('should send a task in the automatic translation service queue', async () => {
-    const entity = {};
+    const languageFromEntity = fixtures.entities.find(e => e.language === 'en');
     const taskManager = new TaskManager({
       serviceName: AutomaticTranslationTaskManager.SERVICE_NAME,
       processResults: () => { },
     });
 
-    const automaticTranslationTaskManager = new AutomaticTranslationTaskManager(taskManager);
+    jest.spyOn(taskManager, 'startTask').mockImplementation(() => { });
+
+    const automaticTranslationTaskManager = new AutomaticTranslationTaskManager(
+      taskManager,
+      DefaultTemplatesDataSource(DefaultTransactionManager())
+    );
 
     const config = new ATConfig(
       true,
       ['es', 'en'],
-      [new ATTemplateConfig('template1', ['title'], ['text1', 'empty_text'])]
+      [
+        new ATTemplateConfig(
+          factory.idString('template1'),
+          [factory.idString('text1'), factory.idString('empty_text')],
+          [factory.commonPropertiesTitleId('template1')]
+        ),
+      ]
     );
 
-    await automaticTranslationTaskManager.tranlateEntity(entity, config);
+    await automaticTranslationTaskManager.translateEntity(languageFromEntity, config);
+
+    expect(taskManager.startTask).toHaveBeenCalledTimes(2);
 
     expect(taskManager.startTask).toHaveBeenCalledWith({
-      key: ['tenant', 'entity1', 'title'],
-      text: 'original title',
-      language_from: 'en',
-      languages_to: ['es'],
+      params: {
+        key: ['tenant', 'entity1', 'title'],
+        text: 'entity1',
+        language_from: 'en',
+        languages_to: ['es'],
+      },
     });
 
     expect(taskManager.startTask).toHaveBeenCalledWith({
-      key: ['tenant', 'entity1', 'text1'],
-      text: 'original text1',
-      language_from: 'en',
-      languages_to: ['es'],
+      params: {
+        key: ['tenant', 'entity1', 'text1'],
+        text: 'original text1',
+        language_from: 'en',
+        languages_to: ['es'],
+      },
     });
+  });
 
-    // expect(taskManager.startTask).toHaveBeenCalledWith({
-    //   key: ['tenant', 'entity1', 'text2'],
-    //   text: 'original text2',
-    //   language_from: 'en',
-    //   languages_to: ['es'],
-    // });
+  it('should do nothing if entity.language is not supported', async () => {
+    expect(true).toBe(false);
+  });
+
+  it('should pass current tenant', async () => {
+    expect(true).toBe(false);
   });
 });
