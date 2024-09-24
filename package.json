@@ -80,7 +80,8 @@
   "resolutions": {
     "trim": "1.0.1",
     "node-fetch": "2.6.7",
-    "ws": "8.18.0"
+    "ws": "8.18.0",
+    "path-to-regexp": "8.1.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.624.0",
