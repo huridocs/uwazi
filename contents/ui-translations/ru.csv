@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Действие
 Activate,Activate
 Activated,Activated
@@ -117,6 +118,7 @@ Change password,Изменить пароль
 Change Password,Change Password
 Change will take effect after saving the template,Изменение вступит в силу после сохранения шаблона
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
@@ -156,8 +158,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,Подтвердите новый пароль
 Confirm publish multiple items,Подтвердить публикацию нескольких элементов
-Connect to a document,Подключиться к документу
 Connect to a paragraph,Подключиться к абзацу
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,Тип связи
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -206,7 +208,6 @@ Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,Пользовательские загрузки
 Dashboard,Dashboard
-Data imported,Данные импортированы
 Date added,Дата добавления
 Date format,Формат даты
 Date modified,Дата изменена
@@ -240,6 +241,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,Описание
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,Отменить изменения
 Discard changes?,Discard changes?
@@ -251,6 +253,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Документ
 Document and entity types,Типы документов и объектов
 Document contents,Содержание документа
+Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,Название документа
 Documentation,Документация
@@ -262,7 +265,6 @@ documents.,документы.
 Download,Скачать
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,"Перетащите и опустите файл в это окно, чтобы загрузить"
-Drag items here,Перетащите элементы сюда
 Drag properties here,Перетащите свойства сюда
 Drag row,Drag row
 Drop your files here to upload or,"Опустите свои файлы сюда, чтобы загрузить или"
@@ -395,7 +397,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,Неверная Captcha
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -466,6 +468,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,Карты
 Mark as Reviewed,Отметить как Просмотрено
 Markdown,Markdown
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -478,6 +481,7 @@ Metadata creator,Создатель метаданных
 Metadata Extraction,Извлечение метаданных
 MIGRATE,MIGRATE
 Minimum,Минимум
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,Доступ смешанного типа
@@ -702,6 +706,7 @@ Search Tips: wildcard,Советы по поиску: подстановочны
 Secret keys,Secret keys
 Security,Security
 Select,Select
+Select & Search,Select & Search
 Select all,Выбрать все
 Select files on your device,Выбрать файлы на вашем устройстве
 Select from computer,Select from computer
@@ -711,6 +716,7 @@ Select...,Выбрать...
 Selected,Selected
 selected,выбранный
 selected of,выбран из
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,Семантический поиск
 Semantic Search,Семантический поиск

@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,เริ่มทำ
 Activate,Activate
 Activated,Activated
@@ -120,6 +121,7 @@ Change password,เปลี่ยนรหัสผ่าน
 Change Password,Change Password
 Change will take effect after saving the template,การเปลี่ยนแปลงจะมีผลหลังจากบันทึกเทมเพลต
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Changes can't be undone after saving. Changing text fields may invalidate the suggestions.
+Changes in the thesaurus will impact all the entities using these values.,Changes in the thesaurus will impact all the entities using these values.
 Changing the type will erase all relationships to this entity.,Changing the type will erase all relationships to this entity.
 Character support description,This option enhances support for non-Latin languages as the default languages of your collection.
 Character support process warning,"This process could take several minutes and will likely change URLs to library filters. If you have menus or links using such URLs, they will probably stop working after the update. You will need to update them manually."
@@ -159,8 +161,8 @@ Confirm deletion of template:,Confirm deletion of template:
 Confirm discard changes,Confirm discard changes
 Confirm new password,ยืนยันรหัสผ่านใหม่
 Confirm publish multiple items,ยืนยันเผยแพร่หลายรายการ
-Connect to a document,เชื่อมต่อเอกสาร
 Connect to a paragraph,เชื่อมต่อย่อหน้า
+Connect to an entity,Connect to an entity
 Connected to server,Connected to server
 Connection type,ประเภทการเชื่อมต่อ
 Contact email description,Here you can set up the contact email and the email that appears when Uwazi sends a notification to a user
@@ -209,7 +211,6 @@ Custom JS,Custom JS
 custom page error warning,"There is an unexpected error on this custom page, it may not work properly. Please contact an admin for details."
 Custom Uploads,อัปโหลดแบบกำหนดค่าเอง
 Dashboard,Dashboard
-Data imported,ข้อมูลที่ถูกอิมพอร์ท
 Date added,เพิ่ม ณ วันที่
 Date format,รูปแบบวันที่
 Date modified,แก้ไข ณ วันที่
@@ -243,6 +244,7 @@ Deleted user group,Deleted user group
 Deletion success,Deletion success
 Description,คำอธิบาย
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,ยกเลิกการเปลี่ยนแปลง
 Discard changes?,Discard changes?
@@ -254,6 +256,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
 Document contents,เนื้อหาของเอกสาร
+Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,ชื่อเอกสาร
 Documentation,เอกสาร
@@ -265,7 +268,6 @@ documents.,เอกสาร.
 Download,ดาวน์โหลด
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,นำไฟล์มาวางในหน้าต่างนี้เพื่ออัปโหลด
-Drag items here,นำรายการมาวางที่นี่
 Drag properties here,นำคุณสมบัติมาวางที่นี่
 Drag row,Drag row
 Drop your files here to upload or,นำไฟล์มาวางที่นี่เพื่ออัปโหลด หรือ
@@ -398,7 +400,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,Instructions to reset user password have been sent. Please check your email.
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -469,6 +471,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -481,6 +484,7 @@ Metadata creator,ผู้สร้างเมตาดาต้า
 Metadata Extraction,ค้นหาเมตาดาต้า
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,การเข้าถึงแบบผสม
@@ -705,6 +709,7 @@ Search Tips: wildcard,เคล็ดลับการค้นหา: ไว�
 Secret keys,Secret keys
 Security,Security
 Select,Select
+Select & Search,Select & Search
 Select all,เลือกทั้งหมด
 Select files on your device,เลือกไฟล์บนอุปกรณ์ของคุณ
 Select from computer,Select from computer
@@ -714,6 +719,7 @@ Select...,เลือก...
 Selected,Selected
 selected,เลือกแล้ว
 selected of,ถูกเลือกโดย
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,ค้นหาความหมาย
 Semantic Search,ค้นหาความหมาย

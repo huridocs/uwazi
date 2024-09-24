@@ -1,9 +1,12 @@
-import { legacyLogger } from 'api/log';
 import Ajv from 'ajv';
-import { createError } from 'api/utils/index';
-import { appContext } from 'api/utils/AppContext';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
+import { FileNotFound } from 'api/files/FileNotFound';
+import { S3TimeoutError } from 'api/files/S3Storage';
+import { legacyLogger } from 'api/log';
+import { appContext } from 'api/utils/AppContext';
+import { createError } from 'api/utils/index';
+import util from 'node:util';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -58,39 +61,57 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
-    result = { code: 500, message: error.stack };
+    result = { code: 500, message: util.inspect(error), logLevel: 'error' };
+  }
+
+  if (error instanceof S3TimeoutError) {
+    result = { code: 408, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {
-    result = { code: 422, message: error.message, validations: error.errors };
+    result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
   }
 
   if (error.name === 'ValidationError') {
-    result = { code: 422, message: error.message, validations: error.properties };
+    result = {
+      code: 422,
+      message: error.message,
+      validations: error.properties,
+      logLevel: 'debug',
+    };
   }
 
   if (error instanceof ValidationError) {
-    result = { code: 422, message: error.message, validations: error.errors };
+    result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
   }
 
   if (error instanceof UnauthorizedError) {
-    result = { code: 401, message: error.message };
+    result = { code: 401, message: error.message, logLevel: 'debug' };
+  }
+
+  if (error instanceof FileNotFound) {
+    result = { code: 404, message: error.message, logLevel: 'debug' };
   }
 
   if (error.name === 'MongoError') {
     result.code = 500;
+    result.logLevel = 'error';
   }
 
   if (error.message && error.message.match(/Cast to ObjectId failed for value/)) {
     result.code = 400;
+    result.logLevel = 'debug';
   }
 
   if (error.message && error.message.match(/rison decoder error/)) {
     result.code = 400;
+    result.logLevel = 'debug';
   }
 
   if (uncaught) {
     result.message = `uncaught exception or unhandled rejection, Node process finished !!\n ${result.message}`;
+    result.logLevel = 'error';
+    result.code = 500;
   }
 
   const obfuscatedRequest = obfuscateCredentials(req);
@@ -119,11 +140,12 @@ const getErrorMessage = (data, error) => {
 
 const sendLog = (data, error, errorOptions) => {
   const messageToLog = getErrorMessage(data, error);
-  if (data.code === 500) {
-    legacyLogger.error(messageToLog, errorOptions);
-  } else if (data.code === 400) {
+  if (data.logLevel === 'debug') {
     legacyLogger.debug(messageToLog, errorOptions);
+    return;
   }
+
+  legacyLogger.error(messageToLog, errorOptions);
 };
 
 function setRequestId(result) {

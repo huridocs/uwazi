@@ -49,7 +49,7 @@ const fixtures: DBFixture = {
       },
     },
   ],
-  files: [factory.file('file1', 'entity1', 'document', 'file1.pdf')],
+  files: [factory.fileDeprecated('file1', 'entity1', 'document', 'file1.pdf')],
   users: [adminUser],
 };
 

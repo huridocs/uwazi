@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Cuenta bloqueada. Revisa tu correo e
 Account unlocked successfully,Cuenta desbloqueada satisfactoriamente
 Account updated,Account updated
 Accuracy,Precisión
+Accuracy (labeled data),Accuracy (labeled data)
 Action,Acción
 Activate,Activate
 Activated,Activated
@@ -118,6 +119,7 @@ Change password,Cambiar la contraseña
 Change Password,Change Password
 Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
 Changes can't be undone after saving. Changing text fields may invalidate the suggestions.,Los cambios no pueden deshacerse después de guardar. Cambiar campos de texto pueden invalidar las sugerencias.
+Changes in the thesaurus will impact all the entities using these values.,Los cambios en Tesauros impactarán en todas las entidades que usen esos valores.
 Changing the type will erase all relationships to this entity.,Cambiar el tipo borrará todas las relaciones de esta entidad.
 Character support description,"Esta opción mejora la compatibilidad con idiomas no latinos como idiomas predeterminados de tu colección. Al seleccionar esta opción, todas las propiedades de la plantilla se actualizarán automáticamente. El proceso puede tardar varios minutos. Seleccionar esta opción probablemente cambiará las URL de los filtros de la colección. Como consecuencia, si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar. Deberás actualizarlos manualmente. Después de seleccionar esta opción, no podrás volver a usar los nombres de la  propiedad heredada. Si no tienes problemas con los nombres de las propiedades de tu plantilla, recomendamos no marcar esta opción."
 Character support process warning,"Este proceso podría demorar varios minutos y probablemente cambiará las URL a los filtros de la colección. Si tienes menús o enlaces que usan dichas URL, probablemente dejarán de funcionar después de la actualización. Deberás actualizarlos manualmente."
@@ -157,8 +159,8 @@ Confirm deletion of template:,Confirmar eliminación de plantilla:
 Confirm discard changes,Confirmar descartar cambios
 Confirm new password,Confirmar nueva contraseña
 Confirm publish multiple items,Confirmar la publicación de varios elementos
-Connect to a document,Conectar a un documento
 Connect to a paragraph,Conectar a un párrafo
+Connect to an entity,Connect to an entity
 Connected to server,Conectado al servidor
 Connection type,Tipo de relación
 Contact email description,Aquí puedes configurar el correo electrónico de contacto y el que aparece cuando Uwazi envía una notificación a un usuario
@@ -207,7 +209,6 @@ Custom JS,JS Personalizado
 custom page error warning,"Hay un error inesperado en esta página personalizada, es posible que no funcione correctamente. Ponte en contacto con un administrador para más detalles."
 Custom Uploads,Subidas personalizadas
 Dashboard,Tablero
-Data imported,Datos importados
 Date added,Fecha de creación
 Date format,Formato de fecha
 Date modified,Fecha de la modificación
@@ -241,6 +242,7 @@ Deleted user group,Grupo de usuarios eliminado
 Deletion success,Eliminación exitosa
 Description,Descripción
 Disable,Disable
+Disable highlights,Disable highlights
 Disabled 2FA,Disabled 2FA
 Discard changes,Descartar cambios
 Discard changes?,Descartar cambios?
@@ -252,6 +254,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,Documento
 Document and entity types,Tipos de documento y entidad
 Document contents,Contenidos del documento
+Document FOR,Document FOR
 Document OCR trigger,Desencadenador de OCR de documento
 Document Title,Título del documento
 Documentation,Documentación
@@ -263,7 +266,6 @@ documents.,documentos.
 Download,Descargar
 Download a third-party authenticator app from your mobile store.,Download a third-party authenticator app from your mobile store.
 Drag and drop file in this window to upload,Arrastrar y soltar el archivo en esta ventana para subir.
-Drag items here,Arrastra aquí
 Drag properties here,Arrastra las propiedades aquí
 Drag row,Drag row
 Drop your files here to upload or,Suelta los archivos aquí para cargar o
@@ -467,6 +469,7 @@ Mapping conflict error,"Es necesaria una reindexación de su colección. El moti
 Maps,Mapas
 Mark as Reviewed,Marcar como Revisado
 Markdown,Markdown
+Match,Match
 Matching,Coincidencia
 matching,matching
 Matomo,Matomo
@@ -479,6 +482,7 @@ Metadata creator,Creador de metadatos
 Metadata Extraction,Extracción de metadatos
 MIGRATE,MIGRAR
 Minimum,Mínimo
+Mismatch,Mismatch
 mismatched passwords,Las contraseñas no coinciden
 mismatching,mismatching
 Mixed access,Acceso mixto
@@ -703,6 +707,7 @@ Search Tips: wildcard,"Utilice un * para la búsqueda con comodines. Es decir: "
 Secret keys,Secret keys
 Security,Security
 Select,Seleccionar
+Select & Search,Select & Search
 Select all,Seleccionar todo
 Select files on your device,Seleccionar archivos de tu dispositivo
 Select from computer,Seleccionar desde la computadora
@@ -712,6 +717,7 @@ Select...,Seleccionar
 Selected,Seleccionado
 selected,seleccionado(s)
 selected of,seleccionados de
+Selected or suggested,Selected or suggested
 Selected templates,Selected templates
 Semantic search,Búsqueda semántica
 Semantic Search,Búsqueda semántica

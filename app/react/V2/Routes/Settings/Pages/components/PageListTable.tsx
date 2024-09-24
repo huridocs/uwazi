@@ -2,19 +2,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { kebabCase } from 'lodash';
-import { CellContext, Row } from '@tanstack/react-table';
-import { Page } from 'app/V2/shared/types';
+import { CellContext } from '@tanstack/react-table';
 import { Button, Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
+import { TablePage } from '../PagesList';
 
 const getPageUrl = (sharedId: string, title: string) => `page/${sharedId}/${kebabCase(title)}`;
 
 const EntityViewHeader = () => <Translate>Entity Page</Translate>;
 const TitleHeader = () => <Translate>Title</Translate>;
 const UrlHeader = () => <Translate>URL</Translate>;
-const ActionHeader = () => <Translate>Action</Translate>;
+const ActionHeader = () => <Translate className="sr-only">Action</Translate>;
 
-const ActionCell = ({ cell }: CellContext<Page, string>) => {
+const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
   const pageUrl = getPageUrl(cell.getValue(), cell.row.original.title);
   const isEntityView = cell.row.original.entityView;
 
@@ -25,12 +25,12 @@ const ActionCell = ({ cell }: CellContext<Page, string>) => {
         target="_blank"
         aria-disabled={isEntityView}
       >
-        <Button styling="outline" disabled={isEntityView}>
+        <Button styling="light" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
       </Link>
       <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
-        <Button styling="outline">
+        <Button styling="light">
           <Translate>Edit</Translate>
         </Button>
       </Link>
@@ -38,7 +38,7 @@ const ActionCell = ({ cell }: CellContext<Page, string>) => {
   );
 };
 
-const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
+const YesNoPill = ({ cell }: CellContext<TablePage, boolean>) => {
   const { color, label }: { color: 'primary' | 'gray'; label: React.ReactElement } = cell.getValue()
     ? { color: 'primary', label: <Translate>Yes</Translate> }
     : { color: 'gray', label: <Translate>No</Translate> };
@@ -46,19 +46,18 @@ const YesNoPill = ({ cell }: CellContext<Page, boolean>) => {
   return <Pill color={color}>{label}</Pill>;
 };
 
-const UrlCell = ({ cell }: CellContext<Page, string>) => {
+const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
   const sharedId = cell.getValue();
   const { title } = cell.row.original;
   const url = `/${getPageUrl(sharedId, title)}`;
   return url;
 };
 
-const List = ({ items }: { items: Row<Page>[] }) => (
+const List = ({ items }: { items: TablePage[] }) => (
   <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
-    {items.map(item => {
-      const page = item.original;
-      return <li key={page._id as string}>{page.title}</li>;
-    })}
+    {items.map(item => (
+      <li key={item._id}>{item.title}</li>
+    ))}
   </ul>
 );
 

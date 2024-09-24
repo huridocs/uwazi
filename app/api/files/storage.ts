@@ -1,6 +1,7 @@
-import { NoSuchKey } from '@aws-sdk/client-s3';
+import { NoSuchKey, S3Client } from '@aws-sdk/client-s3';
 import { config } from 'api/config';
 import { tenants } from 'api/tenants';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream, createWriteStream } from 'fs';
 // eslint-disable-next-line node/no-restricted-import
@@ -9,6 +10,7 @@ import path from 'path';
 import { FileType } from 'shared/types/fileType';
 import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
+import { FileNotFound } from './FileNotFound';
 import {
   activityLogPath,
   attachmentsPath,
@@ -18,14 +20,24 @@ import {
   uploadsPath,
 } from './filesystem';
 import { S3Storage } from './S3Storage';
-import { FileNotFound } from './FileNotFound';
 
 type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
 let s3Instance: S3Storage;
 const s3 = () => {
   if (config.s3.endpoint && !s3Instance) {
-    s3Instance = new S3Storage();
+    s3Instance = new S3Storage(
+      new S3Client({
+        requestHandler: new NodeHttpHandler({
+          socketTimeout: 30000,
+        }),
+        apiVersion: 'latest',
+        region: 'placeholder-region',
+        endpoint: config.s3.endpoint,
+        credentials: config.s3.credentials,
+        forcePathStyle: true,
+      })
+    );
   }
   return s3Instance;
 };

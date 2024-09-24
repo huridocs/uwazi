@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
@@ -33,26 +34,33 @@ function getIdMapper() {
   };
 }
 
-const commonProperties: TemplateSchema['commonProperties'] = [
-  {
-    label: 'Title',
-    name: 'title',
-    isCommonProperty: true,
-    type: 'text',
-  },
-  {
-    label: 'Date added',
-    name: 'creationDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-  {
-    label: 'Date modified',
-    name: 'editDate',
-    isCommonProperty: true,
-    type: 'date',
-  },
-];
+const commonProperties = (
+  key: string,
+  idMapper: (key: string) => ObjectId
+): TemplateSchema['commonProperties'] => {
+  const titleId = idMapper(`${key}Title`).toString();
+  return [
+    {
+      _id: titleId,
+      label: 'Title',
+      name: 'title',
+      isCommonProperty: true,
+      type: 'text',
+    },
+    {
+      label: 'Date added',
+      name: 'creationDate',
+      isCommonProperty: true,
+      type: 'date',
+    },
+    {
+      label: 'Date modified',
+      name: 'editDate',
+      isCommonProperty: true,
+      type: 'date',
+    },
+  ];
+};
 
 const thesaurusNestedValues = (
   rootValue: string,
@@ -82,7 +90,7 @@ function getFixturesFactory() {
       _id: idMapper(name),
       name,
       properties,
-      commonProperties,
+      commonProperties: commonProperties(`commonProperties${name}`, idMapper),
     }),
 
     entityPermission: (
@@ -153,11 +161,36 @@ function getFixturesFactory() {
       },
     }),
 
-    file: (
+    attachment(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'attachment' });
+    },
+
+    document(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'document' });
+    },
+
+    custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'custom' });
+    },
+
+    file: (id: string, extra: Partial<FileType> = {}): WithId<FileType> => ({
+      filename: id,
+      originalname: id,
+      ...extra,
+      _id: idMapper(`${id}`),
+    }),
+
+    /**
+     * @deprecated too many parameters and dificult to read/use
+     * convention should be id and then a partial object with the
+     * desired extra params or id, something else important, extra params
+     * no more than 3 params
+     */
+    fileDeprecated: (
       id: string,
-      entity: string | undefined,
-      type: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
-      filename: string,
+      entity?: string | undefined,
+      type?: 'custom' | 'document' | 'thumbnail' | 'attachment' | undefined,
+      filename?: string | undefined,
       language: string = 'en',
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
@@ -166,7 +199,7 @@ function getFixturesFactory() {
       entity,
       language,
       type,
-      filename,
+      filename: filename || id,
       originalname: originalname || filename,
       extractedMetadata,
     }),
@@ -196,7 +229,11 @@ function getFixturesFactory() {
       ...props,
     }),
 
-    commonProperties: () => _.cloneDeep(commonProperties),
+    commonProperties: () =>
+      _.cloneDeep(commonProperties('default', idMapper)) as TemplateSchema['commonProperties'],
+
+    commonPropertiesTitleId: (templateName: string) =>
+      idMapper(`commonProperties${templateName}Title`).toString(),
 
     metadataValue: (value: PropertyValueSchema, label?: string): MetadataObjectSchema => {
       const mo: MetadataObjectSchema = { value };

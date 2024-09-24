@@ -1,101 +1,73 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator, useBlocker } from 'react-router-dom';
-
-import { Row } from '@tanstack/react-table';
+import { Row, RowSelectionState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
-
+import { cloneDeep, isEqual } from 'lodash';
 import { Translate } from 'app/I18N';
-import { isEqual } from 'lodash';
 import * as SettingsAPI from 'app/V2/api/settings';
 import { ConfirmNavigationModal } from 'app/V2/Components/Forms';
-
-import { ClientSettingsLinkSchema } from 'app/apiResponseTypes';
 import { notificationAtom } from 'app/V2/atoms';
 import { settingsAtom } from 'app/V2/atoms/settingsAtom';
-import { Button, Table_deprecated as Table, Sidepanel } from 'app/V2/Components/UI';
+import { Button, Table, Sidepanel } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
-import uniqueID from 'shared/uniqueID';
 import { MenuForm } from './components/MenuForm';
-
 import { columns } from './components/TableComponents';
+import { Link, sanitizeIds } from './shared';
 
 const menuConfigloader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async () =>
-    SettingsAPI.getLinks(headers);
+  async () => {
+    const tableRows = (await SettingsAPI.getLinks(headers)).map(link => {
+      const linkWithRowId: Link = { ...link, rowId: link._id! };
+      if (link.sublinks) {
+        linkWithRowId.subRows = link.sublinks.map((sublink, index) => ({
+          ...sublink,
+          rowId: `${link._id}-${index}`,
+        }));
+      }
+      return linkWithRowId;
+    });
+    return tableRows;
+  };
 
 const MenuConfig = () => {
-  const links = useLoaderData() as ClientSettingsLinkSchema[];
+  const links = useLoaderData() as Link[];
+  const [linkState, setLinkState] = useState(links);
+  const prevLinks = useRef(cloneDeep(links));
+  const [selectedLinks, setSelectedLinks] = useState<RowSelectionState>({});
   const [isSidepanelOpen, setIsSidepanelOpen] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
   const revalidator = useRevalidator();
-  const [selectedLinks, setSelectedLinks] = useState<Row<ClientSettingsLinkSchema>[]>([]);
-  const [formValues, setFormValues] = useState<ClientSettingsLinkSchema & { groupId?: string }>(
-    {} as ClientSettingsLinkSchema & { groupId?: string }
-  );
-  const [linkChanges, setLinkChanges] = useState<ClientSettingsLinkSchema[]>([]);
+  const [formValues, setFormValues] = useState<Link & { parentId?: string }>();
   const [showModal, setShowModal] = useState(false);
   const setSettings = useSetAtom(settingsAtom);
 
-  useEffect(() => {
-    const linksWIthid = links?.map(link => {
-      const _id = link._id || `tmp_${uniqueID()}`;
-      if (link.sublinks) {
-        const sublinks = link.sublinks.map(sublink => ({ ...sublink, _id: `tmp_${uniqueID()}` }));
-        return { ...link, sublinks, _id };
-      }
+  const areEqual = isEqual(linkState, prevLinks.current);
 
-      return { ...link, _id };
-    });
-    setLinkChanges(linksWIthid);
-  }, [links]);
+  const blocker = useBlocker(!areEqual);
 
-  const sanitizeIds = (_link: ClientSettingsLinkSchema) => {
-    const link = { ..._link };
-    if (link._id?.startsWith('tmp_')) {
-      delete link._id;
-    }
-    if (link.sublinks) {
-      link.sublinks =
-        link.sublinks.map(sublink => {
-          const { _id, ...rest } = sublink;
-          return rest;
-        }) || [];
-    }
-    return link;
-  };
-
-  const blocker = useBlocker(!isEqual(links, linkChanges.map(sanitizeIds)));
-
-  useMemo(() => {
-    if (blocker.state === 'blocked') {
-      setShowModal(true);
-    }
-  }, [blocker, setShowModal]);
-
-  const edit = (row: Row<ClientSettingsLinkSchema>) => {
+  const edit = (row: Row<Link>) => {
     const parent = row.getParentRow();
-
     const link = row.original;
-    setFormValues({ ...link, groupId: parent?.original._id });
+    setFormValues({ ...link, parentId: parent?.id });
     setIsSidepanelOpen(true);
   };
 
   const addLink = () => {
-    setFormValues({ _id: `tmp_${uniqueID()}`, title: '', type: 'link', url: '' });
+    setFormValues({ title: '', type: 'link', url: '' });
     setIsSidepanelOpen(true);
   };
 
   const addGroup = () => {
-    setFormValues({ _id: `tmp_${uniqueID()}`, title: '', type: 'group', sublinks: [] });
+    setFormValues({ title: '', type: 'group', subRows: [] });
     setIsSidepanelOpen(true);
   };
 
   const save = async () => {
-    const settings = await SettingsAPI.saveLinks(linkChanges.map(sanitizeIds));
+    const settings = await SettingsAPI.saveLinks(linkState.map(sanitizeIds));
     setSettings(settings);
     revalidator.revalidate();
     setNotifications({
@@ -104,26 +76,36 @@ const MenuConfig = () => {
     });
   };
 
-  const deleteSelected = async () => {
-    let newLinks = linkChanges.filter(
-      link => !selectedLinks.find(selected => selected.original._id === link._id)
-    );
+  const deleteSelected = () => {
+    let newLinks = linkState.filter(link => !(link.rowId && link.rowId in selectedLinks));
+
     newLinks = newLinks.map(link => {
-      if (link.sublinks) {
-        link.sublinks = link.sublinks.filter(
-          sublink => !selectedLinks.find(selected => selected.original._id === sublink._id)
+      if (link.subRows) {
+        link.subRows = link.subRows.filter(
+          sublink => !(sublink.rowId && sublink.rowId in selectedLinks)
         );
       }
       return link;
     });
 
-    setLinkChanges(newLinks);
+    setLinkState(newLinks);
   };
 
-  const formSubmit = async (values: ClientSettingsLinkSchema[]) => {
-    setLinkChanges(values);
+  const formSubmit = (values: Link[]) => {
+    setLinkState(values);
     setIsSidepanelOpen(false);
   };
+
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      setShowModal(true);
+    }
+  }, [blocker, setShowModal]);
+
+  useEffect(() => {
+    prevLinks.current = cloneDeep(links);
+    setLinkState(links);
+  }, [links]);
 
   return (
     <div
@@ -134,21 +116,26 @@ const MenuConfig = () => {
       <SettingsContent>
         <SettingsContent.Header title="Menu" />
         <SettingsContent.Body>
-          <Table<ClientSettingsLinkSchema>
-            enableSelection
-            draggableRows
+          <Table
+            enableSelections
+            dnd={{ enable: true }}
             columns={columns({ edit })}
-            data={linkChanges}
-            onChange={data => {
-              setLinkChanges(data);
+            data={linkState}
+            onChange={({ rows, selectedRows }) => {
+              setLinkState(rows);
+              setSelectedLinks(selectedRows);
             }}
-            title={<Translate>Menu</Translate>}
-            subRowsKey="sublinks"
-            onSelection={setSelectedLinks}
+            header={
+              <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
+                Menu
+              </Translate>
+            }
           />
         </SettingsContent.Body>
-        <SettingsContent.Footer className={selectedLinks.length ? 'bg-primary-50' : ''}>
-          {selectedLinks.length > 0 && (
+        <SettingsContent.Footer
+          className={Object.keys(selectedLinks).length ? 'bg-primary-50' : ''}
+        >
+          {Object.keys(selectedLinks).length > 0 && (
             <div className="flex gap-2 items-center">
               <Button
                 type="button"
@@ -158,14 +145,15 @@ const MenuConfig = () => {
               >
                 <Translate>Delete</Translate>
               </Button>
-              <Translate>Selected</Translate> {selectedLinks.length} <Translate>of</Translate>{' '}
-              {links?.reduce(
-                (acc, link) => acc + (link.type === 'group' ? (link.sublinks?.length || 1) + 1 : 1),
+              <Translate>Selected</Translate>&nbsp;{Object.keys(selectedLinks).length}&nbsp;
+              <Translate>of</Translate>&nbsp;
+              {linkState.reduce(
+                (acc, link) => acc + (link.type === 'group' ? (link.subRows?.length || 1) + 1 : 1),
                 0
               )}
             </div>
           )}
-          {selectedLinks.length === 0 && (
+          {Object.keys(selectedLinks).length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
                 <Button type="button" onClick={addLink} data-testid="menu-add-link">
@@ -180,7 +168,7 @@ const MenuConfig = () => {
                   type="button"
                   onClick={save}
                   color="success"
-                  disabled={links === linkChanges}
+                  disabled={areEqual}
                   data-testid="menu-save"
                 >
                   <Translate>Save</Translate>
@@ -206,8 +194,8 @@ const MenuConfig = () => {
         <MenuForm
           submit={formSubmit}
           closePanel={() => setIsSidepanelOpen(false)}
-          link={formValues}
-          links={linkChanges}
+          linkToEdit={formValues}
+          links={linkState}
         />
       </Sidepanel>
       {showModal && (
@@ -217,4 +205,5 @@ const MenuConfig = () => {
   );
 };
 
+export type { Link };
 export { MenuConfig, menuConfigloader };

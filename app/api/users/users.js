@@ -75,11 +75,13 @@ const sendAccountLockedEmail = async (user, domain) => {
 
 const validateUserStatus = user => {
   if (!user) {
-    throw createError('Invalid username or password', 401);
+    return createError('Invalid username or password', 401);
   }
   if (user.accountLocked) {
-    throw createError('Account locked. Check your email to unlock.', 403);
+    return createError('Account locked. Check your email to unlock.', 403);
   }
+
+  return undefined;
 };
 
 const updateOldPassword = async (user, password) => {
@@ -102,9 +104,8 @@ const newFailedLogin = async (user, domain) => {
     { $inc: { failedLogins: 1 } },
     { new: true, fields: '+failedLogins' }
   );
-  if (updatedUser.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
+  if (updatedUser?.failedLogins >= MAX_FAILED_LOGIN_ATTEMPTS) {
     await blockAccount(user, domain);
-    throw createError('Account locked. Check your email to unlock.', 403);
   }
 };
 
@@ -118,8 +119,10 @@ const validateUserPassword = async (user, password, domain) => {
 
   if (!oldPasswordValidated && !passwordValidated) {
     await newFailedLogin(user, domain);
-    throw createError('Invalid username or password', 401);
+    return createError('Invalid username or password', 401);
   }
+
+  return undefined;
 };
 
 const validate2fa = async (user, token, domain) => {
@@ -251,14 +254,26 @@ export default {
   },
 
   async login({ username, password, token }, domain) {
-    const [user] = await this.get(
+    const [dbuser] = await this.get(
       { username },
       '+password +accountLocked +failedLogins +accountUnlockCode'
     );
 
-    validateUserStatus(user);
-    await validateUserPassword(user, password, domain);
+    const dummy = { password: await encryptPassword('Avoid user enum on login req ms diff') };
+    const user = dbuser || dummy;
+
+    const passwordError = await validateUserPassword(user, password, domain);
+    const userStatusError = validateUserStatus(user);
     await validate2fa(user, token, domain);
+
+    if (passwordError) {
+      throw passwordError;
+    }
+
+    if (userStatusError) {
+      throw userStatusError;
+    }
+
     await model.db.updateOne({ _id: user._id }, { $unset: { failedLogins: 1 } });
 
     return sanitizeUser(user);
@@ -306,7 +321,7 @@ export default {
         });
       }
 
-      return Promise.reject(createError('User not found', 403));
+      return undefined;
     });
   },
 

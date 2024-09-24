@@ -71,7 +71,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
           </I18NLink>
         </NeedAuthorization>
         <FeatureToggle feature="metadataExtraction.url">
-          <NeedAuthorization roles={['admin']}>
+          <NeedAuthorization roles={['admin', 'editor']}>
             <I18NLink
               to="settings/metadata_extraction"
               activeclassname="active"

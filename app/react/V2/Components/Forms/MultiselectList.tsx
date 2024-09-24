@@ -1,7 +1,7 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable max-statements */
-/* eslint-disable react/no-multi-comp */
 import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
@@ -10,14 +10,15 @@ import { Pill } from '../UI/Pill';
 import { Label } from './Label';
 import { Checkbox } from './Checkbox';
 
-interface Option {
+interface MultiselectListOption {
   label: string | React.ReactNode;
   searchLabel: string;
   value: string;
-  items?: Option[];
+  items?: MultiselectListOption[];
+  suggested?: boolean;
 }
 interface MultiselectListProps {
-  items: Option[];
+  items: MultiselectListOption[];
   onChange: (selectedItems: string[]) => void;
   label?: string | React.ReactNode;
   hasErrors?: boolean;
@@ -29,13 +30,8 @@ interface MultiselectListProps {
   allowSelelectAll?: boolean;
   startOnSelected?: boolean;
   search?: string;
+  suggestions?: boolean;
 }
-
-const SelectedCounter = ({ selectedItems }: { selectedItems: string[] }) => (
-  <>
-    <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
-  </>
-);
 
 const MultiselectList = ({
   items,
@@ -50,14 +46,37 @@ const MultiselectList = ({
   allowSelelectAll = false,
   startOnSelected = false,
   search = '',
+  suggestions = false,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
   const [searchTerm, setSearchTerm] = useState('');
-  const [externalSearchTerm, setExternalSearchTerm] = useState(search);
+  const [externalSearch, setExternalSearch] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
+    new Set(selectedItems)
+  );
   const optionsRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const newSet = new Set<string>(selectedItems);
+    items.forEach(item => {
+      if (item.suggested) {
+        newSet.add(item.value);
+      }
+
+      if (item.items) {
+        item.items.forEach(subItem => {
+          if (subItem.suggested) {
+            newSet.add(subItem.value);
+          }
+        });
+      }
+    });
+
+    setSelectedOrSuggestedItems(newSet);
+  }, [items, selectedItems]);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -71,14 +90,14 @@ const MultiselectList = ({
 
   useEffect(() => {
     setSearchTerm(search);
-    setExternalSearchTerm(search);
+    setExternalSearch(search);
   }, [search]);
 
   useEffect(() => {
-    if (externalSearchTerm) {
+    if (externalSearch && searchTerm) {
       optionsRef.current?.querySelector('input')?.focus();
     }
-  }, [externalSearchTerm, filteredItems]);
+  }, [externalSearch, filteredItems, searchTerm]);
 
   useEffect(() => {
     if (value) {
@@ -88,51 +107,53 @@ const MultiselectList = ({
 
   useEffect(() => {
     let filtered = [...items];
-    if (!showAll) {
-      filtered = filtered
-        .filter(item => {
-          const itemiSelected = selectedItems.includes(item.value);
-          const containsSelected = item.items?.some(childItem =>
-            selectedItems.includes(childItem.value)
-          );
-
-          return itemiSelected || containsSelected;
-        })
-        .map(item => {
-          if (item.items) {
-            return {
-              ...item,
-              items: item.items.filter(childItem => selectedItems.includes(childItem.value)),
-            };
-          }
-          return item;
-        });
-    }
-
-    if (!searchTerm) {
-      setFilteredItems(filtered);
-      return;
-    }
 
     filtered = filtered
-      .filter(({ searchLabel }) => searchLabel.toLowerCase().includes(searchTerm.toLowerCase()))
       .map(item => {
-        if (item.items) {
+        const itemiSelected = selectedItems.includes(item.value) || item.suggested;
+        const containsSelected = item.items?.some(
+          childItem => selectedItems.includes(childItem.value) || childItem.suggested
+        );
+
+        const matchesSearch =
+          !searchTerm || item.searchLabel.toLowerCase().includes(searchTerm.toLowerCase());
+
+        const containsChildrenMatchingSearch =
+          !searchTerm ||
+          item.items?.some(childItem =>
+            childItem.searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+
+        if (showAll && !searchTerm) {
+          return item;
+        }
+
+        if (!showAll && !searchTerm && (itemiSelected || containsSelected)) {
           return {
             ...item,
-            items: item.items.filter(({ searchLabel }) =>
-              searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
+            items: item.items?.filter(
+              childItem => selectedItems.includes(childItem.value) || childItem.suggested
             ),
           };
         }
-        return item;
-      });
+
+        if (searchTerm && (matchesSearch || containsChildrenMatchingSearch)) {
+          return {
+            ...item,
+            items: item.items?.filter(childItem =>
+              childItem.searchLabel.toLowerCase().includes(searchTerm.toLowerCase())
+            ),
+          };
+        }
+
+        return null;
+      })
+      .filter(item => item) as MultiselectListOption[];
 
     setFilteredItems(filtered);
   }, [items, searchTerm, showAll, selectedItems]);
 
   const handleSelect = (_value: string) => {
-    setExternalSearchTerm('');
     let newValues;
     if (singleSelect) {
       newValues = selectedItems.includes(_value) ? [] : [_value];
@@ -143,6 +164,7 @@ const MultiselectList = ({
     }
 
     setSelectedItems(newValues);
+    setExternalSearch('');
     if (onChange) onChange(newValues);
   };
 
@@ -165,7 +187,7 @@ const MultiselectList = ({
     setShowAll(target.value === 'true');
   };
 
-  const renderButtonItem = (item: Option) => {
+  const renderButtonItem = (item: MultiselectListOption) => {
     if (item.items) {
       return renderGroup(item);
     }
@@ -193,13 +215,16 @@ const MultiselectList = ({
     );
   };
 
-  const renderCheckboxItem = (item: Option) => {
+  const renderCheckboxItem = (item: MultiselectListOption) => {
     if (item.items) {
       return renderGroup(item);
     }
     const selected = selectedItems.includes(item.value);
     return (
-      <li key={item.value} className="mb-2">
+      <li
+        key={item.value}
+        className={`mb-2 ${!selected && searchTerm && !showAll ? 'opacity-70' : ''}`}
+      >
         <Checkbox
           name={item.value}
           label={item.label}
@@ -220,10 +245,10 @@ const MultiselectList = ({
 
   const isGroupOpen = (groupKey: string) => openGroups.includes(groupKey);
 
-  const renderItem = (item: Option) =>
+  const renderItem = (item: MultiselectListOption) =>
     checkboxes ? renderCheckboxItem(item) : renderButtonItem(item);
 
-  const renderGroup = (group: Option) => {
+  const renderGroup = (group: MultiselectListOption) => {
     const isOpen = isGroupOpen(group.value);
     if (foldableGroups) {
       return (
@@ -240,7 +265,7 @@ const MultiselectList = ({
               <div className="w-3 h-3 text-sm">
                 {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               </div>
-              <Translate>Properties</Translate>
+              <Translate>Group</Translate>
             </button>
           </div>
           {isOpen && <ul className="pl-4">{group.items?.map(renderItem)}</ul>}
@@ -253,6 +278,23 @@ const MultiselectList = ({
         <span className="block mb-4 text-sm font-bold text-gray-900">{group.label}</span>
         <ul className="">{group.items?.map(renderItem)}</ul>
       </li>
+    );
+  };
+
+  const renderSelectedLabel = () => {
+    if (suggestions) {
+      return (
+        <>
+          <Translate>Selected or suggested</Translate>{' '}
+          {selectedOrSuggestedItems.size ? `(${selectedOrSuggestedItems.size})` : ''}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <Translate>Selected</Translate> {selectedItems.length ? `(${selectedItems.length})` : ''}
+      </>
     );
   };
 
@@ -277,14 +319,14 @@ const MultiselectList = ({
             orientation="horizontal"
             options={[
               {
-                label: <Translate>All</Translate>,
+                label: <Translate data-testid="multiselectlist-show-all">All</Translate>,
                 value: 'true',
                 defaultChecked: !startOnSelected,
               },
               {
-                label: <SelectedCounter selectedItems={selectedItems} />,
+                label: renderSelectedLabel(),
                 value: 'false',
-                disabled: selectedItems.length === 0,
+                disabled: selectedOrSuggestedItems.size === 0,
                 defaultChecked: startOnSelected,
               },
             ]}
@@ -310,3 +352,4 @@ const MultiselectList = ({
   );
 };
 export { MultiselectList };
+export type { MultiselectListOption };

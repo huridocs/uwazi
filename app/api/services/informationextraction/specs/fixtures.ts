@@ -139,7 +139,7 @@ const fixtures: DBFixture = {
     }),
   ],
   files: [
-    factory.file('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
+    factory.fileDeprecated('F1', 'A1', 'document', fixturesPdfNameA, 'other', '', [
       {
         name: 'property1',
         selection: {
@@ -155,7 +155,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F2', 'A2', 'document', fixturesPdfNameB, 'eng', '', [
+    factory.fileDeprecated('F2', 'A2', 'document', fixturesPdfNameB, 'eng', '', [
       {
         name: 'text',
         selection: {
@@ -164,7 +164,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F3', 'A3', 'document', fixturesPdfNameC, 'eng', '', [
+    factory.fileDeprecated('F3', 'A3', 'document', fixturesPdfNameC, 'eng', '', [
       {
         name: 'property1',
         selection: {
@@ -173,7 +173,7 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F4', 'A1', 'document', fixturesPdfNameD, 'eng', '', [
+    factory.fileDeprecated('F4', 'A1', 'document', fixturesPdfNameD, 'eng', '', [
       {
         name: 'property2',
         selection: {
@@ -182,17 +182,17 @@ const fixtures: DBFixture = {
         },
       },
     ]),
-    factory.file('F5', 'A5', 'document', fixturesPdfNameE, 'spa'),
-    factory.file('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
-    factory.file('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
-    factory.file('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
-    factory.file('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
-    factory.file('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
-    factory.file('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
-    factory.file('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
-    factory.file('F21', 'A21', 'document', fixturesPdfNameK, 'eng'),
-    factory.file('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
-    factory.file('F23', 'A23', 'document', fixturesPdfNameM, 'eng'),
+    factory.fileDeprecated('F5', 'A5', 'document', fixturesPdfNameE, 'spa'),
+    factory.fileDeprecated('F6', 'A6', 'document', fixturesPdfNameF, 'eng'),
+    factory.fileDeprecated('F15', 'A15', 'document', fixturesPdfNameA, 'eng'),
+    factory.fileDeprecated('F16', 'A16', 'document', fixturesPdfNameC, 'eng'),
+    factory.fileDeprecated('F17', 'A17', 'document', fixturesPdfNameG, 'eng'),
+    factory.fileDeprecated('F18', 'A18', 'document', fixturesPdfNameH, 'eng'),
+    factory.fileDeprecated('F19', 'A19', 'document', fixturesPdfNameI, 'eng'),
+    factory.fileDeprecated('F20', 'A20', 'document', ficturesPdfNameJ, 'eng'),
+    factory.fileDeprecated('F21', 'A21', 'document', fixturesPdfNameK, 'eng'),
+    factory.fileDeprecated('F22', 'A22', 'document', fixturesPdfNameL, 'eng'),
+    factory.fileDeprecated('F23', 'A23', 'document', fixturesPdfNameM, 'eng'),
   ],
   segmentations: [
     {

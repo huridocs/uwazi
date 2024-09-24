@@ -1,0 +1,717 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Settings Thesauri ThesauriList Thesaurus deletion should ask for confirmation to delete the selection 1`] = `
+HTMLCollection [
+  <tbody>
+    <tr
+      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+    >
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <label>
+          <span
+            class="translation active sr-only"
+          >
+            Select
+          </span>
+          <input
+            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            id="thesaurus3"
+            type="checkbox"
+          />
+        </label>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex items-center"
+        >
+          <span
+            class="text-indigo-700"
+          >
+            Animals
+          </span>
+          <div
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+          >
+            <span
+              class="translation"
+            >
+              Animals
+            </span>
+          </div>
+        </div>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex flex-wrap gap-2"
+        />
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <button
+          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          type="button"
+        >
+          <span
+            class="translation active"
+          >
+            Edit
+          </span>
+        </button>
+      </td>
+    </tr>
+    <tr
+      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+    >
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <label>
+          <span
+            class="translation active sr-only"
+          >
+            Select
+          </span>
+          <input
+            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            id="thesaurus1"
+            type="checkbox"
+          />
+        </label>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex items-center"
+        >
+          <span
+            class="text-indigo-700"
+          >
+            Colors
+          </span>
+          <div
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+          >
+            <span
+              class="translation"
+            >
+              Colors
+            </span>
+          </div>
+        </div>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex flex-wrap gap-2"
+        />
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <button
+          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          type="button"
+        >
+          <span
+            class="translation active"
+          >
+            Edit
+          </span>
+        </button>
+      </td>
+    </tr>
+    <tr
+      class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+    >
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <label>
+          <span
+            class="translation active sr-only"
+          >
+            Select
+          </span>
+          <input
+            class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+            disabled=""
+            id="thesaurus2"
+            type="checkbox"
+          />
+        </label>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex items-center"
+        >
+          <span
+            class="text-indigo-700"
+          >
+            Names
+          </span>
+          <div
+            class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+          >
+            <span
+              class="translation"
+            >
+              Names
+            </span>
+          </div>
+        </div>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <div
+          class="flex flex-wrap gap-2"
+        >
+          <div>
+            <span
+              class="whitespace-nowrap bg-gray-100 px-2.5 py-1 rounded-md text-xs "
+              data-testid="pill-comp"
+            >
+              <span
+                class="translation"
+              >
+                Document
+              </span>
+            </span>
+          </div>
+        </div>
+      </td>
+      <td
+        class="relative px-4 py-2 undefined "
+      >
+        <button
+          class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+          type="button"
+        >
+          <span
+            class="translation active"
+          >
+            Edit
+          </span>
+        </button>
+      </td>
+    </tr>
+  </tbody>,
+]
+`;
+
+exports[`Settings Thesauri ThesauriList Thesaurus deletion should show the selected thesaurus 1`] = `
+<div
+  class="bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 bg-indigo-50 bg-primary-50"
+  data-testid="settings-content-footer"
+>
+  <div
+    class="flex items-center gap-2"
+  >
+    <button
+      class=" text-white bg-error-600 border-error-700  disabled:bg-error-400 disabled:border-error-400 enabled:hover:bg-error-700 enabled:hover:border-error-700 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+      data-testid="thesaurus-delete-link"
+      type="button"
+    >
+      <span
+        class="translation active"
+      >
+        Delete
+      </span>
+    </button>
+    <span
+      class="translation active"
+    >
+      Selected
+    </span>
+     
+    2
+     
+    <span
+      class="translation active"
+    >
+      of
+    </span>
+     
+    3
+  </div>
+</div>
+`;
+
+exports[`Settings Thesauri ThesauriList render existing thesauri should show a list of existing thesauri 1`] = `
+<div>
+  <div
+    class="tw-content"
+    data-testid="settings-thesauri"
+    style="width: 100%; overflow-y: auto;"
+  >
+    <div
+      class=" flex flex-col h-full pb-14 lg:pb-0"
+      data-testid="settings-content"
+    >
+      <div
+        class=" flex pt-5 pb-4 px-4 "
+        data-testid="settings-content-header"
+      >
+        <a
+          class="block lg:hidden"
+          href="/en/settings"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-8 stroke-1 lg:hidden"
+            data-slot="icon"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z"
+              fill-rule="evenodd"
+            />
+          </svg>
+          <span
+            class="sr-only"
+          >
+            <span
+              class="translation active"
+            >
+              Navigate back
+            </span>
+          </span>
+        </a>
+        <nav
+          aria-label="Breadcrumb"
+          class="!relative p-1 flex right-0 !bg-transparent m-0 !w-full flex-wrap align-middle"
+        >
+          <ol
+            class="flex items-center"
+          >
+            <li
+              class="group flex items-center max-w-xs"
+            >
+              <svg
+                aria-hidden="true"
+                class="mx-1 h-4 w-4 text-gray-400 group-first:hidden md:mx-2"
+                data-testid="flowbite-breadcrumb-separator"
+                fill="none"
+                height="1em"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 5l7 7-7 7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <span
+                class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400"
+                data-testid="flowbite-breadcrumb-item"
+              >
+                <span
+                  class="translation active max-w-xs truncate"
+                >
+                  Thesauri
+                </span>
+              </span>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class=" flex-grow px-4"
+        data-testid="settings-content-body"
+      >
+        <div
+          data-testid="thesauri"
+        >
+          <div
+            class="w-full overflow-auto rounded-md shadow"
+          >
+            <table
+              class="w-full "
+            >
+              <caption
+                class="p-4"
+              >
+                <div
+                  class="flex flex-col items-start gap-1"
+                >
+                  <h2
+                    class="text-base font-semibold text-left text-gray-900 bg-white"
+                  >
+                    <span
+                      class="translation active"
+                    >
+                      Thesauri
+                    </span>
+                  </h2>
+                </div>
+              </caption>
+              <thead
+                class="bg-gray-50"
+              >
+                <tr>
+                  <th
+                    class="p-4 text-sm text-gray-500 uppercase border-b w-0"
+                    colspan="1"
+                    scope="col"
+                  >
+                    <span
+                      class="flex "
+                    >
+                      <label>
+                        <span
+                          class="translation active sr-only"
+                        >
+                          Select all
+                        </span>
+                        <input
+                          class="bg-gray-50 rounded border-gray-300 cursor-pointer"
+                          id="checkbox-header"
+                          type="checkbox"
+                        />
+                      </label>
+                    </span>
+                  </th>
+                  <th
+                    class="p-4 text-sm text-gray-500 uppercase border-b w-6/12 font-medium"
+                    colspan="1"
+                    scope="col"
+                  >
+                    <span
+                      class="flex gap-2 cursor-pointer select-none"
+                    >
+                      <span
+                        class="translation active"
+                      >
+                        Label
+                      </span>
+                      <svg
+                        aria-hidden="true"
+                        class="w-4"
+                        data-slot="icon"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          clip-rule="evenodd"
+                          d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z"
+                          fill-rule="evenodd"
+                        />
+                      </svg>
+                    </span>
+                  </th>
+                  <th
+                    class="p-4 text-sm text-gray-500 uppercase border-b w-6/12"
+                    colspan="1"
+                    scope="col"
+                  >
+                    <span
+                      class="flex "
+                    >
+                      <span
+                        class="translation active"
+                      >
+                        Templates
+                      </span>
+                    </span>
+                  </th>
+                  <th
+                    class="p-4 text-sm text-gray-500 uppercase border-b undefined"
+                    colspan="1"
+                    scope="col"
+                  >
+                    <span
+                      class="flex "
+                    >
+                      <span
+                        class="translation active sr-only"
+                      >
+                        Action
+                      </span>
+                    </span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+                >
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <label>
+                      <span
+                        class="translation active sr-only"
+                      >
+                        Select
+                      </span>
+                      <input
+                        class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        id="thesaurus3"
+                        type="checkbox"
+                      />
+                    </label>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex items-center"
+                    >
+                      <span
+                        class="text-indigo-700"
+                      >
+                        Animals
+                      </span>
+                      <div
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                      >
+                        <span
+                          class="translation"
+                        >
+                          Animals
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex flex-wrap gap-2"
+                    />
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <button
+                      class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+                      type="button"
+                    >
+                      <span
+                        class="translation active"
+                      >
+                        Edit
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+                <tr
+                  class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+                >
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <label>
+                      <span
+                        class="translation active sr-only"
+                      >
+                        Select
+                      </span>
+                      <input
+                        class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        id="thesaurus1"
+                        type="checkbox"
+                      />
+                    </label>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex items-center"
+                    >
+                      <span
+                        class="text-indigo-700"
+                      >
+                        Colors
+                      </span>
+                      <div
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                      >
+                        <span
+                          class="translation"
+                        >
+                          Colors
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex flex-wrap gap-2"
+                    />
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <button
+                      class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+                      type="button"
+                    >
+                      <span
+                        class="translation active"
+                      >
+                        Edit
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+                <tr
+                  class="text-gray-900 border-b transition-colors hover:bg-gray-50  "
+                >
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <label>
+                      <span
+                        class="translation active sr-only"
+                      >
+                        Select
+                      </span>
+                      <input
+                        class="bg-gray-50 rounded border-gray-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled=""
+                        id="thesaurus2"
+                        type="checkbox"
+                      />
+                    </label>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex items-center"
+                    >
+                      <span
+                        class="text-indigo-700"
+                      >
+                        Names
+                      </span>
+                      <div
+                        class="has-[span:not(.active)]:hidden h-full p-1 ml-2 border-2 border-gray-400 border-solid rounded-lg border-y-0"
+                      >
+                        <span
+                          class="translation"
+                        >
+                          Names
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <div
+                      class="flex flex-wrap gap-2"
+                    >
+                      <div>
+                        <span
+                          class="whitespace-nowrap bg-gray-100 px-2.5 py-1 rounded-md text-xs "
+                          data-testid="pill-comp"
+                        >
+                          <span
+                            class="translation"
+                          >
+                            Document
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="relative px-4 py-2 undefined "
+                  >
+                    <button
+                      class="leading-4 bg-white text-gray-700 disabled:text-gray-300 border-gray-200 enabled:hover:text-primary-700 enabled:hover:bg-primary-50 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+                      type="button"
+                    >
+                      <span
+                        class="translation active"
+                      >
+                        Edit
+                      </span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            id="DndDescribedBy-0"
+            style="display: none;"
+          >
+            
+    To pick up a draggable item, press the space bar.
+    While dragging, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  
+          </div>
+          <div
+            aria-atomic="true"
+            aria-live="assertive"
+            id="DndLiveRegion-0"
+            role="status"
+            style="position: fixed; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
+          />
+        </div>
+      </div>
+      <div
+        class="bottom-0 left-0 w-full px-4 py-3 bg-white border-t border-gray-200 sticky z-1 bg-indigo-50 bg-primary-50"
+        data-testid="settings-content-footer"
+      >
+        <div
+          class="flex justify-between w-full"
+        >
+          <div
+            class="flex gap-2"
+          >
+            <a
+              href="/settings/thesauri/new"
+            >
+              <button
+                class=" text-white bg-primary-700 border-primary-700 disabled:text-primary-300 disabled:border-primary-300 enabled:hover:bg-primary-800 enabled:hover:border-primary-800 text-xs px-3 py-2 disabled:cursor-not-allowed font-medium rounded-lg
+      border focus:outline-none focus:ring-4 focus:ring-indigo-200 "
+                type="button"
+              >
+                <span
+                  class="translation active"
+                >
+                  Add thesaurus
+                </span>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

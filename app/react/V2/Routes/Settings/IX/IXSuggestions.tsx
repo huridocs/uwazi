@@ -24,7 +24,7 @@ import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
-import { FiltersSidepanel } from './components/FiltersSidepanel';
+import { FiltersSidepanel } from './components/FiltersSidepanel.old';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import {
@@ -187,7 +187,7 @@ const IXSuggestions = () => {
       });
 
       await suggestionsAPI.accept(preparedSuggestions);
-      setCurrentSuggestions(updateSuggestions(currentSuggestions, acceptedSuggestions));
+      setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
       setNotifications({
         type: 'success',
         text: <Translate>Suggestion accepted.</Translate>,
@@ -225,6 +225,7 @@ const IXSuggestions = () => {
   };
 
   const closeSidepanel = () => {
+    setSidepanelSuggestion(undefined);
     setSidepanel('none');
   };
 
@@ -293,7 +294,7 @@ const IXSuggestions = () => {
 
         <SettingsContent.Footer className={`flex gap-2 ${selected.length ? 'bg-gray-200' : ''}`}>
           {selected.length ? (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"
@@ -319,7 +320,7 @@ const IXSuggestions = () => {
               </div>
             </div>
           ) : (
-            <div className="flex justify-center items-center space-x-4">
+            <div className="flex items-center justify-center space-x-4">
               <Button
                 size="small"
                 type="button"

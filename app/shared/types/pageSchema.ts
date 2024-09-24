@@ -6,8 +6,6 @@ import { objectIdSchema } from 'shared/types/commonSchemas';
 import { wrapValidator } from 'shared/tsUtils';
 import { PageType } from './pageType';
 
-export const emitSchemaTypes = true;
-
 const ajv = new Ajv({ allErrors: true });
 ajv.addVocabulary(['tsType']);
 
@@ -74,3 +72,4 @@ export const PageSchema = {
 
 const validatePage = wrapValidator(ajv.compile(PageSchema));
 export { validatePage };
+export const emitSchemaTypes = true;

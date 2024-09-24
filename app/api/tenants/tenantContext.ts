@@ -23,6 +23,8 @@ class Tenants {
 
   defaultTenant: Tenant;
 
+  model?: TenantsModel;
+
   constructor(defaultTenant: Tenant) {
     this.defaultTenant = defaultTenant;
     this.tenants = {
@@ -32,17 +34,22 @@ class Tenants {
 
   async setupTenants() {
     const model = await tenantsModel();
+    this.model = model;
     model.on('change', () => {
       this.updateTenants(model).catch(handleError);
     });
     await this.updateTenants(model);
   }
 
+  async tearDownTenants() {
+    await this.model?.closeChangeStream();
+  }
+
   async updateTenants(model: TenantsModel) {
     const tenants = await model.get();
 
     tenants.forEach((tenant: TenantDocument) => {
-      this.add(tenant.toObject());
+      this.add(tenant);
     });
   }
 

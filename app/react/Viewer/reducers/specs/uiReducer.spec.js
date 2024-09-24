@@ -10,7 +10,12 @@ describe('Viewer uiReducer', () => {
       const newState = uiReducer();
 
       expect(newState instanceof Immutable.Map).toBe(true);
-      expect(newState.toJS()).toEqual({ reference: {}, snippet: {} });
+      expect(newState.toJS()).toEqual({
+        reference: {},
+        snippet: {},
+        enableClickAction: true,
+        activeReferences: [],
+      });
     });
   });
 
@@ -252,12 +257,28 @@ describe('Viewer uiReducer', () => {
     });
   });
 
+  describe('TOGGLE_REFERENCES', () => {
+    it('should toggle if click action state', () => {
+      const newState = uiReducer(Immutable.fromJS({ enableClickAction: true }), {
+        type: types.TOGGLE_REFERENCES,
+      });
+      const expected = Immutable.fromJS({ enableClickAction: false });
+
+      expect(newState.toJS()).toEqual(expected.toJS());
+    });
+  });
+
   describe('RESET_DOCUMENT_VIEWER', () => {
     it('should set initialState', () => {
       const newState = uiReducer(Immutable.fromJS({ targetDocument: 1, panel: true }), {
         type: types.RESET_DOCUMENT_VIEWER,
       });
-      const expected = Immutable.fromJS({ reference: {}, snippet: {} });
+      const expected = Immutable.fromJS({
+        reference: {},
+        snippet: {},
+        enableClickAction: true,
+        activeReferences: [],
+      });
 
       expect(newState.toJS()).toEqual(expected.toJS());
     });

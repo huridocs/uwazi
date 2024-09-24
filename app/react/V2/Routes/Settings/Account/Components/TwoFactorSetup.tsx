@@ -116,13 +116,15 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                 size={180}
                 bgColor="white"
                 fgColor="black"
+                // @ts-ignore required for accessibility check
+                title="qr code"
               />
             </div>
           </Card>
           <Card className="mb-4 sm:col-span-3" title={<Translate>Secret keys</Translate>}>
             <CopyValueInput
               value={_secret}
-              className="mb-4 w-full"
+              className="w-full mb-4"
               label={
                 <>
                   <Translate className="block">
@@ -157,7 +159,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
         </div>
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3">
-        <div className="flex gap-2 w-full">
+        <div className="flex w-full gap-2">
           <Button styling="light" onClick={closePanel} className="grow">
             <Translate>Cancel</Translate>
           </Button>

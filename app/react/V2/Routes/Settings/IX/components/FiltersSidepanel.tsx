@@ -2,12 +2,11 @@
 /* eslint-disable max-statements */
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { Translate, t } from 'app/I18N';
+import { Translate } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
-import { SuggestionCustomFilter } from 'shared/types/suggestionType';
 
 interface FiltersSidepanelProps {
   showSidepanel: boolean;
@@ -15,23 +14,14 @@ interface FiltersSidepanelProps {
   aggregation: any;
 }
 
-const Header = ({ label, total }: { label: string; total: number }) => (
-  <div className="flex items-center space-x-2 text-indigo-700">
-    <div className="flex-none">{label}</div>
-    <div className="flex-1 border-t border-dashed border-t-gray-200" />
-    <div className="flex-none">{total}</div>
-  </div>
-);
-
-const getPercentage = (match: number, total: number): string => {
-  const percentage = (match / total) * 100;
-
-  if (Number.isNaN(percentage)) {
-    return '-';
-  }
-
-  return `${Math.round(percentage)}%`;
-};
+interface IXFilters {
+  labeled: boolean;
+  nonLabeled: boolean;
+  match: boolean;
+  mismatch: boolean;
+  obsolete: boolean;
+  error: boolean;
+}
 
 const FiltersSidepanel = ({
   showSidepanel,
@@ -40,21 +30,16 @@ const FiltersSidepanel = ({
 }: FiltersSidepanelProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const defaultFilter: SuggestionCustomFilter = {
-    labeled: {
-      match: false,
-      mismatch: false,
-    },
-    nonLabeled: {
-      noContext: false,
-      withSuggestion: false,
-      noSuggestion: false,
-      obsolete: false,
-      others: false,
-    },
+  const defaultFilter: IXFilters = {
+    labeled: false,
+    nonLabeled: false,
+    match: false,
+    mismatch: false,
+    obsolete: false,
+    error: false,
   };
 
-  let initialFilters: SuggestionCustomFilter = defaultFilter;
+  let initialFilters = defaultFilter;
 
   try {
     if (searchParams.has('filter')) {
@@ -67,7 +52,7 @@ const FiltersSidepanel = ({
     defaultValues: defaultFilter,
   });
 
-  const submitFilters = async (filters: SuggestionCustomFilter) => {
+  const submitFilters = async (filters: IXFilters) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('page', '1');
       prev.set('filter', JSON.stringify(filters));
@@ -103,113 +88,83 @@ const FiltersSidepanel = ({
     >
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
         <Sidepanel.Body className="flex flex-col flex-grow gap-4">
-          <Card
-            title={<Header label={t('System', 'Labeled')} total={aggregation.labeled._count} />}
-          >
-            <div className="mx-4 mb-3 space-y-1 text-black">
-              <div className="flex items-center space-x-1 bg-green-200">
-                <div className="flex-none">
-                  <Translate>Accuracy</Translate>
-                </div>
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none font-mono">
-                  {getPercentage(aggregation.labeled.match, aggregation.labeled._count)}
-                </div>
+          <Card>
+            <div className="flex items-center space-x-1 ">
+              <div className="flex-none">
+                <Translate>Accuracy (labeled data)</Translate>
               </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label="Match"
-                  {...register('labeled.match')}
-                  onChange={e => {
-                    checkOption(e, 'labeled.match');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.labeled.match}</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label="Mismatch"
-                  {...register('labeled.mismatch')}
-                  onChange={e => {
-                    checkOption(e, 'labeled.mismatch');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.labeled.mismatch}</div>
-              </div>
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.accuracy}%</div>
+            </div>
+            <div className="flex items-center space-x-0.5">
+              <Checkbox
+                label={<Translate className="font-normal">Labeled</Translate>}
+                {...register('labeled')}
+                onChange={e => {
+                  checkOption(e, 'labeled');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.labeled}</div>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Non-labeled</Translate>}
+                {...register('nonLabeled')}
+                onChange={e => {
+                  checkOption(e, 'nonLabeled');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.nonLabeled}</div>
             </div>
           </Card>
-          <Card
-            title={
-              <Header label={t('System', 'Non-labeled')} total={aggregation.nonLabeled._count} />
-            }
-          >
-            <div className="mx-4 mb-3 space-y-1">
-              <div className="flex items-center space-x-1 bg-yellow-100">
-                <div className="flex-none">
-                  <Translate>Pending</Translate>
-                </div>
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none font-mono">
-                  {getPercentage(aggregation.nonLabeled._count, aggregation.total)}
-                </div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label={<Translate>With suggestion</Translate>}
-                  {...register('nonLabeled.withSuggestion')}
-                  onChange={e => {
-                    checkOption(e, 'nonLabeled.withSuggestion');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.nonLabeled.withSuggestion}</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label={<Translate>No suggestion</Translate>}
-                  {...register('nonLabeled.noSuggestion')}
-                  onChange={e => {
-                    checkOption(e, 'nonLabeled.noSuggestion');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.nonLabeled.noSuggestion}</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label={<Translate>No context</Translate>}
-                  {...register('nonLabeled.noContext')}
-                  onChange={e => {
-                    checkOption(e, 'nonLabeled.noContext');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.nonLabeled.noContext}</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label={<Translate>Obsolete</Translate>}
-                  {...register('nonLabeled.obsolete')}
-                  onChange={e => {
-                    checkOption(e, 'nonLabeled.obsolete');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.nonLabeled.obsolete}</div>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  label={<Translate>Others</Translate>}
-                  {...register('nonLabeled.others')}
-                  onChange={e => {
-                    checkOption(e, 'nonLabeled.others');
-                  }}
-                />
-                <div className="flex-1 border-t border-dashed border-t-gray-200" />
-                <div className="flex-none">{aggregation.nonLabeled.others}</div>
-              </div>
+          <Card>
+            <div className="flex items-center space-x-0.5">
+              <Checkbox
+                label={<Translate className="font-normal">Match</Translate>}
+                {...register('match')}
+                onChange={e => {
+                  checkOption(e, 'match');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.match}</div>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Mismatch</Translate>}
+                {...register('mismatch')}
+                onChange={e => {
+                  checkOption(e, 'mismatch');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.mismatch}</div>
+            </div>
+          </Card>
+          <Card>
+            <div className="flex items-center space-x-0.5">
+              <Checkbox
+                label={<Translate className="font-normal">Obsolete</Translate>}
+                {...register('obsolete')}
+                onChange={e => {
+                  checkOption(e, 'obsolete');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.obsolete}</div>
+            </div>
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                label={<Translate className="font-normal">Error</Translate>}
+                {...register('error')}
+                onChange={e => {
+                  checkOption(e, 'error');
+                }}
+              />
+              <div className="flex-1 border-t border-dashed border-t-gray-200" />
+              <div className="flex-none font-mono font-bold">{aggregation.error}</div>
             </div>
           </Card>
         </Sidepanel.Body>

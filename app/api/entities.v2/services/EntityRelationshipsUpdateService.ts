@@ -3,7 +3,7 @@ import { Template } from 'api/templates.v2/model/Template';
 import { RelationshipProperty } from 'api/templates.v2/model/RelationshipProperty';
 import { RelationshipsDataSource } from 'api/relationships.v2/contracts/RelationshipsDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { Entity, MetadataValue } from '../model/Entity';
+import { Entity, EntityMetadata } from '../model/Entity';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 
 export class EntityRelationshipsUpdateService {
@@ -40,7 +40,7 @@ export class EntityRelationshipsUpdateService {
   private async transformToDenormalizedData(
     property: RelationshipProperty,
     queryResult: Entity[]
-  ): Promise<MetadataValue[]> {
+  ): Promise<EntityMetadata[]> {
     return Promise.all(
       queryResult.map(async entity => ({
         value: entity.sharedId,
@@ -65,7 +65,7 @@ export class EntityRelationshipsUpdateService {
     await this.entitiesDataSource.getByIds(sharedIds).forEach(async entity => {
       template = await this.findTemplate(template, entity.template);
 
-      const metadataToUpdate: Record<string, MetadataValue[]> = {};
+      const metadataToUpdate: Record<string, EntityMetadata[]> = {};
 
       await Promise.all(
         template.properties.map(async property => {

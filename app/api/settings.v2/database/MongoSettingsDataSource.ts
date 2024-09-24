@@ -5,8 +5,8 @@ import { DefaultLanguageMissingError } from '../errors/settingsErrors';
 
 export class MongoSettingsDataSource
   extends MongoDataSource<SettingsType>
-  // eslint-disable-next-line prettier/prettier
-  implements SettingsDataSource {
+  implements SettingsDataSource
+{
   protected collectionName = 'settings';
 
   protected async readSettings(): Promise<SettingsType | null> {

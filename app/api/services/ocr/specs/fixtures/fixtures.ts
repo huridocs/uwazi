@@ -9,7 +9,7 @@ const fixtures = {
     fixturesFactory.entity('parentForExistingRecord'),
   ],
   files: [
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'unrelatedAttachment',
       'parentEntity',
       'attachment',
@@ -17,7 +17,7 @@ const fixtures = {
       'eng'
     ),
     {
-      ...fixturesFactory.file(
+      ...fixturesFactory.fileDeprecated(
         'sourceFile',
         'parentEntity',
         'document',
@@ -27,7 +27,7 @@ const fixtures = {
       originalname: 'sourceFileOriginalName.pdf',
     },
     {
-      ...fixturesFactory.file(
+      ...fixturesFactory.fileDeprecated(
         'erroringSourceFile',
         'parentEntity',
         'document',
@@ -35,42 +35,42 @@ const fixtures = {
         'notALanguage'
       ),
     },
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'resultForExistingRecord',
       'parentForExistingRecord',
       'document',
       'ocr_existingFileName.pdf',
       'eng'
     ),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'sourceForExistingRecord',
       'parentForExistingRecord',
       'attachment',
       'existingFileName.pdf',
       'eng'
     ),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'resultToDelete',
       'parentForExistingRecord',
       'document',
       'ocr_toDeleteFileName.pdf',
       'eng'
     ),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'sourceToDelete',
       'parentForExistingRecord',
       'attachment',
       'toDeleteFileName.pdf',
       'eng'
     ),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'resultToDelete2',
       'parentForExistingRecord',
       'document',
       'ocr_toDeleteFileName2.pdf',
       'eng'
     ),
-    fixturesFactory.file(
+    fixturesFactory.fileDeprecated(
       'sourceToDelete2',
       'parentForExistingRecord',
       'attachment',
