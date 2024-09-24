@@ -2,6 +2,8 @@
 /* eslint-disable max-nested-callbacks,max-statements */
 
 import Ajv from 'ajv';
+// eslint-disable-next-line node/no-restricted-import
+import fs from 'fs/promises';
 
 import entitiesModel from 'api/entities/entitiesModel';
 import { spyOnEmit } from 'api/eventsbus/eventTesting';
@@ -11,8 +13,6 @@ import { search } from 'api/search';
 import date from 'api/utils/date.js';
 import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
-// eslint-disable-next-line node/no-restricted-import
-import fs from 'fs/promises';
 import { UserRole } from 'shared/types/userSchema';
 
 import fixtures, {
@@ -32,6 +32,7 @@ import fixtures, {
 import entities from '../entities.js';
 import { EntityUpdatedEvent } from '../events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from '../events/EntityDeletedEvent';
+import { EntityCreatedEvent } from '../events/EntityCreatedEvent';
 
 describe('entities', () => {
   const userFactory = new UserInContextMockFactory();
@@ -509,17 +510,47 @@ describe('entities', () => {
     });
 
     describe('events', () => {
+      it('should emit an event when an entity is created', async () => {
+        const emitSpy = spyOnEmit();
+        const newEntity = {
+          template: templateId,
+          title: 'New Super Hero',
+          metadata: {
+            text: [{ value: 'New Text' }],
+            property1: [{ value: 'value1' }],
+            property2: [{ value: 'value2' }],
+            description: [{ value: 'ew Description' }],
+            friends: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+            enemies: [{ icon: null, label: 'shared2title', type: 'entity', value: 'shared2' }],
+            select: [],
+          },
+        };
+
+        const savedEntity = await entities.save(newEntity, {
+          user: { _id: adminId },
+          language: 'en',
+        });
+
+        const afterAllLanguages = await entities.getAllLanguages(savedEntity.sharedId);
+
+        emitSpy.expectToEmitEventWith(EntityCreatedEvent, {
+          entities: afterAllLanguages,
+          targetLanguageKey: 'es',
+        });
+        emitSpy.restore();
+      });
+
       it('should emit an event when an entity is updated', async () => {
         const emitSpy = spyOnEmit();
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
-        const beforeAllLanguages = fixtures.entities.filter(e => e.sharedId === before.sharedId);
+        const beforeAllLanguages = await entities.getAllLanguages(before.sharedId);
         const after = { ...before, title: 'new title' };
 
         await entities.save(after, { language: 'en' });
 
         const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
 
-        emitSpy.expectToEmitEvent(EntityUpdatedEvent, {
+        emitSpy.expectToEmitEventWith(EntityUpdatedEvent, {
           before: beforeAllLanguages,
           after: afterAllLanguages,
           targetLanguageKey: 'en',
