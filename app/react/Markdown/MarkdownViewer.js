@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import sanitizeHtml from 'sanitize-html';
 import { risonDecodeOrIgnore } from 'app/utils';
 import { Translate } from 'app/I18N';
 import { MarkdownLink, SearchBox, MarkdownMedia, ItemList } from './components';
@@ -7,6 +8,7 @@ import CustomHookComponents from './CustomHooks';
 
 import markdownToReact from './markdownToReact';
 import { ValidatedElement } from './ValidatedElement';
+import { visualizationHtmlTags } from './utils';
 
 class MarkdownViewer extends Component {
   static errorHtml(index, message) {
@@ -107,8 +109,15 @@ class MarkdownViewer extends Component {
       return false;
     }
 
+    const sanitizedMarkdown = !this.props.sanitized
+      ? this.props.markdown
+      : sanitizeHtml(this.props.markdown, {
+          allowedTags: visualizationHtmlTags,
+          allowedAttributes: false,
+        });
+
     const ReactFromMarkdown = markdownToReact(
-      this.props.markdown,
+      sanitizedMarkdown,
       this.customComponent.bind(this),
       this.props.html
     );
@@ -120,7 +129,8 @@ class MarkdownViewer extends Component {
     return ValidatedElement(
       'div',
       { className: 'markdown-viewer' },
-      ...React.Children.toArray(ReactFromMarkdown)
+      React.Children.toArray(ReactFromMarkdown),
+      this.props.sanitized
     );
   }
 }
@@ -130,6 +140,7 @@ MarkdownViewer.defaultProps = {
   markdown: '',
   html: false,
   compact: false,
+  sanitized: true,
 };
 
 MarkdownViewer.propTypes = {
@@ -137,6 +148,7 @@ MarkdownViewer.propTypes = {
   lists: PropTypes.arrayOf(PropTypes.object),
   html: PropTypes.bool,
   compact: PropTypes.bool,
+  sanitized: PropTypes.bool,
 };
 
 export default MarkdownViewer;

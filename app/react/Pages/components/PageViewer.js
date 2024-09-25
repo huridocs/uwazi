@@ -85,7 +85,12 @@ class PageViewer extends Component {
                   {this.state.customPageError && this.renderErrorWarning()}
                   <Context.Provider value={datasets}>
                     <ErrorBoundary>
-                      <MarkdownViewer html markdown={originalText} lists={lists} />
+                      <MarkdownViewer
+                        html
+                        markdown={originalText}
+                        lists={lists}
+                        sanitized={false}
+                      />
                     </ErrorBoundary>
                   </Context.Provider>
                   <Footer />
