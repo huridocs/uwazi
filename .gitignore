@@ -57,3 +57,4 @@ cypress/videos/*
 *.diff.png
 *.actual.png
 .trunk/*
+app/react/App/styles/globals.css
