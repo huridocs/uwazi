@@ -511,9 +511,14 @@ describe('entities', () => {
     });
 
     describe('events', () => {
-      it('should emit an event when an entity is created', async () => {
-        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+      let emitSpy;
 
+      beforeEach(() => {
+        emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+        emitSpy.mockClear();
+      });
+
+      it('should emit an event when an entity is created', async () => {
         const newEntity = {
           template: templateId,
           title: 'New Super Hero',
@@ -539,15 +544,12 @@ describe('entities', () => {
         expect(emitSpy).toHaveBeenCalledWith(
           new EntityCreatedEvent({
             entities: afterAllLanguages,
-            targetLanguageKey: 'es',
+            targetLanguageKey: 'en',
           })
         );
-
-        emitSpy.mockRestore();
       });
 
       it('should emit an event when an entity is updated', async () => {
-        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
         const beforeAllLanguages = await entities.getAllLanguages(before.sharedId);
         const after = { ...before, title: 'new title' };
@@ -564,8 +566,6 @@ describe('entities', () => {
             targetLanguageKey: 'en',
           })
         );
-
-        emitSpy.mockRestore();
       });
     });
   });

@@ -158,7 +158,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   return result;
 }
 
-async function createEntity(doc, languages, sharedId, docTemplate) {
+async function createEntity(doc, [currentLanguage, languages], sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
 
@@ -208,7 +208,7 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   await applicationEventsBus.emit(
     new EntityCreatedEvent({
       entities: await model.get({ sharedId }),
-      targetLanguageKey: languages[0].key,
+      targetLanguageKey: currentLanguage,
     })
   );
 
@@ -419,7 +419,12 @@ export default {
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId, docTemplate);
+      await this.createEntity(
+        this.sanitize(doc, docTemplate),
+        [language, languages],
+        sharedId,
+        docTemplate
+      );
     }
 
     const [entity] = includeDocuments
