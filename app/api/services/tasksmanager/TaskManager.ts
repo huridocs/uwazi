@@ -129,7 +129,9 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
   }
 
   async stop() {
-    await this.repeater!.stop();
+    if (this.repeater) {
+      await this.repeater.stop();
+    }
     await this.redisClient.end(true);
   }
 }
