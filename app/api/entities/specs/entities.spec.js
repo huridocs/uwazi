@@ -15,6 +15,7 @@ import db from 'api/utils/testing_db';
 import { UserInContextMockFactory } from 'api/utils/testingUserInContext';
 import { UserRole } from 'shared/types/userSchema';
 
+import { applicationEventsBus } from 'api/eventsbus';
 import fixtures, {
   adminId,
   batmanFinishesId,
@@ -511,7 +512,8 @@ describe('entities', () => {
 
     describe('events', () => {
       it('should emit an event when an entity is created', async () => {
-        const emitSpy = spyOnEmit();
+        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
+
         const newEntity = {
           template: templateId,
           title: 'New Super Hero',
@@ -533,15 +535,19 @@ describe('entities', () => {
 
         const afterAllLanguages = await entities.getAllLanguages(savedEntity.sharedId);
 
-        emitSpy.expectToEmitEventWith(EntityCreatedEvent, {
-          entities: afterAllLanguages,
-          targetLanguageKey: 'es',
-        });
-        emitSpy.restore();
+        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityCreatedEvent);
+        expect(emitSpy).toHaveBeenCalledWith(
+          new EntityCreatedEvent({
+            entities: afterAllLanguages,
+            targetLanguageKey: 'es',
+          })
+        );
+
+        emitSpy.mockRestore();
       });
 
       it('should emit an event when an entity is updated', async () => {
-        const emitSpy = spyOnEmit();
+        const emitSpy = jest.spyOn(applicationEventsBus, 'emit');
         const before = fixtures.entities.find(e => e._id === batmanFinishesId);
         const beforeAllLanguages = await entities.getAllLanguages(before.sharedId);
         const after = { ...before, title: 'new title' };
@@ -550,12 +556,16 @@ describe('entities', () => {
 
         const afterAllLanguages = await entities.getAllLanguages(before.sharedId);
 
-        emitSpy.expectToEmitEventWith(EntityUpdatedEvent, {
-          before: beforeAllLanguages,
-          after: afterAllLanguages,
-          targetLanguageKey: 'en',
-        });
-        emitSpy.restore();
+        expect(emitSpy.mock.calls[0][0]).toBeInstanceOf(EntityUpdatedEvent);
+        expect(emitSpy).toHaveBeenCalledWith(
+          new EntityUpdatedEvent({
+            before: beforeAllLanguages,
+            after: afterAllLanguages,
+            targetLanguageKey: 'en',
+          })
+        );
+
+        emitSpy.mockRestore();
       });
     });
   });
