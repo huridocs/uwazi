@@ -9,17 +9,17 @@ type DefaultTaskType = string;
 
 type DefaultMessageParameters = Record<string, any>;
 
-export type TaskMessage<T = DefaultTaskType, P = DefaultMessageParameters> = {
+export type TaskMessage = {
   tenant: string;
-  task: T;
-  params?: P;
+  task: DefaultTaskType;
+  params?: DefaultMessageParameters;
 };
 
 /* eslint-disable camelcase */
-export interface ResultsMessage<T = DefaultTaskType, P = DefaultMessageParameters> {
+export interface ResultsMessage {
   tenant: string;
-  task: T;
-  params?: P;
+  task: DefaultTaskType;
+  params?: DefaultMessageParameters;
   data_url?: string;
   file_url?: string;
   success?: boolean;
@@ -27,20 +27,16 @@ export interface ResultsMessage<T = DefaultTaskType, P = DefaultMessageParameter
 }
 /* eslint-enable camelcase */
 
-export interface Service<T = DefaultTaskType, P = DefaultMessageParameters> {
+export interface Service<R = ResultsMessage> {
   serviceName: string;
-  processResults?: (results: ResultsMessage<T, P>) => Promise<void>;
+  processResults?: (results: R) => Promise<void>;
   processResultsMessageHiddenTime?: number;
 }
 
-export class TaskManager<
-  T = DefaultTaskType,
-  S = DefaultMessageParameters,
-  R = DefaultMessageParameters,
-> {
+export class TaskManager<T = TaskMessage, R = ResultsMessage> {
   redisSMQ: RedisSMQ;
 
-  readonly service: Service<T, R>;
+  readonly service: Service<R>;
 
   readonly taskQueue: string;
 
@@ -50,7 +46,7 @@ export class TaskManager<
 
   redisClient: RedisClient;
 
-  constructor(service: Service<T, R>) {
+  constructor(service: Service<R>) {
     this.service = service;
     this.taskQueue = `${config.ENVIRONMENT}_${service.serviceName}_tasks`;
     this.resultsQueue = `${config.ENVIRONMENT}_${service.serviceName}_results`;
@@ -121,7 +117,7 @@ export class TaskManager<
     }
   }
 
-  async startTask(taskMessage: TaskMessage<T, S>) {
+  async startTask(taskMessage: T) {
     if (!this.redisClient.connected) {
       throw new Error('Redis is not connected');
     }
@@ -133,7 +129,9 @@ export class TaskManager<
   }
 
   async stop() {
-    await this.repeater!.stop();
+    if (this.repeater) {
+      await this.repeater.stop();
+    }
     await this.redisClient.end(true);
   }
 }
