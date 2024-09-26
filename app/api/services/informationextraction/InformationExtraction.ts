@@ -360,7 +360,7 @@ class InformationExtraction {
         metadata: {
           extractor_name: extractor.name || '',
           property: extractor.property || '',
-          templates: extractor.templates ? extractor.templates.join(',') : '',
+          templates: Array.isArray(extractor.templates) ? extractor.templates.join(',') : '',
         },
       },
     });
