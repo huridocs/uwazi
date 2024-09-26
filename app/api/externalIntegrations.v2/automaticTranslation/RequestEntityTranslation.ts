@@ -64,6 +64,15 @@ export class RequestEntityTranslation {
       const commonPropName = template?.commonProperties.find(
         prop => prop.id === commonPropId
       )?.name;
+
+      if (!commonPropName) {
+        throw new Error('Common property not found');
+      }
+
+      if (!(typeof entity[commonPropName] === 'string')) {
+        throw new Error('Common property is not a string');
+      }
+
       await this.taskManager.startTask({
         params: {
           key: [getTenant().name, entity.sharedId, commonPropName],
@@ -75,7 +84,15 @@ export class RequestEntityTranslation {
     });
     atTemplateConfig?.properties.forEach(async propId => {
       const propName = template?.properties.find(prop => prop.id === propId)?.name;
-      if (entity.metadata[propName][0].value) {
+      if (!propName) {
+        throw new Error('Property not found');
+      }
+
+      if (!(typeof entity.metadata[propName]?.[0].value === 'string')) {
+        throw new Error('Property is not a string');
+      }
+
+      if (entity.metadata[propName]?.[0].value) {
         await this.taskManager.startTask({
           params: {
             key: [getTenant().name, entity.sharedId, propName],
