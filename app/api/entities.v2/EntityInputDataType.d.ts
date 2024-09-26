@@ -193,7 +193,6 @@ export interface EntityInputData {
     | 'zu';
   title: string;
   template: string;
-  published: boolean;
   metadata: {
     [k: string]:
       | {
