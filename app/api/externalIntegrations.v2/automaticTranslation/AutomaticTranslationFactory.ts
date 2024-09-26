@@ -1,6 +1,6 @@
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';
