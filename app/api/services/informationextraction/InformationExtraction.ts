@@ -55,6 +55,7 @@ interface TaskParameters {
   id: string;
   multi_value?: boolean;
   options?: { label: string; id: string }[];
+  metadata?: { [key: string]: string };
 }
 
 type ResultParameters = TaskParameters;
@@ -354,7 +355,14 @@ class InformationExtraction {
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
-      params: { id: extractorId.toString() },
+      params: {
+        id: extractorId.toString(),
+        metadata: {
+          extractor_name: extractor.name || '',
+          property: extractor.property || '',
+          templates: Array.isArray(extractor.templates) ? extractor.templates.join(',') : '',
+        },
+      },
     });
   };
 
@@ -395,6 +403,11 @@ class InformationExtraction {
     const params: TaskParameters = {
       id: extractorId.toString(),
       multi_value: property.type === 'multiselect' || property.type === 'relationship',
+      metadata: {
+        extractor_name: extractor.name || '',
+        property: extractor.property || '',
+        templates: extractor.templates ? extractor.templates.join(',') : '',
+      },
     };
 
     if (propertyTypeIsSelectOrMultiSelect(property.type)) {
