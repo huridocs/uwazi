@@ -6,11 +6,11 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { MongoATConfigDataSource } from '../../infrastructure/MongoATConfigDataSource';
 import { ATExternalAPI } from '../../infrastructure/ATExternalAPI';
-import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
+import { ATConfigService } from '../GetAutomaticTranslationConfig';
 
 const createService = () => {
   const transactionManager = DefaultTransactionManager();
-  return new GetAutomaticTranslationConfig(
+  return new ATConfigService(
     DefaultSettingsDataSource(transactionManager),
     new MongoATConfigDataSource(getConnection(), transactionManager),
     DefaultTemplatesDataSource(transactionManager),
@@ -89,7 +89,7 @@ afterAll(async () => {
 
 describe('GetAutomaticTranslationConfig', () => {
   it('should return only title, text and markdown properties', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.templates[0]).toEqual({
       template: fixtures.id('template 1').toString(),
       commonProperties: [fixtures.commonPropertiesTitleId('template 1')],
@@ -98,7 +98,7 @@ describe('GetAutomaticTranslationConfig', () => {
   });
 
   it('should not include properties that no longer exist', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.templates[0].properties).toEqual([
       fixtures.id('text property').toString(),
       fixtures.id('rich text').toString(),
@@ -106,7 +106,7 @@ describe('GetAutomaticTranslationConfig', () => {
   });
 
   it('should not include properties belonging to other templates', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.templates[1]).toEqual({
       template: fixtures.id('template 2').toString(),
       commonProperties: [],
@@ -115,12 +115,12 @@ describe('GetAutomaticTranslationConfig', () => {
   });
 
   it('should return languages available filtered by the supported languages of automatic translation', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.languages).toEqual(['en', 'es']);
   });
 
   it('should allow configuring only title without any properties', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.templates[2]).toEqual({
       template: fixtures.id('template 3').toString(),
       commonProperties: [fixtures.commonPropertiesTitleId('template 3')],
@@ -129,7 +129,7 @@ describe('GetAutomaticTranslationConfig', () => {
   });
 
   it('should not include properties configurations belonging to an unexistent template', async () => {
-    const config = await createService().execute();
+    const config = await createService().get();
     expect(config.templates[3]).toBeUndefined();
   });
 });
