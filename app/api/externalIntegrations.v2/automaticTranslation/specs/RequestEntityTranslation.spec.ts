@@ -8,9 +8,11 @@ import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_sourc
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntitySchema } from 'shared/types/entityType';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
 import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
 import { AJVEntityInputValidator } from '../infrastructure/EntityInputValidator';
+import { InvalidInputDataFormat } from '../errors/generateATErrors';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -68,7 +70,7 @@ afterAll(async () => {
 
 describe('RequestEntityTranslation', () => {
   it('should send a task in the automatic translation service queue', async () => {
-    const languageFromEntity = fixtures.entities.find(e => e.language === 'en');
+    const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
     languageFromEntity._id = languageFromEntity?._id?.toString();
     languageFromEntity.template = languageFromEntity?.template?.toString();
 
@@ -123,5 +125,20 @@ describe('RequestEntityTranslation', () => {
 
     await requestEntityTranslation.execute(entityWithNotSupportedLanguage);
     expect(taskManager.startTask).not.toHaveBeenCalled();
+  });
+
+  it('should validate input has proper shape at runtime', async () => {
+    const requestEntityTranslation = new RequestEntityTranslation(
+      taskManager,
+      DefaultTemplatesDataSource(DefaultTransactionManager()),
+      // @ts-ignore
+      new TestATConfigService(),
+      new AJVEntityInputValidator()
+    );
+
+    const invalidEntity = { invalid_prop: true };
+    await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
+      new InvalidInputDataFormat('{"missingProperty":"_id"}')
+    );
   });
 });

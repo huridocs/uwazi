@@ -1,9 +1,10 @@
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import { EntityInputValidator } from './contracts/EntityInputValidator';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
+import { InvalidInputDataFormat } from './errors/generateATErrors';
 
 export type ATTaskMessage = {
   params: {
@@ -12,15 +13,6 @@ export type ATTaskMessage = {
     language_from: string;
     languages_to: string[];
   };
-};
-
-export type EntityInputData = {
-  _id: string;
-  sharedId: string;
-  language: LanguageISO6391;
-  title: string;
-  template: string;
-  published: boolean;
 };
 
 export class RequestEntityTranslation {
@@ -46,9 +38,10 @@ export class RequestEntityTranslation {
     this.inputValidator = inputValidator;
   }
 
+  // eslint-disable-next-line max-statements
   async execute(entity: EntityInputData | unknown) {
     if (!this.inputValidator.validate(entity)) {
-      throw this.inputValidator.getErrors()[0];
+      throw new InvalidInputDataFormat(this.inputValidator.getErrors()[0]);
     }
     const atConfig = await this.aTConfigService.get();
     const atTemplateConfig = atConfig.templates.find(

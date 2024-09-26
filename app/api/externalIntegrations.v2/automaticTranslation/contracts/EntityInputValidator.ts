@@ -1,4 +1,4 @@
-import { EntityInputData } from '../RequestEntityTranslation';
+import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 
 export interface EntityInputValidator {
   getErrors(): string[];
