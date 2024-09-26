@@ -17,6 +17,7 @@ import ID from 'shared/uniqueID';
 
 import { denormalizeMetadata, denormalizeRelated } from './denormalize';
 import model from './entitiesModel';
+import { EntityCreatedEvent } from './events/EntityCreatedEvent';
 import { EntityUpdatedEvent } from './events/EntityUpdatedEvent';
 import { EntityDeletedEvent } from './events/EntityDeletedEvent';
 import { saveSelections } from './metadataExtraction/saveSelections';
@@ -149,7 +150,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   await applicationEventsBus.emit(
     new EntityUpdatedEvent({
       before: docLanguages,
-      after: result,
+      after: await model.get({ sharedId: entity.sharedId }),
       targetLanguageKey: entity.language,
     })
   );
@@ -157,7 +158,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
   return result;
 }
 
-async function createEntity(doc, languages, sharedId, docTemplate) {
+async function createEntity(doc, [currentLanguage, languages], sharedId, docTemplate) {
   if (!docTemplate) docTemplate = await templates.getById(doc.template);
   const thesauriByKey = await templates.getRelatedThesauri(docTemplate);
 
@@ -203,6 +204,14 @@ async function createEntity(doc, languages, sharedId, docTemplate) {
   await updateNewRelationships(v2RelationshipsUpdates);
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
+
+  await applicationEventsBus.emit(
+    new EntityCreatedEvent({
+      entities: await model.get({ sharedId }),
+      targetLanguageKey: currentLanguage,
+    })
+  );
+
   return result;
 }
 
@@ -410,7 +419,12 @@ export default {
         docTemplate = defaultTemplate;
       }
       doc.metadata = doc.metadata || {};
-      await this.createEntity(this.sanitize(doc, docTemplate), languages, sharedId, docTemplate);
+      await this.createEntity(
+        this.sanitize(doc, docTemplate),
+        [language, languages],
+        sharedId,
+        docTemplate
+      );
     }
 
     const [entity] = includeDocuments
