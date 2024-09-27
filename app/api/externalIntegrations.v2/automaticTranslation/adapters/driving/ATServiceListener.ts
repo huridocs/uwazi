@@ -1,10 +1,10 @@
 import { tenants } from 'api/tenants';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 import { ATTranslationResultValidator } from '../../contracts/ATTranslationResultValidator';
 import { AJVTranslationResultValidator } from '../../infrastructure/AJVTranslationResultValidator';
 import { InvalidATServerResponse } from '../../errors/generateATErrors';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 
 export class ATServiceListener {
   static SERVICE_NAME = 'translations';

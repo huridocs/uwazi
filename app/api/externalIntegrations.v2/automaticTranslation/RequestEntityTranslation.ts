@@ -7,12 +7,10 @@ import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { InvalidInputDataFormat } from './errors/generateATErrors';
 
 export type ATTaskMessage = {
-  params: {
-    key: string[];
-    text: string;
-    language_from: string;
-    languages_to: string[];
-  };
+  key: string[];
+  text: string;
+  language_from: string;
+  languages_to: string[];
 };
 
 export class RequestEntityTranslation {
