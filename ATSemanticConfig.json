@@ -1,9 +1,0 @@
-{
-  "active": true,
-  "templates": [
-    {
-      "template": "Document",
-      "properties": ["text to translate"]
-    }
-  ]
-}
