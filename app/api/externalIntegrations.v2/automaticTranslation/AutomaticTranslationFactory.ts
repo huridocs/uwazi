@@ -58,8 +58,8 @@ const AutomaticTranslationFactory = {
 
   defaultATEntityCreationListener(eventsBus: EventsBus) {
     return new ATEntityCreationListener(
-      // AutomaticTranslationFactory.defaultRequestEntityTranslation(),
-      eventsBus
+      eventsBus,
+      AutomaticTranslationFactory.defaultATConfigService()
     );
   },
 };
