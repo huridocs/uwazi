@@ -10,6 +10,7 @@ import { SaveEntityTranslations } from 'api/externalIntegrations.v2/automaticTra
 import { ATServiceListener } from '../ATServiceListener';
 
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
+  // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
     defaultGenerateATConfig() {
       return {} as GenerateAutomaticTranslationsCofig;
