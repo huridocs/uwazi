@@ -5,8 +5,6 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
-import { ATConfigService } from 'api/externalIntegrations.v2/automaticTranslation/services/GetAutomaticTranslationConfig';
-import testingDB from 'api/utils/testing_db';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();
