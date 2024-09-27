@@ -2,28 +2,23 @@ import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
-import { ATConfigService } from '../../services/GetAutomaticTranslationConfig';
 
 export class ATEntityCreationListener {
   private eventBus: EventsBus;
 
   private ATFactory: typeof AutomaticTranslationFactory;
 
-  private aTConfigService: ATConfigService;
-
   constructor(
     eventBus: EventsBus,
-    aTConfigService: ATConfigService,
     ATFactory: typeof AutomaticTranslationFactory = AutomaticTranslationFactory
   ) {
     this.eventBus = eventBus;
-    this.aTConfigService = aTConfigService;
     this.ATFactory = ATFactory;
   }
 
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
-      const { active } = await this.aTConfigService.get();
+      const { active } = await this.ATFactory.defaultATConfigService().get();
 
       if (active) {
         permissionsContext.setCommandContext();

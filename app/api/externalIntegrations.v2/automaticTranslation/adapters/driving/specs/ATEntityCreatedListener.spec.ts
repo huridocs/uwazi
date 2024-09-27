@@ -5,6 +5,13 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { tenants } from 'api/tenants';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { ATConfigService } from 'api/externalIntegrations.v2/automaticTranslation/services/GetAutomaticTranslationConfig';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { MongoATConfigDataSource } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { ATExternalAPI } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/ATExternalAPI';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();
@@ -12,6 +19,15 @@ const factory = getFixturesFactory();
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
+    defaultATConfigService() {
+      const transactionManager = DefaultTransactionManager();
+      return new ATConfigService(
+        DefaultSettingsDataSource(transactionManager),
+        new MongoATConfigDataSource(getConnection(), transactionManager),
+        DefaultTemplatesDataSource(transactionManager),
+        new ATExternalAPI()
+      );
+    },
     defaultRequestEntityTranslation() {
       return { execute: executeSpy } as unknown as RequestEntityTranslation;
     },
@@ -33,11 +49,7 @@ describe('ATEntityCreationListener', () => {
 
     executeSpy = jest.fn();
 
-    listener = new ATEntityCreationListener(
-      eventBus,
-      AutomaticTranslationFactory.defaultATConfigService(),
-      prepareATFactory(executeSpy)
-    );
+    listener = new ATEntityCreationListener(eventBus, prepareATFactory(executeSpy));
     listener.start();
   });
 
