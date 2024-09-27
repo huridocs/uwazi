@@ -5,13 +5,25 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
+import { tenants } from 'api/tenants';
 
 const factory = getFixturesFactory();
+
+const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
+  // @ts-ignore
+  const ATFactory: typeof AutomaticTranslationFactory = {
+    defaultRequestEntityTranslation() {
+      return { execute: executeSpy } as unknown as RequestEntityTranslation;
+    },
+  };
+
+  return ATFactory;
+};
 
 describe('ATEntityCreationListener', () => {
   let listener: ATEntityCreationListener;
   const eventBus: EventsBus = new EventsBus();
-  let requestEntityTranslation: RequestEntityTranslation;
+  let executeSpy: jest.Mock<any, any, any>;
 
   beforeEach(async () => {
     await testingEnvironment.setUp({
@@ -19,10 +31,9 @@ describe('ATEntityCreationListener', () => {
     });
     await testingEnvironment.setTenant('tenant');
 
-    requestEntityTranslation = AutomaticTranslationFactory.defaultRequestEntityTranslation();
-    jest.spyOn(requestEntityTranslation, 'execute');
+    executeSpy = jest.fn();
 
-    listener = new ATEntityCreationListener(requestEntityTranslation, eventBus);
+    listener = new ATEntityCreationListener(eventBus, prepareATFactory(executeSpy));
     listener.start();
   });
 
@@ -38,9 +49,11 @@ describe('ATEntityCreationListener', () => {
         targetLanguageKey: 'en',
       });
 
-      await eventBus.emit(entityCreationEvent);
+      await tenants.run(async () => {
+        await eventBus.emit(entityCreationEvent);
+      }, 'tenant');
 
-      expect(requestEntityTranslation.execute).toHaveBeenCalledWith(entityEn);
+      expect(executeSpy).toHaveBeenCalledWith(entityEn);
     });
   });
 });

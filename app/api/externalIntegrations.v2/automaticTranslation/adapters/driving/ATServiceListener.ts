@@ -4,9 +4,10 @@ import { ATTranslationResultValidator } from '../../contracts/ATTranslationResul
 import { AJVTranslationResultValidator } from '../../infrastructure/AJVTranslationResultValidator';
 import { InvalidATServerResponse } from '../../errors/generateATErrors';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
+import { permissionsContext } from 'api/permissions/permissionsContext';
 
 export class ATServiceListener {
-  static SERVICE_NAME = 'AutomaticTranslation';
+  static SERVICE_NAME = 'translations';
 
   private taskManager: TaskManager;
 
@@ -20,6 +21,7 @@ export class ATServiceListener {
         }
 
         await tenants.run(async () => {
+          permissionsContext.setCommandContext();
           await ATFactory.defaultSaveEntityTranslations().execute(result);
         }, result.key[0]);
       },

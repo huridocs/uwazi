@@ -57,7 +57,7 @@ describe('ATServiceListener', () => {
       await redisSMQ.createQueueAsync({ qname: queueName });
     };
 
-    await recreateQueue('AutomaticTranslation_results').catch(error => {
+    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch(error => {
       throw error;
     });
 
@@ -85,7 +85,7 @@ describe('ATServiceListener', () => {
       executeSpy.mockClear();
 
       await redisSMQ.sendMessageAsync({
-        qname: 'AutomaticTranslation_results',
+        qname: `${ATServiceListener.SERVICE_NAME}_results`,
         message: JSON.stringify(message),
       });
 
