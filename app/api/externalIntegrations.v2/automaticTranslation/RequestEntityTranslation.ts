@@ -7,16 +7,14 @@ import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { InvalidInputDataFormat } from './errors/generateATErrors';
 
 export type ATTaskMessage = {
-  params: {
-    key: string[];
-    text: string;
-    language_from: string;
-    languages_to: string[];
-  };
+  key: string[];
+  text: string;
+  language_from: string;
+  languages_to: string[];
 };
 
 export class RequestEntityTranslation {
-  static SERVICE_NAME = 'AutomaticTranslation';
+  static SERVICE_NAME = 'translations';
 
   private taskManager: TaskManager<ATTaskMessage>;
 
@@ -74,12 +72,10 @@ export class RequestEntityTranslation {
       }
 
       await this.taskManager.startTask({
-        params: {
-          key: [getTenant().name, entity.sharedId, commonPropName],
-          text: entity[commonPropName],
-          language_from: languageFrom,
-          languages_to: languagesTo,
-        },
+        key: [getTenant().name, entity.sharedId, commonPropId.toString()],
+        text: entity[commonPropName],
+        language_from: languageFrom,
+        languages_to: languagesTo,
       });
     });
     atTemplateConfig?.properties.forEach(async propId => {
@@ -94,12 +90,10 @@ export class RequestEntityTranslation {
 
       if (entity.metadata[propName]?.[0].value) {
         await this.taskManager.startTask({
-          params: {
-            key: [getTenant().name, entity.sharedId, propName],
-            text: entity.metadata[propName][0].value,
-            language_from: languageFrom,
-            languages_to: languagesTo,
-          },
+          key: [getTenant().name, entity.sharedId, propId],
+          text: entity.metadata[propName][0].value,
+          language_from: languageFrom,
+          languages_to: languagesTo,
         });
       }
     });

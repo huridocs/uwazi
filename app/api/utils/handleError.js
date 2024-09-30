@@ -69,6 +69,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   }
 
   if (error instanceof Ajv.ValidationError) {
+    console.log(util.inspect(error));
     result = { code: 422, message: error.message, validations: error.errors, logLevel: 'debug' };
   }
 
