@@ -48,8 +48,8 @@ export class TaskManager<T = TaskMessage, R = ResultsMessage> {
 
   constructor(service: Service<R>) {
     this.service = service;
-    this.taskQueue = `${service.serviceName}_tasks`;
-    this.resultsQueue = `${service.serviceName}_results`;
+    this.taskQueue = `${config.ENVIRONMENT}_${service.serviceName}_tasks`;
+    this.resultsQueue = `${config.ENVIRONMENT}_${service.serviceName}_results`;
     const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     this.redisClient = Redis.createClient(redisUrl);
     this.redisSMQ = new RedisSMQ({ client: this.redisClient });

@@ -116,6 +116,8 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
                 size={180}
                 bgColor="white"
                 fgColor="black"
+                // @ts-ignore required for accessibility check
+                title="qr code"
               />
             </div>
           </Card>
