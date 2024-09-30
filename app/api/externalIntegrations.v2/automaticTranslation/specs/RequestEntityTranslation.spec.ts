@@ -87,21 +87,17 @@ describe('RequestEntityTranslation', () => {
     expect(taskManager.startTask).toHaveBeenCalledTimes(2);
 
     expect(taskManager.startTask).toHaveBeenCalledWith({
-      params: {
-        key: ['tenant', 'entity1', 'title'],
-        text: 'entity1',
-        language_from: 'en',
-        languages_to: ['es'],
-      },
+      key: ['tenant', 'entity1', factory.commonPropertiesTitleId('template1').toString()],
+      text: 'entity1',
+      language_from: 'en',
+      languages_to: ['es'],
     });
 
     expect(taskManager.startTask).toHaveBeenCalledWith({
-      params: {
-        key: ['tenant', 'entity1', 'text1'],
-        text: 'original text1',
-        language_from: 'en',
-        languages_to: ['es'],
-      },
+      key: ['tenant', 'entity1', factory.property('text1')._id?.toString()],
+      text: 'original text1',
+      language_from: 'en',
+      languages_to: ['es'],
     });
   });
 
