@@ -5,16 +5,12 @@ import RedisSMQ from 'rsmq';
 import waitForExpect from 'wait-for-expect';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { GenerateAutomaticTranslationsCofig } from 'api/externalIntegrations.v2/automaticTranslation/GenerateAutomaticTranslationConfig';
 import { SaveEntityTranslations } from 'api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations';
 import { ATServiceListener } from '../ATServiceListener';
 
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
-    defaultGenerateATConfig() {
-      return {} as GenerateAutomaticTranslationsCofig;
-    },
     defaultSaveEntityTranslations() {
       return { execute: executeSpy } as unknown as SaveEntityTranslations;
     },
@@ -57,7 +53,7 @@ describe('ATServiceListener', () => {
       await redisSMQ.createQueueAsync({ qname: queueName });
     };
 
-    await recreateQueue('AutomaticTranslation_results').catch(error => {
+    await recreateQueue(`${ATServiceListener.SERVICE_NAME}_results`).catch(error => {
       throw error;
     });
 
@@ -85,7 +81,7 @@ describe('ATServiceListener', () => {
       executeSpy.mockClear();
 
       await redisSMQ.sendMessageAsync({
-        qname: 'AutomaticTranslation_results',
+        qname: `${config.ENVIRONMENT}_${ATServiceListener.SERVICE_NAME}_results`,
         message: JSON.stringify(message),
       });
 
