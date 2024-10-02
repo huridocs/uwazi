@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Modal } from 'V2/Components/UI';
@@ -18,12 +18,15 @@ const TranslateModal = () => {
 
   const { replace, fields } = useFieldArray({ control, keyName: 'id', name: 'values' });
 
+  const context = ((translations && translations[0]?.contexts) || []).find(
+    ctx => ctx.id === inlineEditState.context
+  );
+
   useEffect(() => {
     const values = translations.map(translation => {
       const language = languages?.find(lang => lang.key === translation.locale);
-      const value = translation.contexts.find(ctx => ctx.id === inlineEditState.context)?.values[
-        inlineEditState.translationKey
-      ];
+      const value = context?.values[inlineEditState.translationKey];
+
       return {
         language: language?.key,
         value,
@@ -34,21 +37,8 @@ const TranslateModal = () => {
   }, [inlineEditState.context, inlineEditState.translationKey, languages, replace, translations]);
 
   const submit = async values => {
-    console.log(values);
-    // const updatedTranslations = await postV2(
-    //   [
-    //     {
-    //       language: 'en',
-    //       value: 'TEST',
-    //       key: 'Filters (FILTERS CONFIGURATION)',
-    //     },
-    //   ],
-    //   {
-    //     type: 'Uwazi UI',
-    //     label: 'User Interface',
-    //     id: 'System',
-    //   }
-    // );
+    const updatedTranslations = await postV2(values.values, context);
+    setTranslations(updatedTranslations);
   };
 
   return (
