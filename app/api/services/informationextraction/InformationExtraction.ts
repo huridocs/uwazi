@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
 import { storage } from 'api/files';
-import { ResultsMessage, TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { IXSuggestionsModel } from 'api/suggestions/IXSuggestionsModel';
 import { SegmentationModel } from 'api/services/pdfsegmentation/segmentationModel';
 import { EnforcedWithId } from 'api/odm';
@@ -55,17 +55,36 @@ interface TaskParameters {
   id: string;
   multi_value?: boolean;
   options?: { label: string; id: string }[];
+  metadata?: { [key: string]: string };
+}
+
+interface TaskMessage {
+  tenant: string;
+  task: TaskTypes;
+  params?: TaskParameters;
 }
 
 type ResultParameters = TaskParameters;
+
+/* eslint-disable camelcase */
+interface ResultMessage<P = ResultParameters> {
+  tenant: string;
+  task: TaskTypes;
+  params?: P;
+  data_url?: string;
+  file_url?: string;
+  success?: boolean;
+  error_message?: string;
+}
+/* eslint-enable camelcase */
 
 interface InternalResultParameters {
   id: ObjectId;
 }
 
-type IXResultsMessage = ResultsMessage<TaskTypes, ResultParameters>;
+type IXResultsMessage = ResultMessage;
 
-type InternalIXResultsMessage = ResultsMessage<TaskTypes, InternalResultParameters>;
+type InternalIXResultsMessage = ResultMessage<InternalResultParameters>;
 
 interface CommonMaterialsData {
   xml_file_name: string;
@@ -109,7 +128,7 @@ async function fetchCandidates(property: PropertySchema) {
 class InformationExtraction {
   static SERVICE_NAME = 'information_extraction';
 
-  public taskManager: TaskManager<TaskTypes, TaskParameters, ResultParameters>;
+  public taskManager: TaskManager<TaskMessage, ResultMessage>;
 
   static mock: any;
 
@@ -149,9 +168,9 @@ class InformationExtraction {
     file: FileWithAggregation,
     _data: CommonMaterialsData
   ): MaterialsData => {
-    const language_iso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
+    const languageIso = languages.get(file.language!, 'ISO639_1') || defaultTrainingLanguage;
 
-    let data: MaterialsData = { ..._data, language_iso };
+    let data: MaterialsData = { ..._data, language_iso: languageIso };
 
     const noExtractedData = propertyTypeIsWithoutExtractedMetadata(propertyType);
 
@@ -354,7 +373,14 @@ class InformationExtraction {
     await this.taskManager.startTask({
       task: 'suggestions',
       tenant: tenants.current().name,
-      params: { id: extractorId.toString() },
+      params: {
+        id: extractorId.toString(),
+        metadata: {
+          extractor_name: extractor.name || '',
+          property: extractor.property || '',
+          templates: Array.isArray(extractor.templates) ? extractor.templates.join(',') : '',
+        },
+      },
     });
   };
 
@@ -395,6 +421,11 @@ class InformationExtraction {
     const params: TaskParameters = {
       id: extractorId.toString(),
       multi_value: property.type === 'multiselect' || property.type === 'relationship',
+      metadata: {
+        extractor_name: extractor.name || '',
+        property: extractor.property || '',
+        templates: extractor.templates ? extractor.templates.join(',') : '',
+      },
     };
 
     if (propertyTypeIsSelectOrMultiSelect(property.type)) {
