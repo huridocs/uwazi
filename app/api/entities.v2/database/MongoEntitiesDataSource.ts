@@ -14,8 +14,7 @@ import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource
-{
+  implements EntitiesDataSource {
   protected collectionName = 'entities';
 
   private settingsDS: MongoSettingsDataSource;
@@ -31,6 +30,19 @@ export class MongoEntitiesDataSource
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
+  }
+
+  async updateEntity(entity: Entity) {
+    // This is using V1 so that it gets denormalized to speed up development
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(entity._id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${entity._id}`);
+    }
+
+    entityToModify.title = entity.title;
+    entityToModify.metadata = entity.metadata;
+    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 
   async entitiesExist(sharedIds: string[]) {

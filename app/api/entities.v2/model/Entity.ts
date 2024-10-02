@@ -1,3 +1,5 @@
+import { Property } from 'api/templates.v2/model/Property';
+
 type MetadataValue = unknown;
 
 type BaseMetadataValue = {
@@ -45,6 +47,17 @@ export class Entity {
     this.template = template;
     this.metadata = metadata;
     this.obsoleteMetadata = obsoleteMetadata ?? [];
+  }
+
+  changePropertyValue(property: Property, value: string) {
+    if (property.commonProperty && property.name === 'title') {
+      this.title = value;
+    }
+
+    if (!property.commonProperty) {
+      this.metadata[property.name] = this.metadata[property.name] || [{ value: '' }];
+      this.metadata[property.name][0].value = value;
+    }
   }
 }
 

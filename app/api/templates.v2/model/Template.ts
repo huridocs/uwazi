@@ -45,6 +45,21 @@ class Template {
     });
     return updateInfo;
   };
+
+  getPropertyById(propertyId: string) {
+    const property = this.properties.find(p => p.id === propertyId);
+    if (property) {
+      return property;
+    }
+
+    const commonProperty = this.commonProperties.find(p => p.id === propertyId);
+    if (commonProperty) {
+      commonProperty.commonProperty = true;
+      return commonProperty;
+    }
+
+    return null;
+  }
 }
 
 export { Template };

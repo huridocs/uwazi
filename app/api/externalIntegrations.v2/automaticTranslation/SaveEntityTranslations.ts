@@ -30,29 +30,18 @@ export class SaveEntityTranslations {
 
     const [, entitySharedId, propertyId] = translationResult.key;
 
-    const { property, scope } = await this.getProperty(entitySharedId, propertyId);
+    const property = await this.getProperty(entitySharedId, propertyId);
 
     const entities = this.entitiesDS.getByIds([entitySharedId]);
 
-    await entities.forEach(async oneEntity => {
-      const translation = translationResult.translations.find(
-        t => t.language === oneEntity.language
-      );
+    await entities.forEach(async entity => {
+      const translation = translationResult.translations.find(t => t.language === entity.language);
       if (translation && property) {
-        if (scope === 'metadata') {
-          await this.entitiesDS.updateMetadataValues(oneEntity._id, {
-            [property.name]: [
-              { value: `${SaveEntityTranslations.AITranslatedText} ${translation.text}` },
-            ],
-          });
-        }
-        if (scope === 'title') {
-          await this.entitiesDS.updateMetadataValues(
-            oneEntity._id,
-            {},
-            `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
-          );
-        }
+        entity.changePropertyValue(
+          property,
+          `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
+        );
+        await this.entitiesDS.updateEntity(entity);
       }
     });
   }
@@ -61,24 +50,20 @@ export class SaveEntityTranslations {
   private async getProperty(entitySharedId: string, propertyId: string) {
     const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
     if (!entity) {
-      throw new Error('Entity does not exists');
+      throw new Error('Entity does not exist');
     }
 
     const template = await this.templatesDS.getById(entity.template);
     if (!template) {
-      throw new Error('Template does not exists');
+      throw new Error('Template does not exist');
     }
 
-    const property = template.properties.find(p => p.id === propertyId);
-    const commonProperty = template.commonProperties.find(p => p.id === propertyId);
+    const property = template.getPropertyById(propertyId);
 
-    if (!property && !commonProperty) {
-      throw new Error('Property does not exists');
+    if (!property) {
+      throw new Error('Property does not exist');
     }
 
-    return {
-      property: commonProperty || property,
-      scope: commonProperty ? 'title' : 'metadata',
-    } as const;
+    return property;
   }
 }
