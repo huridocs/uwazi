@@ -81,6 +81,15 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
             </I18NLink>
           </NeedAuthorization>
         </FeatureToggle>
+        <NeedAuthorization roles={['admin', 'editor']}>
+          <I18NLink
+            to="settings/paragraph_extraction"
+            activeclassname="active"
+            className="list-group-item"
+          >
+            <Translate>Paragraph Extraction</Translate>
+          </I18NLink>
+        </NeedAuthorization>
         <NeedAuthorization roles={['admin']}>
           <I18NLink to="settings/thesauri" activeclassname="active" className="list-group-item">
             <Translate>Thesauri</Translate>

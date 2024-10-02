@@ -48,6 +48,10 @@ import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUpl
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
 import {
+  ParagraphExtractor,
+  ParagraphExtractorLoader,
+} from 'V2/Routes/Settings/ParagraphExtractor/ParagraphExtractor';
+import {
   loggedInUsersRoute,
   adminsOnlyRoute,
   privateRoute,
@@ -136,6 +140,13 @@ const getRoutesLayout = (
               <IXSuggestions />
             </ProtectedRoute>
           }
+        />
+      </Route>
+      <Route path="paragraph_extraction">
+        <Route
+          loader={ParagraphExtractorLoader(headers)}
+          index
+          element={adminsOnlyRoute(<ParagraphExtractor />)}
         />
       </Route>
       <Route path="relationship-types">
