@@ -1,4 +1,5 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import {
   ATConfig,
   ATTemplateConfig,
@@ -11,8 +12,6 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
 import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
-import { AJVEntityInputValidator } from '../infrastructure/EntityInputValidator';
-import { InvalidInputDataFormat } from '../errors/generateATErrors';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -78,11 +77,10 @@ describe('RequestEntityTranslation', () => {
       taskManager,
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
-      new TestATConfigService(),
-      new AJVEntityInputValidator()
+      new TestATConfigService()
     );
 
-    await requestEntityTranslation.execute(languageFromEntity!);
+    await requestEntityTranslation.execute(languageFromEntity as EntityInputData);
 
     expect(taskManager.startTask).toHaveBeenCalledTimes(2);
 
@@ -115,26 +113,10 @@ describe('RequestEntityTranslation', () => {
       taskManager,
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
-      new TestATConfigService(),
-      new AJVEntityInputValidator()
+      new TestATConfigService()
     );
 
-    await requestEntityTranslation.execute(entityWithNotSupportedLanguage);
+    await requestEntityTranslation.execute(entityWithNotSupportedLanguage as EntityInputData);
     expect(taskManager.startTask).not.toHaveBeenCalled();
-  });
-
-  it('should validate input has proper shape at runtime', async () => {
-    const requestEntityTranslation = new RequestEntityTranslation(
-      taskManager,
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      // @ts-ignore
-      new TestATConfigService(),
-      new AJVEntityInputValidator()
-    );
-
-    const invalidEntity = { invalid_prop: true };
-    await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
-      new InvalidInputDataFormat('{"missingProperty":"_id"}')
-    );
   });
 });

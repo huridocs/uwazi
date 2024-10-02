@@ -1,10 +1,8 @@
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
-import { EntityInputValidator } from './contracts/EntityInputValidator';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
-import { InvalidInputDataFormat } from './errors/generateATErrors';
 
 export type ATTaskMessage = {
   key: string[];
@@ -22,25 +20,17 @@ export class RequestEntityTranslation {
 
   private aTConfigService: ATConfigService;
 
-  private inputValidator: EntityInputValidator;
-
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
     templatesDS: TemplatesDataSource,
-    aTConfigService: ATConfigService,
-    inputValidator: EntityInputValidator
+    aTConfigService: ATConfigService
   ) {
     this.taskManager = taskManager;
     this.templatesDS = templatesDS;
     this.aTConfigService = aTConfigService;
-    this.inputValidator = inputValidator;
   }
 
-  // eslint-disable-next-line max-statements
-  async execute(entity: EntityInputData | unknown) {
-    if (!this.inputValidator.validate(entity)) {
-      throw new InvalidInputDataFormat(this.inputValidator.getErrors()[0]);
-    }
+  async execute(entity: EntityInputData) {
     const atConfig = await this.aTConfigService.get();
     const atTemplateConfig = atConfig.templates.find(
       t => t.template === entity.template?.toString()

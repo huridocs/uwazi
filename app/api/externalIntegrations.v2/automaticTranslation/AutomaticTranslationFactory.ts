@@ -51,8 +51,7 @@ const AutomaticTranslationFactory = {
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
       DefaultTemplatesDataSource(DefaultTransactionManager()),
-      AutomaticTranslationFactory.defaultATConfigService(),
-      new AJVEntityInputValidator()
+      AutomaticTranslationFactory.defaultATConfigService()
     );
   },
 
