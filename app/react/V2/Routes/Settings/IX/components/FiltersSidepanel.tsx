@@ -89,13 +89,6 @@ const FiltersSidepanel = ({
       <form onSubmit={handleSubmit(submitFilters)} className="flex flex-col h-full">
         <Sidepanel.Body className="flex flex-col flex-grow gap-4">
           <Card>
-            <div className="flex items-center space-x-1 ">
-              <div className="flex-none">
-                <Translate>Accuracy (labeled data)</Translate>
-              </div>
-              <div className="flex-1 border-t border-dashed border-t-gray-200" />
-              <div className="flex-none font-mono font-bold">{aggregation.accuracy}%</div>
-            </div>
             <div className="flex items-center space-x-0.5">
               <Checkbox
                 label={<Translate className="font-normal">Labeled</Translate>}

@@ -93,7 +93,7 @@ const fixtures: DBFixture = {
     fixtureFactory.ixExtractor('fungusKindExtractor', 'kind', ['fungusTemplate']),
   ],
   ixsuggestions: [
-    fixtureFactory.ixSuggestion(
+    fixtureFactory.ixSuggestion_deprecated(
       'sh1_en',
       'existingExtractor',
       'shared1',
@@ -101,7 +101,7 @@ const fixtures: DBFixture = {
       'F3',
       'kind'
     ),
-    fixtureFactory.ixSuggestion(
+    fixtureFactory.ixSuggestion_deprecated(
       'sh1_es',
       'existingExtractor',
       'shared1',
@@ -110,7 +110,7 @@ const fixtures: DBFixture = {
       'kind',
       { language: 'es' }
     ),
-    fixtureFactory.ixSuggestion(
+    fixtureFactory.ixSuggestion_deprecated(
       'sh3_en',
       'existingExtractor',
       'shared3',
@@ -118,7 +118,7 @@ const fixtures: DBFixture = {
       'F5',
       'kind'
     ),
-    fixtureFactory.ixSuggestion(
+    fixtureFactory.ixSuggestion_deprecated(
       'sh4_en',
       'fungusKindExtractor',
       'shared4',
@@ -126,7 +126,7 @@ const fixtures: DBFixture = {
       'F7',
       'kind'
     ),
-    fixtureFactory.ixSuggestion(
+    fixtureFactory.ixSuggestion_deprecated(
       'sh4_es',
       'fungusKindExtractor',
       'shared4',

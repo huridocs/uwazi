@@ -14,46 +14,23 @@ export const baseQueryFragment = (extractorId: ObjectId, ignoreProcessing = true
 };
 
 export const filterFragments = {
-  labeled: {
-    _fragment: { 'state.labeled': true },
-    match: { 'state.labeled': true, 'state.match': true },
-    mismatch: { 'state.labeled': true, 'state.match': false },
-  },
-  nonLabeled: {
-    _fragment: { 'state.labeled': false },
-    withSuggestion: { 'state.labeled': false, 'state.withSuggestion': true },
-    noSuggestion: { 'state.labeled': false, 'state.withSuggestion': false },
-    noContext: { 'state.labeled': false, 'state.hasContext': false },
-    obsolete: { 'state.labeled': false, 'state.obsolete': true },
-    others: { 'state.labeled': false, 'state.error': true },
-  },
+  labeled: { 'state.labeled': true },
+  nonLabeled: { 'state.labeled': false },
+  match: { 'state.match': true },
+  mismatch: { 'state.match': false },
+  obsolete: { 'state.obsolete': true },
+  error: { 'state.error': true },
 };
 
 export const translateCustomFilter = (customFilter: SuggestionCustomFilter) => {
   const orFilters = [];
-  if (customFilter.labeled.match) {
-    orFilters.push(filterFragments.labeled.match);
-  }
-  if (customFilter.labeled.mismatch) {
-    orFilters.push(filterFragments.labeled.mismatch);
-  }
+  if (customFilter.labeled) orFilters.push(filterFragments.labeled);
+  if (customFilter.nonLabeled) orFilters.push(filterFragments.nonLabeled);
+  if (customFilter.match) orFilters.push(filterFragments.match);
+  if (customFilter.mismatch) orFilters.push(filterFragments.mismatch);
+  if (customFilter.obsolete) orFilters.push(filterFragments.obsolete);
+  if (customFilter.error) orFilters.push(filterFragments.error);
 
-  if (customFilter.nonLabeled.withSuggestion) {
-    orFilters.push(filterFragments.nonLabeled.withSuggestion);
-  }
-
-  if (customFilter.nonLabeled.noSuggestion) {
-    orFilters.push(filterFragments.nonLabeled.noSuggestion);
-  }
-  if (customFilter.nonLabeled.noContext) {
-    orFilters.push(filterFragments.nonLabeled.noContext);
-  }
-  if (customFilter.nonLabeled.obsolete) {
-    orFilters.push(filterFragments.nonLabeled.obsolete);
-  }
-  if (customFilter.nonLabeled.others) {
-    orFilters.push(filterFragments.nonLabeled.others);
-  }
   return orFilters;
 };
 
