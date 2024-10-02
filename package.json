@@ -144,7 +144,7 @@
     "express-prom-bundle": "^7.0.0",
     "express-session": "^1.18.0",
     "filesize": "10.1.6",
-    "flag-icon-css": "^4.1.7",
+    "flag-icons": "^7.2.3",
     "flowbite": "^2.3.0",
     "flowbite-datepicker": "^1.2.7",
     "flowbite-react": "^0.10.1",
