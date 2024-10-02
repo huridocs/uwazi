@@ -3,7 +3,7 @@ import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSou
 import { ATGateway } from '../contracts/ATGateway';
 import { ATConfigDataSource } from '../contracts/ATConfigDataSource';
 
-export class GetAutomaticTranslationConfig {
+export class ATConfigService {
   private settings: SettingsDataSource;
 
   private config: ATConfigDataSource;
@@ -24,7 +24,7 @@ export class GetAutomaticTranslationConfig {
     this.automaticTranslation = automaticTranslation;
   }
 
-  async execute() {
+  async get() {
     const config = await this.config.get();
 
     const validProperties = await this.templates.getAllTextProperties().all();

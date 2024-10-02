@@ -334,7 +334,15 @@ describe('InformationExtraction', () => {
       await informationExtraction.trainModel(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { id: factory.id('prop1extractor').toString(), multi_value: false },
+        params: {
+          id: factory.id('prop1extractor').toString(),
+          multi_value: false,
+          metadata: {
+            extractor_name: 'prop1extractor',
+            property: 'property1',
+            templates: expect.anything(),
+          },
+        },
         tenant: 'tenant1',
         task: 'create_model',
       });
@@ -369,6 +377,11 @@ describe('InformationExtraction', () => {
               label: '1B',
             },
           ],
+          metadata: {
+            extractor_name: 'extractorWithMultiselect',
+            property: 'property_multiselect',
+            templates: expect.anything(),
+          },
         },
         tenant: 'tenant1',
         task: 'create_model',
@@ -396,6 +409,11 @@ describe('InformationExtraction', () => {
               label: 'P3',
             },
           ],
+          metadata: {
+            extractor_name: 'extractorWithRelationship',
+            property: 'property_relationship',
+            templates: expect.anything(),
+          },
         },
         tenant: 'tenant1',
         task: 'create_model',
@@ -427,6 +445,11 @@ describe('InformationExtraction', () => {
               label: `A${i + 1}`,
             })),
           ],
+          metadata: {
+            extractor_name: 'extractorWithRelationshipToAny',
+            property: 'property_relationship_to_any',
+            templates: expect.anything(),
+          },
         },
         tenant: 'tenant1',
         task: 'create_model',
@@ -711,7 +734,14 @@ describe('InformationExtraction', () => {
       await informationExtraction.getSuggestions(factory.id('prop1extractor'));
 
       expect(informationExtraction.taskManager?.startTask).toHaveBeenCalledWith({
-        params: { id: factory.id('prop1extractor').toString() },
+        params: {
+          id: factory.id('prop1extractor').toString(),
+          metadata: {
+            extractor_name: 'prop1extractor',
+            property: 'property1',
+            templates: expect.anything(),
+          },
+        },
         tenant: 'tenant1',
         task: 'suggestions',
       });
