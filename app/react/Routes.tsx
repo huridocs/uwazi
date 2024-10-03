@@ -48,9 +48,9 @@ import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUpl
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
 import {
-  ParagraphExtractor,
+  ParagraphExtractorDashboard,
   ParagraphExtractorLoader,
-} from 'V2/Routes/Settings/ParagraphExtractor/ParagraphExtractor';
+} from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,
@@ -146,7 +146,7 @@ const getRoutesLayout = (
         <Route
           loader={ParagraphExtractorLoader(headers)}
           index
-          element={adminsOnlyRoute(<ParagraphExtractor />)}
+          element={adminsOnlyRoute(<ParagraphExtractorDashboard />)}
         />
       </Route>
       <Route path="relationship-types">

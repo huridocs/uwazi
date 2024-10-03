@@ -6,41 +6,66 @@ import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
-import { Button, Table } from 'V2/Components/UI';
+import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
+import { useSetAtom } from 'jotai';
+import { notificationAtom } from 'V2/atoms';
 import { extractorsTableColumns } from './components/TableElements';
 import { TableExtractor, Extractor } from './types';
+import { List } from './components/List';
+
+const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) => {
+  const foundTemplate = templates.find(template => template._id === targetId);
+  return foundTemplate?.name || targetId;
+};
 
 const formatExtractors = (
   extractors: Extractor[],
   templates: ClientTemplateSchema[]
 ): TableExtractor[] =>
   (extractors || []).map(extractor => {
-    const targetTemplateName =
-      templates.find(template => template._id === extractor.templateTo)?.name ||
-      extractor.templateTo;
-    const originTemplateNames = extractor.templateFrom.map(templateFrom => {
-      const namedTemplate = templates.find(template => template._id === templateFrom);
-      return namedTemplate?.name || templateFrom;
-    });
+    const targetTemplateName = getTemplateName(templates, extractor.templateTo);
+    const originTemplateNames = extractor.templateFrom.map(templateFrom =>
+      getTemplateName(templates, templateFrom)
+    );
+
     return { ...extractor, rowId: extractor._id, originTemplateNames, targetTemplateName };
   });
 
-const ParagraphExtractor = () => {
+const ParagraphExtractorDashboard = () => {
   const { extractors = [], templates } = useLoaderData() as {
     extractors: TableExtractor[];
     templates: ClientTemplateSchema[];
   };
   const [isSaving, setIsSaving] = useState(false);
   const revalidator = useRevalidator();
-  const [selected, setSelected] = useState<TableExtractor[]>();
+  const [selected, setSelected] = useState<TableExtractor[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
-  // const setNotifications = useSetAtom(notificationAtom);
+  const setNotifications = useSetAtom(notificationAtom);
 
-  // const deleteExtractors = async () => {};
+  const deleteExtractors = async () => {
+    setIsSaving(true);
+    const extractorIds = selected?.map(selection => selection._id) as string[];
+
+    try {
+      await extractorsAPI.remove(extractorIds);
+      revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Extractor/s deleted</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
   // const handleSave = async (extractor: IXExtractorInfo) => {};
-
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),
     [extractors, templates]
@@ -53,9 +78,10 @@ const ParagraphExtractor = () => {
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
-        <SettingsContent.Header title="Metadata extraction" />
+        <SettingsContent.Header title="Paragraph extraction" />
 
         <SettingsContent.Body>
+          {/* should create a component for empty data? */}
           <Table
             data={paragraphExtractorData}
             columns={extractorsTableColumns}
@@ -65,10 +91,11 @@ const ParagraphExtractor = () => {
               </Translate>
             }
             enableSelections
-            onChange={() => {
-              // setSelected(() => [].filter(ex => ex.rowId in selectedRows));
+            onChange={({ selectedRows }) => {
+              setSelected(() => paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
             }}
-            defaultSorting={[{ id: 'name', desc: false }]}
+            // what default sorting to use?
+            defaultSorting={[{ id: 'status', desc: false }]}
           />
         </SettingsContent.Body>
 
@@ -95,6 +122,21 @@ const ParagraphExtractor = () => {
           )}
         </SettingsContent.Footer>
       </SettingsContent>
+
+      {confirmModal && (
+        <ConfirmationModal
+          header="Delete extractors"
+          warningText="Do you want to delete the following items?"
+          body={<List items={selected || []} />}
+          onAcceptClick={async () => {
+            await deleteExtractors();
+            setConfirmModal(false);
+            setSelected([]);
+          }}
+          onCancelClick={() => setConfirmModal(false)}
+          dangerStyle
+        />
+      )}
     </div>
   );
 };
@@ -107,4 +149,4 @@ const ParagraphExtractorLoader =
     return { extractors, templates };
   };
 
-export { ParagraphExtractor, ParagraphExtractorLoader };
+export { ParagraphExtractorDashboard, ParagraphExtractorLoader };

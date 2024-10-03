@@ -39,46 +39,47 @@ const TemplateFromCell = ({
 const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
-      <Translate>Review</Translate>
+      <Translate>View</Translate>
     </Button>
   </Link>
 );
 
+// todo: fix width of each column
 const extractorsTableColumns = [
   extractorColumnHelper.accessor('originTemplateNames', {
     header: TemplateFromHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: TemplateFromCell,
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('targetTemplateName', {
     header: TemplateToHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: TemplatesCell,
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('documents', {
     header: DocumentsHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: ({ cell }: CellContext<TableExtractor, TableExtractor['documents']>) => cell.getValue(),
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('generatedEntities', {
     header: GeneratedEntitiesHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: ({ cell }: CellContext<TableExtractor, TableExtractor['generatedEntities']>) =>
       cell.getValue(),
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('status', {
     header: StatusHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: ({ cell }: CellContext<TableExtractor, TableExtractor['status']>) => cell.getValue(),
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('_id', {
     header: ActionHeader,
-    enableSorting: false,
+    enableSorting: true,
     cell: LinkButton,
     meta: { headerClassName: '' },
   }),
