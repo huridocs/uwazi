@@ -100,6 +100,37 @@ describe('GenerateAutomaticTranslationConfig', () => {
     });
   });
 
+  it('should save translated common properties (title)', async () => {
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.commonPropertiesTitleId('template1')],
+      text: 'entity',
+      language_from: 'en',
+      languages_to: ['es', 'pt'],
+      translations: [
+        { text: 'titulo original', language: 'es', success: true, error_message: '' },
+        { text: 'titulo original (pt)', language: 'pt', success: true, error_message: '' },
+      ],
+    };
+
+    await saveEntityTranslations.execute(translationResult);
+
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
+      [];
+
+    expect(entities.find(e => e.language === 'es')).toMatchObject({
+      title: `${SaveEntityTranslations.AITranslatedText} titulo original`,
+    });
+
+    expect(entities.find(e => e.language === 'pt')).toMatchObject({
+      title: `${SaveEntityTranslations.AITranslatedText} titulo original (pt)`,
+    });
+
+    expect(entities.find(e => e.language === 'en')).toMatchObject({
+      title: 'entity',
+    });
+  });
+
   it('should denormalize text property on related entities', async () => {
     const fixtures: DBFixture = {
       settings: [
