@@ -265,7 +265,7 @@
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
     "@babel/preset-typescript": "^7.24.7",
-    "@babel/register": "^7.24.6",
+    "@babel/register": "^7.25.7",
     "@babel/traverse": "^7.25.4",
     "@cfaester/enzyme-adapter-react-18": "^0.8.0",
     "@chromatic-com/storybook": "^2.0.2",
