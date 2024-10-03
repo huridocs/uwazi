@@ -127,7 +127,8 @@ export class MongoEntitiesDataSource
   // eslint-disable-next-line class-methods-use-this
   async updateMetadataValues(
     id: Entity['_id'],
-    values: Record<string, { value: MetadataValue }[]>
+    values: Record<string, { value: MetadataValue }[]>,
+    title?: string
   ) {
     // This is using V1 so that it gets denormalized to speed up development
     // this is a hack and should be changed as soon as we finish AT
@@ -135,6 +136,8 @@ export class MongoEntitiesDataSource
     if (!entityToModify) {
       throw new Error(`entity does not exists: ${id}`);
     }
+
+    entityToModify.title = title || entityToModify.title;
 
     Object.entries(values).forEach(([propertyName, metadataValues]) => {
       entityToModify.metadata = entityToModify.metadata || {};
