@@ -351,6 +351,7 @@ Full edit mode,وضع التحرير الكامل
 Full width,Full width
 General,عام
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,خاصية CSS العالمية
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -575,6 +576,7 @@ Others,Others
 out of,خارج
 Page,صفحة
 Pages,الصفحات
+Paragraph Extraction,Paragraph Extraction
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -791,6 +793,8 @@ Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table view,معاينة الجدول
+Target Template,Target Template
+Target Template:,Target Template:
 Template,قالب
 Template conflict,Template conflict
 Template name,Template name
@@ -798,6 +802,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,قوالب
+Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,نتج عن عملية الاستيراد الخطأ التالي:
