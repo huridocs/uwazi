@@ -14,7 +14,7 @@ function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {
 function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
   const fullTextSnippets: { text: string; page: number }[] = [];
 
-  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits.length > 0) {
+  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits[0]?.highlight) {
     const { highlight } = hit.inner_hits.fullText.hits.hits[0];
     const regex = /\[{2}(\d+)]{2}/g;
 
