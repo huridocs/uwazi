@@ -19,7 +19,7 @@ import { CleanInsights } from 'app/V2/Components/Analitycs';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
-import 'flag-icon-css/sass/flag-icons.scss';
+import 'flag-icons/sass/flag-icons.scss';
 import './scss/styles.scss';
 import './styles/globals.css';
 import 'flowbite';

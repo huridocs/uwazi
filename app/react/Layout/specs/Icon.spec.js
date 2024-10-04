@@ -51,8 +51,8 @@ describe('Icon', () => {
 
     it('should render a Flag icon', () => {
       render();
-      expect(component.find('span.flag-icon').props().className).toContain('passed-flag-classname');
-      expect(component.find('span.flag-icon').props().className).toContain('flag-icon-jp');
+      expect(component.find('span.fi').props().className).toContain('passed-flag-classname');
+      expect(component.find('span.fi').props().className).toContain('fi-jp');
     });
   });
 });

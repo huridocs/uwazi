@@ -23,7 +23,7 @@ export default class IconSelectorItem extends Component {
     }
 
     if (item.type === 'Flags') {
-      const className = `flag-icon flag-icon-${CountryList.get(item._id).cca2}`.toLowerCase();
+      const className = `fi fi-${CountryList.get(item._id).cca2}`.toLowerCase();
       icon = (
         <span style={style}>
           <span className={className} />
