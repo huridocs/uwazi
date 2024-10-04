@@ -54,7 +54,8 @@ const AutomaticTranslationFactory = {
       }),
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       AutomaticTranslationFactory.defaultATConfigService(),
-      new AJVEntityInputValidator()
+      new AJVEntityInputValidator(),
+      DefaultLogger()
     );
   },
 
