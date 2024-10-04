@@ -25,7 +25,7 @@ describe('IconSelectorItem', () => {
     props = { item: { _id: 'JPN', type: 'Flags', label: 'Flag Label' } };
     render();
 
-    expect(component.find('span.flag-icon').props().className).toContain('flag-icon-jp');
+    expect(component.find('span.fi').props().className).toContain('fi-jp');
     expect(component.text()).toContain('Flag Label');
   });
 
