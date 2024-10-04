@@ -8,6 +8,7 @@ import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { ATEntityCreationListener } from './adapters/driving/ATEntityCreationListener';
 import { GenerateAutomaticTranslationsCofig } from './GenerateAutomaticTranslationConfig';
 import { ATExternalAPI } from './infrastructure/ATExternalAPI';
@@ -33,7 +34,8 @@ const AutomaticTranslationFactory = {
     return new SaveEntityTranslations(
       DefaultTemplatesDataSource(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
-      new Validator<TranslationResult>(translationResultSchema)
+      new Validator<TranslationResult>(translationResultSchema),
+      DefaultLogger()
     );
   },
 
@@ -54,7 +56,8 @@ const AutomaticTranslationFactory = {
       }),
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       AutomaticTranslationFactory.defaultATConfigService(),
-      new Validator<EntityInputData>(entityInputDataSchema)
+      new Validator<EntityInputData>(entityInputDataSchema),
+      DefaultLogger()
     );
   },
 
