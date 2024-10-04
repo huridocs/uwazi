@@ -1,8 +1,7 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { ATTranslationResultValidator } from './contracts/ATTranslationResultValidator';
-import { InvalidInputDataFormat } from './errors/generateATErrors';
 import { TranslationResult } from './types/TranslationResult';
+import { Validator } from './infrastructure/Validator';
 
 export class SaveEntityTranslations {
   static AITranslatedText = '(AI translated)';
@@ -11,12 +10,12 @@ export class SaveEntityTranslations {
 
   private templatesDS: TemplatesDataSource;
 
-  private validator: ATTranslationResultValidator;
+  private validator: Validator<TranslationResult>;
 
   constructor(
     templatesDS: TemplatesDataSource,
     entitiesDS: EntitiesDataSource,
-    validator: ATTranslationResultValidator
+    validator: Validator<TranslationResult>
   ) {
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
@@ -24,9 +23,7 @@ export class SaveEntityTranslations {
   }
 
   async execute(translationResult: TranslationResult | unknown) {
-    if (!this.validator.validate(translationResult)) {
-      throw new InvalidInputDataFormat(this.validator.getErrors()[0]);
-    }
+    this.validator.ensure(translationResult);
 
     const [, entitySharedId, propertyId] = translationResult.key;
 

@@ -6,9 +6,8 @@ import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { SaveEntityTranslations } from '../SaveEntityTranslations';
-import { InvalidInputDataFormat } from '../errors/generateATErrors';
-import { AJVTranslationResultValidator } from '../infrastructure/AJVTranslationResultValidator';
-import { TranslationResult } from '../types/TranslationResult';
+import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
+import { ValidationError, Validator } from '../infrastructure/Validator';
 
 const factory = getFixturesFactory();
 
@@ -54,14 +53,14 @@ describe('GenerateAutomaticTranslationConfig', () => {
     saveEntityTranslations = new SaveEntityTranslations(
       DefaultTemplatesDataSource(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
-      new AJVTranslationResultValidator()
+      new Validator<TranslationResult>(translationResultSchema)
     );
   });
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
     await expect(saveEntityTranslations.execute(invalidConfig)).rejects.toEqual(
-      new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
+      new ValidationError('must NOT have additional properties')
     );
   });
 
