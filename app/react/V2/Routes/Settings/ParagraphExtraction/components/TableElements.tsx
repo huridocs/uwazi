@@ -17,9 +17,10 @@ const ActionHeader = () => <Translate className="">Action</Translate>;
 
 const NumericCell = ({
   cell,
-}: CellContext<TableExtractor, TableExtractor['generatedEntities']>) => (
-  <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>
-);
+}: CellContext<
+  TableExtractor,
+  TableExtractor['documents'] | TableExtractor['generatedEntities']
+>) => <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>;
 
 const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['templateTo']>) => (
   <div className="flex flex-wrap gap-2">
