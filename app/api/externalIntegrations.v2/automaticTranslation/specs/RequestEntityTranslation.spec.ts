@@ -11,6 +11,8 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
 import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
@@ -55,10 +57,12 @@ class TestATConfigService implements ATConfigService {
 }
 
 let taskManager: TaskManager<ATTaskMessage>;
+let mockLogger: Logger;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
   await testingEnvironment.setTenant('tenant');
+  mockLogger = createMockLogger();
   taskManager = new TaskManager<ATTaskMessage>({
     serviceName: RequestEntityTranslation.SERVICE_NAME,
   });
@@ -80,7 +84,8 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new Validator<EntityInputData>(entityInputDataSchema)
+      new Validator<EntityInputData>(entityInputDataSchema),
+      mockLogger
     );
 
     await requestEntityTranslation.execute(languageFromEntity!);
@@ -117,7 +122,8 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new Validator<EntityInputData>(entityInputDataSchema)
+      new Validator<EntityInputData>(entityInputDataSchema),
+      mockLogger
     );
 
     await requestEntityTranslation.execute(entityWithNotSupportedLanguage);
@@ -130,12 +136,32 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new Validator<EntityInputData>(entityInputDataSchema)
+      new Validator<EntityInputData>(entityInputDataSchema),
+      mockLogger
     );
 
     const invalidEntity = { invalid_prop: true };
     await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
       new ValidationError("must have required property '_id'")
     );
+  });
+
+  it('should call Logger.info two times', async () => {
+    const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
+    languageFromEntity._id = languageFromEntity?._id?.toString();
+    languageFromEntity.template = languageFromEntity?.template?.toString();
+
+    const requestEntityTranslation = new RequestEntityTranslation(
+      taskManager,
+      DefaultTemplatesDataSource(DefaultTransactionManager()),
+      // @ts-ignore
+      new TestATConfigService(),
+      new Validator<EntityInputData>(entityInputDataSchema),
+      mockLogger
+    );
+
+    await requestEntityTranslation.execute(languageFromEntity!);
+
+    expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
 });
