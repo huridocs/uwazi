@@ -4,7 +4,6 @@ export type Extractor = {
   templateTo: string;
   documents: number;
   generatedEntities: number;
-  status: string;
 };
 
 export type TableExtractor = Extractor & {

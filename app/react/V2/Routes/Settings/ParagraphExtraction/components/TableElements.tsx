@@ -13,8 +13,13 @@ const TemplateFromHeader = () => <Translate>Template</Translate>;
 const TemplateToHeader = () => <Translate>Target Template</Translate>;
 const DocumentsHeader = () => <Translate>Documents</Translate>;
 const GeneratedEntitiesHeader = () => <Translate>Generated Entities</Translate>;
-const StatusHeader = () => <Translate>Status</Translate>;
 const ActionHeader = () => <Translate className="">Action</Translate>;
+
+const NumericCell = ({
+  cell,
+}: CellContext<TableExtractor, TableExtractor['generatedEntities']>) => (
+  <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>
+);
 
 const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['templateTo']>) => (
   <div className="flex flex-wrap gap-2">
@@ -61,20 +66,13 @@ const extractorsTableColumns = [
   extractorColumnHelper.accessor('documents', {
     header: DocumentsHeader,
     enableSorting: true,
-    cell: ({ cell }: CellContext<TableExtractor, TableExtractor['documents']>) => cell.getValue(),
+    cell: NumericCell,
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('generatedEntities', {
     header: GeneratedEntitiesHeader,
     enableSorting: true,
-    cell: ({ cell }: CellContext<TableExtractor, TableExtractor['generatedEntities']>) =>
-      cell.getValue(),
-    meta: { headerClassName: 'w-4/6' },
-  }),
-  extractorColumnHelper.accessor('status', {
-    header: StatusHeader,
-    enableSorting: true,
-    cell: ({ cell }: CellContext<TableExtractor, TableExtractor['status']>) => cell.getValue(),
+    cell: NumericCell,
     meta: { headerClassName: 'w-4/6' },
   }),
   extractorColumnHelper.accessor('_id', {
