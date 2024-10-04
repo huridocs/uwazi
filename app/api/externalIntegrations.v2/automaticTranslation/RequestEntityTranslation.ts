@@ -5,6 +5,7 @@ import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { Validator } from './infrastructure/Validator';
+import { ATTemplateConfig } from './model/ATConfig';
 
 export type ATTaskMessage = {
   key: string[];
@@ -41,7 +42,6 @@ export class RequestEntityTranslation {
     this.logger = logger;
   }
 
-  // eslint-disable-next-line max-statements
   async execute(entity: EntityInputData | unknown) {
     this.inputValidator.ensure(entity);
     const atConfig = await this.aTConfigService.get();
@@ -53,18 +53,27 @@ export class RequestEntityTranslation {
       return;
     }
 
-    const template = await this.templatesDS.getById(atTemplateConfig?.template);
-
     const languageFrom = entity.language;
-    if (!atConfig.languages.includes(languageFrom)) {
+
+    if (!atConfig.languages.includes(entity.language)) {
       return;
     }
 
-    const languagesTo = atConfig.languages.filter(language => language !== languageFrom);
+    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
+
+    await this.requestTranslation(atTemplateConfig, languagesTo, languageFrom, entity);
+  }
+
+  private async requestTranslation(
+    atTemplateConfig: ATTemplateConfig,
+    languagesTo: string[],
+    languageFrom: string,
+    entity: EntityInputData
+  ) {
+    const template = await this.templatesDS.getById(atTemplateConfig?.template);
+
     atTemplateConfig?.commonProperties.forEach(async commonPropId => {
-      const commonPropName = template?.commonProperties.find(
-        prop => prop.id === commonPropId
-      )?.name;
+      const commonPropName = template?.getPropertyById(commonPropId)?.name;
 
       if (!commonPropName) {
         throw new Error('Common property not found');
@@ -83,7 +92,7 @@ export class RequestEntityTranslation {
     });
 
     atTemplateConfig?.properties.forEach(async propId => {
-      const propName = template?.properties.find(prop => prop.id === propId)?.name;
+      const propName = template?.getPropertyById(propId)?.name;
       if (!propName) {
         throw new Error('Property not found');
       }
