@@ -26,7 +26,7 @@ let dummyData = [
 
 const apiEndpoint = 'paragraph-extractor';
 
-const get = async (headers?: IncomingHttpHeaders) =>
+const get = async () =>
   new Promise(resolve => {
     setTimeout(() => resolve(dummyData));
   });
