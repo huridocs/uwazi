@@ -354,6 +354,7 @@ Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -578,6 +579,7 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
+Paragraph Extraction,Paragraph Extraction
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -794,6 +796,8 @@ Table,테이블
 Table of Contents,목차
 Table of contents,목차
 Table view,테이블 뷰
+Target Template,Target Template
+Target Template:,Target Template:
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name
@@ -801,6 +805,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,템플릿
+Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:

@@ -353,6 +353,7 @@ Full edit mode,Mode d'édition complet
 Full width,Full width
 General,Général
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,CSS global
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -577,6 +578,7 @@ Others,Others
 out of,hors de
 Page,Page
 Pages,Pages
+Paragraph Extraction,Paragraph Extraction
 Password,Mot de passe
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -793,6 +795,8 @@ Table,Tableau
 Table of Contents,Table des matières
 Table of contents,Table des matières
 Table view,Vue tabulaire
+Target Template,Target Template
+Target Template:,Target Template:
 Template,Modèle
 Template conflict,Template conflict
 Template name,Template name
@@ -800,6 +804,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,Modèles
+Templates:,Templates:
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,Le processus d'importation a généré une erreur :

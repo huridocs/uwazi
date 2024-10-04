@@ -12,6 +12,7 @@ export class ATExternalAPI implements ATGateway {
       'ar',
       'zh-Hans',
       'zh-Hant',
+      'zh',
       'cs',
       'nl',
       'de',

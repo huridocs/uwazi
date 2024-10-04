@@ -354,6 +354,7 @@ Full edit mode,โหมดการแก้ไขแบบสมบูรณ�
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -578,6 +579,7 @@ Others,Others
 out of,ออกไปจาก
 Page,หน้า
 Pages,หน้า
+Paragraph Extraction,Paragraph Extraction
 Password,รหัสผ่าน
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -794,6 +796,8 @@ Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
 Table view,มุมมองตาราง
+Target Template,Target Template
+Target Template:,Target Template:
 Template,แม่แบบ
 Template conflict,Template conflict
 Template name,Template name
@@ -801,6 +805,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,แม่แบบ
+Templates:,Templates:
 Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด
