@@ -37,11 +37,12 @@ export class SaveEntityTranslations {
     await entities.forEach(async entity => {
       const translation = translationResult.translations.find(t => t.language === entity.language);
       if (translation && property) {
-        entity.changePropertyValue(
-          property,
-          `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
+        await this.entitiesDS.updateEntity(
+          entity.changePropertyValue(
+            property,
+            `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
+          )
         );
-        await this.entitiesDS.updateEntity(entity);
       }
     });
   }

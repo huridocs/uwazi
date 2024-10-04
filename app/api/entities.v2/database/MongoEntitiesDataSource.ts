@@ -7,6 +7,7 @@ import entities from 'api/entities/entities';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
+import { MetadataSchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
@@ -14,7 +15,8 @@ import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
-  implements EntitiesDataSource {
+  implements EntitiesDataSource
+{
   protected collectionName = 'entities';
 
   private settingsDS: MongoSettingsDataSource;
@@ -32,6 +34,7 @@ export class MongoEntitiesDataSource
     this.settingsDS = settingsDS;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   async updateEntity(entity: Entity) {
     // This is using V1 so that it gets denormalized to speed up development
     // this is a hack and should be changed as soon as we finish AT
@@ -41,7 +44,7 @@ export class MongoEntitiesDataSource
     }
 
     entityToModify.title = entity.title;
-    entityToModify.metadata = entity.metadata;
+    entityToModify.metadata = entity.metadata as MetadataSchema;
     await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 

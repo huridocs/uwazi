@@ -54,7 +54,6 @@ class Template {
 
     const commonProperty = this.commonProperties.find(p => p.id === propertyId);
     if (commonProperty) {
-      commonProperty.commonProperty = true;
       return commonProperty;
     }
 

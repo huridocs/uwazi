@@ -1,3 +1,4 @@
+import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
 
 type MetadataValue = unknown;
@@ -50,14 +51,24 @@ export class Entity {
   }
 
   changePropertyValue(property: Property, value: string) {
-    if (property.commonProperty && property.name === 'title') {
-      this.title = value;
+    if (property.type === 'text') {
+      const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
+      const { metadata } = this;
+      if (!(property instanceof CommonProperty)) {
+        metadata[property.name] = this.metadata[property.name] || [{ value: '' }];
+        metadata[property.name][0].value = value;
+      }
+      return new Entity(
+        this._id,
+        this.sharedId,
+        this.language,
+        isTitleProperty ? value : this.title,
+        this.template,
+        metadata
+      );
     }
 
-    if (!property.commonProperty) {
-      this.metadata[property.name] = this.metadata[property.name] || [{ value: '' }];
-      this.metadata[property.name][0].value = value;
-    }
+    throw new Error('types other than string are not implemented yet');
   }
 }
 
