@@ -1,5 +1,5 @@
-import Ajv, { JSONSchemaType, ValidateFunction } from 'ajv';
-import { JTDSchemaType, Schema } from 'ajv/dist/core';
+import Ajv, { ValidateFunction } from 'ajv';
+import { Schema } from 'ajv/dist/core';
 
 export class ValidationError extends Error {}
 
