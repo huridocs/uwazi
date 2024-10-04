@@ -41,7 +41,6 @@ const ParagraphExtractorDashboard = () => {
   const revalidator = useRevalidator();
   const [selected, setSelected] = useState<TableExtractor[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
-  const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
 
   const deleteExtractors = async () => {
@@ -101,7 +100,7 @@ const ParagraphExtractorDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected?.length === 1 ? (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
+            <Button type="button" onClick={() => {}} disabled={isSaving}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
@@ -116,7 +115,7 @@ const ParagraphExtractorDashboard = () => {
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
+            <Button type="button" onClick={() => {}} disabled={isSaving}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}
