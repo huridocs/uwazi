@@ -30,7 +30,7 @@ export class SaveEntityTranslations {
 
     const [, entitySharedId, propertyId] = translationResult.key;
 
-    const property = await this.getProperty(entitySharedId, propertyId);
+    const { property, scope } = await this.getProperty(entitySharedId, propertyId);
 
     const entities = this.entitiesDS.getByIds([entitySharedId]);
 
@@ -38,16 +38,26 @@ export class SaveEntityTranslations {
       const translation = translationResult.translations.find(
         t => t.language === oneEntity.language
       );
-      if (translation) {
-        await this.entitiesDS.updateMetadataValues(oneEntity._id, {
-          [property.name]: [
-            { value: `${SaveEntityTranslations.AITranslatedText} ${translation.text}` },
-          ],
-        });
+      if (translation && property) {
+        if (scope === 'metadata') {
+          await this.entitiesDS.updateMetadataValues(oneEntity._id, {
+            [property.name]: [
+              { value: `${SaveEntityTranslations.AITranslatedText} ${translation.text}` },
+            ],
+          });
+        }
+        if (scope === 'title') {
+          await this.entitiesDS.updateMetadataValues(
+            oneEntity._id,
+            {},
+            `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
+          );
+        }
       }
     });
   }
 
+  // eslint-disable-next-line max-statements
   private async getProperty(entitySharedId: string, propertyId: string) {
     const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
     if (!entity) {
@@ -60,10 +70,15 @@ export class SaveEntityTranslations {
     }
 
     const property = template.properties.find(p => p.id === propertyId);
+    const commonProperty = template.commonProperties.find(p => p.id === propertyId);
 
-    if (!property) {
+    if (!property && !commonProperty) {
       throw new Error('Property does not exists');
     }
-    return property;
+
+    return {
+      property: commonProperty || property,
+      scope: commonProperty ? 'title' : 'metadata',
+    } as const;
   }
 }
