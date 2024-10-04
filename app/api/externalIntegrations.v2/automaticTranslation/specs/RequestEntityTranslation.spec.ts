@@ -1,4 +1,6 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { entityInputDataSchema } from 'api/entities.v2/EntityInputDataSchema';
+import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import {
   ATConfig,
   ATTemplateConfig,
@@ -11,10 +13,9 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { Logger } from 'api/log.v2/contracts/Logger';
+import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
 import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
-import { AJVEntityInputValidator } from '../infrastructure/EntityInputValidator';
-import { InvalidInputDataFormat } from '../errors/generateATErrors';
 
 const factory = getFixturesFactory();
 const fixtures = {
@@ -83,7 +84,7 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new AJVEntityInputValidator(),
+      new Validator<EntityInputData>(entityInputDataSchema),
       mockLogger
     );
 
@@ -121,7 +122,7 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new AJVEntityInputValidator(),
+      new Validator<EntityInputData>(entityInputDataSchema),
       mockLogger
     );
 
@@ -135,13 +136,13 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new AJVEntityInputValidator(),
+      new Validator<EntityInputData>(entityInputDataSchema),
       mockLogger
     );
 
     const invalidEntity = { invalid_prop: true };
     await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
-      new InvalidInputDataFormat('{"missingProperty":"_id"}')
+      new ValidationError("must have required property '_id'")
     );
   });
 
@@ -155,7 +156,7 @@ describe('RequestEntityTranslation', () => {
       DefaultTemplatesDataSource(DefaultTransactionManager()),
       // @ts-ignore
       new TestATConfigService(),
-      new AJVEntityInputValidator(),
+      new Validator<EntityInputData>(entityInputDataSchema),
       mockLogger
     );
 
