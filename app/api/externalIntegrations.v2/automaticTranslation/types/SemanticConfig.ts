@@ -1,3 +1,5 @@
+import { JTDSchemaType } from 'ajv/dist/core';
+
 interface SemanticConfig {
   active: boolean;
   templates: {
@@ -7,4 +9,23 @@ interface SemanticConfig {
   }[];
 }
 
+const semanticConfigSchema: JTDSchemaType<SemanticConfig> = {
+  additionalProperties: false,
+  properties: {
+    active: { type: 'boolean' },
+    templates: {
+      elements: {
+        properties: {
+          template: { type: 'string' },
+        },
+        optionalProperties: {
+          properties: { elements: { type: 'string' } },
+          commonProperties: { elements: { type: 'string' } },
+        },
+      },
+    },
+  },
+};
+
 export type { SemanticConfig };
+export { semanticConfigSchema };

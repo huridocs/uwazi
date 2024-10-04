@@ -5,9 +5,9 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
-import { GenerateATConfigError, InvalidInputDataFormat } from '../errors/generateATErrors';
-import { SemanticConfig } from '../types/SemanticConfig';
-import { AJVATConfigValidator } from '../infrastructure/AJVATConfigValidator';
+import { GenerateATConfigError } from '../errors/generateATErrors';
+import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig';
+import { ValidationError, Validator } from '../infrastructure/Validator';
 
 const factory = getFixturesFactory();
 
@@ -83,7 +83,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
       automaticTranslationConfigDS,
       new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager()),
-      new AJVATConfigValidator()
+      new Validator<SemanticConfig>(semanticConfigSchema)
     );
   });
 
@@ -160,8 +160,11 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
+    await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toBeInstanceOf(
+      ValidationError
+    );
     await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-      new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
+      new ValidationError('must NOT have additional properties')
     );
   });
 });
