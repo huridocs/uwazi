@@ -1,11 +1,14 @@
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { ATTranslationResultValidator } from './contracts/ATTranslationResultValidator';
 import { InvalidInputDataFormat } from './errors/generateATErrors';
 import { TranslationResult } from './types/TranslationResult';
 
 export class SaveEntityTranslations {
   static AITranslatedText = '(AI translated)';
+
+  private logger: Logger;
 
   private entitiesDS: EntitiesDataSource;
 
@@ -16,11 +19,13 @@ export class SaveEntityTranslations {
   constructor(
     templatesDS: TemplatesDataSource,
     entitiesDS: EntitiesDataSource,
-    validator: ATTranslationResultValidator
+    validator: ATTranslationResultValidator,
+    logger: Logger
   ) {
     this.entitiesDS = entitiesDS;
     this.templatesDS = templatesDS;
     this.validator = validator;
+    this.logger = logger;
   }
 
   async execute(translationResult: TranslationResult | unknown) {
@@ -37,12 +42,9 @@ export class SaveEntityTranslations {
     await entities.forEach(async entity => {
       const translation = translationResult.translations.find(t => t.language === entity.language);
       if (translation && property) {
-        await this.entitiesDS.updateEntity(
-          entity.changePropertyValue(
-            property,
-            `${SaveEntityTranslations.AITranslatedText} ${translation.text}`
-          )
-        );
+        const textTranslated = `${SaveEntityTranslations.AITranslatedText} ${translation.text}`;
+        await this.entitiesDS.updateEntity(entity.changePropertyValue(property, textTranslated));
+        this.logger.info(`[AT] - Property saved on DB - ${property.name}: ${textTranslated}`);
       }
     });
   }
