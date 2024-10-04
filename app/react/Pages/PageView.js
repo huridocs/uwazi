@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { isClient } from 'app/utils';
 import { actions } from 'app/BasicReducer';
 import { unselectAllDocuments } from 'app/Library/actions/libraryActions';
 import { wrapDispatch } from 'app/Multireducer';
@@ -11,6 +11,7 @@ import { trackPage } from 'app/App/GoogleAnalytics';
 import { ErrorBoundary } from 'app/V2/Components/ErrorHandling';
 import { PageViewer } from './components/PageViewer';
 import { getPageAssets } from './utils/getPageAssets';
+import { updatePageDatasets } from './utils/updatePageDatasets';
 
 class PageViewComponent extends RouteHandler {
   static async requestState(requestParams) {
@@ -32,6 +33,9 @@ class PageViewComponent extends RouteHandler {
 
   componentDidMount() {
     this.closeSidePanel();
+    if (isClient) {
+      window.updatePageDatasets = updatePageDatasets;
+    }
   }
 
   componentWillUnmount() {
