@@ -143,7 +143,7 @@ const ParagraphExtractorDashboard = () => {
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await extractorsAPI.get(headers);
+    const extractors = await extractorsAPI.get();
     const templates = await templatesAPI.get(headers);
     return { extractors, templates };
   };
