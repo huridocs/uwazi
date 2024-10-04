@@ -4,7 +4,7 @@ import { Logger } from '../contracts/Logger';
 import { LogLevel, LogLevels } from './LogLevels';
 import { LogEntry } from './LogEntry';
 import { LogWriter } from './LogWriter';
-import { StandardJSONWriter } from './writers/StandardJSONWriter';
+import { UwaziJSONWriter } from './writers/StandardJSONWriter';
 
 class StandardLogger implements Logger {
   private write: LogWriter;
@@ -44,6 +44,6 @@ class StandardLogger implements Logger {
   }
 }
 
-const DefaultLogger = () => new StandardLogger(StandardJSONWriter, getTenant());
+const DefaultLogger = (writer = UwaziJSONWriter) => new StandardLogger(writer, getTenant());
 
 export { StandardLogger, DefaultLogger };
