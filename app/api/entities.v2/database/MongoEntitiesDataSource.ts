@@ -7,6 +7,7 @@ import entities from 'api/entities/entities';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
+import { MetadataSchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
@@ -31,6 +32,20 @@ export class MongoEntitiesDataSource
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async updateEntity(entity: Entity) {
+    // This is using V1 so that it gets denormalized to speed up development
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(entity._id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${entity._id}`);
+    }
+
+    entityToModify.title = entity.title;
+    entityToModify.metadata = entity.metadata as MetadataSchema;
+    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 
   async entitiesExist(sharedIds: string[]) {

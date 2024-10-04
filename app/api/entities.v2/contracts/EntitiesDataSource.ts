@@ -6,6 +6,7 @@ type MarkAsChangedData = { property: string } | { properties: string[] };
 export type MarkAsChangedItems = MarkAsChangedCriteria & MarkAsChangedData;
 
 export interface EntitiesDataSource {
+  updateEntity(entity: Entity): Promise<void>;
   updateObsoleteMetadataValues(
     id: Entity['_id'],
     values: Record<string, EntityMetadata[]>
