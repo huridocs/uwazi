@@ -49,17 +49,16 @@ export class RequestEntityTranslation {
       t => t.template === entity.template?.toString()
     );
 
-    if (!atTemplateConfig) {
-      return;
-    }
-
     const languageFrom = entity.language;
+    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
 
-    if (!atConfig.languages.includes(entity.language)) {
+    if (
+      !atTemplateConfig ||
+      languagesTo.length <= 0 ||
+      !atConfig.languages.includes(entity.language)
+    ) {
       return;
     }
-
-    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
 
     await this.requestTranslation(atTemplateConfig, languagesTo, languageFrom, entity);
   }
