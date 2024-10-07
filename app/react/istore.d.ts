@@ -193,6 +193,9 @@ export interface IStore {
     data: PageType;
     uiState: IImmutable<{ savingPage: boolean }>;
     formState: any;
+    datasets?: IImmutable<{
+      [name: string]: { rows: any[]; totalRows: number; aggregations: any };
+    }>;
   };
   pages: IImmutable<PageType>;
   relationTypes: IImmutable<RelationshipTypesType[]>;
