@@ -10,36 +10,12 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { SaveEntityTranslations } from '../SaveEntityTranslations';
 import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
 import { ValidationError, Validator } from '../infrastructure/Validator';
+import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures';
 
 const factory = getFixturesFactory();
 
 beforeEach(async () => {
-  const fixtures = {
-    templates: [
-      factory.template('template1', [
-        {
-          _id: factory.id('propertyName'),
-          name: 'propertyName',
-          type: 'text',
-          label: 'Prop 1',
-        },
-      ]),
-    ],
-    entities: [
-      ...factory.entityInMultipleLanguages(['en', 'pt', 'es'], 'entity', 'template1', {
-        propertyName: [{ value: 'original text' }],
-      }),
-    ],
-    settings: [
-      {
-        languages: [
-          { label: 'en', key: 'en' as LanguageISO6391, default: true },
-          { label: 'pt', key: 'pt' as LanguageISO6391 },
-          { label: 'es', key: 'es' as LanguageISO6391 },
-        ],
-      },
-    ],
-  };
+  const fixtures = saveEntityFixtures(factory);
   await testingEnvironment.setUp(fixtures);
 });
 
