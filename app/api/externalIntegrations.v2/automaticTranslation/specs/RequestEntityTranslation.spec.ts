@@ -23,7 +23,7 @@ const fixtures = {
     factory.template('template1', [factory.property('text1'), factory.property('empty_text')]),
   ],
   entities: [
-    ...factory.entityInMultipleLanguages(['en', 'es'], 'entity1', 'template1', {
+    ...factory.entityInMultipleLanguages(['en', 'es', 'pt'], 'entity1', 'template1', {
       text1: [{ value: 'original text1' }],
       empty_text: [{ value: '' }],
     }),
@@ -33,13 +33,17 @@ const fixtures = {
       languages: [
         { label: 'en', key: 'en' as LanguageISO6391, default: true },
         { label: 'es', key: 'es' as LanguageISO6391 },
+        { label: 'pt', key: 'pt' as LanguageISO6391 },
       ],
     },
   ],
 };
 
-// @ts-ignore
-class TestATConfigService implements ATConfigService {
+class TestATConfigService extends ATConfigService {
+  constructor() {
+    super(undefined as any, undefined as any, undefined as any, undefined as any);
+  }
+
   ATConfig = new ATConfig(
     true,
     ['es', 'en'],
@@ -52,7 +56,6 @@ class TestATConfigService implements ATConfigService {
     ]
   );
 
-  // eslint-disable-next-line class-methods-use-this
   async get() {
     return this.ATConfig;
   }
@@ -76,7 +79,7 @@ afterAll(async () => {
 });
 
 describe('RequestEntityTranslation', () => {
-  it('should send a task in the automatic translation service queue', async () => {
+  it('should send a task to the automatic translation service queue', async () => {
     const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
     languageFromEntity._id = languageFromEntity?._id?.toString();
     languageFromEntity.template = languageFromEntity?.template?.toString();
@@ -84,7 +87,6 @@ describe('RequestEntityTranslation', () => {
     const requestEntityTranslation = new RequestEntityTranslation(
       taskManager,
       DefaultTemplatesDataSource(DefaultTransactionManager()),
-      // @ts-ignore
       new TestATConfigService(),
       new Validator<EntityInputData>(entityInputDataSchema),
       mockLogger
