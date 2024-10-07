@@ -1,5 +1,10 @@
 import { clearCookiesAndLogin } from '../helpers/login';
 
+const updateDatasetScript = `window.updatePageDatasets("default",{rows:[],totalRows:292,relation:"eq",aggregations:
+{all:{tipo:{meta:{},doc_count:915,buckets:[{key:"57d8a9c4-f0cd-4290-b15e-ddf2b3c6ef91",doc_count:6,filtered:
+{meta:{},doc_count:2},label:"De asunto"},{key:"d79ab686-a987-4a1e-a26a-0a604a5f3aae",doc_count:6,filtered:
+{meta:{},doc_count:2},label:"En casos"}],count:11}}}});`;
+
 const graphs = {
   barChart: '<BarChart property="tipo" context="58ada34c299e8267485450fb" />',
   pieChart: '<PieChart property="tipo" context="58ada34c299e8267485450fb" />',
@@ -80,5 +85,28 @@ describe('Graphs in Page ', () => {
 
   it('should insert List chart with nested graph in created page', () => {
     testChart(graphs.listChartScatter, 'List chart with nested graph');
+  });
+
+  describe('dataset updates', () => {
+    it('should update a graph via the page script using the updated function', () => {
+      cy.contains('a', 'Settings').click();
+      cy.contains('a', 'Pages').click();
+      cy.contains('tr', 'Bar chart graph').contains('button', 'Edit').click();
+      cy.contains('Javascript').click();
+      // delete extra closing keys added by the code editor when writing this text
+      // eslint-disable-next-line cypress/unsafe-to-chain-command
+      cy.get('div[data-mode-id="javascript"]')
+        .type(updateDatasetScript, {
+          parseSpecialCharSequences: false,
+          delay: 0,
+        })
+        .type('{backspace}{backspace}');
+      // wait for editor to update
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(501);
+      savePage();
+      visitPage();
+      takeSnapshot();
+    });
   });
 });
