@@ -1,21 +1,21 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
-import { RequestEntityTranslation } from 'api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
-import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { tenants } from 'api/tenants';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { ATConfigService } from 'api/externalIntegrations.v2/automaticTranslation/services/GetAutomaticTranslationConfig';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { MongoATConfigDataSource } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { ATExternalAPI } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/ATExternalAPI';
-import { ATEntityCreationListener } from '../ATEntityCreationListener';
+import { MongoATConfigDataSource } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource';
+import { RequestEntityTranslation } from 'api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
+import { ATConfigService } from 'api/externalIntegrations.v2/automaticTranslation/services/GetAutomaticTranslationConfig';
 import { permissionsContext } from 'api/permissions/permissionsContext';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
+import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
+import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { UserSchema } from 'shared/types/userType';
+import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();
 
@@ -64,36 +64,45 @@ describe('ATEntityCreationListener', () => {
   });
 
   describe('Request entity translation', () => {
-    it('should not request translations if feature flag is off', async () => {
-      const entityCreationEvent = new EntityCreatedEvent({
-        entities: [{ sharedId: 'entity 1' }],
-        targetLanguageKey: 'en',
+    describe('when feature flag is off', () => {
+      it('should not request translations', async () => {
+        const entityCreationEvent = new EntityCreatedEvent({
+          entities: [{ sharedId: 'entity 1' }],
+          targetLanguageKey: 'en',
+        });
+
+        await tenants.run(async () => {
+          await eventBus.emit(entityCreationEvent);
+        }, 'tenant');
+
+        expect(executeSpy).not.toHaveBeenCalled();
       });
-
-      await tenants.run(async () => {
-        await eventBus.emit(entityCreationEvent);
-      }, 'tenant');
-
-      expect(executeSpy).not.toHaveBeenCalled();
     });
 
-    it('should call RequestEntityTranslation on receiving entity creation event', async () => {
-      await testingEnvironment.setFixtures({
-        settings: [{ features: { automaticTranslation: { active: true } } }],
-      });
-      testingEnvironment.resetPermissions();
+    describe('when feature flag is on', () => {
       const entityEn = factory.entity('entity1', 'template1', {}, { language: 'en' });
-      const entityCreationEvent = new EntityCreatedEvent({
-        entities: [factory.entity('entity1', 'template1', {}, { language: 'es' }), entityEn],
-        targetLanguageKey: 'en',
+      beforeEach(async () => {
+        await testingEnvironment.setFixtures({
+          settings: [{ features: { automaticTranslation: { active: true } } }],
+        });
+        testingEnvironment.resetPermissions();
+        const entityCreationEvent = new EntityCreatedEvent({
+          entities: [factory.entity('entity1', 'template1', {}, { language: 'es' }), entityEn],
+          targetLanguageKey: 'en',
+        });
+
+        await appContext.run(async () => {
+          await eventBus.emit(entityCreationEvent);
+        });
       });
 
-      await appContext.run(async () => {
-        await eventBus.emit(entityCreationEvent);
+      it('should execute RequestEntityTranslation on receiving entity creation event', async () => {
+        expect(executeSpy).toHaveBeenCalledWith(entityEn);
       });
 
-      expect(executeSpy).toHaveBeenCalledWith(entityEn);
-      expect(userInContext).toBe(permissionsContext.commandUser);
+      it('should execute RequestEntityTranslation with commandUser as its user ', async () => {
+        expect(userInContext).toBe(permissionsContext.commandUser);
+      });
     });
   });
 });
