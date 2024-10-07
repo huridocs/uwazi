@@ -1,11 +1,12 @@
 import { config } from 'api/config';
-import { tenants } from 'api/tenants';
+import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
+import { SaveEntityTranslations } from 'api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import Redis from 'redis';
 import RedisSMQ from 'rsmq';
+import { UserSchema } from 'shared/types/userType';
 import waitForExpect from 'wait-for-expect';
-import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
-import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { SaveEntityTranslations } from 'api/externalIntegrations.v2/automaticTranslation/SaveEntityTranslations';
 import { ATServiceListener } from '../ATServiceListener';
 
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
@@ -24,17 +25,21 @@ describe('ATServiceListener', () => {
   let redisClient: Redis.RedisClient;
   let redisSMQ: RedisSMQ;
   let executeSpy: jest.Mock<any, any, any>;
+  let userInContext: UserSchema | undefined = {} as UserSchema;
+  const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
 
   beforeEach(async () => {
     await testingEnvironment.setUp({
       settings: [{ features: { automaticTranslation: { active: true } } }],
     });
+    testingEnvironment.resetPermissions();
     await testingEnvironment.setTenant('tenant');
 
-    executeSpy = jest.fn();
+    executeSpy = jest.fn().mockImplementation(() => {
+      userInContext = permissionsContext.getUserInContext();
+    });
 
     listener = new ATServiceListener(prepareATFactory(executeSpy));
-    const redisUrl = `redis://${config.redis.host}:${config.redis.port}`;
     redisClient = Redis.createClient(redisUrl);
     redisSMQ = new RedisSMQ({ client: redisClient });
 
@@ -67,28 +72,32 @@ describe('ATServiceListener', () => {
   });
 
   describe('Save Translations', () => {
-    it('should call on saveEntityTranslations after validating the result', async () => {
-      const message = {
-        key: ['tenant', 'sharedId', 'propName'],
-        text: 'original text',
-        language_from: 'en',
-        languages_to: ['es'],
-        translations: [
-          { text: 'texto traducido', language: 'es', success: true, error_message: '' },
-        ],
-      };
+    const message = {
+      key: ['tenant', 'sharedId', 'propName'],
+      text: 'original text',
+      language_from: 'en',
+      languages_to: ['es'],
+      translations: [{ text: 'texto traducido', language: 'es', success: true, error_message: '' }],
+    };
 
+    beforeEach(async () => {
       executeSpy.mockClear();
 
       await redisSMQ.sendMessageAsync({
         qname: `${config.ENVIRONMENT}_${ATServiceListener.SERVICE_NAME}_results`,
         message: JSON.stringify(message),
       });
+    });
 
+    it('should execute saveEntityTranslations after validating the result', async () => {
       await waitForExpect(async () => {
-        await tenants.run(async () => {
-          expect(executeSpy).toHaveBeenCalledWith(message);
-        }, 'tenant');
+        expect(executeSpy).toHaveBeenCalledWith(message);
+      });
+    });
+
+    it('should execute saveEntityTranslations with commandUser as its context user', async () => {
+      await waitForExpect(async () => {
+        expect(userInContext).toBe(permissionsContext.commandUser);
       });
     });
   });

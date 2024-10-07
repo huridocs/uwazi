@@ -12,7 +12,6 @@ const testingEnvironment = {
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
     this.setPermissions();
-    this.setRequestId();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
   },
@@ -56,6 +55,7 @@ const testingEnvironment = {
       .spyOn(appContext, 'get')
       .mockImplementation(key => (key === 'requestId' ? requestId : null));
   },
+
   async tearDown() {
     await testingDB.disconnect();
   },
