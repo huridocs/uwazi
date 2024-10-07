@@ -6,6 +6,7 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { Validator } from './infrastructure/Validator';
 import { ATTemplateConfig } from './model/ATConfig';
+import { SaveEntityTranslationPending } from './SaveEntityTranslationPending';
 
 export type ATTaskMessage = {
   key: string[];
@@ -17,27 +18,31 @@ export type ATTaskMessage = {
 export class RequestEntityTranslation {
   static SERVICE_NAME = 'translations';
 
-  private logger: Logger;
-
   private taskManager: TaskManager<ATTaskMessage>;
 
   private templatesDS: TemplatesDataSource;
 
   private aTConfigService: ATConfigService;
 
+  private saveEntityTranslationPending: SaveEntityTranslationPending;
+
   private inputValidator: Validator<EntityInputData>;
+
+  private logger: Logger;
 
   // eslint-disable-next-line max-params
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
     templatesDS: TemplatesDataSource,
     aTConfigService: ATConfigService,
+    saveEntityTranslationPending: SaveEntityTranslationPending,
     inputValidator: Validator<EntityInputData>,
     logger: Logger
   ) {
     this.taskManager = taskManager;
     this.templatesDS = templatesDS;
     this.aTConfigService = aTConfigService;
+    this.saveEntityTranslationPending = saveEntityTranslationPending;
     this.inputValidator = inputValidator;
     this.logger = logger;
   }
