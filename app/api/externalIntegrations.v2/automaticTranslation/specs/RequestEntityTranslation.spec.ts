@@ -73,13 +73,22 @@ class TestSaveEntityTranslationPending extends SaveEntityTranslationPending {
     _sharedId: string,
     _propertyId: string,
     _originalText: string,
-    _targetLanguageKey: LanguageISO6391
+    _targetLanguageKey: LanguageISO6391[]
   ): Promise<void> {
     return Promise.resolve();
   }
 }
 
-let saveEntityTranlationExecuteSpy;
+let saveEntityTranlationExecuteSpy: jest.SpyInstance<
+  Promise<void>,
+  [
+    _sharedId: string,
+    _propertyId: string,
+    _originalText: string,
+    _targetLanguageKey: LanguageISO6391[],
+  ],
+  any
+>;
 let taskManager: TaskManager<ATTaskMessage>;
 let mockLogger: Logger;
 
@@ -111,12 +120,27 @@ describe('RequestEntityTranslation', () => {
         taskManager,
         DefaultTemplatesDataSource(DefaultTransactionManager()),
         new TestATConfigService(),
-        new TestSaveEntityTranslationPending(),
+        saveEntityTranslationPending,
         new Validator<EntityInputData>(entityInputDataSchema),
         mockLogger
       );
 
       await requestEntityTranslation.execute(languageFromEntity!);
+    });
+
+    it('should update Entities as pending translation', async () => {
+      expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
+        'entity1',
+        factory.commonPropertiesTitleId('template1').toString(),
+        'entity1',
+        ['es']
+      );
+      expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
+        'entity1',
+        factory.property('text1')._id?.toString(),
+        'original text1',
+        ['es']
+      );
     });
 
     it('should send a task to the automatic translation service queue', async () => {
@@ -135,6 +159,10 @@ describe('RequestEntityTranslation', () => {
         language_from: 'en',
         languages_to: ['es'],
       });
+    });
+
+    it('should call Logger.info two times', async () => {
+      expect(mockLogger.info).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -181,28 +209,6 @@ describe('RequestEntityTranslation', () => {
     await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
       new ValidationError("must have required property '_id'")
     );
-  });
-
-  it('should call Logger.info two times', async () => {
-    const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
-    languageFromEntity._id = languageFromEntity?._id?.toString();
-    languageFromEntity.template = languageFromEntity?.template?.toString();
-
-    const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-    saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
-
-    const requestEntityTranslation = new RequestEntityTranslation(
-      taskManager,
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      new TestATConfigService(),
-      saveEntityTranslationPending,
-      new Validator<EntityInputData>(entityInputDataSchema),
-      mockLogger
-    );
-
-    await requestEntityTranslation.execute(languageFromEntity!);
-
-    expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
 
   it('should NOT send any task if there is no other language to translate', async () => {

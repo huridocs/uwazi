@@ -3,6 +3,7 @@ import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { Validator } from './infrastructure/Validator';
 import { ATTemplateConfig } from './model/ATConfig';
@@ -87,9 +88,18 @@ export class RequestEntityTranslation {
         throw new Error('Common property is not a string');
       }
 
+      const originalText = entity[commonPropName];
+
+      await this.saveEntityTranslationPending.execute(
+        entity.sharedId,
+        commonPropId.toString(),
+        originalText,
+        languagesTo as LanguageISO6391[]
+      );
+
       await this.startTask({
         key: [getTenant().name, entity.sharedId, commonPropId.toString()],
-        text: entity[commonPropName],
+        text: originalText,
         language_from: languageFrom,
         languages_to: languagesTo,
       });
@@ -106,9 +116,18 @@ export class RequestEntityTranslation {
       }
 
       if (entity.metadata[propName]?.[0].value) {
+        const originalText = entity.metadata[propName][0].value;
+
+        await this.saveEntityTranslationPending.execute(
+          entity.sharedId,
+          propId,
+          originalText,
+          languagesTo as LanguageISO6391[]
+        );
+
         await this.startTask({
           key: [getTenant().name, entity.sharedId, propId],
-          text: entity.metadata[propName][0].value,
+          text: originalText,
           language_from: languageFrom,
           languages_to: languagesTo,
         });
