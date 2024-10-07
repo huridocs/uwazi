@@ -38,20 +38,15 @@ describe('SaveEntityTranslationPending', () => {
 
   it('should validate inputs have proper shape at runtime', async () => {
     await expect(
-      saveEntityTranslationPending.execute('invalidSharedId', 'propId', 'originalText', 'en')
+      saveEntityTranslationPending.execute('invalidSharedId', 'propId', 'originalText', ['en'])
     ).rejects.toEqual(
-      new ValidationError(
-        "[AT] Translation-pending entity 'invalidSharedId' does not exist for language 'en'"
-      )
+      new ValidationError("[AT] Translation-pending entity 'invalidSharedId' does not exist")
     );
 
     await expect(
-      saveEntityTranslationPending.execute(
-        'entity_with_wrong_template',
-        'propId',
-        'originalText',
-        'en'
-      )
+      saveEntityTranslationPending.execute('entity_with_wrong_template', 'propId', 'originalText', [
+        'en',
+      ])
     ).rejects.toEqual(
       new ValidationError(
         `[AT] Translation-pending template does not exist: ${factory.idString('wrong_template')}`
@@ -59,7 +54,7 @@ describe('SaveEntityTranslationPending', () => {
     );
 
     await expect(
-      saveEntityTranslationPending.execute('entity', 'invalidProp', 'originalText', 'en')
+      saveEntityTranslationPending.execute('entity', 'invalidProp', 'originalText', ['en'])
     ).rejects.toEqual(
       new ValidationError('[AT] Translation-pending property does not exist: invalidProp')
     );
@@ -70,7 +65,7 @@ describe('SaveEntityTranslationPending', () => {
       'entity',
       factory.idString('propertyName'),
       'original text',
-      'es'
+      ['es', 'pt']
     );
 
     const entities =
@@ -87,7 +82,9 @@ describe('SaveEntityTranslationPending', () => {
 
     expect(entities.find(e => e.language === 'pt')).toMatchObject({
       metadata: {
-        propertyName: [{ value: 'original text' }],
+        propertyName: [
+          { value: `${SaveEntityTranslationPending.AITranslationPendingText} original text` },
+        ],
       },
     });
 
@@ -101,7 +98,7 @@ describe('SaveEntityTranslationPending', () => {
       'entity',
       factory.idString('commonPropertiestemplate1Title'),
       'entity',
-      'es'
+      ['es']
     );
 
     const entities =
@@ -142,12 +139,9 @@ describe('SaveEntityTranslationPending', () => {
 
     await testingEnvironment.setUp(fixtures);
 
-    await saveEntityTranslationPending.execute(
-      'B1',
-      factory.idString('text'),
-      'texto original',
-      'en'
-    );
+    await saveEntityTranslationPending.execute('B1', factory.idString('text'), 'texto original', [
+      'en',
+    ]);
 
     const entities = (await testingDB.mongodb?.collection('entities').find().toArray()) || [];
 
@@ -185,7 +179,7 @@ describe('SaveEntityTranslationPending', () => {
       'entity',
       factory.idString('propertyName'),
       'original text',
-      'es'
+      ['es']
     );
 
     expect(mockLogger.info).toHaveBeenCalledWith(
