@@ -6,6 +6,7 @@ import errorHandlingMiddleware from 'api/utils/error_handling_middleware';
 import languageMiddleware from 'api/utils/languageMiddleware';
 import { routesErrorHandler } from 'api/utils/routesErrorHandler';
 import { extendSupertest } from './supertestExtensions';
+import { appContext } from './AppContext';
 
 extendSupertest();
 
@@ -32,7 +33,16 @@ const setUpApp = (
     };
     next();
   });
-
+  app.use((_req: Request, _res: Response, next: NextFunction) => {
+    appContext
+      .run(
+        async () => {
+          next();
+        },
+        { requestId: '1234' }
+      )
+      .catch(next);
+  });
   app.use(languageMiddleware);
   customMiddleware.forEach(middlewareElement => app.use(middlewareElement));
 
