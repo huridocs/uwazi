@@ -46,7 +46,6 @@ export class SaveEntityTranslations {
     });
   }
 
-  // eslint-disable-next-line max-statements
   private async getProperty(entitySharedId: string, propertyId: string) {
     const entity = await this.entitiesDS.getByIds([entitySharedId]).first();
     if (!entity) {
