@@ -13,6 +13,9 @@ import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTen
 import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { ATExternalAPI } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/ATExternalAPI';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
+import { permissionsContext } from 'api/permissions/permissionsContext';
+import { appContext } from 'api/utils/AppContext';
+import { UserSchema } from 'shared/types/userType';
 
 const factory = getFixturesFactory();
 
@@ -40,6 +43,7 @@ describe('ATEntityCreationListener', () => {
   let listener: ATEntityCreationListener;
   const eventBus: EventsBus = new EventsBus();
   let executeSpy: jest.Mock<any, any, any>;
+  let userInContext: UserSchema | undefined = {} as UserSchema;
 
   beforeEach(async () => {
     await testingEnvironment.setUp({
@@ -47,7 +51,9 @@ describe('ATEntityCreationListener', () => {
     });
     await testingEnvironment.setTenant('tenant');
 
-    executeSpy = jest.fn();
+    executeSpy = jest.fn().mockImplementation(() => {
+      userInContext = permissionsContext.getUserInContext();
+    });
 
     listener = new ATEntityCreationListener(eventBus, prepareATFactory(executeSpy));
     listener.start();
@@ -75,17 +81,19 @@ describe('ATEntityCreationListener', () => {
       await testingEnvironment.setFixtures({
         settings: [{ features: { automaticTranslation: { active: true } } }],
       });
+      testingEnvironment.resetPermissions();
       const entityEn = factory.entity('entity1', 'template1', {}, { language: 'en' });
       const entityCreationEvent = new EntityCreatedEvent({
         entities: [factory.entity('entity1', 'template1', {}, { language: 'es' }), entityEn],
         targetLanguageKey: 'en',
       });
 
-      await tenants.run(async () => {
+      await appContext.run(async () => {
         await eventBus.emit(entityCreationEvent);
-      }, 'tenant');
+      });
 
       expect(executeSpy).toHaveBeenCalledWith(entityEn);
+      expect(userInContext).toBe(permissionsContext.commandUser);
     });
   });
 });
