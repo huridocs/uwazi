@@ -100,7 +100,7 @@ describe('ATEntityCreationListener', () => {
         expect(executeSpy).toHaveBeenCalledWith(entityEn);
       });
 
-      it('should execute RequestEntityTranslation with commandUser as its user ', async () => {
+      it('should execute RequestEntityTranslation with commandUser as its context user', async () => {
         expect(userInContext).toBe(permissionsContext.commandUser);
       });
     });
