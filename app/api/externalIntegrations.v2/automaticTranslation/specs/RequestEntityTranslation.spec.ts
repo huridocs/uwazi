@@ -40,19 +40,21 @@ const fixtures = {
 
 // @ts-ignore
 class TestATConfigService implements ATConfigService {
+  ATConfig = new ATConfig(
+    true,
+    ['es', 'en'],
+    [
+      new ATTemplateConfig(
+        factory.idString('template1'),
+        [factory.idString('text1'), factory.idString('empty_text')],
+        [factory.commonPropertiesTitleId('template1')]
+      ),
+    ]
+  );
+
   // eslint-disable-next-line class-methods-use-this
   async get() {
-    return new ATConfig(
-      true,
-      ['es', 'en'],
-      [
-        new ATTemplateConfig(
-          factory.idString('template1'),
-          [factory.idString('text1'), factory.idString('empty_text')],
-          [factory.commonPropertiesTitleId('template1')]
-        ),
-      ]
-    );
+    return this.ATConfig;
   }
 }
 
@@ -163,5 +165,36 @@ describe('RequestEntityTranslation', () => {
     await requestEntityTranslation.execute(languageFromEntity!);
 
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
+  });
+
+  it('should NOT send any task if there is no other language to translate', async () => {
+    const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
+    languageFromEntity._id = languageFromEntity?._id?.toString();
+    languageFromEntity.template = languageFromEntity?.template?.toString();
+    const testATConfigService = new TestATConfigService();
+    testATConfigService.ATConfig = new ATConfig(
+      true,
+      ['en'],
+      [
+        new ATTemplateConfig(
+          factory.idString('template1'),
+          [factory.idString('text1'), factory.idString('empty_text')],
+          [factory.commonPropertiesTitleId('template1')]
+        ),
+      ]
+    );
+
+    const requestEntityTranslation = new RequestEntityTranslation(
+      taskManager,
+      DefaultTemplatesDataSource(DefaultTransactionManager()),
+      // @ts-ignore
+      testATConfigService,
+      new Validator<EntityInputData>(entityInputDataSchema),
+      mockLogger
+    );
+
+    await requestEntityTranslation.execute(languageFromEntity!);
+
+    expect(taskManager.startTask).toHaveBeenCalledTimes(0);
   });
 });
