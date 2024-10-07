@@ -3,6 +3,8 @@ import { appContext } from 'api/utils/AppContext';
 import { DataType } from 'api/odm';
 
 export const permissionsContext = {
+  commandUser: { _id: 'commandId', role: 'editor' },
+
   getUserInContext: (): DataType<UserSchema> | undefined =>
     <DataType<UserSchema> | undefined>appContext.get('user'),
 
@@ -19,6 +21,6 @@ export const permissionsContext = {
   },
 
   setCommandContext: () => {
-    appContext.set('user', { _id: 'commandId', role: 'editor' });
+    appContext.set('user', permissionsContext.commandUser);
   },
 };
