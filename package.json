@@ -172,7 +172,7 @@
     "mime-types": "^2.1.35",
     "moment": "^2.30.1",
     "moment-timezone": "0.5.45",
-    "monaco-editor": "^0.51.0",
+    "monaco-editor": "^0.52.0",
     "monaco-editor-webpack-plugin": "^7.1.0",
     "mongodb": "6.3.0",
     "mongoose": "8.1.2",
