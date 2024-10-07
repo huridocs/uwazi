@@ -17,7 +17,7 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
 import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
-import { SaveEntityTranslationPending } from '../SaveEntityTranslationPending';
+import { SaveEntityTranslationPending } from '../SaveEntityTranslationsPending';
 
 const factory = getFixturesFactory();
 const fixtures = {

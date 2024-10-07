@@ -7,7 +7,7 @@ import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { Validator } from './infrastructure/Validator';
 import { ATTemplateConfig } from './model/ATConfig';
-import { SaveEntityTranslationPending } from './SaveEntityTranslationPending';
+import { SaveEntityTranslationPending } from './SaveEntityTranslationsPending';
 
 export type ATTaskMessage = {
   key: string[];

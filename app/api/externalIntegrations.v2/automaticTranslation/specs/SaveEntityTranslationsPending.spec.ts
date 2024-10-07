@@ -7,7 +7,7 @@ import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { Logger } from 'api/log.v2/contracts/Logger';
-import { SaveEntityTranslationPending } from '../SaveEntityTranslationPending';
+import { SaveEntityTranslationPending } from '../SaveEntityTranslationsPending';
 import { ValidationError } from '../infrastructure/Validator';
 import { saveEntityFixtures } from './fixtures/SaveEntity.fixtures';
 
