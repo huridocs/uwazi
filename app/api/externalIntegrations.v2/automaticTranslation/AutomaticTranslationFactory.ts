@@ -15,6 +15,7 @@ import { ATExternalAPI } from './infrastructure/ATExternalAPI';
 import { MongoATConfigDataSource } from './infrastructure/MongoATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from './RequestEntityTranslation';
+import { SaveEntityTranslationPending } from './SaveEntityTranslationPending';
 import { SaveEntityTranslations } from './SaveEntityTranslations';
 import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig';
@@ -26,6 +27,15 @@ const AutomaticTranslationFactory = {
       new MongoATConfigDataSource(getConnection(), DefaultTransactionManager()),
       new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager()),
       new Validator<SemanticConfig>(semanticConfigSchema)
+    );
+  },
+
+  defaultSaveEntityTranslationPending() {
+    const transactionManager = DefaultTransactionManager();
+    return new SaveEntityTranslationPending(
+      DefaultTemplatesDataSource(transactionManager),
+      DefaultEntitiesDataSource(transactionManager),
+      DefaultLogger()
     );
   },
 
