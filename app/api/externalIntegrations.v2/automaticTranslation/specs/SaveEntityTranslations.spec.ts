@@ -47,7 +47,7 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('GenerateAutomaticTranslationConfig', () => {
+describe('SaveEntityTranslations', () => {
   let saveEntityTranslations: SaveEntityTranslations;
   let mockLogger: Logger;
 
