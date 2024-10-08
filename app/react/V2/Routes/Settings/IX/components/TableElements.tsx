@@ -225,8 +225,10 @@ const OpenPDFButton = ({
 };
 
 const TitleCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
-  <div className="text-xs font-normal text-gray-900">
-    {cell.getValue()} ({row.original.language})
+  <div className="text-sm font-normal text-primary-700">
+    <a href={`/entity/${row.original.sharedId}`} target="_blank" rel="noreferrer">
+      {cell.getValue()} ({row.original.language})
+    </a>
   </div>
 );
 
