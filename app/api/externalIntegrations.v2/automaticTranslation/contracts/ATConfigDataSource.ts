@@ -1,6 +1,6 @@
-import { RawATConfig } from '../model/RawATConfig';
+import { ATConfig, ATTemplateConfig } from '../model/ATConfig';
 
 export interface ATConfigDataSource {
-  get(): Promise<RawATConfig>;
-  update(config: RawATConfig): Promise<RawATConfig>;
+  get(): Promise<ATConfig>;
+  update(active: boolean, templatesConfig: ATTemplateConfig[]): Promise<ATConfig>;
 }
