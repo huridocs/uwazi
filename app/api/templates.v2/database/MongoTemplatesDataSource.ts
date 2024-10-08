@@ -55,22 +55,29 @@ export class MongoTemplatesDataSource
 
   getAllTextProperties() {
     const cursor = this.getCollection().aggregate([
-      { $unwind: '$properties' },
+      {
+        $addFields: {
+          textProperty: {
+            $concatArrays: ['$commonProperties', '$properties'],
+          },
+        },
+      },
+      { $unwind: '$textProperty' },
       {
         $match: {
-          'properties.type': { $in: ['text', 'markdown'] },
+          'textProperty.type': { $in: ['text', 'markdown'] },
         },
       },
       {
         $project: {
           _id: 1,
-          properties: 1,
+          textProperty: 1,
         },
       },
     ]);
 
     return new MongoResultSet(cursor, template =>
-      TemplateMappers.propertyToApp(template.properties, template._id)
+      TemplateMappers.propertyToApp(template.textProperty, template._id)
     );
   }
 

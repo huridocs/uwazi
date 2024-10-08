@@ -2,6 +2,7 @@ import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 export class ATEntityCreationListener {
   private eventBus: EventsBus;
@@ -18,7 +19,9 @@ export class ATEntityCreationListener {
 
   start() {
     this.eventBus.on(EntityCreatedEvent, async event => {
-      const { active } = await this.ATFactory.defaultATConfigService().get();
+      const { active } = await this.ATFactory.defaultATConfigDataSource(
+        DefaultTransactionManager()
+      ).get();
 
       if (active) {
         permissionsContext.setCommandContext();
