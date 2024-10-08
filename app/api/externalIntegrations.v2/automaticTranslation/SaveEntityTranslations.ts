@@ -38,7 +38,7 @@ export class SaveEntityTranslations {
 
     await entities.forEach(async entity => {
       const translation = translationResult.translations.find(t => t.language === entity.language);
-      if (translation && property) {
+      if (translation?.success && property) {
         const textTranslated = `${SaveEntityTranslations.AITranslatedText} ${translation.text}`;
         await this.entitiesDS.updateEntity(entity.changePropertyValue(property, textTranslated));
 

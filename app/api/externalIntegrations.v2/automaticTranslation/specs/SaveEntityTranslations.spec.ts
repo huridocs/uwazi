@@ -209,4 +209,27 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
     expect(mockLogger.info).toHaveBeenCalledTimes(2);
   });
+
+  it('should ONLY save if translation is successfull', async () => {
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.commonPropertiesTitleId('template1')],
+      text: 'entity',
+      language_from: 'en',
+      languages_to: ['es', 'pt'],
+      translations: [
+        { text: '', language: 'es', success: false, error_message: 'any_error' },
+        { text: 'titulo original (pt)', language: 'pt', success: true, error_message: '' },
+      ],
+    };
+
+    await saveEntityTranslations.execute(translationResult);
+
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
+      [];
+
+    expect(entities.find(e => e.language === 'es')).toMatchObject({
+      title: 'entity',
+    });
+  });
 });
