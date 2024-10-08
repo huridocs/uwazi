@@ -71,7 +71,7 @@ const metadataSchema = {
 };
 
 export const entityInputDataSchema = {
-  title: 'EntityInputData',
+  title: 'EntityInputModel',
   $schema: 'http://json-schema.org/schema#',
   type: 'object',
   required: ['_id', 'sharedId', 'language', 'title', 'template', 'metadata'],
