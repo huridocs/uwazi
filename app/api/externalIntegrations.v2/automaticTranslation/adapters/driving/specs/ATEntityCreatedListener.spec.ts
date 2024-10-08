@@ -1,15 +1,9 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
-import { ATExternalAPI } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/ATExternalAPI';
-import { MongoATConfigDataSource } from 'api/externalIntegrations.v2/automaticTranslation/infrastructure/MongoATConfigDataSource';
 import { RequestEntityTranslation } from 'api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
-import { ATConfigService } from 'api/externalIntegrations.v2/automaticTranslation/services/GetAutomaticTranslationConfig';
 import { permissionsContext } from 'api/permissions/permissionsContext';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -22,14 +16,9 @@ const factory = getFixturesFactory();
 const prepareATFactory = (executeSpy: jest.Mock<any, any, any>) => {
   // @ts-ignore
   const ATFactory: typeof AutomaticTranslationFactory = {
-    defaultATConfigService() {
+    defaultATConfigDataSource() {
       const transactionManager = DefaultTransactionManager();
-      return new ATConfigService(
-        DefaultSettingsDataSource(transactionManager),
-        new MongoATConfigDataSource(getConnection(), transactionManager),
-        DefaultTemplatesDataSource(transactionManager),
-        new ATExternalAPI()
-      );
+      return AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager);
     },
     defaultRequestEntityTranslation() {
       return { execute: executeSpy } as unknown as RequestEntityTranslation;

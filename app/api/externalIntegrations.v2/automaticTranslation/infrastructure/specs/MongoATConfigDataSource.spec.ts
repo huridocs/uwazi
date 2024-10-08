@@ -80,27 +80,30 @@ afterAll(async () => {
 describe('MongoAtConfigDataSource', () => {
   it('should return only title, text and markdown properties', async () => {
     const config = await createDS().get();
-    expect(config.templates[0]).toEqual({
+    expect(config.templates[0]).toMatchObject({
       template: fixtures.id('template 1').toString(),
-      commonProperties: [fixtures.commonPropertiesTitleId('template 1')],
-      properties: [fixtures.id('text property').toString(), fixtures.id('rich text').toString()],
+      properties: [
+        { id: fixtures.commonPropertiesTitleId('template 1') },
+        { id: fixtures.id('text property').toString() },
+        { id: fixtures.id('rich text').toString() },
+      ],
     });
   });
 
   it('should not include properties that no longer exist', async () => {
     const config = await createDS().get();
-    expect(config.templates[0].properties).toEqual([
-      fixtures.id('text property').toString(),
-      fixtures.id('rich text').toString(),
+    expect(config.templates[0].properties).toMatchObject([
+      { id: fixtures.commonPropertiesTitleId('template 1') },
+      { id: fixtures.id('text property').toString() },
+      { id: fixtures.id('rich text').toString() },
     ]);
   });
 
   it('should not include properties belonging to other templates', async () => {
     const config = await createDS().get();
-    expect(config.templates[1]).toEqual({
+    expect(config.templates[1]).toMatchObject({
       template: fixtures.id('template 2').toString(),
-      commonProperties: [],
-      properties: [fixtures.id('text property 2').toString()],
+      properties: [{ id: fixtures.id('text property 2').toString() }],
     });
   });
 
@@ -111,10 +114,9 @@ describe('MongoAtConfigDataSource', () => {
 
   it('should allow configuring only title without any properties', async () => {
     const config = await createDS().get();
-    expect(config.templates[2]).toEqual({
+    expect(config.templates[2]).toMatchObject({
       template: fixtures.id('template 3').toString(),
-      commonProperties: [fixtures.commonPropertiesTitleId('template 3')],
-      properties: [],
+      properties: [{ label: 'Title' }],
     });
   });
 

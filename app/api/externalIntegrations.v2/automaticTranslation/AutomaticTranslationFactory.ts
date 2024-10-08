@@ -2,8 +2,8 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { entityInputDataSchema } from 'api/entities.v2/EntityInputDataSchema';
-import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
+import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { EventsBus } from 'api/eventsbus';
 import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
@@ -17,7 +17,6 @@ import { MongoATConfigDataSource } from './infrastructure/MongoATConfigDataSourc
 import { Validator } from './infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from './RequestEntityTranslation';
 import { SaveEntityTranslations } from './SaveEntityTranslations';
-import { ATConfigService } from './services/GetAutomaticTranslationConfig';
 import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig';
 import { TranslationResult, translationResultSchema } from './types/TranslationResult';
 
@@ -53,24 +52,13 @@ const AutomaticTranslationFactory = {
     );
   },
 
-  defaultATConfigService() {
-    const transactionManager = DefaultTransactionManager();
-    return new ATConfigService(
-      DefaultSettingsDataSource(transactionManager),
-      AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
-      DefaultTemplatesDataSource(transactionManager),
-      new ATExternalAPI()
-    );
-  },
-
   defaultRequestEntityTranslation() {
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      AutomaticTranslationFactory.defaultATConfigService(),
-      new Validator<EntityInputData>(entityInputDataSchema),
+      AutomaticTranslationFactory.defaultATConfigDataSource(DefaultTransactionManager()),
+      new Validator<EntityInputModel>(entityInputDataSchema),
       DefaultLogger()
     );
   },
