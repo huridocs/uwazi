@@ -336,7 +336,7 @@ describe('Information Extraction', () => {
     });
 
     it('should click to fill with a new text', () => {
-      cy.contains('The Spectacular Spider-Man').parent().siblings().last().click();
+      cy.contains('The Spectacular Spider-Man').parent().parent().siblings().last().click();
       cy.get('aside').within(() => {
         cy.get('input').clear();
       });
@@ -384,6 +384,7 @@ describe('Information Extraction', () => {
       cy.contains('a', 'Metadata Extraction').eq(0).click();
       cy.contains('Fechas from relevant templates').siblings().last().click();
       cy.contains('Apitz Barbera y otros. Resolución de la Presidenta de 18 de diciembre de 2009')
+        .parent()
         .parent()
         .siblings()
         .last()
