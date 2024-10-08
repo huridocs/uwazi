@@ -1,7 +1,7 @@
 /* eslint-disable */
 /**AUTO-GENERATED. RUN yarn emit-types to update.*/
 
-export interface EntityInputData {
+export interface EntityInputModel {
   _id: string;
   sharedId: string;
   language:
