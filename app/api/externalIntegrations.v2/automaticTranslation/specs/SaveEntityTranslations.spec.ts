@@ -231,5 +231,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
     expect(entities.find(e => e.language === 'es')).toMatchObject({
       title: 'entity',
     });
+
+    expect(mockLogger.error).toHaveBeenCalledTimes(1);
   });
 });

@@ -38,6 +38,14 @@ export class SaveEntityTranslations {
 
     await entities.forEach(async entity => {
       const translation = translationResult.translations.find(t => t.language === entity.language);
+      if (translation?.success === false) {
+        this.logger.error(
+          `[AT]
+- Translation error
+- ${translation.error_message}
+- ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`
+        );
+      }
       if (translation?.success && property) {
         const textTranslated = `${SaveEntityTranslations.AITranslatedText} ${translation.text}`;
         await this.entitiesDS.updateEntity(entity.changePropertyValue(property, textTranslated));
