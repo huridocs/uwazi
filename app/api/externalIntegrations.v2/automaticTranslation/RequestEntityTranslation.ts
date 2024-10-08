@@ -62,20 +62,22 @@ export class RequestEntityTranslation {
       const propertyValue = entity.getPropertyValue(property);
 
       if (propertyValue) {
-        await this.startTask({
+        await this.taskManager.startTask({
           key: [getTenant().name, entity.sharedId, property.id],
           text: propertyValue,
           language_from: languageFrom,
           languages_to: languagesTo,
         });
+
+        this.logger.info(
+          `[AT] - Translation requested - ${JSON.stringify({
+            entityId: entity._id,
+            languageFrom,
+            languagesTo,
+            [property.name]: propertyValue,
+          })}`
+        );
       }
     });
-  }
-
-  private async startTask(task: ATTaskMessage) {
-    this.logger.info(
-      `[AT] - Translation requested - From: ${task.language_from} To: ${task.languages_to.toString()} - Text: ${task.text}`
-    );
-    return this.taskManager.startTask(task);
   }
 }
