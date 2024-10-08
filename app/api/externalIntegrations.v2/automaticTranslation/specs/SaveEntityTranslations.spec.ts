@@ -5,10 +5,11 @@ import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { SaveEntityTranslations } from '../SaveEntityTranslations';
-import { InvalidInputDataFormat } from '../errors/generateATErrors';
-import { AJVTranslationResultValidator } from '../infrastructure/AJVTranslationResultValidator';
-import { TranslationResult } from '../types/TranslationResult';
+import { TranslationResult, translationResultSchema } from '../types/TranslationResult';
+import { ValidationError, Validator } from '../infrastructure/Validator';
 
 const factory = getFixturesFactory();
 
@@ -48,20 +49,23 @@ afterAll(async () => {
 
 describe('GenerateAutomaticTranslationConfig', () => {
   let saveEntityTranslations: SaveEntityTranslations;
+  let mockLogger: Logger;
 
   beforeEach(() => {
     const transactionManager = DefaultTransactionManager();
+    mockLogger = createMockLogger();
     saveEntityTranslations = new SaveEntityTranslations(
       DefaultTemplatesDataSource(transactionManager),
       DefaultEntitiesDataSource(transactionManager),
-      new AJVTranslationResultValidator()
+      new Validator<TranslationResult>(translationResultSchema),
+      mockLogger
     );
   });
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
     await expect(saveEntityTranslations.execute(invalidConfig)).rejects.toEqual(
-      new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
+      new ValidationError('must NOT have additional properties')
     );
   });
 
@@ -97,6 +101,37 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
     expect(entities.find(e => e.language === 'en')).toMatchObject({
       metadata: { propertyName: [{ value: 'original text' }] },
+    });
+  });
+
+  it('should save translated common properties (title)', async () => {
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.commonPropertiesTitleId('template1')],
+      text: 'entity',
+      language_from: 'en',
+      languages_to: ['es', 'pt'],
+      translations: [
+        { text: 'titulo original', language: 'es', success: true, error_message: '' },
+        { text: 'titulo original (pt)', language: 'pt', success: true, error_message: '' },
+      ],
+    };
+
+    await saveEntityTranslations.execute(translationResult);
+
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
+      [];
+
+    expect(entities.find(e => e.language === 'es')).toMatchObject({
+      title: `${SaveEntityTranslations.AITranslatedText} titulo original`,
+    });
+
+    expect(entities.find(e => e.language === 'pt')).toMatchObject({
+      title: `${SaveEntityTranslations.AITranslatedText} titulo original (pt)`,
+    });
+
+    expect(entities.find(e => e.language === 'en')).toMatchObject({
+      title: 'entity',
     });
   });
 
@@ -156,5 +191,47 @@ describe('GenerateAutomaticTranslationConfig', () => {
         },
       },
     ]);
+  });
+
+  it('should call Logger.info two times', async () => {
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.commonPropertiesTitleId('template1')],
+      text: 'entity',
+      language_from: 'en',
+      languages_to: ['es', 'pt'],
+      translations: [
+        { text: 'titulo original', language: 'es', success: true, error_message: '' },
+        { text: 'titulo original (pt)', language: 'pt', success: true, error_message: '' },
+      ],
+    };
+
+    await saveEntityTranslations.execute(translationResult);
+
+    expect(mockLogger.info).toHaveBeenCalledTimes(2);
+  });
+
+  it('should ONLY save if translation is successfull', async () => {
+    const translationResult: TranslationResult = {
+      key: ['tenant', 'entity', factory.commonPropertiesTitleId('template1')],
+      text: 'entity',
+      language_from: 'en',
+      languages_to: ['es', 'pt'],
+      translations: [
+        { text: '', language: 'es', success: false, error_message: 'any_error' },
+        { text: 'titulo original (pt)', language: 'pt', success: true, error_message: '' },
+      ],
+    };
+
+    await saveEntityTranslations.execute(translationResult);
+
+    const entities =
+      (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity' }).toArray()) ||
+      [];
+
+    expect(entities.find(e => e.language === 'es')).toMatchObject({
+      title: 'entity',
+    });
+
+    expect(mockLogger.error).toHaveBeenCalledTimes(1);
   });
 });

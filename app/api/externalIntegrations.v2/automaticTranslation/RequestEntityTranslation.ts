@@ -1,10 +1,10 @@
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
+import { Logger } from 'api/log.v2/contracts/Logger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
-import { EntityInputValidator } from './contracts/EntityInputValidator';
-import { ATConfigService } from './services/GetAutomaticTranslationConfig';
-import { InvalidInputDataFormat } from './errors/generateATErrors';
+import { ATConfigDataSource } from './contracts/ATConfigDataSource';
+import { Validator } from './infrastructure/Validator';
 
 export type ATTaskMessage = {
   key: string[];
@@ -16,85 +16,67 @@ export type ATTaskMessage = {
 export class RequestEntityTranslation {
   static SERVICE_NAME = 'translations';
 
+  private logger: Logger;
+
   private taskManager: TaskManager<ATTaskMessage>;
 
-  private templatesDS: TemplatesDataSource;
+  private ATConfigDS: ATConfigDataSource;
 
-  private aTConfigService: ATConfigService;
-
-  private inputValidator: EntityInputValidator;
+  private inputValidator: Validator<EntityInputModel>;
 
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
-    templatesDS: TemplatesDataSource,
-    aTConfigService: ATConfigService,
-    inputValidator: EntityInputValidator
+    ATConfigDS: ATConfigDataSource,
+    inputValidator: Validator<EntityInputModel>,
+    logger: Logger
   ) {
     this.taskManager = taskManager;
-    this.templatesDS = templatesDS;
-    this.aTConfigService = aTConfigService;
+    this.ATConfigDS = ATConfigDS;
     this.inputValidator = inputValidator;
+    this.logger = logger;
   }
 
-  // eslint-disable-next-line max-statements
-  async execute(entity: EntityInputData | unknown) {
-    if (!this.inputValidator.validate(entity)) {
-      throw new InvalidInputDataFormat(this.inputValidator.getErrors()[0]);
-    }
-    const atConfig = await this.aTConfigService.get();
+  async execute(entityInputModel: EntityInputModel | unknown) {
+    this.inputValidator.ensure(entityInputModel);
+    const atConfig = await this.ATConfigDS.get();
     const atTemplateConfig = atConfig.templates.find(
-      t => t.template === entity.template?.toString()
+      t => t.template === entityInputModel.template?.toString()
     );
 
-    if (!atTemplateConfig) {
+    const languageFrom = entityInputModel.language;
+    const languagesTo = atConfig.languages.filter(
+      language => language !== entityInputModel.language
+    );
+
+    if (
+      !atTemplateConfig ||
+      languagesTo.length <= 0 ||
+      !atConfig.languages.includes(entityInputModel.language)
+    ) {
       return;
     }
 
-    const template = await this.templatesDS.getById(atTemplateConfig?.template);
+    const entity = Entity.fromInputModel(entityInputModel);
 
-    const languageFrom = entity.language;
-    if (!atConfig.languages.includes(languageFrom)) {
-      return;
-    }
+    atTemplateConfig?.properties.forEach(async property => {
+      const propertyValue = entity.getPropertyValue(property);
 
-    const languagesTo = atConfig.languages.filter(language => language !== languageFrom);
-    atTemplateConfig?.commonProperties.forEach(async commonPropId => {
-      const commonPropName = template?.commonProperties.find(
-        prop => prop.id === commonPropId
-      )?.name;
-
-      if (!commonPropName) {
-        throw new Error('Common property not found');
-      }
-
-      if (!(typeof entity[commonPropName] === 'string')) {
-        throw new Error('Common property is not a string');
-      }
-
-      await this.taskManager.startTask({
-        key: [getTenant().name, entity.sharedId, commonPropId.toString()],
-        text: entity[commonPropName],
-        language_from: languageFrom,
-        languages_to: languagesTo,
-      });
-    });
-    atTemplateConfig?.properties.forEach(async propId => {
-      const propName = template?.properties.find(prop => prop.id === propId)?.name;
-      if (!propName) {
-        throw new Error('Property not found');
-      }
-
-      if (!(typeof entity.metadata[propName]?.[0].value === 'string')) {
-        throw new Error('Property is not a string');
-      }
-
-      if (entity.metadata[propName]?.[0].value) {
+      if (propertyValue) {
         await this.taskManager.startTask({
-          key: [getTenant().name, entity.sharedId, propId],
-          text: entity.metadata[propName][0].value,
+          key: [getTenant().name, entity.sharedId, property.id],
+          text: propertyValue,
           language_from: languageFrom,
           languages_to: languagesTo,
         });
+
+        this.logger.info(
+          `[AT] - Translation requested - ${JSON.stringify({
+            entityId: entity._id,
+            languageFrom,
+            languagesTo,
+            [property.name]: propertyValue,
+          })}`
+        );
       }
     });
   }

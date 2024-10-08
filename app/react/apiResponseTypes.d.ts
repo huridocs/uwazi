@@ -71,6 +71,7 @@ export interface ClientSettings
         properties: string[];
       }[];
     };
+    paragraphExtraction?: boolean;
     [k: string]: unknown | undefined;
   };
 }
