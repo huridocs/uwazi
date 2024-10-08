@@ -2201,7 +2201,14 @@
   dependencies:
     "@floating-ui/dom" "^1.0.0"
 
-"@floating-ui/react@0.26.17", "@floating-ui/react@^0.26.2":
+"@floating-ui/react-dom@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@floating-ui/react-dom/-/react-dom-2.1.2.tgz#a1349bbf6a0e5cb5ded55d023766f20a4d439a31"
+  integrity sha512-06okr5cgPzMNBy+Ycse2A6udMi4bqwW/zgBF/rwjcNqWkyr82Mcg8b0vjX8OJpZFy/FKjJmw6wV7t44kK6kW7A==
+  dependencies:
+    "@floating-ui/dom" "^1.0.0"
+
+"@floating-ui/react@0.26.17":
   version "0.26.17"
   resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.26.17.tgz#efa2e1a0dea3d9d308965c5ccd49756bb64a883d"
   integrity sha512-ESD+jYWwqwVzaIgIhExrArdsCL1rOAzryG/Sjlu8yaD3Mtqi3uVyhbE2V7jD58Mo52qbzKz2eUY/Xgh5I86FCQ==
@@ -2210,10 +2217,24 @@
     "@floating-ui/utils" "^0.2.0"
     tabbable "^6.0.0"
 
+"@floating-ui/react@^0.26.23":
+  version "0.26.24"
+  resolved "https://registry.yarnpkg.com/@floating-ui/react/-/react-0.26.24.tgz#072b9dfeca4e79ef4e3000ef1c28e0ffc86f4ed4"
+  integrity sha512-2ly0pCkZIGEQUq5H8bBK0XJmc1xIK/RM3tvVzY3GBER7IOD1UgmC2Y2tjj4AuS+TC+vTE1KJv2053290jua0Sw==
+  dependencies:
+    "@floating-ui/react-dom" "^2.1.2"
+    "@floating-ui/utils" "^0.2.8"
+    tabbable "^6.0.0"
+
 "@floating-ui/utils@^0.2.0":
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.2.tgz#d8bae93ac8b815b2bd7a98078cf91e2724ef11e5"
   integrity sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==
+
+"@floating-ui/utils@^0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.8.tgz#21a907684723bbbaa5f0974cf7730bd797eb8e62"
+  integrity sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==
 
 "@fortawesome/fontawesome-common-types@6.6.0":
   version "6.6.0"
@@ -7066,10 +7087,10 @@ clone@^1.0.2:
   version "1.0.4"
   resolved "https://registry.npmjs.org/clone/-/clone-1.0.4.tgz"
 
-clsx@^2.0.0, clsx@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.0.tgz#e851283bcb5c80ee7608db18487433f7b23f77cb"
-  integrity sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==
+clsx@^2.0.0, clsx@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
+  integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
 co@^4.6.0:
   version "4.6.0"
@@ -7926,7 +7947,7 @@ date-arithmetic@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/date-arithmetic/-/date-arithmetic-3.1.0.tgz"
 
-date-fns@^3.3.1, date-fns@^3.6.0:
+date-fns@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-3.6.0.tgz#f20ca4fe94f8b754951b24240676e8618c0206bf"
   integrity sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==
@@ -14664,16 +14685,15 @@ react-confetti@^6.1.0:
   dependencies:
     tween-functions "^1.2.0"
 
-react-datepicker@7.3.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-7.3.0.tgz#666664a609d4b57b095083fe29d080943fa7b3ed"
-  integrity sha512-EqRKLAtLZUTztiq6a+tjSjQX9ES0Xd229JPckAtyZZ4GoY3rtvNWAzkYZnQUf6zTWT50Ki0+t+W9VRQIkSJLfg==
+react-datepicker@7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-7.4.0.tgz#127a9c3ce24260f6e21cf4211c910f3eb6d83383"
+  integrity sha512-vSSok4DTZ9/Os8O4HjZLxh4SZVFU6dQvoCX6mfbNdBqMsBBdzftrvMz0Nb4UUVVbgj9o8PfX84K3/31oPrTqmg==
   dependencies:
-    "@floating-ui/react" "^0.26.2"
-    clsx "^2.1.0"
-    date-fns "^3.3.1"
-    prop-types "^15.7.2"
-    react-onclickoutside "^6.13.0"
+    "@floating-ui/react" "^0.26.23"
+    clsx "^2.1.1"
+    date-fns "^3.6.0"
+    prop-types "^15.8.1"
 
 react-device-detect@^2.2.3:
   version "2.2.3"
@@ -14841,11 +14861,6 @@ react-native-segmented-control-tab@^3.2.1:
   version "3.4.1"
   resolved "https://registry.npmjs.org/react-native-segmented-control-tab/-/react-native-segmented-control-tab-3.4.1.tgz"
   integrity sha512-BNPdlE9Unr0Xabewn8W+FhBMLjssXy9Ey7S7AY0hXlrKrEKFdC9z0yT+eEWd5dLam4T6T4IuGL8b7ZF4uGyWNw==
-
-react-onclickoutside@^6.13.0:
-  version "6.13.0"
-  resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.13.0.tgz#e165ea4e5157f3da94f4376a3ab3e22a565f4ffc"
-  integrity sha512-ty8So6tcUpIb+ZE+1HAhbLROvAIJYyJe/1vRrrcmW+jLsaM+/powDRqxzo6hSh9CuRZGSL1Q8mvcF5WRD93a0A==
 
 react-player@^2.13.0:
   version "2.13.0"
