@@ -8,6 +8,9 @@ import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSour
 import { GenerateATConfigError } from '../errors/generateATErrors';
 import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig';
 import { ValidationError, Validator } from '../infrastructure/Validator';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
+import testingDB from 'api/utils/testing_db';
+import { Settings } from 'shared/types/settingsType';
 
 const factory = getFixturesFactory();
 
@@ -76,8 +79,7 @@ describe('GenerateAutomaticTranslationConfig', () => {
   let automaticTranslationConfigDS: MongoATConfigDataSource;
 
   beforeEach(() => {
-    automaticTranslationConfigDS = new MongoATConfigDataSource(
-      getConnection(),
+    automaticTranslationConfigDS = AutomaticTranslationFactory.defaultATConfigDataSource(
       DefaultTransactionManager()
     );
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
@@ -96,10 +98,11 @@ describe('GenerateAutomaticTranslationConfig', () => {
   it('should generate and persist the passed config', async () => {
     await generateAutomaticTranslationConfig.execute(validPassedConfig);
 
-    const settingsData = await automaticTranslationConfigDS.get();
+    const settings: Settings = (await testingDB.mongodb?.collection('settings').findOne()) || {};
+    const settingsData = settings.features?.automaticTranslation;
 
-    expect(settingsData.active).toBe(true);
-    expect(settingsData.templates).toEqual([
+    expect(settingsData?.active).toBe(true);
+    expect(settingsData?.templates).toEqual([
       {
         template: factory.idString('Template 1 name'),
         properties: [factory.idString('t1p1').toString(), factory.idString('t1p2').toString()],

@@ -3,7 +3,6 @@ import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { GenerateATConfigError } from './errors/generateATErrors';
 import { Validator } from './infrastructure/Validator';
 import { ATTemplateConfig } from './model/ATConfig';
-import { RawATConfig } from './model/RawATConfig';
 import { SemanticConfig } from './types/SemanticConfig';
 
 export class GenerateAutomaticTranslationsCofig {
@@ -37,25 +36,26 @@ export class GenerateAutomaticTranslationsCofig {
       }
       return new ATTemplateConfig(
         templateData?.id,
-        (configData.properties || []).map(label => {
-          const foundProperty = templateData.properties.find(p => p.label === label);
-          if (!foundProperty) {
-            throw new GenerateATConfigError(`Property not found: ${label}`);
-          }
-          return foundProperty.id;
-        }),
-        (configData.commonProperties || []).map(label => {
-          const foundProperty = templateData?.commonProperties.find(p => p.label === label);
-          if (!foundProperty) {
-            throw new GenerateATConfigError(`Common property not found: ${label}`);
-          }
-          return foundProperty.id;
-        })
+        (configData.properties || [])
+          .map(label => {
+            const foundProperty = templateData.properties.find(p => p.label === label);
+            if (!foundProperty) {
+              throw new GenerateATConfigError(`Property not found: ${label}`);
+            }
+            return foundProperty;
+          })
+          .concat(
+            (configData.commonProperties || []).map(label => {
+              const foundProperty = templateData?.commonProperties.find(p => p.label === label);
+              if (!foundProperty) {
+                throw new GenerateATConfigError(`Common property not found: ${label}`);
+              }
+              return foundProperty;
+            })
+          )
       );
     });
 
-    return this.atuomaticTranslationConfigDS.update(
-      new RawATConfig(semanticConfig.active, templates)
-    );
+    return this.atuomaticTranslationConfigDS.update(semanticConfig.active, templates);
   }
 }

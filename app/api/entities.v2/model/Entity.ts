@@ -1,5 +1,6 @@
 import { CommonProperty } from 'api/templates.v2/model/CommonProperty';
 import { Property } from 'api/templates.v2/model/Property';
+import { EntityInputModel } from '../types/EntityInputDataType';
 
 type MetadataValue = unknown;
 
@@ -50,6 +51,17 @@ export class Entity {
     this.obsoleteMetadata = obsoleteMetadata ?? [];
   }
 
+  static fromInputModel(inputModel: EntityInputModel) {
+    return new Entity(
+      inputModel._id,
+      inputModel.sharedId,
+      inputModel.language,
+      inputModel.title,
+      inputModel.template,
+      inputModel.metadata as Metadata
+    );
+  }
+
   changePropertyValue(property: Property, value: string) {
     if (property.type === 'text') {
       const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
@@ -66,6 +78,16 @@ export class Entity {
         this.template,
         metadata
       );
+    }
+
+    throw new Error('types other than string are not implemented yet');
+  }
+
+  getPropertyValue(property: Property): string {
+    if (property.type === 'text') {
+      const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
+      if (isTitleProperty) return this.title;
+      return this.metadata[property.name][0].value as string;
     }
 
     throw new Error('types other than string are not implemented yet');

@@ -1,16 +1,14 @@
 /* eslint-disable max-classes-per-file */
+import { Property } from 'api/templates.v2/model/Property';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 
 class ATTemplateConfig {
   readonly template: string;
 
-  readonly commonProperties: string[];
+  readonly properties: Property[];
 
-  readonly properties: string[];
-
-  constructor(template: string, properties: string[], commonProperties: string[] = []) {
+  constructor(template: string, properties: Property[]) {
     this.template = template;
-    this.commonProperties = commonProperties;
     this.properties = properties;
   }
 }
@@ -25,7 +23,7 @@ class ATConfig {
   constructor(active: boolean, languages: LanguageISO6391[], templates: ATTemplateConfig[]) {
     this.active = active;
     this.languages = languages;
-    this.templates = templates.filter(t => t.commonProperties.length || t.properties.length);
+    this.templates = templates.filter(t => t.properties.length);
   }
 }
 
