@@ -6,14 +6,14 @@ import { Logger } from 'api/log.v2/contracts/Logger';
 import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import { DBFixture } from 'api/utils/testing_db';
+import testingDB, { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
-import { SaveEntityTranslationPending } from '../SaveEntityTranslationsPending';
 
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {
@@ -49,32 +49,6 @@ const fixtures: DBFixture = {
   ],
 };
 
-class TestSaveEntityTranslationPending extends SaveEntityTranslationPending {
-  constructor() {
-    super(undefined as any, undefined as any, undefined as any);
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  async execute(
-    _sharedId: string,
-    _propertyId: string,
-    _originalText: string,
-    _targetLanguageKey: LanguageISO6391[]
-  ): Promise<void> {
-    return Promise.resolve();
-  }
-}
-
-let saveEntityTranlationExecuteSpy: jest.SpyInstance<
-  Promise<void>,
-  [
-    _sharedId: string,
-    _propertyId: string,
-    _originalText: string,
-    _targetLanguageKey: LanguageISO6391[],
-  ],
-  any
->;
 let taskManager: TaskManager<ATTaskMessage>;
 let mockLogger: Logger;
 let requestEntityTranslation: RequestEntityTranslation;
@@ -88,13 +62,12 @@ beforeEach(async () => {
   });
   jest.spyOn(taskManager, 'startTask').mockImplementation(async () => '');
 
-  const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-  saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
+  const transactionManager = DefaultTransactionManager();
 
   requestEntityTranslation = new RequestEntityTranslation(
     taskManager,
-    AutomaticTranslationFactory.defaultATConfigDataSource(DefaultTransactionManager()),
-    saveEntityTranslationPending,
+    AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
+    DefaultEntitiesDataSource(transactionManager),
     new Validator<EntityInputModel>(entityInputDataSchema),
     mockLogger
   );
@@ -107,29 +80,38 @@ afterAll(async () => {
 describe('RequestEntityTranslation', () => {
   describe('on requests that should be processed', () => {
     beforeEach(async () => {
-      const languageFromEntity = fixtures.entities?.find(e => e.language === 'en') as EntitySchema;
+      const languageFromEntity = {
+        ...fixtures.entities?.find(e => e.language === 'en'),
+      } as EntitySchema;
       languageFromEntity._id = languageFromEntity?._id?.toString();
       languageFromEntity.template = languageFromEntity?.template?.toString();
 
       await requestEntityTranslation.execute(languageFromEntity!);
     });
 
-    it('should call on save entities with pending translation', async () => {
-      expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
-        'entity1',
-        factory.commonPropertiesTitleId('template1').toString(),
-        'entity1',
-        ['es', 'pt']
-      );
-      expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
-        'entity1',
-        factory.property('text1')._id?.toString(),
-        'original text1',
-        ['es', 'pt']
-      );
+    it('should call save entities with pending translation', async () => {
+      const entities =
+        (await testingDB.mongodb?.collection('entities').find({ sharedId: 'entity1' }).toArray()) ||
+        [];
+      expect(entities.find(e => e.language === 'es')).toMatchObject({
+        title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
+        metadata: {
+          text1: [{ value: `${RequestEntityTranslation.AITranslationPendingText} original text1` }],
+        },
+      });
+      expect(entities.find(e => e.language === 'pt')).toMatchObject({
+        title: `${RequestEntityTranslation.AITranslationPendingText} entity1`,
+        metadata: {
+          text1: [{ value: `${RequestEntityTranslation.AITranslationPendingText} original text1` }],
+        },
+      });
+      expect(entities.find(e => e.language === 'en')).toMatchObject({
+        title: 'entity1',
+        metadata: { text1: [{ value: 'original text1' }] },
+      });
     });
 
-    it('should send a task to the automatic translation service queue', async () => {
+    it('should send a task to the automatic translation service queue', () => {
       expect(taskManager.startTask).toHaveBeenCalledTimes(2);
 
       expect(taskManager.startTask).toHaveBeenCalledWith({
@@ -145,10 +127,6 @@ describe('RequestEntityTranslation', () => {
         language_from: 'en',
         languages_to: ['es', 'pt'],
       });
-    });
-
-    it('should call Logger.info two times', async () => {
-      expect(mockLogger.info).toHaveBeenCalledTimes(2);
     });
   });
 

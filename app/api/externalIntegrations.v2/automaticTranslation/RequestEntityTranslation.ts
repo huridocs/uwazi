@@ -3,9 +3,10 @@ import { Entity } from 'api/entities.v2/model/Entity';
 import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
-import { SaveEntityTranslationPending } from './SaveEntityTranslationsPending';
 
 export type ATTaskMessage = {
   key: string[];
@@ -17,11 +18,13 @@ export type ATTaskMessage = {
 export class RequestEntityTranslation {
   static SERVICE_NAME = 'translations';
 
+  static AITranslationPendingText = '(AI translation pending)';
+
   private taskManager: TaskManager<ATTaskMessage>;
 
   private ATConfigDS: ATConfigDataSource;
 
-  private saveEntityTranslationPending: SaveEntityTranslationPending;
+  private entitiesDS: EntitiesDataSource;
 
   private inputValidator: Validator<EntityInputModel>;
 
@@ -31,13 +34,13 @@ export class RequestEntityTranslation {
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
     ATConfigDS: ATConfigDataSource,
-    saveEntityTranslationPending: SaveEntityTranslationPending,
+    entitiesDS: EntitiesDataSource,
     inputValidator: Validator<EntityInputModel>,
     logger: Logger
   ) {
     this.taskManager = taskManager;
     this.ATConfigDS = ATConfigDS;
-    this.saveEntityTranslationPending = saveEntityTranslationPending;
+    this.entitiesDS = entitiesDS;
     this.inputValidator = inputValidator;
     this.logger = logger;
   }
@@ -69,12 +72,19 @@ export class RequestEntityTranslation {
       const propertyValue = entity.getPropertyValue(property);
 
       if (propertyValue) {
-        await this.saveEntityTranslationPending.execute(
-          entity.sharedId,
-          property.id,
-          propertyValue,
-          languagesTo
-        );
+        const entities = this.entitiesDS.getByIds([entity.sharedId]);
+        const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${propertyValue}`;
+
+        await entities.forEach(async fetchedEntity => {
+          if (languagesTo.includes(fetchedEntity.language as LanguageISO6391)) {
+            await this.entitiesDS.updateEntity(
+              fetchedEntity.changePropertyValue(property, pendingText)
+            );
+            this.logger.info(
+              `[AT] - Pending translation saved on DB - ${property.name}: ${pendingText}`
+            );
+          }
+        });
 
         await this.taskManager.startTask({
           key: [getTenant().name, entity.sharedId, property.id],

@@ -16,7 +16,6 @@ import { ATExternalAPI } from './infrastructure/ATExternalAPI';
 import { MongoATConfigDataSource } from './infrastructure/MongoATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from './RequestEntityTranslation';
-import { SaveEntityTranslationPending } from './SaveEntityTranslationsPending';
 import { SaveEntityTranslations } from './SaveEntityTranslations';
 import { SemanticConfig, semanticConfigSchema } from './types/SemanticConfig';
 import { TranslationResult, translationResultSchema } from './types/TranslationResult';
@@ -43,15 +42,6 @@ const AutomaticTranslationFactory = {
     );
   },
 
-  defaultSaveEntityTranslationPending() {
-    const transactionManager = DefaultTransactionManager();
-    return new SaveEntityTranslationPending(
-      DefaultTemplatesDataSource(transactionManager),
-      DefaultEntitiesDataSource(transactionManager),
-      DefaultLogger()
-    );
-  },
-
   defaultSaveEntityTranslations() {
     const transactionManager = DefaultTransactionManager();
     return new SaveEntityTranslations(
@@ -68,12 +58,8 @@ const AutomaticTranslationFactory = {
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
-      AutomaticTranslationFactory.defaultATConfigDataSource(DefaultTransactionManager()),
-      new SaveEntityTranslationPending(
-        DefaultTemplatesDataSource(transactionManager),
-        DefaultEntitiesDataSource(transactionManager),
-        DefaultLogger()
-      ),
+      AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
+      DefaultEntitiesDataSource(transactionManager),
       new Validator<EntityInputModel>(entityInputDataSchema),
       DefaultLogger()
     );
