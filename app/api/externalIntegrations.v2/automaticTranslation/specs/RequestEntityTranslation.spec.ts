@@ -1,26 +1,22 @@
 /* eslint-disable max-classes-per-file */
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { entityInputDataSchema } from 'api/entities.v2/EntityInputDataSchema';
-import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
-import {
-  ATConfig,
-  ATTemplateConfig,
-} from 'api/externalIntegrations.v2/automaticTranslation/model/ATConfig';
+import { entityInputDataSchema } from 'api/entities.v2/types/EntityInputDataSchema';
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
+import { Logger } from 'api/log.v2/contracts/Logger';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { EntitySchema } from 'shared/types/entityType';
-import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
-import { Logger } from 'api/log.v2/contracts/Logger';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
 import { ValidationError, Validator } from '../infrastructure/Validator';
 import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTranslation';
-import { ATConfigService } from '../services/GetAutomaticTranslationConfig';
 import { SaveEntityTranslationPending } from '../SaveEntityTranslationsPending';
 
 const factory = getFixturesFactory();
-const fixtures = {
+const fixtures: DBFixture = {
   templates: [
     factory.template('template1', [factory.property('text1'), factory.property('empty_text')]),
   ],
@@ -37,31 +33,21 @@ const fixtures = {
         { label: 'es', key: 'es' as LanguageISO6391 },
         { label: 'pt', key: 'pt' as LanguageISO6391 },
       ],
+      features: {
+        automaticTranslation: {
+          active: true,
+          templates: [
+            {
+              template: factory.idString('template1'),
+              properties: [factory.idString('text1'), factory.idString('empty_text')],
+              commonProperties: [factory.commonPropertiesTitleId('template1')],
+            },
+          ],
+        },
+      },
     },
   ],
 };
-
-class TestATConfigService extends ATConfigService {
-  constructor() {
-    super(undefined as any, undefined as any, undefined as any, undefined as any);
-  }
-
-  ATConfig = new ATConfig(
-    true,
-    ['es', 'en'],
-    [
-      new ATTemplateConfig(
-        factory.idString('template1'),
-        [factory.idString('text1'), factory.idString('empty_text')],
-        [factory.commonPropertiesTitleId('template1')]
-      ),
-    ]
-  );
-
-  async get() {
-    return this.ATConfig;
-  }
-}
 
 class TestSaveEntityTranslationPending extends SaveEntityTranslationPending {
   constructor() {
@@ -91,6 +77,7 @@ let saveEntityTranlationExecuteSpy: jest.SpyInstance<
 >;
 let taskManager: TaskManager<ATTaskMessage>;
 let mockLogger: Logger;
+let requestEntityTranslation: RequestEntityTranslation;
 
 beforeEach(async () => {
   await testingEnvironment.setUp(fixtures);
@@ -100,6 +87,17 @@ beforeEach(async () => {
     serviceName: RequestEntityTranslation.SERVICE_NAME,
   });
   jest.spyOn(taskManager, 'startTask').mockImplementation(async () => '');
+
+  const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
+  saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
+
+  requestEntityTranslation = new RequestEntityTranslation(
+    taskManager,
+    AutomaticTranslationFactory.defaultATConfigDataSource(DefaultTransactionManager()),
+    saveEntityTranslationPending,
+    new Validator<EntityInputModel>(entityInputDataSchema),
+    mockLogger
+  );
 });
 
 afterAll(async () => {
@@ -109,37 +107,25 @@ afterAll(async () => {
 describe('RequestEntityTranslation', () => {
   describe('on requests that should be processed', () => {
     beforeEach(async () => {
-      const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
+      const languageFromEntity = fixtures.entities?.find(e => e.language === 'en') as EntitySchema;
       languageFromEntity._id = languageFromEntity?._id?.toString();
       languageFromEntity.template = languageFromEntity?.template?.toString();
-
-      const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-      saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
-
-      const requestEntityTranslation = new RequestEntityTranslation(
-        taskManager,
-        DefaultTemplatesDataSource(DefaultTransactionManager()),
-        new TestATConfigService(),
-        saveEntityTranslationPending,
-        new Validator<EntityInputData>(entityInputDataSchema),
-        mockLogger
-      );
 
       await requestEntityTranslation.execute(languageFromEntity!);
     });
 
-    it('should update Entities as pending translation', async () => {
+    it('should call on save entities with pending translation', async () => {
       expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
         'entity1',
         factory.commonPropertiesTitleId('template1').toString(),
         'entity1',
-        ['es']
+        ['es', 'pt']
       );
       expect(saveEntityTranlationExecuteSpy).toHaveBeenCalledWith(
         'entity1',
         factory.property('text1')._id?.toString(),
         'original text1',
-        ['es']
+        ['es', 'pt']
       );
     });
 
@@ -150,14 +136,14 @@ describe('RequestEntityTranslation', () => {
         key: ['tenant', 'entity1', factory.commonPropertiesTitleId('template1').toString()],
         text: 'entity1',
         language_from: 'en',
-        languages_to: ['es'],
+        languages_to: ['es', 'pt'],
       });
 
       expect(taskManager.startTask).toHaveBeenCalledWith({
         key: ['tenant', 'entity1', factory.property('text1')._id?.toString()],
         text: 'original text1',
         language_from: 'en',
-        languages_to: ['es'],
+        languages_to: ['es', 'pt'],
       });
     });
 
@@ -171,40 +157,16 @@ describe('RequestEntityTranslation', () => {
       'entity2',
       'template1',
       {},
-      { language: 'pt' }
+      { language: 'kg' }
     );
     entityWithNotSupportedLanguage._id = entityWithNotSupportedLanguage?._id?.toString();
     entityWithNotSupportedLanguage.template = entityWithNotSupportedLanguage?.template?.toString();
-
-    const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-    saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
-
-    const requestEntityTranslation = new RequestEntityTranslation(
-      taskManager,
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      new TestATConfigService(),
-      saveEntityTranslationPending,
-      new Validator<EntityInputData>(entityInputDataSchema),
-      mockLogger
-    );
 
     await requestEntityTranslation.execute(entityWithNotSupportedLanguage);
     expect(taskManager.startTask).not.toHaveBeenCalled();
   });
 
   it('should validate input has proper shape at runtime', async () => {
-    const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-    saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
-
-    const requestEntityTranslation = new RequestEntityTranslation(
-      taskManager,
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      new TestATConfigService(),
-      saveEntityTranslationPending,
-      new Validator<EntityInputData>(entityInputDataSchema),
-      mockLogger
-    );
-
     const invalidEntity = { invalid_prop: true };
     await expect(requestEntityTranslation.execute(invalidEntity)).rejects.toEqual(
       new ValidationError("must have required property '_id'")
@@ -212,33 +174,13 @@ describe('RequestEntityTranslation', () => {
   });
 
   it('should NOT send any task if there is no other language to translate', async () => {
-    const languageFromEntity = fixtures.entities.find(e => e.language === 'en') as EntitySchema;
+    await testingEnvironment.setFixtures({
+      ...fixtures,
+      settings: [{ languages: [{ label: 'en', key: 'en' as LanguageISO6391, default: true }] }],
+    });
+    const languageFromEntity = fixtures.entities?.find(e => e.language === 'en') as EntitySchema;
     languageFromEntity._id = languageFromEntity?._id?.toString();
     languageFromEntity.template = languageFromEntity?.template?.toString();
-    const testATConfigService = new TestATConfigService();
-    testATConfigService.ATConfig = new ATConfig(
-      true,
-      ['en'],
-      [
-        new ATTemplateConfig(
-          factory.idString('template1'),
-          [factory.idString('text1'), factory.idString('empty_text')],
-          [factory.commonPropertiesTitleId('template1')]
-        ),
-      ]
-    );
-
-    const saveEntityTranslationPending = new TestSaveEntityTranslationPending();
-    saveEntityTranlationExecuteSpy = jest.spyOn(saveEntityTranslationPending, 'execute');
-
-    const requestEntityTranslation = new RequestEntityTranslation(
-      taskManager,
-      DefaultTemplatesDataSource(DefaultTransactionManager()),
-      testATConfigService,
-      saveEntityTranslationPending,
-      new Validator<EntityInputData>(entityInputDataSchema),
-      mockLogger
-    );
 
     await requestEntityTranslation.execute(languageFromEntity!);
 

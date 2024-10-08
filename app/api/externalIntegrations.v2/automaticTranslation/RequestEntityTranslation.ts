@@ -1,12 +1,10 @@
 import { getTenant } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { TaskManager } from 'api/services/tasksmanager/TaskManager';
-import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-import { EntityInputData } from 'api/entities.v2/EntityInputDataType';
+import { Entity } from 'api/entities.v2/model/Entity';
+import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
-import { ATConfigService } from './services/GetAutomaticTranslationConfig';
+import { TaskManager } from 'api/services/tasksmanager/TaskManager';
+import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
-import { ATTemplateConfig } from './model/ATConfig';
 import { SaveEntityTranslationPending } from './SaveEntityTranslationsPending';
 
 export type ATTaskMessage = {
@@ -21,124 +19,79 @@ export class RequestEntityTranslation {
 
   private taskManager: TaskManager<ATTaskMessage>;
 
-  private templatesDS: TemplatesDataSource;
-
-  private aTConfigService: ATConfigService;
+  private ATConfigDS: ATConfigDataSource;
 
   private saveEntityTranslationPending: SaveEntityTranslationPending;
 
-  private inputValidator: Validator<EntityInputData>;
+  private inputValidator: Validator<EntityInputModel>;
 
   private logger: Logger;
 
   // eslint-disable-next-line max-params
   constructor(
     taskManager: TaskManager<ATTaskMessage>,
-    templatesDS: TemplatesDataSource,
-    aTConfigService: ATConfigService,
+    ATConfigDS: ATConfigDataSource,
     saveEntityTranslationPending: SaveEntityTranslationPending,
-    inputValidator: Validator<EntityInputData>,
+    inputValidator: Validator<EntityInputModel>,
     logger: Logger
   ) {
     this.taskManager = taskManager;
-    this.templatesDS = templatesDS;
-    this.aTConfigService = aTConfigService;
+    this.ATConfigDS = ATConfigDS;
     this.saveEntityTranslationPending = saveEntityTranslationPending;
     this.inputValidator = inputValidator;
     this.logger = logger;
   }
 
-  async execute(entity: EntityInputData | unknown) {
-    this.inputValidator.ensure(entity);
-    const atConfig = await this.aTConfigService.get();
+  async execute(entityInputModel: EntityInputModel | unknown) {
+    this.inputValidator.ensure(entityInputModel);
+    const atConfig = await this.ATConfigDS.get();
     const atTemplateConfig = atConfig.templates.find(
-      t => t.template === entity.template?.toString()
+      t => t.template === entityInputModel.template?.toString()
     );
 
-    const languageFrom = entity.language;
-    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
+    const languageFrom = entityInputModel.language;
+    const languagesTo = atConfig.languages.filter(
+      language => language !== entityInputModel.language
+    );
 
     if (
       !atTemplateConfig ||
       languagesTo.length <= 0 ||
-      !atConfig.languages.includes(entity.language)
+      !atConfig.languages.includes(entityInputModel.language)
     ) {
       return;
     }
 
-    await this.requestTranslation(atTemplateConfig, languagesTo, languageFrom, entity);
-  }
+    const entity = Entity.fromInputModel(entityInputModel);
 
-  private async requestTranslation(
-    atTemplateConfig: ATTemplateConfig,
-    languagesTo: string[],
-    languageFrom: string,
-    entity: EntityInputData
-  ) {
-    const template = await this.templatesDS.getById(atTemplateConfig?.template);
+    await atTemplateConfig?.properties.reduce(async (prev, property) => {
+      await prev;
+      const propertyValue = entity.getPropertyValue(property);
 
-    atTemplateConfig?.commonProperties.forEach(async commonPropId => {
-      const commonPropName = template?.getPropertyById(commonPropId)?.name;
-
-      if (!commonPropName) {
-        throw new Error('Common property not found');
-      }
-
-      if (!(typeof entity[commonPropName] === 'string')) {
-        throw new Error('Common property is not a string');
-      }
-
-      const originalText = entity[commonPropName];
-
-      await this.saveEntityTranslationPending.execute(
-        entity.sharedId,
-        commonPropId.toString(),
-        originalText,
-        languagesTo as LanguageISO6391[]
-      );
-
-      await this.startTask({
-        key: [getTenant().name, entity.sharedId, commonPropId.toString()],
-        text: originalText,
-        language_from: languageFrom,
-        languages_to: languagesTo,
-      });
-    });
-
-    atTemplateConfig?.properties.forEach(async propId => {
-      const propName = template?.getPropertyById(propId)?.name;
-      if (!propName) {
-        throw new Error('Property not found');
-      }
-
-      if (!(typeof entity.metadata[propName]?.[0].value === 'string')) {
-        throw new Error('Property is not a string');
-      }
-
-      if (entity.metadata[propName]?.[0].value) {
-        const originalText = entity.metadata[propName][0].value;
-
+      if (propertyValue) {
         await this.saveEntityTranslationPending.execute(
           entity.sharedId,
-          propId,
-          originalText,
-          languagesTo as LanguageISO6391[]
+          property.id,
+          propertyValue,
+          languagesTo
         );
 
-        await this.startTask({
-          key: [getTenant().name, entity.sharedId, propId],
-          text: originalText,
+        await this.taskManager.startTask({
+          key: [getTenant().name, entity.sharedId, property.id],
+          text: propertyValue,
           language_from: languageFrom,
           languages_to: languagesTo,
         });
-      }
-    });
-  }
 
-  private async startTask(task: ATTaskMessage) {
-    this.logger.info(
-      `[AT] - Translation requested - From: ${task.language_from} To: ${task.languages_to.toString()} - Text: ${task.text}`
-    );
-    return this.taskManager.startTask(task);
+        this.logger.info(
+          `[AT] - Translation requested - ${JSON.stringify({
+            entityId: entity._id,
+            languageFrom,
+            languagesTo,
+            [property.name]: propertyValue,
+          })}`
+        );
+      }
+    }, Promise.resolve());
   }
 }
