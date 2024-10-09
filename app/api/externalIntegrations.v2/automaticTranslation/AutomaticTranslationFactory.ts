@@ -53,11 +53,13 @@ const AutomaticTranslationFactory = {
   },
 
   defaultRequestEntityTranslation() {
+    const transactionManager = DefaultTransactionManager();
     return new RequestEntityTranslation(
       new TaskManager<ATTaskMessage>({
         serviceName: RequestEntityTranslation.SERVICE_NAME,
       }),
-      AutomaticTranslationFactory.defaultATConfigDataSource(DefaultTransactionManager()),
+      AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager),
+      DefaultEntitiesDataSource(transactionManager),
       new Validator<EntityInputModel>(entityInputDataSchema),
       DefaultLogger()
     );
