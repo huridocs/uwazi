@@ -14296,10 +14296,10 @@ postcss-ordered-values@^7.0.0:
     cssnano-utils "^5.0.0"
     postcss-value-parser "^4.2.0"
 
-postcss-prefix-selector@^1.16.0:
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/postcss-prefix-selector/-/postcss-prefix-selector-1.16.0.tgz#ad5b56f9a73a2c090ca7161049632c9d89bcb404"
-  integrity sha512-rdVMIi7Q4B0XbXqNUEI+Z4E+pueiu/CS5E6vRCQommzdQ/sgsS4dK42U7GX8oJR+TJOtT+Qv3GkNo6iijUMp3Q==
+postcss-prefix-selector@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/postcss-prefix-selector/-/postcss-prefix-selector-2.0.0.tgz#5255989388dc90f6f3667c6dc8834f02ad998276"
+  integrity sha512-t8172nkNyEASE5VXn+rtHG/WJNa/0qnWP8UpiUdQ4ZWd4EgpRFSLX/YAYGSVLXG2iD+T8Q7Ewr7EP7oEWJos8A==
 
 postcss-reduce-initial@^7.0.0:
   version "7.0.0"
