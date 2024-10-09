@@ -125,6 +125,7 @@ function getFixturesFactory() {
       };
     },
 
+    // eslint-disable-next-line max-params
     entityInMultipleLanguages(
       languages: string[],
       id: string,
