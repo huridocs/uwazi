@@ -1,5 +1,6 @@
 import path from 'path';
 import { Readable } from 'stream';
+import mimetypes from 'mime-types';
 
 import ID from 'shared/uniqueID';
 // eslint-disable-next-line node/no-restricted-import
@@ -69,8 +70,20 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
-const generateFileName = ({ originalname = '' }: FileType) =>
-  Date.now() + ID() + path.extname(originalname);
+const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
+  const fileName = `${Date.now()}${ID()}`;
+
+  // Try first the actual mimetype
+  const extensionFromMime = mimetypes.extension(mimetype);
+  if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
+
+  // If not, try with the original file name
+  const extensionFromOriginalName = mimetypes.extension(mimetypes.lookup(originalname) || '');
+  if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
+
+  // Return the file without any extension.
+  return fileName;
+};
 
 /**
  * Create a file from a read stream and save it to one of uwazi filesystem paths
