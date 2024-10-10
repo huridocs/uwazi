@@ -52,6 +52,15 @@ describe('files', () => {
       expect(result).toBe(`${mockDate}unique_id.pdf`);
     });
 
+    it('should originalname the one to take precendence over mimetype', () => {
+      const mimetype = 'application/jpeg';
+      const originalname = 'any_file.jpg';
+
+      const result = generateFileName({ mimetype, originalname });
+
+      expect(result).toBe(`${mockDate}unique_id.jpg`);
+    });
+
     it('should return the correct filename if provided the CORRECT mimetype and WRONG oringalname', () => {
       const mimetype = 'application/pdf';
       expect(generateFileName({ mimetype })).toBe(`${mockDate}unique_id.pdf`);

@@ -70,18 +70,21 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
+const getExtension = (mimetype = '') => {
+  const result = mimetypes.extension(mimetype);
+
+  return result === 'jpeg' ? 'jpg' : result;
+};
+
 const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
   const fileName = `${Date.now()}${ID()}`;
 
-  // Try first the actual mimetype
-  const extensionFromMime = mimetypes.extension(mimetype);
-  if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
-
-  // If not, try with the original file name
-  const extensionFromOriginalName = mimetypes.extension(mimetypes.lookup(originalname) || '');
+  const extensionFromOriginalName = getExtension(mimetypes.lookup(originalname) || '');
   if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
 
-  // Return the file without any extension.
+  const extensionFromMime = getExtension(mimetype);
+  if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
+
   return fileName;
 };
 
