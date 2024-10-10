@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .document-viewer {
   width: 100%;
   height: 100%;
@@ -115,7 +117,7 @@
 mark,
 .mark {
   color: transparent !important;
-  background-color: transparentize($c-primary, 0.8) !important;
+  background-color: color.adjust($c-primary, $alpha: -0.8) !important;
   padding: 0 !important;
 
   mark,
@@ -125,7 +127,7 @@ mark,
 }
 
 mark.searchTerm {
-  background-color: transparentize(yellow, 0.6) !important;
+  background-color: color.adjust(yellow, $alpha: -0.6) !important;
 
   mark.searchTerm {
     background-color: transparent !important;
@@ -273,13 +275,13 @@ mark.searchTerm {
     margin-bottom: 0;
 
     &:hover {
-      background-color: transparentize($c-primary-light, 0.7);
+      background-color: color.adjust($c-primary-light, $alpha: -0.7);
     }
 
     &:active,
     &.is-selected {
-      box-shadow: inset 0 0 0 1px transparentize($c-primary, 0.7);
-      background-color: transparentize($c-primary-light, 0.7);
+      box-shadow: inset 0 0 0 1px color.adjust($c-primary, $alpha: -0.7);
+      background-color: color.adjust($c-primary-light, $alpha: -0.7);
     }
 
     .item-name {
