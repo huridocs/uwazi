@@ -131,7 +131,7 @@
     "clean-insights-sdk": "^2.6.2",
     "compression": "^1.7.4",
     "connect-mongo": "5.1.0",
-    "cookie": "1.0.0",
+    "cookie": "0.7.0",
     "cookie-parser": "1.4.6",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
