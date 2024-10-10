@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .hero {
   text-align: center;
   margin: -15px -15px 30px;
@@ -50,10 +52,10 @@
     width: 100%;
     border-top: 3px solid $c-white;
     padding: 60px 0;
-    background: transparentize($c-black, .6);
+    background: color.adjust($c-black, $alpha: -.6);
 
     &:hover {
-      background: transparentize($c-black, .5);
+      background: color.adjust($c-black, $alpha: -.5);
       cursor: pointer;
       text-decoration: none;
 
