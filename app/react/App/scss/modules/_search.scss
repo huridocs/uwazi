@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .library-filters {
   z-index: 6;
   top: $header-height;
@@ -202,10 +204,10 @@
   }
 
   b {
-    background-color: transparentize(yellow, 0.4);
+    background-color: color.adjust(yellow, $alpha: -0.4);
     box-shadow:
-      -2px 0 0 0 transparentize(yellow, 0.4),
-      2px 0 0 0 transparentize(yellow, 0.4);
+      -2px 0 0 0 color.adjust(yellow, $alpha: -0.4),
+      2px 0 0 0 color.adjust(yellow, $alpha: -0.4);
   }
 
   .fa {
@@ -489,7 +491,7 @@
   width: 20px;
   height: $switcher-height;
   margin: 0 3px;
-  background-color: lighten($c-primary, 10%);
+  background-color: color.adjust($c-primary, $lightness: 10%, $space: hsl);
   border-radius: calc($switcher-height / 2);
   border: 1px solid $c-primary;
   cursor: pointer;
@@ -1090,6 +1092,6 @@
   b {
     font-weight: normal;
     color: #333300;
-    background-color: transparentize(yellow, 0.8);
+    background-color: color.adjust(yellow, $alpha: -0.8);
   }
 }
