@@ -63,6 +63,11 @@ export default {
           name: templateUtils.safeName('text label'),
         },
         {
+          type: propertyTypes.text,
+          label: 'header.with. dots',
+          name: templateUtils.safeName('header.with.dots'),
+        },
+        {
           type: propertyTypes.numeric,
           label: 'numeric label',
           name: templateUtils.safeName('numeric label'),
