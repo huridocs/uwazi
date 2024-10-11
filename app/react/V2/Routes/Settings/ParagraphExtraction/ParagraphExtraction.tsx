@@ -11,7 +11,7 @@ import { Translate } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { extractorsTableColumns } from './components/TableElements';
-import { TableExtractor, Extractor } from './types';
+import { TableParagraphExtractor, ParagraphExtractorApiResponse } from './types';
 import { List } from './components/List';
 import { ExtractorModal } from './components/ExtractorModal';
 
@@ -21,9 +21,9 @@ const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) =>
 };
 
 const formatExtractors = (
-  extractors: Extractor[],
+  extractors: ParagraphExtractorApiResponse[],
   templates: ClientTemplateSchema[]
-): TableExtractor[] =>
+): TableParagraphExtractor[] =>
   extractors.map(extractor => {
     const targetTemplateName = getTemplateName(templates, extractor.templateTo);
     const originTemplateNames = (extractor.templatesFrom || []).map(templateFrom =>
@@ -40,13 +40,13 @@ const formatExtractors = (
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [], templates } = useLoaderData() as {
-    extractors: Extractor[];
+    extractors: ParagraphExtractorApiResponse[];
     templates: ClientTemplateSchema[];
   };
 
   const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
-  const [selected, setSelected] = useState<TableExtractor[]>([]);
+  const [selected, setSelected] = useState<TableParagraphExtractor[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);

@@ -1,12 +1,12 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { ClientTemplateSchema } from 'app/istore';
-import { ParagraphExtractorValues } from '../types';
+import { ParagraphExtractorApiPayload } from '../types';
 import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
 
 interface ExtractorModalProps {
@@ -14,7 +14,7 @@ interface ExtractorModalProps {
   onClose: () => void;
   onAccept: () => void;
   templates: ClientTemplateSchema[];
-  extractor?: ParagraphExtractorValues;
+  extractor?: ParagraphExtractorApiPayload;
 }
 
 const formatOptions = (templates: ClientTemplateSchema[]) =>
@@ -42,17 +42,21 @@ const ExtractorModal = ({
   extractor,
 }: ExtractorModalProps) => {
   const [step, setStep] = useState(1);
-  console.log(extractor);
   const [templatesFrom, setTemplatesFrom] = useState<string[]>(extractor?.templatesFrom || []);
-  const [templateTo, setTemplateTo] = useState<string[]>(
-    extractor?.templateTo ? [extractor?.templateTo] : []
+  const [templateTo, setTemplateTo] = useState<string>(extractor?.templateTo ?? '');
+
+  const [templateToOptions] = useState(formatOptions(templates.filter(templatesWithParagraph)));
+  const [templateFromOptions, setTemplateFromOptions] = useState(
+    formatOptions(templates.filter(template => template._id !== templateTo))
   );
 
-  const [templateFromOptions] = useState(formatOptions(templates));
-  const [templateToOptions] = useState(formatOptions(templates.filter(templatesWithParagraph)));
+  useEffect(() => {
+    setTemplateFromOptions(
+      formatOptions(templates.filter(template => template._id !== templateTo))
+    );
+  }, [templateTo, templates]);
 
   const handleClose = () => {
-    // setValues([]);
     onClose();
   };
 
@@ -61,7 +65,7 @@ const ExtractorModal = ({
       const values = {
         ...extractor,
         templatesFrom,
-        templateTo: templateTo[0],
+        templateTo,
       };
       await extractorsAPI.save(values);
       handleClose();
@@ -88,10 +92,10 @@ const ExtractorModal = ({
       <Modal.Body className="pt-0">
         <div className={`${step !== 1 && 'hidden'}`}>
           <MultiselectList
-            value={templateTo}
+            value={[templateTo]}
             items={templateToOptions}
             onChange={selected => {
-              setTemplateTo(selected);
+              setTemplateTo(selected[0]);
             }}
             singleSelect
             startOnSelected={templateTo?.length > 0}

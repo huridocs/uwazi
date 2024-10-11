@@ -1,15 +1,15 @@
-export type ParagraphExtractorValues = {
+export type ParagraphExtractorApiPayload = {
   _id?: string;
   templatesFrom: string[];
   templateTo: string;
 };
 
-export type Extractor = ParagraphExtractorValues & {
+export type ParagraphExtractorApiResponse = ParagraphExtractorApiPayload & {
   documents: number;
   generatedEntities: number;
 };
 
-export type TableExtractor = Extractor & {
+export type TableParagraphExtractor = ParagraphExtractorApiResponse & {
   rowId: string;
   targetTemplateName: string;
   originTemplateNames: string[];

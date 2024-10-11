@@ -5,9 +5,9 @@ import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';
-import { TableExtractor } from '../types';
+import { TableParagraphExtractor } from '../types';
 
-const extractorColumnHelper = createColumnHelper<TableExtractor>();
+const extractorColumnHelper = createColumnHelper<TableParagraphExtractor>();
 
 const TemplateFromHeader = () => <Translate>Template</Translate>;
 const TemplateToHeader = () => <Translate>Target Template</Translate>;
@@ -18,11 +18,13 @@ const ActionHeader = () => <Translate className="">Action</Translate>;
 const NumericCell = ({
   cell,
 }: CellContext<
-  TableExtractor,
-  TableExtractor['documents'] | TableExtractor['generatedEntities']
+  TableParagraphExtractor,
+  TableParagraphExtractor['documents'] | TableParagraphExtractor['generatedEntities']
 >) => <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>;
 
-const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['templateTo']>) => (
+const TemplatesCell = ({
+  cell,
+}: CellContext<TableParagraphExtractor, TableParagraphExtractor['templateTo']>) => (
   <div className="flex flex-wrap gap-2">
     <div key={cell.getValue()} className="whitespace-nowrap">
       <Pill color="gray">{cell.getValue()}</Pill>
@@ -32,7 +34,7 @@ const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['tem
 
 const TemplateFromCell = ({
   cell,
-}: CellContext<TableExtractor, TableExtractor['templatesFrom']>) => (
+}: CellContext<TableParagraphExtractor, TableParagraphExtractor['templatesFrom']>) => (
   <div className="flex flex-wrap gap-2">
     {cell.getValue().map(value => (
       <div key={value} className="whitespace-nowrap">
@@ -42,7 +44,9 @@ const TemplateFromCell = ({
   </div>
 );
 
-const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>) => (
+const LinkButton = ({
+  cell,
+}: CellContext<TableParagraphExtractor, TableParagraphExtractor['_id']>) => (
   <Link to={`suggestions/${cell.getValue()}`}>
     <Button className="leading-4" styling="outline">
       <Translate>View</Translate>
