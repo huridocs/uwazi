@@ -7,7 +7,7 @@ const NoQualifiedTemplatesMessage = () => (
       <Translate>No valid target template available</Translate>
     </p>
     <p>
-      <Translate>Qualified templates should have &quot;Rich Text&quot; property</Translate>
+      <Translate>Qualified templates should have Rich Text property</Translate>
     </p>
   </div>
 );
