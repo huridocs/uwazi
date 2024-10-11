@@ -649,6 +649,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,Publish
 Published,Published
 QR Code,QR Code
+"Qualified templates should have ""Rich Text"" property","Qualified templates should have ""Rich Text"" property"
 Query,Query
 Quick labeling for,Quick labeling for
 RAW,RAW
