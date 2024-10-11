@@ -525,6 +525,7 @@ No Documents found,Документы не найдены
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,Нет иконки/флажка
+No items available,No items available
 No Label,Нет метки
 No options,No options
 No options found,Варианты не найдены
@@ -577,6 +578,7 @@ out of,из
 Page,Страница
 Pages,Страницы
 Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
 Password,Пароль
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -667,6 +669,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,Повторите пароль
 Request id #,Запрос ID #
 Request token,Request token
+required criteria,required criteria
 Required property,Необходимое свойство
 Reset,Сброс
 Reset 2FA,Сбросить 2FA
@@ -794,6 +797,7 @@ Table of Contents,Содержание
 Table of contents,Содержание
 Table view,Табличный вид
 Target Template,Target Template
+Target template,Target template
 Target Template:,Target Template:
 Template,Шаблон
 Template conflict,Template conflict
@@ -802,6 +806,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,Шаблоны
+Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Текст
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.

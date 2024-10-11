@@ -526,6 +526,7 @@ No Documents found,No se encontraron documentos
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No Group,No Group
 No icon / flag,Sin icono / bandera
+No items available,No items available
 No Label,No existe etiqueta
 No options,No options
 No options found,Opciones no encontradas
@@ -578,6 +579,7 @@ out of,fuera de
 Page,Página
 Pages,Páginas
 Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -668,6 +670,7 @@ Renamed attachment,Archivo adjunto eliminado
 Repeat Password,Repite la contraseña
 Request id #,Solicitar id #
 Request token,Solicitud de token
+required criteria,required criteria
 Required property,Propiedad requerida
 Reset,Reiniciar
 Reset 2FA,Resetear 2FA
@@ -795,6 +798,7 @@ Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
 Table view,Vista de Tabla
 Target Template,Target Template
+Target template,Target template
 Target Template:,Target Template:
 Template,Plantilla
 Template conflict,Conflicto de plantilla
@@ -802,6 +806,7 @@ Template name,Nombre de plantilla
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
 Templates,Plantillas
+Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.

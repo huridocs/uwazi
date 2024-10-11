@@ -32,7 +32,7 @@ const TemplatesCell = ({ cell }: CellContext<TableExtractor, TableExtractor['tem
 
 const TemplateFromCell = ({
   cell,
-}: CellContext<TableExtractor, TableExtractor['templateFrom']>) => (
+}: CellContext<TableExtractor, TableExtractor['templatesFrom']>) => (
   <div className="flex flex-wrap gap-2">
     {cell.getValue().map(value => (
       <div key={value} className="whitespace-nowrap">
@@ -50,7 +50,6 @@ const LinkButton = ({ cell }: CellContext<TableExtractor, TableExtractor['_id']>
   </Link>
 );
 
-// todo: fix width of each column
 const extractorsTableColumns = [
   extractorColumnHelper.accessor('originTemplateNames', {
     header: TemplateFromHeader,

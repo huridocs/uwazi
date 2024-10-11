@@ -1,7 +1,10 @@
-export type Extractor = {
-  _id: string;
-  templateFrom: string[];
+export type ParagraphExtractorValues = {
+  _id?: string;
+  templatesFrom: string[];
   templateTo: string;
+};
+
+export type Extractor = ParagraphExtractorValues & {
   documents: number;
   generatedEntities: number;
 };

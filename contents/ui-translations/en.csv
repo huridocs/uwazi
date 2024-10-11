@@ -530,6 +530,7 @@ No Documents found,No Documents found
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,No icon / flag
+No items available,No items available
 No Label,No Label
 No options,No options
 No options found,No options found
@@ -582,6 +583,7 @@ out of,out of
 Page,Page
 Pages,Pages
 Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -672,6 +674,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,Repeat Password
 Request id #,Request id #
 Request token,Request token
+required criteria,required criteria
 Required property,Required property
 Reset,Reset
 Reset 2FA,Reset 2FA
@@ -799,6 +802,7 @@ Table of Contents,Table of Contents
 Table of contents,Table of contents
 Table view,Table view
 Target Template,Target Template
+Target template,Target template
 Target Template:,Target Template:
 Template,Template
 Template conflict,Template conflict
@@ -807,6 +811,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,Templates
+Templates meeting,Templates meeting
 Templates:,Templates:
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
