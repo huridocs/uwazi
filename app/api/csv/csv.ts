@@ -58,7 +58,7 @@ const csv = (readStream: Readable, stopOnError = false) => ({
 
   async read() {
     this.reading = true;
-    return csvtojson({ delimiter: DELIMITERS })
+    return csvtojson({ delimiter: DELIMITERS, flatKeys: true })
       .fromStream(readStream)
       .subscribe(async (row: CSVRow, index) => {
         if (!this.reading) {
