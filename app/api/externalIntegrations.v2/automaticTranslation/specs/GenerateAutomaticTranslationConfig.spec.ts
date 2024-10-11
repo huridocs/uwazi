@@ -5,9 +5,12 @@ import { DefaultTransactionManager } from 'api/common.v2/database/data_source_de
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { GenerateAutomaticTranslationsCofig } from '../GenerateAutomaticTranslationConfig';
 import { MongoATConfigDataSource } from '../infrastructure/MongoATConfigDataSource';
-import { GenerateATConfigError, InvalidInputDataFormat } from '../errors/generateATErrors';
-import { SemanticConfig } from '../types/SemanticConfig';
-import { AJVATConfigValidator } from '../infrastructure/AJVATConfigValidator';
+import { GenerateATConfigError } from '../errors/generateATErrors';
+import { SemanticConfig, semanticConfigSchema } from '../types/SemanticConfig';
+import { ValidationError, Validator } from '../infrastructure/Validator';
+import { AutomaticTranslationFactory } from '../AutomaticTranslationFactory';
+import testingDB from 'api/utils/testing_db';
+import { Settings } from 'shared/types/settingsType';
 
 const factory = getFixturesFactory();
 
@@ -76,14 +79,13 @@ describe('GenerateAutomaticTranslationConfig', () => {
   let automaticTranslationConfigDS: MongoATConfigDataSource;
 
   beforeEach(() => {
-    automaticTranslationConfigDS = new MongoATConfigDataSource(
-      getConnection(),
+    automaticTranslationConfigDS = AutomaticTranslationFactory.defaultATConfigDataSource(
       DefaultTransactionManager()
     );
     generateAutomaticTranslationConfig = new GenerateAutomaticTranslationsCofig(
       automaticTranslationConfigDS,
       new MongoTemplatesDataSource(getConnection(), DefaultTransactionManager()),
-      new AJVATConfigValidator()
+      new Validator<SemanticConfig>(semanticConfigSchema)
     );
   });
 
@@ -96,10 +98,11 @@ describe('GenerateAutomaticTranslationConfig', () => {
   it('should generate and persist the passed config', async () => {
     await generateAutomaticTranslationConfig.execute(validPassedConfig);
 
-    const settingsData = await automaticTranslationConfigDS.get();
+    const settings: Settings = (await testingDB.mongodb?.collection('settings').findOne()) || {};
+    const settingsData = settings.features?.automaticTranslation;
 
-    expect(settingsData.active).toBe(true);
-    expect(settingsData.templates).toEqual([
+    expect(settingsData?.active).toBe(true);
+    expect(settingsData?.templates).toEqual([
       {
         template: factory.idString('Template 1 name'),
         properties: [factory.idString('t1p1').toString(), factory.idString('t1p2').toString()],
@@ -160,8 +163,11 @@ describe('GenerateAutomaticTranslationConfig', () => {
 
   it('should validate input has proper shape at runtime', async () => {
     const invalidConfig = { invalid_prop: true };
+    await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toBeInstanceOf(
+      ValidationError
+    );
     await expect(generateAutomaticTranslationConfig.execute(invalidConfig)).rejects.toEqual(
-      new InvalidInputDataFormat('{"additionalProperty":"invalid_prop"}')
+      new ValidationError('must NOT have additional properties')
     );
   });
 });

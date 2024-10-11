@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @mixin tooltip ($direction) {
   display: none;
   position: absolute;
@@ -11,7 +13,7 @@
   font-weight: normal;
   font-style: normal;
   -webkit-font-smoothing: initial;
-  background-color: transparentize(#FFF7E2, .10);
+  background-color: color.adjust(#FFF7E2, $alpha: -.10);
   color: $c-black;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.2);
