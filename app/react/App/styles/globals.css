@@ -1887,6 +1887,10 @@ input[type='range']::-ms-fill-lower {
   margin-top: 1rem;
 }
 
+.mt-5 {
+  margin-top: 1.25rem;
+}
+
 .mt-6 {
   margin-top: 1.5rem;
 }
@@ -2042,6 +2046,14 @@ input[type='range']::-ms-fill-lower {
 
 .max-h-svh {
   max-height: 100svh;
+}
+
+.min-h-\[300px\] {
+  min-height: 300px;
+}
+
+.min-h-\[327px\] {
+  min-height: 327px;
 }
 
 .min-h-fit {

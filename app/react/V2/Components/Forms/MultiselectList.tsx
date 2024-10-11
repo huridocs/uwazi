@@ -5,6 +5,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { isString } from 'lodash';
 import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
@@ -31,7 +32,11 @@ interface MultiselectListProps {
   startOnSelected?: boolean;
   search?: string;
   suggestions?: boolean;
+  blankState?: string | React.ReactNode;
 }
+
+const renderChild = (child: string | React.ReactNode) =>
+  isString(child) ? <Translate>{child}</Translate> : child;
 
 const MultiselectList = ({
   items,
@@ -47,6 +52,7 @@ const MultiselectList = ({
   startOnSelected = false,
   search = '',
   suggestions = false,
+  blankState = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
@@ -345,6 +351,11 @@ const MultiselectList = ({
         </div>
       </div>
 
+      {items.length === 0 && (
+        <div className="flex w-full h-full items-center justify-center min-h-[300px]">
+          {renderChild(blankState)}
+        </div>
+      )}
       <ul className="w-full px-2 pt-2 grow" ref={optionsRef}>
         {filteredItems.map(renderItem)}
       </ul>

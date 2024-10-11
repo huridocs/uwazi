@@ -525,6 +525,7 @@ No Documents found,لم يعثر على مستندات
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,لا توجد أيقونة/ علامة
+No items available,No items available
 No Label,لا تسمية
 No options,No options
 No options found,لم يتم العثور على خيارات
@@ -540,6 +541,7 @@ No Table of Contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
 No type,لا نوع
+No valid target template available,No valid target template available
 No value,لا قيمة
 No Value,لا قيمة
 "No, cancel","No, cancel"
@@ -577,6 +579,8 @@ out of,خارج
 Page,صفحة
 Pages,الصفحات
 Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -640,6 +644,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,انشر
 Published,منشور
 QR Code,QR Code
+Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,استعلام
 Quick labeling for,تسمية سريعة لـ
 RAW,RAW
@@ -667,6 +672,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,إعادة كلمة المرور
 Request id #,طلب المعرف #
 Request token,Request token
+required criteria,required criteria
 Required property,الخاصية المطلوبة
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
@@ -794,6 +800,7 @@ Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table view,معاينة الجدول
 Target Template,Target Template
+Target template,Target template
 Target Template:,Target Template:
 Template,قالب
 Template conflict,Template conflict
@@ -802,6 +809,8 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,قوالب
+Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
