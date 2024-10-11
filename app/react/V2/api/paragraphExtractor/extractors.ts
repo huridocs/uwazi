@@ -2,8 +2,8 @@ import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import {
-  Extractor,
-  ParagraphExtractorValues,
+  ParagraphExtractorApiResponse,
+  ParagraphExtractorApiPayload,
 } from 'app/V2/Routes/Settings/ParagraphExtraction/types';
 
 let dummyData = [
@@ -21,7 +21,7 @@ let dummyData = [
     documents: 500,
     generatedEntities: 12001,
   },
-] as Extractor[];
+] as ParagraphExtractorApiResponse[];
 
 const apiEndpoint = 'paragraph-extractor';
 
@@ -40,7 +40,9 @@ const getById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   }
 };
 
-const save = async (extractorValues: ParagraphExtractorValues): Promise<Extractor> => {
+const save = async (
+  extractorValues: ParagraphExtractorApiPayload
+): Promise<ParagraphExtractorApiResponse> => {
   const requestParams = new RequestParams(extractorValues);
 
   const dummyEntry = {
@@ -62,7 +64,7 @@ const remove = async (ids: string[]) => {
   // const requestParams = new RequestParams({ ids });
   // const response = await api.delete(apiEndpoint, requestParams);
   // return response;
-  dummyData = dummyData.filter(data => !ids.includes(data._id));
+  dummyData = dummyData.filter(data => !ids.includes(data._id ?? ''));
   console.log(dummyData);
   return true;
 };

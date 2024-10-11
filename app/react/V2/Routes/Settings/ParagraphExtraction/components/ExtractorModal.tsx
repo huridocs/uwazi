@@ -98,7 +98,7 @@ const ExtractorModal = ({
               setTemplateTo(selected[0]);
             }}
             singleSelect
-            startOnSelected={templateTo?.length > 0}
+            startOnSelected={!!templateTo}
             className="min-h-[327px]"
             blankState={<NoQualifiedTemplatesMessage />}
           />
@@ -138,11 +138,7 @@ const ExtractorModal = ({
                 <Button styling="light" onClick={() => setShowModal(false)} className="grow">
                   <Translate>Cancel</Translate>
                 </Button>
-                <Button
-                  className="grow"
-                  onClick={() => setStep(2)}
-                  disabled={templateTo.length === 0}
-                >
+                <Button className="grow" onClick={() => setStep(2)} disabled={!templateTo}>
                   <span className="flex items-center justify-center gap-2 flex-nowrap">
                     <Translate>Next</Translate>
                     <ArrowRightIcon className="w-5" />

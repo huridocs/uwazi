@@ -542,6 +542,7 @@ No Table of Contents description,Sin descripción de Tabla de Contenidos
 No text match,Sin coincidencias de texto
 No text match description,Puedes escribir algo diferente en la barra de búsqueda para obtener algunos resultados.
 No type,Sin tipo
+No valid target template available,No valid target template available
 No value,Sin valor
 No Value,Sin valor
 "No, cancel","No, cancelar"
@@ -580,6 +581,7 @@ Page,Página
 Pages,Páginas
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -643,6 +645,7 @@ Public form whitelist description,"Si deseas incluir formularios públicos en tu
 Publish,Publicar
 Published,Publicado
 QR Code,QR Code
+"Qualified templates should have ""Rich Text"" property","Qualified templates should have ""Rich Text"" property"
 Query,Consulta
 Quick labeling for,Etiquetado rápido para
 RAW,SIN FORMATO
@@ -807,6 +810,7 @@ Template with a long number of entities,"La plantilla ha cambiado y las entidade
 Template(s),Template(s)
 Templates,Plantillas
 Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.

@@ -543,6 +543,7 @@ No Table of Contents description,Aucune description de Table des matières
 No text match,Aucune correspondance de texte
 No text match description,You can type something different in the search box to get some results.
 No type,Sans type
+No valid target template available,No valid target template available
 No value,Aucune valeur
 No Value,Aucune valeur
 "No, cancel","No, cancel"
@@ -581,6 +582,7 @@ Page,Page
 Pages,Pages
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,Mot de passe
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -644,6 +646,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,Publier
 Published,Publié
 QR Code,QR Code
+"Qualified templates should have ""Rich Text"" property","Qualified templates should have ""Rich Text"" property"
 Query,Requête
 Quick labeling for,Étiquetage rapide pour
 RAW,RAW
@@ -809,6 +812,7 @@ Template with a long number of entities,"The template has changed and the associ
 Template(s),Template(s)
 Templates,Modèles
 Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Texte
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
