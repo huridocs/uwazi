@@ -43,7 +43,7 @@ const getById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
 const save = async (
   extractorValues: ParagraphExtractorApiPayload
 ): Promise<ParagraphExtractorApiResponse> => {
-  const requestParams = new RequestParams(extractorValues);
+  // const requestParams = new RequestParams(extractorValues);
 
   const dummyEntry = {
     ...extractorValues,
