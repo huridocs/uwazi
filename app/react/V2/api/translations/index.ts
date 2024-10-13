@@ -34,12 +34,29 @@ const getV2 = async (
   return response;
 };
 
-const post = async (updatedTranslations: ClientTranslationSchema[], contextId: string) => {
+const post = async (
+  updatedTranslations: ClientTranslationSchema[],
+  contextId: string
+): Promise<ClientTranslationSchema[]> => {
   try {
     const translations = await Promise.all(
       updatedTranslations.map(language => I18NApi.save(new RequestParams(language)))
     );
     return filterTranslationsByContext(translations, contextId);
+  } catch (e) {
+    return e;
+  }
+};
+
+const postV2 = async (
+  updatedTranslations: any[],
+  context,
+  headers?: IncomingHttpHeaders
+): Promise<ClientTranslationSchema[]> => {
+  try {
+    const translations = updatedTranslations.map(ut => ({ ...ut, context }));
+    const params = new RequestParams(translations, headers);
+    return await api.post('translationsV2', params);
   } catch (e) {
     return e;
   }
@@ -70,4 +87,4 @@ const importTranslations = async (
 
 const { getLanguages } = I18NApi;
 
-export { get, getV2, post, importTranslations, getLanguages };
+export { get, getV2, post, postV2, importTranslations, getLanguages };

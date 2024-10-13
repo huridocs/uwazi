@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { createError, validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
@@ -60,6 +61,7 @@ async function deleteLanguage(key: LanguageISO6391, req: Request) {
 
 type TranslationsRequest = Request & { query: { context: string } };
 
+// eslint-disable-next-line max-statements
 export default (app: Application) => {
   app.get(
     '/api/translations',

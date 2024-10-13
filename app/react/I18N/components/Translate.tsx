@@ -56,7 +56,7 @@ const Translate = ({ className, children, context = 'System', translationKey }: 
           setInlineEditState({
             inlineEdit: inlineEditState.inlineEdit,
             context,
-            translationKey: text,
+            translationKey: translationKey || children,
           });
         }
       }}
