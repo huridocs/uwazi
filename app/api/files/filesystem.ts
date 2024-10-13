@@ -1,5 +1,6 @@
 import path from 'path';
 import { Readable } from 'stream';
+import mimetypes from 'mime-types';
 
 import ID from 'shared/uniqueID';
 // eslint-disable-next-line node/no-restricted-import
@@ -69,8 +70,23 @@ const setupTestUploadedPaths = async (subFolder: string = '') => {
   testingTenants.changeCurrentTenant(await testingUploadPaths(subFolder));
 };
 
-const generateFileName = ({ originalname = '' }: FileType) =>
-  Date.now() + ID() + path.extname(originalname);
+const getExtension = (mimetype = '') => {
+  const result = mimetypes.extension(mimetype);
+
+  return result === 'jpeg' ? 'jpg' : result;
+};
+
+const generateFileName = ({ mimetype = '', originalname = '' }: FileType) => {
+  const fileName = `${Date.now()}${ID()}`;
+
+  const extensionFromOriginalName = getExtension(mimetypes.lookup(originalname) || '');
+  if (extensionFromOriginalName) return `${fileName}.${extensionFromOriginalName}`;
+
+  const extensionFromMime = getExtension(mimetype);
+  if (extensionFromMime) return `${fileName}.${extensionFromMime}`;
+
+  return fileName;
+};
 
 /**
  * Create a file from a read stream and save it to one of uwazi filesystem paths

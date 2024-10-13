@@ -59,7 +59,7 @@ const getIcon = (color: Color) => {
 const ExtractorHeader = () => <Translate className="whitespace-nowrap">Extractor Name</Translate>;
 const PropertyHeader = () => <Translate>Property</Translate>;
 const TemplatesHeader = () => <Translate>Template(s)</Translate>;
-const TitleHeader = () => <Translate>Document</Translate>;
+const TitleHeader = () => <Translate>Document FOR</Translate>;
 const CurrentValueHeader = () => (
   <Translate className="whitespace-nowrap">Current Value/Suggestion</Translate>
 );
@@ -200,8 +200,12 @@ const OpenPDFButton = ({
   );
 };
 
-const TitleCell = ({ cell }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
-  <div className="text-xs font-normal text-gray-900">{cell.getValue()}</div>
+const TitleCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['fileId']>) => (
+  <div className="text-sm font-normal text-primary-700">
+    <a href={`/entity/${row.original.sharedId}`} target="_blank" rel="noreferrer">
+      {cell.getValue()} ({row.original.language})
+    </a>
+  </div>
 );
 
 const SegmentCell = ({ cell, row }: CellContext<TableSuggestion, TableSuggestion['segment']>) => {

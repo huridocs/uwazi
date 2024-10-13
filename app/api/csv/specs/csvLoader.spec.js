@@ -169,6 +169,7 @@ describe('csvLoader', () => {
         numeric_label: [{ value: 1977 }],
         select_label: [{ label: 'thesauri1', value: expect.any(String) }],
         text_label: [{ value: 'text value 1' }],
+        header_with_dots: [{ value: 'header with dots value 1' }],
       });
     });
 

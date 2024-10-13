@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,عمل/ إجراء
 Activate,Activate
 Activated,Activated
@@ -254,6 +255,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,مستند
 Document and entity types,انواع الوثائق والكيانات
 Document contents,محتويات المستند
+Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,عنوان المستند
 Documentation,توثيق
@@ -351,6 +353,7 @@ Full edit mode,وضع التحرير الكامل
 Full width,Full width
 General,عام
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,خاصية CSS العالمية
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -397,7 +400,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,If the email address supplied is correct
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,حروف التحقق غير صحيحة
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -468,6 +471,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,خرائط
 Mark as Reviewed,ضع علامة للإشارة إلى خضوعه للمراجعة
 Markdown,ماركداون
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -480,6 +484,7 @@ Metadata creator,منشئ البيانات الوصفية
 Metadata Extraction,استخلاص البيانات الوصفية
 MIGRATE,MIGRATE
 Minimum,الحد الأدنى
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,وصول مختلط
@@ -522,6 +527,7 @@ No Documents found,لم يعثر على مستندات
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,لا توجد أيقونة/ علامة
+No items available,No items available
 No Label,لا تسمية
 No options,No options
 No options found,لم يتم العثور على خيارات
@@ -537,6 +543,7 @@ No Table of Contents description,لا جدول محتويات الوصف
 No text match,لا يوجد نص تطابق
 No text match description,يمكنك كتابه نص مختلف للحصول على بعض النتائج
 No type,لا نوع
+No valid target template available,No valid target template available
 No value,لا قيمة
 No Value,لا قيمة
 "No, cancel","No, cancel"
@@ -573,6 +580,9 @@ Others,Others
 out of,خارج
 Page,صفحة
 Pages,الصفحات
+Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -636,6 +646,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,انشر
 Published,منشور
 QR Code,QR Code
+Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,استعلام
 Quick labeling for,تسمية سريعة لـ
 RAW,RAW
@@ -663,6 +674,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,إعادة كلمة المرور
 Request id #,طلب المعرف #
 Request token,Request token
+required criteria,required criteria
 Required property,الخاصية المطلوبة
 Reset,إعادة ضبط
 Reset 2FA,إعادة تعيين المصادقة الثنائية
@@ -789,6 +801,9 @@ Table,جدول
 Table of Contents,جدول المحتويات
 Table of contents,جدول المحتويات
 Table view,معاينة الجدول
+Target Template,Target Template
+Target template,Target template
+Target Template:,Target Template:
 Template,قالب
 Template conflict,Template conflict
 Template name,Template name
@@ -796,6 +811,9 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,قوالب
+Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
+Templates:,Templates:
 Text,نص
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,نتج عن عملية الاستيراد الخطأ التالي:

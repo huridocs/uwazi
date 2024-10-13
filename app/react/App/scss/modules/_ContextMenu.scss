@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .ContextMenu {
   position: fixed;
   z-index: 1;
@@ -63,7 +65,7 @@
     left: 50%;
     transform: translateX(-50%) translateY(-10px);
     padding: 5px;
-    background-color: transparentize($c-black, 0.25);
+    background-color: color.adjust($c-black, $alpha: -0.25);
     color: $c-white;
     border-radius: $border-radius;
     text-align: center;
@@ -73,7 +75,7 @@
       content: '';
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
-      border-top: 5px solid transparentize($c-black, 0.25);
+      border-top: 5px solid color.adjust($c-black, $alpha: -0.25);
       position: absolute;
       top: 100%;
       left: 50%;

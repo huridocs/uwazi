@@ -1,24 +1,14 @@
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultTemplatesDataSource } from 'api/templates.v2/database/data_source_defaults';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { MongoATConfigDataSource } from '../../infrastructure/MongoATConfigDataSource';
-import { ATExternalAPI } from '../../infrastructure/ATExternalAPI';
-import { GetAutomaticTranslationConfig } from '../GetAutomaticTranslationConfig';
-
-const createService = () => {
-  const transactionManager = DefaultTransactionManager();
-  return new GetAutomaticTranslationConfig(
-    DefaultSettingsDataSource(transactionManager),
-    new MongoATConfigDataSource(getConnection(), transactionManager),
-    DefaultTemplatesDataSource(transactionManager),
-    new ATExternalAPI()
-  );
-};
+import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
 
 const fixtures = getFixturesFactory();
+
+const createDS = () => {
+  const transactionManager = DefaultTransactionManager();
+  return AutomaticTranslationFactory.defaultATConfigDataSource(transactionManager);
+};
 
 beforeEach(async () => {
   await testingEnvironment.setUp({
@@ -87,49 +77,51 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-describe('GetAutomaticTranslationConfig', () => {
+describe('MongoAtConfigDataSource', () => {
   it('should return only title, text and markdown properties', async () => {
-    const config = await createService().execute();
-    expect(config.templates[0]).toEqual({
+    const config = await createDS().get();
+    expect(config.templates[0]).toMatchObject({
       template: fixtures.id('template 1').toString(),
-      commonProperties: [fixtures.commonPropertiesTitleId('template 1')],
-      properties: [fixtures.id('text property').toString(), fixtures.id('rich text').toString()],
+      properties: [
+        { id: fixtures.commonPropertiesTitleId('template 1') },
+        { id: fixtures.id('text property').toString() },
+        { id: fixtures.id('rich text').toString() },
+      ],
     });
   });
 
   it('should not include properties that no longer exist', async () => {
-    const config = await createService().execute();
-    expect(config.templates[0].properties).toEqual([
-      fixtures.id('text property').toString(),
-      fixtures.id('rich text').toString(),
+    const config = await createDS().get();
+    expect(config.templates[0].properties).toMatchObject([
+      { id: fixtures.commonPropertiesTitleId('template 1') },
+      { id: fixtures.id('text property').toString() },
+      { id: fixtures.id('rich text').toString() },
     ]);
   });
 
   it('should not include properties belonging to other templates', async () => {
-    const config = await createService().execute();
-    expect(config.templates[1]).toEqual({
+    const config = await createDS().get();
+    expect(config.templates[1]).toMatchObject({
       template: fixtures.id('template 2').toString(),
-      commonProperties: [],
-      properties: [fixtures.id('text property 2').toString()],
+      properties: [{ id: fixtures.id('text property 2').toString() }],
     });
   });
 
   it('should return languages available filtered by the supported languages of automatic translation', async () => {
-    const config = await createService().execute();
+    const config = await createDS().get();
     expect(config.languages).toEqual(['en', 'es']);
   });
 
   it('should allow configuring only title without any properties', async () => {
-    const config = await createService().execute();
-    expect(config.templates[2]).toEqual({
+    const config = await createDS().get();
+    expect(config.templates[2]).toMatchObject({
       template: fixtures.id('template 3').toString(),
-      commonProperties: [fixtures.commonPropertiesTitleId('template 3')],
-      properties: [],
+      properties: [{ label: 'Title' }],
     });
   });
 
   it('should not include properties configurations belonging to an unexistent template', async () => {
-    const config = await createService().execute();
+    const config = await createDS().get();
     expect(config.templates[3]).toBeUndefined();
   });
 });

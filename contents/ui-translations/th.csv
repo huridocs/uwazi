@@ -15,6 +15,7 @@ Account locked. Check your email to unlock.,Account locked. Check your email to 
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
 Accuracy,Accuracy
+Accuracy (labeled data),Accuracy (labeled data)
 Action,เริ่มทำ
 Activate,Activate
 Activated,Activated
@@ -255,6 +256,7 @@ Do you want to delete the following items?,Do you want to delete the following i
 Document,เอกสาร
 Document and entity types,ประเภทเอกสารและรายการ
 Document contents,เนื้อหาของเอกสาร
+Document FOR,Document FOR
 Document OCR trigger,Document OCR trigger
 Document Title,ชื่อเอกสาร
 Documentation,เอกสาร
@@ -352,6 +354,7 @@ Full edit mode,โหมดการแก้ไขแบบสมบูรณ�
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -398,7 +401,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,If the email address supplied is correct
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,captcha ไม่ถูกต้อง
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -469,6 +472,7 @@ Mapping conflict error,"A reindex of your collection is necessary. The reason ma
 Maps,แผนที่
 Mark as Reviewed,ได้ตรวจสอบแล้ว
 Markdown,การทำเครื่องหมาย
+Match,Match
 Matching,Matching
 matching,matching
 Matomo,Matomo
@@ -481,6 +485,7 @@ Metadata creator,ผู้สร้างเมตาดาต้า
 Metadata Extraction,ค้นหาเมตาดาต้า
 MIGRATE,MIGRATE
 Minimum,ขั้นต่ำ
+Mismatch,Mismatch
 mismatched passwords,Passwords don't match
 mismatching,mismatching
 Mixed access,การเข้าถึงแบบผสม
@@ -523,6 +528,7 @@ No Documents found,ไม่พบเอกสาร
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
+No items available,No items available
 No Label,ไม่มีลาเบล
 No options,No options
 No options found,ไม่พบตัวเลือก
@@ -538,6 +544,7 @@ No Table of Contents description,ไม่มีคำอธิบายสา�
 No text match,ไม่มีการจับคู่ข้อความ
 No text match description,You can type something different in the search box to get some results.
 No type,ไม่มีประเภท
+No valid target template available,No valid target template available
 No value,ไม่มีค่า
 No Value,ไม่มีค่า
 "No, cancel","No, cancel"
@@ -574,6 +581,9 @@ Others,Others
 out of,ออกไปจาก
 Page,หน้า
 Pages,หน้า
+Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,รหัสผ่าน
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -637,6 +647,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,เผยแพร่
 Published,ตีพิมพ์แล้ว
 QR Code,QR Code
+Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,สืบค้น
 Quick labeling for,จัดประเภททันที
 RAW,RAW
@@ -664,6 +675,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,ใส่รหัสผ่านอีกครั้ง
 Request id #,ขอรหัส #
 Request token,Request token
+required criteria,required criteria
 Required property,คุณสมบัติที่จำเป็น
 Reset,รีเซ็ต
 Reset 2FA,สร้าง 2FA ใหม่
@@ -790,6 +802,9 @@ Table,ตาราง
 Table of Contents,สารบัญ
 Table of contents,สารบัญ
 Table view,มุมมองตาราง
+Target Template,Target Template
+Target template,Target template
+Target Template:,Target Template:
 Template,แม่แบบ
 Template conflict,Template conflict
 Template name,Template name
@@ -797,6 +812,9 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,แม่แบบ
+Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
+Templates:,Templates:
 Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,กระบวนการนำเข้าเกิดความผิดพลาด

@@ -5,6 +5,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Translate } from 'app/I18N';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { isString } from 'lodash';
 import { InputField, RadioSelect } from '.';
 import { Pill } from '../UI/Pill';
 import { Label } from './Label';
@@ -31,7 +32,11 @@ interface MultiselectListProps {
   startOnSelected?: boolean;
   search?: string;
   suggestions?: boolean;
+  blankState?: string | React.ReactNode;
 }
+
+const renderChild = (child: string | React.ReactNode) =>
+  isString(child) ? <Translate>{child}</Translate> : child;
 
 const MultiselectList = ({
   items,
@@ -47,6 +52,7 @@ const MultiselectList = ({
   startOnSelected = false,
   search = '',
   suggestions = false,
+  blankState = <Translate>No items available</Translate>,
 }: MultiselectListProps) => {
   const [selectedItems, setSelectedItems] = useState<string[]>(value || []);
   const [showAll, setShowAll] = useState<boolean>(!(startOnSelected && selectedItems.length));
@@ -54,7 +60,29 @@ const MultiselectList = ({
   const [externalSearch, setExternalSearch] = useState(search);
   const [filteredItems, setFilteredItems] = useState(items);
   const [openGroups, setOpenGroups] = useState<string[]>([]);
+  const [selectedOrSuggestedItems, setSelectedOrSuggestedItems] = useState<Set<string>>(
+    new Set(selectedItems)
+  );
   const optionsRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const newSet = new Set<string>(selectedItems);
+    items.forEach(item => {
+      if (item.suggested) {
+        newSet.add(item.value);
+      }
+
+      if (item.items) {
+        item.items.forEach(subItem => {
+          if (subItem.suggested) {
+            newSet.add(subItem.value);
+          }
+        });
+      }
+    });
+
+    setSelectedOrSuggestedItems(newSet);
+  }, [items, selectedItems]);
 
   useEffect(() => {
     if (startOnSelected) {
@@ -261,20 +289,6 @@ const MultiselectList = ({
 
   const renderSelectedLabel = () => {
     if (suggestions) {
-      const selectedOrSuggestedItems = new Set<string>(selectedItems);
-      items.forEach(item => {
-        if (item.suggested) {
-          selectedOrSuggestedItems.add(item.value);
-        }
-
-        if (item.items) {
-          item.items.forEach(subItem => {
-            if (subItem.suggested) {
-              selectedOrSuggestedItems.add(subItem.value);
-            }
-          });
-        }
-      });
       return (
         <>
           <Translate>Selected or suggested</Translate>{' '}
@@ -318,7 +332,7 @@ const MultiselectList = ({
               {
                 label: renderSelectedLabel(),
                 value: 'false',
-                disabled: selectedItems.length === 0,
+                disabled: selectedOrSuggestedItems.size === 0,
                 defaultChecked: startOnSelected,
               },
             ]}
@@ -337,6 +351,11 @@ const MultiselectList = ({
         </div>
       </div>
 
+      {items.length === 0 && (
+        <div className="flex w-full h-full items-center justify-center min-h-[300px]">
+          {renderChild(blankState)}
+        </div>
+      )}
       <ul className="w-full px-2 pt-2 grow" ref={optionsRef}>
         {filteredItems.map(renderItem)}
       </ul>

@@ -12,15 +12,14 @@ const testingEnvironment = {
   async setUp(fixtures?: DBFixture, elasticIndex?: string) {
     await this.setTenant();
     this.setPermissions();
-    this.setRequestId();
     await this.setFixtures(fixtures);
     await this.setElastic(elasticIndex);
   },
 
-  async setTenant(name = 'defaultDB') {
+  async setTenant(name?: string) {
     testingTenants.mockCurrentTenant({
-      name: testingDB.dbName || name,
-      dbName: testingDB.dbName || name,
+      name: name || testingDB.dbName || 'defaultDB',
+      dbName: testingDB.dbName || name || 'defaultDB',
       indexName: 'index',
     });
     await setupTestUploadedPaths();
@@ -56,6 +55,7 @@ const testingEnvironment = {
       .spyOn(appContext, 'get')
       .mockImplementation(key => (key === 'requestId' ? requestId : null));
   },
+
   async tearDown() {
     await testingDB.disconnect();
   },

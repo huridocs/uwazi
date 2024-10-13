@@ -73,7 +73,7 @@ describe('Preserve', () => {
         ];
         await testingEnvironment.setUp({ ...fixtures, settings: newSettings }, 'preserve-index');
 
-        await expect(Preserve.setup('en', { _id: 'someid' })).rejects.toEqual({
+        await expect(Preserve.setup('en', { _id: 'someid' })).rejects.toMatchObject({
           message: 'Preserve configuration not found',
           code: 402,
         });
