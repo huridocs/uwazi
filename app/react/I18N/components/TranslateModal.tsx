@@ -11,10 +11,9 @@ import { postV2 } from 'V2/api/translations';
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const [translations, setTranslations] = useAtom(translationsAtom);
-  const context =
-    ((translations && translations[0]?.contexts) || []).find(
-      ctx => ctx.id === inlineEditState.context
-    ) || ((translations && translations[0]?.contexts) || []).find(ctx => ctx.id === 'System')!;
+  const context = ((translations && translations[0]?.contexts) || []).find(
+    ctx => ctx.id === inlineEditState.context
+  );
   const { languages } = useAtomValue(settingsAtom);
 
   const { register, handleSubmit, control, reset } = useForm<{ data: TranslationValue[] }>({
@@ -26,7 +25,10 @@ const TranslateModal = () => {
   React.useEffect(() => {
     const initialValues = translations.map(translation => {
       const language = languages?.find(lang => lang.key === translation.locale);
-      const value = context?.values[inlineEditState.translationKey];
+      const languageContext = translation.contexts.find(c =>
+        context?._id ? c._id === context?._id : c.id === context?.id
+      )!;
+      const value = languageContext?.values[inlineEditState.translationKey];
 
       return {
         language: language?.key,
@@ -35,10 +37,18 @@ const TranslateModal = () => {
       };
     });
     reset({ data: initialValues });
-  }, [context?.values, inlineEditState.translationKey, languages, reset, translations]);
+  }, [
+    context?._id,
+    context?.id,
+    context?.values,
+    inlineEditState.translationKey,
+    languages,
+    reset,
+    translations,
+  ]);
 
   const submit = async ({ data }: { data: TranslationValue[] }) => {
-    const updatedTranslations = await postV2(data, context);
+    const updatedTranslations = await postV2(data, context!);
     setTranslations(updatedTranslations);
   };
 
