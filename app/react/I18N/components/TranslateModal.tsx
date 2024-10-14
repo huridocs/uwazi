@@ -1,29 +1,30 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { useAtom, useAtomValue } from 'jotai';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Modal } from 'V2/Components/UI';
 import { settingsAtom, translationsAtom, inlineEditAtom } from 'V2/atoms';
 import { InputField } from 'app/V2/Components/Forms';
-import { postV2, getV2 } from 'V2/api/translations';
+import { TranslationValue } from 'V2/shared/types';
+import { postV2 } from 'V2/api/translations';
 
 const TranslateModal = () => {
   const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
   const [translations, setTranslations] = useAtom(translationsAtom);
+  const context =
+    ((translations && translations[0]?.contexts) || []).find(
+      ctx => ctx.id === inlineEditState.context
+    ) || ((translations && translations[0]?.contexts) || []).find(ctx => ctx.id === 'System')!;
   const { languages } = useAtomValue(settingsAtom);
 
-  const { register, handleSubmit, control } = useForm({
+  const { register, handleSubmit, control, reset } = useForm<{ data: TranslationValue[] }>({
     mode: 'onSubmit',
   });
 
-  const { replace, fields } = useFieldArray({ control, keyName: 'id', name: 'values' });
+  const { fields } = useFieldArray({ control, name: 'data' });
 
-  const context = ((translations && translations[0]?.contexts) || []).find(
-    ctx => ctx.id === inlineEditState.context
-  );
-
-  useEffect(() => {
-    const values = translations.map(translation => {
+  React.useEffect(() => {
+    const initialValues = translations.map(translation => {
       const language = languages?.find(lang => lang.key === translation.locale);
       const value = context?.values[inlineEditState.translationKey];
 
@@ -33,11 +34,11 @@ const TranslateModal = () => {
         key: inlineEditState.translationKey,
       };
     });
-    replace(values);
-  }, [inlineEditState.context, inlineEditState.translationKey, languages, replace, translations]);
+    reset({ data: initialValues });
+  }, [context?.values, inlineEditState.translationKey, languages, reset, translations]);
 
-  const submit = async values => {
-    const updatedTranslations = await postV2(values.values, context);
+  const submit = async ({ data }: { data: TranslationValue[] }) => {
+    const updatedTranslations = await postV2(data, context);
     setTranslations(updatedTranslations);
   };
 
@@ -62,7 +63,7 @@ const TranslateModal = () => {
                   label={<span>{field.language}</span>}
                   id={field.id}
                   key={field.id}
-                  {...register(`values.${index}.value`)}
+                  {...register(`data.${index}.value`)}
                 />
               ))}
               <button type="submit">Save</button>

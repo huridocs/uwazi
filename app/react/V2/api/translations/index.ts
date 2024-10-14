@@ -2,8 +2,9 @@ import { Params } from 'react-router-dom';
 import { IncomingHttpHeaders } from 'http';
 import api from 'app/utils/api';
 import { I18NApi } from 'app/I18N';
-import { ClientTranslationSchema } from 'app/istore';
+import { ClientTranslationSchema, ClientTranslationContextSchema } from 'app/istore';
 import { RequestParams } from 'app/utils/RequestParams';
+import { TranslationValue } from 'V2/shared/types';
 import { httpRequest } from 'shared/superagent';
 import loadingBar from 'app/App/LoadingProgressBar';
 
@@ -49,14 +50,15 @@ const post = async (
 };
 
 const postV2 = async (
-  updatedTranslations: any[],
-  context,
+  updatedTranslations: TranslationValue[],
+  context: ClientTranslationContextSchema,
   headers?: IncomingHttpHeaders
 ): Promise<ClientTranslationSchema[]> => {
   try {
     const translations = updatedTranslations.map(ut => ({ ...ut, context }));
     const params = new RequestParams(translations, headers);
-    return await api.post('translationsV2', params);
+    const response = await api.post('translationsV2', params);
+    return response.json;
   } catch (e) {
     return e;
   }
