@@ -354,6 +354,7 @@ Full edit mode,အပြည့်အဝ တည်းဖြတ် မုဒ်
 Full width,Full width
 General,ယေဘုယျ
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,ကမ္ဘာသုံး CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -578,6 +579,7 @@ Others,Others
 out of,မှ
 Page,စာမျက်နှာ
 Pages,စာမျက်နှာများ
+Paragraph Extraction,Paragraph Extraction
 Password,စကားဝှက်
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -794,6 +796,8 @@ Table,ဇယား
 Table of Contents,မာတိကာ
 Table of contents,မာတိကာ
 Table view,ဇယားမြင်ကွင်း
+Target Template,Target Template
+Target Template:,Target Template:
 Template,ပုံစံပြား
 Template conflict,Template conflict
 Template name,Template name
@@ -801,6 +805,7 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,ပုံစံပြားများ
+Templates:,Templates:
 Text,စာသား
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,ထည့်သွင်းသည့် လုပ်ငန်းစဉ်တွင် ချွတ်ယွင်းချက် ဖြစ်ပေါ်ခဲ့သည်-

@@ -352,6 +352,7 @@ Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
 Google,Google
@@ -576,6 +577,7 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
+Paragraph Extraction,Paragraph Extraction
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -792,12 +794,15 @@ Table,Tabla
 Table of Contents,Tabla de Contenidos
 Table of contents,Tabla de Contenidos
 Table view,Vista de Tabla
+Target Template,Target Template
+Target Template:,Target Template:
 Template,Plantilla
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla
 Template with a long number of entities,"La plantilla ha cambiado y las entidades asociadas se volverán a indexar, este proceso puede tardar varios minutos, ¿quieres continuar?"
 Template(s),Template(s)
 Templates,Plantillas
+Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
 The import process threw an error:,El proceso de importación tiene un error.
