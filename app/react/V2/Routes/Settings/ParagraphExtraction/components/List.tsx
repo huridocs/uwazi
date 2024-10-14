@@ -1,10 +1,9 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { TableExtractor } from '../types';
+import { TableParagraphExtractor } from '../types';
 
-const List = ({ items }: { items: TableExtractor[] }) => (
+const List = ({ items }: { items: TableParagraphExtractor[] }) => (
   <ul className="flex flex-wrap gap-8 max-w-md list-disc">
-    {/* what should be displayed on the confirm modal? */}
     {items.map(item => (
       <li key={item._id}>
         <Translate>Templates: </Translate>

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @import '../config/colors';
 @import '../elements/tooltip';
 
@@ -83,7 +85,7 @@ header {
     height: calc(100% - 50px);
     background-color: var(--c-bg-menu-mobile);
     color: var(--c-text-menu-mobile);
-    border-top: 1px solid transparentize($c-black, 0.6);
+    border-top: 1px solid color.adjust($c-black, $alpha: -0.6);
     overflow: auto;
     transition: all 225ms;
     flex-direction: column;
@@ -171,8 +173,8 @@ header {
     @media (min-width: 1024px) {
       float: left;
       border-top: 0;
-      border-right: 1px solid transparentize($c-black, 0.6);
-      border-left: 1px solid transparentize($c-black, 0.6);
+      border-right: 1px solid color.adjust($c-black, $alpha: -0.6);
+      border-left: 1px solid color.adjust($c-black, $alpha: -0.6);
     }
 
     @media (max-width: 1023px) {

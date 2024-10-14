@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .installed-languages {
   margin-bottom: 3em;
 }
@@ -27,7 +29,7 @@
   }
 
   .translation-available {
-    background-color: transparentize($c-grey-dark, 0.85);
+    background-color: color.adjust($c-grey-dark, $alpha: -0.85);
     border-radius: 3px;
     padding: 0 4px;
     height: 17px;

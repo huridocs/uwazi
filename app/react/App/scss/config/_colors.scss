@@ -1,3 +1,5 @@
+@use "sass:color";
+
 $theme: dark;
 $hero: dark;
 $c-theme: #60748b;
@@ -10,10 +12,10 @@ $c-theme: #60748b;
 }
 
 $c-grey: #aeaeb8;
-$c-white: lighten($c-grey, 100%);
-$c-grey-lighten: lighten($c-grey, 25%);
-$c-grey-light: lighten($c-grey, 15%);
-$c-grey-dark: darken($c-grey, 25%);
+$c-white: color.adjust($c-grey, $lightness: 100%, $space: hsl);
+$c-grey-lighten: color.adjust($c-grey, $lightness: 25%, $space: hsl);
+$c-grey-light: color.adjust($c-grey, $lightness: 15%, $space: hsl);
+$c-grey-dark: color.adjust($c-grey, $lightness: -25%, $space: hsl);
 $c-active-feature: orange;
 $c-black: #444444;
 $c-type-0: #c03b22;
@@ -40,25 +42,25 @@ $c-type-19: #449d44;
 $c-background: #fcfcfc;
 
 $c-primary: #2b56c1;
-$c-primary-lighten: lighten($c-primary, 50%);
-$c-primary-light: lighten($c-primary, 40%);
-$c-primary-dark: darken($c-primary, 10%);
+$c-primary-lighten: color.adjust($c-primary, $lightness: 50%, $space: hsl);
+$c-primary-light: color.adjust($c-primary, $lightness: 40%, $space: hsl);
+$c-primary-dark: color.adjust($c-primary, $lightness: -10%, $space: hsl);
 $c-info: $c-type-7;
-$c-info-light: lighten($c-info, 40%);
-$c-info-dark: darken($c-info, 10%);
+$c-info-light: color.adjust($c-info, $lightness: 40%, $space: hsl);
+$c-info-dark: color.adjust($c-info, $lightness: -10%, $space: hsl);
 $c-success: $c-type-9;
-$c-success-light: lighten($c-type-10, 30%);
-$c-success-dark: darken($c-type-10, 15%);
+$c-success-light: color.adjust($c-type-10, $lightness: 30%, $space: hsl);
+$c-success-dark: color.adjust($c-type-10, $lightness: -15%, $space: hsl);
 $c-danger: $c-type-1;
-$c-danger-light: lighten($c-type-1, 30%);
-$c-danger-dark: darken($c-type-1, 10%);
+$c-danger-light: color.adjust($c-type-1, $lightness: 30%, $space: hsl);
+$c-danger-dark: color.adjust($c-type-1, $lightness: -10%, $space: hsl);
 $c-warning: $c-type-13;
-$c-warning-light: lighten($c-type-14, 30%);
-$c-warning-dark: darken($c-type-14, 10%);
+$c-warning-light: color.adjust($c-type-14, $lightness: 30%, $space: hsl);
+$c-warning-dark: color.adjust($c-type-14, $lightness: -10%, $space: hsl);
 
-$c-shadow: transparentize($c-black, 0.9);
-$c-shadow-dark: transparentize($c-black, 0.8);
-$c-shadow-darker: transparentize($c-black, 0.5);
+$c-shadow: color.adjust($c-black, $alpha: -0.9);
+$c-shadow-dark: color.adjust($c-black, $alpha: -0.8);
+$c-shadow-darker: color.adjust($c-black, $alpha: -0.5);
 
 $c-card-highlight: #dee7ff4d;
 $c-language-highlight: #cff0cf;
