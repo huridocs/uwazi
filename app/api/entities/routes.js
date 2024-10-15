@@ -140,29 +140,6 @@ export default app => {
   );
 
   app.get(
-    '/api/entities/get_raw_page',
-    validation.validateRequest({
-      type: 'object',
-      properties: {
-        query: {
-          type: 'object',
-          properties: {
-            sharedId: { type: 'string' },
-            pageNumber: { type: 'number' },
-          },
-          required: ['sharedId', 'pageNumber'],
-        },
-      },
-      required: ['query'],
-    }),
-    (req, res, next) =>
-      entities
-        .getRawPage(req.query.sharedId, req.language, req.query.pageNumber)
-        .then(data => res.json({ data }))
-        .catch(next)
-  );
-
-  app.get(
     '/api/entities',
     parseQuery,
     validation.validateRequest({
