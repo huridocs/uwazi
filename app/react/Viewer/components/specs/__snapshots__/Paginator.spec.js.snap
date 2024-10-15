@@ -19,7 +19,6 @@ exports[`Paginator should render a previous button and next button based on the 
   >
     <Paginator
       baseUrl="url"
-      onPageChange={[Function]}
       page={5}
       totalPages={25}
     >
@@ -132,7 +131,6 @@ exports[`Paginator when base Url already has the query string "?" should add the
   >
     <Paginator
       baseUrl="url?param=value"
-      onPageChange={[Function]}
       page={3}
       totalPages={25}
     >
@@ -245,7 +243,6 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
   >
     <Paginator
       baseUrl="url"
-      onPageChange={[Function]}
       page={1}
       totalPages={25}
     >
@@ -361,7 +358,6 @@ exports[`Paginator when on last page should disable the next link 1`] = `
   >
     <Paginator
       baseUrl="url"
-      onPageChange={[Function]}
       page={25}
       totalPages={25}
     >
