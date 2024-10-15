@@ -34,6 +34,7 @@ describe('searchSnippets', () => {
       sharedId: 'entity1SharedId',
       searchString: 'fullText:(searched)',
     });
+
     const snippets = body.data;
     const matches = expect.stringContaining('<b>searched</b>');
     const expected = [
@@ -42,8 +43,8 @@ describe('searchSnippets', () => {
           count: 2,
           metadata: [],
           fullText: [
-            { page: 2, text: matches },
-            { page: 4, text: matches },
+            { page: 2, text: matches, filename: 'entity1SharedId.pdf' },
+            { page: 4, text: matches, filename: 'entity1SharedId.pdf' },
           ],
         },
       }),
@@ -97,7 +98,13 @@ describe('searchSnippets', () => {
         snippets: {
           count: 1,
           metadata: [],
-          fullText: [{ page: 2, text: expect.stringContaining('<b>searched:term</b>') }],
+          fullText: [
+            {
+              page: 2,
+              text: expect.stringContaining('<b>searched:term</b>'),
+              filename: 'entity4SharedId.pdf',
+            },
+          ],
         },
       }),
     ];

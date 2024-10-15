@@ -87,5 +87,15 @@ describe('files', () => {
 
       expect(result).toBe(`${mockDate}unique_id`);
     });
+
+    it('should NOT contain underscore on filename', () => {
+      jest.restoreAllMocks();
+      const mimetype = 'application/pdf';
+      const originalname = 'any_file.pdf';
+
+      const result = generateFileName({ mimetype, originalname });
+
+      expect(/_/.test(result)).toBe(false);
+    });
   });
 });
