@@ -60,7 +60,7 @@ const ItemLabel = ({ children, status }) => {
 ItemFooter.Label = ItemLabel;
 ItemFooter.ProgressBar = ProgressBar;
 
-const RowList = ({ children, zoomLevel }) => (
+const RowList = ({ children, zoomLevel = 0 }) => (
   <div className={`item-group item-group-zoom-${zoomLevel}`}>{children}</div>
 );
 
@@ -98,11 +98,6 @@ RowList.Item = RowListItem;
 const childrenType = PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.string]);
 
 List.propTypes = { children: childrenType };
-
-RowList.defaultProps = {
-  children: '',
-  zoomLevel: 0,
-};
 
 RowList.propTypes = {
   children: childrenType,

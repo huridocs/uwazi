@@ -7,7 +7,7 @@ const validProps = props => {
   return valid;
 };
 
-const CurrentLocationLink = ({ children, queryParams, ...otherProps }) => {
+const CurrentLocationLink = ({ children, queryParams = {}, ...otherProps }) => {
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   Object.keys(queryParams).forEach(key => {
@@ -25,11 +25,6 @@ const CurrentLocationLink = ({ children, queryParams, ...otherProps }) => {
       {children}
     </Link>
   );
-};
-
-CurrentLocationLink.defaultProps = {
-  children: '',
-  queryParams: {},
 };
 
 CurrentLocationLink.propTypes = {

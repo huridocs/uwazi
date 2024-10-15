@@ -22,10 +22,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     label="Hide label"
     model="template.data.properties[0].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -35,10 +32,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     label="Full width"
     model="template.data.properties[0].fullWidth"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown using all the width available.
       </Connect(Translate)>
@@ -48,10 +42,7 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -142,10 +133,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     label="Hide label"
     model="template.data.properties[0].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -155,10 +143,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     label="Full width"
     model="template.data.properties[0].fullWidth"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown using all the width available.
       </Connect(Translate)>
@@ -168,10 +153,7 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     label="Required property"
     model="template.data.properties[0].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -264,10 +246,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     label="Hide label"
     model="template.data.properties[0].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -277,10 +256,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     label="Full width"
     model="template.data.properties[0].fullWidth"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown using all the width available.
       </Connect(Translate)>
@@ -290,10 +266,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     label="Required property"
     model="template.data.properties[0].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -305,10 +278,7 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -352,10 +322,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     label="Hide label"
     model="template.data.properties[0].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -365,10 +332,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     label="Full width"
     model="template.data.properties[0].fullWidth"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown using all the width available.
       </Connect(Translate)>
@@ -378,10 +342,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     label="Required property"
     model="template.data.properties[0].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -393,10 +354,7 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -487,10 +445,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     label="Hide label"
     model="template.data.properties[0].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -500,10 +455,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     label="Full width"
     model="template.data.properties[0].fullWidth"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown using all the width available.
       </Connect(Translate)>
@@ -513,10 +465,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     label="Required property"
     model="template.data.properties[0].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -528,10 +477,7 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     label="Show in cards"
     model="template.data.properties[0].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
