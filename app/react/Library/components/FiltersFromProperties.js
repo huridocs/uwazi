@@ -92,12 +92,13 @@ const getPropertyType = (property, templates) => {
 };
 
 const FiltersFromProperties = ({
-  onChange,
+  onChange = () => {},
   properties,
-  translationContext,
+  translationContext = '',
   modelPrefix = '',
   storeKey,
   templates,
+  dateFormat = '',
   ...props
 }) => {
   const location = useLocation();
@@ -152,7 +153,7 @@ const FiltersFromProperties = ({
           case 'multidate':
           case 'multidaterange':
           case 'daterange':
-            filter = <DateFilter {...commonProps} format={props.dateFormat} />;
+            filter = <DateFilter {...commonProps} format={dateFormat} />;
             break;
 
           default:
@@ -163,13 +164,6 @@ const FiltersFromProperties = ({
       })}
     </>
   );
-};
-
-FiltersFromProperties.defaultProps = {
-  onChange: () => {},
-  dateFormat: '',
-  modelPrefix: '',
-  translationContext: '',
 };
 
 FiltersFromProperties.propTypes = {

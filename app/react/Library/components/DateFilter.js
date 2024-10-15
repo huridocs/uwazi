@@ -2,7 +2,7 @@ import { DateRange } from 'app/ReactReduxForms';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const DateFilter = ({ onChange, model, label, format }) => (
+const DateFilter = ({ onChange = () => {}, model, label = '', format = '' }) => (
   <ul className="search__filter is-active">
     <li>
       <label>{label}</label>
@@ -12,12 +12,6 @@ const DateFilter = ({ onChange, model, label, format }) => (
     </li>
   </ul>
 );
-
-DateFilter.defaultProps = {
-  onChange: () => {},
-  label: '',
-  format: '',
-};
 
 DateFilter.propTypes = {
   model: PropTypes.string.isRequired,
