@@ -17,7 +17,6 @@ const Icon = ({ locale = '', ...ownProps }) => {
 
 Icon.propTypes = {
   locale: PropTypes.string,
-  directionAware: PropTypes.bool,
 };
 
 export const mapStateToProps = ({ locale }) => ({ locale });
