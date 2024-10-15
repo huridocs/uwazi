@@ -30,7 +30,6 @@
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
-    "files-healthcheck": "USE_CWD=true node --no-experimental-fetch ./scripts/run.js ../scripts/filesHealthCheck.ts",
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "generateAutomaticTranslationConfig": "node --no-experimental-fetch ./scripts/run.js ../scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
     "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
