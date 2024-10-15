@@ -85,7 +85,7 @@ const bulkIndex = async (docs, _action = 'index') => {
 
     if (defaultDocument.fullText) {
       body.push({
-        [_action]: { _id: `${id}_fullText`, routing: id },
+        [_action]: { _id: `${id}_fullText_${defaultDocument.filename}`, routing: id },
       });
       setFullTextSettings(defaultDocument, id, body, doc);
     }
