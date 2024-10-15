@@ -56,9 +56,7 @@ exports[`SemanticSearchResults should render results in ItemList 1`] = `
         </Connect(Translate)>
       </span>
     </div>
-    <RowList
-      zoomLevel={0}
-    >
+    <RowList>
       <Connect(Doc)
         additionalText={
           <div
