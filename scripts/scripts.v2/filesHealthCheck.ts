@@ -37,12 +37,6 @@ function print(content: any, error?: 'error') {
   process[error ? 'stderr' : 'stdout'].write(`${LINE_PREFIX}${JSON.stringify(content)}\n`);
 }
 
-type FileRecord = { type: string; filename: string; url?: string };
-
-function filterFilesInStorage(files: string[]) {
-  return files.filter(file => !file.endsWith('activity.log'));
-}
-
 async function handleTenant(tenantName: string) {
   await tenants.run(async () => {
     const s3Client = new S3Client({
@@ -93,20 +87,18 @@ async function handleTenant(tenantName: string) {
   }, tenantName);
 }
 
-async function run() {
+(async function run() {
   await DB.connect(config.DBHOST, dbAuth);
   await tenants.setupTenants();
 
   if (!allTenants) {
-    return await handleTenant(tenant);
+    await handleTenant(tenant);
+  } else {
+    await Object.keys(tenants.tenants).reduce(async (prev, tenantName) => {
+      await prev;
+      await handleTenant(tenantName);
+    }, Promise.resolve());
   }
-
-  await Object.keys(tenants.tenants).reduce(async (prev, tenantName) => {
-    await prev;
-    await handleTenant(tenantName);
-  }, Promise.resolve());
-}
-
-run().finally(() => {
-  process.exit();
-});
+  await tenants.model?.closeChangeStream();
+  await DB.disconnect();
+})();
