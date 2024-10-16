@@ -54,6 +54,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
   }
   const fullTextObject = {
     [`fullText_${language}`]: fullText,
+    filename: defaultDocument.filename,
     fullText: { name: 'fullText', parent: id },
   };
   body.push(fullTextObject);
@@ -85,7 +86,7 @@ const bulkIndex = async (docs, _action = 'index') => {
 
     if (defaultDocument.fullText) {
       body.push({
-        [_action]: { _id: `${id}_fullText_${defaultDocument.filename}`, routing: id },
+        [_action]: { _id: `${id}_fullText`, routing: id },
       });
       setFullTextSettings(defaultDocument, id, body, doc);
     }

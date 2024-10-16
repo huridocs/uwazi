@@ -15,7 +15,7 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
   const fullTextSnippets: { text: string; page: number; filename: string }[] = [];
 
   if (hit.inner_hits && hit.inner_hits.fullText.hits.hits[0]) {
-    const { highlight, _id } = hit.inner_hits.fullText.hits.hits[0];
+    const { highlight, _source } = hit.inner_hits.fullText.hits.hits[0];
     const regex = /\[{2}(\d+)]{2}/g;
 
     Object.values<string[]>(highlight).forEach(snippets => {
@@ -24,7 +24,7 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
         fullTextSnippets.push({
           text: snippet.replace(regex, ''),
           page: matches ? Number(matches[1]) : 0,
-          filename: _id.split('_')?.[2] || '',
+          filename: _source.filename,
         });
       });
     });

@@ -26,7 +26,11 @@ export interface ElasticHit<T> {
   fields?: any;
   highlight?: any;
   // eslint-disable-next-line camelcase
-  inner_hits?: { fullText: { hits: { hits: [{ highlight: {}; [k: string]: any }] } } };
+  inner_hits?: {
+    fullText: {
+      hits: { hits: [{ _source: { [k: string]: any }; highlight: {}; [k: string]: any }] };
+    };
+  };
   // eslint-disable-next-line camelcase
   matched_queries?: string[];
   sort?: string[];
