@@ -87,7 +87,7 @@ export class Entity {
     if (property.type === 'text' || property.type === 'markdown') {
       const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
       if (isTitleProperty) return this.title;
-      return this.metadata[property.name][0].value as string;
+      return this.metadata[property.name]?.[0]?.value as string;
     }
 
     throw new Error('types other than string/markdown are not implemented yet');

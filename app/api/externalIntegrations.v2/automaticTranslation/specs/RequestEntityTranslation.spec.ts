@@ -21,6 +21,7 @@ const fixtures: DBFixture = {
     factory.template('template1', [
       factory.property('text1'),
       factory.property('text2', 'markdown'),
+      factory.property('text3'),
       factory.property('empty_text'),
     ]),
   ],
@@ -28,6 +29,7 @@ const fixtures: DBFixture = {
     ...factory.entityInMultipleLanguages(['en', 'es', 'pt'], 'entity1', 'template1', {
       text1: [{ value: 'original text1' }],
       text2: [{ value: 'markdown text' }],
+      text3: [],
       empty_text: [{ value: '' }],
     }),
   ],
@@ -47,6 +49,7 @@ const fixtures: DBFixture = {
               properties: [
                 factory.idString('text1'),
                 factory.idString('text2'),
+                factory.idString('text3'),
                 factory.idString('empty_text'),
               ],
               commonProperties: [factory.commonPropertiesTitleId('template1')],
