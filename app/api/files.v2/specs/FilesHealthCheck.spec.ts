@@ -7,6 +7,7 @@ import { DefaultFilesDataSource } from '../database/data_source_defaults';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
+import { StoredFile } from '../model/StoredFile';
 
 const factory = getFixturesFactory();
 
@@ -18,7 +19,7 @@ afterAll(async () => {
   await testingEnvironment.tearDown();
 });
 
-let testStorageFiles: string[] = [];
+let testStorageFiles: StoredFile[] = [];
 class TestFileStorage implements FileStorage {
   // eslint-disable-next-line class-methods-use-this
   getPath(file: UwaziFile): string {
@@ -32,14 +33,14 @@ class TestFileStorage implements FileStorage {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  async list(): Promise<string[]> {
+  async list() {
     return testStorageFiles;
   }
 }
 
-describe('FilesHealthCheck', () => {
-  let filesHealthCheck: FilesHealthCheck;
+let filesHealthCheck: FilesHealthCheck;
 
+describe('FilesHealthCheck', () => {
   beforeEach(() => {
     filesHealthCheck = new FilesHealthCheck(
       new TestFileStorage(),
@@ -48,7 +49,7 @@ describe('FilesHealthCheck', () => {
   });
 
   it('should report full count in storage and in db', async () => {
-    testStorageFiles = ['document/file1', 'document/file3'];
+    testStorageFiles = [new StoredFile('document/file1'), new StoredFile('document/file3')];
     await testingEnvironment.setUp({
       files: [factory.document('file1'), factory.document('file2'), factory.document('file4')],
     });
@@ -62,7 +63,11 @@ describe('FilesHealthCheck', () => {
   });
 
   it('should report missing in storage files', async () => {
-    testStorageFiles = ['document/file1', 'document/file3', 'custom_uploads/custom1'];
+    testStorageFiles = [
+      new StoredFile('document/file1'),
+      new StoredFile('document/file3'),
+      new StoredFile('custom_uploads/custom1'),
+    ];
     await testingEnvironment.setUp({
       files: [
         factory.document('file1'),
@@ -82,7 +87,12 @@ describe('FilesHealthCheck', () => {
   });
 
   it('should report missing in DB files', async () => {
-    testStorageFiles = ['document/file1', 'document/file2', 'document/file3', 'document/file4'];
+    testStorageFiles = [
+      new StoredFile('document/file1'),
+      new StoredFile('document/file2'),
+      new StoredFile('document/file3'),
+      new StoredFile('document/file4'),
+    ];
     await testingEnvironment.setUp({
       files: [factory.document('file2'), factory.document('file3')],
     });
@@ -97,11 +107,11 @@ describe('FilesHealthCheck', () => {
 
   it('should ignore all /log files', async () => {
     testStorageFiles = [
-      '/log/1-activity.log',
-      '/log/log.log',
-      '/log/error.log',
-      '/log/debug.log',
-      '/document/file1',
+      new StoredFile('/log/1-activity.log'),
+      new StoredFile('/log/log.log'),
+      new StoredFile('/log/error.log'),
+      new StoredFile('/log/debug.log'),
+      new StoredFile('/document/file1'),
     ];
     await testingEnvironment.setUp({ files: [] });
 
@@ -115,9 +125,9 @@ describe('FilesHealthCheck', () => {
 
   it('should ignore all /segmentation files', async () => {
     testStorageFiles = [
-      '/segmentation/1-activity.log',
-      '/documents/segmentation/1-activity.log',
-      '/document/file1',
+      new StoredFile('/segmentation/1-activity.log'),
+      new StoredFile('/documents/segmentation/1-activity.log'),
+      new StoredFile('/document/file1'),
     ];
     await testingEnvironment.setUp({ files: [] });
 
@@ -131,10 +141,10 @@ describe('FilesHealthCheck', () => {
 
   it('should ignore all index.html files', async () => {
     testStorageFiles = [
-      '/documents/index.html',
-      '/index.html',
-      '/segmentation/index.html',
-      '/document/file1',
+      new StoredFile('/documents/index.html'),
+      new StoredFile('/index.html'),
+      new StoredFile('/segmentation/index.html'),
+      new StoredFile('/document/file1'),
     ];
     await testingEnvironment.setUp({ files: [] });
 
@@ -147,7 +157,7 @@ describe('FilesHealthCheck', () => {
   });
 
   it('should ignore external attachemnts (have url)', async () => {
-    testStorageFiles = ['document/file1'];
+    testStorageFiles = [new StoredFile('document/file1')];
     await testingEnvironment.setUp({ files: [factory.attachment('url_file', { url: 'url' })] });
 
     const summary = await filesHealthCheck.execute();
@@ -158,17 +168,63 @@ describe('FilesHealthCheck', () => {
     });
   });
 
-  it('should be able to subscribe to an "event" for each file missing in db', async () => {
-    testStorageFiles = ['document/file1', 'document/file2'];
-    await testingEnvironment.setUp({ files: [] });
+  describe('onMissingInDB', () => {
+    it('should emit each file that is missing', async () => {
+      testStorageFiles = [new StoredFile('document/file1'), new StoredFile('document/file2')];
+      await testingEnvironment.setUp({ files: [] });
 
-    const events: string[] = [];
-    filesHealthCheck.onMissingInDB(file => {
-      events.push(file);
+      const events: { filename: string }[] = [];
+      filesHealthCheck.onMissingInDB(file => {
+        events.push(file);
+      });
+
+      await filesHealthCheck.execute();
+      expect(events.map(e => e.filename)).toEqual(['document/file1', 'document/file2']);
     });
 
-    await filesHealthCheck.execute();
-    expect(events).toEqual(['document/file1', 'document/file2']);
+    it('should emit the count of duplicated checksums for each file emited', async () => {
+      testStorageFiles = [
+        new StoredFile('document/file1', 'checksum1'),
+        new StoredFile('document/file2', 'checksum2'),
+        new StoredFile('document/file3'),
+        new StoredFile('document/file4', 'checksum1'),
+        new StoredFile('document/file5', 'checksum1'),
+        new StoredFile('document/file6', 'checksum2'),
+      ];
+      await testingEnvironment.setUp({ files: [] });
+
+      const events: { filename: string }[] = [];
+      filesHealthCheck.onMissingInDB(file => {
+        events.push(file);
+      });
+
+      await filesHealthCheck.execute();
+      expect(events).toMatchObject([
+        { filename: 'document/file1', checksumMatchCount: 3 },
+        { filename: 'document/file2', checksumMatchCount: 2 },
+        { filename: 'document/file3', checksumMatchCount: 1 },
+        { filename: 'document/file4', checksumMatchCount: 3 },
+        { filename: 'document/file5', checksumMatchCount: 3 },
+        { filename: 'document/file6', checksumMatchCount: 2 },
+      ]);
+    });
+
+    it('should emit in the summary the number of files which have a checksum match count > 1', async () => {
+      testStorageFiles = [
+        new StoredFile('document/file1', 'checksum1'),
+        new StoredFile('document/file2', 'checksum2'),
+        new StoredFile('document/file3'),
+        new StoredFile('document/file4', 'checksum1'),
+        new StoredFile('document/file5', 'checksum1'),
+        new StoredFile('document/file6', 'checksum2'),
+      ];
+      await testingEnvironment.setUp({ files: [] });
+
+      const summary = await filesHealthCheck.execute();
+      expect(summary).toMatchObject({
+        missingInDbWithChecksumMatches: 5,
+      });
+    });
   });
 
   it('should be able to subscribe to an "event" for each file missing in storage', async () => {

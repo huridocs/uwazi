@@ -56,7 +56,8 @@ async function handleTenant(tenantName: string) {
         {
           logType: 'missingInDb',
           tenant: tenantName,
-          file,
+          ...file,
+          file: file.filename,
         },
         'error'
       );
@@ -81,6 +82,7 @@ async function handleTenant(tenantName: string) {
       storage: tenants.current().featureFlags?.s3Storage ? 's3' : 'local',
       missingInStorage: result.missingInStorage,
       missingInDb: result.missingInDb,
+      missingInDbWithChecksumMatches: result.missingInDbWithChecksumMatches,
       countInDb: result.countInDb,
       countInStorage: result.countInStorage,
     });

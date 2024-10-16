@@ -1,17 +1,25 @@
 import { FilesDataSource } from './contracts/FilesDataSource';
 import { FileStorage } from './contracts/FileStorage';
+import { StoredFile } from './model/StoredFile';
 import { URLAttachment } from './model/URLAttachment';
 
-function filterFilesInStorage(files: string[]) {
+function filterFilesInStorage(files: StoredFile[]) {
   return files.filter(
     file =>
-      !file.includes('/log/') && !file.includes('/segmentation/') && !file.includes('index.html')
+      !file.filename.includes('/log/') &&
+      !file.filename.includes('/segmentation/') &&
+      !file.filename.includes('index.html')
   );
 }
 
+type missingInDBFileDTO = {
+  filename: string;
+  checksumMatchCount: number;
+};
+
 export class FilesHealthCheck {
   // eslint-disable-next-line class-methods-use-this
-  private onMissingInDBCB: (filename: string) => void = () => {};
+  private onMissingInDBCB: (file: missingInDBFileDTO) => void = () => {};
 
   // eslint-disable-next-line class-methods-use-this
   private onMissingInStorageCB: (fileDTO: { _id: string; filename: string }) => void = () => {};
@@ -28,40 +36,60 @@ export class FilesHealthCheck {
   async execute() {
     const allFilesInDb = await this.filesDS.getAll().all();
     const allFilesInStorage = await this.fileStorage.list();
-    const filteredFilesInStorage = new Set(filterFilesInStorage(allFilesInStorage));
+    const filteredFilesInStorage = filterFilesInStorage(allFilesInStorage);
     let missingInStorage = 0;
     const missingInStorageList: string[] = [];
     const missingInDbList: string[] = [];
-    const countInStorage = filteredFilesInStorage.size;
+    const countInStorage = filteredFilesInStorage.length;
     let countInDb = 0;
+
+    const checksumMatchCounts = allFilesInStorage.reduce((counts, storedFile) => {
+      if (!counts[storedFile.checksum]) {
+        counts[storedFile.checksum] = 0;
+      }
+      counts[storedFile.checksum] += 1;
+      return counts;
+    }, {});
 
     allFilesInDb.forEach(file => {
       countInDb += 1;
-      const existsInStorage = filteredFilesInStorage.delete(this.fileStorage.getPath(file));
+      const existsInStorage = filteredFilesInStorage.findIndex(
+        storedFile => storedFile.filename === this.fileStorage.getPath(file)
+      );
+      if (existsInStorage > -1) {
+        filteredFilesInStorage.splice(existsInStorage, 1);
+      }
 
-      if (!existsInStorage && !(file instanceof URLAttachment)) {
+      if (existsInStorage === -1 && !(file instanceof URLAttachment)) {
         missingInStorage += 1;
         missingInStorageList.push(this.fileStorage.getPath(file));
         this.onMissingInStorageCB({ _id: file.id, filename: file.filename });
       }
     });
 
-    filteredFilesInStorage.forEach(file => {
-      missingInDbList.push(file);
-      this.onMissingInDBCB(file);
+    let missingInDbWithChecksumMatches = 0;
+
+    filteredFilesInStorage.forEach(storedFile => {
+      missingInDbList.push(storedFile.filename);
+      const checksumMatchCount = checksumMatchCounts[storedFile.checksum];
+      if (checksumMatchCount > 1) {
+        missingInDbWithChecksumMatches += 1;
+      }
+      this.onMissingInDBCB({ filename: storedFile.filename, checksumMatchCount });
     });
 
     return {
       missingInStorageList,
       missingInStorage,
       missingInDbList,
-      missingInDb: filteredFilesInStorage.size,
+      missingInDb: filteredFilesInStorage.length,
+      missingInDbWithChecksumMatches,
       countInDb,
       countInStorage,
     };
   }
 
-  onMissingInDB(cb: (filename: string) => void) {
+  onMissingInDB(cb: (file: missingInDBFileDTO) => void) {
     this.onMissingInDBCB = cb;
   }
 
