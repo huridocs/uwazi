@@ -8,11 +8,12 @@ import Metadata from '../components/Metadata';
 const removeUneededProps = ({ templates, thesauris, settings, excludePreview, ...rest }) => rest;
 
 const BaseFormatMetadata = ({
-  additionalMetadata,
-  sortedProperty,
+  additionalMetadata = [],
+  sortedProperty = '',
   entity,
-  relationships,
-  useV2Player,
+  relationships = Immutable.fromJS([]),
+  useV2Player = false,
+  excludePreview = false,
   ...props
 }) => {
   const { attachments } = entity;
@@ -21,7 +22,7 @@ const BaseFormatMetadata = ({
     <Metadata
       metadata={additionalMetadata.concat(
         metadataSelectors.formatMetadata(props, entity, sortedProperty, relationships, {
-          excludePreview: props.excludePreview,
+          excludePreview,
         })
       )}
       attachments={attachments}
@@ -31,14 +32,6 @@ const BaseFormatMetadata = ({
       {...removeUneededProps(props)}
     />
   );
-};
-
-BaseFormatMetadata.defaultProps = {
-  sortedProperty: '',
-  additionalMetadata: [],
-  relationships: Immutable.fromJS([]),
-  excludePreview: false,
-  useV2Player: false,
 };
 
 BaseFormatMetadata.propTypes = {

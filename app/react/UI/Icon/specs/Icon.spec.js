@@ -18,11 +18,11 @@ describe('Icon', () => {
   });
 
   it('should allow configuring the icon as directionAware', () => {
-    props = { icon: 'angle-left', directionAware: true, locale: 'es' };
+    props = { icon: 'angle-left', locale: 'es' };
     render();
     expect(component).toMatchSnapshot();
 
-    props = { icon: 'angle-left', directionAware: true, locale: 'ar' };
+    props = { icon: 'angle-left', locale: 'ar' };
     render();
     expect(component).toMatchSnapshot();
   });

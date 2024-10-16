@@ -56,7 +56,7 @@ export class ViewDocButton extends Component {
         className="btn btn-default btn-xs view-doc"
         onClick={this.onClick}
       >
-        <Icon icon={icon} directionAware /> <Translate>View</Translate>
+        <Icon icon={icon} /> <Translate>View</Translate>
       </I18NLink>
     );
   }

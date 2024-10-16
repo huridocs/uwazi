@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.188.0-rc10",
+  "version": "1.189.0-rc3",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -30,7 +30,6 @@
     "webpack-server": "node --no-experimental-fetch ./webpack/webpack.server.js",
     "dev-worker": "node --no-experimental-fetch ./scripts/run.js ../app/worker.ts",
     "dev-queue": "node --no-experimental-fetch ./scripts/run.js ../app/queueWorker.ts",
-    "files-healthcheck": "USE_CWD=true node --no-experimental-fetch ./scripts/run.js ../scripts/filesHealthCheck.ts",
     "new-files-healthcheck": "tsx ./scripts/scripts.v2/filesHealthCheck.ts",
     "generateAutomaticTranslationConfig": "node --no-experimental-fetch ./scripts/run.js ../scripts/scripts.v2/generateAutomaticTranslationConfig.ts",
     "check-translations": "node --no-experimental-fetch ./scripts/checkTranslations.mjs",
@@ -277,7 +276,7 @@
     "@storybook/addon-viewport": "^8.1.11",
     "@storybook/addon-webpack5-compiler-babel": "^3.0.3",
     "@storybook/react": "^8.1.11",
-    "@storybook/react-webpack5": "^8.1.11",
+    "@storybook/react-webpack5": "^8.3.4",
     "@storybook/test": "^8.1.11",
     "@testing-library/jest-dom": "6.5.0",
     "@testing-library/react": "^15.0.7",
