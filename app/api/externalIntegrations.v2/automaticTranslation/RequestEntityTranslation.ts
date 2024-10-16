@@ -78,7 +78,7 @@ export class RequestEntityTranslation {
         await entities.forEach(async fetchedEntity => {
           if (languagesTo.includes(fetchedEntity.language as LanguageISO6391)) {
             await this.entitiesDS.updateEntity(
-              fetchedEntity.changePropertyValue(property, pendingText)
+              fetchedEntity.setPropertyValue(property, pendingText)
             );
             this.logger.info(
               `[AT] - Pending translation saved on DB - ${property.name}: ${pendingText}`
