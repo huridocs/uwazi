@@ -84,7 +84,7 @@ const SettingsNavigationComponent = ({ allowcustomJS }: { allowcustomJS: boolean
         <FeatureToggle feature="paragraphExtraction">
           <NeedAuthorization roles={['admin', 'editor']}>
             <I18NLink
-              to="settings/paragraph_extraction"
+              to="settings/paragraph-extraction"
               activeclassname="active"
               className="list-group-item"
             >

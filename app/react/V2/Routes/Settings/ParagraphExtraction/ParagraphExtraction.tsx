@@ -10,20 +10,17 @@ import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
-import { extractorsTableColumns } from './components/TableElements';
-import { TableParagraphExtractor, ParagraphExtractorApiResponse } from './types';
+import { tableColumns } from './components/PXTableElements';
+import { PXTable, ParagraphExtractorApiResponse } from './types';
 import { List } from './components/List';
 import { ExtractorModal } from './components/ExtractorModal';
 
-const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) => {
-  const foundTemplate = templates.find(template => template._id === targetId);
-  return foundTemplate?.name || targetId;
-};
+import { getTemplateName } from './utils/getTemplateName';
 
 const formatExtractors = (
   extractors: ParagraphExtractorApiResponse[],
   templates: ClientTemplateSchema[]
-): TableParagraphExtractor[] =>
+): PXTable[] =>
   extractors.map(extractor => {
     const targetTemplateName = getTemplateName(templates, extractor.templateTo);
     const originTemplateNames = (extractor.templatesFrom || []).map(templateFrom =>
@@ -46,7 +43,7 @@ const ParagraphExtractorDashboard = () => {
 
   const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
-  const [selected, setSelected] = useState<TableParagraphExtractor[]>([]);
+  const [selected, setSelected] = useState<PXTable[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -94,11 +91,10 @@ const ParagraphExtractorDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Paragraph extraction" />
-
         <SettingsContent.Body>
           <Table
             data={paragraphExtractorData}
-            columns={extractorsTableColumns}
+            columns={tableColumns}
             header={
               <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
                 Extractors
@@ -108,8 +104,7 @@ const ParagraphExtractorDashboard = () => {
             onChange={({ selectedRows }) => {
               setSelected(() => paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
             }}
-            // what default sorting to use?
-            defaultSorting={[{ id: 'status', desc: false }]}
+            defaultSorting={[{ id: '_id', desc: false }]}
           />
         </SettingsContent.Body>
 
@@ -168,8 +163,11 @@ const ParagraphExtractorDashboard = () => {
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await extractorsAPI.get();
-    const templates = await templatesAPI.get(headers);
+    const [extractors, templates] = await Promise.all([
+      extractorsAPI.get(),
+      templatesAPI.get(headers),
+    ]);
+
     return { extractors, templates };
   };
 
