@@ -101,7 +101,7 @@ export class RequestEntityTranslation {
     await Promise.all(
       updatedEntities.map(async updatedEntity => {
         this.logger.info(`[AT] - Pending translation saved on DB for entity - ${entity._id}`);
-        await this.entitiesDS.updateEntity(updatedEntity);
+        await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);
       })
     );
   }
