@@ -62,8 +62,8 @@ export class Entity {
     );
   }
 
-  changePropertyValue(property: Property, value: string) {
-    if (property.type === 'text') {
+  setPropertyValue(property: Property, value: string) {
+    if (property.type === 'text' || property.type === 'markdown') {
       const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
       const { metadata } = this;
       if (!(property instanceof CommonProperty)) {
@@ -80,17 +80,17 @@ export class Entity {
       );
     }
 
-    throw new Error('types other than string are not implemented yet');
+    throw new Error('types other than string/markdown are not implemented yet');
   }
 
   getPropertyValue(property: Property): string {
-    if (property.type === 'text') {
+    if (property.type === 'text' || property.type === 'markdown') {
       const isTitleProperty = property instanceof CommonProperty && property.name === 'title';
       if (isTitleProperty) return this.title;
-      return this.metadata[property.name][0].value as string;
+      return this.metadata[property.name]?.[0]?.value as string;
     }
 
-    throw new Error('types other than string are not implemented yet');
+    throw new Error('types other than string/markdown are not implemented yet');
   }
 }
 
