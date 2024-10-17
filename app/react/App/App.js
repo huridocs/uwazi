@@ -1,21 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, useAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
-import { Matomo } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
+import { Matomo } from 'V2/Components/Analitycs';
+import { TranslateModal } from 'app/I18N/components/TranslateModal';
+import { inlineEditAtom } from 'V2/atoms';
+import { CleanInsights } from 'app/V2/Components/Analitycs';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
-import { CleanInsights } from 'app/V2/Components/Analitycs';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -26,6 +28,7 @@ import 'flowbite';
 
 const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const [inlineEditState] = useAtom(inlineEditAtom);
   const [confirmOptions, setConfirmOptions] = useState({});
   const setSettings = useSetAtom(settingsAtom);
 
@@ -99,6 +102,7 @@ const App = ({ customParams }) => {
         </main>
       </div>
       <NotificationsContainer />
+      {inlineEditState.inlineEdit && inlineEditState.context && <TranslateModal />}
     </div>
   );
 };

@@ -24,7 +24,7 @@ import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { atomStore } from './V2/atoms';
-import { I18NUtils, t, Translate } from './I18N';
+import { I18NUtils, t } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';
@@ -142,7 +142,6 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
 
   const reduxData = {
     user: userApiResponse.json,
-    translations: translationsApiResponse.json.rows,
     templates: templatesApiResponse.json.rows,
     thesauris: thesaurisApiResponse.json.rows,
     relationTypes: relationTypesApiResponse.json.rows,
@@ -164,6 +163,7 @@ const prepareStores = async (req: ExpressRequest, settings: ClientSettings, lang
       thesauri: thesaurisApiResponse.json.rows,
       templates: templatesApiResponse.json.rows,
       user: userApiResponse.json,
+      translations: translationsApiResponse.json.rows,
     },
   };
 };
@@ -256,7 +256,7 @@ const getSSRProperties = async (
 
 const resetTranslations = () => {
   t.resetCachedTranslation();
-  Translate.resetCachedTranslation();
+  // Translate.resetCachedTranslation();
 };
 
 const EntryServer = async (req: ExpressRequest, res: Response) => {

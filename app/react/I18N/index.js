@@ -1,7 +1,7 @@
 import { i18NMenuComponent } from './components/I18NMenu';
 import I18NLink from './components/I18NLink';
 import I18N from './components/I18N';
-import Translate from './components/Translate';
+import { Translate } from './components/Translate';
 import TranslateForm from './components/TranslateForm';
 import t from './t';
 import I18NUtils from './utils';

@@ -10,6 +10,12 @@ type DraggableValue<T> = T & {
   items?: IDraggable<T>[];
 };
 
+type TranslationValue = {
+  language: string;
+  key: string;
+  value: string;
+};
+
 interface IDraggable<T> {
   dndId?: string;
   value: DraggableValue<T>;
@@ -50,4 +56,12 @@ enum ItemTypes {
 }
 
 export { ItemTypes };
-export type { IXExtractorInfo, ISublink, ILink, IDraggable, DraggableValue, Page };
+export type {
+  IXExtractorInfo,
+  ISublink,
+  ILink,
+  IDraggable,
+  DraggableValue,
+  Page,
+  TranslationValue,
+};

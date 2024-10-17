@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { createError, validation } from 'api/utils';
 import settings from 'api/settings';
 import entities from 'api/entities';
@@ -11,6 +12,7 @@ import { Application, Request } from 'express';
 import { UITranslationNotAvailable } from 'api/i18n/defaultTranslations';
 import needsAuthorization from '../auth/authMiddleware';
 import translations from './translations';
+import { getTranslationsEntriesV2, upsertTranslationEntries } from './v2_support';
 
 const addLanguage = async (language: LanguageSchema) => {
   const newSettings = await settings.addLanguage(language);
@@ -59,6 +61,7 @@ async function deleteLanguage(key: LanguageISO6391, req: Request) {
 
 type TranslationsRequest = Request & { query: { context: string } };
 
+// eslint-disable-next-line max-statements
 export default (app: Application) => {
   app.get(
     '/api/translations',
@@ -80,6 +83,14 @@ export default (app: Application) => {
       res.json({ rows: response });
     }
   );
+
+  app.get('/api/translationsV2', async (_req: TranslationsRequest, res) => {
+    const translationsV2 = await getTranslationsEntriesV2();
+
+    const translationList = await translationsV2.all();
+
+    res.json(translationList);
+  });
 
   app.get('/api/languages', async (_req, res) => {
     res.json(await translations.availableLanguages());
@@ -155,6 +166,45 @@ export default (app: Application) => {
       const [response] = await translations.get({ locale });
       req.sockets.emitToCurrentTenant('translationsChange', response);
       res.json(response);
+    }
+  );
+
+  app.post(
+    '/api/translationsV2',
+    needsAuthorization(),
+    validation.validateRequest({
+      type: 'object',
+      properties: {
+        body: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string' },
+              language: { type: 'string' },
+              key: { type: 'string' },
+              value: { type: 'string' },
+              context: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  label: { type: 'string' },
+                  type: { type: 'string' },
+                },
+                required: ['id', 'label', 'type'],
+              },
+            },
+            required: ['language', 'key', 'value', 'context'],
+          },
+        },
+      },
+      required: ['body'],
+    }),
+    async (req, res) => {
+      await upsertTranslationEntries(req.body);
+      req.sockets.emitToCurrentTenant('translationKeysChange', req.body);
+      res.status(200);
+      res.json({ success: true });
     }
   );
 

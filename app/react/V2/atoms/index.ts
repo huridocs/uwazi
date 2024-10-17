@@ -2,7 +2,7 @@ export { atomStore } from './store';
 export { notificationAtom } from './notificationAtom';
 export { settingsAtom } from './settingsAtom';
 export { templatesAtom } from './templatesAtom';
-export { translationsAtom } from './translationsAtom';
+export { translationsAtom, inlineEditAtom, localeAtom } from './translationsAtoms';
 export { thesauriAtom } from './thesauriAtom';
 export { globalMatomoAtom } from './globalMatomoAtom';
 export { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
