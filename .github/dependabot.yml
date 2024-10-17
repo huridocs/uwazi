@@ -6,7 +6,40 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "@types/*"
+      - dependency-name: "@sentry/node"
+        versions: ">= 7.114.0"
     open-pull-requests-limit: 5
     labels:
       - "dependencies"
-    rebase-strategy: 'disabled'
+    rebase-strategy: "disabled"
+    groups:
+      dev-dependencies:
+        applies-to: version-updates
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@babel*"
+          - "@storybook*"
+          - "@sentry*"
+          - "@dnd-kit"
+          - "socket.io"
+      babel:
+        applies-to: version-updates
+        patterns:
+          - "@babel*"
+      storybook:
+        applies-to: version-updates
+        patterns:
+          - "@storybook*"
+      sentry:
+        applies-to: version-updates
+        patterns:
+          - "@sentry*"
+      dnd-kit:
+        applies-to: version-updates
+        patterns:
+          - "@dnd-kit*"
+      socket.io:
+        applies-to: version-updates
+        patterns:
+          - "socket.io*"
