@@ -18,11 +18,18 @@ import { ATTaskMessage, RequestEntityTranslation } from '../RequestEntityTransla
 const factory = getFixturesFactory();
 const fixtures: DBFixture = {
   templates: [
-    factory.template('template1', [factory.property('text1'), factory.property('empty_text')]),
+    factory.template('template1', [
+      factory.property('text1'),
+      factory.property('text2', 'markdown'),
+      factory.property('text3'),
+      factory.property('empty_text'),
+    ]),
   ],
   entities: [
     ...factory.entityInMultipleLanguages(['en', 'es', 'pt'], 'entity1', 'template1', {
       text1: [{ value: 'original text1' }],
+      text2: [{ value: 'markdown text' }],
+      text3: [],
       empty_text: [{ value: '' }],
     }),
   ],
@@ -39,7 +46,12 @@ const fixtures: DBFixture = {
           templates: [
             {
               template: factory.idString('template1'),
-              properties: [factory.idString('text1'), factory.idString('empty_text')],
+              properties: [
+                factory.idString('text1'),
+                factory.idString('text2'),
+                factory.idString('text3'),
+                factory.idString('empty_text'),
+              ],
               commonProperties: [factory.commonPropertiesTitleId('template1')],
             },
           ],
@@ -112,7 +124,7 @@ describe('RequestEntityTranslation', () => {
     });
 
     it('should send a task to the automatic translation service queue', () => {
-      expect(taskManager.startTask).toHaveBeenCalledTimes(2);
+      expect(taskManager.startTask).toHaveBeenCalledTimes(3);
 
       expect(taskManager.startTask).toHaveBeenCalledWith({
         key: ['tenant', 'entity1', factory.commonPropertiesTitleId('template1').toString()],
@@ -124,6 +136,13 @@ describe('RequestEntityTranslation', () => {
       expect(taskManager.startTask).toHaveBeenCalledWith({
         key: ['tenant', 'entity1', factory.property('text1')._id?.toString()],
         text: 'original text1',
+        language_from: 'en',
+        languages_to: ['es', 'pt'],
+      });
+
+      expect(taskManager.startTask).toHaveBeenCalledWith({
+        key: ['tenant', 'entity1', factory.property('text2')._id?.toString()],
+        text: 'markdown text',
         language_from: 'en',
         languages_to: ['es', 'pt'],
       });
