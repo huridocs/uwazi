@@ -4,6 +4,7 @@ import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
 import entities from 'api/entities/entities';
+import v1EntitiesModel from 'api/entities/entitiesModel';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
@@ -12,6 +13,7 @@ import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
 import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
+import { search } from 'api/search';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -32,6 +34,21 @@ export class MongoEntitiesDataSource
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async updateEntities_OnlyUpdateAndReindex(entity: Entity) {
+    // This is using V1 model and custom reindex here
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(entity._id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${entity._id}`);
+    }
+
+    entityToModify.title = entity.title;
+    entityToModify.metadata = entity.metadata as MetadataSchema;
+    await v1EntitiesModel.save(entityToModify);
+    await search.indexEntities({ sharedId: entity.sharedId });
   }
 
   // eslint-disable-next-line class-methods-use-this
