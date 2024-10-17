@@ -1,20 +1,21 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: npm
+    directory: /
     schedule:
-      interval: "daily"
+      interval: daily
     ignore:
       - dependency-name: "@types/*"
       - dependency-name: "@sentry/node"
-        versions: ">= 7.114.0"
+        versions: [">= 7.114.0"]
     open-pull-requests-limit: 5
     labels:
-      - "dependencies"
-    rebase-strategy: "disabled"
+      - dependencies
+    rebase-strategy: disabled
     groups:
-      dev-dependencies:
+      dev-minor-dependencies:
         applies-to: version-updates
+        update-types: [minor, patch]
         patterns:
           - "*"
         exclude-patterns:
@@ -22,7 +23,7 @@ updates:
           - "@storybook*"
           - "@sentry*"
           - "@dnd-kit"
-          - "socket.io"
+          - socket.io
       babel:
         applies-to: version-updates
         patterns:
@@ -42,4 +43,8 @@ updates:
       socket.io:
         applies-to: version-updates
         patterns:
-          - "socket.io*"
+          - socket.io*
+      eslint:
+        applies-to: version-updates
+        patterns:
+          - socket.io*
