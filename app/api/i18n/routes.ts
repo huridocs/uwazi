@@ -202,11 +202,9 @@ export default (app: Application) => {
     }),
     async (req, res) => {
       await upsertTranslationEntries(req.body);
-      const response = await translations.get();
-      response.forEach(language => {
-        req.sockets.emitToCurrentTenant('translationsChange', language);
-      });
-      res.json(response);
+      req.sockets.emitToCurrentTenant('translationKeysChange', req.body);
+      res.status(200);
+      res.json({ success: true });
     }
   );
 

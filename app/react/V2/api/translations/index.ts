@@ -58,7 +58,7 @@ const postV2 = async (
     const translations = updatedTranslations.map(ut => ({ ...ut, context }));
     const params = new RequestParams(translations, headers);
     const response = await api.post('translationsV2', params);
-    return response.json;
+    return response.status.ok;
   } catch (e) {
     return e;
   }

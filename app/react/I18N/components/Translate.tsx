@@ -30,7 +30,7 @@ const parseMarkdownItalicMarker = (line: string) =>
 
 type TranslateProps = {
   className?: string;
-  children: string;
+  children?: string;
   context?: string;
   translationKey?: string;
 };
@@ -44,7 +44,7 @@ const Translate = ({ className, children, context = 'System', translationKey }: 
   const activeClassName = inlineEditState.inlineEdit ? 'translation active' : 'translation';
 
   const translationContext = language?.contexts.find(ctx => ctx.id === context) || { values: {} };
-  const text = translationContext.values[translationKey || children] || children;
+  const text = translationContext.values[(translationKey || children)!] || children;
   const lines = text ? text.split('\n') : [];
 
   return (
@@ -56,7 +56,7 @@ const Translate = ({ className, children, context = 'System', translationKey }: 
           setInlineEditState({
             inlineEdit: inlineEditState.inlineEdit,
             context,
-            translationKey: translationKey || children,
+            translationKey: (translationKey || children)!,
           });
         }
       }}

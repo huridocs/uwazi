@@ -96,7 +96,9 @@ const i18NMenuComponent = ({ languages: languageMap, i18nmode, user, locale }: m
             <button
               className="singleItem"
               type="button"
-              onClick={() => setInlineEditState({ inlineEdit: false })}
+              onClick={() =>
+                setInlineEditState({ inlineEdit: false, translationKey: '', context: '' })
+              }
               aria-label={t('System', 'Turn off inline translation', null, false)}
             >
               <div className="live-translate">
@@ -144,7 +146,11 @@ const i18NMenuComponent = ({ languages: languageMap, i18nmode, user, locale }: m
                   className="live-translate"
                   type="button"
                   onClick={() => {
-                    setInlineEditState({ inlineEdit: !inlineEditState.inlineEdit });
+                    setInlineEditState({
+                      inlineEdit: !inlineEditState.inlineEdit,
+                      translationKey: '',
+                      context: '',
+                    });
                     setDropdownOpen(false);
                   }}
                 >

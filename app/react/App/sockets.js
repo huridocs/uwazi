@@ -1,7 +1,8 @@
 import { actions } from 'app/BasicReducer';
-import { t, Translate } from 'app/I18N';
+import { t } from 'app/I18N';
 import { notificationActions } from 'app/Notifications';
 import { documentProcessed } from 'app/Uploads/actions/uploadsActions';
+import { atomStore, translationsAtom } from 'V2/atoms';
 import { store } from '../store';
 import { socket, reconnectSocket } from '../socket';
 
@@ -58,10 +59,27 @@ socket.on('thesauriDelete', thesauri => {
   store.dispatch(actions.remove('thesauris', { _id: thesauri.id }));
 });
 
-socket.on('translationsChange', translations => {
-  store.dispatch(actions.update('translations', translations, 'locale'));
+socket.on('translationsChange', languageTranslations => {
+  const translations = atomStore.get(translationsAtom);
+  const modifiedLanguage = translations.find(
+    translation => translation.locale === languageTranslations.locale
+  );
+  modifiedLanguage.contexts = languageTranslations.contexts;
+  atomStore.set(translationsAtom, translations);
   t.resetCachedTranslation();
   // Translate.resetCachedTranslation();
+});
+
+socket.on('translationKeysChange', translationsEntries => {
+  const translations = atomStore.get(translationsAtom);
+  translationsEntries.forEach(item => {
+    const modifiedContext = translations
+      .find(translation => translation.locale === item.language)
+      .contexts.find(c => c.id && c.id === item.context.id);
+    modifiedContext.values[item.key] = item.value;
+  });
+  atomStore.set(translationsAtom, translations);
+  t.resetCachedTranslation();
 });
 
 socket.on('translationsInstallDone', () => {
