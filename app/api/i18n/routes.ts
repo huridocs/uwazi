@@ -84,7 +84,7 @@ export default (app: Application) => {
     }
   );
 
-  app.get('/api/translationsV2', async (req: TranslationsRequest, res) => {
+  app.get('/api/translationsV2', async (_req: TranslationsRequest, res) => {
     const translationsV2 = await getTranslationsEntriesV2();
 
     const translationList = await translationsV2.all();

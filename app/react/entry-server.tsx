@@ -24,7 +24,7 @@ import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import { atomStore } from './V2/atoms';
-import { I18NUtils, t, Translate } from './I18N';
+import { I18NUtils, t } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
 import createReduxStore from './store';

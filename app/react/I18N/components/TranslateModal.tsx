@@ -52,7 +52,9 @@ const TranslateModal = () => {
           <form onSubmit={handleSubmit(submit)}>
             <Modal.Header>
               <Translate>Translate</Translate>
-              <Modal.CloseButton onClick={closeModal}>Close</Modal.CloseButton>
+              <Modal.CloseButton onClick={closeModal}>
+                <Translate>Close</Translate>
+              </Modal.CloseButton>
             </Modal.Header>
             <Modal.Body>
               {fields?.map((field, index) => (
@@ -75,10 +77,10 @@ const TranslateModal = () => {
                 className="grow"
                 data-testid="cancel-button"
               >
-                Cancel
+                <Translate>Cancel</Translate>
               </Button>
               <Button type="submit" color="primary" className="grow" data-testid="save-button">
-                Save
+                <Translate>Save</Translate>
               </Button>
             </Modal.Footer>
           </form>
