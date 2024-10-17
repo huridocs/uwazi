@@ -4,7 +4,6 @@ import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 
@@ -66,25 +65,20 @@ export class RequestEntityTranslation {
     }
 
     const entity = Entity.fromInputModel(entityInputModel);
+    let updatedEntities = (await this.entitiesDS.getByIds([entity.sharedId]).all()).filter(
+      e => e.language !== languageFrom
+    );
 
     await atTemplateConfig?.properties.reduce(async (prev, property) => {
       await prev;
       const propertyValue = entity.getPropertyValue(property);
 
       if (propertyValue) {
-        const entities = this.entitiesDS.getByIds([entity.sharedId]);
         const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${propertyValue}`;
 
-        await entities.forEach(async fetchedEntity => {
-          if (languagesTo.includes(fetchedEntity.language as LanguageISO6391)) {
-            await this.entitiesDS.updateEntity(
-              fetchedEntity.setPropertyValue(property, pendingText)
-            );
-            this.logger.info(
-              `[AT] - Pending translation saved on DB - ${property.name}: ${pendingText}`
-            );
-          }
-        });
+        updatedEntities = updatedEntities.map(fetchedEntity =>
+          fetchedEntity.setPropertyValue(property, pendingText)
+        );
 
         await this.taskManager.startTask({
           key: [getTenant().name, entity.sharedId, property.id],
@@ -103,5 +97,12 @@ export class RequestEntityTranslation {
         );
       }
     }, Promise.resolve());
+
+    await Promise.all(
+      updatedEntities.map(async updatedEntity => {
+        this.logger.info(`[AT] - Pending translation saved on DB for entity - ${entity._id}`);
+        await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);
+      })
+    );
   }
 }
