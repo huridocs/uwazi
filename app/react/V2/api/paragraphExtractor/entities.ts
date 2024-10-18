@@ -60,4 +60,16 @@ const getByParagraphExtractorId = async (extractorId: string, headers?: Incoming
   }
 };
 
-export { getByParagraphExtractorId };
+const getById = async (entityId: string, headers?: IncomingHttpHeaders) => {
+  try {
+    const requestParams = new RequestParams({ id: entityId }, headers);
+    // const { json: response } = await api.get(apiEndpoint, requestParams);
+    const id = requestParams.data?.id;
+    return dummyData.find(entity => entity._id === id);
+    // return response;
+  } catch (e) {
+    return e;
+  }
+};
+
+export { getByParagraphExtractorId, getById };

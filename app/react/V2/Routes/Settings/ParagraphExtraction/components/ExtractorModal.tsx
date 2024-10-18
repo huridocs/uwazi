@@ -8,6 +8,7 @@ import { Translate } from 'app/I18N';
 import { ClientTemplateSchema } from 'app/istore';
 import { ParagraphExtractorApiPayload } from '../types';
 import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
+import { Link } from 'react-router-dom';
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,6 +34,9 @@ const templatesWithParagraph = (template: ClientTemplateSchema) =>
   template.properties.some(({ name }) => name === 'rich_text');
 
 const isActiveStepClassName = (isActive: boolean) => (isActive ? 'bg-indigo-700' : 'bg-gray-200');
+
+const linkPXTemplateCriteria =
+  'https://uwazi.readthedocs.io/en/latest/admin-docs/paragraph-extraction.html';
 
 const ExtractorModal = ({
   setShowModal,
@@ -118,13 +122,17 @@ const ExtractorModal = ({
 
         <div className="flex flex-col">
           <div className="flex justify-center w-full gap-2">
-            {/* duplicate structure, can be a function */}
             <div className={`w-2 h-2 rounded-full ${isActiveStepClassName(step === 1)}`} />
             <div className={`w-2 h-2 rounded-full ${isActiveStepClassName(step === 2)}`} />
           </div>
           {templateToOptions.length !== 0 && step === 1 && (
             <span className="mt-5 text-gray-500 font-light text-sm">
-              <Translate>Templates meeting required criteria</Translate>
+              <Translate>Templates meeting</Translate>{' '}
+              <Link to={linkPXTemplateCriteria} target="_blank">
+                <span className="underline">
+                  <Translate>required criteria</Translate>
+                </span>
+              </Link>
             </span>
           )}
         </div>

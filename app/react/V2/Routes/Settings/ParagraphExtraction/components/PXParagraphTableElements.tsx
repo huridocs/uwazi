@@ -2,7 +2,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
-import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
 import { Button } from 'V2/Components/UI';
 import { PXParagraphTable } from '../types';
@@ -40,35 +39,13 @@ const ParagraphNoCell = ({ cell }: CellContext<PXParagraphTable, PXParagraphTabl
   </span>
 );
 
-const ViewButton = (
-  { cell }: CellContext<PXParagraphTable, PXParagraphTable['_id']>,
-  actions: () => void
-) => (
-  <Button className="leading-4" styling="outline" onClick={() => actions()}>
+const ViewButton = (action: () => void) => (
+  <Button className="leading-4" styling="outline" onClick={action}>
     <Translate>View</Translate>
   </Button>
 );
 
-const tableColumns = [
-  pxColumnHelper.accessor('rowId', {
-    header: TemplateHeader,
-    cell: ParagraphNoCell,
-    enableSorting: false,
-  }),
-  pxColumnHelper.accessor('text', {
-    header: EntityHeader,
-    cell: DisplayCell,
-    meta: { headerClassName: 'w-5/6' },
-    enableSorting: false,
-  }),
-  pxColumnHelper.accessor('_id', {
-    header: ActionHeader,
-    cell: props => ViewButton(props, () => console.log(props.cell.getValue())),
-    enableSorting: false,
-  }),
-];
-
-const getTableColumns = () => [
+const tableBuilder = ({ onViewAction }: { onViewAction: (paragraphId: string) => void }) => [
   pxColumnHelper.accessor('rowId', {
     header: TemplateHeader,
     cell: ParagraphNoCell,
@@ -83,13 +60,14 @@ const getTableColumns = () => [
   pxColumnHelper.accessor('_id', {
     header: ActionHeader,
     cell: props =>
-      ViewButton(props, event => {
-        event.preventDefault();
-        console.log(`View action triggered for paragraph ID: ${props.cell.getValue()}`);
-        // Add your custom event handling logic here
+      ViewButton(() => {
+        const paragraphId = props.cell.getValue();
+        if (paragraphId) {
+          onViewAction(paragraphId);
+        }
       }),
     enableSorting: false,
   }),
 ];
 
-export { tableColumns, getTableColumns };
+export { tableBuilder };
