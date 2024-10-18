@@ -148,7 +148,7 @@ describe('TableRow', () => {
       render();
       const renderedColumns = screen.getAllByRole('cell');
       const content = renderedColumns.map(col => col.textContent);
-      const icons = renderResult.container.getElementsByClassName('flag-icon-co');
+      const icons = renderResult.container.getElementsByClassName('fi-co');
       const entityIcon = icons[0];
       expect(icons.length).toBe(1);
       expect(entityIcon.parentNode!.parentNode!.parentNode!).toEqual(renderedColumns[0]);

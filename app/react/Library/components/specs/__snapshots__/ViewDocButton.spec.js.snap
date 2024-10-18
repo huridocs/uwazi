@@ -7,7 +7,6 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   to="/entity/123"
 >
   <Connect(Icon)
-    directionAware={true}
     icon="angle-right"
   />
    
@@ -24,7 +23,6 @@ exports[`ViewDocButton should render a view button poiting to the doc url with t
   to="/entity/123?searchTerm=something"
 >
   <Connect(Icon)
-    directionAware={true}
     icon="angle-right"
   />
    
@@ -41,7 +39,6 @@ exports[`ViewDocButton when targetReference is provided should render view butto
   to="/entity/123?ref=ref1"
 >
   <Connect(Icon)
-    directionAware={true}
     icon="angle-right"
   />
    
@@ -58,7 +55,6 @@ exports[`ViewDocButton when targetReference is provided should render view butto
   to="/entity/123?searchTerm=something&ref=ref1"
 >
   <Connect(Icon)
-    directionAware={true}
     icon="angle-right"
   />
    

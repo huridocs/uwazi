@@ -1,10 +1,12 @@
-import { legacyLogger } from 'api/log';
 import Ajv from 'ajv';
-import { createError } from 'api/utils/index';
-import { appContext } from 'api/utils/AppContext';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { FileNotFound } from 'api/files/FileNotFound';
+import { S3TimeoutError } from 'api/files/S3Storage';
+import { legacyLogger } from 'api/log';
+import { appContext } from 'api/utils/AppContext';
+import { createError } from 'api/utils/index';
+import util from 'node:util';
 
 const ajvPrettifier = error => {
   const errorMessage = [error.message];
@@ -59,7 +61,11 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   let result = error;
 
   if (error instanceof Error) {
-    result = { code: 500, message: error.stack, logLevel: 'error' };
+    result = { code: 500, message: util.inspect(error), logLevel: 'error' };
+  }
+
+  if (error instanceof S3TimeoutError) {
+    result = { code: 408, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {

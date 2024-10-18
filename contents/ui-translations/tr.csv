@@ -352,6 +352,7 @@ Full edit mode,Tam düzenleme modu
 Full width,Full width
 General,Genel
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,Genel CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -398,7 +399,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,If the email address supplied is correct
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,Geçersiz güvenlik kodu
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -525,6 +526,7 @@ No Documents found,Belge bulunamadı
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,Simge/İşaret yok
+No items available,No items available
 No Label,Etiket yok
 No options,No options
 No options found,Seçenek bulunamadı
@@ -540,6 +542,7 @@ No Table of Contents description,İçerik Tablosu Yok Açıklama
 No text match,Metin Eşleşmesi Yok
 No text match description,You can type something different in the search box to get some results.
 No type,Tür yok
+No valid target template available,No valid target template available
 No value,Değer yok
 No Value,Değer yok
 "No, cancel","No, cancel"
@@ -576,6 +579,9 @@ Others,Others
 out of,dışında
 Page,Sayfa
 Pages,Sayfalar
+Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,Parola
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -639,6 +645,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,Yayınla
 Published,Yayınlanan
 QR Code,QR Code
+Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,Sorgulama
 Quick labeling for,Hızlı etiketleme
 RAW,RAW
@@ -666,6 +673,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,Parolayı yinele
 Request id #,Kimlik numarası iste #
 Request token,Request token
+required criteria,required criteria
 Required property,Gerekli özellik
 Reset,Sıfırla
 Reset 2FA,İki Adımlı Doğrulama'yı sıfırla
@@ -792,6 +800,9 @@ Table,Tablo
 Table of Contents,İçindekiler
 Table of contents,İçindekiler
 Table view,Tablo görünümü
+Target Template,Target Template
+Target template,Target template
+Target Template:,Target Template:
 Template,Şablon
 Template conflict,Template conflict
 Template name,Template name
@@ -799,6 +810,9 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,Şablonlar
+Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
+Templates:,Templates:
 Text,Metin
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,İçe aktarma işlemi bir hata verdi:

@@ -4,16 +4,16 @@ import React from 'react';
 import { LookupMultiSelect, Switcher } from 'app/ReactReduxForms';
 
 const SelectFilter = ({
-  onChange,
+  onChange = () => {},
   model,
-  label,
-  options,
-  prefix,
-  showBoolSwitch,
-  sort,
-  lookup,
-  totalPossibleOptions,
-  allowSelectGroup,
+  label = '',
+  options = [],
+  prefix = '',
+  showBoolSwitch = false,
+  sort = false,
+  lookup = null,
+  totalPossibleOptions = 0,
+  allowSelectGroup = false,
 }) => (
   <ul className="search__filter is-active">
     <li>
@@ -34,18 +34,6 @@ const SelectFilter = ({
     </li>
   </ul>
 );
-
-SelectFilter.defaultProps = {
-  onChange: () => {},
-  label: '',
-  prefix: '',
-  showBoolSwitch: false,
-  sort: false,
-  options: [],
-  lookup: null,
-  totalPossibleOptions: 0,
-  allowSelectGroup: false,
-};
 
 SelectFilter.propTypes = {
   model: PropTypes.string.isRequired,

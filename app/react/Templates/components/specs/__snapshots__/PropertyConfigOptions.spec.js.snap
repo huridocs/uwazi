@@ -6,10 +6,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -19,10 +16,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -34,10 +28,7 @@ exports[`PropertyConfigOptions Additional options should allow to exclude the "u
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -55,10 +46,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -68,10 +56,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -83,10 +68,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -99,10 +81,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -114,10 +93,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       label="Default filter"
       model="template.data.properties[2].defaultfilter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as default filter description"
         >
@@ -129,10 +105,7 @@ exports[`PropertyConfigOptions Once the property is checked as filter should ren
       label="Priority sorting"
       model="template.data.properties[2].prioritySorting"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Priority sorting description"
         >
@@ -153,10 +126,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -166,10 +136,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -181,10 +148,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -197,10 +161,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -221,10 +182,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -234,10 +192,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -249,10 +204,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -265,10 +217,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -289,10 +238,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -302,10 +248,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -317,10 +260,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -333,10 +273,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -357,10 +294,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -370,10 +304,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -385,10 +316,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -401,10 +329,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is n
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -425,10 +350,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -438,10 +360,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -453,10 +372,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -469,10 +385,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -484,10 +397,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Default filter"
       model="template.data.properties[2].defaultfilter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as default filter description"
         >
@@ -499,10 +409,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Priority sorting"
       model="template.data.properties[2].prioritySorting"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Priority sorting description"
         >
@@ -523,10 +430,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -536,10 +440,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -551,10 +452,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -567,10 +465,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -582,10 +477,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Default filter"
       model="template.data.properties[2].defaultfilter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as default filter description"
         >
@@ -597,10 +489,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Priority sorting"
       model="template.data.properties[2].prioritySorting"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Priority sorting description"
         >
@@ -621,10 +510,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -634,10 +520,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -649,10 +532,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -665,10 +545,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -680,10 +557,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Default filter"
       model="template.data.properties[2].defaultfilter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as default filter description"
         >
@@ -695,10 +569,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Priority sorting"
       model="template.data.properties[2].prioritySorting"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Priority sorting description"
         >
@@ -719,10 +590,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -732,10 +600,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -747,10 +612,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -763,10 +625,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >
@@ -778,10 +637,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Default filter"
       model="template.data.properties[2].defaultfilter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as default filter description"
         >
@@ -793,10 +649,7 @@ exports[`PropertyConfigOptions priority sorting option when property filter is t
       label="Priority sorting"
       model="template.data.properties[2].prioritySorting"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Priority sorting description"
         >
@@ -817,10 +670,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     label="Hide label"
     model="template.data.properties[2].noLabel"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will be shown without the label.
       </Connect(Translate)>
@@ -830,10 +680,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     label="Required property"
     model="template.data.properties[2].required"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)
         translationKey="empty property tip"
       >
@@ -845,10 +692,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
     label="Show in cards"
     model="template.data.properties[2].showInCard"
   >
-    <Tip
-      icon="question-circle"
-      position=""
-    >
+    <Tip>
       <Connect(Translate)>
         This property will appear in the library cards as part of the basic info.
       </Connect(Translate)>
@@ -861,10 +705,7 @@ exports[`PropertyConfigOptions should render fields with the correct datas 1`] =
       label="Use as filter"
       model="template.data.properties[2].filter"
     >
-      <Tip
-        icon="question-circle"
-        position=""
-      >
+      <Tip>
         <Connect(Translate)
           translationKey="Property as filter description"
         >

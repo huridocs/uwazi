@@ -18,7 +18,7 @@ const StoryComponent = ({ args }: any) => {
     <Provider store={createStore()}>
       <>
         <div className="tw-content">
-          <div className="w-full p-4 m-auto md:w-1/2">
+          <div className="w-full p-4 m-auto md:w-1/2 min-h-[300px]">
             <MultiselectList
               label={args.label}
               items={args.items}
@@ -180,6 +180,15 @@ const InitialState: Story = {
   },
 };
 
-export { Basic, WithError, WithGroups, InitialState };
+const BlankState: Story = {
+  ...Primary,
+  args: {
+    ...Basic.args,
+    onChange: () => {},
+    items: [],
+  },
+};
+
+export { Basic, WithError, WithGroups, InitialState, BlankState };
 
 export default meta;

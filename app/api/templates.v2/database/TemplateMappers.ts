@@ -9,6 +9,7 @@ import { V1RelationshipProperty } from '../model/V1RelationshipProperty';
 import { mapPropertyQuery } from './QueryMapper';
 import { TraverseQueryDBO } from './schemas/RelationshipsQueryDBO';
 import { RelationshipPropertyDBO, TemplateDBO } from './schemas/TemplateDBO';
+import { CommonProperty } from '../model/CommonProperty';
 
 type PropertyDBO = TemplateDBO['properties'][number];
 
@@ -20,6 +21,9 @@ function propertyToApp(property: PropertySchema, _templateId: TemplateDBO['_id']
 function propertyToApp(property: PropertyDBO, _templateId: TemplateDBO['_id']): Property {
   const templateId = MongoIdHandler.mapToApp(_templateId);
   const propertyId = property._id?.toString() || MongoIdHandler.generate();
+  if ('isCommonProperty' in property && property.isCommonProperty) {
+    return new CommonProperty(propertyId, property.type, property.name, property.label, templateId);
+  }
   switch (property.type) {
     case propertyTypes.newRelationship:
       return new RelationshipProperty(

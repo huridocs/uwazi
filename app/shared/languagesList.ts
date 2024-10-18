@@ -1359,4 +1359,6 @@ const language = (key: string, purpose: keyof (typeof elasticLanguages)[number] 
   return elasticLanguages[key] ? elasticLanguages[key][purpose] : defaultValue;
 };
 
-export { elasticLanguages, availableLanguages, language };
+const availableLanguagesISO6391 = availableLanguages.map(l => l.key);
+
+export { elasticLanguages, availableLanguages, language, availableLanguagesISO6391 };

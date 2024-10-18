@@ -11,6 +11,7 @@ export interface RelationshipPropertyDBO {
   query: TraverseQueryDBO[];
   denormalizedProperty?: string;
 }
+
 export interface TemplateDBO extends TemplateSchema {
   _id: ObjectId;
   properties: (PropertySchema | RelationshipPropertyDBO)[];

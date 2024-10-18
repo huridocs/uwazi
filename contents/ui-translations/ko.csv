@@ -352,6 +352,7 @@ Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
 General Information,General Information
+Generated Entities,Generated Entities
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -398,7 +399,7 @@ Install browser extension (dynamic link),Install browser extension (dynamic link
 Install Language(s),Install Language(s)
 INSTALL the browser extension,INSTALL the browser extension
 "Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation.","Instructions on how to achieve this will vary according to the app used, please refer to the app's documentation."
-Instructions to reset password,If the email address supplied is correct
+Instructions to reset password,"If the email address supplied is correct, we will send instructions to reset the password."
 Instructions to reset the password were sent to the user,Instructions to reset the password were sent to the user
 Invalid captcha,잘못된 보안문자
 Invalid csv: all the values for a row must be either nested or non-nested,Invalid csv: all the values for a row must be either nested or non-nested
@@ -525,6 +526,7 @@ No Documents found,문서를 찾지 못했습니다.
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,아이콘/플래그 없음
+No items available,No items available
 No Label,라벨 없음
 No options,No options
 No options found,검색된 옵션 없음
@@ -540,6 +542,7 @@ No Table of Contents description,목차 설명 없음
 No text match,일치하는 텍스트 없음
 No text match description,You can type something different in the search box to get some results.
 No type,유형 없음
+No valid target template available,No valid target template available
 No value,값 없음
 No Value,값 없음
 "No, cancel","No, cancel"
@@ -576,6 +579,9 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
+Paragraph Extraction,Paragraph Extraction
+Paragraph extractor,Paragraph extractor
+Paragraph Extractor added,Paragraph Extractor added
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -639,6 +645,7 @@ Public form whitelist description,"If you wish to include Public Forms on your p
 Publish,게시
 Published,공개 게시물
 QR Code,QR Code
+Qualified templates should have Rich Text property,Qualified templates should have Rich Text property
 Query,검사
 Quick labeling for,빠른 라벨링
 RAW,RAW
@@ -666,6 +673,7 @@ Renamed attachment,Renamed attachment
 Repeat Password,암호를 재입력하십시오.
 Request id #,아이디 요청 #
 Request token,Request token
+required criteria,required criteria
 Required property,필수 속성
 Reset,초기화
 Reset 2FA,이중 인증 절차 재설정
@@ -792,6 +800,9 @@ Table,테이블
 Table of Contents,목차
 Table of contents,목차
 Table view,테이블 뷰
+Target Template,Target Template
+Target template,Target template
+Target Template:,Target Template:
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name
@@ -799,6 +810,9 @@ Template with a long number of entities,"The template has changed and the associ
        this process may take several minutes, do you want to continue?"
 Template(s),Template(s)
 Templates,템플릿
+Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
+Templates:,Templates:
 Text,텍스트
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
 The import process threw an error:,업로드 과정에서 오류가 발생했습니다:

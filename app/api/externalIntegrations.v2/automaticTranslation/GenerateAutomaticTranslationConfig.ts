@@ -1,9 +1,8 @@
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
+import { GenerateATConfigError } from './errors/generateATErrors';
+import { Validator } from './infrastructure/Validator';
 import { ATTemplateConfig } from './model/ATConfig';
-import { RawATConfig } from './model/RawATConfig';
-import { GenerateATConfigError, InvalidInputDataFormat } from './errors/generateATErrors';
-import { ATConfigValidator } from './contracts/ATConfigValidator';
 import { SemanticConfig } from './types/SemanticConfig';
 
 export class GenerateAutomaticTranslationsCofig {
@@ -11,12 +10,12 @@ export class GenerateAutomaticTranslationsCofig {
 
   private templatsDS: TemplatesDataSource;
 
-  private validator: ATConfigValidator;
+  private validator: Validator<SemanticConfig>;
 
   constructor(
     atuomaticTranslationConfigDS: ATConfigDataSource,
     templatesDS: TemplatesDataSource,
-    validator: ATConfigValidator
+    validator: Validator<SemanticConfig>
   ) {
     this.atuomaticTranslationConfigDS = atuomaticTranslationConfigDS;
     this.templatsDS = templatesDS;
@@ -24,9 +23,7 @@ export class GenerateAutomaticTranslationsCofig {
   }
 
   async execute(semanticConfig: SemanticConfig | unknown) {
-    if (!this.validator.validate(semanticConfig)) {
-      throw new InvalidInputDataFormat(this.validator.getErrors()[0]);
-    }
+    this.validator.ensure(semanticConfig);
 
     const templatesData = await this.templatsDS
       .getByNames(semanticConfig.templates.map(t => t.template))
@@ -39,25 +36,26 @@ export class GenerateAutomaticTranslationsCofig {
       }
       return new ATTemplateConfig(
         templateData?.id,
-        (configData.properties || []).map(label => {
-          const foundProperty = templateData.properties.find(p => p.label === label);
-          if (!foundProperty) {
-            throw new GenerateATConfigError(`Property not found: ${label}`);
-          }
-          return foundProperty.id;
-        }),
-        (configData.commonProperties || []).map(label => {
-          const foundProperty = templateData?.commonProperties.find(p => p.label === label);
-          if (!foundProperty) {
-            throw new GenerateATConfigError(`Common property not found: ${label}`);
-          }
-          return foundProperty.id;
-        })
+        (configData.properties || [])
+          .map(label => {
+            const foundProperty = templateData.properties.find(p => p.label === label);
+            if (!foundProperty) {
+              throw new GenerateATConfigError(`Property not found: ${label}`);
+            }
+            return foundProperty;
+          })
+          .concat(
+            (configData.commonProperties || []).map(label => {
+              const foundProperty = templateData?.commonProperties.find(p => p.label === label);
+              if (!foundProperty) {
+                throw new GenerateATConfigError(`Common property not found: ${label}`);
+              }
+              return foundProperty;
+            })
+          )
       );
     });
 
-    return this.atuomaticTranslationConfigDS.update(
-      new RawATConfig(semanticConfig.active, templates)
-    );
+    return this.atuomaticTranslationConfigDS.update(semanticConfig.active, templates);
   }
 }

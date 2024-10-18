@@ -250,7 +250,7 @@ class MetadataTemplate extends Component<MetadataTemplateProps> {
           <div className="settings-footer remove-extra-nesting">
             <div className="btn-cluster">
               <I18NLink to={this.props.backUrl} className="btn btn-default btn-plain">
-                <Icon icon="arrow-left" directionAware />
+                <Icon icon="arrow-left" />
                 <span className="btn-label">
                   <Translate>Back</Translate>
                 </span>

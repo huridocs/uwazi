@@ -318,16 +318,14 @@ describe('entities', () => {
     });
   });
 
-  describe('/api/entities/get_raw_page', () => {
-    it('should return formattedPlainTextPages page requested', async () => {
-      jest.spyOn(entities, 'countByTemplate').mockImplementation(async () => Promise.resolve(2));
-      const req = { query: { templateId: 'templateId' } };
+  it('should return formattedPlainTextPages page requested', async () => {
+    jest.spyOn(entities, 'countByTemplate').mockImplementation(async () => Promise.resolve(2));
+    const req = { query: { templateId: 'templateId' } };
 
-      const response = await routes.get('/api/entities/count_by_template', req);
+    const response = await routes.get('/api/entities/count_by_template', req);
 
-      expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
-      expect(response).toEqual(2);
-    });
+    expect(entities.countByTemplate).toHaveBeenCalledWith('templateId');
+    expect(response).toEqual(2);
   });
 
   describe('/api/entities/count_by_template', () => {

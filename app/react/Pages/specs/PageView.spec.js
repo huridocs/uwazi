@@ -104,4 +104,10 @@ describe('PageView', () => {
       });
     });
   });
+
+  describe('dataset functions', () => {
+    it('should expose a function to update page datasets', () => {
+      expect(window.updatePageDatasets).not.toBeUndefined();
+    });
+  });
 });

@@ -54,6 +54,7 @@ function setFullTextSettings(defaultDocument, id, body, doc) {
   }
   const fullTextObject = {
     [`fullText_${language}`]: fullText,
+    filename: defaultDocument.filename,
     fullText: { name: 'fullText', parent: id },
   };
   body.push(fullTextObject);

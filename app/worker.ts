@@ -13,6 +13,7 @@ import { InformationExtraction } from 'api/services/informationextraction/Inform
 import { setupWorkerSockets } from 'api/socketio/setupSockets';
 import { ConvertToPdfWorker } from 'api/services/convertToPDF/ConvertToPdfWorker';
 import { handleError } from './api/utils/handleError.js';
+import { ATServiceListener } from 'api/externalIntegrations.v2/automaticTranslation/adapters/driving/ATServiceListener';
 
 let dbAuth = {};
 
@@ -42,6 +43,7 @@ DB.connect(config.DBHOST, dbAuth)
 
       console.info('==> 📡 starting external services...');
       ocrManager.start();
+      new ATServiceListener().start();
       new InformationExtraction().start();
 
       new ConvertToPdfWorker().start();

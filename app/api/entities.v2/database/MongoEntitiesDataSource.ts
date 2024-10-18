@@ -1,15 +1,19 @@
 import { ResultSet } from 'api/common.v2/contracts/ResultSet';
 import { MongoDataSource } from 'api/common.v2/database/MongoDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 import { MongoResultSet } from 'api/common.v2/database/MongoResultSet';
 import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
-import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import entities from 'api/entities/entities';
+import v1EntitiesModel from 'api/entities/entitiesModel';
 import { MongoSettingsDataSource } from 'api/settings.v2/database/MongoSettingsDataSource';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
 import { Db } from 'mongodb';
+import { MetadataSchema } from 'shared/types/commonTypes';
 import { EntitiesDataSource } from '../contracts/EntitiesDataSource';
+import { Entity, EntityMetadata, MetadataValue } from '../model/Entity';
 import { EntityMappers } from './EntityMapper';
 import { EntityDBO, EntityJoinTemplate } from './schemas/EntityTypes';
-import { Entity, MetadataValue } from '../model/Entity';
+import { search } from 'api/search';
 
 export class MongoEntitiesDataSource
   extends MongoDataSource<EntityDBO>
@@ -30,6 +34,35 @@ export class MongoEntitiesDataSource
     super(db, transactionManager);
     this.templatesDS = templatesDS;
     this.settingsDS = settingsDS;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async updateEntities_OnlyUpdateAndReindex(entity: Entity) {
+    // This is using V1 model and custom reindex here
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(entity._id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${entity._id}`);
+    }
+
+    entityToModify.title = entity.title;
+    entityToModify.metadata = entity.metadata as MetadataSchema;
+    await v1EntitiesModel.save(entityToModify);
+    await search.indexEntities({ sharedId: entity.sharedId });
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  async updateEntity(entity: Entity) {
+    // This is using V1 so that it gets denormalized to speed up development
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(entity._id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${entity._id}`);
+    }
+
+    entityToModify.title = entity.title;
+    entityToModify.metadata = entity.metadata as MetadataSchema;
+    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
   }
 
   async entitiesExist(sharedIds: string[]) {
@@ -123,9 +156,33 @@ export class MongoEntitiesDataSource
     return new MongoResultSet(result, entity => entity.sharedId);
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  async updateMetadataValues(
+    id: Entity['_id'],
+    values: Record<string, { value: MetadataValue }[]>,
+    title?: string
+  ) {
+    // This is using V1 so that it gets denormalized to speed up development
+    // this is a hack and should be changed as soon as we finish AT
+    const entityToModify = await entities.getById(id);
+    if (!entityToModify) {
+      throw new Error(`entity does not exists: ${id}`);
+    }
+
+    entityToModify.title = title || entityToModify.title;
+
+    Object.entries(values).forEach(([propertyName, metadataValues]) => {
+      entityToModify.metadata = entityToModify.metadata || {};
+      // @ts-ignore
+      entityToModify.metadata[propertyName] = metadataValues;
+    });
+
+    await entities.save(entityToModify, { user: {}, language: entityToModify.language });
+  }
+
   async updateObsoleteMetadataValues(
     id: Entity['_id'],
-    values: Record<string, MetadataValue[]>
+    values: Record<string, EntityMetadata[]>
   ): Promise<void> {
     const stream = this.createBulkStream();
 
