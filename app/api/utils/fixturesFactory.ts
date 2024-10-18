@@ -166,18 +166,12 @@ function getFixturesFactory() {
       },
     }),
 
-    document: (entity: string, props: Partial<WithId<FileType>> = {}): WithId<FileType> => ({
-      _id: idMapper(`document_for_${entity}`),
-      entity,
-      language: 'en',
-      type: 'document',
-      filename: `${entity}_document.pdf`,
-      originalname: `${entity}_document.pdf`,
-      ...props,
-    }),
-
     attachment(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
       return this.file(id, { ...extra, type: 'attachment' });
+    },
+
+    document(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
+      return this.file(id, { ...extra, type: 'document' });
     },
 
     custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
