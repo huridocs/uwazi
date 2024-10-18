@@ -2,13 +2,12 @@ import { FilesDataSource } from './contracts/FilesDataSource';
 import { FileStorage } from './contracts/FileStorage';
 import { StoredFile } from './model/StoredFile';
 import { URLAttachment } from './model/URLAttachment';
-
 function filterFilesInStorage(files: StoredFile[]) {
   return files.filter(
     file =>
-      !file.filename.includes('/log/') &&
-      !file.filename.includes('/segmentation/') &&
-      !file.filename.includes('index.html')
+      !file.fullPath.includes('/log/') &&
+      !file.fullPath.includes('/segmentation/') &&
+      !file.fullPath.includes('index.html')
   );
 }
 
@@ -34,58 +33,84 @@ export class FilesHealthCheck {
   }
 
   async execute() {
-    const allFilesInDb = await this.filesDS.getAll().all();
-    const allFilesInStorage = await this.fileStorage.list();
-    const filteredFilesInStorage = filterFilesInStorage(allFilesInStorage);
-    let missingInStorage = 0;
+    const { dbFiles, storageFiles, filesChecksumMatchCounts, storageFilesIndexedByPath } =
+      await this.getFilesData();
+    const countInStorage = storageFiles.length;
     const missingInStorageList: string[] = [];
     const missingInDbList: string[] = [];
-    const countInStorage = filteredFilesInStorage.length;
-    let countInDb = 0;
 
-    const checksumMatchCounts = allFilesInStorage.reduce((counts, storedFile) => {
-      if (!counts[storedFile.checksum]) {
-        counts[storedFile.checksum] = 0;
-      }
-      counts[storedFile.checksum] += 1;
-      return counts;
-    }, {});
+    const counters = {
+      missingInStorage: 0,
+      missingInDbWithChecksumMatches: 0,
+      countInDb: 0,
+    };
 
-    allFilesInDb.forEach(file => {
-      countInDb += 1;
-      const existsInStorage = filteredFilesInStorage.findIndex(
-        storedFile => storedFile.filename === this.fileStorage.getPath(file)
-      );
-      if (existsInStorage > -1) {
-        filteredFilesInStorage.splice(existsInStorage, 1);
+    dbFiles.forEach(file => {
+      counters.countInDb += 1;
+
+      const existsInStorage = storageFilesIndexedByPath[this.fileStorage.getPath(file)];
+
+      if (existsInStorage) {
+        delete storageFilesIndexedByPath[this.fileStorage.getPath(file)];
       }
 
-      if (existsInStorage === -1 && !(file instanceof URLAttachment)) {
-        missingInStorage += 1;
+      if (!existsInStorage && !(file instanceof URLAttachment)) {
+        counters.missingInStorage += 1;
         missingInStorageList.push(this.fileStorage.getPath(file));
         this.onMissingInStorageCB({ _id: file.id, filename: file.filename });
       }
     });
 
-    let missingInDbWithChecksumMatches = 0;
+    const storageFilesRemaining = Object.values(storageFilesIndexedByPath);
 
-    filteredFilesInStorage.forEach(storedFile => {
-      missingInDbList.push(storedFile.filename);
-      const checksumMatchCount = checksumMatchCounts[storedFile.checksum];
+    storageFilesRemaining.forEach(storedFile => {
+      missingInDbList.push(storedFile.fullPath);
+      const checksumMatchCount = filesChecksumMatchCounts[storedFile.checksum || ''];
       if (checksumMatchCount > 1) {
-        missingInDbWithChecksumMatches += 1;
+        counters.missingInDbWithChecksumMatches += 1;
       }
-      this.onMissingInDBCB({ filename: storedFile.filename, checksumMatchCount });
+      this.onMissingInDBCB({ filename: storedFile.fullPath, checksumMatchCount });
     });
 
     return {
       missingInStorageList,
-      missingInStorage,
       missingInDbList,
-      missingInDb: filteredFilesInStorage.length,
-      missingInDbWithChecksumMatches,
-      countInDb,
+      missingInDb: storageFilesRemaining.length,
       countInStorage,
+      ...counters,
+    };
+  }
+
+  async getFilesData() {
+    const allFilesInStorage = await this.fileStorage.list();
+    const storageFiles = filterFilesInStorage(allFilesInStorage);
+    const filesChecksumMatchCounts = storageFiles.reduce(
+      (counts, storedFile) => {
+        const checksum = storedFile.checksum || '';
+        if (!counts[checksum]) {
+          // eslint-disable-next-line no-param-reassign
+          counts[checksum] = 0;
+        }
+        // eslint-disable-next-line no-param-reassign
+        counts[checksum] += 1;
+        return counts;
+      },
+      {} as { [k: string]: number }
+    );
+    const dbFiles = await this.filesDS.getAll().all();
+    const storageFilesIndexedByPath = storageFiles.reduce(
+      (memo, file) => {
+        // eslint-disable-next-line no-param-reassign
+        memo[file.fullPath] = file;
+        return memo;
+      },
+      {} as { [k: string]: StoredFile }
+    );
+    return {
+      storageFilesIndexedByPath,
+      storageFiles,
+      filesChecksumMatchCounts,
+      dbFiles,
     };
   }
 
