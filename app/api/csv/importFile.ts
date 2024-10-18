@@ -5,6 +5,8 @@ import { createError } from 'api/utils';
 import zipFile from 'api/utils/zipFile';
 // eslint-disable-next-line node/no-restricted-import
 import { createReadStream } from 'fs';
+// eslint-disable-next-line node/no-restricted-import
+import { readFile } from 'fs/promises';
 
 const extractFromZip = async (zipPath: string, fileName: string) => {
   const readStream = await zipFile(zipPath).findReadStream(entry => entry === fileName);
@@ -16,14 +18,19 @@ const extractFromZip = async (zipPath: string, fileName: string) => {
   return readStream;
 };
 
-export class ImportFile {
+class ImportFile {
   filePath: string;
 
   constructor(filePath: string) {
     this.filePath = filePath;
   }
 
+  private async checkFileExists() {
+    await readFile(this.filePath);
+  }
+
   async readStream(fileName = 'import.csv') {
+    await this.checkFileExists();
     if (path.extname(this.filePath) === '.zip') {
       return extractFromZip(this.filePath, fileName);
     }
@@ -46,4 +53,5 @@ export class ImportFile {
 
 const importFile = (filePath: string) => new ImportFile(filePath);
 
+export { ImportFile };
 export default importFile;

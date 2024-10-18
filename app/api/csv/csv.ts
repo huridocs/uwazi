@@ -1,5 +1,3 @@
-import readline from 'readline';
-
 import csvtojson from 'csvtojson';
 
 import { Readable } from 'stream';
@@ -8,18 +6,17 @@ import importFile, { ImportFile } from './importFile';
 type CSVRow = { [k: string]: string };
 
 const DELIMITERS = [',', ';'];
-const DELIMITER_REGEX = new RegExp(`[${DELIMITERS.join('')}]`);
 
 const peekHeaders = async (readSource: Readable | string): Promise<string[]> => {
   const readStream =
     typeof readSource === 'string' ? await importFile(readSource).readStream() : readSource;
   let headers: string[] = [];
-  const rl = readline.createInterface({ input: readStream });
-  const line = (await rl[Symbol.asyncIterator]().next()).value;
-  headers = line.split(DELIMITER_REGEX);
-  rl.close();
-  readStream.unpipe();
-  readStream.destroy();
+  const stream = csvtojson().fromStream(readStream);
+  await stream.on('header', async h => {
+    headers = h;
+    await stream.end();
+  });
+
   return headers;
 };
 
