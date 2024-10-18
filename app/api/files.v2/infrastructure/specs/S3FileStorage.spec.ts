@@ -102,7 +102,7 @@ describe('S3FileStorage', () => {
 
       const listedFiles = await s3fileStorage.list();
 
-      expect(listedFiles.sort()).toEqual(
+      expect(listedFiles.map(f => f.fullPath).sort()).toEqual(
         ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
       );
     });
@@ -125,7 +125,7 @@ describe('S3FileStorage', () => {
 
       const listedFiles = await s3fileStorage.list();
 
-      expect(listedFiles.sort()).toEqual(
+      expect(listedFiles.map(f => f.fullPath).sort()).toEqual(
         ['test-tenant/documents/document1', 'test-tenant/documents/document2'].sort()
       );
     });
