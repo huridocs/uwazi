@@ -425,11 +425,7 @@ describe('translations', () => {
     });
 
     it('should throw error when translation is not available', async () => {
-      const readFileMock = jest
-        .spyOn(fs.promises, 'readFile')
-        .mockRejectedValue({ code: 'ENOENT' });
-
-      await expect(translations.importPredefined('zh')).rejects.toThrowError(
+      await expect(translations.importPredefined('non-existent')).rejects.toBeInstanceOf(
         UITranslationNotAvailable
       );
 
@@ -441,8 +437,6 @@ describe('translations', () => {
       expect(ZHTranslations.Password).toBe('Password');
       expect(ZHTranslations.Account).toBe('Account');
       expect(ZHTranslations.Age).toBe('Age');
-
-      readFileMock.mockRestore();
     });
   });
 });

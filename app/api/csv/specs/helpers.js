@@ -2,6 +2,8 @@ import path from 'path';
 import yazl from 'yazl';
 import { Readable } from 'stream';
 // eslint-disable-next-line node/no-restricted-import
+import fsPromises from 'fs/promises';
+// eslint-disable-next-line node/no-restricted-import
 import fs from 'fs';
 
 const createTestingZip = (filesToZip, fileName, directory = __dirname) =>
@@ -37,7 +39,9 @@ class ReadableString extends Readable {
 
 const stream = string => new ReadableString(string);
 
-const mockCsvFileReadStream = str =>
-  jest.spyOn(fs, 'createReadStream').mockImplementation(() => stream(str));
+const mockCsvFileReadStream = str => {
+  jest.spyOn(fsPromises, 'readFile').mockImplementation(() => {});
+  return jest.spyOn(fs, 'createReadStream').mockImplementation(() => stream(str));
+};
 
 export { stream, createTestingZip, mockCsvFileReadStream };

@@ -10,7 +10,7 @@ type CSVRow = { [k: string]: string };
 const DELIMITERS = [',', ';'];
 const DELIMITER_REGEX = new RegExp(`[${DELIMITERS.join('')}]`);
 
-const peekHeaders = async (readSource: Readable | string): Promise<string[]> => {
+const peekHeadersOld = async (readSource: Readable | string): Promise<string[]> => {
   const readStream =
     typeof readSource === 'string' ? await importFile(readSource).readStream() : readSource;
   let headers: string[] = [];
@@ -20,6 +20,25 @@ const peekHeaders = async (readSource: Readable | string): Promise<string[]> => 
   rl.close();
   readStream.unpipe();
   readStream.destroy();
+  return headers;
+};
+
+const peekHeaders = async (readSource: Readable | string): Promise<string[]> => {
+  const readStream =
+    typeof readSource === 'string' ? await importFile(readSource).readStream() : readSource;
+  let headers: string[] = [];
+  await csvtojson()
+    .fromStream(readStream)
+    .on('header', h => {
+      headers = h;
+    })
+    .subscribe(
+      () => {},
+      e => {
+        console.log(e);
+      }
+    );
+
   return headers;
 };
 
