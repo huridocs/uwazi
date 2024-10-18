@@ -8,6 +8,20 @@ updates:
       - dependency-name: "@types/*"
       - dependency-name: "@sentry/node"
         versions: [">= 7.114.0"]
+      - dependency-name: flowbite #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 2.4.1"]
+      - dependency-name: flowbite-datepicker #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 1.2.8"]
+      - dependency-name: flowbite-react #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 0.10.1"]
+      - dependency-name: Mongoose #Mongoose upgrade #7017
+        versions: [">= 8.4.3"]
+      - dependency-name: eslint  #Eslint upgrade to v9.x #6784
+        versions: [">= 9.0.0"]
+      - dependency-name: recharts
+        versions: [">= 	2.13.0"]
+      - dependency-name: "@headlessui/react"
+        versions: [">= 	1.7.19"]
     open-pull-requests-limit: 5
     labels:
       - dependencies
