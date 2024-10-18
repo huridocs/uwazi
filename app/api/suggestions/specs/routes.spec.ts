@@ -419,10 +419,10 @@ describe('aggregation routes', () => {
       expect(response.body).toEqual({
         total: 14,
         labeled: 4,
-        nonLabeled: 6,
-        match: 6,
+        nonLabeled: 10,
+        match: 4,
         mismatch: 4,
-        obsolete: 2,
+        obsolete: 4,
         error: 2,
       });
     });

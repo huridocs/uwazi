@@ -38,10 +38,10 @@ describe('suggestions with CustomFilters', () => {
         { sharedId: 'labeled-mismatch', language: 'es' },
         { sharedId: 'unlabeled-no-context', language: 'en' },
         { sharedId: 'unlabeled-no-context', language: 'es' },
-        { sharedId: 'unlabeled-no-suggestion', language: 'en' },
-        { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         { sharedId: 'unlabeled-error', language: 'en' },
         { sharedId: 'unlabeled-error', language: 'es' },
+        { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+        { sharedId: 'unlabeled-no-suggestion', language: 'es' },
       ]);
     });
 
@@ -73,8 +73,12 @@ describe('suggestions with CustomFilters', () => {
         description: 'filtering for nonLabeled',
         customFilter: { ...blankCustomFilter, nonLabeled: true },
         expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
           { sharedId: 'unlabeled-no-context', language: 'en' },
           { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },
           { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
@@ -131,10 +135,10 @@ describe('suggestions with CustomFilters', () => {
         expectedSuggestions: [
           { sharedId: 'labeled-mismatch', language: 'en' },
           { sharedId: 'labeled-mismatch', language: 'es' },
-          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
-          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
           { sharedId: 'unlabeled-error', language: 'en' },
           { sharedId: 'unlabeled-error', language: 'es' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'en' },
+          { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
       },
       {
@@ -154,12 +158,16 @@ describe('suggestions with CustomFilters', () => {
           'filtering for OR combinations of complimentary filters like: labeled OR nonLabeled, which would result in all suggestions',
         customFilter: { ...blankCustomFilter, labeled: true, nonLabeled: true },
         expectedSuggestions: [
+          { sharedId: 'unlabeled-obsolete', language: 'en' },
+          { sharedId: 'unlabeled-obsolete', language: 'es' },
           { sharedId: 'labeled-match', language: 'en' },
           { sharedId: 'labeled-match', language: 'es' },
           { sharedId: 'labeled-mismatch', language: 'en' },
           { sharedId: 'labeled-mismatch', language: 'es' },
           { sharedId: 'unlabeled-no-context', language: 'en' },
           { sharedId: 'unlabeled-no-context', language: 'es' },
+          { sharedId: 'unlabeled-error', language: 'en' },
+          { sharedId: 'unlabeled-error', language: 'es' },
           { sharedId: 'unlabeled-no-suggestion', language: 'en' },
           { sharedId: 'unlabeled-no-suggestion', language: 'es' },
         ],
