@@ -4,10 +4,12 @@ import { RequestParams } from 'app/utils/RequestParams';
 import { Page } from 'V2/shared/types';
 import { FetchResponseError } from 'shared/JSONRequest';
 
-const get = async (language: string, headers?: IncomingHttpHeaders): Promise<Page[]> => {
+const get = async (headers?: IncomingHttpHeaders): Promise<Page[]> => {
   try {
     const requestParams = new RequestParams({}, headers);
-    api.locale(language);
+    if (headers && headers['Content-Language']) {
+      api.locale(headers['Content-Language']);
+    }
     const response = await api.get('pages', requestParams);
     return response.json;
   } catch (e) {
@@ -15,14 +17,12 @@ const get = async (language: string, headers?: IncomingHttpHeaders): Promise<Pag
   }
 };
 
-const getBySharedId = async (
-  sharedId: string,
-  language: string,
-  headers?: IncomingHttpHeaders
-): Promise<Page> => {
+const getBySharedId = async (sharedId: string, headers?: IncomingHttpHeaders): Promise<Page> => {
   try {
     const requestParams = new RequestParams({ sharedId }, headers);
-    api.locale(language);
+    if (headers && headers['Content-Language']) {
+      api.locale(headers['Content-Language']);
+    }
     const response = await api.get('page', requestParams);
     return response.json;
   } catch (e) {

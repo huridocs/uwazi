@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData, useParams, useRevalidator } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
@@ -26,8 +26,8 @@ type TablePage = Page & { rowId: string };
 
 const pagesListLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params }) =>
-    (await pagesAPI.get(params.lang || 'en', headers)).map(page => ({ ...page, rowId: page._id }));
+  async () =>
+    (await pagesAPI.get(headers)).map(page => ({ ...page, rowId: page._id }));
 
 const deletionNotification: (hasErrors: boolean) => notificationAtomType = hasErrors => ({
   type: !hasErrors ? 'success' : 'error',
@@ -45,7 +45,6 @@ const PagesList = () => {
   const [showModal, setShowModal] = useState(false);
   const pages = useLoaderData() as TablePage[];
   const revalidator = useRevalidator();
-  const params = useParams();
   const setNotifications = useSetAtom(notificationAtom);
 
   const deleteSelected = async () => {
@@ -112,7 +111,7 @@ const PagesList = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedPages.length ? 'bg-primary-50' : ''}>
           {selectedPages.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={confirmDeletion}
@@ -128,7 +127,7 @@ const PagesList = () => {
           {selectedPages.length === 0 && (
             <div className="flex justify-between w-full">
               <div className="flex gap-2">
-                <Link to={`/${params.lang || 'en'}/settings/pages/page`}>
+                <Link to="/settings/pages/page">
                   <Button styling="solid" color="primary" type="button">
                     <Translate>Add page</Translate>
                   </Button>
