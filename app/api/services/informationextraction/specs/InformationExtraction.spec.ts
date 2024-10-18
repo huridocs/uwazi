@@ -759,12 +759,12 @@ describe('InformationExtraction', () => {
           status: 'processing',
           state: {
             labeled: true,
+            match: null,
             withValue: true,
             withSuggestion: true,
-            match: false,
             hasContext: true,
             processing: true,
-            obsolete: false,
+            obsolete: true,
             error: false,
           },
         })
@@ -1011,9 +1011,9 @@ describe('InformationExtraction', () => {
           error: 'Issue calculation suggestion',
           state: {
             labeled: true,
+            match: null,
             withValue: true,
             withSuggestion: false,
-            match: false,
             hasContext: false,
             processing: false,
             obsolete: false,
