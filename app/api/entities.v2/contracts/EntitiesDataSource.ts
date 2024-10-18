@@ -6,6 +6,7 @@ type MarkAsChangedData = { property: string } | { properties: string[] };
 export type MarkAsChangedItems = MarkAsChangedCriteria & MarkAsChangedData;
 
 export interface EntitiesDataSource {
+  updateEntities_OnlyUpdateAndReindex(entity: Entity): Promise<void>;
   updateEntity(entity: Entity): Promise<void>;
   updateObsoleteMetadataValues(
     id: Entity['_id'],

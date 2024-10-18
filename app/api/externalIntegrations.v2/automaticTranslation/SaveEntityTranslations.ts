@@ -48,7 +48,7 @@ export class SaveEntityTranslations {
       }
       if (translation?.success && property) {
         const textTranslated = `${SaveEntityTranslations.AITranslatedText} ${translation.text}`;
-        await this.entitiesDS.updateEntity(entity.changePropertyValue(property, textTranslated));
+        await this.entitiesDS.updateEntity(entity.setPropertyValue(property, textTranslated));
 
         this.logger.info(
           `[AT] - Property saved on DB - ${JSON.stringify({ entityId: entity._id, language: entity.language, [property.name]: translation.text })}`

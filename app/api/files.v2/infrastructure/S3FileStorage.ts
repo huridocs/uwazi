@@ -7,6 +7,7 @@ import { Attachment } from '../model/Attachment';
 import { UwaziFile } from '../model/UwaziFile';
 import { URLAttachment } from '../model/URLAttachment';
 import { CustomUpload } from '../model/CustomUpload';
+import { StoredFile } from '../model/StoredFile';
 
 export class S3FileStorage implements FileStorage {
   private s3Client: S3Client;
@@ -31,7 +32,7 @@ export class S3FileStorage implements FileStorage {
     return path.join(this.tenant.uploadedDocuments, file.filename);
   }
 
-  async list(): Promise<string[]> {
+  async list() {
     const objects: _Object[] = [];
     const requestNext = async (token?: string) => {
       const response = await this.s3Client.send(
@@ -52,6 +53,6 @@ export class S3FileStorage implements FileStorage {
       continuationToken = await requestNext(continuationToken);
     }
 
-    return objects.map(c => c.Key!);
+    return objects.map(c => new StoredFile(c.Key!, c.ETag!));
   }
 }
