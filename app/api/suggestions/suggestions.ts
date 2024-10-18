@@ -226,7 +226,13 @@ const Suggestions = {
             nonLabeled: {
               $sum: {
                 $cond: [
-                  { $and: [{ $ne: ['$state.labeled', undefined] }, { $not: '$state.labeled' }] },
+                  {
+                    $and: [
+                      { $ne: ['$state.labeled', undefined] },
+                      { $ne: ['$state.labeled', null] },
+                      { $not: '$state.labeled' },
+                    ],
+                  },
                   1,
                   0,
                 ],
@@ -236,7 +242,13 @@ const Suggestions = {
             mismatch: {
               $sum: {
                 $cond: [
-                  { $and: [{ $ne: ['$state.match', undefined] }, { $not: '$state.match' }] },
+                  {
+                    $and: [
+                      { $ne: ['$state.match', undefined] },
+                      { $ne: ['$state.match', null] },
+                      { $not: '$state.match' },
+                    ],
+                  },
                   1,
                   0,
                 ],
