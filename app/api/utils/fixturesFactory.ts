@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { ObjectId } from 'mongodb';
 
-import db from 'api/utils/testing_db';
+import { testingDB } from 'api/utils/testing_db';
 import { EntitySchema } from 'shared/types/entityType';
 import { FileType } from 'shared/types/fileType';
 import { UserRole } from 'shared/types/userSchema';
@@ -24,11 +24,15 @@ import { getV2FixturesFactoryElements } from 'api/common.v2/testing/fixturesFact
 import { IXModelType } from 'shared/types/IXModelType';
 import { PermissionSchema } from 'shared/types/permissionType';
 
+type PartialSuggestion = Partial<Omit<IXSuggestionType, 'state'>> & {
+  state?: Partial<IXSuggestionType['state']>;
+};
+
 function getIdMapper() {
   const map = new Map<string, ObjectId>();
 
   return function setAndGet(key: string) {
-    if (!map.has(key)) map.set(key, db.id() as ObjectId);
+    if (!map.has(key)) map.set(key, testingDB.id() as ObjectId);
 
     return map.get(key)!;
   };
@@ -162,12 +166,18 @@ function getFixturesFactory() {
       },
     }),
 
+    document: (entity: string, props: Partial<WithId<FileType>> = {}): WithId<FileType> => ({
+      _id: idMapper(`document_for_${entity}`),
+      entity,
+      language: 'en',
+      type: 'document',
+      filename: `${entity}_document.pdf`,
+      originalname: `${entity}_document.pdf`,
+      ...props,
+    }),
+
     attachment(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
       return this.file(id, { ...extra, type: 'attachment' });
-    },
-
-    document(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
-      return this.file(id, { ...extra, type: 'document' });
     },
 
     custom_upload(id: string, extra: Partial<FileType> = {}): WithId<FileType> {
@@ -196,7 +206,7 @@ function getFixturesFactory() {
       originalname: string | undefined = undefined,
       extractedMetadata: ExtractedMetadataSchema[] = []
     ): WithId<FileType> => ({
-      _id: idMapper(`${id}`),
+      _id: idMapper(id),
       entity,
       language,
       type,
@@ -314,7 +324,37 @@ function getFixturesFactory() {
       extractorId: idMapper(extractor),
     }),
 
-    ixSuggestion: (
+    ixSuggestion(props: PartialSuggestion): IXSuggestionType {
+      const { state, ...otherProps } = props;
+
+      return {
+        _id: testingDB.id(),
+        entityId: testingDB.id().toString(),
+        status: 'ready' as const,
+        entityTemplate: testingDB.id().toString(),
+        language: 'en',
+        fileId: testingDB.id().toString(),
+        propertyName: 'propertyName',
+        extractorId: testingDB.id(),
+        error: '',
+        segment: '',
+        suggestedValue: '',
+        date: 1001,
+        state: {
+          withValue: true,
+          withSuggestion: false,
+          hasContext: false,
+          processing: false,
+          obsolete: false,
+          error: false,
+          ...state,
+        },
+        ...otherProps,
+      };
+    },
+
+    // eslint-disable-next-line max-params
+    ixSuggestion_deprecated: (
       suggestionId: string,
       extractor: string,
       entity: string,
@@ -336,13 +376,11 @@ function getFixturesFactory() {
       suggestedValue: '',
       date: 1,
       state: {
-        labeled: false,
         withValue: true,
         withSuggestion: false,
-        match: false,
         hasContext: false,
-        obsolete: false,
         processing: false,
+        obsolete: false,
         error: false,
       },
       ...otherProps,

@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import db from 'api/utils/testing_db';
 
 import {
@@ -6,6 +7,7 @@ import {
   IXSuggestionType,
   IXSuggestionsFilter,
 } from 'shared/types/suggestionType';
+import { ObjectId } from 'mongodb';
 import { Suggestions } from '../suggestions';
 import {
   factory,
@@ -20,7 +22,6 @@ import {
   selectAcceptanceFixtureBase,
   relationshipAcceptanceFixtureBase,
 } from './fixtures';
-import { ObjectId } from 'mongodb';
 
 const getSuggestions = async (filter: IXSuggestionsFilter, size = 5) =>
   Suggestions.get(filter, { page: { size, number: 1 } });

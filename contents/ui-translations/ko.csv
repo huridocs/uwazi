@@ -14,8 +14,6 @@ Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
-Accuracy,Accuracy
-Accuracy (labeled data),Accuracy (labeled data)
 Action,활동
 Activate,Activate
 Activated,Activated
@@ -958,7 +956,6 @@ Welcome to Uwazi,Uwazi 에 오신 것을 환영합니다.
 will be updated with the same value.,동일 값으로 업데이트됩니다.
 with,with
 With great power comes great responsibility!,큰 일에는 큰 책임이 따르는 법!
-With suggestion,With suggestion
 x less,덜 보기
 x more,더 보기
 Year,연도
