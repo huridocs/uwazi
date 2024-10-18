@@ -24,7 +24,7 @@ import { ClientPropertySchema, ClientTemplateSchema } from 'app/istore';
 import { notificationAtom } from 'app/V2/atoms';
 import { socket } from 'app/socket';
 import { SuggestionsTitle } from './components/SuggestionsTitle';
-import { FiltersSidepanel } from './components/FiltersSidepanel.old';
+import { FiltersSidepanel } from './components/FiltersSidepanel';
 import { suggestionsTableColumnsBuilder } from './components/TableElements';
 import { PDFSidepanel } from './components/PDFSidepanel';
 import {
@@ -112,6 +112,7 @@ const IXSuggestions = () => {
   const [sidepanelSuggestion, setSidepanelSuggestion] = useState<TableSuggestion>();
   const [selected, setSelected] = useState<TableSuggestion[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [aggregations, setAggregations] = useState<any>(aggregation);
   const { revalidate } = useRevalidator();
   const setNotifications = useSetAtom(notificationAtom);
   const [status, setStatus] = useState<{
@@ -138,6 +139,10 @@ const IXSuggestions = () => {
       socket.off('ix_model_status');
     };
   }, [extractor._id, revalidate]);
+
+  useEffect(() => {
+    setAggregations(aggregation);
+  }, [aggregation]);
 
   useEffect(() => {
     if (searchParams.has('sort') && !sorting.length) {
@@ -187,6 +192,8 @@ const IXSuggestions = () => {
       });
 
       await suggestionsAPI.accept(preparedSuggestions);
+      const newAggregations = await suggestionsAPI.aggregation(extractor._id);
+      setAggregations(newAggregations);
       setCurrentSuggestions(current => updateSuggestions(current, acceptedSuggestions));
       setNotifications({
         type: 'success',
@@ -272,7 +279,7 @@ const IXSuggestions = () => {
                 <PaginationState
                   page={Number(searchParams.get('page') || 1)}
                   size={SUGGESTIONS_PER_PAGE}
-                  total={aggregation.total || totalPages * SUGGESTIONS_PER_PAGE}
+                  total={aggregations.total || totalPages * SUGGESTIONS_PER_PAGE}
                   currentLength={currentSuggestions.length}
                 />
                 <div>
@@ -353,7 +360,7 @@ const IXSuggestions = () => {
       <FiltersSidepanel
         showSidepanel={sidepanel === 'filters'}
         setShowSidepanel={closeSidepanel}
-        aggregation={aggregation}
+        aggregation={aggregations}
       />
 
       <PDFSidepanel
@@ -380,10 +387,7 @@ const IXSuggestionsLoader =
     let activeFilters = 0;
     if (searchParams.has('filter')) {
       filter.customFilter = JSON.parse(searchParams.get('filter')!);
-      activeFilters = [
-        ...Object.values(filter.customFilter.labeled),
-        ...Object.values(filter.customFilter.nonLabeled),
-      ].filter(Boolean).length;
+      activeFilters = Object.values(filter.customFilter).filter(Boolean).length;
     }
     const sortingOption = searchParams.has('sort') ? searchParams.get('sort') : undefined;
 
