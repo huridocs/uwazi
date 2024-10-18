@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
-import { useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';
 import { TranslateForm, t } from 'app/I18N';
@@ -27,13 +27,14 @@ import 'flowbite';
 const App = ({ customParams }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmOptions, setConfirmOptions] = useState({});
-  const setSettings = useSetAtom(settingsAtom);
+  const [settings, setSettings] = useAtom(settingsAtom);
 
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
+  const possibleLanguages = settings.languages.map(l => l.key) || [];
   const shouldAddAppClassName =
-    ['/', `/${params.lang}/`].includes(location.pathname) ||
+    ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||
     location.pathname.match(/\/entity\/.*/g);
 
@@ -58,8 +59,8 @@ const App = ({ customParams }) => {
 
   const appClassName = shouldAddAppClassName && sharedId ? `pageId_${sharedId}` : '';
 
-  socket.on('updateSettings', settings => {
-    setSettings(settings);
+  socket.on('updateSettings', _settings => {
+    setSettings(_settings);
   });
 
   return (

@@ -19,17 +19,13 @@ const ActionCell = ({ cell }: CellContext<TablePage, string>) => {
   const isEntityView = cell.row.original.entityView;
 
   return (
-    <div className="flex gap-2 justify-end">
-      <Link
-        to={`/${cell.row.original.language}/${pageUrl}`}
-        target="_blank"
-        aria-disabled={isEntityView}
-      >
+    <div className="flex justify-end gap-2">
+      <Link to={`/${pageUrl}`} target="_blank" aria-disabled={isEntityView}>
         <Button styling="light" disabled={isEntityView}>
           <Translate>View</Translate>
         </Button>
       </Link>
-      <Link to={`/${cell.row.original.language}/settings/pages/page/${cell.getValue()}`}>
+      <Link to={`/settings/pages/page/${cell.getValue()}`}>
         <Button styling="light">
           <Translate>Edit</Translate>
         </Button>
@@ -54,7 +50,7 @@ const UrlCell = ({ cell }: CellContext<TablePage, string>) => {
 };
 
 const List = ({ items }: { items: TablePage[] }) => (
-  <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
+  <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
     {items.map(item => (
       <li key={item._id}>{item.title}</li>
     ))}
