@@ -341,6 +341,7 @@ function getFixturesFactory() {
         suggestedValue: '',
         date: 1001,
         state: {
+          labeled: false,
           withValue: true,
           withSuggestion: false,
           hasContext: false,
@@ -376,6 +377,7 @@ function getFixturesFactory() {
       suggestedValue: '',
       date: 1,
       state: {
+        labeled: false,
         withValue: true,
         withSuggestion: false,
         hasContext: false,
