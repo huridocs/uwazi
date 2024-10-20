@@ -46,15 +46,8 @@ export class RequestEntityTranslation {
 
   async execute(entityInputModel: EntityInputModel | unknown) {
     this.inputValidator.ensure(entityInputModel);
-    const atConfig = await this.ATConfigDS.get();
-    const atTemplateConfig = atConfig.templates.find(
-      t => t.template === entityInputModel.template?.toString()
-    );
-
-    const languageFrom = entityInputModel.language;
-    const languagesTo = atConfig.languages.filter(
-      language => language !== entityInputModel.language
-    );
+    const entity = Entity.fromInputModel(entityInputModel);
+    const { atTemplateConfig, languagesTo, atConfig, languageFrom } = await this.getConfig(entity);
 
     if (
       !atTemplateConfig ||
@@ -64,7 +57,6 @@ export class RequestEntityTranslation {
       return;
     }
 
-    const entity = Entity.fromInputModel(entityInputModel);
     let updatedEntities = (await this.entitiesDS.getByIds([entity.sharedId]).all()).filter(
       e => e.language !== languageFrom
     );
@@ -104,5 +96,16 @@ export class RequestEntityTranslation {
         await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);
       })
     );
+  }
+
+  private async getConfig(entity: Entity) {
+    const atConfig = await this.ATConfigDS.get();
+    const atTemplateConfig = atConfig.templates.find(
+      t => t.template === entity.template?.toString()
+    );
+
+    const languageFrom = entity.language;
+    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
+    return { atTemplateConfig, languagesTo, atConfig, languageFrom };
   }
 }

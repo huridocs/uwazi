@@ -1,8 +1,7 @@
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { AutomaticTranslationFactory } from '../../AutomaticTranslationFactory';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 export class ATEntityCreationListener {
   private eventBus: EventsBus;
@@ -24,7 +23,6 @@ export class ATEntityCreationListener {
       ).get();
 
       if (active) {
-        permissionsContext.setCommandContext();
         const entityFrom = event.entities.find(e => e.language === event.targetLanguageKey) || {};
 
         entityFrom._id = entityFrom._id?.toString();
