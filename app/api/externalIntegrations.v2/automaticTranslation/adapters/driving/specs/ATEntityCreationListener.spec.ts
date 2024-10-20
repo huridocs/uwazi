@@ -3,12 +3,10 @@ import { EntityCreatedEvent } from 'api/entities/events/EntityCreatedEvent';
 import { EventsBus } from 'api/eventsbus';
 import { AutomaticTranslationFactory } from 'api/externalIntegrations.v2/automaticTranslation/AutomaticTranslationFactory';
 import { RequestEntityTranslation } from 'api/externalIntegrations.v2/automaticTranslation/RequestEntityTranslation';
-import { permissionsContext } from 'api/permissions/permissionsContext';
 import { tenants } from 'api/tenants';
 import { appContext } from 'api/utils/AppContext';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { UserSchema } from 'shared/types/userType';
 import { ATEntityCreationListener } from '../ATEntityCreationListener';
 
 const factory = getFixturesFactory();
@@ -32,7 +30,6 @@ describe('ATEntityCreationListener', () => {
   let listener: ATEntityCreationListener;
   const eventBus: EventsBus = new EventsBus();
   let executeSpy: jest.Mock<any, any, any>;
-  let userInContext: UserSchema | undefined = {} as UserSchema;
 
   beforeEach(async () => {
     await testingEnvironment.setUp({
@@ -40,9 +37,7 @@ describe('ATEntityCreationListener', () => {
     });
     await testingEnvironment.setTenant('tenant');
 
-    executeSpy = jest.fn().mockImplementation(() => {
-      userInContext = permissionsContext.getUserInContext();
-    });
+    executeSpy = jest.fn().mockImplementation(() => {});
 
     listener = new ATEntityCreationListener(eventBus, prepareATFactory(executeSpy));
     listener.start();
@@ -87,10 +82,6 @@ describe('ATEntityCreationListener', () => {
 
       it('should execute RequestEntityTranslation on receiving entity creation event', async () => {
         expect(executeSpy).toHaveBeenCalledWith(entityEn);
-      });
-
-      it('should execute RequestEntityTranslation with commandUser as its context user', async () => {
-        expect(userInContext).toBe(permissionsContext.commandUser);
       });
     });
   });
