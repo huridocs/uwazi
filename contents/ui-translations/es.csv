@@ -301,6 +301,7 @@ Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
+Entity title,Entity title
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
@@ -371,6 +372,8 @@ https://yourdomain,https://tudominio
 hubs,nodos
 Hybrid,Híbrido
 Icon,Icono
+ID,ID
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
@@ -430,6 +433,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Idioma reseteado exitósamente
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Idioma eliminado exitósamente
+Language:,Language:
 Languages,Idiomas
 Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
@@ -577,9 +581,11 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraphs,Paragraphs
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -648,6 +654,7 @@ Query,Consulta
 Quick labeling for,Etiquetado rápido para
 RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
+Read Documentation,Read Documentation
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
 Reference,Reference
@@ -941,6 +948,7 @@ Verifying...,Verificando
 View,Ver
 view,Ver
 View entities,Ver entidades
+View entity,View entity
 View in library,Ver en la colección
 View less,Ver menos
 View more,Ver más

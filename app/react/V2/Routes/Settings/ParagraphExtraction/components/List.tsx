@@ -1,8 +1,8 @@
 import React from 'react';
 import { Translate } from 'app/I18N';
-import { TableParagraphExtractor } from '../types';
+import { PXTable } from '../types';
 
-const List = ({ items }: { items: TableParagraphExtractor[] }) => (
+const List = ({ items }: { items: PXTable[] }) => (
   <ul className="flex flex-wrap gap-8 max-w-md list-disc">
     {items.map(item => (
       <li key={item._id}>

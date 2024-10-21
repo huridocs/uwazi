@@ -3,27 +3,22 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
-import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { ClientTemplateSchema } from 'app/istore';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
-import { extractorsTableColumns } from './components/TableElements';
-import { TableParagraphExtractor, ParagraphExtractorApiResponse } from './types';
+import { Template } from 'app/apiResponseTypes';
+import { useSetAtom, useAtomValue } from 'jotai';
+import { notificationAtom, templatesAtom } from 'V2/atoms';
+import { tableColumns } from './components/PXTableElements';
+import { PXTable, ParagraphExtractorApiResponse } from './types';
 import { List } from './components/List';
 import { ExtractorModal } from './components/ExtractorModal';
-
-const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) => {
-  const foundTemplate = templates.find(template => template._id === targetId);
-  return foundTemplate?.name || targetId;
-};
+import { getTemplateName } from './utils/getTemplateName';
 
 const formatExtractors = (
   extractors: ParagraphExtractorApiResponse[],
-  templates: ClientTemplateSchema[]
-): TableParagraphExtractor[] =>
+  templates: Template[]
+): PXTable[] =>
   extractors.map(extractor => {
     const targetTemplateName = getTemplateName(templates, extractor.templateTo);
     const originTemplateNames = (extractor.templatesFrom || []).map(templateFrom =>
@@ -39,14 +34,14 @@ const formatExtractors = (
   });
 
 const ParagraphExtractorDashboard = () => {
-  const { extractors = [], templates } = useLoaderData() as {
+  const { extractors = [] } = useLoaderData() as {
     extractors: ParagraphExtractorApiResponse[];
-    templates: ClientTemplateSchema[];
   };
 
+  const templates = useAtomValue(templatesAtom);
   const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
-  const [selected, setSelected] = useState<TableParagraphExtractor[]>([]);
+  const [selected, setSelected] = useState<PXTable[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
   const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
@@ -94,11 +89,10 @@ const ParagraphExtractorDashboard = () => {
     >
       <SettingsContent>
         <SettingsContent.Header title="Paragraph extraction" />
-
         <SettingsContent.Body>
           <Table
             data={paragraphExtractorData}
-            columns={extractorsTableColumns}
+            columns={tableColumns}
             header={
               <Translate className="text-base font-semibold text-left text-gray-900 bg-white">
                 Extractors
@@ -108,8 +102,7 @@ const ParagraphExtractorDashboard = () => {
             onChange={({ selectedRows }) => {
               setSelected(() => paragraphExtractorData.filter(ex => ex.rowId in selectedRows));
             }}
-            // what default sorting to use?
-            defaultSorting={[{ id: 'status', desc: false }]}
+            defaultSorting={[{ id: '_id', desc: false }]}
           />
         </SettingsContent.Body>
 
@@ -168,9 +161,8 @@ const ParagraphExtractorDashboard = () => {
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const extractors = await extractorsAPI.get();
-    const templates = await templatesAPI.get(headers);
-    return { extractors, templates };
+    const extractors = await extractorsAPI.get(headers);
+    return { extractors };
   };
 
 export { ParagraphExtractorDashboard, ParagraphExtractorLoader };

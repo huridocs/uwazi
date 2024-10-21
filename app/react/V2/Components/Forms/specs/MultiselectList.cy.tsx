@@ -224,7 +224,6 @@ describe('MultiselectList.cy.tsx', () => {
     });
   });
 
-  // add blank state test
   describe('blank state property', () => {
     it('should show blank state property if there is no items passed to the component', () => {
       cy.viewport(450, 650);

@@ -305,6 +305,7 @@ Entity,Entity
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity title,Entity title
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
@@ -375,6 +376,8 @@ https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
 Icon,Icon
+ID,ID
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
 Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
@@ -434,6 +437,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language:,Language:
 Languages,Languages
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -581,9 +585,11 @@ Others,Others
 out of,out of
 Page,Page
 Pages,Pages
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraphs,Paragraphs
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -652,6 +658,7 @@ Query,Query
 Quick labeling for,Quick labeling for
 RAW,RAW
 Re-uploaded document,Re-uploaded document
+Read Documentation,Read Documentation
 Receiving email,Receiving email
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Reference,Reference
@@ -946,6 +953,7 @@ Verifying...,Verifying...
 View,View
 view,view
 View entities,View entities
+View entity,View entity
 View in library,View in library
 View less,View less
 View more,View more
