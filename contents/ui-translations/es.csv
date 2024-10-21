@@ -113,7 +113,6 @@ Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus pla
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
 Cards,Tarjetas
 Cards view,Vista de tarjetas
-Cases,Cases
 Change password,Cambiar la contraseña
 Change Password,Change Password
 Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
@@ -302,7 +301,7 @@ Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
@@ -373,6 +372,7 @@ https://yourdomain,https://tudominio
 hubs,nodos
 Hybrid,Híbrido
 Icon,Icono
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
@@ -581,11 +581,10 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,Contraseña

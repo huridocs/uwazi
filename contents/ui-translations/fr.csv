@@ -112,7 +112,6 @@ Captcha,Captcha
 Captcha bypass,Contournement du captcha
 Cards,Cartes
 Cards view,Vue en cartes
-Cases,Cases
 Change password,Changer le mot de passe
 Change Password,Change Password
 Change will take effect after saving the template,Le changement prendra effet après l'enregistrement du modèle
@@ -303,7 +302,7 @@ Entity,Entité
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,Types d'entités
 Entity updated,Entity updated
 Error,Erreur
@@ -374,6 +373,7 @@ https://yourdomain,https://votredomaine
 hubs,hubs
 Hybrid,Hybride
 Icon,Icône
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si c'est une URL externe, utilisez une URL complète. Par exemple, http://www.uwazi.io."
 "If you want to continue, please type","Si vous voulez continuer, veuillez taper"
@@ -582,11 +582,10 @@ Others,Others
 out of,hors de
 Page,Page
 Pages,Pages
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,Mot de passe

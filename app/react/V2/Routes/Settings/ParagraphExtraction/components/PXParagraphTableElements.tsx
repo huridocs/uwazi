@@ -13,7 +13,7 @@ const TableHeaderContainer = ({ children }: { children: React.ReactNode }) => (
 );
 const TemplateHeader = () => (
   <TableHeaderContainer>
-    <Translate>Paragraph #</Translate>
+    <Translate>Paragraph </Translate>#
   </TableHeaderContainer>
 );
 const EntityHeader = () => (

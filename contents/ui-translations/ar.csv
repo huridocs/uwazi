@@ -112,7 +112,6 @@ Captcha,حروف التحقق
 Captcha bypass,تخطى كلمة التحقق (Captcha)
 Cards,بطاقات
 Cards view,معاينة البطاقات
-Cases,Cases
 Change password,تغيير كلمة المرور
 Change Password,Change Password
 Change will take effect after saving the template,سينفذ التغيير بعد حفظ القالب
@@ -303,7 +302,7 @@ Entity,كيان
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,أنواع الكيانات
 Entity updated,Entity updated
 Error,خطأ
@@ -374,6 +373,7 @@ https://yourdomain,https://yourdomain
 hubs,محاور
 Hybrid,هجين
 Icon,أيقونة
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
@@ -582,11 +582,10 @@ Others,Others
 out of,خارج
 Page,صفحة
 Pages,الصفحات
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,كلمه المرور

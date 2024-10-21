@@ -115,7 +115,6 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,Fişler
 Cards view,Fiş görünümü
-Cases,Cases
 Change password,Parola değiştir
 Change Password,Change Password
 Change will take effect after saving the template,Değişiklik şablonu kaydettikten sonra yürürlüğe girecek
@@ -304,7 +303,7 @@ Entity,Varlık
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,Varlık türü
 Entity updated,Entity updated
 Error,Hata
@@ -375,6 +374,7 @@ https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
 Icon,Simge
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Harici bir URL ise, tam olarak oluşturulmuş bir URL kullanın: http://www.uwazi.io."
 "If you want to continue, please type","Devam etmek istiyorsanız, lütfen yazın"
@@ -583,11 +583,10 @@ Others,Others
 out of,dışında
 Page,Sayfa
 Pages,Sayfalar
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,Parola

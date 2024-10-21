@@ -115,7 +115,6 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,카드
 Cards view,카드 뷰
-Cases,Cases
 Change password,비밀번호 변경
 Change Password,Change Password
 Change will take effect after saving the template,템플릿 저장 후 변경 사항이 적용됩니다.
@@ -304,7 +303,7 @@ Entity,엔티티
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
@@ -375,6 +374,7 @@ https://yourdomain,전체경로: https://yourdomain
 hubs,허브
 Hybrid,Hybrid
 Icon,아이콘
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",외부 URL 인 경우 전체 경로 (http://www. 부터 시작하는 전체 URL) 를 넣으십시오.
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
@@ -583,11 +583,10 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,비밀번호

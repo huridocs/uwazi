@@ -115,7 +115,6 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,Cards
 Cards view,Cards view
-Cases,Cases
 Change password,Change password
 Change Password,Change Password
 Change will take effect after saving the template,Change will take effect after saving the template
@@ -306,7 +305,7 @@ Entity,Entity
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
-Entity title - #,Entity title - #
+Entity title,Entity title
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
@@ -377,6 +376,7 @@ https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
 Icon,Icon
+ID,ID
 ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
@@ -585,11 +585,10 @@ Others,Others
 out of,out of
 Page,Page
 Pages,Pages
-Paragraph #,Paragraph #
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
-Paragraph:,Paragraph:
 Paragraphs,Paragraphs
 Paragraphs,Paragraphs
 Password,Password

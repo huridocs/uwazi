@@ -50,9 +50,7 @@ const PXParagraphDashboard = () => {
   };
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphApiResponse>(
-    undefined
-  );
+  const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphTable>(undefined);
   const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
 
   const pxParagraphData = useMemo(
@@ -114,7 +112,9 @@ const PXParagraphDashboard = () => {
           setSidePanel(false);
         }}
         title={
-          <span className="text-base font-semibold text-gray-500 leading-6 uppercase">Entity</span>
+          <span className="text-base font-semibold text-gray-500 leading-6 uppercase">
+            <Translate>Entity</Translate>
+          </span>
         }
       >
         <Sidepanel.Body>
