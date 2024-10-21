@@ -25,9 +25,12 @@ let dummyData = [
 
 // const apiEndpoint = 'paragraph-extractor';
 
-const get = async () =>
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const get = async (headers?: IncomingHttpHeaders) =>
   new Promise(resolve => {
-    setTimeout(() => resolve(dummyData));
+    setTimeout(() => {
+      resolve(dummyData);
+    });
   });
 
 const getById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
