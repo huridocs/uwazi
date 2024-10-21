@@ -11,8 +11,9 @@ import { Translate } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'V2/atoms';
 import { extractorsTableColumns } from './components/TableElements';
-import { TableExtractor, Extractor } from './types';
+import { TableParagraphExtractor, ParagraphExtractorApiResponse } from './types';
 import { List } from './components/List';
+import { ExtractorModal } from './components/ExtractorModal';
 
 const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) => {
   const foundTemplate = templates.find(template => template._id === targetId);
@@ -20,27 +21,34 @@ const getTemplateName = (templates: ClientTemplateSchema[], targetId: string) =>
 };
 
 const formatExtractors = (
-  extractors: Extractor[],
+  extractors: ParagraphExtractorApiResponse[],
   templates: ClientTemplateSchema[]
-): TableExtractor[] =>
-  (extractors || []).map(extractor => {
+): TableParagraphExtractor[] =>
+  extractors.map(extractor => {
     const targetTemplateName = getTemplateName(templates, extractor.templateTo);
-    const originTemplateNames = extractor.templateFrom.map(templateFrom =>
+    const originTemplateNames = (extractor.templatesFrom || []).map(templateFrom =>
       getTemplateName(templates, templateFrom)
     );
 
-    return { ...extractor, rowId: extractor._id, originTemplateNames, targetTemplateName };
+    return {
+      ...extractor,
+      rowId: extractor._id || '',
+      originTemplateNames,
+      targetTemplateName,
+    };
   });
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [], templates } = useLoaderData() as {
-    extractors: TableExtractor[];
+    extractors: ParagraphExtractorApiResponse[];
     templates: ClientTemplateSchema[];
   };
-  const [isSaving, setIsSaving] = useState(false);
+
   const revalidator = useRevalidator();
-  const [selected, setSelected] = useState<TableExtractor[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [selected, setSelected] = useState<TableParagraphExtractor[]>([]);
   const [confirmModal, setConfirmModal] = useState(false);
+  const [extractorModal, setExtractorModal] = useState(false);
   const setNotifications = useSetAtom(notificationAtom);
 
   const deleteExtractors = async () => {
@@ -64,7 +72,15 @@ const ParagraphExtractorDashboard = () => {
       setIsSaving(false);
     }
   };
-  // const handleSave = async (extractor: IXExtractorInfo) => {};
+
+  const handleSave = async () => {
+    revalidator.revalidate();
+    setNotifications({
+      type: 'success',
+      text: <Translate>Paragraph Extractor added</Translate>,
+    });
+  };
+
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),
     [extractors, templates]
@@ -73,14 +89,13 @@ const ParagraphExtractorDashboard = () => {
   return (
     <div
       className="tw-content"
-      data-testid="settings-ix"
+      data-testid="settings-paragraph-extractor"
       style={{ width: '100%', overflowY: 'auto' }}
     >
       <SettingsContent>
         <SettingsContent.Header title="Paragraph extraction" />
 
         <SettingsContent.Body>
-          {/* should create a component for empty data? */}
           <Table
             data={paragraphExtractorData}
             columns={extractorsTableColumns}
@@ -100,7 +115,7 @@ const ParagraphExtractorDashboard = () => {
 
         <SettingsContent.Footer className="flex gap-2">
           {selected?.length === 1 ? (
-            <Button type="button" onClick={() => {}} disabled={isSaving}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Edit Extractor</Translate>
             </Button>
           ) : undefined}
@@ -115,7 +130,7 @@ const ParagraphExtractorDashboard = () => {
               <Translate>Delete</Translate>
             </Button>
           ) : (
-            <Button type="button" onClick={() => {}} disabled={isSaving}>
+            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
               <Translate>Create Extractor</Translate>
             </Button>
           )}
@@ -134,6 +149,16 @@ const ParagraphExtractorDashboard = () => {
           }}
           onCancelClick={() => setConfirmModal(false)}
           dangerStyle
+        />
+      )}
+
+      {extractorModal && (
+        <ExtractorModal
+          setShowModal={setExtractorModal}
+          onClose={() => setExtractorModal(false)}
+          onAccept={handleSave}
+          templates={templates}
+          extractor={selected?.length ? selected[0] : undefined}
         />
       )}
     </div>
