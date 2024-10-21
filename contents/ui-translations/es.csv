@@ -655,6 +655,7 @@ Query,Consulta
 Quick labeling for,Etiquetado rápido para
 RAW,SIN FORMATO
 Re-uploaded document,Documento recargado
+Read Documentation,Read Documentation
 Receiving email,Correo electrónico de recepción
 Receiving email description,"Si tienes un formulario de contacto, esta es la dirección de correo electrónico que recibirá los envíos del formulario."
 Reference,Reference
@@ -815,6 +816,7 @@ Template with a long number of entities,"La plantilla ha cambiado y las entidade
 Template(s),Template(s)
 Templates,Plantillas
 Templates meeting,Templates meeting
+Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
