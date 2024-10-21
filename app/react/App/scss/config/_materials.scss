@@ -1,4 +1,6 @@
-$box-shadow: 0px 5px 10px -5px transparentize($c-grey-dark, .9);
+@use "sass:color";
+
+$box-shadow: 0px 5px 10px -5px color.adjust($c-grey-dark, $alpha: -.9);
 $box-shadow-danger: 0px 5px 10px -5px $c-danger;
 
 $header-height: 50px;
