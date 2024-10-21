@@ -75,27 +75,62 @@ describe('index (search)', () => {
             title: 'test1',
             documents: [
               {
+                _id: 'fileId_1',
                 filename: 'file1',
                 fullText: { 1: 'this is an english test', 2: 'this is page2' },
               },
+              {
+                _id: 'fileId_3',
+                filename: 'file3',
+                fullText: { 1: 'test two', 2: 'this is page2' },
+              },
             ],
           },
+        ];
+
+        const expectedOutput = [
           {
-            _id: 'id2',
-            title: 'test2',
-            documents: [{ filename: 'file2', fullText: { 1: 'text3[[1]]', 2: 'text4[[2]]' } }],
+            id: 'fileId_3_id1',
+            fullText_other: 'test two\fthis is page2',
+            filename: 'file3',
+            language: 'other',
+            fullText: {
+              name: 'fullText',
+              parent: 'id1',
+            },
+          },
+          {
+            id: 'fileId_1_id1',
+            fullText_other: 'this is an english test\fthis is page2',
+            filename: 'file1',
+            language: 'other',
+            fullText: {
+              name: 'fullText',
+              parent: 'id1',
+            },
+          },
+          {
+            documents: [
+              {
+                _id: 'fileId_1',
+                filename: 'file1',
+              },
+              {
+                _id: 'fileId_3',
+                filename: 'file3',
+              },
+            ],
+            title: 'test1',
+            fullText: 'entity',
           },
         ];
 
         await search.bulkIndex(toIndexDocs);
         await elastic.indices.refresh();
 
-        expect(await elasticTesting.getIndexedEntities('')).toEqual([
-          expect.objectContaining({ title: 'test1' }),
-          expect.objectContaining({ fullText: { name: 'fullText', parent: 'id1' } }),
-          expect.objectContaining({ title: 'test2' }),
-          expect.objectContaining({ fullText: { name: 'fullText', parent: 'id2' } }),
-        ]);
+        const output = await elasticTesting.getIndexedEntities('');
+
+        expectedOutput.forEach(item => expect(output).toContainEqual(item));
       });
     });
 

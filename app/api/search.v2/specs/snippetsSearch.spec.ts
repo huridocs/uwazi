@@ -39,11 +39,12 @@ describe('searchSnippets', () => {
     const expected = [
       expect.objectContaining({
         snippets: {
-          count: 2,
+          count: 3,
           metadata: [],
           fullText: [
             { page: 2, text: matches, filename: 'entity1SharedId.pdf' },
             { page: 4, text: matches, filename: 'entity1SharedId.pdf' },
+            { page: 2, text: matches, filename: 'entity1SharedId.pdf' },
           ],
         },
       }),
@@ -120,11 +121,12 @@ describe('searchSnippets', () => {
         _id: entity1enId.toString(),
         title: 'entity with a document',
         snippets: {
-          count: 2,
+          count: 3,
           metadata: [],
           fullText: [
             { page: 2, text: expect.stringContaining('<b>searched</b>') },
             { page: 4, text: expect.stringContaining('<b>searched</b>') },
+            { page: 2, text: expect.stringContaining('<b>searched</b>') },
           ],
         },
       },
