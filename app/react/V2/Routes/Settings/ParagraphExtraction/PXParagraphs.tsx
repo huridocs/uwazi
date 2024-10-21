@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
-import * as pxEntitiesApi from 'app/V2/api/paragraphExtractor/entities';
 import * as pxParagraphApi from 'app/V2/api/paragraphExtractor/paragraphs';
 import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
 import { Table, Button } from 'V2/Components/UI';
 import { Sidepanel } from 'V2/Components/UI/Sidepanel';
-import { Translate } from 'app/I18N';
+import { Translate, I18NApi } from 'app/I18N';
+import { LanguageSchema } from 'shared/types/commonTypes';
+import { RequestParams } from 'app/utils/RequestParams';
 import { tableBuilder } from './components/PXParagraphTableElements';
 import { TableTitle } from './components/TableTitle';
 import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
@@ -17,15 +18,20 @@ import { ViewParagraph } from './components/ViewParagraph';
 
 const formatParagraphData = (
   paragraphs: PXParagraphApiResponse[],
-  templates: ClientTemplateSchema[]
+  templates: ClientTemplateSchema[],
+  languagePool: LanguageSchema[]
 ): PXParagraphTable[] =>
   paragraphs.map(paragraph => {
     const templateName = getTemplateName(templates, paragraph.templateId);
-
+    const languages = paragraph.languages.map(language => {
+      const { label = language } = languagePool.find(pool => pool.key === language) || {};
+      return label;
+    });
     return {
       ...paragraph,
       rowId: paragraph._id || '',
       templateName,
+      languages,
     };
   });
 
@@ -34,26 +40,35 @@ const PXParagraphDashboard = () => {
     paragraphs = [],
     templates,
     extractorId,
-    entity,
+    languages = [],
   } = useLoaderData() as {
     extractorId: string;
     entity: PXEntityApiResponse;
     paragraphs: PXParagraphApiResponse[];
     templates: ClientTemplateSchema[];
+    languages: LanguageSchema[];
   };
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
-  const [paragraphOnView, setParagraphOnView] = useState<PXParagraphApiResponse | undefined>(
+  const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphApiResponse>(
     undefined
   );
+  const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
+
   const pxParagraphData = useMemo(
-    () => formatParagraphData(paragraphs, templates),
-    [paragraphs, templates]
+    () => formatParagraphData(paragraphs, templates, languages),
+    [paragraphs, templates, languages]
   );
+
+  useEffect(() => {
+    if (pxParagraphData.length) {
+      setParagraphInfo(pxParagraphData[0]);
+    }
+  }, [pxParagraphData]);
 
   const openSidePanel = (id: string): void => {
     setSidePanel(true);
-    const targetParagraph = paragraphs.find(paragraph => paragraph._id === id);
+    const targetParagraph = pxParagraphData.find(paragraph => paragraph._id === id);
     setParagraphOnView(targetParagraph);
   };
 
@@ -77,7 +92,17 @@ const PXParagraphDashboard = () => {
           <Table
             data={pxParagraphData}
             columns={tableBuilder({ onViewAction: openSidePanel })}
-            header={<TableTitle items={['test', 'one', 'two']} />}
+            header={
+              paragraphInfo && (
+                <TableTitle
+                  items={[
+                    paragraphInfo.templateName,
+                    paragraphInfo.document,
+                    paragraphInfo.languages.join(', '),
+                  ]}
+                />
+              )
+            }
             defaultSorting={[{ id: '_id', desc: false }]}
           />
         </SettingsContent.Body>
@@ -109,13 +134,13 @@ const PXParagraphDashboard = () => {
 
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
-  async ({ params: { extractorId = '', entityId = '' } }) => {
-    const [paragraphs = [], templates, entity = {}] = await Promise.all([
+  async ({ params: { extractorId = '' } }) => {
+    const [paragraphs = [], templates, languages] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(extractorId),
       templatesAPI.get(headers),
-      pxEntitiesApi.getById(entityId),
+      I18NApi.getLanguages(new RequestParams({}, headers)),
     ]);
-    return { paragraphs, templates, extractorId, entity };
+    return { paragraphs, templates, extractorId, languages };
   };
 
 export { PXParagraphDashboard, PXParagraphLoader };

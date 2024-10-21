@@ -4,7 +4,7 @@ import { PXParagraphApiResponse } from '../types';
 import { DisplayPills } from './DisplayPills';
 
 const ViewParagraph = ({ paragraphData }: { paragraphData: PXParagraphApiResponse }) => (
-  <div className="mb-6 flex flex-col gap-3 font-inter">
+  <div className="mb-6 flex flex-col gap-3">
     <div className="px-4 py-3 rounded-md bg-gray-50 text-sm font-bold flex justify-between">
       <div>
         Entity title - #{paragraphData._id} - {paragraphData.languages.join(', ')}

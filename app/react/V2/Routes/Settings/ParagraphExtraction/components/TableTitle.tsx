@@ -1,6 +1,5 @@
 import React from 'react';
 import { Icon } from 'app/UI';
-import { Pill } from 'app/V2/Components/UI';
 import { Translate } from 'app/I18N';
 import { DisplayPills } from './DisplayPills';
 

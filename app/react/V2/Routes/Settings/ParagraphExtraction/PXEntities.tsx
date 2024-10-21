@@ -6,35 +6,48 @@ import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { ClientTemplateSchema } from 'app/istore';
 import { Table } from 'V2/Components/UI';
+import { RequestParams } from 'app/utils/RequestParams';
+import { I18NApi } from 'app/I18N';
+import { LanguageSchema } from 'shared/types/commonTypes';
 import { tableColumns } from './components/PXEntityTableElements';
 import { TableTitle } from './components/TableTitle';
 import { PXEntityTable, PXEntityApiResponse } from './types';
 import { getTemplateName } from './utils/getTemplateName';
 
-const formatExtractors = (
+const formatEntityData = (
   entities: PXEntityApiResponse[],
-  templates: ClientTemplateSchema[]
+  templates: ClientTemplateSchema[],
+  languagePool: LanguageSchema[]
 ): PXEntityTable[] =>
-  entities.map(extractor => {
-    const templateName = getTemplateName(templates, extractor.templateId);
-
+  entities.map(entity => {
+    const templateName = getTemplateName(templates, entity.templateId);
+    const languages = entity.languages.map(language => {
+      const { label = language } = languagePool.find(pool => pool.key === language) || {};
+      return label;
+    });
     return {
-      ...extractor,
-      rowId: extractor._id || '',
+      ...entity,
+      rowId: entity._id || '',
       templateName,
+      languages,
     };
   });
 
 const PXEntityDashboard = () => {
   const [templatesFrom, setTemplatesFrom] = useState<string[]>([]);
-  const { entities = [], templates } = useLoaderData() as {
+  const {
+    entities = [],
+    templates,
+    languages = [],
+  } = useLoaderData() as {
     entities: PXEntityApiResponse[];
     templates: ClientTemplateSchema[];
+    languages: LanguageSchema[];
   };
 
   const pxEntitiesData = useMemo(
-    () => formatExtractors(entities, templates),
-    [entities, templates]
+    () => formatEntityData(entities, templates, languages),
+    [entities, templates, languages]
   );
 
   useEffect(() => {
@@ -69,11 +82,12 @@ const PXEntityDashboard = () => {
 const PXEntityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId = '' } }) => {
-    const [entities, templates] = await Promise.all([
+    const [entities, templates, languages] = await Promise.all([
       pxEntitiesApi.getByParagraphExtractorId(extractorId),
       templatesAPI.get(headers),
+      I18NApi.getLanguages(new RequestParams({}, headers)),
     ]);
-    return { entities, templates };
+    return { entities, templates, languages };
   };
 
 export { PXEntityDashboard, PXEntityLoader };
