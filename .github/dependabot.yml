@@ -64,6 +64,7 @@ updates:
           - flowbite-typography
           - Mongoose
           - react-datepicker
+          - "@headlessui/react"
       dev-major-dependencies:
         applies-to: version-updates
         update-types: [major]

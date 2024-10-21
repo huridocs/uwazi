@@ -40,6 +40,7 @@ export const FilterTocGeneration = ({ onChange, aggregations }: FilterTocGenerat
           prefix="generatedToc"
           label={t('System', 'Automatic Table of Contents')}
           onChange={onChange}
+          //@ts-ignore problem with js prop definition
           options={options(aggregations)}
           showBoolSwitch={false}
         />

@@ -96,7 +96,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@googlemaps/js-api-loader": "^1.16.8",
-    "@headlessui/react": "1.7.19",
+    "@headlessui/react": "1.7.17",
     "@heroicons/react": "^2.1.5",
     "@hookform/error-message": "^2.0.1",
     "@huridocs/react-text-selection-handler": "^0.3.0",
