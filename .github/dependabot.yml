@@ -21,24 +21,6 @@ updates:
       - dependencies
     rebase-strategy: disabled
     groups:
-      dev-minor-dependencies:
-        applies-to: version-updates
-        update-types: [minor, patch]
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@babel*"
-          - "@storybook*"
-          - "@sentry*"
-          - "@dnd-kit"
-          - socket.io
-          - recharts
-          - eslint
-          - flowbite
-          - flowbite-react
-          - flowbite-datepicker
-          - flowbite-typography
-          - Mongoose
       babel:
         applies-to: version-updates
         patterns:
@@ -63,3 +45,29 @@ updates:
         applies-to: version-updates
         patterns:
           - eslint*
+      dev-minor-dependencies:
+        applies-to: version-updates
+        update-types: [minor, patch]
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@babel*"
+          - "@storybook*"
+          - "@sentry*"
+          - "@dnd-kit"
+          - socket.io
+          - recharts
+          - eslint
+          - flowbite
+          - flowbite-react
+          - flowbite-datepicker
+          - flowbite-typography
+          - Mongoose
+          - react-datepicker
+      dev-major-dependencies:
+        applies-to: version-updates
+        update-types: [major]
+        patterns:
+          - "*"
+        exclude-patterns:
+          - cookie
