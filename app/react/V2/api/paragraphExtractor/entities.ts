@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import api from 'app/utils/api';
+// import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import { PXEntityApiResponse } from 'app/V2/Routes/Settings/ParagraphExtraction/types';
 
@@ -46,14 +46,14 @@ const dummyData = [
   },
 ] as PXEntityApiResponse[];
 
-const apiEndpoint = 'paragraph-extractor-entities';
+// const apiEndpoint = 'paragraph-extractor-entities';
 
 const getByParagraphExtractorId = async (extractorId: string, headers?: IncomingHttpHeaders) => {
   try {
     const requestParams = new RequestParams({ id: extractorId }, headers);
     // const { json: response } = await api.get(apiEndpoint, requestParams);
     const id = requestParams.data?.id;
-    return dummyData;
+    return dummyData || id;
     // return response;
   } catch (e) {
     return e;

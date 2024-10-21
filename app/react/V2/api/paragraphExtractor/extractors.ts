@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import api from 'app/utils/api';
+// import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
 import {
   ParagraphExtractorApiResponse,
@@ -23,7 +23,7 @@ let dummyData = [
   },
 ] as ParagraphExtractorApiResponse[];
 
-const apiEndpoint = 'paragraph-extractor';
+// const apiEndpoint = 'paragraph-extractor';
 
 const get = async () =>
   new Promise(resolve => {
