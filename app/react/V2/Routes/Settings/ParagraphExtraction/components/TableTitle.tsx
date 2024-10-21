@@ -10,9 +10,7 @@ const TableTitle = ({ items = [], icon = 'user' }: { items: string[]; icon?: str
     </div>
     <div>
       <Translate className="text-base font-semibold text-gray-900">Paragraphs</Translate>{' '}
-      <span className="italic text-base text-gray-900">
-        <Translate>for</Translate>
-      </span>
+      <Translate className="italic text-base text-gray-900">for</Translate>
     </div>
     <DisplayPills items={items} />
   </div>
