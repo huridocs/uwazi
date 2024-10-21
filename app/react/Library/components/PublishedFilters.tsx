@@ -58,6 +58,7 @@ const PublishedFilters = ({ onChange, aggregations }: PublishedFiltersProps) => 
           model=".publishedStatus"
           prefix="publishedStatus"
           onChange={onChange}
+          //@ts-ignore problem with js prop definition
           options={options}
           showBoolSwitch={false}
         />
