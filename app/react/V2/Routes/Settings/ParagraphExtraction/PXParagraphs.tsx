@@ -2,11 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import * as pxParagraphApi from 'app/V2/api/paragraphExtractor/paragraphs';
-import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { ClientTemplateSchema } from 'app/istore';
 import { Table, Button } from 'V2/Components/UI';
 import { Sidepanel } from 'V2/Components/UI/Sidepanel';
+import { Template } from 'app/apiResponseTypes';
 import { Translate, I18NApi } from 'app/I18N';
 import { LanguageSchema } from 'shared/types/commonTypes';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -15,10 +14,12 @@ import { TableTitle } from './components/TableTitle';
 import { PXParagraphTable, PXParagraphApiResponse, PXEntityApiResponse } from './types';
 import { getTemplateName } from './utils/getTemplateName';
 import { ViewParagraph } from './components/ViewParagraph';
+import { templatesAtom } from 'V2/atoms';
+import { useAtomValue } from 'jotai';
 
 const formatParagraphData = (
   paragraphs: PXParagraphApiResponse[],
-  templates: ClientTemplateSchema[],
+  templates: Template[],
   languagePool: LanguageSchema[]
 ): PXParagraphTable[] =>
   paragraphs.map(paragraph => {
@@ -38,20 +39,19 @@ const formatParagraphData = (
 const PXParagraphDashboard = () => {
   const {
     paragraphs = [],
-    templates,
     extractorId,
     languages = [],
   } = useLoaderData() as {
     extractorId: string;
     entity: PXEntityApiResponse;
     paragraphs: PXParagraphApiResponse[];
-    templates: ClientTemplateSchema[];
     languages: LanguageSchema[];
   };
 
   const [sidePanel, setSidePanel] = useState<boolean>(false);
   const [paragraphOnView, setParagraphOnView] = useState<undefined | PXParagraphTable>(undefined);
   const [paragraphInfo, setParagraphInfo] = useState<undefined | PXParagraphTable>(undefined);
+  const templates = useAtomValue(templatesAtom);
 
   const pxParagraphData = useMemo(
     () => formatParagraphData(paragraphs, templates, languages),
@@ -135,12 +135,11 @@ const PXParagraphDashboard = () => {
 const PXParagraphLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId = '' } }) => {
-    const [paragraphs = [], templates, languages] = await Promise.all([
+    const [paragraphs = [], languages] = await Promise.all([
       pxParagraphApi.getByParagraphExtractorId(extractorId),
-      templatesAPI.get(headers),
       I18NApi.getLanguages(new RequestParams({}, headers)),
     ]);
-    return { paragraphs, templates, extractorId, languages };
+    return { paragraphs, extractorId, languages };
   };
 
 export { PXParagraphDashboard, PXParagraphLoader };

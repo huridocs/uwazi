@@ -3,23 +3,21 @@ import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
 import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
-import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { ClientTemplateSchema } from 'app/istore';
 import { Button, Table, ConfirmationModal } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { useSetAtom } from 'jotai';
-import { notificationAtom } from 'V2/atoms';
+import { Template } from 'app/apiResponseTypes';
+import { useSetAtom, useAtomValue } from 'jotai';
+import { notificationAtom, templatesAtom } from 'V2/atoms';
 import { tableColumns } from './components/PXTableElements';
 import { PXTable, ParagraphExtractorApiResponse } from './types';
 import { List } from './components/List';
 import { ExtractorModal } from './components/ExtractorModal';
-
 import { getTemplateName } from './utils/getTemplateName';
 
 const formatExtractors = (
   extractors: ParagraphExtractorApiResponse[],
-  templates: ClientTemplateSchema[]
+  templates: Template[]
 ): PXTable[] =>
   extractors.map(extractor => {
     const targetTemplateName = getTemplateName(templates, extractor.templateTo);
@@ -36,11 +34,11 @@ const formatExtractors = (
   });
 
 const ParagraphExtractorDashboard = () => {
-  const { extractors = [], templates } = useLoaderData() as {
+  const { extractors = [] } = useLoaderData() as {
     extractors: ParagraphExtractorApiResponse[];
-    templates: ClientTemplateSchema[];
   };
 
+  const templates = useAtomValue(templatesAtom);
   const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
@@ -163,12 +161,8 @@ const ParagraphExtractorDashboard = () => {
 const ParagraphExtractorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async () => {
-    const [extractors, templates] = await Promise.all([
-      extractorsAPI.get(),
-      templatesAPI.get(headers),
-    ]);
-
-    return { extractors, templates };
+    const extractors = await extractorsAPI.get(headers);
+    return { extractors };
   };
 
 export { ParagraphExtractorDashboard, ParagraphExtractorLoader };

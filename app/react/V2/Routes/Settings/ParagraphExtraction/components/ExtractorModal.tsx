@@ -5,7 +5,7 @@ import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { ClientTemplateSchema } from 'app/istore';
+import { Template } from 'app/apiResponseTypes';
 import { ParagraphExtractorApiPayload } from '../types';
 import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
 import { Link } from 'react-router-dom';
@@ -14,11 +14,11 @@ interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   onClose: () => void;
   onAccept: () => void;
-  templates: ClientTemplateSchema[];
+  templates: Template[];
   extractor?: ParagraphExtractorApiPayload;
 }
 
-const formatOptions = (templates: ClientTemplateSchema[]) =>
+const formatOptions = (templates: Template[]) =>
   templates.map(template => {
     const option = {
       label: template.name,
@@ -30,8 +30,8 @@ const formatOptions = (templates: ClientTemplateSchema[]) =>
     return option;
   });
 
-const templatesWithParagraph = (template: ClientTemplateSchema) =>
-  template.properties.some(({ name }) => name === 'rich_text');
+const templatesWithParagraph = (template: Template) =>
+  template.properties?.some(({ name }) => name === 'rich_text');
 
 const isActiveStepClassName = (isActive: boolean) => (isActive ? 'bg-indigo-700' : 'bg-gray-200');
 
@@ -127,11 +127,9 @@ const ExtractorModal = ({
           </div>
           {templateToOptions.length !== 0 && step === 1 && (
             <span className="mt-5 text-gray-500 font-light text-sm">
-              <Translate>Templates meeting</Translate>{' '}
+              <Translate>Templates meeting required criteria</Translate>.{' '}
               <Link to={linkPXTemplateCriteria} target="_blank">
-                <span className="underline">
-                  <Translate>required criteria</Translate>
-                </span>
+                <Translate className="underline">Read Documentation</Translate>
               </Link>
             </span>
           )}

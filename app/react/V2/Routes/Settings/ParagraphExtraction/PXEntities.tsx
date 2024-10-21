@@ -2,13 +2,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import * as pxEntitiesApi from 'app/V2/api/paragraphExtractor/entities';
-import * as templatesAPI from 'V2/api/templates';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
-import { ClientTemplateSchema } from 'app/istore';
 import { Table } from 'V2/Components/UI';
 import { RequestParams } from 'app/utils/RequestParams';
+import { Template } from 'app/apiResponseTypes';
 import { I18NApi } from 'app/I18N';
 import { LanguageSchema } from 'shared/types/commonTypes';
+import { templatesAtom } from 'V2/atoms';
+import { useAtomValue } from 'jotai';
 import { tableColumns } from './components/PXEntityTableElements';
 import { TableTitle } from './components/TableTitle';
 import { PXEntityTable, PXEntityApiResponse } from './types';
@@ -16,7 +17,7 @@ import { getTemplateName } from './utils/getTemplateName';
 
 const formatEntityData = (
   entities: PXEntityApiResponse[],
-  templates: ClientTemplateSchema[],
+  templates: Template[],
   languagePool: LanguageSchema[]
 ): PXEntityTable[] =>
   entities.map(entity => {
@@ -35,16 +36,11 @@ const formatEntityData = (
 
 const PXEntityDashboard = () => {
   const [templatesFrom, setTemplatesFrom] = useState<string[]>([]);
-  const {
-    entities = [],
-    templates,
-    languages = [],
-  } = useLoaderData() as {
+  const { entities = [], languages = [] } = useLoaderData() as {
     entities: PXEntityApiResponse[];
-    templates: ClientTemplateSchema[];
     languages: LanguageSchema[];
   };
-
+  const templates = useAtomValue(templatesAtom);
   const pxEntitiesData = useMemo(
     () => formatEntityData(entities, templates, languages),
     [entities, templates, languages]
@@ -82,12 +78,11 @@ const PXEntityDashboard = () => {
 const PXEntityLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params: { extractorId = '' } }) => {
-    const [entities, templates, languages] = await Promise.all([
+    const [entities, languages] = await Promise.all([
       pxEntitiesApi.getByParagraphExtractorId(extractorId),
-      templatesAPI.get(headers),
       I18NApi.getLanguages(new RequestParams({}, headers)),
     ]);
-    return { entities, templates, languages };
+    return { entities, languages };
   };
 
 export { PXEntityDashboard, PXEntityLoader };
