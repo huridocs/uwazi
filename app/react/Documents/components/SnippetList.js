@@ -9,7 +9,7 @@ import SafeHTML from 'app/utils/SafeHTML';
 import getFieldLabel from 'app/Templates/utils/getFieldLabel';
 import Immutable from 'immutable';
 
-const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm }) => (
+const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searchTerm = '' }) => (
   <>
     <li className="snippet-list-item-header metadata-snippet-header">
       <I18NLink to={`${documentViewUrl}?searchTerm=${searchTerm}`}>
@@ -26,10 +26,6 @@ const MetadataFieldSnippets = ({ fieldSnippets, documentViewUrl, template, searc
   </>
 );
 
-MetadataFieldSnippets.defaultProps = {
-  searchTerm: '',
-};
-
 MetadataFieldSnippets.propTypes = {
   fieldSnippets: PropTypes.instanceOf(Immutable.Map).isRequired,
   documentViewUrl: PropTypes.string.isRequired,
@@ -37,10 +33,6 @@ MetadataFieldSnippets.propTypes = {
   template: PropTypes.shape({
     get: PropTypes.func,
   }),
-};
-
-MetadataFieldSnippets.defaultProps = {
-  template: undefined,
 };
 
 const DocumentContentSnippets = ({
@@ -130,10 +122,6 @@ SnippetList.propTypes = {
   template: PropTypes.shape({
     get: PropTypes.func,
   }),
-};
-
-SnippetList.defaultProps = {
-  template: undefined,
 };
 
 const mapStateToProps = (state, ownProps) => ({

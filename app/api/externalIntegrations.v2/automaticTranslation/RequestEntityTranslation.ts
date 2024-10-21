@@ -4,7 +4,6 @@ import { EntityInputModel } from 'api/entities.v2/types/EntityInputDataType';
 import { Logger } from 'api/log.v2/contracts/Logger';
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 import { ATConfigDataSource } from './contracts/ATConfigDataSource';
 import { Validator } from './infrastructure/Validator';
 
@@ -47,15 +46,8 @@ export class RequestEntityTranslation {
 
   async execute(entityInputModel: EntityInputModel | unknown) {
     this.inputValidator.ensure(entityInputModel);
-    const atConfig = await this.ATConfigDS.get();
-    const atTemplateConfig = atConfig.templates.find(
-      t => t.template === entityInputModel.template?.toString()
-    );
-
-    const languageFrom = entityInputModel.language;
-    const languagesTo = atConfig.languages.filter(
-      language => language !== entityInputModel.language
-    );
+    const entity = Entity.fromInputModel(entityInputModel);
+    const { atTemplateConfig, languagesTo, atConfig, languageFrom } = await this.getConfig(entity);
 
     if (
       !atTemplateConfig ||
@@ -65,26 +57,20 @@ export class RequestEntityTranslation {
       return;
     }
 
-    const entity = Entity.fromInputModel(entityInputModel);
+    let updatedEntities = (await this.entitiesDS.getByIds([entity.sharedId]).all()).filter(
+      e => e.language !== languageFrom
+    );
 
     await atTemplateConfig?.properties.reduce(async (prev, property) => {
       await prev;
       const propertyValue = entity.getPropertyValue(property);
 
       if (propertyValue) {
-        const entities = this.entitiesDS.getByIds([entity.sharedId]);
         const pendingText = `${RequestEntityTranslation.AITranslationPendingText} ${propertyValue}`;
 
-        await entities.forEach(async fetchedEntity => {
-          if (languagesTo.includes(fetchedEntity.language as LanguageISO6391)) {
-            await this.entitiesDS.updateEntity(
-              fetchedEntity.changePropertyValue(property, pendingText)
-            );
-            this.logger.info(
-              `[AT] - Pending translation saved on DB - ${property.name}: ${pendingText}`
-            );
-          }
-        });
+        updatedEntities = updatedEntities.map(fetchedEntity =>
+          fetchedEntity.setPropertyValue(property, pendingText)
+        );
 
         await this.taskManager.startTask({
           key: [getTenant().name, entity.sharedId, property.id],
@@ -103,5 +89,23 @@ export class RequestEntityTranslation {
         );
       }
     }, Promise.resolve());
+
+    await Promise.all(
+      updatedEntities.map(async updatedEntity => {
+        this.logger.info(`[AT] - Pending translation saved on DB for entity - ${entity._id}`);
+        await this.entitiesDS.updateEntities_OnlyUpdateAndReindex(updatedEntity);
+      })
+    );
+  }
+
+  private async getConfig(entity: Entity) {
+    const atConfig = await this.ATConfigDS.get();
+    const atTemplateConfig = atConfig.templates.find(
+      t => t.template === entity.template?.toString()
+    );
+
+    const languageFrom = entity.language;
+    const languagesTo = atConfig.languages.filter(language => language !== entity.language);
+    return { atTemplateConfig, languagesTo, atConfig, languageFrom };
   }
 }

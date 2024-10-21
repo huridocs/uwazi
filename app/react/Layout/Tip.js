@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Icon } from 'UI';
 
-const Tip = ({ children, icon, position }) => {
+const Tip = ({ children, icon = 'question-circle', position = '' }) => {
   const className = position ? `property-description-${position}` : 'property-description';
   return (
     <span className="property-help">
@@ -10,11 +10,6 @@ const Tip = ({ children, icon, position }) => {
       <div className={className}>{children}</div>
     </span>
   );
-};
-
-Tip.defaultProps = {
-  icon: 'question-circle',
-  position: '',
 };
 
 Tip.propTypes = {

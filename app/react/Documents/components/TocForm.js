@@ -18,7 +18,7 @@ export class TocForm extends Component {
     );
     return (
       <button type="button" onClick={onClick} className={`toc-indent-${direction} btn btn-default`}>
-        <Icon icon={direction === 'more' ? 'arrow-right' : 'arrow-left'} directionAware />
+        <Icon icon={direction === 'more' ? 'arrow-right' : 'arrow-left'} />
       </button>
     );
   }

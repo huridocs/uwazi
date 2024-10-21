@@ -10,18 +10,14 @@ type PropTypes = {
 };
 
 const FeatureToggleSemanticSearch: React.FC<PropTypes> = ({
-  semanticSearchActivated,
+  semanticSearchActivated = false,
   children,
 }: PropTypes) =>
   semanticSearchActivated ? (
     <NeedAuthorization roles={['admin']}>{children}</NeedAuthorization>
   ) : null;
 
-FeatureToggleSemanticSearch.defaultProps = {
-  semanticSearchActivated: false,
-};
-
-export function mapStateToProps({ settings }: any) {
+function mapStateToProps({ settings }: any) {
   const features = settings.collection.toJS().features || {};
   return {
     semanticSearchActivated: features.semanticSearch,
@@ -29,4 +25,4 @@ export function mapStateToProps({ settings }: any) {
 }
 
 const container = connect(mapStateToProps)(FeatureToggleSemanticSearch);
-export { container as FeatureToggleSemanticSearch };
+export { container as FeatureToggleSemanticSearch, mapStateToProps };

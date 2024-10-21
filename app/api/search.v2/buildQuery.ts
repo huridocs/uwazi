@@ -53,7 +53,9 @@ const fullTextSearch = (
             type: 'fullText',
             score_mode: 'max',
             inner_hits: {
-              _source: false,
+              _source: {
+                excludes: ['fullText*'],
+              },
               ...snippetsHighlight(query, [{ 'fullText_*': {} }]),
             },
             query: {

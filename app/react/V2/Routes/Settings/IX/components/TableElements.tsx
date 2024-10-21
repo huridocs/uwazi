@@ -77,6 +77,44 @@ const PropertyCell = ({ cell }: CellContext<TableExtractor, TableExtractor['prop
   );
 };
 
+const RenderParent = ({ suggestion }: { suggestion: MultiValueSuggestion }) => {
+  const suggestions = suggestion.subRows;
+  const ammountOfSuggestions = suggestions.length;
+  const amountOfValues = suggestions.filter(s => s.currentValue).length;
+  const amountOfMatches = suggestions.filter(s => s.currentValue === s.suggestedValue).length;
+  const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
+
+  return (
+    <div className="flex gap-1 text-xs font-bold text-gray-500">
+      <span>
+        {amountOfValues} <Translate>values</Translate>
+      </span>
+      <span>|</span>
+      <span>
+        {ammountOfSuggestions} <Translate>suggestions</Translate>
+      </span>
+      {amountOfMatches > 0 && (
+        <>
+          <span>|</span>
+          <span>
+            <span className="text-green-500">{amountOfMatches}</span>{' '}
+            <Translate>matching</Translate>
+          </span>
+        </>
+      )}
+      {amountOfMissmatches > 0 && (
+        <>
+          <span>|</span>
+          <span>
+            <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
+            <Translate>mismatching</Translate>
+          </span>
+        </>
+      )}
+    </div>
+  );
+};
+
 const CurrentValueCell = ({
   cell,
   allProperties,
@@ -87,42 +125,28 @@ const CurrentValueCell = ({
   >;
   allProperties: ClientPropertySchema[];
 }) => {
-  if ('subRows' in cell.row.original) {
-    const suggestions = cell.row.original.subRows;
-    const ammountOfSuggestions = suggestions.length;
-    const amountOfValues = suggestions.filter(suggestion => suggestion.currentValue).length;
-    const amountOfMatches = suggestions.filter(s => s.currentValue === s.suggestedValue).length;
-    const amountOfMissmatches = ammountOfSuggestions - amountOfMatches;
-
+  if (cell.row.original.state.obsolete) {
     return (
       <div className="flex gap-1 text-xs font-bold text-gray-500">
         <span>
-          {amountOfValues} <Translate>values</Translate>
+          <Translate>Obsolete</Translate>
         </span>
-        <span>|</span>
-        <span>
-          {ammountOfSuggestions} <Translate>suggestions</Translate>
-        </span>
-        {amountOfMatches > 0 && (
-          <>
-            <span>|</span>
-            <span>
-              <span className="text-green-500">{amountOfMatches}</span>{' '}
-              <Translate>matching</Translate>
-            </span>
-          </>
-        )}
-        {amountOfMissmatches > 0 && (
-          <>
-            <span>|</span>
-            <span>
-              <span className="text-orange-500">{amountOfMissmatches}</span>{' '}
-              <Translate>mismatching</Translate>
-            </span>
-          </>
-        )}
       </div>
     );
+  }
+
+  if (cell.row.original.state.error) {
+    return (
+      <div className="flex gap-1 text-xs font-bold text-gray-500">
+        <span>
+          <Translate className="text-error-500">Error</Translate>
+        </span>
+      </div>
+    );
+  }
+
+  if ('subRows' in cell.row.original) {
+    return <RenderParent suggestion={cell.row.original as MultiValueSuggestion} />;
   }
   return (
     <SuggestedValue
