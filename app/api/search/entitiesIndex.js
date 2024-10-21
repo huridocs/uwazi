@@ -1,8 +1,6 @@
-import { detectLanguage } from 'shared/detectLanguage';
 import { language as languages } from 'shared/languagesList';
 import entities from 'api/entities';
 import { legacyLogger } from 'api/log';
-import { entityDefaultDocument } from 'shared/entityDefaultDocument';
 import PromisePool from '@supercharge/promise-pool';
 import { ElasticEntityMapper } from 'api/entities.v2/database/ElasticEntityMapper';
 import { MongoTemplatesDataSource } from 'api/templates.v2/database/MongoTemplatesDataSource';
@@ -42,54 +40,57 @@ const handleErrors = (itemsWithErrors, { logError = false } = {}) => {
   throw error;
 };
 
-function setFullTextSettings(defaultDocument, id, body, doc) {
-  const fullText = Object.values(defaultDocument.fullText).join('\f');
-
-  let language;
-  if (!defaultDocument.language) {
-    language = detectLanguage(fullText);
-  }
-  if (defaultDocument.language) {
-    language = languages(defaultDocument.language);
-  }
-  const fullTextObject = {
-    [`fullText_${language}`]: fullText,
-    filename: defaultDocument.filename,
-    fullText: { name: 'fullText', parent: id },
+const createFullTextObject = (document, entityId) => {
+  const text = Object.values(document.fullText).join('\f');
+  const language = languages(document.language);
+  return {
+    id: `${document._id}_${entityId}`,
+    [`fullText_${language}`]: text,
+    filename: document.filename,
+    originalname: document.originalname,
+    language,
+    fullText: { name: 'fullText', parent: entityId },
   };
-  body.push(fullTextObject);
-  delete doc.fullText;
-}
+};
 
-const bulkIndex = async (docs, _action = 'index') => {
+const createFullTextIndexRequest = (method, body) => {
+  const header = {
+    [method]: {
+      _id: `${body.id}_fullText`,
+      routing: body.fullText.parent,
+    },
+  };
+
+  return [header, body];
+};
+
+const bulkIndex = async (_entities, _action = 'index') => {
   const body = [];
   // eslint-disable-next-line max-statements
-  docs.forEach(doc => {
-    let docBody = { documents: [], ...doc };
-    docBody.fullText = 'entity';
-    const id = doc._id.toString();
-    ['_id', '_rev'].forEach(e => delete docBody[e]);
+  _entities.forEach(_entity => {
+    let entity = { documents: [], ..._entity };
+    entity.fullText = 'entity';
+    const entityId = _entity._id.toString();
+    ['_id', '_rev'].forEach(e => delete entity[e]);
     const action = {};
-    action[_action] = { _id: id };
+    action[_action] = { _id: entityId };
     if (_action === 'update') {
-      docBody = { doc: docBody };
+      entity = { doc: entity };
     }
 
-    const defaultDocument = { ...(entityDefaultDocument(doc.documents, doc.language, 'en') || {}) };
+    const documentsRequests = [];
 
-    docBody.documents.forEach(document => {
+    entity.documents.forEach(document => {
+      if (!document.fullText) return;
+
+      body.push(...createFullTextIndexRequest(_action, createFullTextObject(document, entityId)));
+
       delete document.fullText;
     });
 
     body.push(action);
-    body.push(docBody);
-
-    if (defaultDocument.fullText) {
-      body.push({
-        [_action]: { _id: `${id}_fullText`, routing: id },
-      });
-      setFullTextSettings(defaultDocument, id, body, doc);
-    }
+    body.push(entity);
+    body.push(...documentsRequests);
   });
 
   const results = await elastic.bulk({ body });

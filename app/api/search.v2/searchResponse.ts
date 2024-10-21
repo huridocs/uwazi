@@ -11,24 +11,55 @@ function getSnippetsForNonFullText(hit: ElasticHit<EntitySchema>) {
     : [];
 }
 
+type ElasticFullTextFile = {
+  filename: string;
+  language: string;
+  originalname: string;
+  text: string;
+};
+
+type Props = ElasticFullTextFile;
+
+type SnippetDto = ReturnType<typeof createSnippetDto>;
+
+const createSnippetDto = (props: Props) => {
+  const PAGE_NUMBER_REGEX = /\[{2}(\d+)]{2}/g;
+
+  const sanitizeText = (text: string) => text.replace(PAGE_NUMBER_REGEX, '');
+
+  const createPage = (text: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [_, page] = PAGE_NUMBER_REGEX.exec(text) || ['', '0'];
+    return Number(page);
+  };
+
+  return {
+    text: sanitizeText(props.text),
+    filename: props.filename,
+    originalname: props.originalname,
+    page: createPage(props.text),
+  };
+};
+
 function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
-  const fullTextSnippets: { text: string; page: number; filename: string }[] = [];
+  const snippetsDtos: SnippetDto[] = [];
 
-  if (hit.inner_hits && hit.inner_hits.fullText.hits.hits[0]?.highlight) {
-    const { highlight, _source } = hit.inner_hits.fullText.hits.hits[0];
-    const regex = /\[{2}(\d+)]{2}/g;
+  hit.inner_hits?.fullText.hits.hits.forEach(item => {
+    const texts = Object.values<string[]>(item.highlight || {});
 
-    Object.values<string[]>(highlight).forEach(snippets => {
-      snippets.forEach(snippet => {
-        const matches = regex.exec(snippet);
-        fullTextSnippets.push({
-          text: snippet.replace(regex, ''),
-          page: matches ? Number(matches[1]) : 0,
-          filename: _source.filename,
-        });
-      });
-    });
-  }
+    texts.forEach(text =>
+      text.forEach(i =>
+        snippetsDtos.push(
+          createSnippetDto({
+            text: i,
+            filename: item._source.filename,
+            language: item._source.language,
+            originalname: item._source.originalname,
+          })
+        )
+      )
+    );
+  });
 
   const hitsCount = hit.highlight
     ? Object.values(hit.highlight).reduce<number>(
@@ -38,9 +69,9 @@ function extractFullTextSnippets(hit: ElasticHit<EntitySchema>) {
     : 0;
 
   return {
-    count: fullTextSnippets.length + hitsCount,
+    count: snippetsDtos.length + hitsCount,
     metadata: getSnippetsForNonFullText(hit),
-    fullText: fullTextSnippets,
+    fullText: snippetsDtos,
   };
 }
 
