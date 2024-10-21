@@ -16,7 +16,7 @@ describe('peekHeaders()', () => {
     title1, text1, text1_es, text1_en`;
     const { mockedFile, mockedFileStream } = mockFileStream(content);
     const headers = await peekHeaders(mockedFileStream);
-    expect(headers).toEqual(['title', ' textprop', ' textprop__es', ' textprop__en']);
+    expect(headers).toEqual(['title', 'textprop', 'textprop__es', 'textprop__en']);
     mockedFile.mockRestore();
   });
 
@@ -27,10 +27,10 @@ describe('peekHeaders()', () => {
       'title',
       'unrelated_property',
       'select_property__en',
-      ' Select Property__es',
+      'Select Property__es',
       'Multiselect Property__en',
-      ' multiselect_property__es',
-      ' no_new_value_select',
+      'multiselect_property__es',
+      'no_new_value_select',
     ]);
   });
 });
@@ -60,7 +60,7 @@ describe('validateFormat()', () => {
       message: 'Expected 3 columns, but found 2.',
     },
     {
-      content: 'title,textprop\ntitle1',
+      content: 'title,textprop\ntitle1,',
       columns: 1,
       message: 'Expected 1 columns, but found 2.',
     },
