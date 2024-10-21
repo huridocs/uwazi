@@ -11,7 +11,7 @@ const disableButton = (page, pageToDisable) => ({
   rel: page === pageToDisable ? 'nofollow' : undefined,
 });
 
-const Paginator = ({ page, totalPages, onPageChange }) => {
+const Paginator = ({ page = 1, totalPages = 1, onPageChange = () => {} }) => {
   const prevPage = page - 1 || 1;
   const nextPage = page + 1 > totalPages ? totalPages : page + 1;
   return (
@@ -39,12 +39,6 @@ const Paginator = ({ page, totalPages, onPageChange }) => {
       </CurrentLocationLink>
     </div>
   );
-};
-
-Paginator.defaultProps = {
-  page: 1,
-  totalPages: 1,
-  onPageChange: () => {},
 };
 
 Paginator.propTypes = {

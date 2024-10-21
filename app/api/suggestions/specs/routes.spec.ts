@@ -208,36 +208,24 @@ describe('suggestions routes', () => {
             filter: {
               extractorId: factory.id('enemy_extractor').toString(),
               customFilter: {
-                labeled: {
-                  match: false,
-                  mismatch: false,
-                },
-                nonLabeled: {
-                  withSuggestion: false,
-                  noSuggestion: true,
-                  noContext: false,
-                  obsolete: false,
-                  others: false,
-                },
+                labeled: true,
+                nonLabeled: false,
+                match: false,
+                mismatch: false,
+                obsolete: false,
+                error: false,
               },
             },
           })
           .expect(200);
         expect(response.body.suggestions).toEqual([
           expect.objectContaining({
-            entityTitle: 'Catwoman',
-            state: {
-              labeled: false,
-              withValue: false,
-              withSuggestion: false,
-              match: false,
-              hasContext: true,
-              obsolete: false,
-              processing: false,
-              error: false,
-            },
-            suggestedValue: '',
-            currentValue: '',
+            entityTitle: 'The Penguin',
+            language: 'en',
+          }),
+          expect.objectContaining({
+            entityTitle: 'The Penguin',
+            language: 'es',
           }),
         ]);
       });
@@ -427,21 +415,15 @@ describe('aggregation routes', () => {
           extractorId: factory.id('test_extractor').toString(),
         })
         .expect(200);
+
       expect(response.body).toEqual({
-        total: 12,
-        labeled: {
-          _count: 4,
-          match: 2,
-          mismatch: 2,
-        },
-        nonLabeled: {
-          _count: 8,
-          withSuggestion: 6,
-          noSuggestion: 2,
-          noContext: 4,
-          obsolete: 2,
-          others: 2,
-        },
+        total: 14,
+        labeled: 4,
+        nonLabeled: 10,
+        match: 4,
+        mismatch: 4,
+        obsolete: 4,
+        error: 2,
       });
     });
   });

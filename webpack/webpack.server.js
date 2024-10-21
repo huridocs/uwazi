@@ -39,8 +39,6 @@ app.get('/CSS/:file', (req, res) => {
           process.stdout.write('Processing RTL...\r\n');
           data = rtlcss.process(data);
           process.stdout.write('Done!\r\n');
-        } else {
-          process.stdout.write('Using standard CSS.\r\n');
         }
         res.end(data);
       });

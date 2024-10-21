@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { ObjectId } from 'mongodb';
 
 import { files } from 'api/files/files';
@@ -28,14 +29,11 @@ import {
 import { Extractors } from 'api/services/informationextraction/ixextractors';
 import { registerEventListeners } from './eventListeners';
 import {
-  baseQueryFragment,
-  filterFragments,
   getCurrentValueStage,
   getEntityStage,
   getFileStage,
   getLabeledValueStage,
   getMatchStage,
-  groupByAndCount,
 } from './pipelineStages';
 import { postProcessCurrentValues, updateStates } from './updateState';
 import {
@@ -43,6 +41,8 @@ import {
   SuggestionAcceptanceError,
   updateEntitiesWithSuggestion,
 } from './updateEntities';
+
+const DEFAULT_LIMIT = 30;
 
 const updateExtractedMetadata = async (
   suggestions: IXSuggestionType[],
@@ -90,10 +90,12 @@ const buildListQuery = (
   extractorId: ObjectId,
   customFilter: SuggestionCustomFilter | undefined,
   setLanguages: LanguagesListSchema | undefined,
-  offset: number,
-  limit: number,
-  sort?: IXSuggestionsQuery['sort']
+  options: { page?: IXSuggestionsQuery['page']; sort?: IXSuggestionsQuery['sort'] }
 ) => {
+  const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
+  const limit = options.page?.size || DEFAULT_LIMIT;
+  const { sort } = options;
+
   const sortOrder = sort?.order === 'desc' ? -1 : 1;
   const sorting = sort?.property ? { [sort.property]: sortOrder } : { date: 1, state: -1 };
 
@@ -134,63 +136,6 @@ const buildListQuery = (
     },
   ];
   return pipeline;
-};
-
-async function getLabeledCounts(extractorId: ObjectId) {
-  const labeledAggregationQuery = [
-    {
-      $match: {
-        ...baseQueryFragment(extractorId),
-        ...filterFragments.labeled._fragment,
-      },
-    },
-    ...groupByAndCount('$state.match'),
-  ];
-  const labeledAggregation: { _id: boolean; count: number }[] =
-    await IXSuggestionsModel.db.aggregate(labeledAggregationQuery);
-  const matchCount =
-    labeledAggregation.find((aggregation: any) => aggregation._id === true)?.count || 0;
-  const mismatchCount =
-    labeledAggregation.find((aggregation: any) => aggregation._id === false)?.count || 0;
-  const labeledCount = matchCount + mismatchCount;
-  return { labeledCount, matchCount, mismatchCount };
-}
-
-const getNonLabeledCounts = async (_extractorId: ObjectId) => {
-  const extractorId = new ObjectId(_extractorId);
-  const unlabeledMatch = {
-    ...baseQueryFragment(extractorId),
-    ...filterFragments.nonLabeled._fragment,
-  };
-  const nonLabeledCount = await IXSuggestionsModel.count(unlabeledMatch);
-  const noContextCount = await IXSuggestionsModel.count({
-    ...unlabeledMatch,
-    ...filterFragments.nonLabeled.noContext,
-  });
-  const withSuggestionCount = await IXSuggestionsModel.count({
-    ...unlabeledMatch,
-    ...filterFragments.nonLabeled.withSuggestion,
-  });
-  const noSuggestionCount = await IXSuggestionsModel.count({
-    ...unlabeledMatch,
-    ...filterFragments.nonLabeled.noSuggestion,
-  });
-  const obsoleteCount = await IXSuggestionsModel.count({
-    ...unlabeledMatch,
-    ...filterFragments.nonLabeled.obsolete,
-  });
-  const othersCount = await IXSuggestionsModel.count({
-    ...unlabeledMatch,
-    ...filterFragments.nonLabeled.others,
-  });
-  return {
-    nonLabeledCount,
-    noContextCount,
-    withSuggestionCount,
-    noSuggestionCount,
-    obsoleteCount,
-    othersCount,
-  };
 };
 
 const readFilter = (filter: IXSuggestionsFilter) => {
@@ -247,9 +192,6 @@ const Suggestions = {
       sort?: IXSuggestionsQuery['sort'];
     }
   ) => {
-    const offset = options && options.page ? options.page.size * (options.page.number - 1) : 0;
-    const DEFAULT_LIMIT = 30;
-    const limit = options.page?.size || DEFAULT_LIMIT;
     const { languages: setLanguages } = await settings.get();
     const { customFilter, extractorId } = readFilter(filter);
 
@@ -258,44 +200,78 @@ const Suggestions = {
       .then(result => (result?.length ? result[0].count : 0));
 
     let suggestions = await IXSuggestionsModel.db.aggregate(
-      buildListQuery(extractorId, customFilter, setLanguages, offset, limit, options.sort)
+      buildListQuery(extractorId, customFilter, setLanguages, options)
     );
     suggestions = await postProcessSuggestions(suggestions, extractorId);
 
     return {
       suggestions,
-      totalPages: Math.ceil(count / limit),
+      totalPages: Math.ceil(count / (options.page?.size || DEFAULT_LIMIT)),
     };
   },
 
   aggregate: async (_extractorId: ObjectIdSchema): Promise<IXSuggestionAggregation> => {
     const extractorId = new ObjectId(_extractorId);
-    const { labeledCount, matchCount, mismatchCount } = await getLabeledCounts(extractorId);
-    const {
-      nonLabeledCount,
-      noContextCount,
-      withSuggestionCount,
-      noSuggestionCount,
-      obsoleteCount,
-      othersCount,
-    } = await getNonLabeledCounts(extractorId);
-    const totalCount = labeledCount + nonLabeledCount;
-    return {
-      total: totalCount,
-      labeled: {
-        _count: labeledCount,
-        match: matchCount,
-        mismatch: mismatchCount,
-      },
-      nonLabeled: {
-        _count: nonLabeledCount,
-        noContext: noContextCount,
-        withSuggestion: withSuggestionCount,
-        noSuggestion: noSuggestionCount,
-        obsolete: obsoleteCount,
-        others: othersCount,
-      },
+
+    const aggregations: (IXSuggestionAggregation & { _id: ObjectId })[] =
+      await IXSuggestionsModel.db.aggregate([
+        {
+          $match: { extractorId },
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: 1 },
+            labeled: { $sum: { $cond: ['$state.labeled', 1, 0] } },
+            nonLabeled: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      { $ne: ['$state.labeled', undefined] },
+                      { $ne: ['$state.labeled', null] },
+                      { $not: '$state.labeled' },
+                    ],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            match: { $sum: { $cond: ['$state.match', 1, 0] } },
+            mismatch: {
+              $sum: {
+                $cond: [
+                  {
+                    $and: [
+                      { $ne: ['$state.match', undefined] },
+                      { $ne: ['$state.match', null] },
+                      { $not: '$state.match' },
+                    ],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            obsolete: { $sum: { $cond: ['$state.obsolete', 1, 0] } },
+            error: { $sum: { $cond: ['$state.error', 1, 0] } },
+          },
+        },
+      ]);
+
+    const { _id, ...results } = aggregations[0] || {
+      _id: null,
+      total: 0,
+      labeled: 0,
+      nonLabeled: 0,
+      match: 0,
+      mismatch: 0,
+      obsolete: 0,
+      error: 0,
     };
+
+    return results;
   },
 
   updateStates,

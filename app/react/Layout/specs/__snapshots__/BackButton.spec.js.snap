@@ -6,7 +6,6 @@ exports[`Icon should render the back button to the provided url 1`] = `
   to="/some/url"
 >
   <Connect(Icon)
-    directionAware={true}
     icon="arrow-left"
   />
   <span

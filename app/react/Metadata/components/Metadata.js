@@ -215,12 +215,12 @@ const flattenInherittedRelationships = metadata =>
 
 const Metadata = ({
   metadata,
-  compact,
-  showSubset,
-  highlight,
-  groupGeolocations,
+  compact = false,
+  showSubset = undefined,
+  highlight = [],
+  groupGeolocations = false,
   templateId,
-  useV2Player,
+  useV2Player = false,
   attachments,
 }) => {
   const filteredMetadata = metadata.filter(filterProps(showSubset));
@@ -261,14 +261,6 @@ const Metadata = ({
       </dl>
     );
   });
-};
-
-Metadata.defaultProps = {
-  compact: false,
-  showSubset: undefined,
-  highlight: [],
-  groupGeolocations: false,
-  useV2Player: false,
 };
 
 Metadata.propTypes = {
