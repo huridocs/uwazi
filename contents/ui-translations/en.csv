@@ -117,6 +117,7 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,Cards
 Cards view,Cards view
+Cases,Cases
 Change password,Change password
 Change Password,Change Password
 Change will take effect after saving the template,Change will take effect after saving the template
@@ -307,6 +308,7 @@ Entity,Entity
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity title - #,Entity title - #
 Entity types,Entity types
 Entity updated,Entity updated
 Error,Error
@@ -377,6 +379,7 @@ https://yourdomain,https://yourdomain
 hubs,hubs
 Hybrid,Hybrid
 Icon,Icon
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type","If you want to continue, please type"
 Impact of property change warning,"By making this change, any values  from the previous thesaurus already assigned to entities will be lost."
@@ -436,6 +439,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language:,Language:
 Languages,Languages
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -583,9 +587,13 @@ Others,Others
 out of,out of
 Page,Page
 Pages,Pages
+Paragraph #,Paragraph #
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph:,Paragraph:
+Paragraphs,Paragraphs
+Paragraphs,Paragraphs
 Password,Password
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -815,7 +823,6 @@ Template with a long number of entities,"The template has changed and the associ
 Template(s),Template(s)
 Templates,Templates
 Templates meeting,Templates meeting
-Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Text
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
@@ -948,6 +955,7 @@ Verifying...,Verifying...
 View,View
 view,view
 View entities,View entities
+View entity,View entity
 View in library,View in library
 View less,View less
 View more,View more

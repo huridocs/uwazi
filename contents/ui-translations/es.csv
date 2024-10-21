@@ -115,6 +115,7 @@ Captcha bypass,"Al estar activo, puede permitir que los usuarios envíen sus pla
 El formulario aún presentará el captcha a los usuarios finales, pero el endpoint de la API permitirá envíos sin validación de CAPTCHA si se incluye la cabecera “Bypass-Captcha: true"". Esta opción no es segura y puede set aprovechada para inundar su instancia con spam o contenido malicioso."
 Cards,Tarjetas
 Cards view,Vista de tarjetas
+Cases,Cases
 Change password,Cambiar la contraseña
 Change Password,Change Password
 Change will take effect after saving the template,El cambio se realizará después de guardar la plantilla.
@@ -303,6 +304,7 @@ Entity,Entidad
 Entity deleted,Entidad eliminada
 Entity Page,Página entidad
 Entity saved,Entidad grabada
+Entity title - #,Entity title - #
 Entity types,Tipos de entidades
 Entity updated,Entidad actualizada
 Error,Error
@@ -373,6 +375,7 @@ https://yourdomain,https://tudominio
 hubs,nodos
 Hybrid,Híbrido
 Icon,Icono
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","Si utilizas una URL externa, utiliza una dirección completa. Ejemplo: http://www.uwazi.io."
 "If you want to continue, please type","Si quieres continuar, por favor escribe"
 Impact of property change warning,Todas las entidades y documentos que ya tienen esta propiedad asignada perderán su valor actual
@@ -432,6 +435,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Idioma reseteado exitósamente
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Idioma eliminado exitósamente
+Language:,Language:
 Languages,Idiomas
 Languages installed successfully,Idioma instalado exitósamente
 Last updated,Última actualización
@@ -579,9 +583,13 @@ Others,Others
 out of,fuera de
 Page,Página
 Pages,Páginas
+Paragraph #,Paragraph #
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph:,Paragraph:
+Paragraphs,Paragraphs
+Paragraphs,Paragraphs
 Password,Contraseña
 Password + 2fa,Password + 2fa
 Password changed success,Contraseña cambiada exitosamente
@@ -810,7 +818,6 @@ Template with a long number of entities,"La plantilla ha cambiado y las entidade
 Template(s),Template(s)
 Templates,Plantillas
 Templates meeting,Templates meeting
-Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,Texto
 Text references limit warning,Las referencias de texto están temporalmente limitadas a un máximo de 300. Actualmente estamos trabajando en una solución para este problema.
@@ -943,6 +950,7 @@ Verifying...,Verificando
 View,Ver
 view,Ver
 View entities,Ver entidades
+View entity,View entity
 View in library,Ver en la colección
 View less,Ver menos
 View more,Ver más

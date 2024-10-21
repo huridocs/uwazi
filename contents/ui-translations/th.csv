@@ -117,6 +117,7 @@ header ""Bypass-Captcha: true"" is sent along. This option is insecure and can b
 malicious content."
 Cards,บัตร
 Cards view,มุมมองการ์ด
+Cases,Cases
 Change password,เปลี่ยนรหัสผ่าน
 Change Password,Change Password
 Change will take effect after saving the template,การเปลี่ยนแปลงจะมีผลหลังจากบันทึกเทมเพลต
@@ -305,6 +306,7 @@ Entity,รายการ
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity title - #,Entity title - #
 Entity types,ประเภทรายการ
 Entity updated,Entity updated
 Error,ข้อผิดพลาด
@@ -375,6 +377,7 @@ https://yourdomain,https: // yourdomain
 hubs,ฮับ
 Hybrid,Hybrid
 Icon,ไอคอน
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",หากเป็น URL จากภายนอก กรุณาใช้ URL แบบเต็มเช่น http://www.uwazi.io
 "If you want to continue, please type",ถ้าคุณต้องการดำเนินการต่อ กรุณาพิมพ์
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
@@ -434,6 +437,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language:,Language:
 Languages,ภาษา
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -581,9 +585,13 @@ Others,Others
 out of,ออกไปจาก
 Page,หน้า
 Pages,หน้า
+Paragraph #,Paragraph #
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraph:,Paragraph:
+Paragraphs,Paragraphs
+Paragraphs,Paragraphs
 Password,รหัสผ่าน
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -813,7 +821,6 @@ Template with a long number of entities,"The template has changed and the associ
 Template(s),Template(s)
 Templates,แม่แบบ
 Templates meeting,Templates meeting
-Templates meeting required criteria,Templates meeting required criteria
 Templates:,Templates:
 Text,ข้อความ
 Text references limit warning,Text references are temporarily limited to a maximum of 300. We are currently working on a fix for this issue.
@@ -946,6 +953,7 @@ Verifying...,กำลังตรวจสอบ....
 View,ดู
 view,ดู
 View entities,View entities
+View entity,View entity
 View in library,ดูในไลบรารี
 View less,View less
 View more,View more
