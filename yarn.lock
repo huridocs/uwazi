@@ -9347,7 +9347,7 @@ flowbite@2.3.0:
     "@popperjs/core" "^2.9.3"
     mini-svg-data-uri "^1.4.3"
 
-flowbite@^2.0.0, flowbite@^2.3.0:
+flowbite@^2.0.0:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/flowbite/-/flowbite-2.5.2.tgz#4a14b87ad3f2abd8bcd7b0fb52a6b06fd7a74685"
   integrity sha512-kwFD3n8/YW4EG8GlY3Od9IoKND97kitO+/ejISHSqpn3vw2i5K/+ZI8Jm2V+KC4fGdnfi0XZ+TzYqQb4Q1LshA==
