@@ -17,6 +17,9 @@ function labelNotNull(label: string | null): label is string {
 function splitMultiselectLabels(labelString: string): {
   labelInfos: LabelInfo[];
 } {
+  if (!labelString) {
+    return { labelInfos: [] };
+  }
   const labels = labelString
     .split(csvConstants.multiValueSeparator)
     .map(l => l.trim())
