@@ -191,11 +191,13 @@ class OcrManager {
 
   start() {
     this.ocrTaskManager.subscribeToResults();
+
+    return this.stop;
   }
 
-  async stop() {
+  stop = async () => {
     await this.ocrTaskManager?.stop();
-  }
+  };
 
   async addToQueue(file: EnforcedWithId<FileType>) {
     if (!file.filename) {

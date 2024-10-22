@@ -33,7 +33,13 @@ class PDFSegmentation {
 
   start() {
     this.segmentationTaskManager.subscribeToResults();
+
+    return this.stop;
   }
+
+  stop = async () => {
+    await this.segmentationTaskManager.stop();
+  };
 
   segmentOnePdf = async (
     file: { filename: string; _id: ObjectIdSchema },
