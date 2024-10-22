@@ -23,6 +23,7 @@ describe('DistributedLoopLock', () => {
 
   afterEach(async () => {
     await pendingTasks.map(pendingTask => pendingTask());
+    jest.restoreAllMocks();
   });
 
   async function sleepTime(time) {
@@ -161,5 +162,24 @@ describe('DistributedLoopLock', () => {
 
     finishTask();
     await nodeTwo.stop();
+  });
+
+  it('should continue stop process if a task takes too long to stop', async () => {
+    jest.useFakeTimers(); // Use Jest's fake timers
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    const clearTimeoutSpy = jest.spyOn(global, 'clearInterval');
+
+    const sut = new DistributedLoop('my_locked_task', task, { stopTimeout: 500 });
+
+    sut.start();
+    const stopPromise = sut.stop();
+    jest.advanceTimersByTime(sut.stopTimeout);
+
+    await stopPromise;
+
+    expect(console.log).toHaveBeenCalledWith(
+      `The task ${sut.lockName} tried to be stopped and reached stop timeout of ${sut.stopTimeout} milliseconds`
+    );
+    expect(clearTimeoutSpy).toHaveBeenCalled();
   });
 });
