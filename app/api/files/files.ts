@@ -1,9 +1,10 @@
 import entities from 'api/entities';
 import { applicationEventsBus } from 'api/eventsbus';
 import { mimeTypeFromUrl } from 'api/files/extensionHelper';
-import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 import connections from 'api/relationships';
 import { search } from 'api/search';
+import { cleanupRecordsOfFiles } from 'api/services/ocr/ocrRecords';
 import { validateFile } from 'shared/types/fileSchema';
 import { FileType } from 'shared/types/fileType';
 import { FileCreatedEvent } from './events/FileCreatedEvent';
@@ -12,6 +13,7 @@ import { FileUpdatedEvent } from './events/FileUpdatedEvent';
 import { filesModel } from './filesModel';
 import { storage } from './storage';
 import { V2 } from './v2_support';
+import { inspect } from 'util';
 
 const deduceMimeType = (_file: FileType) => {
   const file = { ..._file };
@@ -38,6 +40,12 @@ export const files = {
         new FileUpdatedEvent({ before: existingFile, after: savedFile })
       );
     } else {
+      if (!savedFile.url && !savedFile.filename) {
+        DefaultLogger().error([
+          inspect(new Error('[Files] a file was created without url or filename')),
+          inspect(savedFile),
+        ]);
+      }
       await applicationEventsBus.emit(new FileCreatedEvent({ newFile: savedFile }));
     }
 
