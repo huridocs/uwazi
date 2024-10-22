@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
@@ -8,14 +9,13 @@ import { TranslateForm, t } from 'app/I18N';
 import { Icon } from 'UI';
 import { socket } from 'app/socket';
 import { NotificationsContainer } from 'V2/Components/UI';
-import { Matomo } from 'app/V2/Components/Analitycs';
+import { Matomo, CleanInsights } from 'app/V2/Components/Analitycs';
 import { settingsAtom } from 'V2/atoms/settingsAtom';
 import Confirm from './Confirm';
 import { Menu } from './Menu';
 import { AppMainContext } from './AppMainContext';
 import SiteName from './SiteName';
 import GoogleAnalytics from './GoogleAnalytics';
-import { CleanInsights } from 'app/V2/Components/Analitycs';
 import 'react-widgets/dist/css/react-widgets.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'nprogress/nprogress.css';
@@ -32,7 +32,8 @@ const App = ({ customParams }) => {
   const location = useLocation();
   const params = useParams();
   const sharedId = params.sharedId || customParams?.sharedId;
-  const possibleLanguages = settings.languages.map(l => l.key) || [];
+
+  const possibleLanguages = settings.languages?.map(l => l.key) || [];
   const shouldAddAppClassName =
     ['/', ...possibleLanguages.map(lang => `/${lang}/`)].includes(location.pathname) ||
     location.pathname.match(/\/page\/.*\/.*/g) ||

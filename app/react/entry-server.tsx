@@ -23,7 +23,7 @@ import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import { atomStore } from './V2/atoms';
+import { atomStore, hydrateAtomStore } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -294,7 +294,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
   resetTranslations();
-
+  hydrateAtomStore(atomStoreData);
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>
