@@ -167,8 +167,7 @@ describe('DistributedLoopLock', () => {
   it('should continue stop process if a task takes too long to stop', async () => {
     jest.useFakeTimers(); // Use Jest's fake timers
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    const clearTimeoutSpy = jest.spyOn(global, 'clearInterval');
-
+    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
     const sut = new DistributedLoop('my_locked_task', task, { stopTimeout: 500 });
 
     sut.start();

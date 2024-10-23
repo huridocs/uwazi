@@ -86,36 +86,29 @@ export class DistributedLoop {
     await this.waitBetweenTasks();
   }
 
-  private sleep() {
-    let intervalId: NodeJS.Timeout;
+  private logStopTimeoutMessage() {
+    console.log(
+      `The task ${this.lockName} tried to be stopped and reached stop timeout of ${this.stopTimeout} milliseconds`
+    );
+  }
 
-    const promise = new Promise(resolve => {
-      intervalId = setTimeout(() => {
-        console.log(
-          `The task ${this.lockName} tried to be stopped and reached stop timeout of ${this.stopTimeout} milliseconds`
-        );
+  private async _stop() {
+    let timeoutId;
+
+    await new Promise(resolve => {
+      this.stopTask = resolve;
+
+      timeoutId = setTimeout(() => {
+        this.logStopTimeoutMessage();
         resolve(undefined);
       }, this.stopTimeout);
     });
 
-    return {
-      promise,
-      clear: () => clearInterval(intervalId),
-    };
-  }
-
-  private async _stop() {
-    await new Promise(resolve => {
-      this.stopTask = resolve;
-    });
+    clearTimeout(timeoutId);
   }
 
   stop = async () => {
-    const sleep = this.sleep();
-
-    await Promise.race([this._stop(), sleep.promise]);
-    sleep.clear();
-
+    await this._stop();
     await this.redlock.quit();
     this.redisClient.end(true);
   };
