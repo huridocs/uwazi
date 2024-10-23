@@ -1,16 +1,36 @@
 import * as errorHelper from 'api/utils/handleError';
+import { createMockLogger } from 'api/log.v2/infrastructure/MockLogger';
 import waitForExpect from 'wait-for-expect';
 import { DistributedLoop } from '../DistributedLoop';
 
+let finishTask;
+let task;
+let rejectTask;
+let pendingTasks;
+let mockLogger;
+
+async function sleepTime(time) {
+  await new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+}
+
+const createSut = ({ lockName, options }) =>
+  new DistributedLoop(
+    lockName,
+    task,
+    {
+      delayTimeBetweenTasks: 0,
+      ...options,
+    },
+    mockLogger
+  );
+
 /* eslint-disable max-statements */
 describe('DistributedLoopLock', () => {
-  let finishTask;
-  let task;
-  let rejectTask;
-  let pendingTasks;
-
-  beforeEach(async () => {
+  beforeEach(() => {
     pendingTasks = [];
+    mockLogger = createMockLogger();
     task = jest.fn().mockImplementation(
       () =>
         new Promise((resolve, reject) => {
@@ -23,22 +43,12 @@ describe('DistributedLoopLock', () => {
 
   afterEach(async () => {
     await pendingTasks.map(pendingTask => pendingTask());
-    jest.restoreAllMocks();
   });
 
-  async function sleepTime(time) {
-    await new Promise(resolve => {
-      setTimeout(resolve, time);
-    });
-  }
-
   it('should run one task at a time', async () => {
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      delayTimeBetweenTasks: 0,
-    });
-    const nodeTwo = new DistributedLoop('my_locked_task', task, {
-      delayTimeBetweenTasks: 0,
-    });
+    const nodeOne = createSut({ lockName: 'my_locked_task' });
+    const nodeTwo = createSut({ lockName: 'my_locked_task' });
+
     await nodeOne.start();
     await nodeTwo.start();
     await waitForExpect(async () => {
@@ -59,13 +69,19 @@ describe('DistributedLoopLock', () => {
   });
 
   it('should handle when a lock fails for too many retries', async () => {
-    const nodeOne = new DistributedLoop('my_long_locked_task', task, {
-      retryDelay: 20,
-      delayTimeBetweenTasks: 0,
+    const nodeOne = createSut({
+      lockName: 'my_long_locked_task',
+      options: {
+        retryDelay: 20,
+        delayTimeBetweenTasks: 0,
+      },
     });
-    const nodeTwo = new DistributedLoop('my_long_locked_task', task, {
-      retryDelay: 20,
-      delayTimeBetweenTasks: 0,
+    const nodeTwo = createSut({
+      lockName: 'my_long_locked_task',
+      options: {
+        retryDelay: 20,
+        delayTimeBetweenTasks: 0,
+      },
     });
 
     await nodeOne.start();
@@ -82,13 +98,19 @@ describe('DistributedLoopLock', () => {
   });
 
   it('should handle when a node fails to unlock the lock', async () => {
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      maxLockTime: 50,
-      delayTimeBetweenTasks: 0,
+    const nodeOne = createSut({
+      lockName: 'my_locked_task',
+      options: {
+        maxLockTime: 50,
+        delayTimeBetweenTasks: 0,
+      },
     });
-    const nodeTwo = new DistributedLoop('my_locked_task', task, {
-      maxLockTime: 50,
-      delayTimeBetweenTasks: 0,
+    const nodeTwo = createSut({
+      lockName: 'my_locked_task',
+      options: {
+        maxLockTime: 50,
+        delayTimeBetweenTasks: 0,
+      },
     });
 
     await nodeOne.start();
@@ -108,9 +130,12 @@ describe('DistributedLoopLock', () => {
 
   it('should continue executing the task if one task fails', async () => {
     jest.spyOn(errorHelper, 'handleError').mockImplementation(() => {});
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      maxLockTime: 500,
-      delayTimeBetweenTasks: 0,
+    const nodeOne = createSut({
+      lockName: 'my_locked_task',
+      options: {
+        maxLockTime: 500,
+        delayTimeBetweenTasks: 0,
+      },
     });
 
     await nodeOne.start();
@@ -133,17 +158,22 @@ describe('DistributedLoopLock', () => {
     await nodeOne.stop();
   });
 
-  // eslint-disable-next-line max-statements
   it('should add a delay between task executions', async () => {
-    const nodeOne = new DistributedLoop('my_locked_task', task, {
-      maxLockTime: 50,
-      delayTimeBetweenTasks: 50,
-      retryDelay: 20,
+    const nodeOne = createSut({
+      lockName: 'my_locked_task',
+      options: {
+        maxLockTime: 50,
+        delayTimeBetweenTasks: 50,
+        retryDelay: 20,
+      },
     });
-    const nodeTwo = new DistributedLoop('my_locked_task', task, {
-      maxLockTime: 50,
-      delayTimeBetweenTasks: 50,
-      retryDelay: 20,
+    const nodeTwo = createSut({
+      lockName: 'my_locked_task',
+      options: {
+        maxLockTime: 50,
+        delayTimeBetweenTasks: 50,
+        retryDelay: 20,
+      },
     });
 
     await nodeOne.start();
@@ -165,20 +195,14 @@ describe('DistributedLoopLock', () => {
   });
 
   it('should continue stop process if a task takes too long to stop', async () => {
-    jest.useFakeTimers(); // Use Jest's fake timers
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
-    const sut = new DistributedLoop('my_locked_task', task, { stopTimeout: 500 });
+    const sut = createSut({ lockName: 'stop_mocked_test', options: { stopTimeout: 0 } });
 
     sut.start();
-    const stopPromise = sut.stop();
-    jest.advanceTimersByTime(sut.stopTimeout);
+    await waitForExpect(async () => {
+      expect(task).toHaveBeenCalledTimes(1);
+    });
 
-    await stopPromise;
-
-    expect(console.log).toHaveBeenCalledWith(
-      `The task ${sut.lockName} tried to be stopped and reached stop timeout of ${sut.stopTimeout} milliseconds`
-    );
-    expect(clearTimeoutSpy).toHaveBeenCalled();
+    await expect(sut.stop()).resolves.toBe(undefined);
+    expect(mockLogger.info).toHaveBeenCalled();
   });
 });
