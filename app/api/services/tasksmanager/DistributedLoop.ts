@@ -1,8 +1,10 @@
 import Redis from 'redis';
 import Redlock from 'redlock';
 import { handleError } from 'api/utils/handleError';
+import { Logger } from 'api/log.v2/contracts/Logger';
+import { DefaultLogger } from 'api/log.v2/infrastructure/StandardLogger';
 
-type OptionsProps = {
+export type OptionsProps = {
   maxLockTime?: number;
   delayTimeBetweenTasks?: number;
   retryDelay?: number;
@@ -11,9 +13,9 @@ type OptionsProps = {
   stopTimeout?: number;
 };
 
-export class DistributedLoop {
-  private TEN_SECONDS_IN_MS = 10_000;
+const TEN_SECONDS_IN_MS = 10_000;
 
+export class DistributedLoop {
   private lockName: string;
 
   private task: () => Promise<void>;
@@ -45,10 +47,11 @@ export class DistributedLoop {
       retryDelay = 200,
       port = 6379,
       host = 'localhost',
-      stopTimeout,
-    }: OptionsProps
+      stopTimeout = TEN_SECONDS_IN_MS,
+    }: OptionsProps,
+    private logger: Logger = DefaultLogger()
   ) {
-    this.stopTimeout = stopTimeout || this.TEN_SECONDS_IN_MS;
+    this.stopTimeout = stopTimeout;
     this.maxLockTime = maxLockTime;
     this.retryDelay = retryDelay;
     this.delayTimeBetweenTasks = delayTimeBetweenTasks;
@@ -87,7 +90,7 @@ export class DistributedLoop {
   }
 
   private logStopTimeoutMessage() {
-    console.log(
+    this.logger.info(
       `The task ${this.lockName} tried to be stopped and reached stop timeout of ${this.stopTimeout} milliseconds`
     );
   }
