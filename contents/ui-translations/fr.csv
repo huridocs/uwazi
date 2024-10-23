@@ -14,8 +14,6 @@ Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
-Accuracy,Accuracy
-Accuracy (labeled data),Accuracy (labeled data)
 Action,Action
 Activate,Activate
 Activated,Activated
@@ -957,7 +955,6 @@ Welcome to Uwazi,Bienvenue à Uwazi
 will be updated with the same value.,sera mis à jour avec la même valeur.
 with,avec
 With great power comes great responsibility!,De grands pouvoirs impliquent de grandes responsabilités !
-With suggestion,With suggestion
 x less,x en moins
 x more,x en plus
 Year,Année

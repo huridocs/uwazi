@@ -14,8 +14,6 @@ Account locked,Account locked
 Account locked. Check your email to unlock.,Account locked. Check your email to unlock.
 Account unlocked successfully,Account unlocked successfully
 Account updated,Account updated
-Accuracy,Accuracy
-Accuracy (labeled data),Accuracy (labeled data)
 Action,Eylem
 Activate,Activate
 Activated,Activated
@@ -958,7 +956,6 @@ Welcome to Uwazi,Uwazi'ye hoş geldiniz
 will be updated with the same value.,aynı değerle güncellenecektir.
 with,ile
 With great power comes great responsibility!,Büyük güç büyük sorumluluk getirir!
-With suggestion,With suggestion
 x less,daha az
 x more,daha az
 Year,Yıl
