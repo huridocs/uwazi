@@ -8,8 +8,7 @@ import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import * as relationshipTypesAPI from 'app/V2/api/relationshiptypes';
 import { Template } from 'app/apiResponseTypes';
-import { notificationAtom, templatesAtom } from 'app/V2/atoms';
-import { relationshipTypesAtom } from 'app/V2/atoms/relationshipTypes';
+import { notificationAtom, templatesAtom, relationshipTypesAtom } from 'app/V2/atoms';
 import { Button, Table, Sidepanel, ConfirmationModal } from 'app/V2/Components/UI';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';
 import { columns, Relationships, TableRelationshipType } from './components/TableComponents';
@@ -134,7 +133,7 @@ const RelationshipTypes = () => {
         </SettingsContent.Body>
         <SettingsContent.Footer className={selectedItems.length ? 'bg-primary-50' : ''}>
           {selectedItems.length > 0 && (
-            <div className="flex gap-2 items-center">
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 onClick={() => setShowConfirmationModal(true)}
@@ -182,7 +181,7 @@ const RelationshipTypes = () => {
           header={<Translate>Delete</Translate>}
           warningText={<Translate>Do you want to delete the following items?</Translate>}
           body={
-            <ul className="flex flex-wrap gap-8 max-w-md list-disc list-inside">
+            <ul className="flex flex-wrap max-w-md gap-8 list-disc list-inside">
               {selectedItems.map(item => (
                 <li key={item.name}>{item.name}</li>
               ))}
