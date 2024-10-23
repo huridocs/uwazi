@@ -232,6 +232,13 @@ const getRoutesLayout = (
   </Route>
 );
 
+const languageLayout = (langKey: string, layout: React.JSX.Element) => (
+  <Route key={langKey} path={langKey}>
+    {layout}
+    <Route path="*" element={<GeneralError />} />
+  </Route>
+);
+
 const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
@@ -239,13 +246,11 @@ const getRoutes = (
 ) => {
   const { element, parameters } = getIndexElement(settings, userId);
   const layout = getRoutesLayout(settings, element, headers);
+  const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
-      <Route path="/:lang">
-        {layout}
-        <Route path="*" element={<GeneralError />} />
-      </Route>
+      {languageKeys.map(langKey => languageLayout(langKey, layout))}
       <Route path="*" element={<GeneralError />} />
     </Route>
   );

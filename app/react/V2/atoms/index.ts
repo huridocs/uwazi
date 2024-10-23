@@ -1,4 +1,4 @@
-export { atomStore } from './store';
+export { atomStore, hydrateAtomStore } from './store';
 export { notificationAtom } from './notificationAtom';
 export { settingsAtom } from './settingsAtom';
 export { templatesAtom } from './templatesAtom';
@@ -7,5 +7,6 @@ export { thesauriAtom } from './thesauriAtom';
 export { globalMatomoAtom } from './globalMatomoAtom';
 export { ciMatomoActiveAtom } from './ciMatomoActiveAtom';
 export { userAtom } from './userAtom';
+export { relationshipTypesAtom } from './relationshipTypes';
 export type { AtomStoreData } from './store';
 export type { notificationAtomType } from './notificationAtom';
