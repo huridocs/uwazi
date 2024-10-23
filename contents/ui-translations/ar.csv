@@ -302,6 +302,7 @@ Entity,كيان
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity title,Entity title
 Entity types,أنواع الكيانات
 Entity updated,Entity updated
 Error,خطأ
@@ -372,6 +373,8 @@ https://yourdomain,https://yourdomain
 hubs,محاور
 Hybrid,هجين
 Icon,أيقونة
+ID,ID
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.","If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io."
 "If you want to continue, please type",إذا كنت ترغب في المتابعة، يرجى كتابة
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
@@ -431,6 +434,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language:,Language:
 Languages,اللغات
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -578,9 +582,11 @@ Others,Others
 out of,خارج
 Page,صفحة
 Pages,الصفحات
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraphs,Paragraphs
 Password,كلمه المرور
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -649,6 +655,7 @@ Query,استعلام
 Quick labeling for,تسمية سريعة لـ
 RAW,RAW
 Re-uploaded document,Re-uploaded document
+Read Documentation,Read Documentation
 Receiving email,البريد الالكتروني المستقبل
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Reference,Reference
@@ -943,6 +950,7 @@ Verifying...,تحقق..
 View,عرض
 view,عرض
 View entities,View entities
+View entity,View entity
 View in library,عرض في المكتبة
 View less,View less
 View more,View more

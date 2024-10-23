@@ -303,6 +303,7 @@ Entity,엔티티
 Entity deleted,Entity deleted
 Entity Page,Entity Page
 Entity saved,Entity saved
+Entity title,Entity title
 Entity types,엔티티 유형
 Entity updated,Entity updated
 Error,오류
@@ -373,6 +374,8 @@ https://yourdomain,전체경로: https://yourdomain
 hubs,허브
 Hybrid,Hybrid
 Icon,아이콘
+ID,ID
+ID:,ID:
 "If it is an external URL, use a fully formed URL. Ie. http://www.uwazi.io.",외부 URL 인 경우 전체 경로 (http://www. 부터 시작하는 전체 URL) 를 넣으십시오.
 "If you want to continue, please type",계속하려면 다음을 입력하십시오:
 Impact of property change warning,All entities and documents that have already this property assigned will loose its current value
@@ -432,6 +435,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language:,Language:
 Languages,언어
 Languages installed successfully,Languages installed successfully
 Last updated,Last updated
@@ -579,9 +583,11 @@ Others,Others
 out of,out of
 Page,페이지
 Pages,페이지
+Paragraph,Paragraph
 Paragraph Extraction,Paragraph Extraction
 Paragraph extractor,Paragraph extractor
 Paragraph Extractor added,Paragraph Extractor added
+Paragraphs,Paragraphs
 Password,비밀번호
 Password + 2fa,Password + 2fa
 Password changed success,Password changed success
@@ -650,6 +656,7 @@ Query,검사
 Quick labeling for,빠른 라벨링
 RAW,RAW
 Re-uploaded document,Re-uploaded document
+Read Documentation,Read Documentation
 Receiving email,수신 이메일 주소
 Receiving email description,"If you have a contact form, this is the email address that will receive the form's submissions."
 Reference,Reference
@@ -944,6 +951,7 @@ Verifying...,검증 중
 View,보기
 view,보기
 View entities,View entities
+View entity,View entity
 View in library,라이브러리에서 보기
 View less,View less
 View more,View more
