@@ -32,9 +32,11 @@ export class ATServiceListener {
 
   start(interval = 500) {
     this.taskManager.subscribeToResults(interval);
+
+    return this.stop;
   }
 
-  async stop() {
+  stop = async () => {
     await this.taskManager.stop();
-  }
+  };
 }
