@@ -23,7 +23,7 @@ import CustomProvider from './App/Provider';
 import Root from './App/Root';
 import RouteHandler from './App/RouteHandler';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
-import { atomStore } from './V2/atoms';
+import { atomStore, hydrateAtomStore } from './V2/atoms';
 import { I18NUtils, t, Translate } from './I18N';
 import { IStore } from './istore';
 import { getRoutes } from './Routes';
@@ -110,7 +110,7 @@ const getAssets = async () => {
 
 const prepareStores = async (req: ExpressRequest, settings: ClientSettings, language?: string) => {
   const locale = I18NUtils.getLocale(language, settings.languages, req.cookies);
-
+  api.locale(locale);
   const headers = {
     'Content-Language': locale,
     Cookie: `connect.sid=${req.cookies['connect.sid']}`,
@@ -270,7 +270,14 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
   const { connection, ...headers } = req.headers;
   const routes = getRoutes(settings, req.user && req.user._id, headers);
   const matched = matchRoutes(routes, req.path);
-  const language = matched ? matched[0].params.lang : req.language;
+  const lastRouteMatched = matched ? matched[matched.length - 1] : null;
+  //extract the language from the route pathName, i.e /en/library
+  const pathPossibleLanguage = lastRouteMatched?.pathname.split('/')[1] || '';
+
+  const languageKeys = (settings?.languages?.map(lang => lang.key) as string[]) || [];
+  const language = languageKeys.includes(pathPossibleLanguage)
+    ? pathPossibleLanguage
+    : req.language;
   const isCatchAll = matched ? matched[matched.length - 1].route.path === '*' : true;
 
   const { reduxState, atomStoreData, staticHandleContext, router } = await getSSRProperties(
@@ -287,7 +294,7 @@ const EntryServer = async (req: ExpressRequest, res: Response) => {
     matched
   );
   resetTranslations();
-
+  hydrateAtomStore(atomStoreData);
   const componentHtml = ReactDOMServer.renderToString(
     <ReduxProvider store={initialStore as any}>
       <CustomProvider initialData={initialState} user={req.user} language={initialState.locale}>

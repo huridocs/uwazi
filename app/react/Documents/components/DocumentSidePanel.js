@@ -794,7 +794,7 @@ DocumentSidePanel.propTypes = {
     search: PropTypes.string,
   }).isRequired,
   navigate: PropTypes.func.isRequired,
-  selectedDocument: PropTypes.instanceOf(Immutable),
+  selectedDocument: PropTypes.instanceOf(Immutable.Map),
   // relationships v2
   newRelationshipsEnabled: PropTypes.bool,
 };

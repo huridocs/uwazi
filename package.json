@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.190.0-rc3",
+  "version": "1.190.0-rc4",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -53,7 +53,7 @@
     "fixtures": "node --no-experimental-fetch scripts/bash.js ./uwazi-fixtures/restore.sh",
     "add-migration": "./node_modules/.bin/plop --plopfile ./app/api/migrations/plopfile.js migration",
     "migrate": "node --no-experimental-fetch scripts/run.js ../scripts/migrate.js",
-    "migrate-and-reindex": "node --no-experimental-fetch scripts/run.js ../scripts/migrate_and_reindex.js",
+    "migrate-and-reindex": "node scripts/run.js ../scripts/migrate_and_reindex.js",
     "test-debug": "node --no-experimental-fetch --inspect ./node_modules/.bin/jest --watch --no-cache -i",
     "test": "node --no-experimental-fetch ./node_modules/.bin/jest -w=50%",
     "e2e-puppeteer-all": "echo 'MAKE SURE UWAZI IS RUNNING WITH uwazi_e2e DATABASE AND INDEX';DATABASE_NAME=uwazi_e2e INDEX_NAME=uwazi_e2e jest --projects e2e/jest.e2e.config.ts -i --verbose true",

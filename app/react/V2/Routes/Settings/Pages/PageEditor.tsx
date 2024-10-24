@@ -31,7 +31,7 @@ const pageEditorLoader =
   (headers?: IncomingHttpHeaders): LoaderFunction =>
   async ({ params }) => {
     if (params.sharedId) {
-      const page = await pagesAPI.getBySharedId(params.sharedId, params.lang || 'en', headers);
+      const page = await pagesAPI.getBySharedId(params.sharedId, headers);
 
       return page;
     }
@@ -136,8 +136,8 @@ const PageEditor = () => {
             <Tabs.Tab id="Basic" label={<Translate>Basic</Translate>}>
               <form>
                 <input className="hidden" {...register('sharedId')} />
-                <div className="flex flex-col gap-4 max-w-2xl">
-                  <div className="flex gap-4 items-center">
+                <div className="flex flex-col max-w-2xl gap-4">
+                  <div className="flex items-center gap-4">
                     <Translate className="font-bold">
                       Enable this page to be used as an entity view page:
                     </Translate>
@@ -162,7 +162,7 @@ const PageEditor = () => {
                         : ''
                     }
                     label={<Translate>URL</Translate>}
-                    className="mb-4 w-full"
+                    className="w-full mb-4"
                     id="page-url"
                   />
 
@@ -184,9 +184,9 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Code" key="html" label={<Translate>Markdown</Translate>}>
-              <div className="flex flex-col gap-2 h-full">
+              <div className="flex flex-col h-full gap-2">
                 <HTMLNotification />
-                <div className="pt-2 h-full">
+                <div className="h-full pt-2">
                   <CodeEditor
                     language="html"
                     intialValue={page.metadata?.content}
@@ -206,9 +206,9 @@ const PageEditor = () => {
             </Tabs.Tab>
 
             <Tabs.Tab id="Advanced" label={<Translate>Javascript</Translate>}>
-              <div className="flex flex-col gap-2 h-full">
+              <div className="flex flex-col h-full gap-2">
                 <JSNotification />
-                <div className="pt-2 h-full">
+                <div className="h-full pt-2">
                   <CodeEditor
                     language="javascript"
                     intialValue={page.metadata?.script}
@@ -230,7 +230,7 @@ const PageEditor = () => {
         </SettingsContent.Body>
 
         <SettingsContent.Footer>
-          <div className="flex gap-2 justify-end">
+          <div className="flex justify-end gap-2">
             <Link to="/settings/pages">
               <Button styling="light" disabled={isSubmitting}>
                 <Translate>Cancel</Translate>

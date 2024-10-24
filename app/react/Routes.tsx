@@ -52,6 +52,14 @@ import {
   ParagraphExtractorLoader,
 } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
 import {
+  PXEntityDashboard,
+  PXEntityLoader,
+} from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
+import {
+  PXParagraphDashboard,
+  PXParagraphLoader,
+} from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+import {
   loggedInUsersRoute,
   adminsOnlyRoute,
   privateRoute,
@@ -142,11 +150,21 @@ const getRoutesLayout = (
           }
         />
       </Route>
-      <Route path="paragraph_extraction">
+      <Route path="paragraph-extraction">
         <Route
           loader={ParagraphExtractorLoader(headers)}
           index
           element={adminsOnlyRoute(<ParagraphExtractorDashboard />)}
+        />
+        <Route
+          loader={PXEntityLoader(headers)}
+          path=":extractorId/entities"
+          element={adminsOnlyRoute(<PXEntityDashboard />)}
+        />
+        <Route
+          loader={PXParagraphLoader(headers)}
+          path=":extractorId/entities/:entityId/paragraphs"
+          element={adminsOnlyRoute(<PXParagraphDashboard />)}
         />
       </Route>
       <Route path="relationship-types">
@@ -214,6 +232,13 @@ const getRoutesLayout = (
   </Route>
 );
 
+const languageLayout = (langKey: string, layout: React.JSX.Element) => (
+  <Route key={langKey} path={langKey}>
+    {layout}
+    <Route path="*" element={<GeneralError />} />
+  </Route>
+);
+
 const getRoutes = (
   settings: ClientSettings | undefined,
   userId: string | undefined,
@@ -221,13 +246,11 @@ const getRoutes = (
 ) => {
   const { element, parameters } = getIndexElement(settings, userId);
   const layout = getRoutesLayout(settings, element, headers);
+  const languageKeys = settings?.languages?.map(lang => lang.key) || [];
   return createRoutesFromElements(
     <Route path="/" element={<App customParams={parameters} />}>
       {layout}
-      <Route path="/:lang">
-        {layout}
-        <Route path="*" element={<GeneralError />} />
-      </Route>
+      {languageKeys.map(langKey => languageLayout(langKey, layout))}
       <Route path="*" element={<GeneralError />} />
     </Route>
   );
