@@ -105,6 +105,13 @@ const fixturesSnippetsSearch: DBFixture = {
       }),
     },
     {
+      ...fileWithFullText('entity1SharedId', {
+        1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
+        2: 'Phrase[[2]] which[[2]] contains[[2]] searched[[2]] term[[2]]. '.repeat(5),
+        3: 'Other[[3]] phrase[[3]] which[[3]] contains[[3]] different[[3]] data[[3]].'.repeat(5),
+      }),
+    },
+    {
       ...fileWithFullText('entity3SharedId', {
         1: 'Other[[1]] phrase[[1]] which[[1]] contains[[1]] different[[1]] data[[1]].'.repeat(5),
         2: 'Other[[2]] phrase[[2]] which[[2]] contains[[2]] different[[2]] data[[2]].'.repeat(5),
