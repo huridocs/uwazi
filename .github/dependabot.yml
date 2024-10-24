@@ -8,22 +8,19 @@ updates:
       - dependency-name: "@types/*"
       - dependency-name: "@sentry/node"
         versions: [">= 7.114.0"]
+      - dependency-name: flowbite #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 2.3.1"]
+      - dependency-name: flowbite-datepicker #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 1.2.8"]
+      - dependency-name: flowbite-react #Flowbite & flowbite-datepicker upgrade #6993
+        versions: [">= 0.10.1"]
+      - dependency-name: Mongoose #Mongoose upgrade #7017
+        versions: [">= 8.4.3"]
     open-pull-requests-limit: 5
     labels:
       - dependencies
     rebase-strategy: disabled
     groups:
-      dev-minor-dependencies:
-        applies-to: version-updates
-        update-types: [minor, patch]
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "@babel*"
-          - "@storybook*"
-          - "@sentry*"
-          - "@dnd-kit"
-          - socket.io
       babel:
         applies-to: version-updates
         patterns:
@@ -47,4 +44,31 @@ updates:
       eslint:
         applies-to: version-updates
         patterns:
-          - socket.io*
+          - eslint*
+      dev-minor-dependencies:
+        applies-to: version-updates
+        update-types: [minor, patch]
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "@babel*"
+          - "@storybook*"
+          - "@sentry*"
+          - "@dnd-kit"
+          - socket.io
+          - recharts
+          - eslint
+          - flowbite
+          - flowbite-react
+          - flowbite-datepicker
+          - flowbite-typography
+          - Mongoose
+          - react-datepicker
+          - "@headlessui/react"
+      dev-major-dependencies:
+        applies-to: version-updates
+        update-types: [major]
+        patterns:
+          - "*"
+        exclude-patterns:
+          - cookie
