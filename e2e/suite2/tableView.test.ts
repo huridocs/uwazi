@@ -66,7 +66,7 @@ describe('Table view', () => {
       await expect(page).toClick('.rw-list-option>span', { text: 'Firmantes' });
       await page.click('.tableview-wrapper');
       await expect(page).toMatchElement('.tableview-wrapper th:last-child', { text: 'Firmantes' });
-      await expect(page).toMatchElement('.tableview-wrapper th:nth-last-child(3)', {
+      await expect(page).toMatchElement('.tableview-wrapper th:nth-last-child(2)', {
         text: 'Mecanismo',
       });
       await expect(page).not.toMatchElement('.hidden-columns-dropdown .rw-open');
@@ -113,6 +113,7 @@ describe('Table view', () => {
         text: 'Alvarez et al. Order of the President. August 14, 1997',
       });
     });
+
     it('should uncheck selected rows and show the clicked entity row on the side panel', async () => {
       const rowSelector = 'div.tableview-wrapper > table > tbody > tr:nth-child(2)';
       await expect(page).toClick(rowSelector);
