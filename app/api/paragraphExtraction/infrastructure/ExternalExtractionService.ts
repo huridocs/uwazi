@@ -1,4 +1,6 @@
 import { HttpClient } from 'api/common.v2/contracts/HttpClient';
+import { HttpField } from 'api/common.v2/contracts/HttpField';
+
 import { ExtractParagraphInput, PXExtractionService } from '../domain/PXExtractionService';
 
 type SegmentBoxDTO = {
@@ -56,9 +58,11 @@ export class PXExternalExtractionService implements PXExtractionService {
 
     await this.dependencies.httpClient.postFormData({
       url: `${this.dependencies.url}/extract_paragraphs`,
-      formData: {
-        json_data: dto,
+      files: {
         xml_files: files,
+      },
+      fields: {
+        json_data: new HttpField(dto),
       },
     });
   }

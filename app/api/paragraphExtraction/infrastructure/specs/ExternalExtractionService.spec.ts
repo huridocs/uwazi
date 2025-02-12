@@ -90,7 +90,7 @@ describe('ExternalExtractionService', () => {
 
       expect(body).toEqual({
         json_data: JSON.stringify({
-          key: 'any_id__any_shared_id',
+          key: 'any_id_____any_shared_id',
           xmls_segments: [
             {
               language: 'pt',
