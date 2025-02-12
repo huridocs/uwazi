@@ -14,6 +14,8 @@ export enum PXErrorCode {
 }
 
 export class PXValidationError extends Error {
+  static codes = PXErrorCode;
+
   constructor(
     public code: PXErrorCode,
     message: string,
