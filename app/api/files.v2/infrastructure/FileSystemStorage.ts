@@ -30,7 +30,7 @@ export class FileSystemStorage implements FileStorage {
     throw new Error('Method not implemented.');
   }
 
-  async getPath(file: UwaziFile) {
+  getPath(file: UwaziFile): string {
     throw new Error('Method not implemented.');
   }
 }

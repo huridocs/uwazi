@@ -13,10 +13,7 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 
-import {
-  PXExtractionId,
-  PXExtractionService,
-} from 'api/paragraphExtraction/domain/PXExtractionService';
+import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Document } from 'api/files.v2/model/Document';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphFromEntity';
@@ -37,6 +34,7 @@ import {
   file,
   files,
 } from './fixtures';
+import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
