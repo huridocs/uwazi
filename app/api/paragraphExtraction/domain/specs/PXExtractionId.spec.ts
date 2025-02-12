@@ -6,16 +6,16 @@ describe('PXExtractionId', () => {
     const extractionId = PXExtractionId.create(input);
 
     expect(extractionId).toBeInstanceOf(PXExtractionId);
-    expect(extractionId.id).toBe('extractor123__entity456');
+    expect(extractionId.id).toBe('extractor123_____entity456');
     expect(extractionId.extractorId).toBe('extractor123');
     expect(extractionId.entitySharedId).toBe('entity456');
   });
 
   it('should create an instance with correct properties ', () => {
-    const extractionId = new PXExtractionId({ id: 'extractor123__entity456' });
+    const extractionId = new PXExtractionId({ id: 'extractor123_____entity456' });
 
     expect(extractionId).toBeInstanceOf(PXExtractionId);
-    expect(extractionId.id).toBe('extractor123__entity456');
+    expect(extractionId.id).toBe('extractor123_____entity456');
     expect(extractionId.extractorId).toBe('extractor123');
     expect(extractionId.entitySharedId).toBe('entity456');
   });

@@ -1,5 +1,6 @@
 /* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
+
 import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
@@ -12,10 +13,11 @@ import {
 import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
-
 import { PXExtractionService } from 'api/paragraphExtraction/domain/PXExtractionService';
 import { FileStorage } from 'api/files.v2/contracts/FileStorage';
 import { Document } from 'api/files.v2/model/Document';
+import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphFromEntity';
 import {
   extractor,
@@ -34,7 +36,6 @@ import {
   file,
   files,
 } from './fixtures';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],

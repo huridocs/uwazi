@@ -16,6 +16,8 @@ const Schema = z.object({
 });
 
 class PXExtractionId {
+  private static separator = '_____';
+
   id: string;
 
   extractorId: string;
@@ -24,7 +26,7 @@ class PXExtractionId {
 
   constructor(props: PXExtractionIdProps) {
     this.id = props.id;
-    const [extractorId, entitySharedId] = this.id.split('__');
+    const [extractorId, entitySharedId] = this.id.split(PXExtractionId.separator);
     this.extractorId = extractorId;
     this.entitySharedId = entitySharedId;
 
@@ -40,7 +42,9 @@ class PXExtractionId {
   }
 
   static create(input: CreateExtractionIdInput) {
-    return new PXExtractionId({ id: `${input.extractorId}__${input.entitySharedId}` });
+    return new PXExtractionId({
+      id: `${input.extractorId}${PXExtractionId.separator}${input.entitySharedId}`,
+    });
   }
 }
 
