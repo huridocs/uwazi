@@ -12,7 +12,8 @@ import { Segmentation } from 'api/files.v2/model/Segmentation';
 
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
-import { PXExtractionId, PXExtractionService } from '../domain/PXExtractionService';
+import { PXExtractionService } from '../domain/PXExtractionService';
+import { PXExtractionId } from '../domain/PXExtractionId';
 
 type Input = z.infer<typeof Schema>;
 
@@ -50,7 +51,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       documents,
       segmentations,
       defaultLanguage,
-      extractionId: new PXExtractionId({
+      extractionId: PXExtractionId.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
       }),

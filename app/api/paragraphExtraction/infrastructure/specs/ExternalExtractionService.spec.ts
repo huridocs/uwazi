@@ -9,8 +9,8 @@ import { Segmentation } from 'api/files.v2/model/Segmentation';
 import { Template } from 'api/templates.v2/model/Template';
 import { Property } from 'api/templates.v2/model/Property';
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
-import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionService';
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
+import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService';
 
@@ -77,7 +77,7 @@ describe('ExternalExtractionService', () => {
         segmentations: [segmentation],
         documents: [document],
         defaultLanguage: 'pt',
-        extractionId: new PXExtractionId({
+        extractionId: PXExtractionId.create({
           entitySharedId: 'any_shared_id',
           extractorId: extractor.id,
         }),
