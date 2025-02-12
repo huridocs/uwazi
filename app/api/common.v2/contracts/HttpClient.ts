@@ -1,6 +1,10 @@
+import { File } from 'api/files.v2/model/File';
+import { HttpField } from './HttpField';
+
 type PostFormDataInput = {
   url: string;
-  formData: Record<string, any>;
+  fields: Record<string, HttpField>;
+  files: Record<string, File[]>;
 };
 
 interface HttpClient {
