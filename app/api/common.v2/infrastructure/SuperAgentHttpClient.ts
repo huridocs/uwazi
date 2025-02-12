@@ -1,60 +1,38 @@
 import superagent from 'superagent';
 import { File } from 'api/files.v2/model/File';
 import { HttpClient, PostFormDataInput } from '../contracts/HttpClient';
+import { HttpField } from '../contracts/HttpField';
 
 export class SuperAgentHttpClient implements HttpClient {
   private client = superagent;
 
-  async postFormData<T>({ url, formData }: PostFormDataInput): Promise<T> {
-    const request = this.client.post(url);
+  async postFormData<T>(input: PostFormDataInput): Promise<T> {
+    const request = this.client.post(input.url);
 
-    await this.appendFormDataToRequest(request, formData);
+    await SuperAgentHttpClient.attachFiles(request, input.files);
+    SuperAgentHttpClient.appendFields(request, input.fields);
 
     const response = await request;
 
     return response.body as T;
   }
 
-  private async appendFormDataToRequest(
-    request: superagent.Request,
-    formData: Record<string, any>
-  ) {
-    const appendPromises = Object.entries(formData).map(async ([key, value]) =>
-      this.appendFormData(request, key, value)
+  private static async attachFiles(request: superagent.Request, files: Record<string, File[]>) {
+    const promises = Object.entries(files).flatMap(([key, _files]) =>
+      _files.map(async file => {
+        const buffer = await file.toBuffer();
+
+        // This is necessary because when we actually 'await' for 'request.[attach/field]' the 'superagent' library kicks off the request
+        // This is not what we want here.
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        request.attach(key, buffer, file.filename);
+      })
     );
-    await Promise.all(appendPromises);
+
+    return Promise.all(promises);
   }
 
-  private async appendFormData(request: superagent.Request, key: string, value: any) {
-    if (value instanceof File) {
-      await this.attachFile(request, key, value);
-    } else if (Array.isArray(value)) {
-      await this.appendArray(request, key, value);
-    } else if (typeof value === 'object' && value !== null) {
-      this.appendObject(request, key, value);
-    } else {
-      this.appendPrimitive(request, key, value);
-    }
-  }
-
-  private async attachFile(request: superagent.Request, key: string, file: File) {
-    const fileBuffer = await file.toBuffer();
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    request.attach(key, fileBuffer, file.filename);
-  }
-
-  private async appendArray(request: superagent.Request, key: string, array: any[]) {
-    const appendPromises = array.map(async item => this.appendFormData(request, key, item));
-    await Promise.all(appendPromises);
-  }
-
-  private appendObject(request: superagent.Request, key: string, object: object) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    request.field(key, JSON.stringify(object));
-  }
-
-  private appendPrimitive(request: superagent.Request, key: string, value: any) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    request.field(key, value);
+  private static appendFields(request: superagent.Request, fields: Record<string, HttpField>) {
+    Object.entries(fields).forEach(([key, value]) => request.field(key, value.value));
   }
 }
