@@ -30,7 +30,7 @@ export class S3FileStorage implements FileStorage {
   async getFile(input: GetFileInput) {
     const command = new GetObjectCommand({
       Bucket: this.bucket,
-      Key: this.pathManager.createPath(input), // Todo:  check the need of prepend the tenant name
+      Key: this.pathManager.createPath(input),
     });
 
     const response = await this.s3Client.send(command);
