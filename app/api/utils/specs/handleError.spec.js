@@ -2,7 +2,7 @@ import { legacyLogger } from 'api/log';
 import { createError } from 'api/utils';
 
 import { errors as elasticErrors } from '@elastic/elasticsearch';
-import { S3TimeoutError } from 'api/files/S3Storage';
+import { S3Error } from 'api/files/S3Storage';
 import { appContext } from 'api/utils/AppContext';
 import util from 'node:util';
 import { handleError, prettifyError } from '../handleError';
@@ -20,17 +20,31 @@ describe('handleError', () => {
   });
 
   describe('errors by type', () => {
-    describe('and is instance of S3TimeoutError', () => {
-      it('should be a debug logLevel and a 408 http code', () => {
-        const errorInstance = new S3TimeoutError(new Error('timeout'));
+    describe('and is instance of S3Error', () => {
+      it('should be a debug logLevel and use the error httpStatusCode', () => {
+        const originalError = new Error('original error');
+        originalError.$metadata = { httpStatusCode: 404 };
+        const errorInstance = new S3Error(originalError);
         const error = handleError(errorInstance);
         expect(error).toMatchObject({
-          code: 408,
+          code: 404,
           logLevel: 'debug',
         });
-        expect(legacyLogger.debug.mock.calls[0][0]).toContain('timeout');
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('original error');
+      });
+      it('should use 503 status code if httpStatusCode is undefined', () => {
+        const originalError = new Error('original error');
+        originalError.$metadata = {};
+        const errorInstance = new S3Error(originalError);
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({
+          code: 503,
+          logLevel: 'debug',
+        });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('original error');
       });
     });
+
     describe('when error is instance of Error', () => {
       it('should return the error with 500 code without the original error and error stack', () => {
         const errorInstance = new Error('error');

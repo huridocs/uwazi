@@ -6,6 +6,7 @@ import * as attachmentsTypes from 'app/Attachments/actions/actionTypes';
 import * as uploadsActionTypes from 'app/Uploads/actions/actionTypes';
 import { ensure } from 'shared/tsUtils';
 import { constructFile } from 'shared/fileUploadUtils';
+import loadingBar from 'app/App/LoadingProgressBar';
 
 const readFileAsBase64 = async (file: Blob, cb: (file: any) => void) =>
   new Promise<void>(resolve => {
@@ -44,6 +45,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
   );
 
   return new Promise((resolve, reject) => {
+    loadingBar.start();
     const request = superagent
       .post('/api/entities')
       .set('Accept', 'application/json')
@@ -89,6 +91,7 @@ const saveEntityWithFiles = async (entity: ClientEntitySchema, dispatch?: Dispat
     });
 
     request.end((err, res) => {
+      loadingBar.done();
       if (!res.ok && (res.body.prettyMessage !== undefined || res.body.error !== undefined)) {
         if (err) {
           reject(
