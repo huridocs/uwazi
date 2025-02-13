@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+import { Validator } from 'api/common.v2/contracts/Validator';
+import { PXValidationError } from './PXValidationError';
+
 type CreateExtractionIdInput = {
   extractorId: string;
   entitySharedId: string;
@@ -9,10 +12,14 @@ type PXExtractionIdProps = {
   id: string;
 };
 
-const Schema = z.object({
-  id: z.string(),
-  extractorId: z.string().min(1),
-  entitySharedId: z.string().min(1),
+const validator = new Validator({
+  schema: Validator.z.object({
+    id: z.string(),
+    extractorId: z.string().min(1),
+    entitySharedId: z.string().min(1),
+  }),
+  name: PXValidationError.name,
+  code: PXValidationError.codes.EXTRACTION_ID_INVALID,
 });
 
 class PXExtractionId {
@@ -30,11 +37,7 @@ class PXExtractionId {
     this.extractorId = extractorId;
     this.entitySharedId = entitySharedId;
 
-    this.validate();
-  }
-
-  private validate() {
-    Schema.parse({
+    validator.validate({
       id: this.id,
       extractorId: this.extractorId,
       entitySharedId: this.entitySharedId,
