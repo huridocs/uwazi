@@ -32,6 +32,17 @@ describe('handleError', () => {
         });
         expect(legacyLogger.debug.mock.calls[0][0]).toContain('original error');
       });
+      it('should use 503 status code if httpStatusCode is undefined', () => {
+        const originalError = new Error('original error');
+        originalError.$metadata = {};
+        const errorInstance = new S3Error(originalError);
+        const error = handleError(errorInstance);
+        expect(error).toMatchObject({
+          code: 503,
+          logLevel: 'debug',
+        });
+        expect(legacyLogger.debug.mock.calls[0][0]).toContain('original error');
+      });
     });
 
     describe('when error is instance of Error', () => {

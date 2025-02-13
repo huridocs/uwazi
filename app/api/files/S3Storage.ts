@@ -19,7 +19,7 @@ class S3Error extends Error {
   }
 
   get httpStatusCode() {
-    return this.originalError.$metadata?.httpStatusCode;
+    return this.originalError.$metadata.httpStatusCode;
   }
 }
 

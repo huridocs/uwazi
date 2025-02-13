@@ -65,7 +65,7 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
   }
 
   if (error instanceof S3Error) {
-    result = { code: error.httpStatusCode, message: util.inspect(error), logLevel: 'debug' };
+    result = { code: error.httpStatusCode || 503, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {

@@ -1,4 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
+import { S3Client } from '@aws-sdk/client-s3';
 import { S3Storage, S3Error } from '../S3Storage';
 
 const expectedMetadata = {
@@ -29,8 +30,7 @@ describe('s3Storage error handling', () => {
   let s3Storage: S3Storage;
 
   beforeEach(() => {
-    // @ts-ignore
-    s3Storage = new S3Storage(new MockS3Client());
+    s3Storage = new S3Storage(new MockS3Client() as unknown as S3Client);
   });
 
   describe('error wrapping', () => {
