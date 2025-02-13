@@ -11,10 +11,13 @@ export enum PXErrorCode {
   TARGET_TEMPLATE_INVALID = 'TARGET_TEMPLATE_INVALID',
   ENTITY_INVALID = 'ENTITY_INVALID',
   TARGET_SOURCE_TEMPLATE_EQUAL = 'TARGET_SOURCE_TEMPLATE_EQUAL',
+  EXTRACTION_ID_INVALID = 'EXTRACTION_ID_INVALID',
 }
 
 export class PXValidationError extends Error {
   static codes = PXErrorCode;
+
+  static name = 'PXValidationError';
 
   constructor(
     public code: PXErrorCode,
@@ -22,6 +25,6 @@ export class PXValidationError extends Error {
     options?: ErrorOptions
   ) {
     super(message, options);
-    this.name = 'PXValidationError';
+    this.name = PXValidationError.name;
   }
 }
