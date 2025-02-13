@@ -1,26 +1,14 @@
 import { HttpClient } from 'api/common.v2/contracts/HttpClient';
 import { HttpField } from 'api/common.v2/contracts/HttpField';
+import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-import { ExtractParagraphInput, PXExtractionService } from '../domain/PXExtractionService';
-
-type SegmentBoxDTO = {
-  left: number;
-  top: number;
-  page_number: number;
-  type: string;
-};
-
-type SegmentDTO = {
-  xml_file_name: string;
-  language: string;
-  is_main_language: boolean;
-  xml_segments_boxes: SegmentBoxDTO[];
-};
-
-type ExtractionDTO = {
-  key: string;
-  xmls_segments: SegmentDTO[];
-};
+import {
+  ExtractParagraphInput,
+  GetParagraphsResultOutput,
+  PXExtractionService,
+} from '../../domain/PXExtractionService';
+import { ExtractionDTO, GetParagraphsResultDTO } from './types';
 
 type Dependencies = {
   url: string;
@@ -29,6 +17,24 @@ type Dependencies = {
 
 export class PXExternalExtractionService implements PXExtractionService {
   constructor(private dependencies: Dependencies) {}
+
+  async getParagraphsResult(url: string): Promise<GetParagraphsResultOutput> {
+    const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
+
+    return {
+      extractionId: new PXExtractionId({ id: dto.key }),
+      availableLanguages: dto.available_languages as LanguageISO6391[],
+      mainLanguage: dto.main_language as LanguageISO6391,
+      paragraphs: dto.paragraphs.map(paragraph => ({
+        position: paragraph.position,
+        translations: paragraph.translations.map(translation => ({
+          language: translation.language as LanguageISO6391,
+          text: translation.text,
+          needsUserReview: translation.needs_user_review,
+        })),
+      })),
+    };
+  }
 
   async extractParagraph({
     segmentations,

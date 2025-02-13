@@ -3,33 +3,12 @@ import multer from 'multer';
 import express from 'express';
 import { Server } from 'http';
 
-import { Document } from 'api/files.v2/model/Document';
-import { PXExtractor } from 'api/paragraphExtraction/domain/PXExtractor';
-import { Segmentation } from 'api/files.v2/model/Segmentation';
-import { Template } from 'api/templates.v2/model/Template';
-import { Property } from 'api/templates.v2/model/Property';
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 
-import { PXExternalExtractionService } from '../ExternalExtractionService';
-
-const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
-const sourceTemplate = new Template('sourceTemplate', 'Source template');
-const targetTemplate = new Template('targetTemplate', 'Target template', [
-  new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id'),
-]);
-const segmentation: Segmentation = {
-  id: 'any_id',
-  fileId: document.id,
-  filename: document.filename,
-  xmlname: document.filename,
-  paragraphs: [
-    { width: 0, height: 0, left: 0, top: 0, type: 'any_type', text: 'any_text', pageNumber: 0 },
-  ],
-  status: 'ready',
-};
-const extractor = new PXExtractor({ id: 'any_id', sourceTemplate, targetTemplate });
+import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
+import { document, extractor, mockGetParagraphsResult, segmentation } from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -42,6 +21,10 @@ app.post('/extract_paragraphs', upload.any(), (req, res) => {
   files = req.files;
   body = req.body;
   res.status(200).send('ok');
+});
+
+app.get('/paragraphs_results', upload.any(), (_, res) => {
+  res.status(200).json(mockGetParagraphsResult);
 });
 
 describe('ExternalExtractionService', () => {
@@ -128,6 +111,72 @@ describe('ExternalExtractionService', () => {
           size: 15,
         },
       ]);
+    });
+  });
+
+  describe('getParagraphsResult', () => {
+    it('should return the correct output', async () => {
+      const externalExtractionService = new PXExternalExtractionService({
+        httpClient: HttpClientFactory.createDefault(),
+        url: 'http://localhost:5056',
+      });
+
+      const output = await externalExtractionService.getParagraphsResult(
+        'http://localhost:5056/paragraphs_results'
+      );
+
+      expect(output).toEqual({
+        extractionId: PXExtractionId.create({
+          entitySharedId: 'entitySharedId',
+          extractorId: 'extractorId',
+        }),
+
+        mainLanguage: 'en',
+        availableLanguages: ['en', 'es', 'fr'],
+
+        paragraphs: [
+          {
+            position: 1,
+            translations: [
+              {
+                language: 'en',
+                text: 'This is an example paragraph in English.',
+                needsUserReview: false,
+              },
+              {
+                language: 'es',
+                text: 'Este es un párrafo de ejemplo en español.',
+                needsUserReview: false,
+              },
+              {
+                language: 'fr',
+                text: 'Ceci est un paragraphe exemple en français.',
+                needsUserReview: true,
+              },
+            ],
+          },
+          {
+            position: 2,
+            translations: [
+              {
+                language: 'en',
+                text: 'This is another example paragraph in English.',
+                needsUserReview: false,
+              },
+              {
+                language: 'es',
+                text: 'Este es otro párrafo de ejemplo en español.',
+                needsUserReview: true,
+              },
+              {
+                language: 'fr',
+                text: 'Ceci est un autre paragraphe exemple en français.',
+                needsUserReview: false,
+              },
+            ],
+          },
+        ],
+      });
     });
   });
 });

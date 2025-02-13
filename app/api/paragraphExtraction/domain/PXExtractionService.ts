@@ -12,8 +12,27 @@ type ExtractParagraphInput = {
   files: File[];
 };
 
+type Translation = {
+  language: LanguageISO6391;
+  text: string;
+  needsUserReview: boolean;
+};
+
+type Paragraph = {
+  position: number;
+  translations: Translation[];
+};
+
+type GetParagraphsResultOutput = {
+  extractionId: PXExtractionId;
+  mainLanguage: LanguageISO6391;
+  availableLanguages: LanguageISO6391[];
+  paragraphs: Paragraph[];
+};
+
 interface PXExtractionService {
   extractParagraph(extraction: ExtractParagraphInput): Promise<void>;
+  getParagraphsResult(url: string): Promise<GetParagraphsResultOutput>;
 }
 
-export type { ExtractParagraphInput, PXExtractionService };
+export type { ExtractParagraphInput, PXExtractionService, GetParagraphsResultOutput };
