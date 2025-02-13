@@ -68,6 +68,7 @@ export const config = {
     activityLogs: ACTIVITY_LOGS_FOLDER || `${filesRootPath}/log/`,
     featureFlags: {
       s3Storage: false,
+      esUseReplicas: false,
     },
   },
   externalServices: Boolean(process.env.EXTERNAL_SERVICES) || false,

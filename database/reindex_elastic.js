@@ -21,11 +21,11 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) =>
-  fetch(`${getIndexUrl()}/_settings`, {
+const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) => {
+  const result = await fetch(`${getIndexUrl()}/_settings`, {
     method: 'PUT',
     headers,
-    body: {
+    body: JSON.stringify({
       index: {
         refresh_interval: refreshInterval,
         number_of_replicas: numberOfReplicas,
@@ -33,12 +33,23 @@ const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDur
           durability: translogDurability,
         },
       },
-    },
+    }),
   });
+
+  return result;
+};
 
 const restoreSettings = async () => {
   process.stdout.write('Restoring index settings...');
-  const result = setReindexSettings('1s', 0, 'request');
+
+  let tenantReplicas = 0;
+
+  if (tenants.current().featureFlags?.esUseReplicas) {
+    tenantReplicas = 1;
+    process.stdout.write('restoring ES Replicas...');
+  }
+
+  const result = setReindexSettings('1s', tenantReplicas, 'request');
   process.stdout.write(' [done]\n');
   return result;
 };
