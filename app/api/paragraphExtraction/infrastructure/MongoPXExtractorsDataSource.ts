@@ -13,7 +13,6 @@ export class MongoPXExtractorsDataSource
 {
   protected collectionName = mongoPXExtractorsCollection;
 
-  // Todo: This method needs to be tested
   async getById(extractorId: string): Promise<PXExtractor | undefined> {
     const extractor = await this.getCollection()
       .aggregate([

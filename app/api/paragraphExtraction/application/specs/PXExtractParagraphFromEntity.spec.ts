@@ -56,6 +56,7 @@ const createFixtures = (): DBFixture => ({
 const setUpUseCase = () => {
   const extractionService: PXExtractionService = {
     extractParagraph: jest.fn(),
+    getParagraphsResult: jest.fn(),
   };
 
   const fileStorage: FileStorage = {
