@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { TemplatesDataSource } from 'api/templates.v2/contracts/TemplatesDataSource';
-
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+
 import { PXExtractor } from '../domain/PXExtractor';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
