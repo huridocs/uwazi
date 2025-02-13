@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import { UnauthorizedError } from 'api/authorization.v2/errors/UnauthorizedError';
 import { ValidationError } from 'api/common.v2/validation/ValidationError';
 import { FileNotFound } from 'api/files/FileNotFound';
-import { S3TimeoutError } from 'api/files/S3Storage';
+import { S3Error } from 'api/files/S3Storage';
 import { legacyLogger } from 'api/log';
 import { appContext } from 'api/utils/AppContext';
 import { createError } from 'api/utils/index';
@@ -64,8 +64,8 @@ const prettifyError = (error, { req = {}, uncaught = false } = {}) => {
     result = { code: 500, message: util.inspect(error), logLevel: 'error' };
   }
 
-  if (error instanceof S3TimeoutError) {
-    result = { code: 408, message: util.inspect(error), logLevel: 'debug' };
+  if (error instanceof S3Error) {
+    result = { code: error.httpStatusCode || 503, message: util.inspect(error), logLevel: 'debug' };
   }
 
   if (error instanceof Ajv.ValidationError) {

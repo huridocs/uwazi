@@ -23,7 +23,7 @@ import {
   deleteFile,
   uploadsPath,
 } from './filesystem';
-import { S3Storage } from './S3Storage';
+import { S3Error, S3Storage } from './S3Storage';
 
 export type FileTypes = NonNullable<FileType['type']> | 'activitylog' | 'segmentation';
 
@@ -81,7 +81,10 @@ const catchFileNotFound = async <T>(cb: () => Promise<T>, filename: string): Pro
   try {
     return await cb();
   } catch (err) {
-    if (err?.code === 'ENOENT' || err instanceof NoSuchKey) {
+    if (
+      err?.code === 'ENOENT' ||
+      (err instanceof S3Error && err.originalError instanceof NoSuchKey)
+    ) {
       throw new FileNotFound(filename, storageType);
     }
     throw err;
@@ -126,7 +129,10 @@ export const storage = {
         await access(paths[type](filename));
       }
     } catch (err) {
-      if (err?.code === 'ENOENT' || err instanceof NoSuchKey) {
+      if (
+        err?.code === 'ENOENT' ||
+        (err instanceof S3Error && err.originalError instanceof NoSuchKey)
+      ) {
         return false;
       }
       if (err) {
