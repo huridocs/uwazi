@@ -1,10 +1,16 @@
 import superagent from 'superagent';
 import { File } from 'api/files.v2/model/File';
-import { HttpClient, PostFormDataInput } from '../contracts/HttpClient';
+import { GetInput, HttpClient, PostFormDataInput } from '../contracts/HttpClient';
 import { HttpField } from '../contracts/HttpField';
 
 export class SuperAgentHttpClient implements HttpClient {
   private client = superagent;
+
+  async get<Response>(input: GetInput): Promise<Response> {
+    const response = await this.client.get(input.url);
+
+    return response.body as Response;
+  }
 
   async postFormData<T>(input: PostFormDataInput): Promise<T> {
     const request = this.client.post(input.url);
