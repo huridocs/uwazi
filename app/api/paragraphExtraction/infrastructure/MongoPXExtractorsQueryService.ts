@@ -37,30 +37,31 @@ class MongoPXExtractorsQueryService
         },
       },
       {
+        $lookup: {
+          from: 'entities',
+          localField: '_id',
+          foreignField: 'extractorId',
+          as: 'entities',
+          pipeline: [{ $project: { _id: 1 } }],
+        },
+      },
+      {
+        $addFields: {
+          paragraphsQuantity: { $size: '$entities' },
+        },
+      },
+      {
         $unwind: '$sourceTemplate',
       },
       {
         $unwind: '$targetTemplate',
       },
       {
-        $lookup: {
-          from: 'entities',
-          localField: '_id',
-          foreignField: 'extractorId',
-          as: 'entities',
-        },
-      },
-      {
-        $addFields: {
-          entityCount: { $size: '$entities' },
-        },
-      },
-      {
         $project: {
           _id: 1,
           sourceTemplate: 1,
           targetTemplate: 1,
-          entityCount: 1,
+          paragraphsQuantity: 1,
         },
       },
     ]);
