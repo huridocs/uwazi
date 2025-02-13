@@ -28,13 +28,13 @@ const extractor2: MongoPXExtractorDBO = {
 };
 
 const paragraph1 = factory.entity('paragraph1', sourceTemplate._id.toString());
-paragraph1.extractionId = extractor._id;
+paragraph1.extractorId = extractor._id;
 
 const paragraph2 = factory.entity('paragraph2', sourceTemplate2._id.toString());
-paragraph2.extractionId = extractor2._id;
+paragraph2.extractorId = extractor2._id;
 
 const createFixtures = (): DBFixture => ({
-  [mongoPXExtractorsCollection]: [extractor],
+  [mongoPXExtractorsCollection]: [extractor, extractor2],
   templates: [sourceTemplate, sourceTemplate2, targetTemplate],
   entities: [paragraph1, paragraph2],
 });

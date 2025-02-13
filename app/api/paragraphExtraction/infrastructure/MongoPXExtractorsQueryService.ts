@@ -18,6 +18,7 @@ class MongoPXExtractorsQueryService
 
   getExtractors(input: GetExtractorsInput): ResultSet<GetExtractorsOutput> {
     const cursor = this.getCollection().aggregate([
+      // Join with the templates collection to get sourceTemplate details
       {
         $lookup: {
           from: 'templates',
@@ -27,6 +28,7 @@ class MongoPXExtractorsQueryService
           pipeline: [{ $project: { _id: 1, name: 1 } }],
         },
       },
+      // Join with the templates collection to get targetTemplate details
       {
         $lookup: {
           from: 'templates',
@@ -36,6 +38,7 @@ class MongoPXExtractorsQueryService
           pipeline: [{ $project: { _id: 1, name: 1 } }],
         },
       },
+      // Join with the entities collection to get related entities
       {
         $lookup: {
           from: 'entities',
@@ -45,17 +48,21 @@ class MongoPXExtractorsQueryService
           pipeline: [{ $project: { _id: 1 } }],
         },
       },
+      // Unwind the sourceTemplate array
+      {
+        $unwind: '$sourceTemplate',
+      },
+      // Unwind the targetTemplate array
+      {
+        $unwind: '$targetTemplate',
+      },
+      // Add a new field paragraphsQuantity which is the size of the entities array
       {
         $addFields: {
           paragraphsQuantity: { $size: '$entities' },
         },
       },
-      {
-        $unwind: '$sourceTemplate',
-      },
-      {
-        $unwind: '$targetTemplate',
-      },
+      // Project the required fields
       {
         $project: {
           _id: 1,
