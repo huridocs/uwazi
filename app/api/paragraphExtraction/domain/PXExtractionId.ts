@@ -8,10 +8,6 @@ type CreateExtractionIdInput = {
   entitySharedId: string;
 };
 
-type PXExtractionIdProps = {
-  id: string;
-};
-
 const validator = new Validator({
   schema: Validator.z.object({
     id: z.string(),
@@ -25,15 +21,12 @@ const validator = new Validator({
 class PXExtractionId {
   private static separator = '_____';
 
-  id: string;
-
   extractorId: string;
 
   entitySharedId: string;
 
-  constructor(props: PXExtractionIdProps) {
-    this.id = props.id;
-    const [extractorId, entitySharedId] = this.id.split(PXExtractionId.separator);
+  constructor(id: string) {
+    const { extractorId, entitySharedId } = PXExtractionId.split(id);
     this.extractorId = extractorId;
     this.entitySharedId = entitySharedId;
 
@@ -44,10 +37,25 @@ class PXExtractionId {
     });
   }
 
-  static create(input: CreateExtractionIdInput) {
-    return new PXExtractionId({
-      id: `${input.extractorId}${PXExtractionId.separator}${input.entitySharedId}`,
+  get id() {
+    return PXExtractionId.join({
+      entitySharedId: this.entitySharedId,
+      extractorId: this.extractorId,
     });
+  }
+
+  private static split(id: string) {
+    const [extractorId, entitySharedId] = id.split(PXExtractionId.separator);
+
+    return { extractorId, entitySharedId };
+  }
+
+  private static join(input: CreateExtractionIdInput): string {
+    return `${input.extractorId}${PXExtractionId.separator}${input.entitySharedId}`;
+  }
+
+  static create(input: CreateExtractionIdInput) {
+    return new PXExtractionId(PXExtractionId.join(input));
   }
 }
 

@@ -12,7 +12,7 @@ describe('PXExtractionId', () => {
   });
 
   it('should create an instance with correct properties ', () => {
-    const extractionId = new PXExtractionId({ id: 'extractor123_____entity456' });
+    const extractionId = new PXExtractionId('extractor123_____entity456');
 
     expect(extractionId).toBeInstanceOf(PXExtractionId);
     expect(extractionId.id).toBe('extractor123_____entity456');
@@ -21,8 +21,6 @@ describe('PXExtractionId', () => {
   });
 
   it('should throw an error if id format is incorrect', () => {
-    const props = { id: 'incorrectFormat' };
-
-    expect(() => new PXExtractionId(props)).toThrow();
+    expect(() => new PXExtractionId('incorrectFormat')).toThrow();
   });
 });

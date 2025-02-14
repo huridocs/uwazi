@@ -22,7 +22,7 @@ export class PXExternalExtractionService implements PXExtractionService {
     const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
 
     return {
-      extractionId: new PXExtractionId({ id: dto.key }),
+      extractionId: new PXExtractionId(dto.key),
       availableLanguages: dto.available_languages as LanguageISO6391[],
       mainLanguage: dto.main_language as LanguageISO6391,
       paragraphs: dto.paragraphs.map(paragraph => ({

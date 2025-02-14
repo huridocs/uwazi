@@ -41,7 +41,7 @@ export class PXCreateParagraph implements UseCase<Input, Output> {
   }
 
   private async getInitialData(input: Input) {
-    const extractionId = new PXExtractionId({ id: input.extractionId });
+    const extractionId = new PXExtractionId(input.extractionId);
     const [extractor, sourceEntities] = await Promise.all([
       this.dependencies.extractorsDS.getById(extractionId.extractorId),
       this.dependencies.entityDS.getByIds([extractionId.entitySharedId], input.language).all(),
