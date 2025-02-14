@@ -11,18 +11,18 @@ import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 type Input = z.infer<typeof InputSchema>;
 type Output = PXExtractor;
 
+const InputSchema = z.object({
+  targetTemplateId: z.string({ message: 'You should provide a target template' }),
+  sourceTemplateId: z.string({ message: 'You should provide a source template' }),
+});
+
 type Dependencies = {
   templatesDS: TemplatesDataSource;
   extractorDS: PXExtractorsDataSource;
   idGenerator: IdGenerator;
 };
 
-const InputSchema = z.object({
-  targetTemplateId: z.string({ message: 'You should provide a target template' }),
-  sourceTemplateId: z.string({ message: 'You should provide a source template' }),
-});
-
-export class PXCreateExtractor implements UseCase<Input, Output> {
+class PXCreateExtractor implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
   async execute(input: Input): Promise<Output> {
@@ -56,3 +56,7 @@ export class PXCreateExtractor implements UseCase<Input, Output> {
     return extractor;
   }
 }
+
+export { InputSchema, PXCreateExtractor };
+
+export type { Input };
