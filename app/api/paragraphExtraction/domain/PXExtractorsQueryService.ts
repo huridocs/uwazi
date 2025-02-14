@@ -5,12 +5,14 @@ type TemplateDTO = {
   name: string;
 };
 
-type GetExtractorsOutput = {
+type ExtractorDTO = {
   extractorId: string;
   sourceTemplate: TemplateDTO;
   targetTemplate: TemplateDTO;
   paragraphsQuantity: number;
 };
+
+type GetExtractorsOutput = ExtractorDTO;
 
 type GetExtractorsInput = {};
 
@@ -18,4 +20,4 @@ interface PXExtractorsQueryService {
   getExtractors(input: GetExtractorsInput): ResultSet<GetExtractorsOutput>;
 }
 
-export type { PXExtractorsQueryService, GetExtractorsInput, GetExtractorsOutput };
+export type { ExtractorDTO, PXExtractorsQueryService, GetExtractorsInput, GetExtractorsOutput };
