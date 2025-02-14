@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
+import { Application, NextFunction, Request, Response } from 'express';
 
 export type Dependencies = {
   next: NextFunction;
   res: Response;
+  app: Application;
 };
 
 export abstract class AbstractController {
@@ -10,9 +11,12 @@ export abstract class AbstractController {
 
   protected res: Response;
 
-  constructor({ next, res }: Dependencies) {
+  protected app: Application;
+
+  constructor({ next, res, app }: Dependencies) {
     this.next = next;
     this.res = res;
+    this.app = app;
   }
 
   abstract handle(request: Request): Promise<void>;
