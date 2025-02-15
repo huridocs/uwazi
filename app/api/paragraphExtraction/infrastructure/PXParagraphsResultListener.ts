@@ -1,5 +1,6 @@
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
+import { PXExtractionService } from '../domain/PXExtractionService';
 
 type ResultMessage = {
   key: string;
@@ -15,16 +16,17 @@ type Xml = {
   is_main_language: boolean;
 };
 
+type PXParagraphsResultListenerProps = {
+  createParagraphs: PXCreateParagraphs;
+  extractionService: PXExtractionService;
+};
+
 export class PXParagraphsResultListener {
   static SERVICE_NAME = 'extract_paragraphs';
 
   private taskManager: TaskManager;
 
-  private createParagraphs: PXCreateParagraphs;
-
-  constructor(createParagraphs: PXCreateParagraphs) {
-    this.createParagraphs = createParagraphs;
-
+  constructor(private props: PXParagraphsResultListenerProps) {
     this.taskManager = new TaskManager({
       serviceName: PXParagraphsResultListener.SERVICE_NAME,
       processResults: this.processResults.bind(this) as any,
@@ -32,9 +34,11 @@ export class PXParagraphsResultListener {
   }
 
   private async processResults(results: ResultMessage) {
-    if (!results.data_url) return;
+    if (!results.success || !results.data_url) return;
 
-    await this.createParagraphs.execute({ resultUrl: results.data_url });
+    const { paragraphs } = await this.props.extractionService.getParagraphsResult(results.data_url);
+
+    await this.props.createParagraphs.execute(paragraphs);
   }
 
   start(interval = 500) {

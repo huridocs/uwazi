@@ -28,4 +28,5 @@ export interface EntitiesDataSource {
     title: string,
     propertiesToNewValues: { propertyName: string; value?: any }[]
   ): Promise<void>;
+  create(entity: Entity): Promise<void>;
 }

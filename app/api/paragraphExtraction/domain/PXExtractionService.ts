@@ -14,20 +14,20 @@ type ExtractParagraphInput = {
 
 type Translation = {
   language: LanguageISO6391;
-  text: string;
   needsUserReview: boolean;
+  paragraph: string;
 };
 
-type Paragraph = {
-  position: number;
+type ParagraphOutput = {
+  extractionId: PXExtractionId;
+  pageNumber: number;
   translations: Translation[];
+  defaultLanguage: LanguageISO6391;
 };
 
 type GetParagraphsResultOutput = {
-  extractionId: PXExtractionId;
-  mainLanguage: LanguageISO6391;
   availableLanguages: LanguageISO6391[];
-  paragraphs: Paragraph[];
+  paragraphs: ParagraphOutput[];
 };
 
 interface PXExtractionService {
@@ -35,4 +35,9 @@ interface PXExtractionService {
   getParagraphsResult(url: string): Promise<GetParagraphsResultOutput>;
 }
 
-export type { ExtractParagraphInput, PXExtractionService, GetParagraphsResultOutput };
+export type {
+  ExtractParagraphInput,
+  PXExtractionService,
+  GetParagraphsResultOutput,
+  ParagraphOutput,
+};

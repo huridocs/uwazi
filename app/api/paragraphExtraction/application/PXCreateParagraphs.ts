@@ -1,29 +1,27 @@
 import { UseCase } from 'api/common.v2/contracts/UseCase';
 
-import { PXExtractionService } from '../domain/PXExtractionService';
+import { PXCreateParagraphInput } from './PXCreateParagraph';
 
-type Input = {
-  resultUrl: string;
-};
+type PXCreateParagraphsInput = PXCreateParagraphInput[];
 
 type Output = any;
 
-type Dependencies = {
-  extractionService: PXExtractionService;
-};
+type Dependencies = {};
 
-export class PXCreateParagraphs implements UseCase<Input, Output> {
+export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: Input): Promise<Output> {
-    const { paragraphsResult } = await this.getInitialData(input);
-  }
-
-  private async getInitialData(input: Input) {
-    const paragraphsResult = await this.dependencies.extractionService.getParagraphsResult(
-      input.resultUrl
-    );
-
-    return { paragraphsResult };
+  async execute(input: PXCreateParagraphsInput): Promise<Output> {
+    /**
+     * Call PXCreateParagraph use case passing each paragraph
+     *
+     */
   }
 }
+
+export type { PXCreateParagraphsInput };
+
+/**
+ * The idea is to put each paragraph in to a Queue
+ * This Task will execute the PXCreateParagraph
+ */

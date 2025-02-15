@@ -2,69 +2,74 @@ import { UseCase } from 'api/common.v2/contracts/UseCase';
 import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
-import { LanguageISO6391 } from 'shared/types/commonTypes';
 
-import { PXExtractionId } from '../domain/PXExtractionId';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { PXValidationError } from '../domain/PXValidationError';
+import { ParagraphOutput } from '../domain/PXExtractionService';
 
-type Input = {
-  pageNumber: number;
-  extractionId: string;
-  text: string;
-  language: LanguageISO6391;
-};
+type PXCreateParagraphInput = ParagraphOutput;
 
 type Output = any;
 
 type Dependencies = {
-  entityDS: EntitiesDataSource;
+  entitiesDS: EntitiesDataSource;
   extractorsDS: PXExtractorsDataSource;
   idGenerator: IdGenerator;
 };
 
-export class PXCreateParagraph implements UseCase<Input, Output> {
+class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: Input): Promise<Output> {
-    const { extractor, sourceEntity } = await this.getInitialData(input);
+  async execute(input: PXCreateParagraphInput): Promise<Output> {
+    const { extractor, sourceEntities, defaultParagraph, translationsParagraph } =
+      await this.getInitialData(input);
 
-    const title = PXCreateParagraph.createParagraphTitle(sourceEntity, input.pageNumber);
-    const paragraph = new Entity(
-      this.dependencies.idGenerator.generate(),
-      'sharedId',
-      input.language,
-      title,
-      extractor.targetTemplate.id,
-      {}
-    );
+    // await this.dependencies.entitiesDS.create();
   }
 
-  private async getInitialData(input: Input) {
-    const extractionId = new PXExtractionId(input.extractionId);
+  private async getInitialData(input: PXCreateParagraphInput) {
     const [extractor, sourceEntities] = await Promise.all([
-      this.dependencies.extractorsDS.getById(extractionId.extractorId),
-      this.dependencies.entityDS.getByIds([extractionId.entitySharedId], input.language).all(),
+      this.dependencies.extractorsDS.getById(input.extractionId.extractorId),
+      this.dependencies.entitiesDS.getByIds([input.extractionId.entitySharedId]).all(),
     ]);
+
+    const translationsParagraph = input.translations.filter(
+      item => item.language !== input.defaultLanguage
+    );
+
+    const defaultParagraph =
+      input.translations.find(item => item.language === input.defaultLanguage) ||
+      translationsParagraph.pop();
+
+    if (!defaultParagraph) {
+      throw new PXValidationError(
+        PXValidationError.codes.DEFAULT_PARAGRAPH_NOT_FOUND,
+        'A default Paragraph was not found'
+      );
+    }
 
     if (!extractor) {
       throw new PXValidationError(
         PXValidationError.codes.EXTRACTOR_NOT_FOUND,
-        `Extractor with id "${extractionId.extractorId}" was not found`
+        `Extractor with id "${input.extractionId.extractorId}" was not found`
       );
     }
 
-    if (!sourceEntities[0]) {
+    if (!sourceEntities.length) {
       throw new PXValidationError(
         PXValidationError.codes.ENTITY_NOT_FOUND,
-        `Source Entity with id "${extractionId.entitySharedId}" was not found`
+        `Source Entity with id "${input.extractionId.entitySharedId}" was not found`
       );
     }
 
-    return { sourceEntity: sourceEntities[0], extractor };
+    return { sourceEntities, extractor, defaultParagraph, translationsParagraph };
   }
 
   private static createParagraphTitle(entity: Entity, pageNumber: number): string {
     return `${entity.title}.${pageNumber}`;
   }
 }
+
+export { PXCreateParagraph };
+
+export type { PXCreateParagraphInput };

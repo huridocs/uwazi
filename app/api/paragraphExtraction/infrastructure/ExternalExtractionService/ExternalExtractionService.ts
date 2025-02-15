@@ -20,16 +20,17 @@ export class PXExternalExtractionService implements PXExtractionService {
 
   async getParagraphsResult(url: string): Promise<GetParagraphsResultOutput> {
     const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
+    const extractionId = new PXExtractionId(dto.key);
 
     return {
-      extractionId: new PXExtractionId(dto.key),
       availableLanguages: dto.available_languages as LanguageISO6391[],
-      mainLanguage: dto.main_language as LanguageISO6391,
       paragraphs: dto.paragraphs.map(paragraph => ({
-        position: paragraph.position,
+        defaultLanguage: dto.main_language as LanguageISO6391,
+        extractionId,
+        pageNumber: paragraph.position,
         translations: paragraph.translations.map(translation => ({
           language: translation.language as LanguageISO6391,
-          text: translation.text,
+          paragraph: translation.text,
           needsUserReview: translation.needs_user_review,
         })),
       })),

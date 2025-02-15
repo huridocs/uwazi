@@ -125,52 +125,55 @@ describe('ExternalExtractionService', () => {
         'http://localhost:5056/paragraphs_results'
       );
 
-      expect(output).toEqual({
-        extractionId: PXExtractionId.create({
-          entitySharedId: 'entitySharedId',
-          extractorId: 'extractorId',
-        }),
+      const extractionId = PXExtractionId.create({
+        entitySharedId: 'entitySharedId',
+        extractorId: 'extractorId',
+      });
 
-        mainLanguage: 'en',
+      expect(output).toEqual({
         availableLanguages: ['en', 'es', 'fr'],
 
         paragraphs: [
           {
-            position: 1,
+            defaultLanguage: 'en',
+            extractionId,
+            pageNumber: 1,
             translations: [
               {
                 language: 'en',
-                text: 'This is an example paragraph in English.',
+                paragraph: 'This is an example paragraph in English.',
                 needsUserReview: false,
               },
               {
                 language: 'es',
-                text: 'Este es un párrafo de ejemplo en español.',
+                paragraph: 'Este es un párrafo de ejemplo en español.',
                 needsUserReview: false,
               },
               {
                 language: 'fr',
-                text: 'Ceci est un paragraphe exemple en français.',
+                paragraph: 'Ceci est un paragraphe exemple en français.',
                 needsUserReview: true,
               },
             ],
           },
           {
-            position: 2,
+            defaultLanguage: 'en',
+            extractionId,
+            pageNumber: 2,
             translations: [
               {
                 language: 'en',
-                text: 'This is another example paragraph in English.',
+                paragraph: 'This is another example paragraph in English.',
                 needsUserReview: false,
               },
               {
                 language: 'es',
-                text: 'Este es otro párrafo de ejemplo en español.',
+                paragraph: 'Este es otro párrafo de ejemplo en español.',
                 needsUserReview: true,
               },
               {
                 language: 'fr',
-                text: 'Ceci est un autre paragraphe exemple en français.',
+                paragraph: 'Ceci est un autre paragraphe exemple en français.',
                 needsUserReview: false,
               },
             ],

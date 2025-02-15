@@ -20,7 +20,7 @@ export class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
     /**
      * The idea here is to:
      * 1. Append each one of the input into a Queue
-     * 2. This Queue would execute the PXExtractParagraphsFromEntity use case.
+     * 2. This Queue would execute the [PXExtractParagraphsFromEntity!!] use case.
      *
      * This Queue must have the following requirements:
      * 1. Persist Tasks/Jobs (This will prevent from lost the Task if the process gets down)
