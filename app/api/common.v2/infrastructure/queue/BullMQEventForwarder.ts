@@ -16,7 +16,7 @@ class BullMQEventForwarder {
 
   private enqueueEvent(event: Event) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.dependencies.queue.add(this.dependencies.eventName, JSON.stringify(event));
+    this.dependencies.queue.add(this.dependencies.eventName, event);
   }
 
   get queue() {

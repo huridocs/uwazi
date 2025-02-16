@@ -33,7 +33,11 @@ describe('BullMQEventForwarder', () => {
     const jobs = await bullMQEventForwarder.queue.getJobs();
 
     expect(jobs).toHaveLength(100);
-    expect(jobs[0].data).toEqual(JSON.stringify(event));
+    expect(jobs[0].data).toEqual({
+      date: event.date.toISOString(),
+      name: event.name,
+      payload: event.payload,
+    });
   });
 
   it('should not enqueue events with different names', async () => {
@@ -56,7 +60,17 @@ describe('BullMQEventForwarder', () => {
     const jobs = await bullMQEventForwarder.queue.getJobs();
 
     expect(jobs).toHaveLength(2);
-    expect(jobs[0].data).toBe(JSON.stringify(event2));
-    expect(jobs[1].data).toBe(JSON.stringify(event1));
+
+    expect(jobs[0].data).toEqual({
+      date: event2.date.toISOString(),
+      name: event2.name,
+      payload: event2.payload,
+    });
+
+    expect(jobs[1].data).toEqual({
+      date: event1.date.toISOString(),
+      name: event1.name,
+      payload: event1.payload,
+    });
   });
 });
