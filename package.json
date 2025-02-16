@@ -17,6 +17,7 @@
   "author": "huridocs.org",
   "main": "server.js",
   "scripts": {
+    "FIX_ERR_REQUIRE_ESM": "node -e \"['cjs','esm'].map(a=>'./node_modules/bullmq/dist/'+a+'/classes/child-processor.js').map(a=>require('fs').writeFileSync(a,require('fs').readFileSync(a,{encoding:'utf8'}).replace('require(processorFile)','await import(processorFile)')))\"",
     "check-app-types": "tsc --noEmit --pretty",
     "check-cy-types": "tsc --noEmit --pretty --project cypress",
     "check-types": "yarn check-cy-types && yarn check-app-types",
@@ -128,6 +129,7 @@
     "big.js": "^6.2.2",
     "body-parser": "^1.20.3",
     "bootstrap": "3.4.1",
+    "bullmq": "^5.41.2",
     "child-process-promise": "^2.2.1",
     "clean-insights-sdk": "^2.6.2",
     "compression": "^1.7.5",
