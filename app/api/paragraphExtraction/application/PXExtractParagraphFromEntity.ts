@@ -15,7 +15,7 @@ import { PXErrorCode, PXValidationError } from '../domain/PXValidationError';
 import { PXExtractionService } from '../domain/PXExtractionService';
 import { PXExtractionId } from '../domain/PXExtractionId';
 
-type Input = z.infer<typeof Schema>;
+type PXExtractParagraphsFromEntityInput = z.infer<typeof Schema>;
 
 type Output = any;
 
@@ -33,10 +33,12 @@ const Schema = z.object({
   entitySharedId: z.string({ message: 'You should provide an Entity' }),
 });
 
-export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
+export class PXExtractParagraphsFromEntity
+  implements UseCase<PXExtractParagraphsFromEntityInput, Output>
+{
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: Input): Promise<Output> {
+  async execute(input: PXExtractParagraphsFromEntityInput): Promise<Output> {
     const { extractor, entity, installedLanguages } = await this.getInitialData(input);
 
     const documents = await this.getDocuments(entity, installedLanguages);
@@ -60,7 +62,7 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
   }
 
   // eslint-disable-next-line max-statements
-  private async getInitialData(input: Input) {
+  private async getInitialData(input: PXExtractParagraphsFromEntityInput) {
     const [extractor, entities, installedLanguages] = await Promise.all([
       this.dependencies.extractorsDS.getById(input.extractorId),
       this.dependencies.entityDS.getByIds([input.entitySharedId]).all(),
@@ -149,3 +151,5 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
     return segmentations;
   }
 }
+
+export type { PXExtractParagraphsFromEntityInput };

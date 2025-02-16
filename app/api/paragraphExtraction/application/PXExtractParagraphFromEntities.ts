@@ -1,12 +1,17 @@
 import { z } from 'zod';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { Emitter } from 'api/common.v2/contracts/emitter/Emitter';
+
+import { PXExtractParagraphFromEntityEvent } from '../domain/PXExtractParagraphFromEntityEvent';
 
 type Input = z.infer<typeof Schema>;
 
 type Output = any;
 
-type Dependencies = {};
+type Dependencies = {
+  emitter: Emitter;
+};
 
 const Schema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),
@@ -16,7 +21,13 @@ const Schema = z.object({
 export class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: Input): Promise<Output> {
+  async execute({ entitySharedIds, extractorId }: Input): Promise<Output> {
+    entitySharedIds.forEach(entitySharedId =>
+      this.dependencies.emitter.emit(
+        new PXExtractParagraphFromEntityEvent({ entitySharedId, extractorId })
+      )
+    );
+
     /**
      * The idea here is to:
      * 1. Append each one of the input into a Queue
