@@ -36,18 +36,6 @@ export class MongoEntitiesDataSource
     this.settingsDS = settingsDS;
   }
 
-  async create(entity: Entity): Promise<void> {
-    /**
-     translate to EntityInputModel and call
-     
-     await entities.save(
-         eo,
-         { user, language },
-         { updateRelationships: true, index: false }
-       );
-     */
-  }
-
   // eslint-disable-next-line class-methods-use-this
   async updateEntities_OnlyUpdateAndReindex(entity: Entity) {
     // This is using V1 model and custom reindex here
