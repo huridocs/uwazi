@@ -25,6 +25,29 @@ function excludeRefs(template) {
   return template;
 }
 
+const getMatchingHubsCount = async (entitySharedId, searchResultIds) => {
+  const [countResult] = await model.db.aggregate([
+    { $match: { entity: entitySharedId } },
+    {
+      $lookup: {
+        from: 'connections',
+        localField: 'hub',
+        foreignField: 'hub',
+        as: 'connections',
+      },
+    },
+    {
+      $match: {
+        'connections.entity': {
+          $in: searchResultIds,
+        },
+      },
+    },
+    { $count: 'total' }
+  ]);
+  
+  return countResult?.total || 0;
+};
 function getPropertiesToBeConnections(template) {
   const props = [];
   template.properties.forEach(prop => {
@@ -529,6 +552,179 @@ export default {
         return limitRelationshipResults(results, entitySharedId, hubsLimit);
       });
     });
+  },
+
+  async _search(entitySharedId, query, language, user) {
+    const relationTypeFilter = Object.keys(query.filter || {})
+      .filter(relationTypeId => {
+        return query.filter[relationTypeId].length > 0;
+      })
+      .map(relationTypeId => {
+        if (relationTypeId === 'null') {
+          return null;
+        }
+        return new ObjectId(relationTypeId);
+      });
+    const ownRelations = await model.get({ entity: entitySharedId }, 'hub');
+    const hubsIds = ownRelations.map(relationship => relationship.hub);
+
+    const rightSideIds = (
+      await model.get(
+        {
+          hub: { $in: hubsIds },
+          entity: { $ne: entitySharedId },
+          ...(relationTypeFilter.length ? { template: { $in: relationTypeFilter } } : {}),
+        },
+        { entity: 1 }
+      )
+    ).map(r => r.entity);
+
+    const entityTemplateFilter = Object.keys(query.filter || {}).reduce(
+      (templatesToFilter, relationTypeId) => {
+        return [
+          ...templatesToFilter,
+          ...query.filter[relationTypeId].map(relationTemplateIdCombo =>
+            relationTemplateIdCombo.replace(relationTypeId, '')
+          ),
+        ];
+      },
+      []
+    );
+
+    const _query = {
+      ...query,
+      ids: rightSideIds.length ? rightSideIds : ['no_results'],
+      includeUnpublished: true,
+      limit: 9999,
+      filter: undefined,
+      types: entityTemplateFilter,
+    };
+    const searchResult = await search.search(_query, language, user);
+
+    const totalHubs = await getMatchingHubsCount(entitySharedId, searchResult.rows.map(r => r.sharedId));
+
+    const agg = await model.db.aggregate([
+      { $match: { entity: entitySharedId } },
+      { $project: { hub: 1 } },
+      {
+        $lookup: {
+          from: 'connections',
+          localField: 'hub',
+          foreignField: 'hub',
+          as: 'connections',
+        },
+      },
+      {
+        $project: {
+          hub: 1,
+          connections: {
+            $filter: {
+              input: '$connections',
+              as: 'conn',
+              cond: {
+                $or: [
+                  { $eq: ['$$conn.entity', entitySharedId] },
+                  { $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] },
+                ],
+              },
+            },
+          },
+          // 'connections._id': 1,
+          // 'connections.entity': 1,
+          // 'connections.template': 1,
+          // 'connections.hub': 1,
+          // 'connections.reference.text': 1,
+        },
+      },
+      {
+        $match: {
+          'connections.entity': {
+            $in: searchResult.rows.map(r => r.sharedId),
+          },
+        },
+      },
+      {
+        $addFields: {
+          sortValue: {
+            $min: {
+              $map: {
+                input: '$connections',
+                as: 'conn',
+                in: {
+                  $cond: {
+                    if: { $ne: ['$$conn.entity', entitySharedId] },
+                    then: {
+                      $indexOfArray: [searchResult.rows.map(r => r.sharedId), '$$conn.entity'],
+                    },
+                    else: 999999, // arbitrary high number
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      {
+        $sort: { sortValue: 1 },
+      },
+      { $limit: Number(query.limit) || 10 },
+    ]);
+
+    const connectionsPerEntity = agg.reduce((memo, row) => {
+      row.connections.forEach(connection => {
+        if (!memo[connection.entity]) {
+          memo[connection.entity] = [];
+        }
+        connection.entityData = searchResult.rows.find(r => r.sharedId === connection.entity);
+        memo[connection.entity].push(connection);
+      });
+      return memo;
+    }, {});
+
+    // console.log(Object.keys(connectionsPerEntity));
+
+    const entitiesInvolved = await entities.get(
+      {
+        sharedId: { $in: Object.keys(connectionsPerEntity) },
+        language,
+        ...(entityTemplateFilter.length && { template: { $in: entityTemplateFilter } }),
+      }
+      // { title: 1, sharedId: 1 },
+      // { withoutDocuments: true }
+    );
+
+    entitiesInvolved.forEach(e => {
+      e.connections = connectionsPerEntity[e.sharedId];
+    });
+
+    // console.log(JSON.stringify(entitiesInvolved, null, ' '));
+
+    return {
+      aggregations: { all: {} },
+      totalRows: Number(query.limit) || 10,
+      requestedHubs: Number(query.limit) || 10,
+      totalHubs,
+      relation: 'eq',
+      // rows: entitiesInvolved,
+      rows: entitiesInvolved.sort((a, b) => {
+        // Handle sharedId first (always put it at the end)
+        if (a.sharedId === entitySharedId) return 1;
+        if (b.sharedId === entitySharedId) return -1;
+
+        // Find indices in searchResults
+        const indexA = searchResult.rows.findIndex(r => r.sharedId === a.sharedId);
+        const indexB = searchResult.rows.findIndex(r => r.sharedId === b.sharedId);
+
+        // Handle cases where items are not found in searchResults
+        if (indexA === -1 && indexB === -1) return 0;
+        if (indexA === -1) return 1;
+        if (indexB === -1) return -1;
+
+        return indexA - indexB;
+      }),
+    };
+
+    return this.search(entitySharedId, query, language, user);
   },
 
   async delete(relationQuery, _language, updateMetdata = true) {

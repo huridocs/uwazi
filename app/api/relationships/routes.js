@@ -163,7 +163,7 @@ export default app => {
       req.query.filter = JSON.parse(req.query.filter || '{}');
       const { sharedId, ...query } = req.query;
       relationships
-        .search(req.query.sharedId, query, req.language, req.user)
+        ._search(req.query.sharedId, query, req.language, req.user)
         .then(results => res.json(results))
         .catch(next);
     }
