@@ -17,11 +17,11 @@ import { extractor, sourceTemplate, targetTemplate, defaultTemplate, entity } fr
 const setUpUseCase = () => {
   const db = getConnection();
   const transaction = DefaultTransactionManager();
-  const entityDS = DefaultEntitiesDataSource(transaction);
+  const entitiesDS = DefaultEntitiesDataSource(transaction);
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
 
   const createParagraph = new PXCreateParagraph({
-    entityDS,
+    entitiesDS,
     extractorsDS,
     idGenerator: MongoIdHandler,
   });
@@ -108,7 +108,7 @@ describe('PXCreateParagraph', () => {
     const extractionId = PXExtractionId.create({
       entitySharedId: entity.sharedId!.toString(),
       extractorId: extractor._id.toString(),
-    }).id;
+    });
 
     const promise = createParagraph.execute({
       language: 'ab',
