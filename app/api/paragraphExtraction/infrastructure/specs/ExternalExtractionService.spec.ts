@@ -8,7 +8,14 @@ import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
-import { document, extractor, mockGetParagraphsResult, segmentation } from './fixtures';
+import {
+  document,
+  document2,
+  extractor,
+  mockGetParagraphsResult,
+  segmentation,
+  segmentation2,
+} from './fixtures';
 
 const upload = multer();
 const app = express();
@@ -56,14 +63,18 @@ describe('ExternalExtractionService', () => {
         url: 'http://localhost:5056',
       });
 
+      const extractionId = PXExtractionId.create({
+        entitySharedId: 'entitySharedId',
+        extractorId: extractor.id,
+        tenantName: 'tenantName',
+        userId: 'userId',
+      });
+
       await externalExtractionService.extractParagraph({
         segmentations: [segmentation],
         documents: [document],
         defaultLanguage: 'pt',
-        extractionId: PXExtractionId.create({
-          entitySharedId: 'any_shared_id',
-          extractorId: extractor.id,
-        }),
+        extractionId,
         files: [
           FileBuilder.create().withFilename('file1.txt').build(),
           FileBuilder.create().withFilename('file2.txt').build(),
@@ -73,7 +84,7 @@ describe('ExternalExtractionService', () => {
 
       expect(body).toEqual({
         json_data: JSON.stringify({
-          key: 'any_id_____any_shared_id',
+          key: extractionId.id,
           xmls_segments: [
             {
               language: 'pt',
@@ -112,6 +123,35 @@ describe('ExternalExtractionService', () => {
         },
       ]);
     });
+
+    it('should choose the first Document language if default language is not present', async () => {
+      const externalExtractionService = new PXExternalExtractionService({
+        httpClient: HttpClientFactory.createDefault(),
+        url: 'http://localhost:5056',
+      });
+
+      const extractionId = PXExtractionId.create({
+        entitySharedId: 'entitySharedId',
+        extractorId: extractor.id,
+        tenantName: 'tenantName',
+        userId: 'userId',
+      });
+
+      await externalExtractionService.extractParagraph({
+        segmentations: [segmentation, segmentation2],
+        documents: [document, document2],
+        defaultLanguage: 'en',
+        extractionId,
+        files: [],
+      });
+
+      const payload = JSON.parse(body.json_data);
+
+      expect(payload.xmls_segments).toMatchObject([
+        { language: 'pt', is_main_language: true },
+        { language: 'es', is_main_language: false },
+      ]);
+    });
   });
 
   describe('getParagraphsResult', () => {
@@ -128,6 +168,8 @@ describe('ExternalExtractionService', () => {
       const extractionId = PXExtractionId.create({
         entitySharedId: 'entitySharedId',
         extractorId: 'extractorId',
+        tenantName: 'any_tenant',
+        userId: 'any_user_id',
       });
 
       expect(output).toEqual({

@@ -8,7 +8,12 @@ import { Document } from 'api/files.v2/model/Document';
 import { GetParagraphsResultDTO } from '../ExternalExtractionService/types';
 
 const mockGetParagraphsResult: GetParagraphsResultDTO = {
-  key: PXExtractionId.create({ entitySharedId: 'entitySharedId', extractorId: 'extractorId' }).id,
+  key: PXExtractionId.create({
+    entitySharedId: 'entitySharedId',
+    extractorId: 'extractorId',
+    tenantName: 'tenantName',
+    userId: 'userId',
+  }).id,
   main_language: 'en',
   available_languages: ['en', 'es', 'fr'],
   paragraphs: [
@@ -56,6 +61,7 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
 };
 
 const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
+const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
 const sourceTemplate = new Template('sourceTemplate', 'Source template');
 const targetTemplate = new Template('targetTemplate', 'Target template', [
   new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id'),
@@ -72,6 +78,17 @@ const segmentation: Segmentation = {
   status: 'ready',
 };
 
+const segmentation2: Segmentation = {
+  id: 'any_id2',
+  fileId: document2.id,
+  filename: document2.filename,
+  xmlname: document2.filename,
+  paragraphs: [
+    { width: 0, height: 0, left: 0, top: 0, type: 'any_type', text: 'any_text', pageNumber: 0 },
+  ],
+  status: 'ready',
+};
+
 const extractor = new PXExtractor({ id: 'any_id', sourceTemplate, targetTemplate });
 
 export {
@@ -81,4 +98,6 @@ export {
   document,
   sourceTemplate,
   targetTemplate,
+  document2,
+  segmentation2,
 };

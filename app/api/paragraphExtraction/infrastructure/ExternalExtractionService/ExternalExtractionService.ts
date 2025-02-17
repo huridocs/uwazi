@@ -44,6 +44,9 @@ export class PXExternalExtractionService implements PXExtractionService {
     files,
     extractionId,
   }: ExtractParagraphInput): Promise<void> {
+    const hasDefaultLanguage = documents.some(document => document.language === defaultLanguage);
+    const _defaultLanguage = hasDefaultLanguage ? defaultLanguage : documents[0].language;
+
     const dto: ExtractionDTO = {
       key: extractionId.id,
       xmls_segments: segmentations.map(segmentation => {
@@ -51,7 +54,7 @@ export class PXExternalExtractionService implements PXExtractionService {
 
         return {
           language,
-          is_main_language: language === defaultLanguage,
+          is_main_language: language === _defaultLanguage,
           xml_file_name: segmentation.xmlname!,
           xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
             left: paragraph.left,
