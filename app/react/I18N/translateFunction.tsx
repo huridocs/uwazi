@@ -9,10 +9,18 @@ interface TranslationFunction {
   translation?: string;
 }
 
-const t: TranslationFunction = (contextId, key, text, returnComponent = true) => {
-  let translations;
-  let locale;
+// const updateTranslations = () => {
+//   const translations = atomStore.get(translationsAtom);
+//   const locale = atomStore.get(localeAtom);
+//   t.translation = getLocaleTranslation(translations, locale);
+//   return { translations, locale };
+// };
+//
+// atomStore.sub(translationsAtom, () => {
+//   updateTranslations();
+// });
 
+const t: TranslationFunction = (contextId, key, text, returnComponent = true) => {
   if (!contextId) {
     // eslint-disable-next-line no-console
     console.warn(`You cannot translate "${key}", because context id is "${contextId}"`);
@@ -22,20 +30,11 @@ const t: TranslationFunction = (contextId, key, text, returnComponent = true) =>
     return <Translate context={contextId}>{key}</Translate>;
   }
 
-  const updateTranslations = () => {
-    translations = atomStore.get(translationsAtom);
-    locale = atomStore.get(localeAtom);
-    t.translation = getLocaleTranslation(translations, locale);
-    return { translations, locale };
-  };
+  // updateTranslations();
 
-  updateTranslations();
-
-  atomStore.sub(translationsAtom, () => {
-    updateTranslations();
-  });
-
-  const context = getContext(t.translation, contextId);
+  const translations = atomStore.get(translationsAtom);
+  const locale = atomStore.get(localeAtom);
+  const context = getContext(getLocaleTranslation(translations, locale), contextId);
 
   return translate(context, key, text || key);
 };
