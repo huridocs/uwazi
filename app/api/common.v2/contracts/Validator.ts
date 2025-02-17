@@ -1,5 +1,4 @@
-import { z, ZodError, ZodSchema } from 'zod';
-import { ValidationError } from './ValidationError';
+import { z, ZodSchema } from 'zod';
 
 type ValidatorProps = {
   code: string;
@@ -23,14 +22,6 @@ export class Validator {
   }
 
   validate(data: unknown) {
-    try {
-      this.schema.parse(data);
-    } catch (e) {
-      if (e instanceof ZodError) {
-        throw new ValidationError('', this.code, this.name);
-      }
-
-      throw e;
-    }
+    this.schema.parse(data);
   }
 }
