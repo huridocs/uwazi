@@ -31,6 +31,8 @@ type Dependencies = {
 const Schema = z.object({
   extractorId: z.string({ message: 'You should provide an Extractor' }),
   entitySharedId: z.string({ message: 'You should provide an Entity' }),
+  tenantName: z.string(),
+  userId: z.string(),
 });
 
 export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
@@ -54,6 +56,8 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       extractionId: PXExtractionId.create({
         entitySharedId: entity.sharedId,
         extractorId: extractor.id,
+        tenantName: input.tenantName,
+        userId: input.userId,
       }),
       files,
     });

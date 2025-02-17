@@ -24,7 +24,7 @@ export const extractor: MongoPXExtractorDBO = {
 
 export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });
 export const file2 = factory.document('file2', { language: 'spa', entity: entity.sharedId });
-export const fileWithLanguageNotConfigured = factory.document('fileWithLanguageNotConfigured', {
+export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
   language: 'por',
   entity: entity.sharedId,
 });
@@ -35,8 +35,8 @@ export const segmentation2 = factory.MongoSegmentationBuilder.create()
   .withFileId(file2._id)
   .build();
 
-export const fileWithLanguageNotConfiguredSegmentation = factory.MongoSegmentationBuilder.create()
-  .withFileId(fileWithLanguageNotConfigured._id)
+export const segmentationFileWithLanguageNotInstalled = factory.MongoSegmentationBuilder.create()
+  .withFileId(fileWithLanguageNotInstalled._id)
   .build();
 
 export const failedSegmentation = factory.MongoSegmentationBuilder.create()
