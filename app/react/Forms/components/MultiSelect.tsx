@@ -367,11 +367,7 @@ abstract class MultiSelectBase<ValueType> extends Component<
           </span>
           <span className="multiselectItem-name" onClick={clickEvent}>
             <CustomIcon className="item-icon" data={option.icon} />
-            {this.state.serverSideRender && option.url ? (
-              <Link to={option.url}>{option[optionsLabel]}</Link>
-            ) : (
-              option[optionsLabel]
-            )}
+            {option[optionsLabel]}
           </span>
           &nbsp;
         </label>
