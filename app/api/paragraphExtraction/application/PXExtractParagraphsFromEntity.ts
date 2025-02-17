@@ -83,13 +83,6 @@ export class PXExtractParagraphsFromEntity implements UseCase<Input, Output> {
       );
     }
 
-    if (!installedLanguages.length) {
-      throw new PXValidationError(
-        PXErrorCode.LANGUAGES_NOT_FOUND,
-        'There is no languages available'
-      );
-    }
-
     if (!extractor.canExtract(entity)) {
       throw new PXValidationError(
         PXErrorCode.ENTITY_INVALID,
