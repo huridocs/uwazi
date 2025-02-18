@@ -191,8 +191,6 @@ function saveRelationships() {
       )
       .then(([response, parentEntity]) => {
         dispatch(actions.set('entityView/entity', parentEntity));
-        dispatch(actions.set('viewer/doc', parentEntity));
-
         dispatch(uiActions.closePanel());
         dispatch(
           edit(

@@ -333,7 +333,6 @@ describe('Relationships actions', () => {
               },
               { type: 'relationships/list/searchResults/SET', value: 'reloadedSearchResults' },
               { type: 'entityView/entity/SET', value: 'entity' },
-              { type: 'viewer/doc/SET', value: 'entity' },
               { type: 'CLOSE_RELATIONSHIPS_PANEL' },
               {
                 type: 'EDIT_RELATIONSHIPS',
