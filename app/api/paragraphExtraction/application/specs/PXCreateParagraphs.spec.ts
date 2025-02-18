@@ -1,3 +1,6 @@
+import { ObjectId } from 'mongodb';
+
+import { tenants } from 'api/tenants';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
@@ -49,23 +52,24 @@ describe('PXCreateParagraphs', () => {
   it('should create an Entity per paragraph with available translations', async () => {
     const createParagraphs = new PXCreateParagraphs({});
 
-    const input: PXCreateParagraphsInput = {
-      availableLanguages: ['en', 'es'],
-      mainLanguage: 'en',
-      extractionId: PXExtractionId.create({
-        entitySharedId: entity.sharedId!,
-        extractorId: extractor._id.toString(),
-      }),
-      paragraphs: [
-        {
-          pageNumber: 1,
-          translations: [
-            { language: 'en', needsUserReview: false, paragraph: 'Paragraph 1 in english' },
-            { language: 'es', needsUserReview: false, paragraph: 'Paragraph 1 is spanish' },
-          ],
-        },
-      ],
-    };
+    const extractionId = PXExtractionId.create({
+      entitySharedId: entity.sharedId!,
+      extractorId: extractor._id.toString(),
+      tenantName: tenants.current().name,
+      userId: new ObjectId().toString(),
+    });
+
+    const input: PXCreateParagraphsInput = [
+      {
+        defaultLanguage: 'es',
+        extractionId,
+        pageNumber: 2,
+        translations: [
+          { language: 'en', needsUserReview: false, paragraph: 'Paragraph 1 in english' },
+          { language: 'es', needsUserReview: false, paragraph: 'Paragraph 1 in spanish' },
+        ],
+      },
+    ];
 
     await createParagraphs.execute(input);
 
@@ -89,7 +93,5 @@ describe('PXCreateParagraphs', () => {
         },
       },
     ]);
-
-    // Extracted Paragraphs needs to be grouped by sharedId and tested in clusters
   });
 });
