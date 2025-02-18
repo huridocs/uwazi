@@ -15,17 +15,17 @@ type ExtractParagraphInput = {
 type Translation = {
   language: LanguageISO6391;
   needsUserReview: boolean;
-  paragraph: string;
+  text: string;
 };
 
 type ParagraphOutput = {
-  extractionId: PXExtractionId;
-  pageNumber: number;
+  paragraphNumber: number;
   translations: Translation[];
-  defaultLanguage: LanguageISO6391;
 };
 
 type GetParagraphsResultOutput = {
+  extractionId: PXExtractionId;
+  mainLanguage: LanguageISO6391;
   availableLanguages: LanguageISO6391[];
   paragraphs: ParagraphOutput[];
 };

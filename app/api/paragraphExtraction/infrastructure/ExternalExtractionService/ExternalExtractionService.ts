@@ -24,14 +24,14 @@ export class PXExternalExtractionService implements PXExtractionService {
 
     return {
       availableLanguages: dto.available_languages as LanguageISO6391[],
-      paragraphs: dto.paragraphs.map(paragraph => ({
-        defaultLanguage: dto.main_language as LanguageISO6391,
-        extractionId,
-        pageNumber: paragraph.position,
-        translations: paragraph.translations.map(translation => ({
-          language: translation.language as LanguageISO6391,
-          paragraph: translation.text,
-          needsUserReview: translation.needs_user_review,
+      extractionId,
+      mainLanguage: dto.main_language as LanguageISO6391,
+      paragraphs: dto.paragraphs.map(p => ({
+        paragraphNumber: p.position,
+        translations: p.translations.map(t => ({
+          language: t.language as LanguageISO6391,
+          text: t.text,
+          needsUserReview: t.needs_user_review,
         })),
       })),
     };

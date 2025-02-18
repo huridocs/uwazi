@@ -1,28 +1,74 @@
-import { UseCase } from 'api/common.v2/contracts/UseCase';
-import { EntitiesDataSource } from 'api/entities.v2/contracts/EntitiesDataSource';
-import { Entity } from 'api/entities.v2/model/Entity';
-import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
+import { ObjectId } from 'mongodb';
 
-import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { UseCase } from 'api/common.v2/contracts/UseCase';
+import { EntitySchema } from 'shared/types/entityType';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import entities from 'api/entities';
+
+import { PXExtractor } from '../domain/PXExtractor';
 import { ParagraphOutput } from '../domain/PXExtractionService';
 
-type PXCreateParagraphInput = ParagraphOutput;
+type PXCreateParagraphInput = {
+  mainLanguage: LanguageISO6391;
+  sourceEntity: EntitySchema;
+  extractor: PXExtractor;
+  user: { _id: ObjectId };
+  paragraph: ParagraphOutput;
+};
 
 type Output = any;
 
-type Dependencies = {
-  entitiesDS: EntitiesDataSource;
-  extractorsDS: PXExtractorsDataSource;
-  idGenerator: IdGenerator;
-};
+type Dependencies = {};
 
 class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
   constructor(private dependencies: Dependencies) {}
 
-  async execute(input: PXCreateParagraphInput): Promise<Output> {}
+  async execute({
+    paragraph,
+    mainLanguage,
+    extractor,
+    sourceEntity,
+    user,
+  }: PXCreateParagraphInput): Promise<Output> {
+    const [mainTranslation, ...translations] = paragraph.translations.sort(a =>
+      a.language === mainLanguage ? -1 : 1
+    );
 
-  private static createParagraphTitle(entity: Entity, pageNumber: number): string {
-    return `${entity.title}.${pageNumber}`;
+    const [markdownProperty] = extractor.targetTemplate.getPropertiesByType('markdown');
+    const entityResult = await entities.save(
+      {
+        title: PXCreateParagraph.createTitle(sourceEntity, paragraph.paragraphNumber),
+        template: new ObjectId(extractor?.targetTemplate.id),
+        metadata: {
+          [markdownProperty.name]: [
+            { value: mainTranslation?.text, label: markdownProperty.label },
+          ],
+        },
+      },
+      { language: mainTranslation.language, user }
+    );
+
+    const entitiesCreated = await entities.getAllLanguages(entityResult.sharedId);
+
+    await translations.reduce(async (promise, translation) => {
+      await promise;
+
+      const entitySaved = entitiesCreated.find(e => e.language === translation.language);
+
+      return entities.save(
+        {
+          ...entitySaved,
+          metadata: {
+            [markdownProperty.name]: [{ value: translation.text, label: markdownProperty.label }],
+          },
+        },
+        { language: translation.language, user }
+      );
+    }, Promise.resolve());
+  }
+
+  private static createTitle(entity: EntitySchema, paragraphNumber: number): string {
+    return `${entity.title}.${paragraphNumber}`;
   }
 }
 

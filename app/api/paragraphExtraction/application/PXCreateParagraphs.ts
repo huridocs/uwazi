@@ -1,27 +1,46 @@
+import { ObjectId } from 'mongodb';
+
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+import entities from 'api/entities';
+import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 
-import { PXCreateParagraphInput } from './PXCreateParagraph';
+import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
+import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
+import { PXCreateParagraph } from './PXCreateParagraph';
 
-type PXCreateParagraphsInput = PXCreateParagraphInput[];
+type PXCreateParagraphsInput = GetParagraphsResultOutput;
 
 type Output = any;
 
-type Dependencies = {};
+type Dependencies = {
+  extractorsDS: PXExtractorsDataSource;
+  idGenerator: IdGenerator;
+};
 
 export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Output> {
-  constructor(private dependencies: Dependencies) {}
+  createParagraph: PXCreateParagraph;
 
-  async execute(input: PXCreateParagraphsInput): Promise<Output> {
-    /**
-     * Call PXCreateParagraph use case passing each paragraph
-     *
-     */
+  constructor(private dependencies: Dependencies) {
+    this.createParagraph = new PXCreateParagraph({});
+  }
+
+  async execute({
+    extractionId,
+    mainLanguage,
+    paragraphs,
+  }: PXCreateParagraphsInput): Promise<Output> {
+    const user = { _id: new ObjectId(extractionId.userId) };
+    const [extractor, sourceEntity] = await Promise.all([
+      this.dependencies.extractorsDS.getById(extractionId.extractorId),
+      entities.getById(extractionId.entitySharedId, mainLanguage),
+    ]);
+
+    const promises = paragraphs.map(async paragraph =>
+      this.createParagraph.execute({ paragraph, extractor, mainLanguage, sourceEntity, user })
+    );
+
+    await Promise.all(promises);
   }
 }
 
 export type { PXCreateParagraphsInput };
-
-/**
- * The idea is to put each paragraph in to a Queue
- * This Task will execute the PXCreateParagraph
- */

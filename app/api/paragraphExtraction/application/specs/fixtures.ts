@@ -15,6 +15,7 @@ export const targetTemplate = factory.template('Target Template', [
 export const invalidEntity = factory.entity('invalidEntity', defaultTemplate.name);
 
 export const entity = factory.entity('entity', sourceTemplate.name);
+export const entity2 = factory.entity('entity2', sourceTemplate.name);
 
 export const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
@@ -24,6 +25,7 @@ export const extractor: MongoPXExtractorDBO = {
 
 export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });
 export const file2 = factory.document('file2', { language: 'spa', entity: entity.sharedId });
+export const file3 = factory.document('file3', { language: 'spa', entity: entity2.sharedId });
 export const fileWithLanguageNotInstalled = factory.document('fileWithLanguageNotInstalled', {
   language: 'por',
   entity: entity.sharedId,
@@ -33,6 +35,10 @@ export const segmentation = factory.MongoSegmentationBuilder.create().withFileId
 
 export const segmentation2 = factory.MongoSegmentationBuilder.create()
   .withFileId(file2._id)
+  .build();
+
+export const segmentation3 = factory.MongoSegmentationBuilder.create()
+  .withFileId(file3._id)
   .build();
 
 export const segmentationFileWithLanguageNotInstalled = factory.MongoSegmentationBuilder.create()

@@ -208,7 +208,7 @@ describe('PXExtractParagraphsFromEntity', () => {
 
   it('should throw if there is no Documents to be extracted', async () => {
     const fixtures = createFixtures();
-    fixtures.files = [];
+    fixtures.files = [fileWithLanguageNotInstalled];
 
     await testingEnvironment.setFixtures(fixtures);
 

@@ -6,6 +6,7 @@ import { Server } from 'http';
 import { HttpClientFactory } from 'api/common.v2/infrastructure/HttpClientFactory';
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
+import { GetParagraphsResultOutput } from 'api/paragraphExtraction/domain/PXExtractionService';
 
 import { PXExternalExtractionService } from '../ExternalExtractionService/ExternalExtractionService';
 import {
@@ -168,60 +169,59 @@ describe('ExternalExtractionService', () => {
       const extractionId = PXExtractionId.create({
         entitySharedId: 'entitySharedId',
         extractorId: 'extractorId',
-        tenantName: 'any_tenant',
-        userId: 'any_user_id',
+        tenantName: 'tenantName',
+        userId: 'userId',
       });
 
-      expect(output).toEqual({
+      const expectedOutput: GetParagraphsResultOutput = {
         availableLanguages: ['en', 'es', 'fr'],
-
+        mainLanguage: 'en',
+        extractionId,
         paragraphs: [
           {
-            defaultLanguage: 'en',
-            extractionId,
-            pageNumber: 1,
+            paragraphNumber: 1,
             translations: [
               {
                 language: 'en',
-                paragraph: 'This is an example paragraph in English.',
+                text: 'This is an example paragraph in English.',
                 needsUserReview: false,
               },
               {
                 language: 'es',
-                paragraph: 'Este es un párrafo de ejemplo en español.',
+                text: 'Este es un párrafo de ejemplo en español.',
                 needsUserReview: false,
               },
               {
                 language: 'fr',
-                paragraph: 'Ceci est un paragraphe exemple en français.',
+                text: 'Ceci est un paragraphe exemple en français.',
                 needsUserReview: true,
               },
             ],
           },
           {
-            defaultLanguage: 'en',
-            extractionId,
-            pageNumber: 2,
+            paragraphNumber: 2,
             translations: [
               {
                 language: 'en',
-                paragraph: 'This is another example paragraph in English.',
+                text: 'This is another example paragraph in English.',
                 needsUserReview: false,
               },
               {
                 language: 'es',
-                paragraph: 'Este es otro párrafo de ejemplo en español.',
+                text: 'Este es otro párrafo de ejemplo en español.',
                 needsUserReview: true,
               },
               {
                 language: 'fr',
-                paragraph: 'Ceci est un autre paragraphe exemple en français.',
+                text: 'Ceci est un autre paragraphe exemple en français.',
                 needsUserReview: false,
               },
             ],
           },
         ],
-      });
+      };
+
+      expect(output).toEqual(expectedOutput);
     });
   });
 });
