@@ -1,6 +1,6 @@
 {
   "name": "uwazi",
-  "version": "1.199.6",
+  "version": "1.200.1",
   "description": "Uwazi is a free, open-source solution for organising, analysing and publishing your documents.",
   "keywords": [
     "react"
@@ -248,7 +248,7 @@
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.3.0",
     "@babel/cli": "7.26.4",
-    "@babel/core": "7.26.0",
+    "@babel/core": "7.26.7",
     "@babel/eslint-parser": "7.26.5",
     "@babel/helper-call-delegate": "^7.12.13",
     "@babel/helper-get-function-arity": "^7.16.7",
@@ -262,7 +262,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.26.3",
     "@babel/plugin-transform-react-constant-elements": "^7.25.9",
     "@babel/plugin-transform-react-inline-elements": "^7.25.9",
-    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-env": "^7.26.7",
     "@babel/preset-react": "^7.26.3",
     "@babel/preset-typescript": "^7.26.0",
     "@babel/register": "^7.25.9",
