@@ -12,15 +12,16 @@ type ExtractParagraphInput = {
   files: File[];
 };
 
-type Translation = {
+type TranslationOutput = {
   language: LanguageISO6391;
   needsUserReview: boolean;
   text: string;
+  isMainLanguage: boolean;
 };
 
 type ParagraphOutput = {
   paragraphNumber: number;
-  translations: Translation[];
+  translations: TranslationOutput[];
 };
 
 type GetParagraphsResultOutput = {
@@ -40,4 +41,5 @@ export type {
   PXExtractionService,
   GetParagraphsResultOutput,
   ParagraphOutput,
+  TranslationOutput,
 };

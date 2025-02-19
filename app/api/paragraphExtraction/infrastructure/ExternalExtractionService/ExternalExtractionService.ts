@@ -32,6 +32,7 @@ export class PXExternalExtractionService implements PXExtractionService {
           language: t.language as LanguageISO6391,
           text: t.text,
           needsUserReview: t.needs_user_review,
+          isMainLanguage: t.language === dto.main_language,
         })),
       })),
     };

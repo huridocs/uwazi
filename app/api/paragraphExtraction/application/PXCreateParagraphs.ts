@@ -7,6 +7,7 @@ import { IdGenerator } from 'api/common.v2/contracts/IdGenerator';
 import { PXExtractorsDataSource } from '../domain/PXExtractorDataSource';
 import { GetParagraphsResultOutput } from '../domain/PXExtractionService';
 import { PXCreateParagraph } from './PXCreateParagraph';
+import { PXValidationError } from '../domain/PXValidationError';
 
 type PXCreateParagraphsInput = GetParagraphsResultOutput;
 
@@ -24,19 +25,29 @@ export class PXCreateParagraphs implements UseCase<PXCreateParagraphsInput, Outp
     this.createParagraph = new PXCreateParagraph({});
   }
 
-  async execute({
-    extractionId,
-    mainLanguage,
-    paragraphs,
-  }: PXCreateParagraphsInput): Promise<Output> {
+  async execute({ extractionId, paragraphs }: PXCreateParagraphsInput): Promise<Output> {
     const user = { _id: new ObjectId(extractionId.userId) };
-    const [extractor, sourceEntity] = await Promise.all([
+    const [extractor, sourceEntities] = await Promise.all([
       this.dependencies.extractorsDS.getById(extractionId.extractorId),
-      entities.getById(extractionId.entitySharedId, mainLanguage),
+      entities.getAllLanguages(extractionId.entitySharedId),
     ]);
 
+    if (!extractor) {
+      throw new PXValidationError(
+        PXValidationError.codes.EXTRACTOR_NOT_FOUND,
+        `The Extractor with id ${extractionId.extractorId} does not exist anymore`
+      );
+    }
+
+    if (!sourceEntities.length) {
+      throw new PXValidationError(
+        PXValidationError.codes.SOURCE_ENTITY_DOES_NOT_EXIST_ANYMORE,
+        `The source Entity for the Extractor ${extractor?.id} does not exist anymore`
+      );
+    }
+
     const promises = paragraphs.map(async paragraph =>
-      this.createParagraph.execute({ paragraph, extractor, mainLanguage, sourceEntity, user })
+      this.createParagraph.execute({ paragraph, extractor, sourceEntities, user })
     );
 
     await Promise.all(promises);
