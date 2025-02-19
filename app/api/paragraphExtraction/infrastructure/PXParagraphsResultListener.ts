@@ -36,9 +36,9 @@ export class PXParagraphsResultListener {
   private async processResults(results: ResultMessage) {
     if (!results.success || !results.data_url) return;
 
-    const { paragraphs } = await this.props.extractionService.getParagraphsResult(results.data_url);
+    const result = await this.props.extractionService.getParagraphsResult(results.data_url);
 
-    await this.props.createParagraphs.execute(paragraphs);
+    await this.props.createParagraphs.execute(result);
   }
 
   start(interval = 500) {

@@ -60,8 +60,8 @@ export class PXExtractor {
     return translation ?? mainTranslation;
   }
 
-  canExtract(entity: Entity) {
-    return this.sourceTemplate.id === entity.template;
+  canExtract(sourceEntity: Entity) {
+    return this.sourceTemplate.id === sourceEntity.template;
   }
 
   createParagraph(sourceEntity: EntitySchema, extractedParagraph: ParagraphOutput): EntitySchema {

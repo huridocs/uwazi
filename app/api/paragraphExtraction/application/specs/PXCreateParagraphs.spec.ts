@@ -415,6 +415,8 @@ describe('PXCreateParagraphs', () => {
     });
   });
 
+  it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
+
   it.todo('should throw if the source Entity does not belong to the Extractor');
   it.todo('should pick the first rich text property if target Template has more than one');
 });
