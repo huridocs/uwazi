@@ -4,7 +4,7 @@ import React from 'react';
 import { CellContext, createColumnHelper } from '@tanstack/react-table';
 import { Link } from 'react-router-dom';
 import { Translate } from 'app/I18N';
-import { Button } from 'V2/Components/UI';
+import { Button, Pill } from 'V2/Components/UI';
 import { PXTable } from '../types';
 import { TableTitle } from './TableTitle';
 import { DisplayPill } from './DisplayPills';
@@ -32,31 +32,31 @@ const EntitiesCountHeader = () => (
 );
 const ActionHeader = () => <TableHeaderContainer> </TableHeaderContainer>;
 
-const NumericCell = ({
-  cell,
-}: CellContext<PXTable, PXTable['documents'] | PXTable['generatedEntities']>) => (
-  <span className="text-sm font-normal text-gray-500">{cell.getValue()}</span>
+const NewEntitiesCountPill = ({ count }: { count: number }) => (
+  <Pill color="indigo" className="font-medium px-1 rounded-md text-xs">
+    {count} <Translate>New</Translate>
+  </Pill>
 );
 
-const TemplatesCell = ({ cell }: CellContext<PXTable, PXTable['targetTemplate']>) => (
+const NumericCell = ({ cell }: CellContext<PXTable, PXTable['count']>) => {
+  const count = cell.getValue();
+  return (
+    <div className="flex gap-2 items-center">
+      <span className="text-sm font-normal text-gray-500">{count.generatedEntities}</span>
+      {count.new > 0 && <NewEntitiesCountPill count={count.new} />}
+    </div>
+  );
+};
+
+const TemplatesCell = ({
+  cell,
+}: CellContext<PXTable, PXTable['targetTemplate'] | PXTable['sourceTemplate']>) => (
   <div className="flex flex-wrap gap-2">
     <div className="whitespace-nowrap">
       <DisplayPill color={cell.getValue().color}>
         <span className="text-xs font-medium">{cell.getValue().name}</span>
       </DisplayPill>
     </div>
-  </div>
-);
-
-const SourceTemplateCell = ({ cell }: CellContext<PXTable, PXTable['sourceTemplates']>) => (
-  <div className="flex flex-wrap gap-2">
-    {cell.getValue().map(({ name, color, _id }) => (
-      <div key={_id} className="whitespace-nowrap">
-        <DisplayPill color={color}>
-          <span className="text-xs font-medium">{name}</span>
-        </DisplayPill>
-      </div>
-    ))}
   </div>
 );
 
@@ -71,10 +71,10 @@ const ActionButtons = ({ cell }: CellContext<PXTable, PXTable['_id']>) => (
 );
 
 const tableColumns = [
-  extractorColumnHelper.accessor('sourceTemplates', {
+  extractorColumnHelper.accessor('sourceTemplate', {
     header: SourceTemplateHeader,
     enableSorting: true,
-    cell: SourceTemplateCell,
+    cell: TemplatesCell,
     meta: {
       headerClassName: 'w-1/4',
     },
@@ -87,7 +87,7 @@ const tableColumns = [
       headerClassName: 'w-1/4',
     },
   }),
-  extractorColumnHelper.accessor('generatedEntities', {
+  extractorColumnHelper.accessor('count', {
     header: EntitiesCountHeader,
     enableSorting: true,
     cell: NumericCell,
@@ -108,4 +108,4 @@ const NoDataMessage = () => (
   </div>
 );
 
-export { tableColumns, TableTitle, NoDataMessage };
+export { tableColumns, TableTitle, NoDataMessage, NewEntitiesCountPill };

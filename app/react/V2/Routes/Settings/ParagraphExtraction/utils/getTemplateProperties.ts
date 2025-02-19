@@ -1,11 +1,6 @@
 import { Template } from 'app/apiResponseTypes';
 import { TemplateSchema } from 'shared/types/templateType';
 
-const getTemplateName = (templates: Template[], targetId: string) => {
-  const foundTemplate = templates.find(template => template._id === targetId);
-  return foundTemplate?.name || targetId;
-};
-
 type TemplateSchemaKeys = keyof TemplateSchema;
 
 const getTemplateProperties = (
@@ -23,4 +18,4 @@ const getTemplateProperties = (
   );
 };
 
-export { getTemplateName, getTemplateProperties };
+export { getTemplateProperties };

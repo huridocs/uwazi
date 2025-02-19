@@ -1,27 +1,31 @@
 export type PXTemplate = {
   _id: string;
   name: string;
-  color: string;
+  color?: string;
 };
 
 export type ParagraphExtractorApiPayload = {
   _id?: string;
-  sourceTemplateIds: string[];
+  sourceTemplateId: string;
   targetTemplateId: string;
 };
 
 export type ParagraphExtractorApiResponse = ParagraphExtractorApiPayload & {
   documents: number;
-  generatedEntities: number;
+  count: {
+    generatedEntities: number;
+    new: number;
+  };
 };
 
 export type PXTable = ParagraphExtractorApiResponse & {
   rowId: string;
   targetTemplate: PXTemplate;
-  sourceTemplates: PXTemplate[];
+  sourceTemplate: PXTemplate;
 };
 
-//
+export type EntityStatus = 'NEW' | 'IN_QUEUE' | 'PROCESSING' | 'DONE' | 'HAS_ERROR';
+
 export type PXEntityApiResponse = {
   _id: string;
   title: string;
@@ -29,11 +33,12 @@ export type PXEntityApiResponse = {
   document: string;
   languages: string[];
   paragraphCount: number;
+  status: EntityStatus;
 };
 
 export type PXEntityTable = PXEntityApiResponse & {
   rowId: string;
-  templateName: string;
+  template: PXTemplate;
 };
 
 export type PXParagraphApiResponse = {
@@ -43,10 +48,31 @@ export type PXParagraphApiResponse = {
   document: string;
   languages: string[];
   paragraphCount: number;
-  text: string;
+  versions: {
+    [key: string]: string;
+  };
+};
+
+export type PXEntityQuery = {
+  filter: {
+    extractorId: string;
+    status?: string[];
+    languages?: string[];
+  };
+  page?: {
+    number: number;
+    size: number;
+  };
+  sort?: {
+    property: string;
+    order?: 'asc' | 'desc';
+  };
+  [k: string]: unknown | undefined;
 };
 
 export type PXParagraphTable = PXParagraphApiResponse & {
   rowId: string;
-  templateName: string;
+  template: PXTemplate;
+  text: string;
+  subRows?: any[];
 };

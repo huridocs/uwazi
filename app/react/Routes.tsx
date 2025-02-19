@@ -47,17 +47,14 @@ import { ActivityLog, activityLogLoader } from 'V2/Routes/Settings/ActivityLog';
 import { CustomUploads, customUploadsLoader } from 'V2/Routes/Settings/CustomUploads/CustomUploads';
 import { FiltersTable, filtersLoader } from 'V2/Routes/Settings/Filters';
 import { RouteErrorBoundary, GeneralError } from 'V2/Components/ErrorHandling';
-import { ParagraphExtractorDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
-import { ParagraphExtractorLoader } from 'app/V2/Routes/Settings/ParagraphExtraction/PXLoaders';
-
 import {
-  PXEntityDashboard,
+  ParagraphExtractorLoader,
   PXEntityLoader,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
-import {
-  PXParagraphDashboard,
   PXParagraphLoader,
-} from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
+} from 'app/V2/Routes/Settings/ParagraphExtraction/PXLoaders';
+import { ParagraphExtractorDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/ParagraphExtraction';
+import { PXEntityDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXEntities';
+import { PXParagraphDashboard } from 'app/V2/Routes/Settings/ParagraphExtraction/PXParagraphs';
 import {
   loggedInUsersRoute,
   adminsOnlyRoute,

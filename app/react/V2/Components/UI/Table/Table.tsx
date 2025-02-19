@@ -55,6 +55,7 @@ type TableProps<T extends TableRow<T>> = {
   footer?: React.ReactNode;
   noDataMessage?: string | React.ReactNode;
   className?: string;
+  groupColumnPosition?: number;
 };
 
 const Table = <T extends TableRow<T>>({
@@ -69,6 +70,7 @@ const Table = <T extends TableRow<T>>({
   footer,
   className,
   noDataMessage = <DefaultNoDataMessage />,
+  groupColumnPosition = 0,
 }: TableProps<T>) => {
   const [dataState, setDataState] = useState(data);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
@@ -84,12 +86,13 @@ const Table = <T extends TableRow<T>>({
     let calculatedIndex = 0;
 
     if (hasGroups) {
-      tableColumns.unshift({
+      const groupColumn = {
         id: 'group-button',
         cell: GroupCell,
         header: GroupHeader,
         meta: { headerClassName: 'w-0' },
-      });
+      };
+      tableColumns.splice(groupColumnPosition, 0, groupColumn);
     }
     if (enableSelections) {
       calculatedIndex += 1;

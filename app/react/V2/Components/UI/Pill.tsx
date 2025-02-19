@@ -1,6 +1,6 @@
 import React from 'react';
 
-type PillColor = 'primary' | 'gray' | 'yellow' | 'green' | 'blue' | 'red';
+type PillColor = 'primary' | 'gray' | 'yellow' | 'green' | 'blue' | 'red' | 'indigo';
 interface PillProps {
   children: string | React.ReactNode;
   color: PillColor;
@@ -26,6 +26,9 @@ const Pill = ({ children, color = 'gray', className }: PillProps) => {
       break;
     case 'red':
       pillColors = 'bg-red-100 text-red-800';
+      break;
+    case 'indigo':
+      pillColors = 'bg-indigo-100 text-indigo-800';
       break;
 
     default:

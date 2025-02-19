@@ -1,17 +1,16 @@
-/* eslint-disable max-statements */
 import React, { useMemo, useState } from 'react';
-import { useLoaderData, useRevalidator, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router-dom';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { useSetAtom, useAtomValue } from 'jotai';
-import { notificationAtom, templatesAtom } from 'V2/atoms';
+import { useAtomValue } from 'jotai';
+import { templatesAtom } from 'V2/atoms';
 import { tableColumns, NoDataMessage } from './components/PXTableElements';
 import { PXTable, ParagraphExtractorApiResponse } from './types';
-import { ExtractorModal } from './components/ExtractorModal';
-import { formatExtractors } from './utils/formatExtractors';
+import { formatExtractors } from './utils/formatters';
 import { PXTableFooter } from './components/PXTableFooter';
-import { ConfirmDeleteExtractorModal } from './components/ConfirmDeleteExtractorModal';
+import { usePXActionModal } from './hooks/usePXActionModal';
+import { useAddExtractorModal } from './hooks/useAddExtractorModal';
 
 const ParagraphExtractorDashboard = () => {
   const { extractors = [] } = useLoaderData() as {
@@ -19,20 +18,14 @@ const ParagraphExtractorDashboard = () => {
   };
 
   const templates = useAtomValue(templatesAtom);
-  const revalidator = useRevalidator();
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
-  const [confirmModal, setConfirmModal] = useState(false);
-  const [extractorModal, setExtractorModal] = useState(false);
-  const setNotifications = useSetAtom(notificationAtom);
 
-  const handleSave = async () => {
-    revalidator.revalidate();
-    setNotifications({
-      type: 'success',
-      text: <Translate>Paragraph Extractor added</Translate>,
-    });
-  };
+  const { AddExtractorModal, setShowModal: showAddExtractorModal } = useAddExtractorModal();
+  const { Modal: ConfirmDeleteModal, setShowModal: showConfirmModal } = usePXActionModal({
+    action: 'deleteExtractor',
+    actionParams: selected?.map(selection => selection._id) as string[],
+  });
 
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),
@@ -40,8 +33,6 @@ const ParagraphExtractorDashboard = () => {
   );
 
   const [searchParams] = useSearchParams();
-
-  console.log(paragraphExtractorData);
 
   return (
     <div
@@ -77,19 +68,13 @@ const ParagraphExtractorDashboard = () => {
           />
         </SettingsContent.Body>
 
-        <SettingsContent.Footer className="flex gap-2">
-          {selected?.length === 1 ? (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
-              <Translate>Edit Extractor</Translate>
-            </Button>
-          ) : undefined}
-
+        <SettingsContent.Footer className="flex gap-2" highlighted={selected?.length > 0}>
           {selected?.length ? (
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center ">
               <Button
                 type="button"
                 color="error"
-                onClick={() => setConfirmModal(true)}
+                onClick={() => showConfirmModal(true)}
                 disabled={isSaving}
               >
                 <Translate>Delete</Translate>
@@ -102,35 +87,19 @@ const ParagraphExtractorDashboard = () => {
               </div>
             </div>
           ) : (
-            <Button type="button" onClick={() => setExtractorModal(true)} disabled={isSaving}>
+            <Button type="button" onClick={() => showAddExtractorModal(true)} disabled={isSaving}>
               <Translate>Add extractor</Translate>
             </Button>
           )}
         </SettingsContent.Footer>
       </SettingsContent>
-
-      {confirmModal && (
-        <ConfirmDeleteExtractorModal
-          setIsProcessing={setIsSaving}
-          extractorIds={selected?.map(selection => selection._id) as string[]}
-          showModal={setConfirmModal}
-          handleSuccessfulDeletion={() => {
-            setConfirmModal(false);
-            setSelected([]);
-          }}
-          warningText="Only the extractor will be deleted, all created entities will remain on the library."
-        />
-      )}
-
-      {extractorModal && (
-        <ExtractorModal
-          setShowModal={setExtractorModal}
-          onClose={() => setExtractorModal(false)}
-          onAccept={handleSave}
-          templates={templates}
-          extractor={selected?.length ? selected[0] : undefined}
-        />
-      )}
+      <ConfirmDeleteModal
+        setIsProcessing={setIsSaving}
+        onSuccess={() => {
+          setSelected([]);
+        }}
+      />
+      <AddExtractorModal extractor={selected?.length ? selected[0] : undefined} />
     </div>
   );
 };

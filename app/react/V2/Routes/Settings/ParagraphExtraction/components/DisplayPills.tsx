@@ -1,5 +1,4 @@
 import React from 'react';
-import { Pill } from 'app/V2/Components/UI';
 
 const getLighterShade = (hexValue: string, percent: number = 90): string => {
   if (!hexValue) return '';
@@ -23,11 +22,11 @@ const getLighterShade = (hexValue: string, percent: number = 90): string => {
 
 const DisplayPill = ({
   children,
-  color,
+  color = '#111928',
   className,
 }: {
   children: React.ReactNode;
-  color: string;
+  color?: string;
   className?: string;
 }) => {
   const bgColor = getLighterShade(color);
@@ -43,14 +42,4 @@ const DisplayPill = ({
   );
 };
 
-const DisplayPills = ({ items = [] }: { items: string[] }) => (
-  <>
-    {items.map(item => (
-      <Pill key={item} color="gray" className="text-gray-900 text-xs font-medium mr-1">
-        {item}
-      </Pill>
-    ))}
-  </>
-);
-
-export { DisplayPills, DisplayPill };
+export { DisplayPill };
