@@ -6,19 +6,7 @@ import { Translate } from './Translate';
 //return type as any since there is no way to create conditional returns based on parameters
 interface TranslationFunction {
   (contextId?: string, key?: string, text?: string | null, returnComponent?: boolean): any;
-  translation?: string;
 }
-
-// const updateTranslations = () => {
-//   const translations = atomStore.get(translationsAtom);
-//   const locale = atomStore.get(localeAtom);
-//   t.translation = getLocaleTranslation(translations, locale);
-//   return { translations, locale };
-// };
-//
-// atomStore.sub(translationsAtom, () => {
-//   updateTranslations();
-// });
 
 const t: TranslationFunction = (contextId, key, text, returnComponent = true) => {
   if (!contextId) {
@@ -29,8 +17,6 @@ const t: TranslationFunction = (contextId, key, text, returnComponent = true) =>
   if (returnComponent) {
     return <Translate context={contextId}>{key}</Translate>;
   }
-
-  // updateTranslations();
 
   const translations = atomStore.get(translationsAtom);
   const locale = atomStore.get(localeAtom);
