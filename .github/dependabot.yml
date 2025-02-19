@@ -27,7 +27,6 @@ updates:
       - dependency-name: '@typescript-eslint/parser'
       - dependency-name: eslint #6784
       - dependency-name: fetch-mock
-      - dependency-name: react-router-dom
       - dependency-name: react-datepicker
       - dependency-name: recharts
       - dependency-name: '@headlessui/react'

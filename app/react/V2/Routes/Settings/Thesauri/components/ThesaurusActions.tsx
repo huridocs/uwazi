@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Dispatch, SetStateAction } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal } from 'app/V2/Components/UI';
 import { ConfirmationCallback } from '../helpers';

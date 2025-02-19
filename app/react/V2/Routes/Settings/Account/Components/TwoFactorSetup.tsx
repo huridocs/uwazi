@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from 'app/utils/api';
-import { useRevalidator } from 'react-router-dom';
+import { useRevalidator } from 'react-router';
 import { useSetAtom } from 'jotai';
 
 import { RequestParams } from 'app/utils/RequestParams';
@@ -57,7 +57,7 @@ const TwoFactorSetup = ({ closePanel, isOpen }: TwoFactorSetupProps) => {
   const enable2fa = async () => {
     try {
       await api.post('auth2fa-enable', new RequestParams({ token }));
-      revalidator.revalidate();
+      await revalidator.revalidate();
       closePanel();
       setNotifications({
         type: 'success',

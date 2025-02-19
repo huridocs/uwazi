@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
 import { withRouter } from 'app/componentWrappers';

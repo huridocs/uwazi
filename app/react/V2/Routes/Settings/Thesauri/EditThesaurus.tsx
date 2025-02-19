@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useMemo, useState } from 'react';
-import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router-dom';
+import { Location, useBlocker, useLoaderData, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { Row } from '@tanstack/react-table';
@@ -168,13 +168,13 @@ const EditThesaurus = () => {
                   }}
                   disabled={isEmpty(getValues().name)}
                   getThesaurus={getCurrentStatus}
-                  onSuccess={(savedThesaurus: ThesaurusSchema) => {
+                  onSuccess={async (savedThesaurus: ThesaurusSchema) => {
                     setValue('_id', savedThesaurus._id);
                     setNotifications({
                       type: 'success',
                       text: <Translate>Thesauri updated.</Translate>,
                     });
-                    navigate(`../edit/${savedThesaurus._id}`);
+                    await navigate(`../edit/${savedThesaurus._id}`);
                     setIsImporting(false);
                   }}
                   onFailure={() => {

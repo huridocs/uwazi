@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Table, Button } from 'V2/Components/UI';
 import { templatesAtom } from 'V2/atoms';

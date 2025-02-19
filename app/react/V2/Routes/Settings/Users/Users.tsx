@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router-dom';
+import { ActionFunction, LoaderFunction, useFetcher, useLoaderData } from 'react-router';
 import { Translate } from 'app/I18N';
 import { Button, ConfirmationModal, Table, Tabs } from 'V2/Components/UI';
 import * as usersAPI from 'V2/api/users';
@@ -52,7 +52,7 @@ const Users = () => {
     setSidepanelData(group);
   });
 
-  const handleBulkAction = () => {
+  const handleBulkAction = async () => {
     const formData = new FormData();
     formData.set('intent', bulkActionIntent.current || '');
 
@@ -64,7 +64,7 @@ const Users = () => {
 
     formData.set('confirmation', password.current || '');
 
-    fetcher.submit(formData, { method: 'post' });
+    await fetcher.submit(formData, { method: 'post' });
   };
 
   return (
@@ -216,9 +216,9 @@ const Users = () => {
               ['bulk-reset-2fa', 'delete-users'].includes(bulkActionIntent.current || '')) ||
             false
           }
-          onAcceptClick={value => {
+          onAcceptClick={async value => {
             password.current = value;
-            handleBulkAction();
+            await handleBulkAction();
             setShowConfirmationModal(false);
             setSelectedGroups([]);
             setSelectedUsers([]);

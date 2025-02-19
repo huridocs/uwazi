@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import PropTypes from 'prop-types';
 import React from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { Translate } from 'app/I18N';
 import { CurrentLocationLink } from 'app/Layout';
 import { searchParamsFromSearchParams } from 'app/utils/routeHelpers';

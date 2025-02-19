@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useLoaderData, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Button, Table } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
@@ -21,11 +21,43 @@ const ParagraphExtractorDashboard = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [selected, setSelected] = useState<PXTable[]>([]);
 
+<<<<<<< HEAD
   const { AddExtractorModal, setShowModal: showAddExtractorModal } = useAddExtractorModal();
   const { Modal: ConfirmDeleteModal, setShowModal: showConfirmModal } = usePXActionModal({
     action: 'deleteExtractor',
     actionParams: selected?.map(selection => selection._id) as string[],
   });
+=======
+  const deleteExtractors = async () => {
+    setIsSaving(true);
+    const extractorIds = selected?.map(selection => selection._id) as string[];
+
+    try {
+      await extractorsAPI.remove(extractorIds);
+      await revalidator.revalidate();
+      setNotifications({
+        type: 'success',
+        text: <Translate>Extractor/s deleted</Translate>,
+      });
+    } catch (error) {
+      setNotifications({
+        type: 'error',
+        text: <Translate>An error occurred</Translate>,
+        details: error.json?.prettyMessage ? error.json.prettyMessage : undefined,
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    await revalidator.revalidate();
+    setNotifications({
+      type: 'success',
+      text: <Translate>Paragraph Extractor added</Translate>,
+    });
+  };
+>>>>>>> 78ac5fdeca2475b37f953efc07c805eec596d75c
 
   const paragraphExtractorData = useMemo(
     () => formatExtractors(extractors, templates),

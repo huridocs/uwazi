@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { useState } from 'react';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
@@ -55,7 +55,7 @@ const PagesList = () => {
     );
     const hasErrors = result.find(res => res instanceof FetchResponseError) !== undefined;
     setNotifications(deletionNotification(hasErrors));
-    revalidator.revalidate();
+    await revalidator.revalidate();
   };
 
   const columns = [

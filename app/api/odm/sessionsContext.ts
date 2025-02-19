@@ -41,8 +41,7 @@ export const dbSessionContext = {
 
   async startSession() {
     const currentTenant = tenants.current();
-    const connection = DB.connectionForDB(currentTenant.dbName);
-    const session = await connection.startSession();
+    const session = DB.connectionForDB(currentTenant.dbName).getClient().startSession();
     appContext.set('mongoSession', session);
     return session;
   },

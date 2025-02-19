@@ -37,6 +37,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:title)"
           >
             Title
@@ -45,6 +46,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:creationDate)"
           >
             Date added
@@ -53,6 +55,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:editDate)"
           >
             Date modified
@@ -61,6 +64,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:_score)"
           >
             Search relevance
@@ -69,6 +73,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.date)"
           >
             Date
@@ -77,6 +82,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.number)"
           >
             Number
@@ -85,6 +91,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:metadata.my_select)"
           >
             My select
@@ -93,6 +100,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:metadata.sortable_name)"
           >
             Sortable name
@@ -101,6 +109,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
         <li>
           <a
             aria-current="page"
+            data-discover="true"
             href="/en/library/?q=(from:0,order:desc,searchTerm:'my search',sort:metadata.inherited_1.inheritedValue)"
           >
             Inherited 1
@@ -110,6 +119,7 @@ exports[`Sort dropdown when there is an active search term should display sort b
     </div>
     <a
       aria-current="page"
+      data-discover="true"
       disable="true"
       href="/en/library/?q=(from:0,order:asc,searchTerm:'my search',sort:_score)"
     >

@@ -2,8 +2,8 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { CurrentLocationLink } from '../CurrentLocationLink';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: () => ({ pathname: 'pathanem', search: 'param=value&param2=value2' }),
 }));
 

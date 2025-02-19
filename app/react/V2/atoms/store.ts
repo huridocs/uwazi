@@ -1,4 +1,5 @@
 import { createStore } from 'jotai';
+import { sortBy } from 'lodash';
 import { isClient } from 'app/utils';
 import { store } from 'app/store';
 import { ClientSettings, ClientThesaurus, ClientUserSchema } from 'app/apiResponseTypes';
@@ -52,11 +53,11 @@ if (isClient && window.__atomStoreData__) {
     store?.dispatch({ type: 'settings/collection/SET', value });
   });
   atomStore.sub(templatesAtom, () => {
-    const value = atomStore.get(templatesAtom);
+    const value = sortBy(atomStore.get(templatesAtom), 'name');
     store?.dispatch({ type: 'templates/SET', value });
   });
   atomStore.sub(relationshipTypesAtom, () => {
-    const value = atomStore.get(relationshipTypesAtom);
+    const value = sortBy(atomStore.get(relationshipTypesAtom), 'name');
     store?.dispatch({ type: 'relationTypes/SET', value });
   });
   atomStore.sub(thesauriAtom, () => {

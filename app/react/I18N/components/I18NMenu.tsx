@@ -1,14 +1,14 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Location, useLocation } from 'react-router-dom';
+import { Location, useLocation } from 'react-router';
 import { useAtom, useAtomValue } from 'jotai';
 import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { NeedAuthorization } from 'V2/Components/UI';
-import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
 import { Translate, t } from 'app/I18N';
+import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
+import { NeedAuthorization } from 'V2/Components/UI';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
 
 const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');

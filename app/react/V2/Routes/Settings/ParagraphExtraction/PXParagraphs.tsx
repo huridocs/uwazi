@@ -6,7 +6,7 @@ import { SettingsContent } from 'V2/Components/Layouts/SettingsContent';
 import { Table, Button } from 'V2/Components/UI';
 import { Sidepanel } from 'V2/Components/UI/Sidepanel';
 import { templatesAtom } from 'V2/atoms';
-import { useLoaderData, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useSearchParams } from 'react-router';
 import { Settings } from 'shared/types/settingsType';
 import { Icon } from 'app/UI';
 import { tableBuilder } from './components/PXParagraphTableElements';

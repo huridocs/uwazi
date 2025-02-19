@@ -2,7 +2,7 @@
 /* eslint-disable no-spaced-func */
 /* eslint-disable max-statements */
 import React, { useEffect, useState } from 'react';
-import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router-dom';
+import { LoaderFunction, useBlocker, useLoaderData, useRevalidator } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import { useSetAtom } from 'jotai';
 import { Translate } from 'app/I18N';
@@ -93,7 +93,7 @@ const CustomUploads = () => {
         setConfirmationModal(false);
         const response = await remove(file._id);
         notify([response], <Translate>Deleted custom file</Translate>);
-        revalidator.revalidate();
+        await revalidator.revalidate();
       },
     });
   };
@@ -104,7 +104,7 @@ const CustomUploads = () => {
     setSelectedRows([]);
     const responses = await Promise.all(filesToDelete.map(async fileId => remove(fileId)));
     notify(responses, <Translate>Deleted custom file</Translate>);
-    revalidator.revalidate();
+    await revalidator.revalidate();
   };
 
   return (

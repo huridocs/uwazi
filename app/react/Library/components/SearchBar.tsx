@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { actions as formActions } from 'react-redux-form';
 import { connect, ConnectedProps } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 
 import { Icon } from 'UI';
 import {

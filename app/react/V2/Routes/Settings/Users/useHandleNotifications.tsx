@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useFetchers } from 'react-router-dom';
+import { useFetchers } from 'react-router';
 import { useSetAtom } from 'jotai';
 import { last } from 'lodash';
 import { Translate } from 'app/I18N';

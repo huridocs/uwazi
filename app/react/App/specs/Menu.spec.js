@@ -3,8 +3,8 @@ import { I18NLink } from 'app/I18N';
 import { renderConnected } from 'app/utils/test/renderConnected';
 import { Menu } from '../Menu';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: () => ({
     search: '?q=(searchTerm:%27asd%27)',
   }),

@@ -177,8 +177,8 @@ describe('Thesauri configuration', () => {
   });
 
   it('should use a value when creating an entity', () => {
-    cy.contains('a', 'Colección').click();
     changeLanguage('English');
+    cy.contains('a', 'Library').click();
     clickOnCreateEntity();
     cy.get('[name="library.sidepanel.metadata.title"]').click();
     cy.get('[name="library.sidepanel.metadata.title"]').type('País select', { delay: 0 });
