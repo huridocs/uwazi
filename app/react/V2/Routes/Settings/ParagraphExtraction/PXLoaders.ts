@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction } from 'react-router-dom';
+import { LoaderFunction } from 'react-router';
 import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import * as pxParagraphApi from 'app/V2/api/paragraphExtractor/paragraphs';
 import * as pxEntitiesApi from 'app/V2/api/paragraphExtractor/entities';

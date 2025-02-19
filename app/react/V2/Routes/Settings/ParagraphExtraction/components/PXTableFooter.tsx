@@ -1,6 +1,6 @@
 import React from 'react';
 import { PaginationState, Paginator } from 'V2/Components/UI';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { PX_EXTRACTORS_PER_PAGE } from '../pxConfig';
 
 const PXTableFooter = ({

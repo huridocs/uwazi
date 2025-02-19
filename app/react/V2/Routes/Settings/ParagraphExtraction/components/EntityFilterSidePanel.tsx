@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { Button } from 'app/V2/Components/UI';
@@ -29,15 +30,23 @@ const EntityFilterSidePanel = ({ availableFilters, show, setShow }: EntityFilter
       }
     >
       <Sidepanel.Body>
-        <EntityFilter filterGroups={availableFilters} setFilters={setAppliedFilters} />
+        <EntityFilter filterGroups={availableFilters} setFilters={() => {}} />
       </Sidepanel.Body>
       <Sidepanel.Footer className="px-4 py-3 border-t">
         <div className="flex gap-2 justify-end">
-          <Button size="small" styling="outline" onClick={() => setAppliedFilters({})}>
+          <Button
+            size="small"
+            styling="outline"
+            // onClick={() => setAppliedFilters({})}
+          >
             <Translate>Clear All</Translate>
           </Button>
 
-          <Button size="small" color="success" onClick={() => setFilters(appliedFilters)}>
+          <Button
+            size="small"
+            color="success"
+            // onClick={() => setFilters(appliedFilters)}
+          >
             <Translate>Apply</Translate>
           </Button>
         </div>

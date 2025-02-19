@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { useQueryFilter } from '../hooks/useQueryFilter';
-import { filter } from 'lodash';
 import { PXEntityQuery } from '../types';
 
 type EntityFilterProps = {
@@ -14,21 +14,23 @@ type EntityFilterProps = {
 const EntityFilter = ({ filterGroups, setFilters }: EntityFilterProps) => {
   //   const { filters } = useQueryFilter();
 
-  const [internalFilters, setInternalFilters] = useState<PXEntityQuery['filter']>();
-
+  const [internalFilters, setInternalFilters] = useState<PXEntityQuery['filter']>({
+    extractorId: '',
+    status: [],
+    languages: [],
+  });
   const handleFilterChange = (isChecked: boolean, groupKey: string, optionKey: string) => {
-    const newFilter = {
-      [groupKey]: [],
-      ...internalFilters,
-    } as Record<string, string[]>;
-
-    if (isChecked) {
-      newFilter[groupKey].push(optionKey);
-    } else {
-      newFilter[groupKey] = newFilter[groupKey].filter(key => key !== optionKey);
-    }
-    console.log(newFilter);
-    setInternalFilters({ ...internalFilters, ...newFilter });
+    // const newFilter = {
+    //   ...internalFilters,
+    //   [groupKey]: [...(internalFilters[groupKey] || [])],
+    // };
+    // if (isChecked) {
+    //   newFilter[groupKey].push(optionKey);
+    // } else {
+    //   newFilter[groupKey] = newFilter[groupKey].filter(key => key !== optionKey);
+    // }
+    // console.log(newFilter);
+    // setInternalFilters({ ...internalFilters, ...newFilter });
   };
 
   return (
@@ -41,11 +43,7 @@ const EntityFilter = ({ filterGroups, setFilters }: EntityFilterProps) => {
               <label key={option.label} className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={
-                    internalFilters && internalFilters[group.key]
-                      ? internalFilters[group.key].includes(option.key)
-                      : false
-                  }
+                  checked={false}
                   onChange={e => {
                     handleFilterChange(e.target.checked, group.key, option.key);
                   }}

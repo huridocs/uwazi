@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Translate } from 'app/I18N';
 import { useSetAtom } from 'jotai';
 import { notificationAtom } from 'app/V2/atoms';
-import { useRevalidator } from 'react-router-dom';
+import { useRevalidator } from 'react-router';
 import { ConfirmationModal } from 'app/V2/Components/UI';
 import { pxActions } from '../pxConfig';
 

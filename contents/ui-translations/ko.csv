@@ -28,6 +28,7 @@ Add date,날짜 추가
 Add entities / documents,엔티티/문서 추가
 Add entity type,Add entity type
 Add Extractor,Add Extractor
+Add extractor,Add extractor
 Add file,파일 추가
 Add from URL,URL 에서 추가
 Add from web,웹에서 추가
@@ -128,6 +129,7 @@ Check to make this instance public (non-logged in users can see public documents
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
+Clear All,Clear All
 Clear coordinates,좌표 초기화
 Clear Filters,필터 초기화
 Clear PDF selection,Clear PDF selection
@@ -315,6 +317,8 @@ Exploration,탐색
 Export CSV,CSV 추출
 Exporting entities to CSV,엔티티를 CSV 로 추출
 Extension Token,Extension Token
+Extract new paragraphs,Extract new paragraphs
+Extract paragraphs,Extract paragraphs
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -354,7 +358,6 @@ Full edit mode,전체 편집 모드
 Full width,Full width
 General,일반
 General Information,General Information
-Generated Entities,Generated Entities
 Global CSS,Global CSS
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -391,6 +394,7 @@ Importing data in progress,데이터 업로드 중
 in,안
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,OCR 대기 중
+In queue,In queue
 incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,엔티티 색인 작업에는 몇 분이 소요될 수 있습니다.
 Info,정보
@@ -436,6 +440,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language(s),Language(s)
 Language:,Language:
 Languages,언어
 Languages installed successfully,Languages installed successfully
@@ -512,6 +517,8 @@ Narrow your search,상세 검색
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New,New
+New,New
 New entity,새 엔티티
 New group,New group
 New language added,새로운 언어가 추가되었습니다.
@@ -527,7 +534,9 @@ No common filters,공통 필터 없음
 No Connections,커넥션 없음
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+NO DATA AVAILABLE,NO DATA AVAILABLE
 No Documents found,문서를 찾지 못했습니다.
+NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,아이콘/플래그 없음
@@ -779,6 +788,7 @@ Sort by,정렬 기준
 Sort descending,Sort descending
 sorted by,정렬 기준
 Source template,Source template
+Source Template,Source Template
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -808,7 +818,6 @@ Table of contents,목차
 Table view,테이블 뷰
 Target Template,Target Template
 Target template,Target template
-Target Template:,Target Template:
 Template,템플릿
 Template conflict,Template conflict
 Template name,Template name

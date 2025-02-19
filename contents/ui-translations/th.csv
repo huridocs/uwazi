@@ -28,6 +28,7 @@ Add date,เพิ่มวันที่
 Add entities / documents,เพิ่มรายการ / เอกสาร
 Add entity type,Add entity type
 Add Extractor,Add Extractor
+Add extractor,Add extractor
 Add file,เพิ่มไฟล์
 Add from URL,เพิ่มจาก URL
 Add from web,เพิ่มจากเว็บ
@@ -128,6 +129,7 @@ Check to make this instance public (non-logged in users can see public documents
 Chrome extension store link,Chrome extension store link
 Clear,Clear
 Clear all,Clear all
+Clear All,Clear All
 Clear coordinates,ลบจุดพิกัด
 Clear Filters,ล้างตัวกรอง
 Clear PDF selection,Clear PDF selection
@@ -315,6 +317,8 @@ Exploration,ค้นหา
 Export CSV,โหลดเป็น CSV
 Exporting entities to CSV,โหลดรายการเป็น CSV
 Extension Token,Extension Token
+Extract new paragraphs,Extract new paragraphs
+Extract paragraphs,Extract paragraphs
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -354,7 +358,6 @@ Full edit mode,โหมดการแก้ไขแบบสมบูรณ�
 Full width,Full width
 General,ข้อมูลทั่วไป
 General Information,General Information
-Generated Entities,Generated Entities
 Global CSS,CSS ทั้งหมด
 Global CSS & JS,Global CSS & JS
 Google,Google
@@ -391,6 +394,7 @@ Importing data in progress,การนำเข้าข้อมูลที�
 in,ใน
 "In a group, either all relationships must have a hub or none of them.","In a group, either all relationships must have a hub or none of them."
 In OCR queue,In OCR queue
+In queue,In queue
 incorrect suggestion check,Is the suggestion incorrect? Click on 'Reject' and Uwazi will improve on the suggestions it makes
 Indexing entities may take a few minutes,การจัดทำดัชนีรายการอาจใช้เวลาสักครู่
 Info,ข้อมูล
@@ -436,6 +440,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Language reset success
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Language uninstalled successfully
+Language(s),Language(s)
 Language:,Language:
 Languages,ภาษา
 Languages installed successfully,Languages installed successfully
@@ -512,6 +517,8 @@ Narrow your search,จำกัด การค้นหาของคุณ
 Navigate back,Navigate back
 Navigation menu tool tip part 1,"If it is an internal URL within this website, be sure to delete the first part"
 Navigation menu tool tip part 2,leaving only a relative URL starting with a slash character. Ie. /some_url.
+New,New
+New,New
 New entity,รายการใหม่
 New group,New group
 New language added,ภาษาใหม่ถูกเพิ่มแล้ว
@@ -527,7 +534,9 @@ No common filters,ไม่มีฟิลเตอร์สามัญ
 No Connections,ไม่มีการเชื่อมต่อ
 No Connections description,Connections are the direct relationships between this document and other documents and entities.
 No context,No context
+NO DATA AVAILABLE,NO DATA AVAILABLE
 No Documents found,ไม่พบเอกสาร
+NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,The combination of entity types doesn't have any filters in common.
 No Group,No Group
 No icon / flag,ไม่พบ ไอค่อน / สิ่งที่ถูกคั่นหน้า
@@ -779,6 +788,7 @@ Sort by,เรียงลำดับ
 Sort descending,Sort descending
 sorted by,เรียงลำดับโดย
 Source template,Source template
+Source Template,Source Template
 State,State
 Stats & Filters,Stats & Filters
 Status,Status
@@ -808,7 +818,6 @@ Table of contents,สารบัญ
 Table view,มุมมองตาราง
 Target Template,Target Template
 Target template,Target template
-Target Template:,Target Template:
 Template,แม่แบบ
 Template conflict,Template conflict
 Template name,Template name

@@ -28,6 +28,7 @@ Add date,Añadir fecha
 Add entities / documents,Añadir entidades / documentos
 Add entity type,Add entity type
 Add Extractor,Add Extractor
+Add extractor,Add extractor
 Add file,Añadir archivo
 Add from URL,Añadir desde URL
 Add from web,Añadir desde la web
@@ -126,6 +127,7 @@ Check to make this instance public (non-logged in users can see public documents
 Chrome extension store link,Enlace de la tienda de extensiones de Chrome
 Clear,Limpiar
 Clear all,Clear all
+Clear All,Clear All
 Clear coordinates,Limpiar coordenadas
 Clear Filters,Limpiar filtros
 Clear PDF selection,Limpiar la selección PDF
@@ -313,6 +315,8 @@ Exploration,Exploración
 Export CSV,Exportar CSV
 Exporting entities to CSV,Exportando entidades a CSV
 Extension Token,Token extensión
+Extract new paragraphs,Extract new paragraphs
+Extract paragraphs,Extract paragraphs
 Extractor Name,Extractor Name
 Extractor/s deleted,Extractor/s deleted
 Extractors,Extractors
@@ -352,7 +356,6 @@ Full edit mode,Modo de edición completa
 Full width,Ancho completo
 General,General
 General Information,General Information
-Generated Entities,Generated Entities
 Global CSS,CSS global
 Global CSS & JS,CSS Global & JS
 Google,Google
@@ -389,6 +392,7 @@ Importing data in progress,Importación de datos en curso
 in,en
 "In a group, either all relationships must have a hub or none of them.","En un grupo, todas las relaciones deben tener un nodo o ninguno de ellos."
 In OCR queue,En cola para ROC
+In queue,In queue
 incorrect suggestion check,¿La sugerencia es incorrecta? Haz clic en 'Rechazar' y Uwazi mejorará las sugerencias que realiza.
 Indexing entities may take a few minutes,La indexación de entidades puede tomar unos minutos.
 Info,Información
@@ -434,6 +438,7 @@ Language Install Start Message,Language installation process initiated. It may t
 Language reset success,Idioma reseteado exitósamente
 Language Uninstall Start Message,Language uninstallation process initiated. It may take several minutes to complete depending on the size of the collection.  Please wait until the uninstallation process is finished.
 Language uninstalled successfully,Idioma eliminado exitósamente
+Language(s),Language(s)
 Language:,Language:
 Languages,Idiomas
 Languages installed successfully,Idioma instalado exitósamente
@@ -510,6 +515,8 @@ Narrow your search,Reducir tu búsqueda
 Navigate back,Navegar hacia atrás
 Navigation menu tool tip part 1,"Si utilizas una URL interna de este sitio web, asegúrate de eliminar la primera parte."
 Navigation menu tool tip part 2,dejando solo una URL relativa que comienza con una barra inclinada. Es decir. /algun_url.
+New,New
+New,New
 New entity,Nueva entidad
 New group,Grupo nuevo
 New language added,Nuevo idioma añadido
@@ -525,7 +532,9 @@ No common filters,No existen filtros comunes
 No Connections,No existen relaciones
 No Connections description,Las conexiones son las relaciones directas entre este documento y otros documentos y entidades.
 No context,No context
+NO DATA AVAILABLE,NO DATA AVAILABLE
 No Documents found,No se encontraron documentos
+NO EXTRACTORS,NO EXTRACTORS
 no filters for templates,La combinación de tipos de entidades no tiene filtros en común.
 No Group,No Group
 No icon / flag,Sin icono / bandera
@@ -777,6 +786,7 @@ Sort by,Ordenar por
 Sort descending,Orden descendiente
 sorted by,ordenado por
 Source template,Source template
+Source Template,Source Template
 State,Estado
 Stats & Filters,Stats & Filters
 Status,Status
@@ -806,7 +816,6 @@ Table of contents,Tabla de Contenidos
 Table view,Vista de Tabla
 Target Template,Target Template
 Target template,Target template
-Target Template:,Target Template:
 Template,Plantilla
 Template conflict,Conflicto de plantilla
 Template name,Nombre de plantilla

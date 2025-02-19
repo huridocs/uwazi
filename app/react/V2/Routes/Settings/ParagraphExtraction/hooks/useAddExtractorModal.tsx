@@ -3,7 +3,7 @@ import * as extractorsAPI from 'app/V2/api/paragraphExtractor/extractors';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Modal, Button, MultiselectList } from 'V2/Components/UI';
 import { Translate } from 'app/I18N';
-import { Link, useRevalidator } from 'react-router-dom';
+import { Link, useRevalidator } from 'react-router';
 import { notificationAtom, templatesAtom } from 'app/V2/atoms';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ParagraphExtractorApiPayload } from '../types';
