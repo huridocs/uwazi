@@ -6,9 +6,9 @@ import { Provider } from 'jotai';
 import { act, render, RenderResult } from '@testing-library/react';
 import { localeAtom, translationsAtom, atomStore } from 'V2/atoms';
 import { socket } from 'app/socket';
+import 'app/App/sockets';
 import { t } from '../translateFunction';
 import { translations } from './fixtures';
-import 'app/App/sockets';
 
 describe('t function', () => {
   let renderResult: RenderResult;
@@ -71,7 +71,7 @@ describe('t function', () => {
             label: 'System',
             values: {
               Search: 'Buscar',
-              confirmDeleteDocument: '¿CONFIRMA b ELIMINACION?'
+              confirmDeleteDocument: '¿CONFIRMA ELIMINACION?'
             },
           },
         ],
@@ -84,7 +84,7 @@ describe('t function', () => {
 
       await act(async () => {
         expect(
-          result.getByText('¿CONFIRMA b ELIMINACION?')
+          result.getByText('¿CONFIRMA ELIMINACION?')
         ).toBeInTheDocument();
       });
     });
