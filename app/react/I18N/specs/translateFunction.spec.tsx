@@ -53,11 +53,16 @@ describe('t function', () => {
         atomStore.set(translationsAtom, [...translations]);
       });
 
-      const result = render(<Provider store={atomStore}> {
-        t('System',
-          'confirmDeleteDocument',
-          'Are you sure you want to delete this document?', true)
-      }</Provider >);
+      const result = render(
+        <Provider store={atomStore}>
+          {t(
+            'System',
+            'confirmDeleteDocument',
+            'Are you sure you want to delete this document?',
+            true
+          )}
+        </Provider>
+      );
 
       expect(
         result.getByText('¿Esta seguro que quiere borrar este documento?')
@@ -71,7 +76,7 @@ describe('t function', () => {
             label: 'System',
             values: {
               Search: 'Buscar',
-              confirmDeleteDocument: '¿CONFIRMA ELIMINACION?'
+              confirmDeleteDocument: '¿CONFIRMA ELIMINACION?',
             },
           },
         ],
@@ -83,9 +88,7 @@ describe('t function', () => {
       });
 
       await act(async () => {
-        expect(
-          result.getByText('¿CONFIRMA ELIMINACION?')
-        ).toBeInTheDocument();
+        expect(result.getByText('¿CONFIRMA ELIMINACION?')).toBeInTheDocument();
       });
     });
 
@@ -94,25 +97,23 @@ describe('t function', () => {
         atomStore.set(translationsAtom, [...translations]);
       });
 
-      const result = render(<Provider store={atomStore}> {
-        t('System',
-          'Search',
-          'Search', true)
-      }</Provider >);
+      const result = render(
+        <Provider store={atomStore}> {t('System', 'Search', 'Search', true)}</Provider>
+      );
 
-      expect(
-        result.getByText('Buscar')
-      ).toBeInTheDocument();
+      expect(result.getByText('Buscar')).toBeInTheDocument();
 
-      const translationKeysChangeArguments = [{
-        language: 'es',
-        value: 'Busqueda',
-        key: 'Search',
-        context: {
-          id: 'System',
-          label: 'System',
+      const translationKeysChangeArguments = [
+        {
+          language: 'es',
+          value: 'Busqueda',
+          key: 'Search',
+          context: {
+            id: 'System',
+            label: 'System',
+          },
         },
-      }];
+      ];
 
       await act(async () => {
         //@ts-ignore
@@ -120,9 +121,7 @@ describe('t function', () => {
       });
 
       await act(async () => {
-        expect(
-          result.getByText('Busqueda')
-        ).toBeInTheDocument();
+        expect(result.getByText('Busqueda')).toBeInTheDocument();
       });
     });
   });
