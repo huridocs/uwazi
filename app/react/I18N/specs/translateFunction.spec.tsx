@@ -49,10 +49,6 @@ describe('t function', () => {
     });
 
     it('should update translation when the atom is updated partially from the socket', async () => {
-      await act(async () => {
-        atomStore.set(translationsAtom, [...translations]);
-      });
-
       const result = render(
         <Provider store={atomStore}>
           {t(
@@ -83,7 +79,7 @@ describe('t function', () => {
       };
 
       await act(async () => {
-        //@ts-ignore
+        //@ts-ignore accessing internal _callbacks for testing purposes 
         socket._callbacks.$translationsChange[0](translation);
       });
 
@@ -93,10 +89,6 @@ describe('t function', () => {
     });
 
     it('should update translation when the atom is updated fully from the socket', async () => {
-      await act(async () => {
-        atomStore.set(translationsAtom, [...translations]);
-      });
-
       const result = render(
         <Provider store={atomStore}> {t('System', 'Search', 'Search', true)}</Provider>
       );
@@ -116,7 +108,7 @@ describe('t function', () => {
       ];
 
       await act(async () => {
-        //@ts-ignore
+        //@ts-ignore accessing internal _callbacks for testing purposes
         socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
       });
 
