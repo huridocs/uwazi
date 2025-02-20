@@ -52,7 +52,7 @@ const usePXActionModal = <ActionParams extends unknown>({
   const executeAction = async () => {
     try {
       await service(actionParams);
-      revalidator.revalidate();
+      await revalidator.revalidate();
       showNotification('success', successText);
       setShowModal(false);
     } catch (error: any) {

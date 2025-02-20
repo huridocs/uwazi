@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { IncomingHttpHeaders } from 'http';
 // import api from 'app/utils/api';
 import { RequestParams } from 'app/utils/RequestParams';
@@ -49,22 +50,10 @@ const get = async (headers?: IncomingHttpHeaders) =>
     });
   });
 
-const getById = async (extractorId: string, headers?: IncomingHttpHeaders) => {
-  try {
-    const requestParams = new RequestParams({ id: extractorId }, headers);
-    // const { json: response } = await api.get(apiEndpoint, requestParams);
-    const id = requestParams.data?.id;
-    return dummyData.find(datum => datum._id === id);
-    // return response;
-  } catch (e) {
-    return e;
-  }
-};
-
 const save = async (
   extractorValues: ParagraphExtractorApiPayload
 ): Promise<ParagraphExtractorApiResponse> => {
-  // const requestParams = new RequestParams(extractorValues);
+  const requestParams = new RequestParams(extractorValues);
 
   const dummyEntry = {
     ...extractorValues,

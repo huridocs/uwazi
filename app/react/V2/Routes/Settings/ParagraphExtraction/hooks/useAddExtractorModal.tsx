@@ -59,7 +59,7 @@ const useAddExtractorModal = () => {
         };
         await extractorsAPI.save(values);
         setShowModal(false);
-        revalidator.revalidate();
+        await revalidator.revalidate();
         setNotifications({
           type: 'success',
           text: <Translate>Paragraph Extractor added</Translate>,
