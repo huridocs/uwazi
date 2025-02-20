@@ -1,19 +1,24 @@
-import { DBFixture } from 'api/utils/testing_db';
+/**
+ * Get Extractors
+ * 1. it should show source and target Template
+ * 2. it should show the number of available Entities that can be used to be extracted
+ * 3. it should calculate how many Entities was not yet extracted (It most not have an Extraction related).
+ */
+
 import { testingEnvironment } from 'api/utils/testingEnvironment';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DBFixture } from 'api/utils/testing_db';
+import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
+import { mongoPXExtractorsCollection } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 
 import { MongoPXExtractorsQueryService } from '../MongoPXExtractorsQueryService';
-import { MongoPXExtractorDBO } from '../MongoPXExtractorDBO';
-import { mongoPXExtractorsCollection } from '../MongoPXExtractorsDataSource';
 
 const factory = getFixturesFactory();
-
-const sourceTemplate = factory.template('sourceTemplate');
-const sourceTemplate2 = factory.template('sourceTemplate2');
-
-const targetTemplate = factory.template('targetTemplate');
+const sourceTemplate = factory.template('Source Template');
+const targetTemplate = factory.template('Target Template');
+const template = factory.template('Template');
 
 const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
@@ -21,22 +26,29 @@ const extractor: MongoPXExtractorDBO = {
   targetTemplateId: targetTemplate._id,
 };
 
-const extractor2: MongoPXExtractorDBO = {
-  _id: factory.id('extractor2'),
-  sourceTemplateId: sourceTemplate2._id,
-  targetTemplateId: targetTemplate._id,
-};
+const entity = factory.entity('entity', sourceTemplate.name);
+const entityPt = factory.entity('entity', sourceTemplate.name, {}, { language: 'pt' });
 
-const paragraph1 = factory.entity('paragraph1', sourceTemplate._id.toString());
-paragraph1.extractorId = extractor._id;
+const entity2 = factory.entity('entity2', sourceTemplate.name);
+const entity2Pt = factory.entity('entity2', sourceTemplate.name, {}, { language: 'pt' });
 
-const paragraph2 = factory.entity('paragraph2', sourceTemplate2._id.toString());
-paragraph2.extractorId = extractor2._id;
+const entityThatDoesNotBelongToExtractor = factory.entity(
+  'entityThatDoesNotBelongToExtractor',
+  template.name
+);
 
 const createFixtures = (): DBFixture => ({
-  [mongoPXExtractorsCollection]: [extractor, extractor2],
-  templates: [sourceTemplate, sourceTemplate2, targetTemplate],
-  entities: [paragraph1, paragraph2],
+  [mongoPXExtractorsCollection]: [extractor],
+  templates: [sourceTemplate, targetTemplate],
+  entities: [entity, entity2, entityPt, entity2Pt, entityThatDoesNotBelongToExtractor],
+  settings: [
+    {
+      languages: [
+        { label: 'English', key: 'en', default: true },
+        { label: 'Portuguese', key: 'pt' },
+      ],
+    },
+  ],
 });
 
 const setUpSut = () => {
@@ -50,7 +62,7 @@ const setUpSut = () => {
   };
 };
 
-describe('PXExtractorsQueryService', () => {
+describe('MongoPXExtractorsQueryService', () => {
   beforeAll(async () => {
     await testingEnvironment.setUp(createFixtures());
   });
@@ -58,64 +70,36 @@ describe('PXExtractorsQueryService', () => {
   afterAll(async () => {
     await testingEnvironment.tearDown();
   });
+  it('should return target and source', async () => {
+    const { extractorsQueryService } = setUpSut();
 
-  describe('getExtractors', () => {
-    it('should return extractors with source and target templates and entity count', async () => {
-      const { extractorsQueryService } = setUpSut();
+    const extractors = await extractorsQueryService.getExtractors({}).all();
 
-      const result = await extractorsQueryService.getExtractors({}).all();
-
-      expect(result).toEqual([
-        {
-          _id: extractor._id,
-          sourceTemplate: { _id: sourceTemplate._id, name: sourceTemplate.name },
-          targetTemplate: { _id: targetTemplate._id, name: targetTemplate.name },
-          paragraphsQuantity: 1,
+    expect(extractors).toMatchObject([
+      {
+        sourceTemplate: {
+          templateId: sourceTemplate._id,
+          name: sourceTemplate.name,
         },
-        {
-          _id: extractor2._id,
-          sourceTemplate: { _id: sourceTemplate2._id, name: sourceTemplate2.name },
-          targetTemplate: { _id: targetTemplate._id, name: targetTemplate.name },
-          paragraphsQuantity: 1,
+        targetTemplate: {
+          templateId: targetTemplate._id,
+          name: targetTemplate.name,
         },
-      ]);
-    });
-
-    it('should return an empty array if no extractors are found', async () => {
-      const fixtures = createFixtures();
-      fixtures[mongoPXExtractorsCollection] = [];
-      await testingEnvironment.setFixtures(fixtures);
-
-      const { extractorsQueryService } = setUpSut();
-
-      const result = await extractorsQueryService.getExtractors({}).all();
-
-      expect(result).toEqual([]);
-    });
-
-    it('should return extractors with zero entity count if no entities are linked', async () => {
-      const fixtures = createFixtures();
-      fixtures.entities = [];
-      await testingEnvironment.setFixtures(fixtures);
-
-      const { extractorsQueryService } = setUpSut();
-
-      const result = await extractorsQueryService.getExtractors({}).all();
-
-      expect(result).toEqual([
-        {
-          _id: extractor._id,
-          sourceTemplate: { _id: sourceTemplate._id, name: sourceTemplate.name },
-          targetTemplate: { _id: targetTemplate._id, name: targetTemplate.name },
-          paragraphsQuantity: 0,
-        },
-        {
-          _id: extractor2._id,
-          sourceTemplate: { _id: sourceTemplate2._id, name: sourceTemplate2.name },
-          targetTemplate: { _id: targetTemplate._id, name: targetTemplate.name },
-          paragraphsQuantity: 0,
-        },
-      ]);
-    });
+      },
+    ]);
   });
+
+  it('should count source Entities to be extracted which belongs to Extractor', async () => {
+    const { extractorsQueryService } = setUpSut();
+
+    const extractors = await extractorsQueryService.getExtractors({}).all();
+
+    expect(extractors).toMatchObject([
+      {
+        sourceEntitiesCount: 2,
+      },
+    ]);
+  });
+
+  it.todo('should count source Entities that was never extracted');
 });

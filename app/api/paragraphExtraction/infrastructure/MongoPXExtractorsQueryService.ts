@@ -42,10 +42,10 @@ class MongoPXExtractorsQueryService
       {
         $lookup: {
           from: 'entities',
-          localField: '_id',
-          foreignField: 'extractorId',
-          as: 'entities',
-          pipeline: [{ $project: { _id: 1 } }],
+          localField: 'sourceTemplateId',
+          foreignField: 'template',
+          as: 'sourceEntities',
+          pipeline: [{ $group: { _id: '$sharedId' } }],
         },
       },
       // Unwind the sourceTemplate array
@@ -56,10 +56,10 @@ class MongoPXExtractorsQueryService
       {
         $unwind: '$targetTemplate',
       },
-      // Add a new field paragraphsQuantity which is the size of the entities array
+      // Add a new field sourceEntitiesCount which is the size of the Entities that can be extracted
       {
         $addFields: {
-          paragraphsQuantity: { $size: '$entities' },
+          sourceEntitiesCount: { $size: '$sourceEntities' },
         },
       },
       // Project the required fields
@@ -68,12 +68,21 @@ class MongoPXExtractorsQueryService
           _id: 1,
           sourceTemplate: 1,
           targetTemplate: 1,
-          paragraphsQuantity: 1,
+          sourceEntitiesCount: 1,
         },
       },
     ]);
 
-    return new MongoResultSet(cursor, item => item as GetExtractorsOutput);
+    return new MongoResultSet(
+      cursor,
+      item =>
+        ({
+          extractorId: item._id,
+          sourceEntitiesCount: item.sourceEntitiesCount,
+          sourceTemplate: { templateId: item.sourceTemplate._id, name: item.sourceTemplate.name },
+          targetTemplate: { templateId: item.targetTemplate._id, name: item.targetTemplate.name },
+        }) as GetExtractorsOutput
+    );
   }
 }
 

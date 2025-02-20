@@ -9,7 +9,7 @@ type ExtractorDTO = {
   extractorId: string;
   sourceTemplate: TemplateDTO;
   targetTemplate: TemplateDTO;
-  paragraphsQuantity: number;
+  sourceEntitiesCount: number;
 };
 
 type GetExtractorsOutput = ExtractorDTO;
