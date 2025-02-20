@@ -132,6 +132,13 @@ describe('PXCreateParagraphs', () => {
     await testingEnvironment.tearDown();
   });
 
+  it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
+
+  it.todo('should save Paragraph number as a Property of the created Entity Paragraph');
+
+  it.todo('should throw if the source Entity does not belong to the Extractor');
+  it.todo('should pick the first rich text property if target Template has more than one');
+
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
@@ -230,6 +237,7 @@ describe('PXCreateParagraphs', () => {
       createExpectedParagraph('Source Entity Spanish.02', 'es', 'Paragraph 2 in spanish', userId),
     ]);
   });
+
   it('should ignore Paragraph which languages does not exist anymore on settings Collection', async () => {
     const { createParagraphs } = setUpUseCase();
 
@@ -413,11 +421,4 @@ describe('PXCreateParagraphs', () => {
       code: PXValidationError.codes.EXTRACTOR_NOT_FOUND,
     });
   });
-
-  it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
-
-  it.todo('should save Paragraph number as a Property of the created Entity Paragraph');
-
-  it.todo('should throw if the source Entity does not belong to the Extractor');
-  it.todo('should pick the first rich text property if target Template has more than one');
 });
