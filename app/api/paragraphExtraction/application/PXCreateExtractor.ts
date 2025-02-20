@@ -14,6 +14,8 @@ type Output = PXExtractor;
 const InputSchema = z.object({
   targetTemplateId: z.string({ message: 'You should provide a target template' }),
   sourceTemplateId: z.string({ message: 'You should provide a source template' }),
+  paragraphPropertyId: z.string(),
+  paragraphNumberPropertyId: z.string(),
 });
 
 type Dependencies = {
@@ -49,6 +51,8 @@ class PXCreateExtractor implements UseCase<Input, Output> {
       id: this.dependencies.idGenerator.generate(),
       targetTemplate,
       sourceTemplate,
+      paragraphNumberPropertyId: input.paragraphNumberPropertyId,
+      paragraphPropertyId: input.paragraphPropertyId,
     });
 
     await this.dependencies.extractorDS.create(extractor);

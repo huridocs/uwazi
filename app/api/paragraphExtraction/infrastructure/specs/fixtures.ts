@@ -62,9 +62,21 @@ const mockGetParagraphsResult: GetParagraphsResultDTO = {
 
 const document = new Document('any_id', 'any_entity', 0, 'any_file_name', 'pt');
 const document2 = new Document('any_id2', 'any_entity2', 0, 'any_file_name2', 'es');
+
 const sourceTemplate = new Template('sourceTemplate', 'Source template');
+
+const paragraphProperty = new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id');
+const paragraphNumberProperty = new Property(
+  'paragraphNumberProperty',
+  'numeric',
+  'paragraph_number',
+  'Paragraph Number',
+  'any_id'
+);
+
 const targetTemplate = new Template('targetTemplate', 'Target template', [
-  new Property('any_id', 'markdown', 'Rich name', 'Rich label', 'any_id'),
+  paragraphProperty,
+  paragraphNumberProperty,
 ]);
 
 const segmentation: Segmentation = {
@@ -89,7 +101,13 @@ const segmentation2: Segmentation = {
   status: 'ready',
 };
 
-const extractor = new PXExtractor({ id: 'any_id', sourceTemplate, targetTemplate });
+const extractor = new PXExtractor({
+  id: 'any_id',
+  sourceTemplate,
+  targetTemplate,
+  paragraphNumberPropertyId: paragraphNumberProperty.id,
+  paragraphPropertyId: paragraphProperty.id,
+});
 
 export {
   mockGetParagraphsResult,

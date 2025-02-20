@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { Entity } from 'api/entities.v2/model/Entity';
 import { Template } from 'api/templates.v2/model/Template';
 import { EntitySchema } from 'shared/types/entityType';
+import { Property } from 'api/templates.v2/model/Property';
 
 import { PXValidationError, PXErrorCode } from './PXValidationError';
 import { ParagraphOutput } from './PXExtractionService';
@@ -11,6 +12,8 @@ export type PXExtractorProps = {
   id: string;
   sourceTemplate: Template;
   targetTemplate: Template;
+  paragraphPropertyId: string;
+  paragraphNumberPropertyId: string;
 };
 
 export class PXExtractor {
@@ -20,19 +23,55 @@ export class PXExtractor {
 
   sourceTemplate: Template;
 
-  constructor(props: PXExtractorProps) {
+  paragraphProperty: Property;
+
+  paragraphNumberProperty: Property;
+
+  constructor(private props: PXExtractorProps) {
     this.id = props.id;
     this.targetTemplate = props.targetTemplate;
     this.sourceTemplate = props.sourceTemplate;
+    this.paragraphProperty = props.targetTemplate.getPropertyById(props.paragraphPropertyId)!;
+    this.paragraphNumberProperty = props.targetTemplate.getPropertyById(
+      props.paragraphNumberPropertyId
+    )!;
 
     this.validate();
   }
 
+  // eslint-disable-next-line max-statements
   private validate() {
-    if (!this.targetTemplate.getPropertiesByType('markdown').length) {
+    if (!this.paragraphProperty) {
       throw new PXValidationError(
-        PXErrorCode.TARGET_TEMPLATE_INVALID,
-        `Target template with id ${this.targetTemplate.id} should have at least one rich text property`
+        PXValidationError.codes.PARAGRAPH_PROPERTY_DOES_NOT_EXIST,
+        `Target Template does not have a Property with the id ${this.props.paragraphPropertyId}`
+      );
+    }
+    if (!this.paragraphProperty) {
+      throw new PXValidationError(
+        PXValidationError.codes.PARAGRAPH_PROPERTY_DOES_NOT_EXIST,
+        `Target Template does not have a Property with the id ${this.props.paragraphPropertyId}`
+      );
+    }
+
+    if (!this.paragraphNumberProperty) {
+      throw new PXValidationError(
+        PXValidationError.codes.PARAGRAPH_NUMBER_PROPERTY_DOES_NOT_EXIST,
+        `Target Template does not have a Property with the id ${this.props.paragraphNumberPropertyId}`
+      );
+    }
+
+    if (this.paragraphProperty.type !== 'markdown') {
+      throw new PXValidationError(
+        PXValidationError.codes.PARAGRAPH_PROPERTY_IS_NOT_OF_RICH_TEXT,
+        'Property type which store Paragraph is not of the rich text type'
+      );
+    }
+
+    if (this.paragraphNumberProperty.type !== 'numeric') {
+      throw new PXValidationError(
+        PXValidationError.codes.PARAGRAPH_NUMBER_PROPERTY_IS_NOT_A_NUMBER,
+        'Property type which store Paragraph number is not of the number type'
       );
     }
 
@@ -65,7 +104,6 @@ export class PXExtractor {
   }
 
   createParagraph(sourceEntity: EntitySchema, extractedParagraph: ParagraphOutput): EntitySchema {
-    const [richTextProperty] = this.targetTemplate.getPropertiesByType('markdown');
     const translation = PXExtractor.getTranslation(sourceEntity, extractedParagraph);
 
     return {
@@ -73,7 +111,12 @@ export class PXExtractor {
       title: PXExtractor.createTitle(sourceEntity, extractedParagraph),
       template: new ObjectId(this.targetTemplate.id),
       metadata: {
-        [richTextProperty.name]: [{ value: translation?.text, label: richTextProperty.label }],
+        [this.paragraphProperty!.name]: [
+          { value: translation?.text, label: this.paragraphProperty!.label },
+        ],
+        [this.paragraphNumberProperty!.name]: [
+          { value: extractedParagraph.paragraphNumber, label: this.paragraphNumberProperty?.label },
+        ],
       },
     };
   }

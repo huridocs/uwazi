@@ -1,15 +1,20 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
+import { ObjectId } from 'mongodb';
 
 const factory = getFixturesFactory();
+
+const paragraphProperty = factory.property('rich_text', 'markdown');
+const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric');
 
 export const defaultTemplate = factory.template('Default Template');
 export const sourceTemplate = factory.template('Source Template', [
   factory.property('text', 'text'),
 ]);
 export const targetTemplate = factory.template('Target Template', [
-  factory.property('rich_text', 'markdown'),
+  paragraphProperty,
+  paragraphNumberProperty,
 ]);
 
 export const invalidEntity = factory.entity('invalidEntity', defaultTemplate.name);
@@ -21,6 +26,8 @@ export const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
+  paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
+  paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
 export const file = factory.document('file', { language: 'eng', entity: entity.sharedId });

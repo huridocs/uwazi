@@ -1,9 +1,17 @@
+import { ObjectId } from 'mongodb';
+
+import { tenants } from 'api/tenants';
 import {
   mongoPXExtractorsCollection,
   MongoPXExtractorsDataSource,
 } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorsDataSource';
 import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
+import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
+import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
+import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
+import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
+import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
 
 import {
   defaultTemplate,
@@ -21,15 +29,8 @@ import {
   sourceTemplate,
   targetTemplate,
 } from './fixtures';
-import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
-import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
-import { DefaultEntitiesDataSource } from 'api/entities.v2/database/data_source_defaults';
-import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_defaults';
-import { DefaultFilesDataSource } from 'api/files.v2/database/data_source_defaults';
-import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
-import { tenants } from 'api/tenants';
-import { ObjectId } from 'mongodb';
+import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],

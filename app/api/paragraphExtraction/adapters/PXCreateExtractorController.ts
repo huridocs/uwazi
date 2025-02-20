@@ -29,7 +29,10 @@ class PXCreateExtractorController extends AbstractController {
     const dto: Input = {
       sourceTemplateId: request.body.sourceTemplateId,
       targetTemplateId: request.body.targetTemplateId,
+      paragraphNumberPropertyId: request.body.paragraphNumberPropertyId,
+      paragraphPropertyId: request.body.paragraphPropertyId,
     };
+
     InputSchema.parse(dto);
 
     const output = await this.createExtractor.execute(dto);

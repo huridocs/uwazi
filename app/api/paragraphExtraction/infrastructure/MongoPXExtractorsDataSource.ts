@@ -46,6 +46,8 @@ export class MongoPXExtractorsDataSource
             _id: 1,
             sourceTemplate: 1,
             targetTemplate: 1,
+            paragraphNumberPropertyId: 1,
+            paragraphPropertyId: 1,
           },
         },
       ])
@@ -57,6 +59,8 @@ export class MongoPXExtractorsDataSource
       id: extractor._id,
       sourceTemplate: TemplateMappers.toApp(extractor.sourceTemplate),
       targetTemplate: TemplateMappers.toApp(extractor.targetTemplate),
+      paragraphNumberPropertyId: extractor.paragraphNumberPropertyId.toString(),
+      paragraphPropertyId: extractor.paragraphPropertyId.toString(),
     });
   }
 
@@ -65,6 +69,8 @@ export class MongoPXExtractorsDataSource
       _id: new ObjectId(extractor.id),
       sourceTemplateId: new ObjectId(extractor.sourceTemplate.id),
       targetTemplateId: new ObjectId(extractor.targetTemplate.id),
+      paragraphNumberPropertyId: new ObjectId(extractor.paragraphNumberProperty.id),
+      paragraphPropertyId: new ObjectId(extractor.paragraphProperty.id),
     };
 
     await this.getCollection().insertOne(mongoExtractor);

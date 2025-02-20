@@ -21,12 +21,22 @@ import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagrap
 
 const factory = getFixturesFactory();
 
+const paragraphProperty = factory.property('extracted_paragraph', 'markdown', {
+  label: 'Extracted Paragraph',
+});
+const paragraphNumberProperty = factory.property('paragraph_number_property', 'numeric', {
+  label: 'Paragraph number',
+});
+const textProperty = factory.property('text_property', 'text');
+
 const template = factory.template('default template');
 
 const sourceTemplate = factory.template('Source Template');
 
 const targetTemplate = factory.template('Target Template', [
-  factory.property('extracted_paragraph', 'markdown', { label: 'Extracted Paragraph' }),
+  paragraphProperty,
+  paragraphNumberProperty,
+  textProperty,
 ]);
 
 const sourceEntityThatDoesNotBelongToExtractor = factory.entity(
@@ -65,6 +75,8 @@ const extractor: MongoPXExtractorDBO = {
   _id: factory.id('extractor'),
   sourceTemplateId: sourceTemplate._id,
   targetTemplateId: targetTemplate._id,
+  paragraphNumberPropertyId: paragraphNumberProperty._id as ObjectId,
+  paragraphPropertyId: paragraphProperty._id as ObjectId,
 };
 
 const createFixtures = (): DBFixture => ({
@@ -134,10 +146,7 @@ describe('PXCreateParagraphs', () => {
 
   it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
 
-  it.todo('should save Paragraph number as a Property of the created Entity Paragraph');
-
   it.todo('should throw if the source Entity does not belong to the Extractor');
-  it.todo('should pick the first rich text property if target Template has more than one');
 
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
@@ -235,6 +244,77 @@ describe('PXCreateParagraphs', () => {
     expect(extractedSpanish).toMatchObject([
       createExpectedParagraph('Source Entity Spanish.01', 'es', 'Paragraph 1 in spanish', userId),
       createExpectedParagraph('Source Entity Spanish.02', 'es', 'Paragraph 2 in spanish', userId),
+    ]);
+  });
+
+  it('should persist Paragraph text and number according to the Extractor configuration', async () => {
+    const _targetTemplate = {
+      ...targetTemplate,
+      properties: [
+        textProperty,
+        factory.property('paragraph', 'markdown', { label: 'Paragraph' }),
+        factory.property('paragraph_number', 'numeric', { label: 'Paragraph Number' }),
+      ],
+    };
+
+    const _extractor = {
+      ...extractor,
+      paragraphNumberPropertyId: _targetTemplate.properties[2]._id,
+      paragraphPropertyId: _targetTemplate.properties[1]._id,
+    };
+
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      templates: [sourceTemplate, _targetTemplate, template],
+      [mongoPXExtractorsCollection]: [_extractor],
+    });
+
+    const { createParagraphs } = setUpUseCase();
+
+    const extractionId = PXExtractionId.create({
+      entitySharedId: entityEn.sharedId!,
+      extractorId: extractor._id.toString(),
+      tenantName: tenants.current().name,
+      userId: new ObjectId().toString(),
+    });
+
+    const input: PXCreateParagraphsInput = {
+      availableLanguages: ['es'],
+      extractionId,
+      mainLanguage: 'es',
+      paragraphs: [
+        {
+          paragraphNumber: 1,
+          translations: [
+            {
+              isMainLanguage: true,
+              language: 'es',
+              needsUserReview: false,
+              text: 'Paragraph 1 in spanish',
+            },
+          ],
+        },
+      ],
+    };
+
+    await createParagraphs.execute(input);
+
+    const extractedParagraphs = await getExtractedParagraphs();
+    const extractedParagraphsEs = filterAndSortParagraphs(extractedParagraphs, 'es');
+
+    expect(extractedParagraphsEs).toMatchObject([
+      {
+        ...createExpectedParagraph(
+          'Source Entity Spanish.01',
+          'es',
+          'Paragraph 1 in spanish',
+          extractionId.userId
+        ),
+        metadata: {
+          paragraph: [{ value: 'Paragraph 1 in spanish', label: 'Paragraph' }],
+          paragraph_number: [{ value: 1, label: 'Paragraph Number' }],
+        },
+      },
     ]);
   });
 
