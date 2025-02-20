@@ -86,10 +86,10 @@ describe('ExternalExtractionService', () => {
       expect(body).toEqual({
         json_data: JSON.stringify({
           key: extractionId.id,
-          xmls_segments: [
+          xmls: [
             {
               language: 'pt',
-              is_main_language: true,
+              main_language: true,
               xml_file_name: 'any_file_name',
               xml_segments_boxes: [{ left: 0, top: 0, page_number: 0, type: 'any_type' }],
             },
@@ -148,9 +148,9 @@ describe('ExternalExtractionService', () => {
 
       const payload = JSON.parse(body.json_data);
 
-      expect(payload.xmls_segments).toMatchObject([
-        { language: 'pt', is_main_language: true },
-        { language: 'es', is_main_language: false },
+      expect(payload.xmls).toMatchObject([
+        { language: 'pt', main_language: true },
+        { language: 'es', main_language: false },
       ]);
     });
   });

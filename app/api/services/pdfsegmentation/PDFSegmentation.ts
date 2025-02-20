@@ -14,6 +14,7 @@ import { SegmentationType } from 'shared/types/segmentationType';
 import { FileType } from 'shared/types/fileType';
 import { SegmentationModel } from './segmentationModel';
 import { FileNotFound } from 'api/files/FileNotFound';
+import { inspect } from 'util';
 
 class PDFSegmentation {
   static SERVICE_NAME = 'segmentation';

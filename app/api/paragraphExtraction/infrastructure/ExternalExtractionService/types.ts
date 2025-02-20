@@ -8,13 +8,13 @@ type SegmentBoxDTO = {
 type SegmentDTO = {
   xml_file_name: string;
   language: string;
-  is_main_language: boolean;
+  main_language: boolean;
   xml_segments_boxes: SegmentBoxDTO[];
 };
 
 type ExtractionDTO = {
   key: string;
-  xmls_segments: SegmentDTO[];
+  xmls: SegmentDTO[];
 };
 
 type TranslationDTO = {

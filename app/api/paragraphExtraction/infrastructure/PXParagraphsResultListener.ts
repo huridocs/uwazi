@@ -1,6 +1,7 @@
 import { TaskManager } from 'api/services/tasksmanager/TaskManager';
 import { PXCreateParagraphs } from '../application/PXCreateParagraphs';
 import { PXExtractionService } from '../domain/PXExtractionService';
+import { tenants } from 'api/tenants';
 
 type ResultMessage = {
   key: string;
@@ -38,7 +39,9 @@ export class PXParagraphsResultListener {
 
     const result = await this.props.extractionService.getParagraphsResult(results.data_url);
 
-    await this.props.createParagraphs.execute(result);
+    await tenants.run(async () => { /// this needs testing
+      await this.props.createParagraphs.execute(result);
+    }, result.extractionId.tenantName);
   }
 
   start(interval = 500) {

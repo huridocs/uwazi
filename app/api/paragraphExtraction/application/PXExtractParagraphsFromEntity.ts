@@ -17,7 +17,7 @@ import { PXExtractionId } from '../domain/PXExtractionId';
 
 type Input = z.infer<typeof Schema>;
 
-type Output = any;
+type Output = void;
 
 type Dependencies = {
   extractorsDS: PXExtractorsDataSource;

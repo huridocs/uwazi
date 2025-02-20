@@ -19,7 +19,8 @@ export class PXExternalExtractionService implements PXExtractionService {
   constructor(private dependencies: Dependencies) {}
 
   async getParagraphsResult(url: string): Promise<GetParagraphsResultOutput> {
-    const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
+    const _dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
+    const dto = JSON.parse(_dto);
     const extractionId = new PXExtractionId(dto.key);
 
     return {
@@ -50,12 +51,12 @@ export class PXExternalExtractionService implements PXExtractionService {
 
     const dto: ExtractionDTO = {
       key: extractionId.id,
-      xmls_segments: segmentations.map(segmentation => {
+      xmls: segmentations.map(segmentation => {
         const language = documents.find(document => document.id === segmentation.fileId)?.language!;
 
         return {
           language,
-          is_main_language: language === _defaultLanguage,
+          main_language: language === _defaultLanguage,
           xml_file_name: segmentation.xmlname!,
           xml_segments_boxes: segmentation.paragraphs!.map(paragraph => ({
             left: paragraph.left,
