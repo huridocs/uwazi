@@ -39,7 +39,7 @@ export class PXParagraphsResultListener {
 
     const result = await this.props.extractionService.getParagraphsResult(results.data_url);
 
-    await tenants.run(async () => { /// this needs testing
+    await tenants.run(async () => {
       await this.props.createParagraphs.execute(result);
     }, result.extractionId.tenantName);
   }

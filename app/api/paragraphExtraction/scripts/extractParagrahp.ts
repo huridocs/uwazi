@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
@@ -15,34 +16,51 @@ import { PXExtractParagraphsFromEntity } from '../application/PXExtractParagraph
 import { PXExternalExtractionService } from '../infrastructure/ExternalExtractionService/ExternalExtractionService';
 import { MongoPXExtractorsDataSource } from '../infrastructure/MongoPXExtractorsDataSource';
 import { tenants } from 'api/tenants';
+import { MongoTransactionManager } from 'api/common.v2/database/MongoTransactionManager';
+import { SystemLogger } from 'api/log.v2/infrastructure/StandardLogger';
 
 (async () => {
   await DB.connect(config.DBHOST, {});
 
   await tenants.run(async () => {
-    const transactionManager = DefaultTransactionManager();
+    const transactionManager = new MongoTransactionManager(
+      DB.connectionForDB('uwazi_development').getClient(),
+      SystemLogger()
+    );
 
     const createExtractorUseCase = new PXCreateExtractor({
-      templatesDS: new MongoTemplatesDataSource(getConnection(), transactionManager),
-      extractorDS: new MongoPXExtractorsDataSource(getConnection(), transactionManager),
+      templatesDS: new MongoTemplatesDataSource(
+        DB.mongodb_Db('uwazi_development'),
+        transactionManager
+      ),
+      extractorDS: new MongoPXExtractorsDataSource(
+        DB.mongodb_Db('uwazi_development'),
+        transactionManager
+      ),
       idGenerator: MongoIdHandler,
     });
 
     const extractor = await createExtractorUseCase.execute({
-      sourceTemplateId: '5bfbb1a0471dd0fc16ada146',
-      targetTemplateId: '67b72d9c8f9ad3b0824d4418',
+      sourceTemplateId: '67b768af4aeb5031fc97daf0',
+      targetTemplateId: '67b768bf4aeb5031fc97db5c',
     });
 
     const extractParagraphsUseCase = new PXExtractParagraphsFromEntity({
-      extractorsDS: new MongoPXExtractorsDataSource(getConnection(), transactionManager),
-      entityDS: new MongoEntitiesDataSource(
-        getConnection(),
-        new MongoTemplatesDataSource(getConnection(), transactionManager),
-        new MongoSettingsDataSource(getConnection(), transactionManager),
+      extractorsDS: new MongoPXExtractorsDataSource(
+        DB.mongodb_Db('uwazi_development'),
         transactionManager
       ),
-      filesDS: new MongoFilesDataSource(getConnection(), transactionManager),
-      settingsDS: new MongoSettingsDataSource(getConnection(), transactionManager),
+      entityDS: new MongoEntitiesDataSource(
+        DB.mongodb_Db('uwazi_development'),
+        new MongoTemplatesDataSource(DB.mongodb_Db('uwazi_development'), transactionManager),
+        new MongoSettingsDataSource(DB.mongodb_Db('uwazi_development'), transactionManager),
+        transactionManager
+      ),
+      filesDS: new MongoFilesDataSource(DB.mongodb_Db('uwazi_development'), transactionManager),
+      settingsDS: new MongoSettingsDataSource(
+        DB.mongodb_Db('uwazi_development'),
+        transactionManager
+      ),
       extractionService: new PXExternalExtractionService({
         url: 'http://localhost:5056',
         httpClient: HttpClientFactory.createDefault(),
@@ -52,7 +70,7 @@ import { tenants } from 'api/tenants';
 
     await extractParagraphsUseCase.execute({
       extractorId: extractor.id,
-      entitySharedId: 'hceype04ae7',
+      entitySharedId: 'kzpjfmdteb',
       tenantName: 'default',
       userId: '58ad7d240d44252fee4e6212',
     });

@@ -59,8 +59,11 @@ DB.connect(config.DBHOST, dbAuth)
       px_listenet: new PXParagraphsResultListener({
         createParagraphs: new PXCreateParagraphs({
           extractorsDS: new MongoPXExtractorsDataSource(
-            DB.mongodb_Db('default'),
-            new MongoTransactionManager(DB.connectionForDB('default').getClient(), systemLogger)
+            DB.mongodb_Db('uwazi_development'),
+            new MongoTransactionManager(
+              DB.connectionForDB('uwazi_development').getClient(),
+              systemLogger
+            )
           ),
           idGenerator: MongoIdHandler,
         }),

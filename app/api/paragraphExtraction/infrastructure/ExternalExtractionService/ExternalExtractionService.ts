@@ -19,8 +19,7 @@ export class PXExternalExtractionService implements PXExtractionService {
   constructor(private dependencies: Dependencies) {}
 
   async getParagraphsResult(url: string): Promise<GetParagraphsResultOutput> {
-    const _dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
-    const dto = JSON.parse(_dto);
+    const dto = await this.dependencies.httpClient.get<GetParagraphsResultDTO>({ url });
     const extractionId = new PXExtractionId(dto.key);
 
     return {

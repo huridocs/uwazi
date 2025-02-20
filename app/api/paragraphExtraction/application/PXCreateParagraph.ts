@@ -49,6 +49,9 @@ class PXCreateParagraph implements UseCase<PXCreateParagraphInput, Output> {
 
     const paragraphsCreated = await this.entitiesDS.getAllLanguages(firstParagraphCreated.sharedId);
 
+    // Todo: We have a save conflict here
+    // If I update a specif entity language, the others one increase the version number ?
+    // If this is true, then we need use a getById on each iteration of this reduce method.
     await paragraphsCreated.reduce(async (promise, paragraphCreated) => {
       await promise;
 
