@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 import { ObjectId } from 'mongodb';
 
 import { tenants } from 'api/tenants';
@@ -11,13 +12,12 @@ import { DBFixture } from 'api/utils/testing_db';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntitySchema } from 'shared/types/entityType';
 import { PXExtractionId } from 'api/paragraphExtraction/domain/PXExtractionId';
-
 import { getConnection } from 'api/common.v2/database/getConnectionForCurrentTenant';
 import { DefaultTransactionManager } from 'api/common.v2/database/data_source_defaults';
 import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
+import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 
 import { PXCreateParagraphsInput, PXCreateParagraphs } from '../PXCreateParagraphs';
-import { PXValidationError } from 'api/paragraphExtraction/domain/PXValidationError';
 
 const factory = getFixturesFactory();
 
@@ -132,7 +132,6 @@ describe('PXCreateParagraphs', () => {
     await testingEnvironment.tearDown();
   });
 
-  // eslint-disable-next-line max-statements
   it('should create an Entity per paragraph with available translations', async () => {
     const { createParagraphs } = setUpUseCase();
 
@@ -416,6 +415,8 @@ describe('PXCreateParagraphs', () => {
   });
 
   it.todo('should inherit Properties from source Entity if target Template has inherit Properties');
+
+  it.todo('should save Paragraph number as a Property of the created Entity Paragraph');
 
   it.todo('should throw if the source Entity does not belong to the Extractor');
   it.todo('should pick the first rich text property if target Template has more than one');
