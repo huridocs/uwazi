@@ -43,9 +43,9 @@ const getMatchingHubsCount = async (entitySharedId, searchResultIds) => {
         },
       },
     },
-    { $count: 'total' }
+    { $count: 'total' },
   ]);
-  
+
   return countResult?.total || 0;
 };
 function getPropertiesToBeConnections(template) {
@@ -565,6 +565,7 @@ export default {
         }
         return new ObjectId(relationTypeId);
       });
+
     const ownRelations = await model.get({ entity: entitySharedId }, 'hub');
     const hubsIds = ownRelations.map(relationship => relationship.hub);
 
@@ -601,7 +602,10 @@ export default {
     };
     const searchResult = await search.search(_query, language, user);
 
-    const totalHubs = await getMatchingHubsCount(entitySharedId, searchResult.rows.map(r => r.sharedId));
+    const totalHubs = await getMatchingHubsCount(
+      entitySharedId,
+      searchResult.rows.map(r => r.sharedId)
+    );
 
     const agg = await model.db.aggregate([
       { $match: { entity: entitySharedId } },
@@ -622,18 +626,31 @@ export default {
               input: '$connections',
               as: 'conn',
               cond: {
-                $or: [
-                  { $eq: ['$$conn.entity', entitySharedId] },
-                  { $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] },
+                $and: [
+                  {
+                    $or: [
+                      { $eq: ['$$conn.entity', entitySharedId] },
+                      { $in: ['$$conn.entity', searchResult.rows.map(r => r.sharedId)] },
+                    ],
+                  },
+                  ...(relationTypeFilter.length
+                    ? [
+                        {
+                          $in: ['$$conn.template', relationTypeFilter],
+                        },
+                      ]
+                    : []),
                 ],
               },
             },
           },
-          // 'connections._id': 1,
-          // 'connections.entity': 1,
-          // 'connections.template': 1,
-          // 'connections.hub': 1,
-          // 'connections.reference.text': 1,
+        },
+      },
+      {
+        $match: {
+          'connections.entity': {
+            $in: searchResult.rows.map(r => r.sharedId),
+          },
         },
       },
       {
@@ -681,23 +698,17 @@ export default {
       return memo;
     }, {});
 
-    // console.log(Object.keys(connectionsPerEntity));
-
-    const entitiesInvolved = await entities.get(
-      {
-        sharedId: { $in: Object.keys(connectionsPerEntity) },
-        language,
-        ...(entityTemplateFilter.length && { template: { $in: entityTemplateFilter } }),
-      }
-      // { title: 1, sharedId: 1 },
-      // { withoutDocuments: true }
-    );
+    const entitiesInvolved = await entities.get({
+      sharedId: { $in: Object.keys(connectionsPerEntity) },
+      language,
+      ...(entityTemplateFilter.length && {
+        $or: [{ sharedId: entitySharedId }, { template: { $in: entityTemplateFilter } }],
+      }),
+    });
 
     entitiesInvolved.forEach(e => {
       e.connections = connectionsPerEntity[e.sharedId];
     });
-
-    // console.log(JSON.stringify(entitiesInvolved, null, ' '));
 
     return {
       aggregations: { all: {} },
