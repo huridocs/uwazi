@@ -79,7 +79,7 @@ describe('t function', () => {
       };
 
       await act(async () => {
-        //@ts-ignore accessing internal _callbacks for testing purposes 
+        //@ts-ignore accessing internal _callbacks for testing purposes
         socket._callbacks.$translationsChange[0](translation);
       });
 
