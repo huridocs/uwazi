@@ -48,9 +48,9 @@ const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDur
 const restoreSettings = async () => {
   process.stdout.write('Restoring index settings...');
 
-  const tenantReplicas = tenants.current().featureFlags?.esUseReplicas || 0;
+  const tenantReplicas = tenants.current().featureFlags?.esReplicas || 0;
 
-  if (tenants.current().featureFlags?.esUseReplicas) {
+  if (tenants.current().featureFlags?.esReplicas) {
     process.stdout.write('restoring ES Replicas...');
   }
 
