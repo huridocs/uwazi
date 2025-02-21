@@ -2,11 +2,13 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, render, RenderResult } from '@testing-library/react';
 import { Provider } from 'jotai';
+import { act, render, RenderResult } from '@testing-library/react';
 import { localeAtom, translationsAtom, atomStore } from 'V2/atoms';
+import { socket } from 'app/socket';
+import 'app/App/sockets';
 import { t } from '../translateFunction';
-import { translations, updatedTranslations } from './fixtures';
+import { translations } from './fixtures';
 
 describe('t function', () => {
   let renderResult: RenderResult;
@@ -19,7 +21,6 @@ describe('t function', () => {
   beforeEach(() => {
     atomStore.set(translationsAtom, translations);
     atomStore.set(localeAtom, locale);
-    jest.spyOn(atomStore, 'sub');
     locale = 'es';
   });
 
@@ -32,12 +33,10 @@ describe('t function', () => {
     expect(
       renderResult.getByText('¿Esta seguro que quiere borrar este documento?')
     ).toBeInTheDocument();
-    expect(atomStore.sub).toHaveBeenCalledTimes(3);
-    expect(t.translation).toBe(undefined);
   });
 
   describe('no component', () => {
-    it('should return the translated string and subscribe to the atom store', () => {
+    it('should return the translated string', () => {
       renderEnvironment(
         'System',
         'confirmDeleteDocument',
@@ -47,32 +46,75 @@ describe('t function', () => {
       expect(
         renderResult.getByText('¿Esta seguro que quiere borrar este documento?')
       ).toBeInTheDocument();
-      // expect(atomStore.sub).toHaveBeenCalledTimes(4);
-      // expect(t.translation).toEqual({
-      //   contexts: translations[1].contexts,
-      //   locale: 'es',
-      // });
     });
 
-    it('should update translation when the atom updates', async () => {
-      renderEnvironment(
-        'System',
-        'confirmDeleteDocument',
-        'Are you sure you want to delete this document?',
-        false
+    it('should update translation when the atom is updated partially from the socket', async () => {
+      const result = render(
+        <Provider store={atomStore}>
+          {t(
+            'System',
+            'confirmDeleteDocument',
+            'Are you sure you want to delete this document?',
+            true
+          )}
+        </Provider>
       );
+
       expect(
-        renderResult.getByText('¿Esta seguro que quiere borrar este documento?')
+        result.getByText('¿Esta seguro que quiere borrar este documento?')
       ).toBeInTheDocument();
 
+      const translation = {
+        locale: 'es',
+        contexts: [
+          {
+            id: 'System',
+            label: 'System',
+            values: {
+              Search: 'Buscar',
+              confirmDeleteDocument: '¿CONFIRMA ELIMINACION?',
+            },
+          },
+        ],
+      };
+
       await act(async () => {
-        atomStore.set(translationsAtom, updatedTranslations);
+        //@ts-ignore accessing internal _callbacks for testing purposes
+        socket._callbacks.$translationsChange[0](translation);
       });
 
-      // expect(t.translation).toEqual({
-      //   contexts: updatedTranslations[1].contexts,
-      //   locale: 'es',
-      // });
+      await act(async () => {
+        expect(result.getByText('¿CONFIRMA ELIMINACION?')).toBeInTheDocument();
+      });
+    });
+
+    it('should update translation when the atom is updated fully from the socket', async () => {
+      const result = render(
+        <Provider store={atomStore}> {t('System', 'Search', 'Search', true)}</Provider>
+      );
+
+      expect(result.getByText('Buscar')).toBeInTheDocument();
+
+      const translationKeysChangeArguments = [
+        {
+          language: 'es',
+          value: 'Busqueda',
+          key: 'Search',
+          context: {
+            id: 'System',
+            label: 'System',
+          },
+        },
+      ];
+
+      await act(async () => {
+        //@ts-ignore accessing internal _callbacks for testing purposes
+        socket._callbacks.$translationKeysChange[0](translationKeysChangeArguments);
+      });
+
+      await act(async () => {
+        expect(result.getByText('Busqueda')).toBeInTheDocument();
+      });
     });
   });
 

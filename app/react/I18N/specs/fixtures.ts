@@ -45,20 +45,4 @@ const translations: ClientTranslationSchema[] = [
   },
 ];
 
-const updatedTranslations: ClientTranslationSchema[] = [
-  translations[0],
-  {
-    ...translations[1],
-    contexts: [
-      {
-        ...translations[1].contexts,
-        values: {
-          Search: 'Buscar',
-          confirmDeleteDocument: 'Actualizado!',
-        },
-      },
-    ],
-  },
-];
-
-export { translations, updatedTranslations, languages };
+export { translations, languages };
