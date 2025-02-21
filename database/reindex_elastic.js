@@ -22,18 +22,24 @@ const headers = {
 };
 
 const setReindexSettings = async (refreshInterval, numberOfReplicas, translogDurability) => {
+  let body = {
+    index: {
+      refresh_interval: refreshInterval,
+      number_of_replicas: numberOfReplicas,
+      translog: {
+        durability: translogDurability,
+      },
+    },
+  };
+
+  if (process.env.REINDEX_WITH_OPTIMIZATION) {
+    body = JSON.stringify(body);
+  }
+
   const result = await fetch(`${getIndexUrl()}/_settings`, {
     method: 'PUT',
     headers,
-    body: JSON.stringify({
-      index: {
-        refresh_interval: refreshInterval,
-        number_of_replicas: numberOfReplicas,
-        translog: {
-          durability: translogDurability,
-        },
-      },
-    }),
+    body,
   });
 
   return result;
