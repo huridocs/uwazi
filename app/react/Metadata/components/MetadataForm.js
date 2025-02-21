@@ -22,27 +22,9 @@ import { PDFUpload } from './PDFUpload';
 import { DeleteSelectionButton } from './DeleteSelectionButton';
 
 const immutableDefaultTemplate = Immutable.fromJS(defaultTemplate);
-
 const selectTemplateOptions = createSelector(
   s => s.templates,
-  s => s.translations,
-  s => s.locale,
-  (templates, translations, locale) => {
-    const translationContexts = translations.find(
-      translation => translation.get('locale') === locale
-    );
-    return templates.map(tmpl => {
-      const [translationContext] = translationContexts
-        .get('contexts')
-        .filter(context => context.get('id') === tmpl.get('_id'));
-
-      const label = translationContext
-        ? t(tmpl.get('_id'), tmpl.get('name'), null, false)
-        : tmpl.get('name');
-
-      return { label, value: tmpl.get('_id') };
-    });
-  }
+  templates => templates.map(tmpl => ({ label: tmpl.get('name'), value: tmpl.get('_id') }))
 );
 
 class MetadataForm extends Component {
@@ -143,9 +125,9 @@ class MetadataForm extends Component {
     }
     const titleLabel = template.get('commonProperties')
       ? template
-          .get('commonProperties')
-          .find(p => p.get('name') === 'title')
-          .get('label')
+        .get('commonProperties')
+        .find(p => p.get('name') === 'title')
+        .get('label')
       : 'Title';
 
     return (
@@ -218,10 +200,10 @@ MetadataForm.defaultProps = {
   showSubset: undefined,
   version: undefined,
   initialTemplateId: undefined,
-  componentWillUnmount: () => {},
-  notify: () => {},
-  changeTemplate: () => {},
-  onSubmit: () => {},
+  componentWillUnmount: () => { },
+  notify: () => { },
+  changeTemplate: () => { },
+  onSubmit: () => { },
   highlightedProps: [],
   storeKey: '',
   attachments: [],
@@ -266,7 +248,7 @@ export const mapStateToProps = (state, ownProps) => {
     template: ownProps.template
       ? ownProps.template
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-        immutableDefaultTemplate,
+      immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,
