@@ -16,11 +16,14 @@ import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 const getItemsToShow = (fromFilters, templates, settings) => {
   let items = fromFilters ? settings.collection.toJS().filters : [];
   if (!items?.length) {
-    items = templates.toJS().map(tpl => ({
-      id: tpl._id,
-      name: tpl.name,
-      translation: t(tpl._id, tpl.name, null, false).toLowerCase()
-    })).sort((a, b) => a.translation.localeCompare(b.translation));
+    items = templates
+      .toJS()
+      .map(tpl => ({
+        id: tpl._id,
+        name: tpl.name,
+        translation: t(tpl._id, tpl.name, null, false).toLowerCase(),
+      }))
+      .sort((a, b) => a.translation.localeCompare(b.translation));
   }
   return items;
 };

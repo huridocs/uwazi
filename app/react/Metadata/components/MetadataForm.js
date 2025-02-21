@@ -40,7 +40,7 @@ const selectTemplateOptions = createSelector(
         ? t(tmpl.get('_id'), tmpl.get('name'), null, false)
         : tmpl.get('name');
 
-      return ({ label, value: tmpl.get('_id') })
+      return { label, value: tmpl.get('_id') };
     });
   }
 );
@@ -143,9 +143,9 @@ class MetadataForm extends Component {
     }
     const titleLabel = template.get('commonProperties')
       ? template
-        .get('commonProperties')
-        .find(p => p.get('name') === 'title')
-        .get('label')
+          .get('commonProperties')
+          .find(p => p.get('name') === 'title')
+          .get('label')
       : 'Title';
 
     return (
@@ -218,10 +218,10 @@ MetadataForm.defaultProps = {
   showSubset: undefined,
   version: undefined,
   initialTemplateId: undefined,
-  componentWillUnmount: () => { },
-  notify: () => { },
-  changeTemplate: () => { },
-  onSubmit: () => { },
+  componentWillUnmount: () => {},
+  notify: () => {},
+  changeTemplate: () => {},
+  onSubmit: () => {},
   highlightedProps: [],
   storeKey: '',
   attachments: [],
@@ -266,7 +266,7 @@ export const mapStateToProps = (state, ownProps) => {
     template: ownProps.template
       ? ownProps.template
       : state.templates.find(tmpl => tmpl.get('_id') === ownProps.templateId) ||
-      immutableDefaultTemplate,
+        immutableDefaultTemplate,
     templateOptions: selectTemplateOptions(state),
     attachments,
     sharedId,
