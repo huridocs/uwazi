@@ -1,5 +1,8 @@
 import { FileBuilder } from 'api/files.v2/model/specs/utils/FileBuilder';
+import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+import { MongoPXExtractionDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionDBO';
 import { MongoPXExtractorDBO } from 'api/paragraphExtraction/infrastructure/MongoPXExtractorDBO';
+import { tenants } from 'api/tenants';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
 import { ObjectId } from 'mongodb';
 
@@ -66,3 +69,14 @@ export const files = [
   FileBuilder.create().withFilename('file1.txt').build(),
   FileBuilder.create().withFilename('file2.txt').build(),
 ];
+
+export const userId = new ObjectId();
+
+export const extraction: MongoPXExtractionDBO = {
+  _id: new ObjectId(),
+  extractorId: extractor._id,
+  sourceEntityId: entity.sharedId!,
+  status: PXExtraction.status.Finished,
+  tenantName: 'default',
+  userId,
+};

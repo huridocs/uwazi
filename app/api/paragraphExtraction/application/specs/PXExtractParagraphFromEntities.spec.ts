@@ -31,6 +31,8 @@ import {
 } from './fixtures';
 import { Input, PXExtractParagraphsFromEntities } from '../PXExtractParagraphFromEntities';
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
+import { MongoPXExtractionsDataSource } from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 
 const createFixtures = (): DBFixture => ({
   [mongoPXExtractorsCollection]: [extractor],
@@ -68,6 +70,8 @@ const setUpUseCase = () => {
   const settingsDS = DefaultSettingsDataSource(transaction);
   const filesDS = DefaultFilesDataSource(transaction);
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
+  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
+  const idGenerator = MongoIdHandler;
 
   const extractParagraphsFromEntity = new PXExtractParagraphsFromEntity({
     entityDS,
@@ -76,6 +80,8 @@ const setUpUseCase = () => {
     settingsDS,
     extractionService,
     fileStorage,
+    extractionsDS,
+    idGenerator,
   });
 
   const extractParagraphFromEntities = new PXExtractParagraphsFromEntities({

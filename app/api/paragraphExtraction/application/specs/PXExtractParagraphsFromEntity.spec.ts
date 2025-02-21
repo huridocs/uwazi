@@ -14,6 +14,12 @@ import { DefaultSettingsDataSource } from 'api/settings.v2/database/data_source_
 import { PXErrorCode } from 'api/paragraphExtraction/domain/PXValidationError';
 import { DBFixture } from 'api/utils/testing_db';
 import { tenants } from 'api/tenants';
+import {
+  mongoPXExtractionsCollection,
+  MongoPXExtractionsDataSource,
+} from 'api/paragraphExtraction/infrastructure/MongoPXExtractionsDataSource';
+import { PXExtraction } from 'api/paragraphExtraction/domain/PXExtraction';
+import { MongoIdHandler } from 'api/common.v2/database/MongoIdGenerator';
 
 import { PXExtractParagraphsFromEntity } from '../PXExtractParagraphsFromEntity';
 import {
@@ -31,6 +37,8 @@ import {
   processingSegmentation,
   file,
   files,
+  userId,
+  extraction,
 } from './fixtures';
 
 const createFixtures = (): DBFixture => ({
@@ -68,6 +76,8 @@ const setUpUseCase = () => {
   const settingsDS = DefaultSettingsDataSource(transaction);
   const filesDS = DefaultFilesDataSource(transaction);
   const extractorsDS = new MongoPXExtractorsDataSource(db, transaction);
+  const extractionsDS = new MongoPXExtractionsDataSource(db, transaction);
+  const idGenerator = MongoIdHandler;
 
   const extractParagraphs = new PXExtractParagraphsFromEntity({
     entityDS,
@@ -76,6 +86,8 @@ const setUpUseCase = () => {
     settingsDS,
     extractionService,
     fileStorage,
+    extractionsDS,
+    idGenerator,
   });
 
   return {
@@ -92,6 +104,62 @@ describe('PXExtractParagraphsFromEntity', () => {
 
   afterAll(async () => {
     await testingEnvironment.tearDown();
+  });
+
+  it('should create an Extraction record for the extracted Paragraph', async () => {
+    const { extractParagraphs } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
+      tenantName: tenants.current().name,
+      userId: userId.toString(),
+    });
+
+    const result = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(result).toEqual([
+      {
+        _id: expect.any(ObjectId),
+        sourceEntityId: entity.sharedId,
+        extractorId: extractor._id,
+        userId,
+        status: PXExtraction.status.Processing,
+        tenantName: tenants.current().name,
+      },
+    ]);
+  });
+
+  it('should update an Extraction record if there is already one', async () => {
+    const tenantName = tenants.current().name;
+    const _extraction = { ...extraction, tenantName };
+    await testingEnvironment.setFixtures({
+      ...createFixtures(),
+      [mongoPXExtractionsCollection]: [_extraction],
+    });
+
+    const { extractParagraphs } = setUpUseCase();
+
+    await extractParagraphs.execute({
+      entitySharedId: entity.sharedId!.toString()!,
+      extractorId: extractor._id.toString(),
+      tenantName,
+      userId: userId.toString(),
+    });
+
+    const result = await testingEnvironment.db.getAllFrom(mongoPXExtractionsCollection);
+
+    expect(result).toHaveLength(1);
+    expect(result).toEqual([
+      {
+        _id: _extraction._id,
+        tenantName: _extraction.tenantName,
+        sourceEntityId: _extraction.sourceEntityId,
+        extractorId: _extraction.extractorId,
+        userId: _extraction.userId,
+        status: PXExtraction.status.Processing,
+      },
+    ]);
   });
 
   it('should only extract Documents which language are installed on Settings collections', async () => {
