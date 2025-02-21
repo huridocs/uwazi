@@ -19,7 +19,8 @@ const getItemsToShow = (fromFilters, templates, settings) => {
     items = templates.toJS().map(tpl => ({
       id: tpl._id,
       name: tpl.name,
-    }));
+      translation: t(tpl._id, tpl.name, null, false).toLowerCase()
+    })).sort((a, b) => a.translation.localeCompare(b.translation));
   }
   return items;
 };
