@@ -18,11 +18,11 @@ describe('tenantESMapping', () => {
       tenants.add({
         name: 'test-tenant',
         dbName: 'test-tenant-db',
-        featureFlags: { esUseReplicas: true },
+        featureFlags: { esReplicas: 2 },
       });
 
       await tenants.run(async () => {
-        expect(getTenantESMapping().settings['index.number_of_replicas']).toBe(1);
+        expect(getTenantESMapping().settings['index.number_of_replicas']).toBe(2);
       }, 'test-tenant');
     });
   });

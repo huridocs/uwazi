@@ -7,9 +7,8 @@ const getTenantESMapping = () => {
     mappings: { ...elasticMapping.mappings },
   };
 
-  if (tenants.current().featureFlags?.esUseReplicas) {
-    tenantElasticMapping.settings['index.number_of_replicas'] = 1;
-  }
+  tenantElasticMapping.settings['index.number_of_replicas'] =
+    tenants.current().featureFlags?.esReplicas || 0;
 
   return tenantElasticMapping;
 };

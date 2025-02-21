@@ -30,7 +30,7 @@ const mongoSchema = new mongoose.Schema({
   activityLogs: String,
   featureFlags: {
     s3Storage: Boolean,
-    esUseReplicas: Boolean,
+    esReplicas: Number,
     sync: Boolean,
     v1_transactions: Boolean,
   },

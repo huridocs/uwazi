@@ -51,7 +51,7 @@ describe('tenantsModel', () => {
         healthChecks: 'un-needed data',
         featureFlags: {
           s3Storage: false,
-          esUseReplicas: true,
+          esReplicas: 1,
         },
       },
       {
@@ -83,7 +83,7 @@ describe('tenantsModel', () => {
         activityLogs: 'path',
         featureFlags: {
           s3Storage: false,
-          esUseReplicas: true,
+          esReplicas: 1,
         },
       });
       expect(tenantTwo).toEqual({
