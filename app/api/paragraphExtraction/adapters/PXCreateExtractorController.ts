@@ -1,11 +1,9 @@
-import { Request } from 'express';
-
 import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from 'api/common.v2/AbstractController';
 
-import { Input, InputSchema, PXCreateExtractor } from '../application/PXCreateExtractor';
+import { InputSchema, PXCreateExtractor } from '../application/PXCreateExtractor';
 
 type Response = {
   extractorId: string;
@@ -21,19 +19,10 @@ class PXCreateExtractorController extends AbstractController {
   constructor(dependencies: PXExtractorsControllersProps) {
     super(dependencies);
     this.createExtractor = dependencies.createExtractor;
-
-    this.app.post('paragraphExtraction/extractors', this.handle.bind(this));
   }
 
-  async handle(request: Request): Promise<void> {
-    const dto: Input = {
-      sourceTemplateId: request.body.sourceTemplateId,
-      targetTemplateId: request.body.targetTemplateId,
-      paragraphNumberPropertyId: request.body.paragraphNumberPropertyId,
-      paragraphPropertyId: request.body.paragraphPropertyId,
-    };
-
-    InputSchema.parse(dto);
+  async handle(): Promise<void> {
+    const dto = InputSchema.parse(this.request.body);
 
     const output = await this.createExtractor.execute(dto);
 

@@ -1,42 +1,38 @@
-import { Application, NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 
-export type Dependencies = {
-  next: NextFunction;
-  res: Response;
-  app: Application;
+export type Dependencies<RequestBody = any> = {
+  response: Response;
+  request: Request<unknown, any, RequestBody>;
 };
 
-export abstract class AbstractController {
-  protected next: NextFunction;
+export abstract class AbstractController<RequestBody = any> {
+  constructor(private dependencies: Dependencies<RequestBody>) {}
 
-  protected res: Response;
+  abstract handle(): Promise<void>;
 
-  protected app: Application;
-
-  constructor({ next, res, app }: Dependencies) {
-    this.next = next;
-    this.res = res;
-    this.app = app;
+  get request() {
+    return this.dependencies.request;
   }
 
-  abstract handle(request: Request): Promise<void>;
+  get response() {
+    return this.dependencies.response;
+  }
 
   serverError(error: Error) {
-    // Logging ?
-
-    return this.res.status(500).json({
+    this.dependencies.response.status(500).json({
       message: error.message,
     });
   }
 
   clientError(message: string) {
-    // Should we log this ?
-    // What about negative impacts spam on Notifications channel ?
-    return this.res.status(400).json({ message });
+    this.dependencies.response.status(400).json({ message });
   }
 
   jsonResponse(body: any) {
-    this.res.status(200).json(body);
-    this.next();
+    this.dependencies.response.status(200).json(body);
+  }
+
+  ok() {
+    this.dependencies.response.status(200).send();
   }
 }

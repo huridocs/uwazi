@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
 import { UseCase } from 'api/common.v2/contracts/UseCase';
+
 import { PXExtractParagraphsFromEntity } from './PXExtractParagraphsFromEntity';
 
-type Input = z.infer<typeof Schema>;
+type Input = z.infer<typeof InputSchema>;
 
 type Output = any;
 
@@ -11,14 +12,14 @@ type Dependencies = {
   extractParagraphsFromEntity: PXExtractParagraphsFromEntity;
 };
 
-const Schema = z.object({
+const InputSchema = z.object({
   userId: z.string({ message: 'You should provide an User Id' }),
   tenantName: z.string({ message: 'You should provide an Tenant name' }),
   extractorId: z.string({ message: 'You should provide an Extractor' }),
   entitySharedIds: z.array(z.string({ message: 'You should provide an Entity' })).min(1),
 });
 
-export class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
+class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
   constructor(private dependencies: Dependencies) {}
 
   async execute({ entitySharedIds, extractorId, tenantName, userId }: Input): Promise<Output> {
@@ -47,5 +48,7 @@ export class PXExtractParagraphsFromEntities implements UseCase<Input, Output> {
  * 4. Some how handle metadata (e.g., pending, in-progress, completed, failed) for a Task, this metadata should be associated with the Entity
  * 5. When making queries to populate our user interfaces, we should retrieve the Entity and associated status
  */
+
+export { InputSchema, PXExtractParagraphsFromEntities };
 
 export type { Input };
