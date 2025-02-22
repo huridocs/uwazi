@@ -19,20 +19,20 @@ export abstract class AbstractController<RequestBody = any> {
   }
 
   serverError(error: Error) {
-    this.dependencies.response.status(500).json({
+    this.response.status(500).json({
       message: error.message,
     });
   }
 
   clientError(message: string) {
-    this.dependencies.response.status(400).json({ message });
+    this.response.status(400).json({ message });
   }
 
   jsonResponse(body: any) {
-    this.dependencies.response.status(200).json(body);
+    this.response.status(200).json(body);
   }
 
   ok() {
-    this.dependencies.response.status(200).send();
+    this.response.status(200).send();
   }
 }
