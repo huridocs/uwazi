@@ -4,7 +4,7 @@ import { clearCookiesAndLogin } from '../helpers/login';
 describe('customization', () => {
   before(() => {
     cy.blankState();
-    clearCookiesAndLogin();
+    clearCookiesAndLogin('admin', 'change this password now');
     cy.injectAxe();
     cy.contains('a', 'Settings').click();
   });
