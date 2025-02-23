@@ -2,7 +2,6 @@ import {
   AbstractController,
   Dependencies as AbstractControllerDependencies,
 } from 'api/common.v2/AbstractController';
-import { tenants } from 'api/tenants';
 
 import {
   Input,
@@ -25,7 +24,7 @@ class PXExtractParagraphFromEntitiesController extends AbstractController<Reques
   }
 
   async handle(): Promise<void> {
-    const dto = InputSchema.parse({ ...this.request.body, tenantName: tenants.current().name });
+    const dto = InputSchema.parse({ ...this.request.body, tenantName: this.tenantName });
 
     await this.useCase.execute(dto);
 
