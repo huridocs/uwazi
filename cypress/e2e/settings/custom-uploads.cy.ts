@@ -4,7 +4,7 @@ import { clearCookiesAndLogin } from '../helpers/login';
 describe('customization', () => {
   before(() => {
     cy.blankState();
-    clearCookiesAndLogin('admin', 'change this password now');
+    clearCookiesAndLogin();
     cy.injectAxe();
     cy.contains('a', 'Settings').click();
   });
@@ -90,6 +90,6 @@ describe('customization', () => {
     cy.contains('li', 'short-video-thumbnail.jpg');
     cy.contains('button', 'Accept').click();
     cy.contains('button', 'Dismiss').click();
-    cy.get('tbody').children().should('have.length', 0);
+    cy.get('tbody').children().contains('NO DATA AVAILABLE');
   });
 });
