@@ -35,9 +35,9 @@ exports[`Login on instance should render the component with the login form 1`] =
               className="form-group-label"
               htmlFor="username"
             >
-              <Connect(Translate)>
+              <Translate>
                 User
-              </Connect(Translate)>
+              </Translate>
             </label>
             <input
               className="form-control"
@@ -54,9 +54,9 @@ exports[`Login on instance should render the component with the login form 1`] =
             className="form-group-label"
             htmlFor="password"
           >
-            <Connect(Translate)>
+            <Translate>
               Password
-            </Connect(Translate)>
+            </Translate>
           </label>
           <Modeled(Connect(Field))
             model=".password"
@@ -76,9 +76,9 @@ exports[`Login on instance should render the component with the login form 1`] =
               onClick={[Function]}
               title="Forgot Password?"
             >
-              <Connect(Translate)>
+              <Translate>
                 Forgot Password?
-              </Connect(Translate)>
+              </Translate>
             </span>
           </div>
         </div>
@@ -87,9 +87,9 @@ exports[`Login on instance should render the component with the login form 1`] =
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            <Connect(Translate)>
+            <Translate>
               Login
-            </Connect(Translate)>
+            </Translate>
           </button>
         </p>
       </LocalForm>
@@ -127,7 +127,11 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
           className="form-group login-token"
         >
           <h5>
-            Two-step verification
+            <Translate
+              context="System"
+            >
+              Two-step verification
+            </Translate>
           </h5>
           <Modeled(Connect(Field))
             model=".token"
@@ -136,7 +140,11 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
               className="form-group-label"
               htmlFor="token"
             >
-              Authentication code
+              <Translate
+                context="System"
+              >
+                Authentication code
+              </Translate>
             </label>
             <input
               className="form-control"
@@ -149,23 +157,23 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
             >
               <p />
               <p>
-                <Connect(Translate)>
+                <Translate>
                   Open the two-factor Authenticator app on your device
-                </Connect(Translate)>
+                </Translate>
                  
                 <br />
-                <Connect(Translate)>
+                <Translate>
                   to view your authentication code and verify your identity.
-                </Connect(Translate)>
+                </Translate>
               </p>
               <p>
                 <span
                   className="button forgot-password "
                   onClick={[Function]}
                 >
-                  <Connect(Translate)>
+                  <Translate>
                     Return to login
-                  </Connect(Translate)>
+                  </Translate>
                 </span>
               </p>
             </div>
@@ -176,9 +184,9 @@ exports[`Login submit() on response failure when authorization conflict (2fa req
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            <Connect(Translate)>
+            <Translate>
               Verify
-            </Connect(Translate)>
+            </Translate>
           </button>
         </p>
       </LocalForm>
@@ -216,7 +224,11 @@ exports[`Login submit() on response failure when authorization failure should se
           className="form-group login-token has-error"
         >
           <h5>
-            Two-step verification
+            <Translate
+              context="System"
+            >
+              Two-step verification
+            </Translate>
           </h5>
           <Modeled(Connect(Field))
             model=".token"
@@ -225,7 +237,11 @@ exports[`Login submit() on response failure when authorization failure should se
               className="form-group-label"
               htmlFor="token"
             >
-              Authentication code
+              <Translate
+                context="System"
+              >
+                Authentication code
+              </Translate>
             </label>
             <input
               className="form-control"
@@ -241,27 +257,31 @@ exports[`Login submit() on response failure when authorization failure should se
                   icon="exclamation-triangle"
                 />
                 <span>
-                  Two-factor verification failed
+                  <Translate
+                    context="System"
+                  >
+                    Two-factor verification failed
+                  </Translate>
                 </span>
               </p>
               <p>
-                <Connect(Translate)>
+                <Translate>
                   Open the two-factor Authenticator app on your device
-                </Connect(Translate)>
+                </Translate>
                  
                 <br />
-                <Connect(Translate)>
+                <Translate>
                   to view your authentication code and verify your identity.
-                </Connect(Translate)>
+                </Translate>
               </p>
               <p>
                 <span
                   className="button forgot-password label-danger"
                   onClick={[Function]}
                 >
-                  <Connect(Translate)>
+                  <Translate>
                     Return to login
-                  </Connect(Translate)>
+                  </Translate>
                 </span>
               </p>
             </div>
@@ -272,9 +292,9 @@ exports[`Login submit() on response failure when authorization failure should se
             className="btn btn-block btn-lg btn-primary"
             type="submit"
           >
-            <Connect(Translate)>
+            <Translate>
               Verify
-            </Connect(Translate)>
+            </Translate>
           </button>
         </p>
       </LocalForm>

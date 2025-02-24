@@ -12,9 +12,9 @@ exports[`DocumentSidePanel Tabs when doc passed has toc toc edition should show 
   <span
     className="btn-label"
   >
-    <Connect(Translate)>
+    <Translate>
       Edit
-    </Connect(Translate)>
+    </Translate>
   </span>
 </button>
 `;

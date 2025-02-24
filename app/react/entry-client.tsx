@@ -8,16 +8,17 @@ import {
   matchRoutes,
   useLocation,
   useNavigationType,
-} from 'react-router-dom';
+} from 'react-router';
 import { Provider } from 'jotai';
 import { Provider as ReduxProvider } from 'react-redux';
 import type { RequestError } from 'V2/shared/errorUtils';
 import { ErrorBoundary } from './V2/Components/ErrorHandling';
 import './App/sockets';
-import { getRoutes } from './Routes';
 import CustomProvider from './App/Provider';
-import { settingsAtom, atomStore, userAtom } from './V2/atoms';
+import { atomStore } from './V2/atoms';
 import { store } from './store';
+import { options } from './reactRouterConfig';
+import { routes } from './appRoutes';
 
 declare global {
   interface Window {
@@ -47,16 +48,14 @@ if (window.SENTRY_APP_DSN) {
   });
 }
 
-const router = createBrowserRouter(
-  getRoutes(atomStore.get(settingsAtom), atomStore.get(userAtom)?._id)
-);
+const router = createBrowserRouter(routes, options);
 
 const App = () => (
   <ReduxProvider store={store as any}>
     <CustomProvider>
       <Provider store={atomStore}>
         <ErrorBoundary>
-          <RouterProvider router={router} fallbackElement={null} />
+          <RouterProvider router={router} />
         </ErrorBoundary>
       </Provider>
     </CustomProvider>

@@ -1,4 +1,5 @@
 /** @format */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import * as otplib from 'otplib';
 
@@ -18,11 +19,11 @@ type Error = { code: number; message: string };
 
 describe('auth2fa userUtils', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   const expectError = async (method: string, _id: any, token: string, err: Error) => {

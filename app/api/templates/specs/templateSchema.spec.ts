@@ -1,28 +1,29 @@
 /* eslint-disable max-lines */
 import Ajv from 'ajv';
 import db from 'api/utils/testing_db';
-import { TemplateSchema } from 'shared/types/templateType';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { PropertySchema } from 'shared/types/commonTypes';
+import { TemplateSchema } from 'shared/types/templateType';
 
 import fixtures, {
+  propertyToBeInherited,
   templateId,
   templateToBeInherited,
-  propertyToBeInherited,
   thesauriId1,
   thesauriId2,
   thesauriId4,
 } from './validatorFixtures';
 
-import { safeName } from '../utils';
 import { validateTemplate } from '../../../shared/types/templateSchema';
+import { safeName } from '../utils';
 
 describe('template schema', () => {
   beforeEach(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('validateTemplate', () => {

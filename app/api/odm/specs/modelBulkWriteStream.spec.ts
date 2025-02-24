@@ -1,4 +1,5 @@
 import userModel from 'api/users/usersModel';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import db from 'api/utils/testing_db';
 import { UserRole } from 'shared/types/userSchema';
 import { ModelBulkWriteStream } from '../modelBulkWriteStream';
@@ -29,7 +30,7 @@ const fixtures = {
 const newUsers = Array(11)
   .fill(0)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  .map((value: any, index: number) => ({
+  .map((_value: any, index: number) => ({
     username: `new_user_${index}`,
     role: UserRole.COLLABORATOR,
     email: `new_user_${index}@tenant.xy`,
@@ -49,12 +50,12 @@ describe('modelBulkWriteStream', () => {
   let stream: ModelBulkWriteStream;
 
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     stream = new ModelBulkWriteStream(userModel, stackLimit);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
   it('should be able to insert', async () => {
     await stream.insert(newUsers[0]);

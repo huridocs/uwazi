@@ -1,8 +1,8 @@
 import { OdmModel } from 'api/odm/model';
-import { MultiTenantMongooseModel } from 'api/odm/MultiTenantMongooseModel';
+import { MongooseModelWrapper } from 'api/odm/MongooseModelWrapper';
 
 class ModelBulkWriteStream {
-  db: MultiTenantMongooseModel<any>;
+  db: MongooseModelWrapper<any>;
 
   stackLimit: number;
 

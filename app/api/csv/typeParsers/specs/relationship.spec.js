@@ -1,6 +1,7 @@
 import entities, { model } from 'api/entities';
 import { search } from 'api/search';
 import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import { fixtures, templateToRelateId } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
@@ -72,7 +73,7 @@ describe('relationship', () => {
   };
 
   beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
 
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await prepareExtraFixtures();
@@ -81,7 +82,7 @@ describe('relationship', () => {
     entitiesRelated = await entities.get({ template: templateToRelateId, language: 'en' });
   });
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   it('should create entities and return the ids', async () => {
     expect(entitiesRelated[0].title).toBe('value1');

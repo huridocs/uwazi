@@ -86,6 +86,7 @@ ajv.addKeyword({
     if (!entity.template) {
       return true;
     }
+
     const [template] = await templatesModel.get({ _id: entity.template });
     if (!template) {
       throw new Ajv.ValidationError([

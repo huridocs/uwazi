@@ -9,8 +9,10 @@ import { legacyLogger } from 'api/log';
 import connections from 'api/relationships';
 import { search } from 'api/search';
 import * as ocrRecords from 'api/services/ocr/ocrRecords';
+import { appContext } from 'api/utils/AppContext';
 import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { setUpApp } from 'api/utils/testingRoutes';
+import { testingTenants } from 'api/utils/testingTenants';
 import db from 'api/utils/testing_db';
 import { FileType } from 'shared/types/fileType';
 import { UserSchema } from 'shared/types/userType';
@@ -19,9 +21,11 @@ import { FileUpdatedEvent } from '../events/FileUpdatedEvent';
 import { FilesDeletedEvent } from '../events/FilesDeletedEvent';
 import { files } from '../files';
 import uploadRoutes from '../routes';
+import jsRoutes from '../jsRoutes';
 import { storage } from '../storage';
 import {
   adminUser,
+  allowedPublicTemplate,
   collabUser,
   customFileId,
   externalUrlFileId,
@@ -52,6 +56,7 @@ describe('files routes', () => {
   };
 
   beforeEach(async () => {
+    jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
     await testingEnvironment.setUp(fixtures);
     mockCurrentUser(collabUser);
@@ -440,6 +445,39 @@ describe('files routes', () => {
           expect(file).not.toBe(undefined);
         }
       );
+    });
+  });
+
+  describe('api/public', () => {
+    it('should run as a transaction', async () => {
+      const jsRoutesApp: Application = setUpApp(
+        jsRoutes,
+        (req: Request, _res: Response, next: NextFunction) => {
+          (req as any).user = (() => requestMockedUser)();
+          next();
+        }
+      );
+      testingTenants.changeCurrentTenant({ featureFlags: { v1_transactions: true } });
+      jest.restoreAllMocks();
+      jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+      jest.spyOn(entities, 'getUnrestrictedWithDocuments').mockImplementationOnce(() => {
+        throw new Error('error at the end of the saveEntity');
+      });
+      await request(jsRoutesApp)
+        .post('/api/public')
+        .set('Bypass-Captcha', 'true')
+        .field(
+          'entity',
+          JSON.stringify({ title: 'my entity', template: allowedPublicTemplate.toString() })
+        )
+        .attach('attachments[0]', path.join(__dirname, 'Hello, World.pdf'), 'Nombre en español')
+        .field('attachments_originalname[0]', 'Nombre en español')
+        .expect(500);
+
+      await appContext.run(async () => {
+        const myEntity = await entities.get({ title: 'my entity' });
+        expect(myEntity.length).toBe(0);
+      });
     });
   });
 });

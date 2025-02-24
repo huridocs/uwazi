@@ -1,6 +1,7 @@
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import entities from 'api/entities';
+import { TranslationSyO } from 'api/i18n.v2/schemas/TranslationSyO';
 import pages from 'api/pages';
 import settings from 'api/settings';
 import thesauri from 'api/thesauri/thesauri.js';
@@ -8,18 +9,19 @@ import { ContextType } from 'shared/translationSchema';
 // eslint-disable-next-line node/no-restricted-import
 import * as fs from 'fs';
 import { UITranslationNotAvailable } from '../defaultTranslations';
+import { addLanguage } from '../routes';
 import translations from '../translations';
+import { getTranslationsV2ByContext } from '../v2_support';
 import fixtures, { dictionaryId } from './fixtures';
 import { sortByLocale } from './sortByLocale';
-import { addLanguage } from '../routes';
 
 describe('translations', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('get()', () => {
@@ -29,7 +31,7 @@ describe('translations', () => {
       expect(result).toMatchObject({
         contexts: [
           {
-            type: 'Thesaurus',
+            type: 'Thesaurus' as 'Thesaurus',
             values: {
               Account: 'Account',
               Age: 'Age',
@@ -53,6 +55,36 @@ describe('translations', () => {
         ],
         locale: 'en',
       });
+    });
+  });
+
+  describe('v2StructureSave', () => {
+    it('should save changed translations and propagate the changes', async () => {
+      const initialTranslations = await getTranslationsV2ByContext(dictionaryId.toString());
+      const initialEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
+      const translationsToSave = [
+        {
+          _id: '1',
+          language: initialTranslations[0].locale!,
+          key: 'Password',
+          value: 'Changed Password ES',
+          context: {
+            id: dictionaryId.toString(),
+            type: 'Thesaurus' as TranslationSyO['context']['type'],
+            label: '',
+          },
+        },
+      ];
+
+      await translations.v2StructureSave(translationsToSave);
+      const updatedTranslations = await getTranslationsV2ByContext(dictionaryId.toString());
+      initialTranslations![0]!.contexts![0]!.values!.find(v => v.key === 'Password')!.value =
+        'Changed Password ES';
+      expect(updatedTranslations).toEqual(initialTranslations);
+
+      const updatedEntity = (await entities.get({ language: 'es', sharedId: 'entity1' }))[0];
+      initialEntity.metadata.Dictionary[0].label = 'Changed Password ES';
+      expect(updatedEntity).toEqual(initialEntity);
     });
   });
 

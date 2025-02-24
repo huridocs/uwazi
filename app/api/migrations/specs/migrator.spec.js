@@ -1,23 +1,26 @@
 import { toHaveBeenCalledBefore } from 'jest-extended';
 import path from 'path';
 
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+
+import testingDB from '../../utils/testing_db';
+import migrationsModel from '../migrationsModel';
+import { migrator } from '../migrator';
 import migration1 from './testMigrations/1-migrationTest';
 import migration10 from './testMigrations/10-migrationTest';
 import migration2 from './testMigrations/2-migrationTest';
-import migrationsModel from '../migrationsModel';
-import { migrator } from '../migrator';
-import testingDB from '../../utils/testing_db';
 
 expect.extend({ toHaveBeenCalledBefore });
 
 describe('migrator', () => {
   let connection;
   beforeAll(async () => {
-    connection = await testingDB.connect();
+    await testingEnvironment.setUp({});
+    connection = testingDB.mongodb;
   });
 
   afterAll(async () => {
-    await testingDB.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should have migrations directory configured', () => {

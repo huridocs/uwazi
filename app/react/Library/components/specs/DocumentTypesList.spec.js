@@ -2,8 +2,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import Immutable from 'immutable';
-
 import { DocumentTypesList } from '../DocumentTypesList';
+
+jest.mock('app/I18N', () => ({
+  t: (_context, key) => key,
+  Translate: ({ children }) => children,
+}));
 
 describe('DocumentTypesList', () => {
   let component;
@@ -99,7 +103,7 @@ describe('DocumentTypesList', () => {
     };
     it('should list all the templates if fromFilters is false', () => {
       render({ fromFilters: false });
-      checkExpectedList(['Case', 'Judge', 'Country', 'Documents']);
+      checkExpectedList(['Case', 'Country', 'Documents', 'Judge']);
     });
 
     it.each([true, undefined])(

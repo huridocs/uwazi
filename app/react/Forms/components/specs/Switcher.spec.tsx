@@ -40,7 +40,7 @@ describe('Switcher', () => {
 
   it('should receive alternative elements for values', () => {
     render({ leftLabel: <Translate>ALL</Translate>, rightLabel: <Translate>NONE</Translate> });
-    const labels = component.find('Connect(Translate)');
+    const labels = component.find('Translate');
     expect(labels.at(0).props().children).toEqual('ALL');
     expect(labels.at(1).props().children).toEqual('NONE');
   });
@@ -54,7 +54,7 @@ describe('Switcher', () => {
 
   it('should render default labels AND/OR', () => {
     render();
-    const labels = component.find('Connect(Translate)');
+    const labels = component.find('Translate');
     expect(labels.at(0).props().children).toEqual('AND');
     expect(labels.at(1).props().children).toEqual('OR');
   });

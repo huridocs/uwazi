@@ -76,6 +76,7 @@ const entity3textFile: FileType = {
 };
 
 const fixtures: DBFixture = {
+  ocr_records: [],
   entities: [
     {
       _id: entity1Id,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 import { withOutlet, withRouter } from 'app/componentWrappers';
 import RouteHandler from 'app/App/RouteHandler';
 import { actions } from 'app/BasicReducer';

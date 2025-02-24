@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { InformationCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 import { Translate } from 'app/I18N';
 

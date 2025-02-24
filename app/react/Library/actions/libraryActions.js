@@ -231,7 +231,7 @@ function encodeSearch(_search, appendQ = true) {
   return appendQ ? `?q=${encodedSearch}` : encodedSearch;
 }
 
-function setSearchInUrl(searchParams, location, navigate) {
+async function setSearchInUrl(searchParams, location, navigate) {
   const { pathname } = location;
   const path = `${pathname}/`.replace(/\/\//g, '/');
   const query = new URLSearchParams(location.search);
@@ -246,7 +246,7 @@ function searchDocuments(
   limit = 30,
   from = 0
 ) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState().library;
     const currentSearch = search || state.search;
     const currentFilters = filters || state.filters;

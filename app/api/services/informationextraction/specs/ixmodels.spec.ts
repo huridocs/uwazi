@@ -1,8 +1,8 @@
 import { Suggestions } from 'api/suggestions/suggestions';
 import { getFixturesFactory } from 'api/utils/fixturesFactory';
-import db from 'api/utils/testing_db';
-import { ModelStatus } from 'shared/types/IXModelSchema';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { toHaveBeenCalledBefore } from 'jest-extended';
+import { ModelStatus } from 'shared/types/IXModelSchema';
 import ixmodels from '../ixmodels';
 
 expect.extend({ toHaveBeenCalledBefore });
@@ -11,13 +11,13 @@ const fixtureFactory = getFixturesFactory();
 
 describe('save()', () => {
   beforeAll(async () => {
-    await db.clearAllAndLoad({
+    await testingEnvironment.setUp({
       settings: [{ languages: [{ default: true, label: 'English', key: 'en' }] }],
     });
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should set suggestions obsolete on saving a ready model', async () => {

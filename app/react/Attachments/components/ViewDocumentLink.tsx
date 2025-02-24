@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import { CurrentLocationLink } from 'app/Layout';
 import { EntitySchema } from 'shared/types/entityType';
 

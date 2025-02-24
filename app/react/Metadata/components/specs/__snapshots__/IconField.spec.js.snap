@@ -7,9 +7,9 @@ exports[`IconField should be open when has value 1`] = `
   <ToggleDisplay
     hideLabel={
       <span>
-        <Connect(Translate)>
+        <Translate>
           remove icon
-        </Connect(Translate)>
+        </Translate>
         <Connect(Icon)
           icon="eye-slash"
         />
@@ -19,9 +19,9 @@ exports[`IconField should be open when has value 1`] = `
     open={true}
     showLabel={
       <span>
-        <Connect(Translate)>
+        <Translate>
           add icon
-        </Connect(Translate)>
+        </Translate>
         <Connect(Icon)
           icon="eye"
         />
@@ -33,13 +33,13 @@ exports[`IconField should be open when has value 1`] = `
     >
       <li>
         <label>
-          <Connect(Translate)>
+          <Translate>
             Icon
-          </Connect(Translate)>
+          </Translate>
            / 
-          <Connect(Translate)>
+          <Translate>
             Flag
-          </Connect(Translate)>
+          </Translate>
         </label>
       </li>
       <li
@@ -61,9 +61,9 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
   <ToggleDisplay
     hideLabel={
       <span>
-        <Connect(Translate)>
+        <Translate>
           remove icon
-        </Connect(Translate)>
+        </Translate>
         <Connect(Icon)
           icon="eye-slash"
         />
@@ -73,9 +73,9 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
     open={false}
     showLabel={
       <span>
-        <Connect(Translate)>
+        <Translate>
           add icon
-        </Connect(Translate)>
+        </Translate>
         <Connect(Icon)
           icon="eye"
         />
@@ -87,13 +87,13 @@ exports[`IconField should render IconSelector with toggleDisplay 1`] = `
     >
       <li>
         <label>
-          <Connect(Translate)>
+          <Translate>
             Icon
-          </Connect(Translate)>
+          </Translate>
            / 
-          <Connect(Translate)>
+          <Translate>
             Flag
-          </Connect(Translate)>
+          </Translate>
         </label>
       </li>
       <li

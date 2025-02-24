@@ -2,12 +2,12 @@ import React from 'react';
 import { withRouter } from 'app/componentWrappers';
 import { requestState } from 'app/Library/helpers/requestState';
 import { MapView } from 'app/Library/components/MapView';
+import { LibraryRootComponent } from 'app/Library/Library';
 import LibraryLayout from 'app/Library/LibraryLayout';
-import Library from 'app/Library/Library';
 import LibraryModeToggleButtons from 'app/Library/components/LibraryModeToggleButtons';
 import { trackPage } from 'app/App/GoogleAnalytics';
 
-class LibraryMapComponent extends Library {
+class LibraryMapComponent extends LibraryRootComponent {
   static async requestState(requestParams, globalResources) {
     return requestState(requestParams, globalResources, { geolocation: true });
   }

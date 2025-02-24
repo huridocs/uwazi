@@ -1,8 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import { Provider } from 'react-redux';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 import { InputField } from 'V2/Components/Forms';
 
 const meta: Meta<typeof InputField> = {
@@ -14,13 +12,11 @@ type Story = StoryObj<typeof InputField>;
 
 const InputFieldStory: Story = {
   render: args => (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="md:w-1/2">
-          <InputField {...args} />
-        </div>
+    <div className="tw-content">
+      <div className="md:w-1/2">
+        <InputField {...args} />
       </div>
-    </Provider>
+    </div>
   ),
 };
 

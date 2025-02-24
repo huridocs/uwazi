@@ -9,7 +9,7 @@ import {
   Link,
   ActionFunction,
   useFetcher,
-} from 'react-router-dom';
+} from 'react-router';
 import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { IncomingHttpHeaders } from 'http';
 import { useForm } from 'react-hook-form';
@@ -257,7 +257,7 @@ const EditTranslations = () => {
     const values = prepareValuesToSave(data.formValues, translations);
     formData.set('intent', 'form-submit');
     formData.set('data', JSON.stringify(values));
-    fetcher.submit(formData, { method: 'post' });
+    await fetcher.submit(formData, { method: 'post' });
     reset({}, { keepValues: true });
   };
 
@@ -268,7 +268,7 @@ const EditTranslations = () => {
       const formData = new FormData();
       formData.set('intent', 'file-upload');
       formData.set('data', file);
-      fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
+      await fetcher.submit(formData, { method: 'post', encType: 'multipart/form-data' });
       reset({}, { keepValues: true });
     }
   };

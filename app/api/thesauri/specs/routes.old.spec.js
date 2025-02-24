@@ -1,22 +1,22 @@
-import 'api/utils/jasmineHelpers';
-import db from 'api/utils/testing_db';
 import translations from 'api/i18n/translations';
+import 'api/utils/jasmineHelpers';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
-import { fixtures } from './fixtures';
 import instrumentRoutes from '../../utils/instrumentRoutes';
-import thesauri from '../thesauri';
 import thesauriRoute from '../routes.js';
+import thesauri from '../thesauri';
+import { fixtures } from './fixtures';
 
 describe('thesauri routes', () => {
   let routes;
 
   beforeEach(async () => {
     routes = instrumentRoutes(thesauriRoute);
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('GET', () => {

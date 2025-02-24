@@ -10,3 +10,4 @@ export {
   saveEntity,
 } from './entities';
 export { editPropertyForExtractor } from './information-extraction';
+export { waitForLegacyNotifications } from './notifications';

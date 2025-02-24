@@ -31,6 +31,7 @@ const mongoSchema = new mongoose.Schema({
   featureFlags: {
     s3Storage: Boolean,
     sync: Boolean,
+    v1_transactions: Boolean,
   },
   globalMatomo: { id: String, url: String },
   ciMatomoActive: Boolean,

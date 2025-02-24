@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash';
 import api from 'app/utils/api';
 import { actions } from 'app/BasicReducer';
 import debounce from 'app/utils/debounce';
@@ -248,7 +249,9 @@ const selectRelationTypes = createSelector(
         name,
       };
     });
-    return [{ _id: null, name: t('System', 'No Label', null, false) }].concat(relations);
+    return [{ _id: null, name: t('System', 'No Label', null, false) }].concat(
+      sortBy(relations, 'name')
+    );
   }
 );
 

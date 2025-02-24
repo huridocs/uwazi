@@ -6,7 +6,7 @@ import { Translate } from 'app/I18N';
 import { Button, Card, Sidepanel } from 'V2/Components/UI';
 import { Checkbox } from 'app/V2/Components/Forms';
 import { useForm } from 'react-hook-form';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 
 interface FiltersSidepanelProps {
   showSidepanel: boolean;

@@ -1,7 +1,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Transition } from '@headlessui/react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { availableLanguages } from 'shared/language';
 import { Translate } from 'app/I18N';

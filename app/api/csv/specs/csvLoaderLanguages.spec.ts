@@ -4,7 +4,7 @@ import * as filesystem from 'api/files/filesystem';
 import { uploadsPath } from 'api/files/filesystem';
 import { search } from 'api/search';
 import settings from 'api/settings';
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import path from 'path';
 import { EntitySchema } from 'shared/types/entityType';
 
@@ -21,7 +21,7 @@ describe('csvLoader languages', () => {
   const loader = new CSVLoader();
 
   beforeAll(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoader');
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
@@ -62,7 +62,7 @@ describe('csvLoader languages', () => {
     ]);
 
     await removeTestingZip();
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should import entities in the diferent languages', async () => {

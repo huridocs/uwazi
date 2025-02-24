@@ -1,28 +1,21 @@
+/* eslint-disable react/no-multi-comp */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect, ConnectedProps } from 'react-redux';
-import { IImmutable } from 'shared/types/Immutable';
+import { Location, useLocation } from 'react-router';
+import { useAtom, useAtomValue } from 'jotai';
+import { ChevronUpIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
 import { LanguagesListSchema } from 'shared/types/commonTypes';
-import { Icon } from 'UI';
-import { actions, Translate, t } from 'app/I18N';
-import { IStore } from 'app/istore';
-import { NeedAuthorization } from 'app/Auth';
+import { Translate, t } from 'app/I18N';
 import { useOnClickOutsideElement } from 'app/utils/useOnClickOutsideElementHook';
-import { Location, useLocation } from 'react-router-dom';
+import { NeedAuthorization } from 'V2/Components/UI';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
 
 const locationSearch = (location: Location) => {
   const cleanSearch = location.search.split(/page=\d+|&page=\d+/).join('');
   return cleanSearch === '?' ? '' : cleanSearch;
 };
 
-const prepareValues = (
-  languageMap: IImmutable<LanguagesListSchema>,
-  locale: string,
-  location: Location
-) => {
-  const languages: LanguagesListSchema = languageMap.toJS();
-
+const prepareValues = (languages: LanguagesListSchema, locale: string, location: Location) => {
   const selectedLanguage =
     languages.find(lang => lang.key === locale) || languages.find(lang => lang.default);
 
@@ -37,28 +30,20 @@ const prepareValues = (
   return { languages, selectedLanguage, urlLocation, path };
 };
 
-const mapStateToProps = (state: IStore) => ({
-  languages: state.settings.collection.get('languages'),
-  i18nmode: state.inlineEdit.get('inlineEdit'),
-  locale: state.locale,
-  user: state.user,
-});
+const SVGCircle = ({ fill }: { fill: string }) => (
+  <svg height="20" width="20" xmlns="http://www.w3.org/2000/svg">
+    <circle r="7" cx="10" cy="10" fill={fill} />
+  </svg>
+);
 
-const mapDispatchToProps = (dispatch: Dispatch<{}>) =>
-  bindActionCreators({ toggleInlineEdit: actions.toggleInlineEdit }, dispatch);
+// eslint-disable-next-line max-statements
+const I18NMenu = () => {
+  const [inlineEditState, setInlineEditState] = useAtom(inlineEditAtom);
+  const locale = useAtomValue(localeAtom);
+  const user = useAtomValue(userAtom);
+  const { languages: languageList } = useAtomValue(settingsAtom);
 
-const connector = connect(mapStateToProps, mapDispatchToProps);
-
-type mappedProps = ConnectedProps<typeof connector>;
-
-const i18NMenuComponent = ({
-  languages: languageMap,
-  i18nmode,
-  user,
-  locale,
-  toggleInlineEdit,
-}: mappedProps) => {
-  if (!languageMap || languageMap.size < 1 || (languageMap!.size <= 1 && !user.get('_id'))) {
+  if (!languageList || languageList.length < 1 || (languageList.length <= 1 && !user?._id)) {
     return <div className="no-i18nmenu" />;
   }
 
@@ -68,7 +53,7 @@ const i18NMenuComponent = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const { languages, selectedLanguage, path, urlLocation } = prepareValues(
-    languageMap!,
+    languageList,
     locale,
     location
   );
@@ -88,21 +73,27 @@ const i18NMenuComponent = ({
 
   return (
     <li
-      className={languageMap!.size === 1 ? 'menuNav-I18NMenu one-language' : 'menuNav-I18NMenu'}
+      className={languageList.length === 1 ? 'menuNav-I18NMenu one-language' : 'menuNav-I18NMenu'}
       aria-label="Languages"
       ref={menuRef}
     >
-      {i18nmode && (
+      {inlineEditState.inlineEdit && (
         <NeedAuthorization roles={['admin', 'editor']}>
           <div className="menuNav-language">
             <button
               className="singleItem"
               type="button"
-              onClick={toggleInlineEdit}
+              onClick={() =>
+                setInlineEditState({ inlineEdit: false, translationKey: '', context: '' })
+              }
               aria-label={t('System', 'Turn off inline translation', null, false)}
             >
               <div className="live-translate">
-                <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                {inlineEditState.inlineEdit ? (
+                  <SVGCircle fill="#88eacd" />
+                ) : (
+                  <SVGCircle fill="#ffe66b" />
+                )}
               </div>
             </button>
             <span className="singleItem">
@@ -112,7 +103,7 @@ const i18NMenuComponent = ({
         </NeedAuthorization>
       )}
 
-      {!i18nmode && (
+      {!inlineEditState.inlineEdit && (
         <div className="menuNav-language">
           <button
             className="singleItem dropdown"
@@ -121,7 +112,7 @@ const i18NMenuComponent = ({
           >
             <span>{selectedLanguage?.localized_label}</span>
             &nbsp;
-            <Icon icon={dropdownOpen ? 'caret-up' : 'caret-down'} />
+            {dropdownOpen ? <ChevronUpIcon width={22} /> : <ChevronDownIcon width={22} />}
           </button>
 
           <ul className={dropdownOpen ? 'dropdown-menu expanded' : 'dropdown-menu'}>
@@ -146,11 +137,19 @@ const i18NMenuComponent = ({
                   className="live-translate"
                   type="button"
                   onClick={() => {
-                    toggleInlineEdit();
+                    setInlineEditState({
+                      inlineEdit: !inlineEditState.inlineEdit,
+                      translationKey: '',
+                      context: '',
+                    });
                     setDropdownOpen(false);
                   }}
                 >
-                  <Icon icon="circle" className={i18nmode ? 'live-on' : 'live-off'} />
+                  {inlineEditState.inlineEdit ? (
+                    <SVGCircle fill="#88eacd" />
+                  ) : (
+                    <SVGCircle fill="#ffe66b" />
+                  )}
                   <Translate>Live translate</Translate>
                 </button>
               </li>
@@ -162,6 +161,4 @@ const i18NMenuComponent = ({
   );
 };
 
-const container = connector(i18NMenuComponent);
-
-export { container as i18NMenuComponent };
+export { I18NMenu };

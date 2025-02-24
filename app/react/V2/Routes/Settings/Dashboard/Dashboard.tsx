@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData } from 'react-router-dom';
+import { LoaderFunction, useLoaderData } from 'react-router';
 
 import { Translate } from 'app/I18N';
 import { SettingsContent } from 'app/V2/Components/Layouts/SettingsContent';

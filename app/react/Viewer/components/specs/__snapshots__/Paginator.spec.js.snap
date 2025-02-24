@@ -45,22 +45,14 @@ exports[`Paginator should render a previous button and next button based on the 
               onClick={[Function]}
               to="undefined?page=4"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Previous"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Previous
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Previous
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -87,22 +79,14 @@ exports[`Paginator should render a previous button and next button based on the 
               onClick={[Function]}
               to="undefined?page=6"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Next"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Next
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Next
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -157,22 +141,14 @@ exports[`Paginator when base Url already has the query string "?" should add the
               onClick={[Function]}
               to="undefined?page=2"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Previous"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Previous
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Previous
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -199,22 +175,14 @@ exports[`Paginator when base Url already has the query string "?" should add the
               onClick={[Function]}
               to="undefined?page=4"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Next"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Next
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Next
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -272,22 +240,14 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
               rel="nofollow"
               to="undefined?page=1"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Previous"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Previous
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Previous
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -314,22 +274,14 @@ exports[`Paginator when on first page should disable the prev link 1`] = `
               onClick={[Function]}
               to="undefined?page=2"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Next"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Next
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Next
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -384,22 +336,14 @@ exports[`Paginator when on last page should disable the next link 1`] = `
               onClick={[Function]}
               to="undefined?page=24"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Previous"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Previous
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Previous
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>
@@ -429,22 +373,14 @@ exports[`Paginator when on last page should disable the next link 1`] = `
               rel="nofollow"
               to="undefined?page=25"
             >
-              <Connect(Translate)>
-                <Translate
-                  className=""
-                  context="System"
-                  edit={[Function]}
-                  i18nmode={true}
-                  translationKey="Next"
+              <Translate>
+                <span
+                  className="translation "
+                  onClick={[Function]}
                 >
-                  <span
-                    className="translation active"
-                    onClick={[Function]}
-                  >
-                    Next
-                  </span>
-                </Translate>
-              </Connect(Translate)>
+                  Next
+                </span>
+              </Translate>
             </a>
           </Link>
         </CurrentLocationLink>

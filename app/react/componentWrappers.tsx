@@ -8,7 +8,7 @@ import {
   useOutlet,
   useParams,
   useSearchParams,
-} from 'react-router-dom';
+} from 'react-router';
 import { AppMainContext } from './App/AppMainContext';
 import { searchParamsFromSearchParams } from './utils/routeHelpers';
 

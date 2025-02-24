@@ -2,63 +2,134 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { act, fireEvent, RenderResult, screen } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { Location, MemoryRouter } from 'react-router-dom';
-import Immutable from 'immutable';
-import { defaultState, renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { i18NMenuComponent as I18NMenu } from '../I18NMenu';
+import { act, fireEvent, RenderResult, screen, render } from '@testing-library/react';
+import { Location, MemoryRouter } from 'react-router';
+import { createStore, Provider } from 'jotai';
+import { ClientUserSchema } from 'app/apiResponseTypes';
+import { inlineEditAtom, localeAtom, settingsAtom, userAtom } from 'V2/atoms';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { UserRole } from 'shared/types/userSchema';
+import { LanguageISO6391 } from 'shared/types/commonTypes';
+import { I18NMenu } from '../I18NMenu';
+
+const defaultLanguages = [
+  {
+    _id: '1',
+    label: 'English',
+    key: 'en' as LanguageISO6391,
+    localized_label: 'English',
+    default: true,
+  },
+  {
+    _id: '2',
+    label: 'Spanish',
+    key: 'es' as LanguageISO6391,
+    localized_label: 'Español',
+    default: false,
+  },
+];
+
+const users = [
+  { _id: 'admin', username: 'admin', role: UserRole.ADMIN, email: '' },
+  { _id: 'collab', username: 'collab', role: UserRole.COLLABORATOR, email: '' },
+];
 
 describe('I18NMenu', () => {
-  let props: any;
+  const initialEntry: Partial<Location> = { pathname: '/library' };
+  const inlineEditAtomValue = { inlineEdit: false };
   let renderResult: RenderResult;
-  let store: MockStoreEnhanced;
-  let location: Partial<Location>;
-  const toggleInlineEditMock = jest.fn();
+  let settingsAtomValue = { languages: defaultLanguages };
+  let localeAtomValue = 'en';
 
   Reflect.deleteProperty(global.window, 'location');
   window.location = { ...window.location, assign: jest.fn() };
 
+  const renderComponent = (user?: ClientUserSchema) => {
+    renderResult = render(
+      <MemoryRouter initialEntries={[initialEntry]}>
+        <TestAtomStoreProvider
+          initialValues={[
+            [settingsAtom, settingsAtomValue],
+            [userAtom, user],
+            [localeAtom, localeAtomValue],
+            [inlineEditAtom, inlineEditAtomValue],
+          ]}
+        >
+          <I18NMenu />
+        </TestAtomStoreProvider>
+      </MemoryRouter>
+    );
+  };
+
   beforeEach(() => {
+    initialEntry.pathname = '/library';
+    localeAtomValue = 'en';
+    settingsAtomValue = { languages: defaultLanguages };
+    inlineEditAtomValue.inlineEdit = false;
     jest.clearAllMocks();
-    const languages = [
-      { _id: '1', key: 'en', label: 'English', localized_label: 'English' },
-      { _id: '2', key: 'es', label: 'Spanish', localized_label: 'Español', default: true },
-    ];
-
-    props = {
-      languages: Immutable.fromJS(languages),
-      toggleInlineEdit: toggleInlineEditMock,
-      i18nmode: false,
-      locale: 'es',
-    };
-
-    location = {
-      pathname: '/templates/2452345',
-      search: '?query=weneedmoreclerics',
-    };
   });
 
-  const render = (userType?: 'admin' | 'editor' | 'collaborator') => {
-    const storeUser = userType
-      ? Immutable.fromJS({ _id: 'user1', role: userType })
-      : Immutable.fromJS({});
+  it('should render the links to the different languages', () => {
+    renderComponent();
+    const links = screen.getAllByRole('link');
+    expect(links.map(link => link.getAttribute('href'))).toEqual(
+      expect.arrayContaining(['/en/library', '/es/library'])
+    );
+  });
 
-    props.user = userType
-      ? Immutable.fromJS({ _id: 'user1', role: userType })
-      : Immutable.fromJS({});
+  it('should not render anything if there is only one language', () => {
+    settingsAtomValue = {
+      languages: [
+        { _id: '2', label: 'Spanish', key: 'es', localized_label: 'Español', default: true },
+      ],
+    };
+    renderComponent();
+    const links = screen.queryAllByRole('link');
+    expect(links.length).toBe(0);
+  });
 
-    ({ renderResult, store } = renderConnectedContainer(
-      <I18NMenu.WrappedComponent {...props} />,
-      () => ({
-        ...defaultState,
-        user: storeUser,
-      }),
-      'MemoryRouter',
-      [location]
-    ));
-  };
+  it('should show as active the current locale', async () => {
+    renderComponent(users[0]);
+    const [listItem] = renderResult
+      .getAllByRole('listitem')
+      .filter(item => item.textContent === 'English');
+    expect(listItem.getAttribute('class')).toBe('menuNav-item active');
+  });
+
+  it('should active toggle translation edit mode when clicking Live translate', async () => {
+    renderComponent(users[0]);
+    expect(renderResult.container).toMatchSnapshot('before turning on live translate');
+    await act(async () => {
+      fireEvent.click(screen.getByText('Live translate').parentElement!);
+    });
+    expect(renderResult.container).toMatchSnapshot('after turning on live translate');
+  });
+
+  describe('when there is a user', () => {
+    it('should render then laguages and the live translate option', () => {
+      renderComponent(users[0]);
+      expect(renderResult.getByText('Live translate')).toBeInTheDocument();
+    });
+
+    it('should not render live translate for unauthorized users', () => {
+      renderComponent(users[1]);
+      expect(renderResult.queryByText('Live translate')).not.toBeInTheDocument();
+    });
+
+    it('should display the language section if there is only one language', () => {
+      settingsAtomValue = {
+        languages: [
+          { _id: '2', label: 'Spanish', key: 'es', localized_label: 'Español', default: true },
+        ],
+      };
+      renderComponent(users[1]);
+      const links = screen.queryAllByRole('link');
+      expect(links.length).toBe(1);
+      expect(links.map(link => link.getAttribute('href'))).toEqual(
+        expect.arrayContaining(['/es/library'])
+      );
+    });
+  });
 
   describe('Paths', () => {
     it.each`
@@ -71,10 +142,10 @@ describe('I18NMenu', () => {
     `(
       'should create the expected links for $pathName',
       async ({ locale, currentPath, search, expectedPath }) => {
-        props.locale = locale;
-        location.pathname = currentPath;
-        location.search = search;
-        render('admin');
+        localeAtomValue = locale;
+        initialEntry.pathname = currentPath;
+        initialEntry.search = search;
+        renderComponent(users[0]);
         const links = screen.getAllByRole('link');
         expect(links.map(link => link.getAttribute('href'))).toEqual(
           expect.arrayContaining([`/en${expectedPath}`, `/es${expectedPath}`])
@@ -83,89 +154,47 @@ describe('I18NMenu', () => {
     );
   });
 
-  it('should return empty if there are no languages', () => {
-    props.languages = Immutable.fromJS([]);
-    render('admin');
-    expect(screen.queryByText('Live translate')).not.toBeInTheDocument();
-    expect(screen.queryByText('English')).not.toBeInTheDocument();
-  });
+  describe('reloading after language change', () => {
+    const testStore = createStore();
+    testStore.set(userAtom, users[0]);
+    testStore.set(localeAtom, 'en');
+    testStore.set(settingsAtom, settingsAtomValue);
 
-  it('should not show live transtions for not authorized user', async () => {
-    render('collaborator');
-    expect(screen.queryByText('Live translate')).not.toBeInTheDocument();
-    expect(screen.getByText('English')).toBeInTheDocument();
-  });
+    it('should trigger a reload if the current language is deleted', async () => {
+      const result = render(
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <Provider store={testStore}>
+            <I18NMenu />
+          </Provider>
+        </MemoryRouter>
+      );
 
-  it('should show live transtions for authorized user', async () => {
-    render('editor');
-    expect(screen.queryByText('Live translate')).toBeInTheDocument();
-    const listItems = screen.getAllByRole('link');
-    expect(listItems.map(item => item.textContent)).toEqual(['English', 'Español']);
-  });
+      const newSettingsAtomValue = {
+        languages: [
+          {
+            _id: '2',
+            label: 'Spanish',
+            key: 'es' as LanguageISO6391,
+            localized_label: 'Español',
+            default: true,
+          },
+        ],
+      };
 
-  it('should show as active the current locale', async () => {
-    render('admin');
-    const [listItem] = screen
-      .getAllByRole('listitem')
-      .filter(item => item.textContent === 'Español');
-    expect(listItem.getAttribute('class')).toBe('menuNav-item active');
-  });
+      await act(() => {
+        testStore.set(settingsAtom, newSettingsAtomValue);
+      });
 
-  it('should not display the language section if there is only one language and no user', () => {
-    props.languages = Immutable.fromJS([{ _id: '1', key: 'en', label: 'English', default: true }]);
-    render();
-    expect(screen.queryByText('English')).not.toBeInTheDocument();
-  });
+      result.rerender(
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <Provider store={testStore}>
+            <I18NMenu />
+          </Provider>
+        </MemoryRouter>
+      );
 
-  it('should display the language section if there is only one language and a user', () => {
-    props.languages = Immutable.fromJS([{ _id: '1', key: 'en', label: 'English', default: true }]);
-    render('collaborator');
-    expect(screen.queryByText('English')).toBeInTheDocument();
-    expect(screen.getByRole('link').getAttribute('href')).toBe(
-      '/en/templates/2452345?query=weneedmoreclerics'
-    );
-  });
-
-  it('should change to a single button when live translating', async () => {
-    props.i18nmode = true;
-    render('editor');
-    expect(screen.getByRole('button').parentElement!.textContent).toEqual('Live translate');
-    const activeIcon = renderResult.container.getElementsByClassName('live-on');
-    expect(activeIcon.length).toBe(1);
-    const listItems = screen.queryAllByRole('link');
-    expect(listItems).toEqual([]);
-  });
-
-  it('should active toggle translation edit mode when clicking Live translate', async () => {
-    render('admin');
-    await act(async () => {
-      fireEvent.click(screen.getByText('Live translate').parentElement!);
+      expect(window.location.assign).toHaveBeenCalledTimes(1);
+      expect(window.location.assign).toHaveBeenCalledWith('/library');
     });
-    expect(toggleInlineEditMock).toBeCalled();
-  });
-
-  it('should trigger a reload if the current language is deleted', async () => {
-    props.locale = 'en';
-    render('admin');
-    props.languages = Immutable.fromJS([
-      {
-        _id: '2',
-        key: 'es',
-        label: 'Spanish',
-        localized_label: 'Español',
-        default: true,
-      },
-    ]);
-
-    renderResult.rerender(
-      <MemoryRouter initialEntries={[location]}>
-        <Provider store={store}>
-          <I18NMenu.WrappedComponent {...props} />
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(window.location.assign).toHaveBeenCalledTimes(1);
-    expect(window.location.assign).toHaveBeenCalledWith('/templates/2452345');
   });
 });

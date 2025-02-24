@@ -1,15 +1,16 @@
 /* eslint-disable max-lines */
-import db, { DBFixture } from 'api/utils/testing_db';
 import entities from 'api/entities';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import db, { DBFixture } from 'api/utils/testing_db';
 
-import { EntitySchema } from 'shared/types/entityType';
+import translations from 'api/i18n/translations';
 import thesauris from 'api/thesauri';
 import { elasticTesting } from 'api/utils/elastic_testing';
-import translations from 'api/i18n/translations';
+import { EntitySchema } from 'shared/types/entityType';
 import { getFixturesFactory } from '../../utils/fixturesFactory';
 
 const load = async (data: DBFixture, index?: string) =>
-  db.setupFixturesAndContext(
+  testingEnvironment.setUp(
     {
       ...data,
       settings: [
@@ -37,7 +38,7 @@ describe('Denormalize relationships', () => {
     );
   };
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   describe('title and basic property (text)', () => {
     it('should update denormalized title and icon', async () => {

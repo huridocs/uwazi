@@ -1,14 +1,28 @@
 import { clearCookiesAndLogin } from '../helpers/login';
 import 'cypress-axe';
 
-const addLanguages = (languages: string[]) => {
-  languages.forEach(lang => {
-    cy.clearAndType('[data-testid=modal] input[type=text]', lang);
-    cy.contains('button', lang).click();
-  });
-};
-
 const stringToTranslate = "*please keep this key secret and don't share it.";
+
+const addLanguages = () => {
+  cy.contains('Install Language').click();
+  cy.get('[data-testid=modal]')
+    .should('be.visible')
+    .within(() => {
+      cy.get('input[type=text]').realClick().realType('Spanish');
+      cy.contains('button', 'Spanish').should('be.visible').realClick();
+      cy.get('input[type=text]').clear();
+      cy.get('input[type=text]').realType('French');
+      cy.contains('button', 'French').should('be.visible').realClick();
+      cy.get('input[type=text]').clear();
+      cy.contains('label', '(2)').click();
+      cy.contains('span', '* French (fr)').should('be.visible');
+      cy.contains('span', '* Spanish (es)').should('be.visible');
+    });
+  cy.get('[data-testid=modal]').within(() => {
+    cy.contains('button', 'Install (2)').realClick();
+  });
+  cy.get('[data-testid=modal]').should('not.exist');
+};
 
 describe('Languages', () => {
   before(() => {
@@ -22,26 +36,31 @@ describe('Languages', () => {
   describe('Languages List', () => {
     it('should open the install language modal', () => {
       cy.contains('Install Language').click();
+      cy.get('[data-testid=modal]').should('be.visible');
       cy.checkA11y();
+      cy.get('[data-testid=modal]').within(() => {
+        cy.contains('button', 'Cancel').click();
+      });
     });
 
     it('should install new languages', () => {
       const BACKEND_LANGUAGE_INSTALL_DELAY = 25000;
       cy.intercept('POST', 'api/translations/languages').as('addLanguage');
-      addLanguages(['Spanish', 'French']);
-      cy.contains('[data-testid=modal] button', 'Install').click();
+
+      addLanguages();
+
       cy.wait('@addLanguage');
       cy.contains('Dismiss').click();
-      cy.contains('Spanish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
-      cy.contains('French', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
+      cy.contains('tr', 'Spanish', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
+      cy.contains('tr', 'French', { timeout: BACKEND_LANGUAGE_INSTALL_DELAY });
       cy.contains('Languages installed successfully').click();
     });
 
     it('should render the list of installed languages', () => {
       cy.get('[data-testid=settings-languages]').toMatchImageSnapshot();
-      cy.contains('English');
-      cy.contains('Spanish');
-      cy.contains('French');
+      cy.contains('tr', 'English');
+      cy.contains('tr', 'Spanish');
+      cy.contains('tr', 'French');
       cy.checkA11y();
     });
   });

@@ -24,8 +24,7 @@ describe('Thesauri routes', () => {
 
   beforeEach(async () => {
     jest.spyOn(search, 'indexEntities').mockImplementation(async () => Promise.resolve());
-    await testingEnvironment.setTenant();
-    await testingEnvironment.setFixtures(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => testingEnvironment.tearDown());

@@ -1,4 +1,4 @@
-@use "sass:color";
+@use 'sass:color';
 
 @import '../config/colors';
 @import '../elements/tooltip';
@@ -252,14 +252,6 @@ header {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-      }
-
-      .live-on {
-        color: #88eacd;
-      }
-
-      .live-off {
-        color: #ffe66b;
       }
 
       button.singleItem {

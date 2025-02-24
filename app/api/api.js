@@ -33,6 +33,7 @@ export default (app, server) => {
   require('./files/ocrRoutes').ocrRoutes(app);
   require('./settings/routes').default(app);
   require('./i18n/routes').default(app);
+  require('./i18n.v2/routes').translationsRoutes(app);
   require('./sync/routes').default(app);
   require('./tasks/routes').default(app);
   require('./usergroups/routes').default(app);

@@ -1,4 +1,4 @@
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { files } from 'api/files/files';
 import { search } from 'api/search';
 import path from 'path';
@@ -20,7 +20,7 @@ describe('csvLoader zip file', () => {
   beforeAll(async () => {
     const zip = path.join(__dirname, '/zipData/test.zip');
     const loader = new CSVLoader();
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
     await filesystem.setupTestUploadedPaths('csvLoaderZip');
     await createTestingZip(
       [
@@ -54,7 +54,7 @@ describe('csvLoader zip file', () => {
       filesystem.attachmentsPath('generatedatt2.doc'),
     ]);
     await removeTestingZip();
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   it('should save files into uploaded_documents', async () => {

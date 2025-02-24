@@ -1,8 +1,6 @@
 import React, { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Provider } from 'react-redux';
 import { CodeEditor, CodeEditorProps, CodeEditorInstance } from 'V2/Components/CodeEditor';
-import { LEGACY_createStore as createStore } from 'V2/testing';
 
 const sampleJS = `const myButton = document.getElementById('myButton');
 myButton.addEventListener('click', function () {
@@ -85,30 +83,28 @@ const Component = ({ language, intialValue, fallbackElement }: CodeEditorProps) 
   const [updatedCode, setUpdatedCode] = useState<string>();
 
   return (
-    <Provider store={createStore()}>
-      <div className="tw-content">
-        <div className="overflow-y-auto w-full h-96">
-          <CodeEditor
-            language={language}
-            intialValue={intialValue}
-            onMount={editor => {
-              editorInstance.current = editor;
-            }}
-            fallbackElement={fallbackElement}
-          />
-        </div>
-        <div className="w-full">
-          <button
-            type="button"
-            onClick={() => setUpdatedCode(editorInstance.current?.getValue())}
-            className="p-2 text-white rounded border bg-primary-700"
-          >
-            Save
-          </button>
-        </div>
-        <pre className="mt-2 w-full">{updatedCode}</pre>
+    <div className="tw-content">
+      <div className="overflow-y-auto w-full h-96">
+        <CodeEditor
+          language={language}
+          intialValue={intialValue}
+          onMount={editor => {
+            editorInstance.current = editor;
+          }}
+          fallbackElement={fallbackElement}
+        />
       </div>
-    </Provider>
+      <div className="w-full">
+        <button
+          type="button"
+          onClick={() => setUpdatedCode(editorInstance.current?.getValue())}
+          className="p-2 text-white rounded border bg-primary-700"
+        >
+          Save
+        </button>
+      </div>
+      <pre className="mt-2 w-full">{updatedCode}</pre>
+    </div>
   );
 };
 

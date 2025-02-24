@@ -40,9 +40,9 @@ exports[`Should match render of wem media form 1`] = `
       icon="link"
     />
       
-    <Connect(Translate)>
+    <Translate>
       Add from URL
-    </Connect(Translate)>
+    </Translate>
   </button>
 </LocalForm>
 `;
@@ -105,9 +105,9 @@ exports[`should also display a name field when hasName is true 1`] = `
       icon="link"
     />
       
-    <Connect(Translate)>
+    <Translate>
       Add from URL
-    </Connect(Translate)>
+    </Translate>
   </button>
 </LocalForm>
 `;

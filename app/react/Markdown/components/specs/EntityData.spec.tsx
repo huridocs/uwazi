@@ -4,7 +4,9 @@
 import React, { act } from 'react';
 import { screen, RenderResult } from '@testing-library/react';
 import { renderConnectedContainer } from 'app/utils/test/renderConnected';
-import { state } from './fixture/state';
+import { TestAtomStoreProvider } from 'V2/testing';
+import { localeAtom, translationsAtom } from 'V2/atoms';
+import { state, translations } from './fixture/state';
 import { EntityData, EntityDataProps } from '../EntityData';
 
 describe('EntityData Markdown', () => {
@@ -25,7 +27,17 @@ describe('EntityData Markdown', () => {
 
   const render = async (props: EntityDataProps) => {
     await act(async () => {
-      ({ renderResult } = renderConnectedContainer(<EntityData {...props} />, () => state));
+      ({ renderResult } = renderConnectedContainer(
+        <TestAtomStoreProvider
+          initialValues={[
+            [translationsAtom, translations],
+            [localeAtom, 'en'],
+          ]}
+        >
+          <EntityData {...props} />
+        </TestAtomStoreProvider>,
+        () => state
+      ));
     });
   };
 

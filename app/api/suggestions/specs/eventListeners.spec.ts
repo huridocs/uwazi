@@ -1,4 +1,5 @@
 import entities from 'api/entities';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { EntityDeletedEvent } from 'api/entities/events/EntityDeletedEvent';
 import { EntityUpdatedEvent } from 'api/entities/events/EntityUpdatedEvent';
 import { applicationEventsBus } from 'api/eventsbus';
@@ -159,11 +160,11 @@ beforeAll(() => {
 
 beforeEach(async () => {
   jest.spyOn(search, 'indexEntities').mockReturnValue(Promise.resolve());
-  await db.setupFixturesAndContext(fixtures);
+  await testingEnvironment.setUp(fixtures);
 });
 
 afterAll(async () => {
-  await db.disconnect();
+  await testingEnvironment.tearDown();
 });
 
 describe(`On ${EntityUpdatedEvent.name}`, () => {

@@ -103,15 +103,11 @@ describe('files routes download', () => {
 
     describe('when there is no user logged in', () => {
       it('should serve custom files', async () => {
-        testingEnvironment.resetPermissions();
         const response = await request(app).get(`/api/files/${customPdfFileName}`);
-
         expect(response.status).toBe(200);
       });
       it('should serve files that are related to public entities', async () => {
-        testingEnvironment.resetPermissions();
         const response = await request(app).get(`/api/files/${fileOnPublicEntity}`);
-
         expect(response.status).toBe(200);
       });
     });

@@ -6,9 +6,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     className="form-group"
   >
     <label>
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -23,9 +23,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     model="template.data.properties[0].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -33,9 +33,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     model="template.data.properties[0].fullWidth"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown using all the width available.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -43,9 +43,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     model="template.data.properties[0].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div>
@@ -53,9 +53,9 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
       className="form-group"
     >
       <label>
-        <Connect(Translate)>
+        <Translate>
           Style
-        </Connect(Translate)>
+        </Translate>
       </label>
       <Select
         model="template.data.properties[0].style"
@@ -80,28 +80,28 @@ exports[`FormConfigMultimedia should allow excluding "required" 1`] = `
     >
       <p>
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fit
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fit description"
         >
           will show the entire media inside the container.
-        </Connect(Translate)>
+        </Translate>
         <br />
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fill
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fill description"
         >
           will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
   </div>
@@ -117,9 +117,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     className="form-group"
   >
     <label>
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -134,9 +134,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     model="template.data.properties[0].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -144,9 +144,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     model="template.data.properties[0].fullWidth"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown using all the width available.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -154,11 +154,11 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     model="template.data.properties[0].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div>
@@ -166,9 +166,9 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
       className="form-group"
     >
       <label>
-        <Connect(Translate)>
+        <Translate>
           Style
-        </Connect(Translate)>
+        </Translate>
       </label>
       <Select
         model="template.data.properties[0].style"
@@ -193,28 +193,28 @@ exports[`FormConfigMultimedia should allow excluding "show in card" 1`] = `
     >
       <p>
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fit
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fit description"
         >
           will show the entire media inside the container.
-        </Connect(Translate)>
+        </Translate>
         <br />
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fill
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fill description"
         >
           will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
   </div>
@@ -230,9 +230,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     className="form-group"
   >
     <label>
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -247,9 +247,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     model="template.data.properties[0].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -257,9 +257,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     model="template.data.properties[0].fullWidth"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown using all the width available.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -267,11 +267,11 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     model="template.data.properties[0].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -279,9 +279,9 @@ exports[`FormConfigMultimedia should allow excluding "style" 1`] = `
     model="template.data.properties[0].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <Connect(SharedProperties)
@@ -296,9 +296,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     className="form-group"
   >
     <label>
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -323,9 +323,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     model="template.data.properties[0].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -333,9 +333,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     model="template.data.properties[0].fullWidth"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown using all the width available.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -343,11 +343,11 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     model="template.data.properties[0].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -355,9 +355,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     model="template.data.properties[0].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div>
@@ -365,9 +365,9 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
       className="form-group"
     >
       <label>
-        <Connect(Translate)>
+        <Translate>
           Style
-        </Connect(Translate)>
+        </Translate>
       </label>
       <Select
         model="template.data.properties[0].style"
@@ -392,28 +392,28 @@ exports[`FormConfigMultimedia should allow setting a help text 1`] = `
     >
       <p>
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fit
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fit description"
         >
           will show the entire media inside the container.
-        </Connect(Translate)>
+        </Translate>
         <br />
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fill
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fill description"
         >
           will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
   </div>
@@ -429,9 +429,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     className="form-group"
   >
     <label>
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
     </label>
     <Modeled(Connect(Field))
       model="template.data.properties[0].label"
@@ -446,9 +446,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     model="template.data.properties[0].noLabel"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown without the label.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -456,9 +456,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     model="template.data.properties[0].fullWidth"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will be shown using all the width available.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -466,11 +466,11 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     model="template.data.properties[0].required"
   >
     <Tip>
-      <Connect(Translate)
+      <Translate
         translationKey="empty property tip"
       >
         You won't be able to save an entity if this property is empty.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <PropertyConfigOption
@@ -478,9 +478,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     model="template.data.properties[0].showInCard"
   >
     <Tip>
-      <Connect(Translate)>
+      <Translate>
         This property will appear in the library cards as part of the basic info.
-      </Connect(Translate)>
+      </Translate>
     </Tip>
   </PropertyConfigOption>
   <div>
@@ -488,9 +488,9 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
       className="form-group"
     >
       <label>
-        <Connect(Translate)>
+        <Translate>
           Style
-        </Connect(Translate)>
+        </Translate>
       </label>
       <Select
         model="template.data.properties[0].style"
@@ -515,28 +515,28 @@ exports[`FormConfigMultimedia should hold show label, show in card and select ca
     >
       <p>
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fit
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fit description"
         >
           will show the entire media inside the container.
-        </Connect(Translate)>
+        </Translate>
         <br />
         <b>
-          <Connect(Translate)>
+          <Translate>
             Fill
-          </Connect(Translate)>
+          </Translate>
         </b>
          
-        <Connect(Translate)
+        <Translate
           translationKey="Multimedia fill description"
         >
           will attempt to fill the container, using its entire width. In cards, cropping is likely to occur.
-        </Connect(Translate)>
+        </Translate>
       </p>
     </div>
   </div>

@@ -1,7 +1,7 @@
 /** @format */
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 
 import thesauri from 'api/thesauri';
-import db from 'api/utils/testing_db';
 
 import { fixtures, thesauri1Id } from '../../specs/fixtures';
 import typeParsers from '../../typeParsers';
@@ -17,9 +17,9 @@ describe('multiselect', () => {
 
   const templateProp = { name: 'multiselect_prop', content: thesauri1Id };
 
-  afterAll(async () => db.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
   beforeAll(async () => {
-    await db.clearAllAndLoad(fixtures);
+    await testingEnvironment.setUp(fixtures);
 
     thesauri1 = await thesauri.getById(thesauri1Id);
   });

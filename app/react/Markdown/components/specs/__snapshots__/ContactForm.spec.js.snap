@@ -31,9 +31,9 @@ exports[`ContactForm should render the ContactForm 1`] = `
       className="form-group-label"
       htmlFor="name"
     >
-      <Connect(Translate)>
+      <Translate>
         Name
-      </Connect(Translate)>
+      </Translate>
       <span
         className="required"
       >
@@ -57,9 +57,9 @@ exports[`ContactForm should render the ContactForm 1`] = `
       className="form-group-label"
       htmlFor="email"
     >
-      <Connect(Translate)>
+      <Translate>
         Email
-      </Connect(Translate)>
+      </Translate>
       <span
         className="required"
       >
@@ -83,9 +83,9 @@ exports[`ContactForm should render the ContactForm 1`] = `
       className="form-group-label"
       htmlFor="message"
     >
-      <Connect(Translate)>
+      <Translate>
         Message
-      </Connect(Translate)>
+      </Translate>
       <span
         className="required"
       >
@@ -115,9 +115,9 @@ exports[`ContactForm should render the ContactForm 1`] = `
     <span
       className="btn-label"
     >
-      <Connect(Translate)>
+      <Translate>
         Send
-      </Connect(Translate)>
+      </Translate>
     </span>
   </button>
 </LocalForm>

@@ -1,0 +1,131 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`I18NMenu should active toggle translation edit mode when clicking Live translate: after turning on live translate 1`] = `
+<div>
+  <li
+    aria-label="Languages"
+    class="menuNav-I18NMenu"
+  >
+    <div
+      class="menuNav-language"
+    >
+      <button
+        aria-label="Turn off inline translation"
+        class="singleItem"
+        type="button"
+      >
+        <div
+          class="live-translate"
+        >
+          <svg
+            height="20"
+            width="20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="10"
+              cy="10"
+              fill="#88eacd"
+              r="7"
+            />
+          </svg>
+        </div>
+      </button>
+      <span
+        class="singleItem"
+      >
+        <span
+          class="translation active "
+        >
+          Live translate
+        </span>
+      </span>
+    </div>
+  </li>
+</div>
+`;
+
+exports[`I18NMenu should active toggle translation edit mode when clicking Live translate: before turning on live translate 1`] = `
+<div>
+  <li
+    aria-label="Languages"
+    class="menuNav-I18NMenu"
+  >
+    <div
+      class="menuNav-language"
+    >
+      <button
+        class="singleItem dropdown"
+        type="button"
+      >
+        <span>
+          English
+        </span>
+         
+        <svg
+          aria-hidden="true"
+          data-slot="icon"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          width="22"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            clip-rule="evenodd"
+            d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z"
+            fill-rule="evenodd"
+          />
+        </svg>
+      </button>
+      <ul
+        class="dropdown-menu"
+      >
+        <li
+          class="menuNav-item active"
+        >
+          <a
+            href="/en/library"
+          >
+            English
+          </a>
+        </li>
+        <li
+          class="menuNav-item"
+        >
+          <a
+            href="/es/library"
+          >
+            Español
+          </a>
+        </li>
+        <li
+          class="menuNav-item"
+        >
+          <button
+            class="live-translate"
+            type="button"
+          >
+            <svg
+              height="20"
+              width="20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="10"
+                cy="10"
+                fill="#ffe66b"
+                r="7"
+              />
+            </svg>
+            <span
+              class="translation "
+            >
+              Live translate
+            </span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </li>
+</div>
+`;

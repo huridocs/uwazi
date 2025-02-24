@@ -11,7 +11,11 @@ exports[`Icon should render the back button to the provided url 1`] = `
   <span
     className="btn-label"
   >
-    Back
+    <Translate
+      context="System"
+    >
+      Back
+    </Translate>
   </span>
 </Connect(I18NLink)>
 `;

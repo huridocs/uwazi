@@ -1,6 +1,6 @@
-import { testingDB } from 'api/utils/testing_db';
-import { publicAPIMiddleware } from '../publicAPIMiddleware';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import * as auth from '../index';
+import { publicAPIMiddleware } from '../publicAPIMiddleware';
 
 jest.mock('../index', () => ({
   captchaAuthorization: jest.fn(),
@@ -10,7 +10,7 @@ describe('publicAPIMiddleware', () => {
   let captchaMock: jest.Mock<any, any>;
 
   const setUpSettings = async (open: boolean) =>
-    testingDB.clearAllAndLoad({
+    testingEnvironment.setUp({
       settings: [
         {
           openPublicEndpoint: open,
@@ -24,7 +24,7 @@ describe('publicAPIMiddleware', () => {
     captchaMock.mockReset();
   });
 
-  afterAll(async () => testingDB.disconnect());
+  afterAll(async () => testingEnvironment.tearDown());
 
   it('should bypass captcha if enabled on settings and request has corresponding header', async () => {
     await setUpSettings(true);

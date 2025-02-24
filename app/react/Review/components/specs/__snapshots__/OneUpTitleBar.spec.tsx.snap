@@ -16,7 +16,11 @@ exports[`EntityViewer should render 1 1`] = `
     <span
       className="btn-label"
     >
-      Back to
+      <Translate
+        context="System"
+      >
+        Back to
+      </Translate>
        
       <span>
         'Thes'
@@ -29,7 +33,11 @@ exports[`EntityViewer should render 1 1`] = `
     <span
       className="space8"
     />
-    Documents including suggestion:
+    <Translate
+      context="System"
+    >
+      Documents including suggestion:
+    </Translate>
      
     <b>
       'Topic1'
@@ -39,13 +47,21 @@ exports[`EntityViewer should render 1 1`] = `
     />
   </span>
   <div>
-    Document
+    <Translate
+      context="System"
+    >
+      Document
+    </Translate>
      
     <span>
       4
     </span>
      
-    of
+    <Translate
+      context="System"
+    >
+      of
+    </Translate>
      
     <span>
       &gt;39
@@ -87,19 +103,31 @@ exports[`EntityViewer should render 2 1`] = `
     <span
       className="space8"
     />
-    Documents for custom filter
+    <Translate
+      context="System"
+    >
+      Documents for custom filter
+    </Translate>
     <span
       className="separator"
     />
   </span>
   <div>
-    Document
+    <Translate
+      context="System"
+    >
+      Document
+    </Translate>
      
     <span>
       1
     </span>
      
-    of
+    <Translate
+      context="System"
+    >
+      of
+    </Translate>
      
     <span>
       10

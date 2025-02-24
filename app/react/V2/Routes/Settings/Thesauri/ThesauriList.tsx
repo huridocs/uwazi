@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { Link, LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useSetAtom, useAtomValue } from 'jotai';
 import { Translate } from 'app/I18N';
 import ThesauriAPI from 'app/V2/api/thesauri';
@@ -62,7 +62,7 @@ const ThesauriList = () => {
         text: e.message,
       });
     } finally {
-      revalidator.revalidate();
+      await revalidator.revalidate();
       setShowConfirmationModal(false);
     }
   };

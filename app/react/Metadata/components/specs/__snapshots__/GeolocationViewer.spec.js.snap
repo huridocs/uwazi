@@ -12,15 +12,15 @@ exports[`GeolocationViewer should not fail if points is just an empty array 1`] 
     className="print-view-alt"
   >
     <p>
-      <Connect(Translate)>
+      <Translate>
         Latitude
-      </Connect(Translate)>
+      </Translate>
       : 
     </p>
     <p>
-      <Connect(Translate)>
+      <Translate>
         Longitude
-      </Connect(Translate)>
+      </Translate>
       : 
     </p>
   </div>
@@ -66,16 +66,16 @@ exports[`GeolocationViewer should render a map with markers when onlyForCards is
     className="print-view-alt"
   >
     <p>
-      <Connect(Translate)>
+      <Translate>
         Latitude
-      </Connect(Translate)>
+      </Translate>
       : 
       13
     </p>
     <p>
-      <Connect(Translate)>
+      <Translate>
         Longitude
-      </Connect(Translate)>
+      </Translate>
       : 
       7
     </p>

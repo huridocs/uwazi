@@ -8,7 +8,7 @@ import {
 } from 'api/templates/specs/generatedIdPropertyAutoFillerFixtures';
 import { elasticTesting } from 'api/utils/elastic_testing';
 import { unique } from 'api/utils/filters';
-import db from 'api/utils/testing_db';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
 import { propertyTypes } from 'shared/propertyTypes';
 import { EntitySchema } from 'shared/types/entityType';
 import { TemplateSchema } from 'shared/types/templateType';
@@ -17,11 +17,11 @@ import templates from '../templates';
 describe('generatedId property auto filler', () => {
   beforeAll(async () => {
     jest.spyOn(translations, 'updateContext').mockImplementation(async () => 'ok');
-    await db.setupFixturesAndContext(fixtures, 'generated_id_auto_filler_index');
+    await testingEnvironment.setUp(fixtures, 'generated_id_auto_filler_index');
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('fill generated id fields for entities of a specified template', () => {

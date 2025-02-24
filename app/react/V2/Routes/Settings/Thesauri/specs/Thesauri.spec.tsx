@@ -13,12 +13,10 @@ import {
   render,
   cleanup,
 } from '@testing-library/react/pure';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import { createMemoryRouter, RouterProvider } from 'react-router';
 import { has } from 'lodash';
-import { fromJS } from 'immutable';
 import { templatesAtom } from 'V2/atoms';
-import { LEGACY_createStore as reduxStoreCreator, TestAtomStoreProvider } from 'V2/testing';
+import { TestAtomStoreProvider } from 'V2/testing';
 import { ThesauriList, thesauriLoader } from '../ThesauriList';
 import { EditThesaurus } from '../EditThesaurus';
 import { editThesaurusLoader } from '../helpers';
@@ -100,24 +98,11 @@ describe('Settings Thesauri', () => {
       }
     );
 
-    const reduxStore = reduxStoreCreator({
-      locale: 'en',
-      inlineEdit: fromJS({ inlineEdit: true }),
-      translations: fromJS([
-        {
-          locale: 'en',
-          contexts: [],
-        },
-      ]),
-    });
-
     const renderComponent = () =>
       render(
-        <Provider store={reduxStore}>
-          <TestAtomStoreProvider initialValues={[[templatesAtom, templateAtomValue]]}>
-            <RouterProvider router={router} />
-          </TestAtomStoreProvider>
-        </Provider>
+        <TestAtomStoreProvider initialValues={[[templatesAtom, templateAtomValue]]}>
+          <RouterProvider router={router} />
+        </TestAtomStoreProvider>
       );
 
     let rows: HTMLElement[];

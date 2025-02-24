@@ -68,9 +68,9 @@ describe('getFieldLabel', () => {
   it('should work when template is an Immutable instance', () => {
     template = Immutable.fromJS(template);
     field = 'title';
-    expect(runGetLabel()).toEqual('Name');
+    expect(runGetLabel().props.children).toEqual('Name');
     field = 'metadata.prop1';
-    expect(runGetLabel()).toEqual('Prop 1');
+    expect(runGetLabel().props.children).toEqual('Prop 1');
     field = 'nonexistent';
     expect(runGetLabel()).toEqual('nonexistent');
   });

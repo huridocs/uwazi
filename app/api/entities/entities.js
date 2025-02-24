@@ -47,7 +47,6 @@ const FIELD_TYPES_TO_SYNC = [
 
 async function updateEntity(entity, _template, unrestricted = false) {
   const docLanguages = await this.getAllLanguages(entity.sharedId);
-
   if (
     docLanguages[0].template &&
     entity.template &&
@@ -100,7 +99,7 @@ async function updateEntity(entity, _template, unrestricted = false) {
         if (template._id) {
           await denormalizeRelated(fullEntity, template, currentDoc);
         }
-        const saveResult = await saveFunc(toSave);
+        const saveResult = await saveFunc(toSave, undefined);
 
         await updateNewRelationships(v2RelationshipsUpdates);
 
@@ -139,16 +138,17 @@ async function updateEntity(entity, _template, unrestricted = false) {
         await denormalizeRelated(toSave, template, d);
       }
 
-      return saveFunc(toSave);
+      return saveFunc(toSave, undefined);
     })
   );
 
   await denormalizeAfterEntityUpdate(entity);
 
+  const afterEntities = await model.get({ sharedId: entity.sharedId });
   await applicationEventsBus.emit(
     new EntityUpdatedEvent({
       before: docLanguages,
-      after: await model.get({ sharedId: entity.sharedId }),
+      after: afterEntities,
       targetLanguageKey: entity.language,
     })
   );
@@ -203,9 +203,10 @@ async function createEntity(doc, [currentLanguage, languages], sharedId, docTemp
 
   await Promise.all(result.map(r => denormalizeAfterEntityCreation(r)));
 
+  const createdEntities = await model.get({ sharedId });
   await applicationEventsBus.emit(
     new EntityCreatedEvent({
-      entities: await model.get({ sharedId }),
+      entities: createdEntities,
       targetLanguageKey: currentLanguage,
     })
   );
@@ -390,6 +391,7 @@ export default {
   getEntityTemplate,
   async save(_doc, { user, language }, options = {}) {
     const { updateRelationships = true, index = true, includeDocuments = true } = options;
+
     await validateEntity(_doc);
     await saveSelections(_doc);
     const doc = _doc;
@@ -548,7 +550,7 @@ export default {
     validateWritePermissions(ids, entitiesToUpdate);
     await Promise.all(
       ids.map(async id => {
-        const entity = await entitiesToUpdate.find(
+        const entity = entitiesToUpdate.find(
           e => e.sharedId === id && e.language === params.language
         );
 
@@ -575,12 +577,12 @@ export default {
     return this.get({ sharedId: { $in: ids }, language: params.language });
   },
 
-  async getAllLanguages(sharedId) {
-    const entities = await model.get({ sharedId });
+  async getAllLanguages(sharedId, options = {}) {
+    const entities = await model.get({ sharedId }, null, options);
     return entities;
   },
 
-  countByTemplate(template, language) {
+  async countByTemplate(template, language) {
     const query = language ? { template, language } : { template };
     return model.count(query);
   },

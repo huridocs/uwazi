@@ -8,11 +8,11 @@ exports[`DateRange should allow using the local timezone 1`] = `
     <span
       className="truncate"
     >
-      <Connect(Translate)
+      <Translate
         translationKey="Label date \\"From\\""
       >
         From:
-      </Connect(Translate)>
+      </Translate>
     </span>
     <Connect(DatePicker)
       onChange={[Function]}
@@ -26,11 +26,11 @@ exports[`DateRange should allow using the local timezone 1`] = `
     <span
       className="truncate"
     >
-      <Connect(Translate)
+      <Translate
         translationKey="Label date \\"to\\""
       >
         To:
-      </Connect(Translate)>
+      </Translate>
     </span>
     <Connect(DatePicker)
       endOfDay={true}
@@ -50,11 +50,11 @@ exports[`DateRange should render the component 1`] = `
     <span
       className="truncate"
     >
-      <Connect(Translate)
+      <Translate
         translationKey="Label date \\"From\\""
       >
         From:
-      </Connect(Translate)>
+      </Translate>
     </span>
     <Connect(DatePicker)
       onChange={[Function]}
@@ -68,11 +68,11 @@ exports[`DateRange should render the component 1`] = `
     <span
       className="truncate"
     >
-      <Connect(Translate)
+      <Translate
         translationKey="Label date \\"to\\""
       >
         To:
-      </Connect(Translate)>
+      </Translate>
     </span>
     <Connect(DatePicker)
       endOfDay={true}

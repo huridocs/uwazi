@@ -22,6 +22,7 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
   }));
 
   const install = async () => {
+    setShowModal(false);
     await requestAction(
       I18NApi.addLanguage,
       new RequestParams(languages.filter(l => selected.includes(l.key))),
@@ -57,7 +58,6 @@ const InstallLanguagesModal = ({ setShowModal, languages }: InstallLanguagesModa
             </Button>
             <Button
               onClick={async () => {
-                setShowModal(false);
                 await install();
               }}
               className="grow"

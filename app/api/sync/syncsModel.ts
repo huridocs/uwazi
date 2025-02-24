@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { MultiTenantMongooseModel } from 'api/odm/MultiTenantMongooseModel';
+import { MongooseModelWrapper } from 'api/odm/MongooseModelWrapper';
 
 const syncSchema = new mongoose.Schema({
   lastSyncs: { type: mongoose.Schema.Types.Mixed, default: {} },
@@ -10,4 +10,4 @@ export interface Sync extends mongoose.Document {
   name: string;
 }
 
-export default new MultiTenantMongooseModel<Sync>('syncs', syncSchema);
+export default new MongooseModelWrapper<Sync>('syncs', syncSchema);

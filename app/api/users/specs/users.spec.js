@@ -6,24 +6,25 @@ import mailer from 'api/utils/mailer';
 import db from 'api/utils/testing_db';
 import * as random from 'shared/uniqueID';
 
-import { encryptPassword, comparePasswords } from 'api/auth/encryptPassword';
+import { comparePasswords, encryptPassword } from 'api/auth/encryptPassword';
 import * as usersUtils from 'api/auth2fa/usersUtils';
 import { settingsModel } from 'api/settings/settingsModel';
 import userGroups from 'api/usergroups/userGroups';
+import { testingEnvironment } from 'api/utils/testingEnvironment';
+import * as unlockCode from '../generateUnlockCode';
+import passwordRecoveriesModel from '../passwordRecoveriesModel';
+import users from '../users.js';
+import usersModel from '../usersModel';
 import fixtures, {
-  userId,
+  blockedUserId,
   expectedKey,
-  recoveryUserId,
   group1Id,
   group2Id,
+  recoveryUserId,
+  userId,
   userToDelete,
   userToDelete2,
-  blockedUserId,
 } from './fixtures.js';
-import users from '../users.js';
-import passwordRecoveriesModel from '../passwordRecoveriesModel';
-import usersModel from '../usersModel';
-import * as unlockCode from '../generateUnlockCode';
 
 jest.mock('api/users/generateUnlockCode.ts', () => ({
   generateUnlockCode: () => 'hash',
@@ -31,11 +32,11 @@ jest.mock('api/users/generateUnlockCode.ts', () => ({
 
 describe('Users', () => {
   beforeEach(async () => {
-    await db.setupFixturesAndContext(fixtures);
+    await testingEnvironment.setUp(fixtures);
   });
 
   afterAll(async () => {
-    await db.disconnect();
+    await testingEnvironment.tearDown();
   });
 
   describe('save', () => {
@@ -509,6 +510,7 @@ describe('Users', () => {
       jest.restoreAllMocks();
       jest.spyOn(mailer, 'send').mockImplementation(async () => Promise.resolve('OK'));
       jest.spyOn(Date, 'now').mockReturnValue(1000);
+      testingEnvironment.setFakeContext();
     });
 
     it('should find the matching email create a recover password doc in the database and send an email', async () => {
