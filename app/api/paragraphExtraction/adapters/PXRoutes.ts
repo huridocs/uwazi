@@ -1,5 +1,7 @@
 import { Application } from 'express';
 
+import { needsAuthorization } from 'api/auth';
+
 import { PXCreateExtractorController } from './PXCreateExtractorController';
 import { PXCreateExtractorFactory } from '../infrastructure/PXCreateExtractorFactory';
 import { PXExtractParagraphFromEntitiesController } from './PXExtractParagraphFromEntitiesController';
@@ -8,7 +10,7 @@ import { PXGetExtractorsController } from './PXGetExtractorsController';
 import { PXExtractorsQueryServiceFactory } from '../infrastructure/PXExtractorsQueryServiceFactory';
 
 const paragraphExtractionRoutes = (app: Application) => {
-  app.post('/api/paragraphExtraction/extractor', async (request, response) =>
+  app.post('/api/paragraphExtraction/extractor', needsAuthorization(), async (request, response) =>
     new PXCreateExtractorController({
       response,
       request,
@@ -16,7 +18,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     }).handle()
   );
 
-  app.post('/api/paragraphExtraction/extract', async (request, response) =>
+  app.post('/api/paragraphExtraction/extract', needsAuthorization(), async (request, response) =>
     new PXExtractParagraphFromEntitiesController({
       response,
       request,
@@ -24,7 +26,7 @@ const paragraphExtractionRoutes = (app: Application) => {
     }).handle()
   );
 
-  app.get('/api/paragraphExtraction/extractors', async (request, response) =>
+  app.get('/api/paragraphExtraction/extractors', needsAuthorization(), async (request, response) =>
     new PXGetExtractorsController({
       response,
       request,
