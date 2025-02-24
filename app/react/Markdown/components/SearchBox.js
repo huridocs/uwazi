@@ -1,5 +1,5 @@
 import { Form, Field } from 'react-redux-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import React from 'react';
 import PropTypes from 'prop-types';
 import rison from 'rison-node';
@@ -11,8 +11,8 @@ import { SearchTipsContent } from 'app/App/SearchTipsContent';
 const SearchBox = ({ placeholder, classname }) => {
   const navigate = useNavigate();
 
-  const search = ({ searchTerm }) => {
-    navigate(`/library/?q=${rison.encode({ searchTerm })}`);
+  const search = async ({ searchTerm }) => {
+    await navigate(`/library/?q=${rison.encode({ searchTerm })}`);
   };
 
   return (

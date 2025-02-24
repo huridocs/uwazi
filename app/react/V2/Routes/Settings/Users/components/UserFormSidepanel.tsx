@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher } from 'react-router';
 import { FetchResponseError } from 'shared/JSONRequest';
 import { t, Translate } from 'app/I18N';
 import { InputField, Select, MultiSelect } from 'V2/Components/Forms';
@@ -149,15 +149,15 @@ const UserFormSidepanel = ({
 
     formData.set('data', JSON.stringify(data));
     formData.set('confirmation', password.current || '');
-    fetcher.submit(formData, { method: 'post' });
+    await fetcher.submit(formData, { method: 'post' });
   };
 
-  const onClickSubmit = () => {
+  const onClickSubmit = async () => {
     const formData = new FormData();
     formData.set('intent', actionType.current || '');
     formData.set('data', JSON.stringify(selectedUser));
     formData.set('confirmation', password.current || '');
-    fetcher.submit(formData, { method: 'post' });
+    await fetcher.submit(formData, { method: 'post' });
   };
 
   return (
@@ -248,9 +248,9 @@ const UserFormSidepanel = ({
                       <Button
                         type="button"
                         styling="light"
-                        onClick={() => {
+                        onClick={async () => {
                           actionType.current = 'reset-password';
-                          onClickSubmit();
+                          await onClickSubmit();
                         }}
                       >
                         <Translate>Reset Password</Translate>
@@ -338,7 +338,7 @@ const UserFormSidepanel = ({
           body="Confirm action"
           usePassword
           onCancelClick={() => setShowConfirmationModal(false)}
-          onAcceptClick={value => {
+          onAcceptClick={async value => {
             password.current = value;
 
             if (actionType.current === 'formSubmit' && formSubmitRef.current) {
@@ -346,7 +346,7 @@ const UserFormSidepanel = ({
               formSubmitRef.current.click();
               formSubmitRef.current.disabled = true;
             } else {
-              onClickSubmit();
+              await onClickSubmit();
             }
 
             setShowConfirmationModal(false);

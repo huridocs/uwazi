@@ -8,7 +8,7 @@ import { Translate } from 'app/I18N';
 import { Template } from 'app/apiResponseTypes';
 import { ParagraphExtractorApiPayload } from '../types';
 import { NoQualifiedTemplatesMessage } from './NoQualifiedTemplate';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 interface ExtractorModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;

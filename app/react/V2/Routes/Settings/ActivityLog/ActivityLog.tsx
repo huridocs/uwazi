@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import { useLoaderData, useLocation, useSearchParams } from 'react-router-dom';
+import { useLoaderData, useLocation, useSearchParams } from 'react-router';
 import { Row, SortingState } from '@tanstack/react-table';
 import { FunnelIcon } from '@heroicons/react/24/outline';
 import { useAtomValue } from 'jotai';

@@ -1,4 +1,4 @@
-import { redirect } from 'react-router-dom';
+import { redirect } from 'react-router';
 import { isClient } from 'app/utils';
 import { notify } from 'app/Notifications/actions/notificationsActions';
 import { store } from 'app/store';

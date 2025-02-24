@@ -9,7 +9,7 @@ import {
   useNavigate,
   useRevalidator,
   useSearchParams,
-} from 'react-router-dom';
+} from 'react-router';
 import { SortingState } from '@tanstack/react-table';
 import { useSetAtom } from 'jotai';
 import * as extractorsAPI from 'app/V2/api/ix/extractors';
@@ -124,10 +124,10 @@ const IXSuggestions = () => {
   useEffect(() => {
     socket.on(
       'ix_model_status',
-      (extractorId: string, modelStatus: string, _: string, data: any) => {
+      async (extractorId: string, modelStatus: string, _: string, data: any) => {
         if (extractorId === extractor._id) {
           setStatus({ status: modelStatus as ixStatus, data });
-          revalidate();
+          await revalidate();
           if ((data && data.total === data.processed) || modelStatus === 'ready') {
             setStatus({ status: 'ready' });
           }
@@ -145,8 +145,10 @@ const IXSuggestions = () => {
   }, [aggregation]);
 
   useEffect(() => {
+    const navigatePromise = async (path: string) => navigate(path, { replace: true });
+
     if (searchParams.has('sort') && !sorting.length) {
-      navigate(location.pathname, { replace: true });
+      navigatePromise(location.pathname).catch(_e => {});
     }
 
     if (sorting.length && sorting[0].id) {
@@ -158,9 +160,9 @@ const IXSuggestions = () => {
 
       const order = sorting[0].desc ? 'desc' : 'asc';
 
-      navigate(`${location.pathname}?sort={"property":"${_property}","order":"${order}"}`, {
-        replace: true,
-      });
+      navigatePromise(
+        `${location.pathname}?sort={"property":"${_property}","order":"${order}"}`
+      ).catch(_e => {});
     }
   }, [sorting]);
 
@@ -225,7 +227,7 @@ const IXSuggestions = () => {
         } else {
           setStatus({ status: 'cancel' });
         }
-        revalidate();
+        await revalidate();
       }
     } catch (error) {}
   };
