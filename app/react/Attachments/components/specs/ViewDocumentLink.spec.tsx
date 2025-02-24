@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import React from 'react';
 import { shallow } from 'enzyme';
 
@@ -13,8 +13,8 @@ const mockUseLocation = jest.fn().mockImplementation(() => ({
   pathname: `?page=${pathname}`,
 }));
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: () => mockUseLocation(),
 }));
 const renderComponent = (entity: EntitySchema) => {

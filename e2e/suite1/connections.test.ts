@@ -17,7 +17,7 @@ describe('connections', () => {
 
   it('should navigate to an entities connections view', async () => {
     await expect(page).toClick(
-      '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(6) > label > span.multiselectItem-name > span',
+      '#filtersForm > div:nth-child(2) > ul > li > ul > li:nth-child(1) > label > span.multiselectItem-name > span',
       { text: 'Causa' }
     );
     await expect(page).toClick('.item-name', {

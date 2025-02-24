@@ -1,7 +1,7 @@
 /* eslint-disable import/no-named-as-default */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Outlet, useLocation, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router';
 import { useAtom } from 'jotai';
 import Notifications from 'app/Notifications';
 import Cookiepopup from 'app/App/Cookiepopup';

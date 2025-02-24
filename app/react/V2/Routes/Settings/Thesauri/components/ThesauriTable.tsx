@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { Row } from '@tanstack/react-table';
 import { Translate } from 'app/I18N';
 import { Table } from 'V2/Components/UI';
@@ -21,8 +21,8 @@ interface ThesauriTableProps {
 
 const ThesauriTable = ({ currentThesauri, setSelectedThesauri }: ThesauriTableProps) => {
   const navigate = useNavigate();
-  const navigateToEditThesaurus = (thesaurus: Row<ThesauriRow>) => {
-    navigate(`./edit/${thesaurus.original._id}`);
+  const navigateToEditThesaurus = async (thesaurus: Row<ThesauriRow>) => {
+    await navigate(`./edit/${thesaurus.original._id}`);
   };
 
   return (

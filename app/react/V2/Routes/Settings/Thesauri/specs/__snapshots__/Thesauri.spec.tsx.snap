@@ -269,6 +269,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
       >
         <a
           class="block lg:hidden "
+          data-discover="true"
           href="/settings"
         >
           <svg
@@ -694,6 +695,7 @@ exports[`Settings Thesauri ThesauriList render existing thesauri should show a l
             class="flex gap-2"
           >
             <a
+              data-discover="true"
               href="/settings/thesauri/new"
             >
               <button

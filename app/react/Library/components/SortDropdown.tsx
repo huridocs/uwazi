@@ -3,7 +3,7 @@ import { bindActionCreators, Dispatch } from 'redux';
 import { connect, ConnectedProps } from 'react-redux';
 import { actions } from 'react-redux-form';
 import { risonDecodeOrIgnore } from 'app/utils';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router';
 import { Icon } from 'UI';
 import { I18NLink, t } from 'app/I18N';
 import { wrapDispatch } from 'app/Multireducer';

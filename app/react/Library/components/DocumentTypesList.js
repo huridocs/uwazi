@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Immutable, { is } from 'immutable';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import rison from 'rison-node';
 import ShowIf from 'app/App/ShowIf';
 import { withRouter } from 'app/componentWrappers';
@@ -16,10 +16,14 @@ import { filterDocumentTypes } from 'app/Library/actions/filterActions';
 const getItemsToShow = (fromFilters, templates, settings) => {
   let items = fromFilters ? settings.collection.toJS().filters : [];
   if (!items?.length) {
-    items = templates.toJS().map(tpl => ({
-      id: tpl._id,
-      name: tpl.name,
-    }));
+    items = templates
+      .toJS()
+      .map(tpl => ({
+        id: tpl._id,
+        name: tpl.name,
+        translation: t(tpl._id, tpl.name, null, false).toLowerCase(),
+      }))
+      .sort((a, b) => a.translation.localeCompare(b.translation));
   }
   return items;
 };

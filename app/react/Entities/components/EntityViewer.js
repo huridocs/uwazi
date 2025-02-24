@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { Helmet } from 'react-helmet';
+import { sortBy } from 'lodash';
 import PropTypes from 'prop-types';
 import { Icon } from 'UI';
 import { withContext, withRouter } from 'app/componentWrappers';
@@ -417,7 +418,7 @@ EntityViewer.propTypes = {
 
 const selectRelationTypes = createSelector(
   s => s.relationTypes,
-  r => r.toJS()
+  r => sortBy(r.toJS(), 'name')
 );
 
 const mapStateToProps = state => {

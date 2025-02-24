@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 import React from 'react';
 import { Cell, CellContext, Row, createColumnHelper } from '@tanstack/react-table';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { Translate } from 'app/I18N';
 import { Button, Pill } from 'V2/Components/UI';

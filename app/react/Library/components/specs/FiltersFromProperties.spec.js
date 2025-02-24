@@ -12,8 +12,8 @@ import SelectFilter from '../SelectFilter';
 import TextFilter from '../TextFilter';
 import { defaultProperties } from './fixtures/FiltersFromPropertiesFixtures';
 
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
+jest.mock('react-router', () => ({
+  ...jest.requireActual('react-router'),
   useLocation: () => jest.fn(),
 }));
 jest.mock('app/I18N', () => ({

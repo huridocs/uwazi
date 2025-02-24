@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { useNavigate, NavLink, useLocation } from 'react-router-dom';
+import { useNavigate, NavLink, useLocation } from 'react-router';
 import { omit } from 'lodash';
 
 const defaultProps = {
@@ -48,20 +48,20 @@ const I18NLink = (props: I18NLinkProps) => {
     }, delay);
   };
 
-  const _navigate = () => {
-    navigate(to, { replace });
+  const _navigate = async () => {
+    await navigate(to, { replace });
     scrollToHashWithRetry(location.hash);
   };
 
-  const onClickHandler = (e: { preventDefault: () => void }) => {
+  const onClickHandler = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     if (disabled) return;
 
     if (onClick && confirmTitle) {
       props.mainContext.confirm({
-        accept: () => {
+        accept: async () => {
           onClick(e);
-          _navigate();
+          await _navigate();
         },
         title: confirmTitle,
         message: confirmMessage,
@@ -71,10 +71,10 @@ const I18NLink = (props: I18NLinkProps) => {
 
     if (onClick) {
       onClick(e);
-      _navigate();
+      await _navigate();
       return;
     }
-    _navigate();
+    await _navigate();
   };
 
   useEffect(() => {

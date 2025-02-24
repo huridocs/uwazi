@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router-dom';
+import { LoaderFunction, SetURLSearchParams, createSearchParams, Location } from 'react-router';
 import { IncomingHttpHeaders } from 'http';
 import _, { isArray, isEqual, isObject } from 'lodash';
 import moment from 'moment';

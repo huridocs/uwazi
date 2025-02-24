@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef, useState } from 'react';
 import { IncomingHttpHeaders } from 'http';
-import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router-dom';
+import { LoaderFunction, useLoaderData, useRevalidator } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { useSetAtom } from 'jotai';
 import { ClientUserSchema } from 'app/apiResponseTypes';
@@ -62,7 +62,7 @@ const Account = () => {
         type: 'success',
         text: <Translate>Account updated</Translate>,
       });
-      revalidator.revalidate();
+      await revalidator.revalidate();
     }
 
     resetField('password');
